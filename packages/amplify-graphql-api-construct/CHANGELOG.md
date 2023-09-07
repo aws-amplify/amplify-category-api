@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-construct-alpha@0.6.1...@aws-amplify/graphql-construct-alpha@0.6.2) (2023-09-07)
+
+### Bug Fixes
+
+- enable autoDeleteObjects on the codegen bucket ([ba508a6](https://github.com/aws-amplify/amplify-category-api/commit/ba508a608ee1c3dbd5f87e515af8044dea9af951))
+
 ## [0.6.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-construct-alpha@0.6.0...@aws-amplify/graphql-construct-alpha@0.6.1) (2023-08-30)
 
 **Note:** Version bump only for package @aws-amplify/graphql-construct-alpha
