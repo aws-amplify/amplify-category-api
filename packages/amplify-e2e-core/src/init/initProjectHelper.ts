@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { EOL } from 'os';
+import * as fs from 'fs';
 import { copySync, moveSync, readFile } from 'fs-extra';
 import { v4 as uuid } from 'uuid';
 import { nspawn as spawn, getCLIPath, getNpxPath, singleSelect, addCITags } from '..';
@@ -495,7 +496,7 @@ export function amplifyStatus(cwd: string, expectedStatus: string, testingWithLa
   });
 }
 
-export function initCDKProject(cwd: string, templatePath: string): Promise<string> {
+export function initCDKProject(cwd: string, templatePath: string, cdkVersion = '2.80.0'): Promise<string> {
   return new Promise<void>((resolve, reject) => {
     spawn(getNpxPath(), ['cdk', 'init', 'app', '--language', 'typescript'], {
       cwd,
@@ -522,8 +523,20 @@ export function initCDKProject(cwd: string, templatePath: string): Promise<strin
     .then(
       () =>
         new Promise<void>((resolve, reject) => {
-          // change to official package
-          spawn('npm', ['install', '--save-dev', '@aws-amplify/graphql-construct-alpha'], { cwd, stripColors: true }).run((err: Error) => {
+          // Consume the locally packaged library for testing.
+          const packagedConstructDirectory = path.join(__dirname, '..', '..', 'amplify-graphql-api-construct', 'dist', 'js');
+          const packagedConstructTarballs = fs.readdirSync(packagedConstructDirectory).filter((fileName) => fileName.match(/\.tgz/));
+          if (packagedConstructTarballs.length !== 1) {
+            throw new Error(
+              `Expected a single packaged tarball, but found ${packagedConstructTarballs.length}, ${JSON.stringify(
+                packagedConstructTarballs,
+                null,
+                2,
+              )}`,
+            );
+          }
+          const packagedConstructPath = path.join(packagedConstructDirectory, packagedConstructTarballs[0]);
+          spawn('npm', ['install', '--save-dev', packagedConstructPath], { cwd, stripColors: true }).run((err: Error) => {
             if (!err) {
               resolve();
             } else {
@@ -536,7 +549,7 @@ export function initCDKProject(cwd: string, templatePath: string): Promise<strin
       () =>
         new Promise<void>((resolve, reject) => {
           // override dep version from cdk init
-          spawn('npm', ['install', '--save', 'aws-cdk-lib@2.80.0'], { cwd, stripColors: true }).run((err: Error) => {
+          spawn('npm', ['install', '--save', `aws-cdk-lib@${cdkVersion}`], { cwd, stripColors: true }).run((err: Error) => {
             if (!err) {
               resolve();
             } else {
