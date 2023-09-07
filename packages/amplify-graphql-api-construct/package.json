@@ -106,7 +106,6 @@
     "@types/node": "^12.12.6",
     "rimraf": "^3.0.0",
     "ts-jest": "^26.4.4",
-    "zod": "^3.21.4",
     "jsii": "^5.1.5",
     "jsii-docgen": "9.1.2",
     "jsii-pacmak": "^1.84.0",
