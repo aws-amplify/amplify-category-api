@@ -134,7 +134,7 @@ export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends 
       },
     });
 
-    this.codegenAssets = new CodegenAssets(this, 'CodegenAssets', { modelSchema: processedSchema });
+    this.codegenAssets = new CodegenAssets(this, 'AmplifyCodegenAssets', { modelSchema: processedSchema });
 
     this.resources = getGeneratedResources(this);
     this.generatedFunctionSlots = getGeneratedFunctionSlots(assetManager.resolverAssets);
