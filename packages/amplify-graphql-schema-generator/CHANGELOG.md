@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0-rds-2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.4.2...@aws-amplify/graphql-schema-generator@0.5.0-rds-2.0) (2023-09-07)
+
+### Bug Fixes
+
+- Fix schema import for RDS clusters in VPCs ([942ad39](https://github.com/aws-amplify/amplify-category-api/commit/942ad3923e826f77cc20a65beee3dfadd21e32ef))
+
+### Features
+
+- **api:** specify include or exclude tables option to generate schema ([1fa52a1](https://github.com/aws-amplify/amplify-category-api/commit/1fa52a1f0c0d7bf82caebc94241774ac3b5c8aa1))
+- infer refersTo for models in the import flow and preserve edits during schema regeneration ([#1845](https://github.com/aws-amplify/amplify-category-api/issues/1845)) ([2631c02](https://github.com/aws-amplify/amplify-category-api/commit/2631c027395a35d9841669f2aa034af93cbeb9fc))
+
 ## [0.4.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.4.1...@aws-amplify/graphql-schema-generator@0.4.2) (2023-08-30)
 
 **Note:** Version bump only for package @aws-amplify/graphql-schema-generator

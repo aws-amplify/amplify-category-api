@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0-rds-2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.1.2...@aws-amplify/graphql-transformer-core@2.2.0-rds-2.0) (2023-09-07)
+
+### Bug Fixes
+
+- **api:** make id optional if not a string type ([48ecac0](https://github.com/aws-amplify/amplify-category-api/commit/48ecac0989097106a531ebb898abbda7a0f1745c))
+
+### Features
+
+- add refersTo directive transformer for model renaming ([#1830](https://github.com/aws-amplify/amplify-category-api/issues/1830)) ([afbd6f2](https://github.com/aws-amplify/amplify-category-api/commit/afbd6f282bc411313ce098a53a87bb8c6481aa48))
+- **api:** add vpc endpoints for ssm ([5a4ffc4](https://github.com/aws-amplify/amplify-category-api/commit/5a4ffc4c1889536c8e1fdd1f31fe28ca4326100f))
+- **api:** custom queries support using sql directive ([5214037](https://github.com/aws-amplify/amplify-category-api/commit/52140374ca974956c5d5eac09fec91a51cfc9027))
+- **api:** rds has many support ([42b4c9f](https://github.com/aws-amplify/amplify-category-api/commit/42b4c9f770dec01f02b397ad2a231232395d577d))
+
 ## [2.1.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.1.1...@aws-amplify/graphql-transformer-core@2.1.2) (2023-08-30)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-core
