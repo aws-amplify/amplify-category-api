@@ -181,11 +181,8 @@ function _installCLIFromLocalRegistry {
     npm list -g --depth=1 | grep -e '@aws-amplify/amplify-category-api' -e 'amplify-codegen'
     unsetNpmRegistryUrl
 }
-function _setupLocalRegistry {
-    echo "Start verdaccio"
-    source codebuild_specs/scripts/local_publish_helpers.sh
-    startLocalRegistry "$(pwd)/codebuild_specs/scripts/verdaccio.yaml"
-    setNpmRegistryUrlToLocal
+function _setupRegistryTimeouts {
+    echo "Setup Registry Timeouts"
     # set longer timeout to avoid socket timeout error
     npm config set fetch-retry-mintimeout 20000
     npm config set fetch-retry-maxtimeout 120000
@@ -222,7 +219,9 @@ function _setupCDKTestsLinux {
     echo "Setup CDK Tests Linux"
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
-    _setupLocalRegistry  
+    _setupRegistryTimeouts
+    cd packages/amplify-graphql-api-construct
+    yarn package
     _loadTestAccountCredentials
     _setShell
 }
