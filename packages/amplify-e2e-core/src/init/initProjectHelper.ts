@@ -524,7 +524,7 @@ export function initCDKProject(cwd: string, templatePath: string, cdkVersion = '
       () =>
         new Promise<void>((resolve, reject) => {
           // Consume the locally packaged library for testing.
-          const packagedConstructDirectory = path.join(__dirname, '..', '..', 'amplify-graphql-api-construct', 'dist', 'js');
+          const packagedConstructDirectory = path.join(__dirname, '..', '..', '..', 'amplify-graphql-api-construct', 'dist', 'js');
           const packagedConstructTarballs = fs.readdirSync(packagedConstructDirectory).filter((fileName) => fileName.match(/\.tgz/));
           if (packagedConstructTarballs.length !== 1) {
             throw new Error(
