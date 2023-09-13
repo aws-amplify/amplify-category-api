@@ -19,7 +19,7 @@
     "test-watch": "jest --watch",
     "extract-api": "ts-node --project extract-api.tsconfig.json ../../scripts/extract-api.ts",
     "update-readme": "cp README_HEAD.md README.md && jsii && jsii-docgen --readme --output README.md",
-    "prepublishOnly": "jsii && git add .jsii && git commit -m \"chore: update .jsii assembly\" --no-verify"
+    "prepublishOnly": "echo \"Executing PrePublishOnly Hook for API Construct\" && jsii && git add .jsii && git add packages/amplify-graphql-api-construct/.jsii && git commit -m \"chore: update .jsii assembly\" --no-verify && echo \"Finished prePublishOnly hook\" && echo $(git log -1)"
   },
   "keywords": [
     "awscdk",
