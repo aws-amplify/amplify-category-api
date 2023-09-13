@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-construct-alpha@0.6.2...@aws-amplify/graphql-construct-alpha@0.7.0) (2023-09-13)
+
+### Bug Fixes
+
+- update local deps after release ([d6469f8](https://github.com/aws-amplify/amplify-category-api/commit/d6469f8395506c5812127a9281c17c905a17987a))
+
+### Features
+
+- enable jsii builds for the api construct ([#1840](https://github.com/aws-amplify/amplify-category-api/issues/1840)) ([f6e9aff](https://github.com/aws-amplify/amplify-category-api/commit/f6e9aff2b7e8ad620e1899d29c8cb330b4d6a30f))
+
 ## [0.6.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-construct-alpha@0.6.1...@aws-amplify/graphql-construct-alpha@0.6.2) (2023-09-07)
 
 ### Bug Fixes

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.15.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.14.2...amplify-category-api-e2e-tests@3.15.0) (2023-09-13)
+
+### Features
+
+- enable jsii builds for the api construct ([#1840](https://github.com/aws-amplify/amplify-category-api/issues/1840)) ([f6e9aff](https://github.com/aws-amplify/amplify-category-api/commit/f6e9aff2b7e8ad620e1899d29c8cb330b4d6a30f))
+
 ## [3.14.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.14.1...amplify-category-api-e2e-tests@3.14.2) (2023-08-30)
 
 **Note:** Version bump only for package amplify-category-api-e2e-tests
