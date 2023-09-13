@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
+import { AmplifyGraphqlSchema } from '../../amplify-graphql-schema';
 
 describe('basic functionality', () => {
   it('renders an appsync api', () => {
@@ -11,11 +12,11 @@ describe('basic functionality', () => {
 
     new AmplifyGraphqlApi(stack, 'TestApi', {
       apiName: 'MyApi',
-      schema: /* GraphQL */ `
+      schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
         type Todo @model @auth(rules: [{ allow: owner }]) {
           description: String!
         }
-      `,
+      `),
       authorizationConfig: {
         userPoolConfig: { userPool },
       },
@@ -41,11 +42,11 @@ describe('basic functionality', () => {
     const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
 
     new AmplifyGraphqlApi(stack, 'TestApi', {
-      schema: /* GraphQL */ `
+      schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
         type Todo @model @auth(rules: [{ allow: owner }]) {
           description: String!
         }
-      `,
+      `),
       authorizationConfig: {
         userPoolConfig: { userPool },
       },
@@ -90,11 +91,11 @@ describe('basic functionality', () => {
     const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
 
     new AmplifyGraphqlApi(stack, 'TestApi', {
-      schema: /* GraphQL */ `
+      schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
         type Todo @model @auth(rules: [{ allow: owner }]) {
           description: String!
         }
-      `,
+      `),
       authorizationConfig: {
         userPoolConfig: { userPool },
       },
@@ -111,7 +112,7 @@ describe('basic functionality', () => {
   it('generates a nested stack per-model and for connections', () => {
     const stack = new cdk.Stack();
     const api = new AmplifyGraphqlApi(stack, 'TestApi', {
-      schema: /* GraphQL */ `
+      schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
         type Blog @model @auth(rules: [{ allow: public }]) {
           title: String!
           posts: [Post] @hasMany
@@ -121,7 +122,7 @@ describe('basic functionality', () => {
           title: String!
           blog: Blog @belongsTo
         }
-      `,
+      `),
       authorizationConfig: {
         apiKeyConfig: { expires: cdk.Duration.days(7) },
       },

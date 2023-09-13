@@ -199,7 +199,10 @@ function _setupE2ETestsLinux {
     echo "Setup E2E Tests Linux"
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
-    _installCLIFromLocalRegistry  
+    _installCLIFromLocalRegistry
+    cd packages/amplify-graphql-api-construct
+    yarn package
+    cd ../..
     _loadTestAccountCredentials
     _setShell
 }

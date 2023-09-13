@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
+import { AmplifyGraphqlSchema } from '../../amplify-graphql-schema';
 
 /**
  * Utility to wrap construct creation a basic synth step to smoke test
@@ -17,11 +18,11 @@ describe('predictions category', () => {
   it('synths with predictions config', () => {
     verifySynth((stack) => {
       new AmplifyGraphqlApi(stack, 'TestApi', {
-        schema: /* GraphQL */ `
+        schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
           type Query {
             recognizeTextFromImage: String @predictions(actions: [identifyText])
           }
-        `,
+        `),
         authorizationConfig: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
@@ -33,11 +34,11 @@ describe('predictions category', () => {
   it('generates a nested stack for predictions directive', () => {
     const stack = new cdk.Stack();
     const api = new AmplifyGraphqlApi(stack, 'TestApi', {
-      schema: /* GraphQL */ `
+      schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
         type Query {
           recognizeTextFromImage: String @predictions(actions: [identifyText])
         }
-      `,
+      `),
       authorizationConfig: {
         apiKeyConfig: { expires: cdk.Duration.days(7) },
       },
@@ -52,11 +53,11 @@ describe('predictions category', () => {
   it('generates a resolver and iam policy without fn::sub when a real bucket is passed in', () => {
     const stack = new cdk.Stack();
     const api = new AmplifyGraphqlApi(stack, 'TestApi', {
-      schema: /* GraphQL */ `
+      schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
         type Query {
           recognizeTextFromImage: String @predictions(actions: [identifyText])
         }
-      `,
+      `),
       authorizationConfig: {
         apiKeyConfig: { expires: cdk.Duration.days(7) },
       },
