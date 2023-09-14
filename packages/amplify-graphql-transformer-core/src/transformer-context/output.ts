@@ -97,35 +97,35 @@ export class TransformerOutput implements TransformerContextOutputProvider {
         default:
         /* pass any others */
       }
+    }
 
-      // We add the extension nodes last so that the order of input documents does not matter.
-      // At this point, all input documents have been processed so the base types will be present.
-      for (const ext of extensionNodes) {
-        switch (ext.kind) {
-          case Kind.OBJECT_TYPE_EXTENSION:
-            this.addObjectExtension(ext);
-            break;
-          case Kind.INTERFACE_TYPE_EXTENSION:
-            this.addInterfaceExtension(ext);
-            break;
-          case Kind.UNION_TYPE_EXTENSION:
-            this.addUnionExtension(ext);
-            break;
-          case Kind.ENUM_TYPE_EXTENSION:
-            this.addEnumExtension(ext);
-            break;
-          case Kind.INPUT_OBJECT_TYPE_EXTENSION:
-            this.addInputExtension(ext);
-            break;
-          // case Kind.SCALAR_TYPE_EXTENSION:
-          default:
-            continue;
-        }
+    // We add the extension nodes last so that the order of input documents does not matter.
+    // At this point, all input documents have been processed so the base types will be present.
+    for (const ext of extensionNodes) {
+      switch (ext.kind) {
+        case Kind.OBJECT_TYPE_EXTENSION:
+          this.addObjectExtension(ext);
+          break;
+        case Kind.INTERFACE_TYPE_EXTENSION:
+          this.addInterfaceExtension(ext);
+          break;
+        case Kind.UNION_TYPE_EXTENSION:
+          this.addUnionExtension(ext);
+          break;
+        case Kind.ENUM_TYPE_EXTENSION:
+          this.addEnumExtension(ext);
+          break;
+        case Kind.INPUT_OBJECT_TYPE_EXTENSION:
+          this.addInputExtension(ext);
+          break;
+        // case Kind.SCALAR_TYPE_EXTENSION:
+        default:
+          continue;
       }
-      // If no schema definition is provided then fill with the default one.
-      if (!this.getSchema()) {
-        this.putSchema(DEFAULT_SCHEMA_DEFINITION);
-      }
+    }
+    // If no schema definition is provided then fill with the default one.
+    if (!this.getSchema()) {
+      this.putSchema(DEFAULT_SCHEMA_DEFINITION);
     }
   }
 
