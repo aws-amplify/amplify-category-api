@@ -33,8 +33,6 @@ export class IterativeDynamoModelResourceGenerator extends DynamoModelResourceGe
     }
 
     if (this.isProvisioned()) {
-      // const tableManagerStack = ctx.stackManager.createStack(ITERATIVE_TABLE_STACK_NAME);
-
       // add model related-parameters to the root stack
       const rootStack = cdk.Stack.of(ctx.stackManager.scope);
       new cdk.CfnParameter(rootStack, ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
@@ -88,6 +86,7 @@ export class IterativeDynamoModelResourceGenerator extends DynamoModelResourceGe
     ddbManagerPolicy.addStatements(
       new aws_iam.PolicyStatement({
         actions: ['dynamodb:CreateTable', 'dynamodb:UpdateTable', 'dynamodb:DeleteTable', 'dynamodb:DescribeTable'],
+        // TODO: have more restricted scope
         resources: ['*'],
       })
     );
@@ -130,8 +129,7 @@ export class IterativeDynamoModelResourceGenerator extends DynamoModelResourceGe
   createModelTable(scope: Construct, def: ObjectTypeDefinitionNode, context: TransformerContextProvider): void {
     const modelName = def!.name.value;
     const tableLogicalName = ModelResourceIDs.ModelTableResourceID(modelName);
-    const tableNameOrig = context.resourceHelper.generateTableName(modelName);
-    const tableName = 'TestTodoIterativeDeploy'
+    const tableName = context.resourceHelper.generateTableName(modelName);
 
     // Add parameters.
     const readIops = new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
@@ -188,13 +186,22 @@ export class IterativeDynamoModelResourceGenerator extends DynamoModelResourceGe
 
     const removalPolicy = this.options.EnableDeletionProtection ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY;
 
-    // Expose a way in context to allow proper resource naming
-    const tableState = {
+    // TODO: The following lines for custom resource creation will be wrapped into a new internal construct
+    // TODO: The attribute of encryption and TTL should be added
+    const defaultTableState = {
       TableName: tableName,
       AttributeDefinitions: [
         {
           AttributeName: 'id',
           AttributeType: 'S',
+        },
+        {
+          AttributeName: 'name',
+          AttributeType: 'S'
+        },
+        {
+          AttributeName: 'name1',
+          AttributeType: 'S'
         },
       ],
       KeySchema: [
@@ -202,22 +209,36 @@ export class IterativeDynamoModelResourceGenerator extends DynamoModelResourceGe
           AttributeName: 'id',
           KeyType: 'HASH',
         },
+        {
+          AttributeName: 'name',
+          KeyType: 'RANGE'
+        }
       ],
-      ProvisionedThroughput: {
-        ReadCapacityUnits: 5, 
-        WriteCapacityUnits: 5
-      },
+      GlobalSecondaryIndexes: [
+        {
+          IndexName: 'gsi1',
+          KeySchema: [
+            {
+              AttributeName: 'name1',
+              KeyType: 'HASH',
+            }
+          ],
+          Projection: {
+            ProjectionType: 'ALL'
+          },
+        }
+      ],
       StreamSpecification: {
-        StreamEnabled: true,
         StreamViewType: 'NEW_AND_OLD_IMAGES'
       }
     };
     const tableResource = new CustomResource(scope, tableLogicalName, {
       serviceToken: this.customResourceServiceToken,
+      resourceType: 'Custom::AmplifyManagedDynamoDBTable',
       properties: {
-        Template: JSON.stringify(tableState),
-        TableName: tableNameOrig,
-      }
+        ...defaultTableState,
+      },
+      removalPolicy
     });
     setResourceName(tableResource, { name: modelName, setOnDefaultChild: true });
 
@@ -227,19 +248,7 @@ export class IterativeDynamoModelResourceGenerator extends DynamoModelResourceGe
       tableStreamArn: tableResource.getAttString('TableStreamArn')
     });
     const cfnTable = tableResource.node.defaultChild as cdk.CfnCustomResource;
-    // const table = new Table(scope, tableLogicalName, {
-    //   tableName,
-    //   partitionKey: {
-    //     name: 'id',
-    //     type: AttributeType.STRING,
-    //   },
-    //   stream: StreamViewType.NEW_AND_OLD_IMAGES,
-    //   encryption: TableEncryption.DEFAULT,
-    //   removalPolicy,
-    //   ...(context.isProjectUsingDataStore() ? { timeToLiveAttribute: '_ttl' } : undefined),
-    // });
-    // const cfnTable = table.node.defaultChild as CfnTable;
-    // setResourceName(table, { name: modelName, setOnDefaultChild: true });
+
     cfnTable.addPropertyOverride('ProvisonedThroughput', cdk.Fn.conditionIf(usePayPerRequestBilling.logicalId, cdk.Fn.ref('AWS::NoValue'), {
       ReadCapacityUnits: readIops,
       WriteCapacityUnits: writeIops,
