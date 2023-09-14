@@ -1,5 +1,7 @@
 # Amplify Graphql API Construct
 
+[![View on Construct Hub](https://constructs.dev/badge?package=%40aws-amplify%2Fgraphql-construct-alpha)](https://constructs.dev/packages/@aws-amplify/graphql-construct-alpha)
+
 This package vends an L3 CDK Construct wrapping the behavior of the Amplify GraphQL Transformer. This enables quick development and interation of AppSync APIs which support the Amplify GraphQL Directives. For more information on schema modeling in GraphQL, please refer to the [amplify developer docs](https://docs.amplify.aws/cli/graphql/overview/).
 
 The primary way to use this construct is to invoke it with a provided schema (either as an inline graphql string, or as one or more `appsync.SchemaFile`) objects, and with authorization config provided. There are 5 supported methods for authorization of an AppSync API, all of which are supported by this construct. For more information on authorization rule definitions in Amplify, refer to the [authorization docs](https://docs.amplify.aws/cli/graphql/authorization-rules/). Note: currently at least one authorization rule is required, and if multiple are specified, a `defaultAuthMode` must be specified on the api as well. Specified authorization modes must be a superset of those configured in the graphql schema.

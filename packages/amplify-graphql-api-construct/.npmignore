@@ -10,3 +10,8 @@ tsconfig.tsbuildinfo
 
 # Exclude jsii outdir
 dist
+
+# Files required for building/validation steps.
+nonJsiiDependencies.json
+extract-api.tsconfig.json
+README_HEAD.md
