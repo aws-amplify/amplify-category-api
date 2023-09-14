@@ -29,8 +29,7 @@
     "clean": "rimraf ./lib && rimraf ./rds-lambda/lib && rimraf ./rds-patching-lambda/lib && rimraf ./publish-notification-lambda/lib",
     "test": "jest",
     "test-watch": "jest --watch",
-    "extract-api": "ts-node ../../scripts/extract-api.ts",
-    "build-custom-resource-lambda": "cd lib/resources/custom-resource-lambda && bestzip --force node ../../custom-resource-lambda.zip ./* && cd -"
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
     "@aws-amplify/graphql-transformer-core": "2.1.2",

@@ -3,7 +3,7 @@ import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-int
 import { ModelResourceIDs, ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { SyncUtils, setResourceName } from '@aws-amplify/graphql-transformer-core';
-import { AttributeType, CfnTable, ITable, StreamViewType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
+import { ITable, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnRole } from 'aws-cdk-lib/aws-iam';
@@ -195,38 +195,12 @@ export class IterativeDynamoModelResourceGenerator extends DynamoModelResourceGe
           AttributeName: 'id',
           AttributeType: 'S',
         },
-        {
-          AttributeName: 'name',
-          AttributeType: 'S'
-        },
-        {
-          AttributeName: 'name1',
-          AttributeType: 'S'
-        },
       ],
       KeySchema: [
         {
           AttributeName: 'id',
           KeyType: 'HASH',
         },
-        {
-          AttributeName: 'name',
-          KeyType: 'RANGE'
-        }
-      ],
-      GlobalSecondaryIndexes: [
-        {
-          IndexName: 'gsi1',
-          KeySchema: [
-            {
-              AttributeName: 'name1',
-              KeyType: 'HASH',
-            }
-          ],
-          Projection: {
-            ProjectionType: 'ALL'
-          },
-        }
       ],
       StreamSpecification: {
         StreamViewType: 'NEW_AND_OLD_IMAGES'
