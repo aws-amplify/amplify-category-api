@@ -147,7 +147,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
   before = (ctx: TransformerBeforeStepContextProvider): void => {
     if (ctx.transformParameters.useAmplifyManagedTableResources) {
-      this.resourceGeneratorMap.set(DDB_DB_TYPE, new IterativeDynamoModelResourceGenerator())
+      this.resourceGeneratorMap.set(DDB_DB_TYPE, new IterativeDynamoModelResourceGenerator());
     }
     const datasourceMapValues: Array<DatasourceType> = Array.from(ctx.modelToDatasourceMap.values());
     if (datasourceMapValues.some((value) => value.dbType === DDB_DB_TYPE && value.provisionDB)) {

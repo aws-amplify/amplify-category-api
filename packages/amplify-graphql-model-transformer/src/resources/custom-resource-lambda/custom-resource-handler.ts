@@ -6,12 +6,14 @@ const ddbClient = new DynamoDB();
 const log = (msg: string, ...other: any[]) => {
   console.log(
     msg,
-    other.map((o) => (typeof o === 'object' ? JSON.stringify(o, undefined, 2) : o))
+    other.map((o) => (typeof o === 'object' ? JSON.stringify(o, undefined, 2) : o)),
   );
 };
 
-export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): Promise<AWSCDKAsyncCustomResource.OnEventResponse | void> => {
-  console.log(event)
+export const onEvent = async (
+  event: AWSCDKAsyncCustomResource.OnEventRequest,
+): Promise<AWSCDKAsyncCustomResource.OnEventResponse | void> => {
+  console.log(event);
   const tableDef = extractTableInputFromEvent(event);
   console.log('Input table state: ', tableDef);
 
@@ -27,7 +29,7 @@ export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
         Data: {
           TableArn: response.tableArn,
           TableStreamArn: response.streamArn,
-          TableName: response.tableName
+          TableName: response.tableName,
         },
       };
       console.log('Returning result: ', result);
@@ -49,7 +51,7 @@ export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
         await ddbClient.deleteTable({ TableName: event.PhysicalResourceId }).promise();
         await retry(
           async () => await doesTableExist(event.PhysicalResourceId!),
-          (res) => res === false
+          (res) => res === false,
         );
         console.log(`Table '${event.PhysicalResourceId}' does not exist. Deletion is finished.`);
 
@@ -60,8 +62,8 @@ export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
           Data: {
             TableArn: response.tableArn,
             TableStreamArn: response.streamArn,
-            TableName: response.tableName
-          }
+            TableName: response.tableName,
+          },
         };
         log('Returning result', result);
         return result;
@@ -75,11 +77,11 @@ export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
           Data: {
             TableArn: describeTableResult.Table.TableArn,
             TableStreamArn: describeTableResult.Table.LatestStreamArn,
-            TableName: describeTableResult.Table.TableName
-          }
-        }
+            TableName: describeTableResult.Table.TableName,
+          },
+        };
         return result; // nothing to update
-      } 
+      }
 
       // TODO: merge gsi update with other table updates
 
@@ -93,9 +95,9 @@ export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
         Data: {
           TableArn: describeTableResult.Table.TableArn,
           TableStreamArn: describeTableResult.Table.LatestStreamArn,
-          TableName: describeTableResult.Table.TableName
-        }
-      }
+          TableName: describeTableResult.Table.TableName,
+        },
+      };
       return result;
     case 'Delete':
       console.log('Initiating table deletion');
@@ -111,7 +113,9 @@ export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
   // after this function exits, the state machine will invoke isComplete in a loop until it returns finished or the state machine times out
 };
 
-export const isComplete = async (event: AWSCDKAsyncCustomResource.IsCompleteRequest): Promise<AWSCDKAsyncCustomResource.IsCompleteResponse> => {
+export const isComplete = async (
+  event: AWSCDKAsyncCustomResource.IsCompleteRequest,
+): Promise<AWSCDKAsyncCustomResource.IsCompleteResponse> => {
   log('got event', event);
   if (event.RequestType === 'Delete') {
     // nothing else to do on delete
@@ -124,7 +128,7 @@ export const isComplete = async (event: AWSCDKAsyncCustomResource.IsCompleteRequ
   console.log('Fetching current table state');
   const describeTableResult = await retry(
     async () => await ddbClient.describeTable({ TableName: event.PhysicalResourceId! }).promise(),
-    (result) => !!result?.Table
+    (result) => !!result?.Table,
   );
   if (describeTableResult.Table?.TableStatus !== 'ACTIVE') {
     console.log('Table not active yet');
@@ -148,7 +152,7 @@ export const isComplete = async (event: AWSCDKAsyncCustomResource.IsCompleteRequ
   log('Computed next update', nextUpdate);
   if (!nextUpdate) {
     // current state equals end state so we're done
-    console.log('No additional updates needed. Update finished')
+    console.log('No additional updates needed. Update finished');
     return finished;
   }
   // don't need to merge gsi updates with other table updates here because those have already been applied in the first update
@@ -201,19 +205,18 @@ export const getNextGSIUpdate = (currentState: TableDescription, endState: Custo
   }
 
   // if we get here, then find a GSI that needs to be created and construct an update request
-  const gsiRequiresCreationPredicate = (endStateGSI: DynamoDB.GlobalSecondaryIndex): boolean => !currentStateGSINames.includes(endStateGSI.IndexName);
+  const gsiRequiresCreationPredicate = (endStateGSI: DynamoDB.GlobalSecondaryIndex): boolean =>
+    !currentStateGSINames.includes(endStateGSI.IndexName);
 
   const gsiToAdd = endStateGSIs.find(gsiRequiresCreationPredicate);
   if (gsiToAdd) {
     const attributeNamesToInclude = gsiToAdd.KeySchema.map((schema) => schema.AttributeName);
-    const gsiToAddAction = removeUndefinedAttributes(
-      {
-        IndexName: gsiToAdd.IndexName,
-        KeySchema: gsiToAdd.KeySchema,
-        Projection: gsiToAdd.Projection,
-        ProvisionedThroughput: gsiToAdd.ProvisionedThroughput
-      },
-    ) as DynamoDB.CreateGlobalSecondaryIndexAction
+    const gsiToAddAction = removeUndefinedAttributes({
+      IndexName: gsiToAdd.IndexName,
+      KeySchema: gsiToAdd.KeySchema,
+      Projection: gsiToAdd.Projection,
+      ProvisionedThroughput: gsiToAdd.ProvisionedThroughput,
+    }) as DynamoDB.CreateGlobalSecondaryIndexAction;
     return {
       TableName: currentState.TableName!,
       AttributeDefinitions: endState.AttributeDefinitions.filter((def) => attributeNamesToInclude.includes(def.AttributeName)),
@@ -241,8 +244,8 @@ type CreateTableResponse = {
  * @returns The table input for Custom dynamoDB Table
  */
 const extractTableInputFromEvent = (
-  event: AWSCDKAsyncCustomResource.OnEventRequest | AWSCDKAsyncCustomResource.IsCompleteRequest
-  ): CustomDDB.Input => {
+  event: AWSCDKAsyncCustomResource.OnEventRequest | AWSCDKAsyncCustomResource.IsCompleteRequest,
+): CustomDDB.Input => {
   // isolate the resource properties from the event and remove the service token
   const resourceProperties = { ...event.ResourceProperties } as Record<string, any> & { ServiceToken?: string };
   delete resourceProperties.ServiceToken;
@@ -250,7 +253,7 @@ const extractTableInputFromEvent = (
   // cast the remaining resource properties to the DynamoDB API call input type
   const tableDef = convertStringToBooleanOrNumber(resourceProperties) as CustomDDB.Input;
   return tableDef;
-}
+};
 /**
  * Util function to convert string values to the correct form
  * Such as 'true' to true, '5' to 5
@@ -263,18 +266,17 @@ const convertStringToBooleanOrNumber = (obj: Record<string, any>): Record<string
       // If the property is an object, recursively call the function
       obj[key] = convertStringToBooleanOrNumber(obj[key]);
     } else if (typeof obj[key] === 'string') {
-      if ((obj[key] === 'true' || obj[key] === 'false')) {
+      if (obj[key] === 'true' || obj[key] === 'false') {
         // If the property is a string with value 'true' or 'false', convert it to a boolean
         obj[key] = obj[key] === 'true';
-      }
-      else if (!isNaN(Number(obj[key]))) {
+      } else if (!isNaN(Number(obj[key]))) {
         // If the property is a string that can be parsed into a number, convert it to a number
         obj[key] = Number(obj[key]);
       }
     }
   }
   return obj;
-}
+};
 /**
  * Util function to remove undefined values from root level of object
  * @param obj Input Object
@@ -288,7 +290,7 @@ const removeUndefinedAttributes = (obj: Record<string, any>): Record<string, any
     }
   }
   return obj;
-}
+};
 
 const toCreateTableInput = (props: any): CreateTableInput => {
   const createTableInput: CreateTableInput = {
@@ -299,14 +301,15 @@ const toCreateTableInput = (props: any): CreateTableInput => {
     BillingMode: props.BillingMode,
     StreamSpecification: props.StreamSpecification
       ? {
-        StreamEnabled: true,
-        StreamViewType: props.StreamSpecification.StreamViewType
-      } : undefined,
+          StreamEnabled: true,
+          StreamViewType: props.StreamSpecification.StreamViewType,
+        }
+      : undefined,
     ProvisionedThroughput: props.ProvisionedThroughput,
-    SSESpecification: props.SSESpecification ? { Enabled: props.SSESpecification.sseEnabled } : undefined
+    SSESpecification: props.SSESpecification ? { Enabled: props.SSESpecification.sseEnabled } : undefined,
   };
   return removeUndefinedAttributes(createTableInput) as CreateTableInput;
-}
+};
 
 const createNewTable = async (input: CreateTableInput): Promise<CreateTableResponse> => {
   const tableName = input.TableName;
@@ -325,7 +328,7 @@ const doesTableExist = async (tableName: string): Promise<boolean> => {
     }
     throw error; // Handle other errors
   }
-}
+};
 
 const isProjectionModified = (currentProjection: Projection, endProjection: Projection): boolean => {
   // first see if the projection type is changed
@@ -396,7 +399,7 @@ const retry = async <T>(
   func: () => Promise<T>,
   successPredicate: (res?: T) => boolean,
   settings?: Partial<RetrySettings>,
-  failurePredicate?: (res?: T) => boolean
+  failurePredicate?: (res?: T) => boolean,
 ): Promise<T> => {
   const { times, delayMS, timeoutMS, stopOnError } = {
     ...defaultSettings,

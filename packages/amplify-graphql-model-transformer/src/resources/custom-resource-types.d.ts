@@ -1,8 +1,8 @@
-import { DynamoDB } from "aws-sdk";
+import { DynamoDB } from 'aws-sdk';
 
-export as namespace CustomDDB
+export as namespace CustomDDB;
 
-export type Input = DynamoDB.CreateTableInput
+export type Input = DynamoDB.CreateTableInput;
 
 // TYPES BELOW ARE COPIED FROM CDK
 

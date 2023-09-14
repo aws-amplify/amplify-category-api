@@ -215,6 +215,7 @@ export type SchemaTranslationBehavior = {
     enableAutoIndexQueryNames: boolean;
     respectPrimaryKeyAttributesOnConnectionField: boolean;
     enableSearchNodeToNodeEncryption: boolean;
+    useAmplifyManagedTableResources: boolean;
 };
 
 // @public
