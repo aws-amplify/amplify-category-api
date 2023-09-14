@@ -72,7 +72,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     return new DynamoDBModelVTLGenerator();
   }
 
-  createModelTable(scope: Construct, def: ObjectTypeDefinitionNode, context: TransformerContextProvider): void {
+  protected createModelTable(scope: Construct, def: ObjectTypeDefinitionNode, context: TransformerContextProvider): void {
     const modelName = def!.name.value;
     const tableLogicalName = ModelResourceIDs.ModelTableResourceID(modelName);
     const tableName = context.resourceHelper.generateTableName(modelName);
@@ -182,7 +182,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     this.createModelTableDataSource(def, context, table, scope, role, tableDataSourceLogicalName);
   }
 
-  createModelTableDataSource(
+  protected createModelTableDataSource(
     def: ObjectTypeDefinitionNode,
     context: TransformerContextProvider,
     table: Table,
