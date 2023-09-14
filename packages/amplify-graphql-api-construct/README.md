@@ -916,6 +916,8 @@ For more information, refer to https://docs.aws.amazon.com/appsync/latest/devgui
 
 ### BackendOutputEntry <a name="BackendOutputEntry" id="@aws-amplify/graphql-construct-alpha.BackendOutputEntry"></a>
 
+Entry representing the required output from the backend for codegen generate commands to work.
+
 #### Initializer <a name="Initializer" id="@aws-amplify/graphql-construct-alpha.BackendOutputEntry.Initializer"></a>
 
 ```typescript
@@ -928,8 +930,8 @@ const backendOutputEntry: BackendOutputEntry = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@aws-amplify/graphql-construct-alpha.BackendOutputEntry.property.payload">payload</a></code> | <code>{[ key: string ]: string}</code> | *No description.* |
-| <code><a href="#@aws-amplify/graphql-construct-alpha.BackendOutputEntry.property.version">version</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.BackendOutputEntry.property.payload">payload</a></code> | <code>{[ key: string ]: string}</code> | The string-map payload of generated config values. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.BackendOutputEntry.property.version">version</a></code> | <code>string</code> | The protocol version for this backend output. |
 
 ---
 
@@ -941,6 +943,8 @@ public readonly payload: {[ key: string ]: string};
 
 - *Type:* {[ key: string ]: string}
 
+The string-map payload of generated config values.
+
 ---
 
 ##### `version`<sup>Required</sup> <a name="version" id="@aws-amplify/graphql-construct-alpha.BackendOutputEntry.property.version"></a>
@@ -950,6 +954,8 @@ public readonly version: string;
 ```
 
 - *Type:* string
+
+The protocol version for this backend output.
 
 ---
 
@@ -1546,6 +1552,8 @@ For more information, refer to https://docs.aws.amazon.com/appsync/latest/devgui
 ---
 
 ### PartialSchemaTranslationBehavior <a name="PartialSchemaTranslationBehavior" id="@aws-amplify/graphql-construct-alpha.PartialSchemaTranslationBehavior"></a>
+
+A utility interface equivalent to Partial<SchemaTranslationBehavior>.
 
 #### Initializer <a name="Initializer" id="@aws-amplify/graphql-construct-alpha.PartialSchemaTranslationBehavior.Initializer"></a>
 
@@ -2183,6 +2191,8 @@ Retrieve any function slots defined explicitly in the schema.
 ### IBackendOutputStorageStrategy <a name="IBackendOutputStorageStrategy" id="@aws-amplify/graphql-construct-alpha.IBackendOutputStorageStrategy"></a>
 
 - *Implemented By:* <a href="#@aws-amplify/graphql-construct-alpha.IBackendOutputStorageStrategy">IBackendOutputStorageStrategy</a>
+
+Backend output strategy used to write config required for codegen tasks.
 
 #### Methods <a name="Methods" id="Methods"></a>
 

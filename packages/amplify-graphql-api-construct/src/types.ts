@@ -404,6 +404,9 @@ export interface SchemaTranslationBehavior {
   readonly enableSearchNodeToNodeEncryption: boolean;
 }
 
+/**
+ * A utility interface equivalent to Partial<SchemaTranslationBehavior>.
+ */
 export interface PartialSchemaTranslationBehavior {
   /**
    * Restore parity w/ GQLv1 @model parameter behavior, where setting a single field doesn't implicitly set the other fields to null.
@@ -480,11 +483,24 @@ export interface IAmplifyGraphqlSchema {
   readonly functionSlots: FunctionSlot[];
 }
 
+/**
+ * Entry representing the required output from the backend for codegen generate commands to work.
+ */
 export interface BackendOutputEntry {
+  /**
+   * The protocol version for this backend output.
+   */
   readonly version: string;
+
+  /**
+   * The string-map payload of generated config values.
+   */
   readonly payload: Record<string, string>;
 }
 
+/**
+ * Backend output strategy used to write config required for codegen tasks.
+ */
 export interface IBackendOutputStorageStrategy {
   /**
    * Add an entry to backend output.

@@ -87,9 +87,7 @@ export class AmplifyGraphqlSchema {
 
 // @public
 export interface ApiKeyAuthorizationConfig {
-    // (undocumented)
     readonly description?: string;
-    // (undocumented)
     readonly expires: Duration;
 }
 
@@ -105,15 +103,12 @@ export interface AuthorizationConfig {
 
 // @public
 export interface AutomergeConflictResolutionStrategy extends ConflictResolutionStrategyBase {
-    // (undocumented)
     readonly handlerType: 'AUTOMERGE';
 }
 
-// @public (undocumented)
+// @public
 export interface BackendOutputEntry {
-    // (undocumented)
     readonly payload: Record<string, string>;
-    // (undocumented)
     readonly version: string;
 }
 
@@ -131,15 +126,12 @@ export type ConflictResolutionStrategy = AutomergeConflictResolutionStrategy | O
 
 // @public
 export interface ConflictResolutionStrategyBase {
-    // (undocumented)
     readonly detectionType: ConflictDetectionType;
 }
 
 // @public
 export interface CustomConflictResolutionStrategy extends ConflictResolutionStrategyBase {
-    // (undocumented)
     readonly conflictHandler: IFunction;
-    // (undocumented)
     readonly handlerType: 'LAMBDA';
 }
 
@@ -148,34 +140,25 @@ export type FunctionSlot = MutationFunctionSlot | QueryFunctionSlot | Subscripti
 
 // @public
 export interface FunctionSlotBase {
-    // (undocumented)
     readonly fieldName: string;
-    // (undocumented)
     readonly function: FunctionSlotOverride;
-    // (undocumented)
     readonly slotIndex: number;
 }
 
 // @public
 export interface FunctionSlotOverride {
-    // (undocumented)
     readonly requestMappingTemplate?: MappingTemplate;
-    // (undocumented)
     readonly responseMappingTemplate?: MappingTemplate;
 }
 
-// @public (undocumented)
+// @public
 export type GraphqlOutput = z.infer<typeof versionedGraphqlOutputSchema>;
 
 // @public
 export interface IAMAuthorizationConfig {
-    // (undocumented)
     readonly adminRoles?: IRole[];
-    // (undocumented)
     readonly authenticatedUserRole?: IRole;
-    // (undocumented)
     readonly identityPoolId?: string;
-    // (undocumented)
     readonly unauthenticatedUserRole?: IRole;
 }
 
@@ -185,7 +168,7 @@ export interface IAmplifyGraphqlSchema {
     readonly functionSlots: FunctionSlot[];
 }
 
-// @public (undocumented)
+// @public
 export interface IBackendOutputStorageStrategy {
     addBackendOutputEntry(keyName: string, strategy: BackendOutputEntry): void;
     flush(): void;
@@ -193,41 +176,31 @@ export interface IBackendOutputStorageStrategy {
 
 // @public
 export interface LambdaAuthorizationConfig {
-    // (undocumented)
     readonly function: IFunction;
-    // (undocumented)
     readonly ttl: Duration;
 }
 
 // @public
 export interface MutationFunctionSlot extends FunctionSlotBase {
-    // (undocumented)
     readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preUpdate' | 'postUpdate' | 'finish';
-    // (undocumented)
     readonly typeName: 'Mutation';
 }
 
 // @public
 export interface OIDCAuthorizationConfig {
-    // (undocumented)
     readonly clientId?: string;
-    // (undocumented)
     readonly oidcIssuerUrl: string;
-    // (undocumented)
     readonly oidcProviderName: string;
-    // (undocumented)
     readonly tokenExpiryFromAuth: Duration;
-    // (undocumented)
     readonly tokenExpiryFromIssue: Duration;
 }
 
 // @public
 export interface OptimisticConflictResolutionStrategy extends ConflictResolutionStrategyBase {
-    // (undocumented)
     readonly handlerType: 'OPTIMISTIC_CONCURRENCY';
 }
 
-// @public (undocumented)
+// @public
 export interface PartialSchemaTranslationBehavior {
     readonly disableResolverDeduping?: boolean;
     readonly enableAutoIndexQueryNames?: boolean;
@@ -243,9 +216,7 @@ export interface PartialSchemaTranslationBehavior {
 
 // @public
 export interface QueryFunctionSlot extends FunctionSlotBase {
-    // (undocumented)
     readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preDataLoad' | 'postDataLoad' | 'finish';
-    // (undocumented)
     readonly typeName: 'Query';
 }
 
@@ -265,19 +236,16 @@ export interface SchemaTranslationBehavior {
 
 // @public
 export interface SubscriptionFunctionSlot extends FunctionSlotBase {
-    // (undocumented)
     readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preSubscribe';
-    // (undocumented)
     readonly typeName: 'Subscription';
 }
 
 // @public
 export interface UserPoolAuthorizationConfig {
-    // (undocumented)
     readonly userPool: IUserPool;
 }
 
-// @public (undocumented)
+// @public
 export const versionedGraphqlOutputSchema: z.ZodDiscriminatedUnion<"version", [z.ZodObject<{
     version: z.ZodLiteral<"1">;
     payload: z.ZodObject<{
