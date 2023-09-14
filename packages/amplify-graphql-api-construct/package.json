@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-construct-alpha",
-  "version": "0.7.1-jsii-build-updates.0",
+  "version": "0.7.1-jsii-build-updates.1",
   "description": "AppSync GraphQL Api Construct using Amplify GraphQL Transformer.",
   "repository": {
     "type": "git",

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.1-jsii-build-updates.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-construct-alpha@0.7.1-jsii-build-updates.0...@aws-amplify/graphql-construct-alpha@0.7.1-jsii-build-updates.1) (2023-09-14)
+
+### Bug Fixes
+
+- reuse prepub, update jsii ([9173abf](https://github.com/aws-amplify/amplify-category-api/commit/9173abfdd6177534fc1ab4622d38af5bcf5198fb))
+- try with prepack instead ([d661ced](https://github.com/aws-amplify/amplify-category-api/commit/d661ced35d72f18d3671b992abf245d9d607ffc9))
+- use prepublishOnly lifecycle instead of prepare for jsii assembly ([fa7e756](https://github.com/aws-amplify/amplify-category-api/commit/fa7e75692e6a807c453c79d249677830d0da30ad))
+
 ## [0.7.1-jsii-build-updates.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-construct-alpha@0.7.0...@aws-amplify/graphql-construct-alpha@0.7.1-jsii-build-updates.0) (2023-09-13)
 
 **Note:** Version bump only for package @aws-amplify/graphql-construct-alpha
