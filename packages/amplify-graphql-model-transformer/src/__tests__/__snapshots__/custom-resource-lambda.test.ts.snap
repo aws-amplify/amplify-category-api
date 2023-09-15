@@ -1,0 +1,70 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Custom Resource Lambda Tests Get next GSI update should compute addition correctly 1`] = `
+Object {
+  "AttributeDefinitions": Array [
+    Object {
+      "AttributeName": "sk",
+      "AttributeType": "S",
+    },
+  ],
+  "GlobalSecondaryIndexUpdates": Array [
+    Object {
+      "Create": Object {
+        "IndexName": "gsi2",
+        "KeySchema": Array [
+          Object {
+            "AttributeName": "sk",
+            "KeyType": "HASH",
+          },
+        ],
+        "Projection": Object {
+          "ProjectionType": "ALL",
+        },
+      },
+    },
+  ],
+  "TableName": "test-table",
+}
+`;
+
+exports[`Custom Resource Lambda Tests Get next GSI update should compute deletion correctly 1`] = `
+Object {
+  "GlobalSecondaryIndexUpdates": Array [
+    Object {
+      "Delete": Object {
+        "IndexName": "gsi1",
+      },
+    },
+  ],
+  "TableName": "test-table",
+}
+`;
+
+exports[`Custom Resource Lambda Tests Get next GSI update should compute next addition correctly 1`] = `
+Object {
+  "AttributeDefinitions": Array [
+    Object {
+      "AttributeName": "newKey",
+      "AttributeType": "S",
+    },
+  ],
+  "GlobalSecondaryIndexUpdates": Array [
+    Object {
+      "Create": Object {
+        "IndexName": "gsi3",
+        "KeySchema": Array [
+          Object {
+            "AttributeName": "newKey",
+            "KeyType": "HASH",
+          },
+        ],
+        "Projection": Object {
+          "ProjectionType": "ALL",
+        },
+      },
+    },
+  ],
+  "TableName": "test-table",
+}
+`;

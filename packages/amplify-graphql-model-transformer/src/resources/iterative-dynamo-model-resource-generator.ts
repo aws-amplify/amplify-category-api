@@ -95,7 +95,7 @@ export class IterativeDynamoModelResourceGenerator extends DynamoModelResourceGe
       runtime: aws_lambda.Runtime.NODEJS_16_X,
       code: lambdaCode,
       handler: 'custom-resource-handler.onEvent',
-      timeout: Duration.minutes(8),
+      timeout: Duration.minutes(14),
     });
 
     // lambda that will poll for provisioning to complete
@@ -103,7 +103,7 @@ export class IterativeDynamoModelResourceGenerator extends DynamoModelResourceGe
       runtime: aws_lambda.Runtime.NODEJS_16_X,
       code: lambdaCode,
       handler: 'custom-resource-handler.isComplete',
-      timeout: Duration.minutes(8),
+      timeout: Duration.minutes(14),
     });
 
     ddbManagerPolicy.attachToRole(gsiOnEventHandler.role!);
