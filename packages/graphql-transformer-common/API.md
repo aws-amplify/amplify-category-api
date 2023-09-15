@@ -399,6 +399,9 @@ export class ResourceConstants {
         AuthCognitoUserPoolLogicalID: string;
         AuthCognitoUserPoolNativeClientLogicalID: string;
         AuthCognitoUserPoolJSClientLogicalID: string;
+        TableOnEventHandlerLogicalID: string;
+        TableIsCompleteHandlerLogicalID: string;
+        TableCustomProviderLogicalID: string;
     };
     // (undocumented)
     static readonly SNIPPETS: {

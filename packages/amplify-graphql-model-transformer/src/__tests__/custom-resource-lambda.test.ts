@@ -120,7 +120,7 @@ describe('Custom Resource Lambda Tests', () => {
         GlobalSecondaryIndexes: [],
       };
       const nextUpdate = getNextGSIUpdate(currentState, endState);
-      expect(nextUpdate).toMatchSnapshot()
+      expect(nextUpdate).toMatchSnapshot();
     });
     it('should compute next addition correctly', () => {
       const currentState: DynamoDB.TableDescription = {
@@ -161,7 +161,7 @@ describe('Custom Resource Lambda Tests', () => {
         ],
       };
       const nextUpdate = getNextGSIUpdate(currentState, endState);
-      expect(nextUpdate).toMatchSnapshot()
+      expect(nextUpdate).toMatchSnapshot();
     });
     it('should compute end state correctly', () => {
       const currentState: DynamoDB.TableDescription = {
@@ -219,7 +219,7 @@ describe('Custom Resource Lambda Tests', () => {
         ],
       };
       const nextUpdate = getNextGSIUpdate(currentState, endState);
-      expect(nextUpdate).toBeUndefined()
+      expect(nextUpdate).toBeUndefined();
     });
   });
 });

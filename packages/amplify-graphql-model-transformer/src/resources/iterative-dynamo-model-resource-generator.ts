@@ -13,6 +13,7 @@ import { DynamoModelResourceGenerator } from './dynamo-model-resource-generator'
 import * as path from 'path';
 
 export const ITERATIVE_TABLE_STACK_NAME = 'AmplifyTableManager';
+export const CUSTOM_DDB_CFN_TYPE = 'Custom::AmplifyManagedDynamoDBTable';
 /**
  * DynamoModelResourceGenerator is an implementation of ModelResourceGenerator,
  * providing necessary utilities to generate the DynamoDB resources for models
@@ -88,7 +89,7 @@ export class IterativeDynamoModelResourceGenerator extends DynamoModelResourceGe
     const lambdaCode = aws_lambda.Code.fromAsset(path.join(__dirname, '..', '..', 'lib', 'resources', 'custom-resource-lambda'));
 
     // lambda that will handle DDB CFN events
-    const gsiOnEventHandler = new aws_lambda.Function(scope, 'TableOnEventHandler', {
+    const gsiOnEventHandler = new aws_lambda.Function(scope, ResourceConstants.RESOURCES.TableOnEventHandlerLogicalID, {
       runtime: aws_lambda.Runtime.NODEJS_16_X,
       code: lambdaCode,
       handler: 'custom-resource-handler.onEvent',
@@ -96,7 +97,7 @@ export class IterativeDynamoModelResourceGenerator extends DynamoModelResourceGe
     });
 
     // lambda that will poll for provisioning to complete
-    const gsiIsCompleteHandler = new aws_lambda.Function(scope, 'TableIsCompleteHandler', {
+    const gsiIsCompleteHandler = new aws_lambda.Function(scope, ResourceConstants.RESOURCES.TableIsCompleteHandlerLogicalID, {
       runtime: aws_lambda.Runtime.NODEJS_16_X,
       code: lambdaCode,
       handler: 'custom-resource-handler.isComplete',
@@ -105,7 +106,7 @@ export class IterativeDynamoModelResourceGenerator extends DynamoModelResourceGe
 
     ddbManagerPolicy.attachToRole(gsiOnEventHandler.role!);
     ddbManagerPolicy.attachToRole(gsiIsCompleteHandler.role!);
-    const gsiCustomProvider = new custom_resources.Provider(scope, 'TableCustomProvider', {
+    const gsiCustomProvider = new custom_resources.Provider(scope, ResourceConstants.RESOURCES.TableCustomProviderLogicalID, {
       onEventHandler: gsiOnEventHandler,
       isCompleteHandler: gsiIsCompleteHandler,
       logRetention: aws_logs.RetentionDays.ONE_MONTH,
@@ -202,7 +203,7 @@ export class IterativeDynamoModelResourceGenerator extends DynamoModelResourceGe
     };
     const tableResource = new CustomResource(scope, tableLogicalName, {
       serviceToken: this.customResourceServiceToken,
-      resourceType: 'Custom::AmplifyManagedDynamoDBTable',
+      resourceType: CUSTOM_DDB_CFN_TYPE,
       properties: {
         ...defaultTableState,
       },
