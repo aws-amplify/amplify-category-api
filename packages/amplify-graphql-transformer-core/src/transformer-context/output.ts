@@ -172,6 +172,12 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     this.addOperationType(DEFAULT_QUERY_OPERATION);
   }
 
+  public ensureQuery(): void {
+    if (!this.getQueryTypeName()) {
+      this.addDefaultQuery();
+    }
+  }
+
   public getMutationTypeName(): string | undefined {
     const schemaNode = this.getSchema();
     const mutationTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'mutation');
@@ -191,6 +197,12 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     this.addOperationType(DEFAULT_MUTATION_OPERATION);
   }
 
+  public ensureMutation(): void {
+    if (!this.getMutationTypeName()) {
+      this.addDefaultMutation();
+    }
+  }
+
   public getSubscriptionTypeName(): string | undefined {
     const schemaNode = this.getSchema();
     const subscriptionTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'subscription');
@@ -208,6 +220,12 @@ export class TransformerOutput implements TransformerContextOutputProvider {
 
   public addDefaultSubscription(): void {
     this.addOperationType(DEFAULT_SUBSCRIPTION_OPERATION);
+  }
+
+  public ensureSubscription(): void {
+    if (!this.getSubscriptionTypeName()) {
+      this.addDefaultSubscription();
+    }
   }
 
   /**
@@ -236,7 +254,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
   public addOperationType(operation: OperationTypeDefinitionNode) {
     const schemaNode = this.getSchema();
     if (schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === operation.operation)) {
-      throw new Error(`Conflicting operation ${operation.operation} found.`);
+      throw new Error(`Conflicting ${operation.operation} operation found.`);
     } else {
       const updatedSchema = TransformerOutput.makeSchema([...schemaNode.operationTypes, operation]);
       this.putSchema(updatedSchema);
@@ -290,6 +308,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
    * @param fields The fields to add the query type.
    */
   public addQueryFields(fields: FieldDefinitionNode[]) {
+    this.ensureQuery();
     const queryTypeName = this.getQueryTypeName();
     if (queryTypeName) {
       if (!this.getType(queryTypeName)) {
@@ -297,9 +316,6 @@ export class TransformerOutput implements TransformerContextOutputProvider {
       }
       let queryType = objectExtension(queryTypeName, fields);
       this.addObjectExtension(queryType);
-    } else {
-      this.addDefaultQuery();
-      this.addQueryFields(fields);
     }
   }
 
@@ -310,6 +326,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
    * @param fields The fields to add the mutation type.
    */
   public addMutationFields(fields: FieldDefinitionNode[]) {
+    this.ensureMutation();
     const mutationTypeName = this.getMutationTypeName();
     if (mutationTypeName) {
       if (!this.getType(mutationTypeName)) {
@@ -317,9 +334,6 @@ export class TransformerOutput implements TransformerContextOutputProvider {
       }
       let mutationType = objectExtension(mutationTypeName, fields);
       this.addObjectExtension(mutationType);
-    } else {
-      this.addDefaultMutation();
-      this.addMutationFields(fields);
     }
   }
 
@@ -330,6 +344,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
    * @param fields The fields to add the subscription type.
    */
   public addSubscriptionFields(fields: FieldDefinitionNode[]) {
+    this.ensureSubscription();
     const subscriptionTypeName = this.getSubscriptionTypeName();
     if (subscriptionTypeName) {
       if (!this.getType(subscriptionTypeName)) {
