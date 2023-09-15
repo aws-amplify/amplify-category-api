@@ -1,12 +1,9 @@
 import * as cdk from 'aws-cdk-lib';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ModelResourceIDs, ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
+import { ModelResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode } from 'graphql';
-import { SyncUtils, setResourceName } from '@aws-amplify/graphql-transformer-core';
-import { ITable, Table } from 'aws-cdk-lib/aws-dynamodb';
-import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import { CfnRole } from 'aws-cdk-lib/aws-iam';
+import { setResourceName } from '@aws-amplify/graphql-transformer-core';
+import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import { DynamoDBModelVTLGenerator, ModelVTLGenerator } from '../resolvers';
 
@@ -259,110 +256,4 @@ export class IterativeDynamoModelResourceGenerator extends DynamoModelResourceGe
     const tableDataSourceLogicalName = `${def!.name.value}Table`;
     this.createModelTableDataSource(def, context, table, scope, role, tableDataSourceLogicalName);
   }
-
-  protected createModelTableDataSource(
-    def: ObjectTypeDefinitionNode,
-    context: TransformerContextProvider,
-    table: ITable,
-    scope: Construct,
-    role: iam.Role,
-    dataSourceLogicalName: string,
-  ): void {
-    const datasourceRoleLogicalID = ModelResourceIDs.ModelTableDataSourceID(def!.name.value);
-    const dataSource = context.api.host.addDynamoDbDataSource(
-      datasourceRoleLogicalID,
-      table,
-      { name: dataSourceLogicalName, serviceRole: role },
-      scope,
-    );
-
-    const cfnDataSource = dataSource.node.defaultChild as CfnDataSource;
-    cfnDataSource.addDependency(role.node.defaultChild as CfnRole);
-
-    if (context.isProjectUsingDataStore()) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const datasourceDynamoDb = cfnDataSource.dynamoDbConfig as any;
-      datasourceDynamoDb.deltaSyncConfig = {
-        deltaSyncTableName: context.resourceHelper.generateTableName(SyncResourceIDs.syncTableName),
-        deltaSyncTableTtl: '30',
-        baseTableTtl: '43200',
-      };
-      datasourceDynamoDb.versioned = true;
-    }
-
-    const datasourceOutputId = `GetAtt${datasourceRoleLogicalID}Name`;
-    new cdk.CfnOutput(cdk.Stack.of(scope), datasourceOutputId, {
-      value: dataSource.ds.attrName,
-      description: 'Your model DataSource name.',
-      exportName: cdk.Fn.join(':', [context.api.apiId, 'GetAtt', datasourceRoleLogicalID, 'Name']),
-    });
-
-    // add the data source
-    context.dataSources.add(def!, dataSource);
-    this.datasourceMap[def!.name.value] = dataSource;
-  }
-
-  /**
-   * createIAMRole
-   */
-  createIAMRole = (context: TransformerContextProvider, def: ObjectTypeDefinitionNode, scope: Construct, tableName: string): iam.Role => {
-    const roleName = context.resourceHelper.generateIAMRoleName(ModelResourceIDs.ModelTableIAMRoleID(def!.name.value));
-    const role = new iam.Role(scope, ModelResourceIDs.ModelTableIAMRoleID(def!.name.value), {
-      roleName,
-      assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
-    });
-    setResourceName(role, { name: ModelResourceIDs.ModelTableIAMRoleID(def!.name.value), setOnDefaultChild: true });
-
-    const amplifyDataStoreTableName = context.resourceHelper.generateTableName(SyncResourceIDs.syncTableName);
-    role.attachInlinePolicy(
-      new iam.Policy(scope, 'DynamoDBAccess', {
-        statements: [
-          new iam.PolicyStatement({
-            effect: iam.Effect.ALLOW,
-            actions: [
-              'dynamodb:BatchGetItem',
-              'dynamodb:BatchWriteItem',
-              'dynamodb:PutItem',
-              'dynamodb:DeleteItem',
-              'dynamodb:GetItem',
-              'dynamodb:Scan',
-              'dynamodb:Query',
-              'dynamodb:UpdateItem',
-            ],
-            resources: [
-              // eslint-disable-next-line no-template-curly-in-string
-              cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
-                tablename: tableName,
-              }),
-              // eslint-disable-next-line no-template-curly-in-string
-              cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
-                tablename: tableName,
-              }),
-              ...(context.isProjectUsingDataStore()
-                ? [
-                    // eslint-disable-next-line no-template-curly-in-string
-                    cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
-                      tablename: amplifyDataStoreTableName,
-                    }),
-                    // eslint-disable-next-line no-template-curly-in-string
-                    cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
-                      tablename: amplifyDataStoreTableName,
-                    }),
-                  ]
-                : []),
-            ],
-          }),
-        ],
-      }),
-    );
-
-    const syncConfig = SyncUtils.getSyncConfig(context, def!.name.value);
-    if (syncConfig && SyncUtils.isLambdaSyncConfig(syncConfig)) {
-      role.attachInlinePolicy(
-        SyncUtils.createSyncLambdaIAMPolicy(context, scope, syncConfig.LambdaConflictHandler.name, syncConfig.LambdaConflictHandler.region),
-      );
-    }
-
-    return role;
-  };
 }

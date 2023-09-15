@@ -3,7 +3,7 @@ import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-int
 import { ModelResourceIDs, ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { SyncUtils, setResourceName } from '@aws-amplify/graphql-transformer-core';
-import { AttributeType, CfnTable, StreamViewType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
+import { AttributeType, CfnTable, ITable, StreamViewType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnRole } from 'aws-cdk-lib/aws-iam';
@@ -185,7 +185,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
   protected createModelTableDataSource(
     def: ObjectTypeDefinitionNode,
     context: TransformerContextProvider,
-    table: Table,
+    table: Table | ITable,
     scope: Construct,
     role: iam.Role,
     dataSourceLogicalName: string,
