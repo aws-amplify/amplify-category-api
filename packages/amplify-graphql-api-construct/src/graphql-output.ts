@@ -19,11 +19,18 @@ export const graphqlOutputSchemaV1 = z.object({
   }),
 });
 
+/**
+ * The versioned graphql schema output, used to describe the possible shapes
+ * which graphql metadata could be stored.
+ */
 export const versionedGraphqlOutputSchema = z.discriminatedUnion('version', [
   graphqlOutputSchemaV1,
   // this is where additional api major version schemas would go
 ]);
 
+/**
+ * Type representing the graphql construct output metadata.
+ */
 export type GraphqlOutput = z.infer<typeof versionedGraphqlOutputSchema>;
 
 export const GraphqlOutputKey = 'graphqlOutput';
