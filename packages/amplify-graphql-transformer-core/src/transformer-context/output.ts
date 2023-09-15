@@ -24,7 +24,12 @@ import {
 } from 'graphql';
 import { TransformerContextOutputProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { stripDirectives } from '../utils/strip-directives';
-import { DEFAULT_SCHEMA_DEFINITION } from '../utils/defaultSchema';
+import {
+  DEFAULT_SCHEMA_DEFINITION,
+  DEFAULT_QUERY_OPERATION,
+  DEFAULT_MUTATION_OPERATION,
+  DEFAULT_SUBSCRIPTION_OPERATION,
+} from '../utils/defaultSchema';
 
 const AMPLIFY = 'AMPLIFY';
 
@@ -163,6 +168,10 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     }
   }
 
+  public addDefaultQuery(): void {
+    this.addOperationType(DEFAULT_QUERY_OPERATION);
+  }
+
   public getMutationTypeName(): string | undefined {
     const schemaNode = this.getSchema();
     const mutationTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'mutation');
@@ -178,6 +187,10 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     }
   }
 
+  public addDefaultMutation(): void {
+    this.addOperationType(DEFAULT_MUTATION_OPERATION);
+  }
+
   public getSubscriptionTypeName(): string | undefined {
     const schemaNode = this.getSchema();
     const subscriptionTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'subscription');
@@ -191,6 +204,10 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     if (subscriptionTypeName) {
       return this.nodeMap[subscriptionTypeName] as ObjectTypeDefinitionNode | undefined;
     }
+  }
+
+  public addDefaultSubscription(): void {
+    this.addOperationType(DEFAULT_SUBSCRIPTION_OPERATION);
   }
 
   /**
@@ -214,6 +231,16 @@ export class TransformerOutput implements TransformerContextOutputProvider {
 
   public hasType(name: string): boolean {
     return name in this.nodeMap;
+  }
+
+  public addOperationType(operation: OperationTypeDefinitionNode) {
+    const schemaNode = this.getSchema();
+    if (schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === operation.operation)) {
+      throw new Error(`Conflicting operation ${operation.operation} found.`);
+    } else {
+      const updatedSchema = TransformerOutput.makeSchema([...schemaNode.operationTypes, operation]);
+      this.putSchema(updatedSchema);
+    }
   }
 
   /**
@@ -270,6 +297,9 @@ export class TransformerOutput implements TransformerContextOutputProvider {
       }
       let queryType = objectExtension(queryTypeName, fields);
       this.addObjectExtension(queryType);
+    } else {
+      this.addDefaultQuery();
+      this.addQueryFields(fields);
     }
   }
 
@@ -287,6 +317,9 @@ export class TransformerOutput implements TransformerContextOutputProvider {
       }
       let mutationType = objectExtension(mutationTypeName, fields);
       this.addObjectExtension(mutationType);
+    } else {
+      this.addDefaultMutation();
+      this.addMutationFields(fields);
     }
   }
 
@@ -304,6 +337,9 @@ export class TransformerOutput implements TransformerContextOutputProvider {
       }
       let subscriptionType = objectExtension(subscriptionTypeName, fields);
       this.addObjectExtension(subscriptionType);
+    } else {
+      this.addDefaultSubscription();
+      this.addSubscriptionFields(fields);
     }
   }
 
