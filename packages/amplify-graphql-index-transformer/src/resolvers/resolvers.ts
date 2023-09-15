@@ -455,7 +455,7 @@ export function updateResolversForIndex(
   }
 }
 
-function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider, dbType: DBType) {
+export function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider, dbType: DBType) {
   const { RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
   const isDynamoDB = dbType === DDB_DB_TYPE;
   const { name, object, queryField } = config;
@@ -510,7 +510,14 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
   );
 
   resolver.setScope(ctx.stackManager.getScopeFor(resolverResourceId, stackId));
-  ctx.resolvers.addResolver(object.name.value, queryField, resolver);
+  ctx.resolvers.addResolver(queryTypeName, queryField, resolver);
+  if (dbType === MYSQL_DB_TYPE) {
+    const modelFieldMap = ctx.resourceHelper.getModelFieldMap(object?.name?.value);
+    if (!modelFieldMap.getMappedFields().length) {
+      return;
+    }
+    modelFieldMap.addResolverReference({ typeName: queryTypeName, fieldName: queryField, isList: false });
+  }
 }
 
 // When issuing an create/update mutation that creates/changes one part of a composite sort key,

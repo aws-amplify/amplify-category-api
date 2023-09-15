@@ -1,10 +1,11 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { ConflictHandlerType, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType, DDB_DB_TYPE, MYSQL_DB_TYPE, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { Template as AssertionTemplate } from 'aws-cdk-lib/assertions';
 import { DocumentNode, parse } from 'graphql';
 import { testTransform, Template, AmplifyApiGraphQlResourceStackTemplate } from '@aws-amplify/graphql-transformer-test-utils';
 import { Construct } from 'constructs';
 import { IndexTransformer, PrimaryKeyTransformer } from '..';
+import * as resolverUtils from '../resolvers/resolvers';
 
 test('throws if @index is used in a non-@model type', () => {
   const schema = `
@@ -1307,4 +1308,120 @@ describe('automatic name generation', () => {
     expect(() => transform(true, modelName, schema)).toThrow(errorMessage);
     expect(() => transform(false, modelName, schema)).toThrow(errorMessage);
   });
+});
+
+describe('Index query resolver creation', () => {
+  const modelName = 'User';
+  const mockResolver = {
+    addToSlot: jest.fn(),
+    setScope: jest.fn(),
+  };
+  const mockModelFieldMap = {
+    getMappedFields: jest.fn(),
+    addResolverReference: jest.fn(),
+  };
+  const mockConfig = {
+    name: 'byUsername',
+    object: { name: { value: modelName } },
+    queryField: 'queryByUsername',
+  };
+  let mockContext: any;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockContext = constructMockContext();
+  });
+
+  it('sets appropriate resolver reference if field mappings are present for a RDS model', () => {
+    mockContext.modelToDatasourceMap.get.mockReturnValue({
+      dbType: MYSQL_DB_TYPE,
+      provisionDB: false,
+    });
+    mockContext.api.host.getDataSource.mockReturnValue({});
+    mockModelFieldMap.getMappedFields.mockReturnValue([{ details: 'description' }]);
+    resolverUtils.makeQueryResolver(mockConfig as any, mockContext as any, MYSQL_DB_TYPE);
+
+    expect(mockContext.resolvers.addResolver).toBeCalledWith('Query', 'queryByUsername', mockResolver);
+    expect(mockModelFieldMap.addResolverReference).toBeCalledWith({
+      typeName: 'Query',
+      fieldName: 'queryByUsername',
+      isList: false,
+    });
+  });
+
+  it('does not set resolver reference if field mappings are not present for a RDS model', () => {
+    mockContext.modelToDatasourceMap.get.mockReturnValue({
+      dbType: MYSQL_DB_TYPE,
+      provisionDB: false,
+    });
+    mockContext.api.host.getDataSource.mockReturnValue({});
+    mockModelFieldMap.getMappedFields.mockReturnValue([]);
+    resolverUtils.makeQueryResolver(mockConfig as any, mockContext as any, MYSQL_DB_TYPE);
+
+    expect(mockContext.resolvers.addResolver).toBeCalledWith('Query', 'queryByUsername', mockResolver);
+    expect(mockModelFieldMap.addResolverReference).not.toBeCalled();
+  });
+
+  it('does not set resolver reference for a DDB model', () => {
+    const mockResolverUtils = jest.spyOn(resolverUtils, 'getVTLGenerator');
+    mockResolverUtils.mockReturnValueOnce({
+      generateIndexQueryRequestTemplate: jest.fn().mockReturnValue('mock template'),
+      generatePrimaryKeyVTL: jest.fn().mockReturnValue('mock template'),
+    });
+    mockContext.modelToDatasourceMap.get.mockReturnValueOnce({
+      dbType: DDB_DB_TYPE,
+      provisionDB: true,
+    });
+    const mockTable = {
+      stack: {
+        node: {
+          id: 'UserTable',
+        },
+      },
+    };
+    mockContext.api.host.getDataSource.mockReturnValue({});
+    mockContext.dataSources.get.mockReturnValue({
+      ds: { stack: { node: { findChild: jest.fn().mockReturnValue(mockTable) } } },
+    });
+    mockModelFieldMap.getMappedFields.mockReturnValue([{ details: 'description' }]);
+    resolverUtils.makeQueryResolver(mockConfig as any, mockContext as any, DDB_DB_TYPE);
+
+    // The resolver is added with correct type and field names
+    expect(mockContext.resolvers.addResolver).toBeCalledWith('Query', 'queryByUsername', mockResolver);
+    // Even if the field mapping exists, the resolver reference is not added for DDB models
+    expect(mockModelFieldMap.addResolverReference).not.toBeCalled();
+  });
+
+  const constructMockContext = () => {
+    return {
+      modelToDatasourceMap: {
+        get: jest.fn(),
+      },
+      api: {
+        host: {
+          getDataSource: jest.fn(),
+        },
+      },
+      output: {
+        getQueryTypeName: jest.fn().mockReturnValue('Query'),
+      },
+      resolvers: {
+        generateQueryResolver: jest.fn().mockReturnValue(mockResolver),
+        addResolver: jest.fn(),
+      },
+      resourceHelper: {
+        getModelFieldMap: jest.fn().mockReturnValue(mockModelFieldMap),
+        getModelNameMapping: jest.fn().mockReturnValue(modelName),
+      },
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
+      stackManager: {
+        getScopeFor: jest.fn(),
+      },
+      dataSources: {
+        get: jest.fn(),
+      },
+    };
+  };
 });

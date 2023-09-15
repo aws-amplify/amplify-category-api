@@ -28,7 +28,7 @@ import {
 } from 'graphql';
 import produce from 'immer';
 import { WritableDraft } from 'immer/dist/types/types-external';
-import { updateTableForConnection } from './resolvers';
+import { updateTableForConnection, setFieldMappingResolverReference } from './resolvers';
 import {
   addFieldsToDefinition,
   convertSortKeyFieldsToSortKeyConnectionFields,
@@ -144,6 +144,7 @@ export class HasManyTransformer extends TransformerPluginBase {
     this.directiveList.forEach((config) => {
       const modelName = config.object.name.value;
       if (isRDSModel(context as TransformerContextProvider, modelName)) {
+        setFieldMappingResolverReference(context, config.relatedType?.name?.value, modelName, config.field.name.value, true);
         return;
       }
       registerHasManyForeignKeyMappings({

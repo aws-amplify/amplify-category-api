@@ -410,7 +410,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       if (context.metadata.has(indexKeyName)) {
         context.metadata.get<Set<string>>(indexKeyName)!.forEach((index) => {
           const [indexName, indexQueryName] = index.split(':');
-          this.protectListResolver(context, def, def.name.value, indexQueryName, acm, indexName);
+          this.protectListResolver(context, def, 'Query', indexQueryName, acm, indexName);
         });
       }
       // check if searchable if included in the typeName

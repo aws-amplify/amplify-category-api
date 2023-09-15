@@ -59,6 +59,7 @@ import {
   validateRelatedModelDirective,
 } from './utils';
 import { getGenerator } from './resolver/generator-factory';
+import { setFieldMappingResolverReference } from './resolvers';
 
 const directiveName = 'hasOne';
 const directiveDefinition = `
@@ -167,6 +168,7 @@ export class HasOneTransformer extends TransformerPluginBase {
     this.directiveList.forEach((config) => {
       const modelName = config.object.name.value;
       if (isRDSModel(context as TransformerContextProvider, modelName)) {
+        setFieldMappingResolverReference(context, config.relatedType?.name?.value, modelName, config.field.name.value);
         return;
       }
       registerHasOneForeignKeyMappings({

@@ -1,4 +1,4 @@
-import { DirectiveNode, Kind, ObjectTypeDefinitionNode, parse } from 'graphql';
+import { DirectiveNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode, parse } from 'graphql';
 import {
   TransformerContextProvider,
   TransformerPreProcessContextProvider,
@@ -7,19 +7,22 @@ import {
 import { constructModelToDataSourceMap } from './__integ__/common';
 import { MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 import { RefersToTransformer } from '../graphql-refers-to-transformer';
+import { attachFieldMappingSlot } from '../field-mapping-resolvers';
 
 jest.mock('../field-mapping-resolvers');
 
 type DeepWriteable<T> = { -readonly [P in keyof T]: DeepWriteable<T[P]> };
 
-describe('@refersTo directive', () => {
+const refersToTransformer = new RefersToTransformer();
+
+describe('@refersTo directive on models', () => {
   const setModelNameMapping_mock = jest.fn();
   const getResolver_mock = jest.fn();
   const getModelFieldMapKeys_mock = jest.fn();
   const getModelFieldMap_mock = jest.fn();
   const setTypeMapping_mock = jest.fn();
 
-  const host_stub = 'host_stub';
+  const hostStub = 'host_stub';
 
   const stubTransformerContextBase = {
     resolvers: {
@@ -31,7 +34,7 @@ describe('@refersTo directive', () => {
       getModelFieldMap: getModelFieldMap_mock,
     },
     api: {
-      host: host_stub,
+      host: hostStub,
     },
     schemaHelper: {
       setTypeMapping: setTypeMapping_mock,
@@ -39,7 +42,6 @@ describe('@refersTo directive', () => {
     modelToDatasourceMap: constructModelToDataSourceMap(['TestName'], MYSQL_DB_TYPE),
   };
 
-  const refersToTransformer = new RefersToTransformer();
   const modelName = 'TestName';
 
   const simpleSchema = /* GraphQL */ `
@@ -162,5 +164,225 @@ describe('@refersTo directive', () => {
     });
 
     expect(setTypeMapping_mock).toHaveBeenCalledWith('TestName', 'OriginalName');
+  });
+});
+
+describe.only('@refersTo directive on fields', () => {
+  const hostStub = 'host_stub';
+  const setModelNameMapping_mock = jest.fn();
+  const getResolver_mock = jest.fn();
+  const getModelFieldMapKeys_mock = jest.fn();
+  const getModelFieldMap_mock = jest.fn();
+  const setTypeMapping_mock = jest.fn();
+  const attachFieldMappingSlot_mock = attachFieldMappingSlot as jest.MockedFunction<typeof attachFieldMappingSlot>;
+
+  const modelName = 'Todo';
+  const stubTransformerContextBase = {
+    resolvers: {
+      getResolver: getResolver_mock,
+    },
+    resourceHelper: {
+      setModelNameMapping: setModelNameMapping_mock,
+      getModelFieldMapKeys: getModelFieldMapKeys_mock,
+      getModelFieldMap: getModelFieldMap_mock,
+    },
+    api: {
+      host: hostStub,
+    },
+    schemaHelper: {
+      setTypeMapping: setTypeMapping_mock,
+    },
+    modelToDatasourceMap: constructModelToDataSourceMap([modelName], MYSQL_DB_TYPE),
+  };
+
+  const mappedFieldName = 'details';
+
+  const simpleSchema = /* GraphQL */ `
+    type ${modelName} @model {
+      id: ID!
+      details: String @refersTo(name: "Description")
+    }
+  `;
+
+  const duplicateFieldMappingsSchema = /* GraphQL */ `
+    type ${modelName} @model {
+      id: ID!
+      details: String @refersTo(name: "Description")
+      description: String @refersTo(name: "Description")
+    }
+
+    type OriginalName @model {
+      id: ID!
+    }
+  `;
+
+  const conflictingFieldsSchema = /* GraphQL */ `
+    type ${modelName} @model @refersTo(name: "OriginalName") {
+      id: ID!
+      details: String @refersTo(name: "description")
+      description: String
+    }
+  `;
+
+  const getTransformerInputsFromSchema = (schema: string, modelName: string) => {
+    const ast = parse(schema);
+    const parent = ast.definitions.find(
+      (def) => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === modelName,
+    ) as ObjectTypeDefinitionNode;
+    const field = parent.fields?.find((field) => field.name.value === mappedFieldName)!;
+    const directive = field.directives?.find((directive) => directive.name.value === 'refersTo')!;
+    return [
+      parent as DeepWriteable<ObjectTypeDefinitionNode>,
+      field as DeepWriteable<FieldDefinitionNode>,
+      directive as DeepWriteable<DirectiveNode>,
+      { ...stubTransformerContextBase, inputDocument: ast } as unknown as TransformerSchemaVisitStepContextProvider,
+    ] as const;
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('can be applied only on model types', () => {
+    const schema = /* GraphQL */ `
+      type ${modelName} {
+        id: ID!
+        details: String @refersTo(name: "description")
+      }
+    `;
+    const [parent, field, directive, context] = getTransformerInputsFromSchema(schema, modelName);
+    expect(() =>
+      refersToTransformer.field(parent as ObjectTypeDefinitionNode, field as FieldDefinitionNode, directive as DirectiveNode, context),
+    ).toThrowErrorMatchingInlineSnapshot(`"@refersTo is not supported on type Todo. It can only be used on a @model type."`);
+  });
+
+  it('can be applied only on RDS model types', () => {
+    const modelName = 'DDBModel';
+    const schema = /* GraphQL */ `
+      type ${modelName} @model {
+        id: ID!
+        details: String @refersTo(name: "description")
+      }
+    `;
+    const [parent, field, directive, context] = getTransformerInputsFromSchema(schema, modelName);
+    context.modelToDatasourceMap.set(modelName, { dbType: 'DDB', provisionDB: false });
+    expect(() =>
+      refersToTransformer.field(parent as ObjectTypeDefinitionNode, field as FieldDefinitionNode, directive as DirectiveNode, context),
+    ).toThrowErrorMatchingInlineSnapshot(`"@refersTo is only supported on RDS models. DDBModel is not an RDS model."`);
+  });
+
+  it('cannot be applied on relational fields in a model', () => {
+    const schema = /* GraphQL */ `
+      type ${modelName} @model {
+        id: ID!
+        details: String @refersTo(name: "description") @belongsTo(references: "parentId")
+      }
+    `;
+    const [parent, field, directive, context] = getTransformerInputsFromSchema(schema, modelName);
+    expect(() =>
+      refersToTransformer.field(parent as ObjectTypeDefinitionNode, field as FieldDefinitionNode, directive as DirectiveNode, context),
+    ).toThrowErrorMatchingInlineSnapshot(`"@refersTo is not supported on \\"details\\" relational field in \\"Todo\\" model."`);
+  });
+
+  it('requires a name to be specified', () => {
+    const schema = /* GraphQL */ `
+      type ${modelName} @model {
+        id: ID!
+        details: String @refersTo
+      }
+    `;
+    const [parent, field, directive, context] = getTransformerInputsFromSchema(schema, modelName);
+    expect(() =>
+      refersToTransformer.field(parent as ObjectTypeDefinitionNode, field as FieldDefinitionNode, directive as DirectiveNode, context),
+    ).toThrowErrorMatchingInlineSnapshot(`"name is required in @refersTo directive."`);
+  });
+
+  it('requires a string value for name', () => {
+    const schema = /* GraphQL */ `
+      type ${modelName} @model {
+        id: ID!
+        details: String @refersTo(name: ["description"])
+      }
+    `;
+    const [parent, field, directive, context] = getTransformerInputsFromSchema(schema, modelName);
+    expect(() =>
+      refersToTransformer.field(parent as ObjectTypeDefinitionNode, field as FieldDefinitionNode, directive as DirectiveNode, context),
+    ).toThrowErrorMatchingInlineSnapshot(`"A single string must be provided for \\"name\\" in @refersTo directive"`);
+  });
+
+  it('throws if a duplicate field name mapping is present in the schema', () => {
+    const [parent, field, directive, context] = getTransformerInputsFromSchema(duplicateFieldMappingsSchema, modelName);
+    expect(() =>
+      refersToTransformer.field(parent as ObjectTypeDefinitionNode, field as FieldDefinitionNode, directive as DirectiveNode, context),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Cannot apply @refersTo with name \\"Description\\" on field \\"details\\" in type \\"Todo\\" because \\"description\\" field already has the same name mapping."`,
+    );
+  });
+
+  it('throws if a conflicting field name is present in the schema', () => {
+    const [parent, field, directive, context] = getTransformerInputsFromSchema(conflictingFieldsSchema, modelName);
+    expect(() =>
+      refersToTransformer.field(parent as ObjectTypeDefinitionNode, field as FieldDefinitionNode, directive as DirectiveNode, context),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Cannot apply @refersTo with name \\"description\\" on field \\"details\\" in type \\"Todo\\" because \\"description\\" field already exists in the model."`,
+    );
+  });
+
+  it('registers the field name mappings', () => {
+    const [parent, field, directive, context] = getTransformerInputsFromSchema(simpleSchema, modelName);
+    context.resourceHelper.getModelFieldMap = jest.fn().mockReturnValue({
+      addMappedField: jest.fn(),
+    });
+    refersToTransformer.field(parent as ObjectTypeDefinitionNode, field as FieldDefinitionNode, directive as DirectiveNode, context);
+    expect(context.resourceHelper.getModelFieldMap).toBeCalledWith(modelName);
+    expect(context.resourceHelper.getModelFieldMap(modelName).addMappedField).toBeCalledWith({
+      currentFieldName: mappedFieldName,
+      originalFieldName: 'Description',
+    });
+  });
+
+  it('attaches resolver slot if field mapping exists for RDS Model', () => {
+    const [parent, field, directive, context] = getTransformerInputsFromSchema(simpleSchema, modelName);
+    context.resourceHelper.getModelFieldMapKeys = jest.fn().mockReturnValue([modelName]);
+    context.resourceHelper.getModelFieldMap = jest.fn().mockReturnValue({
+      getMappedFields: jest.fn().mockReturnValue([{ currentFieldName: mappedFieldName, originalFieldName: 'Description' }]),
+      getResolverReferences: jest.fn().mockReturnValue([{ typeName: 'Query', fieldName: mappedFieldName, isList: false }]),
+    });
+    getResolver_mock.mockReturnValue({});
+    refersToTransformer.after(context as TransformerContextProvider);
+    expect(attachFieldMappingSlot_mock).toBeCalledWith({
+      resolver: {},
+      resolverTypeName: 'Query',
+      resolverFieldName: mappedFieldName,
+      fieldMap: [{ currentFieldName: mappedFieldName, originalFieldName: 'Description' }],
+    });
+  });
+
+  it('does not attache resolver slot even if field mapping exists for DDB Model', () => {
+    const [parent, field, directive, context] = getTransformerInputsFromSchema(simpleSchema, modelName);
+    context.modelToDatasourceMap.set(modelName, { dbType: 'DDB', provisionDB: false });
+    expect(attachFieldMappingSlot_mock).toBeCalledTimes(0);
+  });
+
+  it('does not attach resolver slot if field mapping does not exist for RDS Model', () => {
+    const [parent, field, directive, context] = getTransformerInputsFromSchema(simpleSchema, modelName);
+    context.resourceHelper.getModelFieldMapKeys = jest.fn().mockReturnValue([modelName]);
+    context.resourceHelper.getModelFieldMap = jest.fn().mockReturnValue({
+      getMappedFields: jest.fn().mockReturnValue([]),
+      getResolverReferences: jest.fn().mockReturnValue([{ typeName: 'Query', fieldName: mappedFieldName, isList: false }]),
+    });
+    refersToTransformer.after(context as TransformerContextProvider);
+    expect(attachFieldMappingSlot_mock).toBeCalledTimes(0);
+  });
+
+  it('does not attach resolver slot if the resolver does not exist for RDS Model', () => {
+    const [parent, field, directive, context] = getTransformerInputsFromSchema(simpleSchema, modelName);
+    context.resourceHelper.getModelFieldMapKeys = jest.fn().mockReturnValue([modelName]);
+    context.resourceHelper.getModelFieldMap = jest.fn().mockReturnValue({
+      getMappedFields: jest.fn().mockReturnValue([]),
+    });
+    getResolver_mock.mockReturnValue(undefined);
+    refersToTransformer.after(context as TransformerContextProvider);
+    expect(attachFieldMappingSlot_mock).toBeCalledTimes(0);
   });
 });

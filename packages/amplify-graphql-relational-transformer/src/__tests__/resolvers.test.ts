@@ -1,7 +1,7 @@
 import { DDB_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 import { HasOneDirectiveConfiguration, HasManyDirectiveConfiguration } from '../types';
-import { DDBRelationalResolverGenerator } from '../resolver/ddb-generator';
 import { getGenerator } from '../resolver/generator-factory';
+import { setFieldMappingResolverReference } from '../resolvers';
 
 /**
  * Utility to create a partial of a given type for mocking purposes. Getting the right fields in place is on you.
@@ -34,5 +34,44 @@ describe('makeQueryConnectionWithKeyResolver', () => {
         createPartialMock(),
       ),
     ).toThrowErrorMatchingInlineSnapshot('"Either connection fields or local fields should be populated."');
+  });
+});
+
+describe('set field mapping resolver reference', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+  const mockContext = {
+    resourceHelper: {
+      getModelFieldMap: jest.fn(),
+    },
+  } as any;
+  const modelName = 'User';
+  const typeName = 'User';
+  const fieldName = 'profile';
+
+  it('adds resolver reference if model has mapped field names', () => {
+    const mockAddResolverRef = jest.fn().mockReturnValueOnce({});
+    mockContext.resourceHelper.getModelFieldMap.mockReturnValueOnce({
+      getMappedFields: jest.fn().mockReturnValueOnce([{ details: 'description' }]),
+      addResolverReference: mockAddResolverRef,
+    });
+    setFieldMappingResolverReference(mockContext, modelName, typeName, fieldName, true);
+    expect(mockAddResolverRef).toBeCalledTimes(1);
+    expect(mockAddResolverRef).toBeCalledWith({
+      typeName: typeName,
+      fieldName: fieldName,
+      isList: true,
+    });
+  });
+
+  it('does not add resolver reference if model has no mapped field names', () => {
+    const mockAddResolverRef = jest.fn().mockReturnValueOnce({});
+    mockContext.resourceHelper.getModelFieldMap.mockReturnValueOnce({
+      getMappedFields: jest.fn().mockReturnValueOnce([]),
+      addResolverReference: mockAddResolverRef,
+    });
+    setFieldMappingResolverReference(mockContext, modelName, typeName, fieldName, true);
+    expect(mockAddResolverRef).toBeCalledTimes(0);
   });
 });

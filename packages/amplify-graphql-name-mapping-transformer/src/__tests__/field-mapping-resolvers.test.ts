@@ -1,5 +1,5 @@
 import { FieldMapEntry, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { attachInputMappingSlot, attachResponseMappingSlot } from '../field-mapping-resolvers';
+import { attachInputMappingSlot, attachResponseMappingSlot, attachFieldMappingSlot } from '../field-mapping-resolvers';
 
 const addToSlot_mock = jest.fn();
 
@@ -181,5 +181,27 @@ describe('attachResponseMappingSlot', () => {
         "type": "S3_LOCATION",
       }
     `);
+  });
+});
+
+describe('attachFieldMappingSlot', () => {
+  it('uses the preUpdate slot for Mutations', () => {
+    attachFieldMappingSlot({
+      resolver: resolver_typed,
+      resolverTypeName: 'Mutation',
+      resolverFieldName: 'createTestType',
+      fieldMap: singleTestFieldMap,
+    });
+    expect(addToSlot_mock.mock.calls[0][0]).toBe('preUpdate');
+  });
+
+  it('uses the preDataLoad slot for Queries', () => {
+    attachFieldMappingSlot({
+      resolver: resolver_typed,
+      resolverTypeName: 'Query',
+      resolverFieldName: 'getTestType',
+      fieldMap: singleTestFieldMap,
+    });
+    expect(addToSlot_mock.mock.calls[0][0]).toBe('preDataLoad');
   });
 });

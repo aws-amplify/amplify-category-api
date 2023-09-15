@@ -46,6 +46,21 @@ export const attachInputMappingSlot = ({ resolver, resolverTypeName, resolverFie
   );
 };
 
+/**
+ * Adds an init slot to the given resolver that maps currAttrName to origAttrName in the incoming request
+ * Calls createPostDataLoadMapping to create a slot to map origAttrName back to currAttrName in the response
+ */
+export const attachFieldMappingSlot = ({ resolver, resolverTypeName, resolverFieldName, fieldMap }: AttachInputMappingSlotParams): void => {
+  const slotName = resolverTypeName === 'Mutation' ? 'preUpdate' : 'preDataLoad';
+  resolver.addToSlot(
+    slotName,
+    MappingTemplate.s3MappingTemplateFromString(
+      print(compoundExpression([createFieldMapExpression(fieldMap), toJson(raw('{}'))])),
+      `${resolverTypeName}.${resolverFieldName}.{slotName}.{slotIndex}.req.vtl`,
+    ),
+  );
+};
+
 type AttachResponseMappingSlotParams = {
   slotName: 'postDataLoad' | 'postUpdate'; // the slot to insert into
   resolver: TransformerResolverProvider; // The get / list / field resolver
@@ -178,3 +193,12 @@ const createRemapExpression = (vtlMapName: string, sourceAttrName: string, destA
     qref(methodCall(ref(`${vtlMapName}.put`), str(destAttrName), ref(`${vtlMapName}.${sourceAttrName}`))),
     qref(methodCall(ref(`${vtlMapName}.remove`), str(sourceAttrName))),
   ]);
+
+const createFieldMapExpression = (fieldMap: ReadonlyArray<FieldMapEntry>): Expression => {
+  const fieldMapRef = ref('fieldMap');
+  const fieldMapVtl = fieldMap.reduce((acc, { originalFieldName, currentFieldName }) => {
+    acc[currentFieldName] = originalFieldName;
+    return acc;
+  }, {} as Record<string, string>);
+  return compoundExpression([set(fieldMapRef, raw(JSON.stringify(fieldMapVtl))), set(ref('ctx.stash.fieldMap'), fieldMapRef)]);
+};
