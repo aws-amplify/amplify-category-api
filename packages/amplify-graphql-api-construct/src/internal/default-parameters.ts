@@ -14,5 +14,5 @@ export const defaultSchemaTranslationBehavior: SchemaTranslationBehavior = {
   enableAutoIndexQueryNames: true,
   respectPrimaryKeyAttributesOnConnectionField: true,
   enableSearchNodeToNodeEncryption: false,
-  useAmplifyManagedTableResources: true,
+  useAmplifyManagedTableResources: false, // TODO: flip to true once all implementations are finished
 };

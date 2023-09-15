@@ -50,8 +50,6 @@ import { ObjectTypeDefinitionNode } from 'graphql';
 import { ObjectTypeExtensionNode } from 'graphql';
 import { QueryFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
-import { S3Asset } from '@aws-amplify/graphql-transformer-interfaces';
-import { S3MappingFunctionCodeProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { S3MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { SchemaDefinitionNode } from 'graphql';
 import { Stack } from 'aws-cdk-lib';
@@ -402,15 +400,6 @@ export type ResolverConfig = {
     project?: SyncConfig;
     models?: Record<string, SyncConfig>;
 };
-
-// @public (undocumented)
-export class S3MappingFunctionCode implements S3MappingFunctionCodeProvider {
-    constructor(fileName: string, filePath: string);
-    // (undocumented)
-    bind(scope: Construct): S3Asset;
-    // (undocumented)
-    readonly type = MappingTemplateType.S3_LOCATION;
-}
 
 // @public (undocumented)
 export class SchemaValidationError extends Error {
