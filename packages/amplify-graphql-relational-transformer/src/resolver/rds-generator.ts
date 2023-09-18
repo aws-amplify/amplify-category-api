@@ -85,6 +85,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
         set(ref('lambdaInput.operationName'), str(operationName)),
         set(ref('lambdaInput.args.metadata'), obj({})),
         set(ref('lambdaInput.args.metadata.keys'), list([])),
+        this.constructFieldMappingInput(),
         qref(methodCall(ref('lambdaInput.args.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments'), obj({})))),
         iff(not(ref('lambdaInput.args.filter')), set(ref('lambdaInput.args.filter'), obj({}))),
         ...joinCondition,
@@ -119,6 +120,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
         set(ref('lambdaInput.operationName'), str(operationName)),
         set(ref('lambdaInput.args.metadata'), obj({})),
         set(ref('lambdaInput.args.metadata.keys'), list(relatedTypePrimaryKeys.map((key) => str(key)))),
+        this.constructFieldMappingInput(),
         qref(methodCall(ref('lambdaInput.args.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments'), obj({})))),
         iff(not(ref('lambdaInput.args.input')), set(ref('lambdaInput.args.input'), obj({}))),
         ...joinCondition,
@@ -227,5 +229,17 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
 
     resolver.setScope(ctx.stackManager.getScopeFor(resolverResourceId, CONNECTION_STACK));
     ctx.resolvers.addResolver(object.name.value, field.name.value, resolver);
+  };
+
+  constructFieldMappingInput = (): Expression => {
+    return compoundExpression([
+      set(ref('lambdaInput.args.metadata.fieldMap'), obj({})),
+      qref(
+        methodCall(
+          ref('lambdaInput.args.metadata.fieldMap.putAll'),
+          methodCall(ref('util.defaultIfNull'), ref('context.stash.fieldMap'), obj({})),
+        ),
+      ),
+    ]);
   };
 }

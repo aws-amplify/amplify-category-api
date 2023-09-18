@@ -378,6 +378,7 @@ export const generateLambdaRequestTemplate = (
       set(ref('lambdaInput.args.metadata'), obj({})),
       set(ref('lambdaInput.args.metadata.keys'), list([])),
       constructNonScalarFieldsStatement(tableName, ctx),
+      constructFieldMappingInput(),
       qref(
         methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
       ),
@@ -451,3 +452,15 @@ export const getNonScalarFields = (object: ObjectTypeDefinitionNode | undefined,
 
 export const constructNonScalarFieldsStatement = (tableName: string, ctx: TransformerContextProvider): Expression =>
   set(ref('lambdaInput.args.metadata.nonScalarFields'), list(getNonScalarFields(ctx.output.getObject(tableName), ctx).map(str)));
+
+export const constructFieldMappingInput = (): Expression => {
+  return compoundExpression([
+    set(ref('lambdaInput.args.metadata.fieldMap'), obj({})),
+    qref(
+      methodCall(
+        ref('lambdaInput.args.metadata.fieldMap.putAll'),
+        methodCall(ref('util.defaultIfNull'), ref('context.stash.fieldMap'), obj({})),
+      ),
+    ),
+  ]);
+};

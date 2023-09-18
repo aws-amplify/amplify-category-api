@@ -1,6 +1,6 @@
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { compoundExpression, list, methodCall, obj, printBlock, qref, ref, set, str } from 'graphql-mapping-template';
-import { constructNonScalarFieldsStatement } from './resolver';
+import { constructNonScalarFieldsStatement, constructFieldMappingInput } from './resolver';
 
 export const generateLambdaListRequestTemplate = (
   tableName: string,
@@ -19,6 +19,7 @@ export const generateLambdaListRequestTemplate = (
       set(ref('lambdaInput.args.metadata'), obj({})),
       set(ref('lambdaInput.args.metadata.keys'), list([])),
       constructNonScalarFieldsStatement(tableName, ctx),
+      constructFieldMappingInput(),
       qref(
         methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
       ),
