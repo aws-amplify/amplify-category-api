@@ -27,7 +27,10 @@ export class CodegenAssets extends Construct {
   constructor(scope: Construct, id: string, props: CodegenAssetsProps) {
     super(scope, id);
 
-    const bucket = new Bucket(this, `${id}Bucket`, { removalPolicy: RemovalPolicy.DESTROY });
+    const bucket = new Bucket(this, `${id}Bucket`, {
+      removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
 
     new BucketDeployment(this, `${id}Deployment`, {
       destinationBucket: bucket,

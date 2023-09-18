@@ -59,7 +59,8 @@
     "cleanup-stale-resources": "source ./scripts/cloud-utils.sh && cleanupStaleResources",
     "depcheck": "eslint --no-eslintrc --config depcheck.config.js",
     "cloud-e2e-debug": "source scripts/cloud-utils.sh && cloudE2EDebug",
-    "authenticate-e2e-profile": "source scripts/cloud-utils.sh && authenticateWithE2EProfile"
+    "authenticate-e2e-profile": "source scripts/cloud-utils.sh && authenticateWithE2EProfile",
+    "verify-construct-dependencies": "ts-node ./scripts/verify-construct-dependencies.ts"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-category-api/issues"
@@ -74,14 +75,13 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "yarn verify-commit && yarn split-e2e-tests && lint-staged"
+      "pre-commit": "yarn verify-commit && yarn split-e2e-tests && lint-staged && yarn verify-construct-dependencies"
     }
   },
   "lint-staged": {
     "*.{md,yml,yaml,json,graphql}": "prettier --write",
     "*.{js,ts,jsx,tsx}": [
-      "prettier --write",
-      "yarn depcheck"
+      "prettier --write"
     ]
   },
   "author": "Amazon Web Services",
@@ -96,7 +96,39 @@
       "packages/*"
     ],
     "nohoist": [
-      "@aws-amplify/cli-internal/amplify-codegen"
+      "@aws-amplify/cli-internal/amplify-codegen",
+      "@aws-amplify/graphql-construct-alpha/@aws-amplify/graphql-transformer",
+      "@aws-amplify/graphql-construct-alpha/@aws-amplify/graphql-transformer-core",
+      "@aws-amplify/graphql-construct-alpha/@aws-amplify/graphql-transformer-interfaces",
+      "@aws-amplify/graphql-construct-alpha/zod",
+      "@aws-amplify/graphql-construct-alpha/@aws-amplify/graphql-auth-transformer",
+      "@aws-amplify/graphql-construct-alpha/@aws-amplify/graphql-default-value-transformer",
+      "@aws-amplify/graphql-construct-alpha/@aws-amplify/graphql-function-transformer",
+      "@aws-amplify/graphql-construct-alpha/@aws-amplify/graphql-http-transformer",
+      "@aws-amplify/graphql-construct-alpha/@aws-amplify/graphql-index-transformer",
+      "@aws-amplify/graphql-construct-alpha/@aws-amplify/graphql-maps-to-transformer",
+      "@aws-amplify/graphql-construct-alpha/@aws-amplify/graphql-model-transformer",
+      "@aws-amplify/graphql-construct-alpha/@aws-amplify/graphql-predictions-transformer",
+      "@aws-amplify/graphql-construct-alpha/@aws-amplify/graphql-relational-transformer",
+      "@aws-amplify/graphql-construct-alpha/@aws-amplify/graphql-searchable-transformer",
+      "@aws-amplify/graphql-construct-alpha/fs-extra",
+      "@aws-amplify/graphql-construct-alpha/graphql",
+      "@aws-amplify/graphql-construct-alpha/graphql-transformer-common",
+      "@aws-amplify/graphql-construct-alpha/hjson",
+      "@aws-amplify/graphql-construct-alpha/lodash",
+      "@aws-amplify/graphql-construct-alpha/md5",
+      "@aws-amplify/graphql-construct-alpha/object-hash",
+      "@aws-amplify/graphql-construct-alpha/ts-dedent",
+      "@aws-amplify/graphql-construct-alpha/charenc",
+      "@aws-amplify/graphql-construct-alpha/crypt",
+      "@aws-amplify/graphql-construct-alpha/graceful-fs",
+      "@aws-amplify/graphql-construct-alpha/graphql-mapping-template",
+      "@aws-amplify/graphql-construct-alpha/immer",
+      "@aws-amplify/graphql-construct-alpha/is-buffer",
+      "@aws-amplify/graphql-construct-alpha/jsonfile",
+      "@aws-amplify/graphql-construct-alpha/libphonenumber-js",
+      "@aws-amplify/graphql-construct-alpha/pluralize",
+      "@aws-amplify/graphql-construct-alpha/universalify"
     ]
   },
   "devDependencies": {
@@ -145,7 +177,8 @@
     "rimraf": "^3.0.0",
     "ts-jest": "^26.4.4",
     "ts-node": "^8.10.1",
-    "typescript": "^4.5.5"
+    "typescript": "^4.5.5",
+    "@yarnpkg/lockfile": "^1.1.0"
   },
   "resolutions": {
     "**/glob-parent": "^6.0.2",

@@ -1,4 +1,4 @@
-import { Code, FunctionRuntime, MappingTemplate } from 'aws-cdk-lib/aws-appsync';
+import { MappingTemplate } from 'aws-cdk-lib/aws-appsync';
 import { getSlotName, parseUserDefinedSlots, validateFunctionSlots, separateSlots } from '../../internal/user-defined-slots';
 import { FunctionSlot } from '../../types';
 

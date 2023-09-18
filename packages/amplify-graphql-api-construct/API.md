@@ -4,7 +4,6 @@
 
 ```ts
 
-import { AppsyncFunctionProps } from 'aws-cdk-lib/aws-appsync';
 import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
@@ -23,212 +22,230 @@ import { IGraphqlApi } from 'aws-cdk-lib/aws-appsync';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
+import { MappingTemplate } from 'aws-cdk-lib/aws-appsync';
 import { NestedStack } from 'aws-cdk-lib';
 import { SchemaFile } from 'aws-cdk-lib/aws-appsync';
-import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { z } from 'zod';
 
 // @public
-export type AmplifyApiGraphqlSchema = SchemaFile | SchemaFile[] | string;
+export interface AmplifyApiSchemaPreprocessorOutput {
+    readonly processedFunctionSlots?: FunctionSlot[];
+    readonly processedSchema: string;
+}
 
 // @public
-export type AmplifyApiSchemaPreprocessor<SchemaType> = (schema: SchemaType) => AmplifyApiSchemaPreprocessorOutput;
-
-// @public
-export type AmplifyApiSchemaPreprocessorOutput = {
-    processedSchema: string;
-    processedFunctionSlots?: FunctionSlot[];
-};
-
-// @public
-export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends Construct {
-    constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps<SchemaType>);
+export class AmplifyGraphqlApi extends Construct {
+    constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps);
     readonly generatedFunctionSlots: FunctionSlot[];
     readonly resources: AmplifyGraphqlApiResources;
 }
 
 // @public
-export type AmplifyGraphqlApiCfnResources = {
-    cfnGraphqlApi: CfnGraphQLApi;
-    cfnGraphqlSchema: CfnGraphQLSchema;
-    cfnApiKey?: CfnApiKey;
-    cfnResolvers: Record<string, CfnResolver>;
-    cfnFunctionConfigurations: Record<string, CfnFunctionConfiguration>;
-    cfnDataSources: Record<string, CfnDataSource>;
-    cfnTables: Record<string, CfnTable>;
-    cfnRoles: Record<string, CfnRole>;
-    cfnFunctions: Record<string, CfnFunction>;
-    additionalCfnResources: Record<string, CfnResource>;
-};
+export interface AmplifyGraphqlApiCfnResources {
+    readonly additionalCfnResources: Record<string, CfnResource>;
+    readonly cfnApiKey?: CfnApiKey;
+    readonly cfnDataSources: Record<string, CfnDataSource>;
+    readonly cfnFunctionConfigurations: Record<string, CfnFunctionConfiguration>;
+    readonly cfnFunctions: Record<string, CfnFunction>;
+    readonly cfnGraphqlApi: CfnGraphQLApi;
+    readonly cfnGraphqlSchema: CfnGraphQLSchema;
+    readonly cfnResolvers: Record<string, CfnResolver>;
+    readonly cfnRoles: Record<string, CfnRole>;
+    readonly cfnTables: Record<string, CfnTable>;
+}
 
 // @public
-export type AmplifyGraphqlApiProps<SchemaType = AmplifyApiGraphqlSchema> = {
-    schema: SchemaType;
-    schemaPreprocessor?: AmplifyApiSchemaPreprocessor<SchemaType>;
-    apiName?: string;
-    authorizationConfig: AuthorizationConfig;
-    functionNameMap?: Record<string, IFunction>;
-    conflictResolution?: ConflictResolution;
-    stackMappings?: Record<string, string>;
-    functionSlots?: FunctionSlot[];
-    transformers?: TransformerPluginProvider[];
-    predictionsBucket?: IBucket;
-    schemaTranslationBehavior?: Partial<SchemaTranslationBehavior>;
-    outputStorageStrategy?: BackendOutputStorageStrategy<GraphqlOutput>;
-};
+export interface AmplifyGraphqlApiProps {
+    readonly apiName?: string;
+    readonly authorizationConfig: AuthorizationConfig;
+    readonly conflictResolution?: ConflictResolution;
+    readonly functionNameMap?: Record<string, IFunction>;
+    readonly functionSlots?: FunctionSlot[];
+    readonly outputStorageStrategy?: IBackendOutputStorageStrategy;
+    readonly predictionsBucket?: IBucket;
+    readonly schema: IAmplifyGraphqlSchema;
+    readonly schemaTranslationBehavior?: PartialSchemaTranslationBehavior;
+    readonly stackMappings?: Record<string, string>;
+    readonly transformers?: any[];
+}
 
 // @public
-export type AmplifyGraphqlApiResources = {
-    graphqlApi: IGraphqlApi;
-    tables: Record<string, ITable>;
-    roles: Record<string, IRole>;
-    functions: Record<string, IFunction>;
-    cfnResources: AmplifyGraphqlApiCfnResources;
-    nestedStacks: Record<string, NestedStack>;
-};
+export interface AmplifyGraphqlApiResources {
+    readonly cfnResources: AmplifyGraphqlApiCfnResources;
+    readonly functions: Record<string, IFunction>;
+    readonly graphqlApi: IGraphqlApi;
+    readonly nestedStacks: Record<string, NestedStack>;
+    readonly roles: Record<string, IRole>;
+    readonly tables: Record<string, ITable>;
+}
 
 // @public
-export type ApiKeyAuthorizationConfig = {
-    description?: string;
-    expires: Duration;
-};
+export class AmplifyGraphqlSchema {
+    static fromSchemaFiles(...schemaFiles: SchemaFile[]): IAmplifyGraphqlSchema;
+    static fromString(schema: string): IAmplifyGraphqlSchema;
+}
 
 // @public
-export type AuthorizationConfig = {
-    defaultAuthMode?: 'AWS_IAM' | 'AMAZON_COGNITO_USER_POOLS' | 'OPENID_CONNECT' | 'API_KEY' | 'AWS_LAMBDA';
-    iamConfig?: IAMAuthorizationConfig;
-    userPoolConfig?: UserPoolAuthorizationConfig;
-    oidcConfig?: OIDCAuthorizationConfig;
-    apiKeyConfig?: ApiKeyAuthorizationConfig;
-    lambdaConfig?: LambdaAuthorizationConfig;
-};
+export interface ApiKeyAuthorizationConfig {
+    readonly description?: string;
+    readonly expires: Duration;
+}
 
 // @public
-export type AutomergeConflictResolutionStrategy = ConflictResolutionStrategyBase & {
-    handlerType: 'AUTOMERGE';
-};
+export interface AuthorizationConfig {
+    readonly apiKeyConfig?: ApiKeyAuthorizationConfig;
+    readonly defaultAuthMode?: 'AWS_IAM' | 'AMAZON_COGNITO_USER_POOLS' | 'OPENID_CONNECT' | 'API_KEY' | 'AWS_LAMBDA';
+    readonly iamConfig?: IAMAuthorizationConfig;
+    readonly lambdaConfig?: LambdaAuthorizationConfig;
+    readonly oidcConfig?: OIDCAuthorizationConfig;
+    readonly userPoolConfig?: UserPoolAuthorizationConfig;
+}
 
-// @public (undocumented)
-export type BackendOutputEntry<T extends Record<string, string> = Record<string, string>> = {
+// @public
+export interface AutomergeConflictResolutionStrategy extends ConflictResolutionStrategyBase {
+    readonly handlerType: 'AUTOMERGE';
+}
+
+// @public
+export interface BackendOutputEntry {
+    readonly payload: Record<string, string>;
     readonly version: string;
-    readonly payload: T;
-};
-
-// @public (undocumented)
-export type BackendOutputStorageStrategy<T extends BackendOutputEntry> = {
-    addBackendOutputEntry(keyName: string, backendOutputEntry: T): void;
-    flush(): void;
-};
+}
 
 // @public
 export type ConflictDetectionType = 'VERSION' | 'NONE';
 
 // @public
-export type ConflictHandlerType = 'OPTIMISTIC_CONCURRENCY' | 'AUTOMERGE' | 'LAMBDA';
-
-// @public
-export type ConflictResolution = {
-    project?: ConflictResolutionStrategy;
-    models?: Record<string, ConflictResolutionStrategy>;
-};
+export interface ConflictResolution {
+    readonly models?: Record<string, ConflictResolutionStrategy>;
+    readonly project?: ConflictResolutionStrategy;
+}
 
 // @public
 export type ConflictResolutionStrategy = AutomergeConflictResolutionStrategy | OptimisticConflictResolutionStrategy | CustomConflictResolutionStrategy;
 
 // @public
-export type ConflictResolutionStrategyBase = {
-    detectionType: ConflictDetectionType;
-    handlerType: ConflictHandlerType;
-};
+export interface ConflictResolutionStrategyBase {
+    readonly detectionType: ConflictDetectionType;
+}
 
 // @public
-export type CustomConflictResolutionStrategy = ConflictResolutionStrategyBase & {
-    handlerType: 'LAMBDA';
-    conflictHandler: IFunction;
-};
+export interface CustomConflictResolutionStrategy extends ConflictResolutionStrategyBase {
+    readonly conflictHandler: IFunction;
+    readonly handlerType: 'LAMBDA';
+}
 
 // @public
 export type FunctionSlot = MutationFunctionSlot | QueryFunctionSlot | SubscriptionFunctionSlot;
 
 // @public
-export type FunctionSlotBase = {
-    fieldName: string;
-    slotIndex: number;
-    function: FunctionSlotOverride;
-};
+export interface FunctionSlotBase {
+    readonly fieldName: string;
+    readonly function: FunctionSlotOverride;
+    readonly slotIndex: number;
+}
 
 // @public
-export type FunctionSlotOverride = Partial<Pick<AppsyncFunctionProps, 'requestMappingTemplate' | 'responseMappingTemplate'>>;
+export interface FunctionSlotOverride {
+    readonly requestMappingTemplate?: MappingTemplate;
+    readonly responseMappingTemplate?: MappingTemplate;
+}
 
-// @public (undocumented)
+// @public
 export type GraphqlOutput = z.infer<typeof versionedGraphqlOutputSchema>;
 
 // @public
-export type IAMAuthorizationConfig = {
-    identityPoolId?: string;
-    authenticatedUserRole?: IRole;
-    unauthenticatedUserRole?: IRole;
-    adminRoles?: IRole[];
-};
+export interface IAMAuthorizationConfig {
+    readonly adminRoles?: IRole[];
+    readonly authenticatedUserRole?: IRole;
+    readonly identityPoolId?: string;
+    readonly unauthenticatedUserRole?: IRole;
+}
 
 // @public
-export type LambdaAuthorizationConfig = {
-    function: IFunction;
-    ttl: Duration;
-};
+export interface IAmplifyGraphqlSchema {
+    readonly definition: string;
+    readonly functionSlots: FunctionSlot[];
+}
 
 // @public
-export type MutationFunctionSlot = FunctionSlotBase & {
-    typeName: 'Mutation';
-    slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preUpdate' | 'postUpdate' | 'finish';
-};
+export interface IBackendOutputStorageStrategy {
+    addBackendOutputEntry(keyName: string, strategy: BackendOutputEntry): void;
+    flush(): void;
+}
 
 // @public
-export type OIDCAuthorizationConfig = {
-    oidcProviderName: string;
-    oidcIssuerUrl: string;
-    clientId?: string;
-    tokenExpiryFromAuth: Duration;
-    tokenExpiryFromIssue: Duration;
-};
+export interface LambdaAuthorizationConfig {
+    readonly function: IFunction;
+    readonly ttl: Duration;
+}
 
 // @public
-export type OptimisticConflictResolutionStrategy = ConflictResolutionStrategyBase & {
-    handlerType: 'OPTIMISTIC_CONCURRENCY';
-};
+export interface MutationFunctionSlot extends FunctionSlotBase {
+    readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preUpdate' | 'postUpdate' | 'finish';
+    readonly typeName: 'Mutation';
+}
 
 // @public
-export type QueryFunctionSlot = FunctionSlotBase & {
-    typeName: 'Query';
-    slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preDataLoad' | 'postDataLoad' | 'finish';
-};
+export interface OIDCAuthorizationConfig {
+    readonly clientId?: string;
+    readonly oidcIssuerUrl: string;
+    readonly oidcProviderName: string;
+    readonly tokenExpiryFromAuth: Duration;
+    readonly tokenExpiryFromIssue: Duration;
+}
 
 // @public
-export type SchemaTranslationBehavior = {
-    shouldDeepMergeDirectiveConfigDefaults: boolean;
-    disableResolverDeduping: boolean;
-    sandboxModeEnabled: boolean;
-    useSubUsernameForDefaultIdentityClaim: boolean;
-    populateOwnerFieldForStaticGroupAuth: boolean;
-    suppressApiKeyGeneration: boolean;
-    secondaryKeyAsGSI: boolean;
-    enableAutoIndexQueryNames: boolean;
-    respectPrimaryKeyAttributesOnConnectionField: boolean;
-    enableSearchNodeToNodeEncryption: boolean;
-};
+export interface OptimisticConflictResolutionStrategy extends ConflictResolutionStrategyBase {
+    readonly handlerType: 'OPTIMISTIC_CONCURRENCY';
+}
 
 // @public
-export type SubscriptionFunctionSlot = FunctionSlotBase & {
-    typeName: 'Subscription';
-    slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preSubscribe';
-};
+export interface PartialSchemaTranslationBehavior {
+    readonly disableResolverDeduping?: boolean;
+    readonly enableAutoIndexQueryNames?: boolean;
+    readonly enableSearchNodeToNodeEncryption?: boolean;
+    readonly populateOwnerFieldForStaticGroupAuth?: boolean;
+    readonly respectPrimaryKeyAttributesOnConnectionField?: boolean;
+    readonly sandboxModeEnabled?: boolean;
+    readonly secondaryKeyAsGSI?: boolean;
+    readonly shouldDeepMergeDirectiveConfigDefaults?: boolean;
+    readonly suppressApiKeyGeneration?: boolean;
+    readonly useSubUsernameForDefaultIdentityClaim?: boolean;
+}
 
 // @public
-export type UserPoolAuthorizationConfig = {
-    userPool: IUserPool;
-};
+export interface QueryFunctionSlot extends FunctionSlotBase {
+    readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preDataLoad' | 'postDataLoad' | 'finish';
+    readonly typeName: 'Query';
+}
 
-// @public (undocumented)
+// @public
+export interface SchemaTranslationBehavior {
+    readonly disableResolverDeduping: boolean;
+    readonly enableAutoIndexQueryNames: boolean;
+    readonly enableSearchNodeToNodeEncryption: boolean;
+    readonly populateOwnerFieldForStaticGroupAuth: boolean;
+    readonly respectPrimaryKeyAttributesOnConnectionField: boolean;
+    readonly sandboxModeEnabled: boolean;
+    readonly secondaryKeyAsGSI: boolean;
+    readonly shouldDeepMergeDirectiveConfigDefaults: boolean;
+    readonly suppressApiKeyGeneration: boolean;
+    readonly useSubUsernameForDefaultIdentityClaim: boolean;
+}
+
+// @public
+export interface SubscriptionFunctionSlot extends FunctionSlotBase {
+    readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preSubscribe';
+    readonly typeName: 'Subscription';
+}
+
+// @public
+export interface UserPoolAuthorizationConfig {
+    readonly userPool: IUserPool;
+}
+
+// @public
 export const versionedGraphqlOutputSchema: z.ZodDiscriminatedUnion<"version", [z.ZodObject<{
     version: z.ZodLiteral<"1">;
     payload: z.ZodObject<{
@@ -241,14 +258,14 @@ export const versionedGraphqlOutputSchema: z.ZodDiscriminatedUnion<"version", [z
     }, "strip", z.ZodTypeAny, {
         awsAppsyncRegion: string;
         awsAppsyncApiEndpoint: string;
-        awsAppsyncAuthenticationType: "API_KEY" | "AMAZON_COGNITO_USER_POOLS" | "AWS_IAM" | "OPENID_CONNECT" | "AWS_LAMBDA";
+        awsAppsyncAuthenticationType: "AWS_LAMBDA" | "API_KEY" | "AMAZON_COGNITO_USER_POOLS" | "AWS_IAM" | "OPENID_CONNECT";
         awsAppsyncApiId: string;
         amplifyApiModelSchemaS3Uri: string;
         awsAppsyncApiKey?: string | undefined;
     }, {
         awsAppsyncRegion: string;
         awsAppsyncApiEndpoint: string;
-        awsAppsyncAuthenticationType: "API_KEY" | "AMAZON_COGNITO_USER_POOLS" | "AWS_IAM" | "OPENID_CONNECT" | "AWS_LAMBDA";
+        awsAppsyncAuthenticationType: "AWS_LAMBDA" | "API_KEY" | "AMAZON_COGNITO_USER_POOLS" | "AWS_IAM" | "OPENID_CONNECT";
         awsAppsyncApiId: string;
         amplifyApiModelSchemaS3Uri: string;
         awsAppsyncApiKey?: string | undefined;
@@ -258,7 +275,7 @@ export const versionedGraphqlOutputSchema: z.ZodDiscriminatedUnion<"version", [z
     payload: {
         awsAppsyncRegion: string;
         awsAppsyncApiEndpoint: string;
-        awsAppsyncAuthenticationType: "API_KEY" | "AMAZON_COGNITO_USER_POOLS" | "AWS_IAM" | "OPENID_CONNECT" | "AWS_LAMBDA";
+        awsAppsyncAuthenticationType: "AWS_LAMBDA" | "API_KEY" | "AMAZON_COGNITO_USER_POOLS" | "AWS_IAM" | "OPENID_CONNECT";
         awsAppsyncApiId: string;
         amplifyApiModelSchemaS3Uri: string;
         awsAppsyncApiKey?: string | undefined;
@@ -268,7 +285,7 @@ export const versionedGraphqlOutputSchema: z.ZodDiscriminatedUnion<"version", [z
     payload: {
         awsAppsyncRegion: string;
         awsAppsyncApiEndpoint: string;
-        awsAppsyncAuthenticationType: "API_KEY" | "AMAZON_COGNITO_USER_POOLS" | "AWS_IAM" | "OPENID_CONNECT" | "AWS_LAMBDA";
+        awsAppsyncAuthenticationType: "AWS_LAMBDA" | "API_KEY" | "AMAZON_COGNITO_USER_POOLS" | "AWS_IAM" | "OPENID_CONNECT";
         awsAppsyncApiId: string;
         amplifyApiModelSchemaS3Uri: string;
         awsAppsyncApiKey?: string | undefined;
