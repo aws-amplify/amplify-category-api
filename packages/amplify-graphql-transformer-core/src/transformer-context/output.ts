@@ -352,9 +352,6 @@ export class TransformerOutput implements TransformerContextOutputProvider {
       }
       let subscriptionType = objectExtension(subscriptionTypeName, fields);
       this.addObjectExtension(subscriptionType);
-    } else {
-      this.addDefaultSubscription();
-      this.addSubscriptionFields(fields);
     }
   }
 
