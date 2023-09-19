@@ -21,15 +21,19 @@ import { ObjectTypeDefinitionNode, parse } from 'graphql';
 import path from 'path';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
+import axios from 'axios';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 
 const CDK_FUNCTION_TYPE = 'AWS::Lambda::Function';
 const CDK_VPC_ENDPOINT_TYPE = 'AWS::EC2::VPCEndpoint';
+const IPIFY_URL = 'https://api.ipify.org/';
+const AWSCHECKIP_URL = 'https://checkip.amazonaws.com/';
 
 describe('RDS Model Directive', () => {
   const publicIpCidr = '0.0.0.0/0';
+  const ipAddresses = [];
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
 
   // Generate settings for RDS instance
@@ -118,6 +122,12 @@ describe('RDS Model Directive', () => {
     await cleanupDatabase();
   });
 
+  const getIpAddress = async (url: string): Promise<string> => {
+    const response = await axios(url);
+    const ipParts = response.data.trim().split('.');
+    return `${ipParts[0]}.${ipParts[1]}.0.0/16`;
+  };
+
   const setupDatabase = async (): Promise<void> => {
     // This test performs the below
     // 1. Create a RDS Instance
@@ -134,11 +144,18 @@ describe('RDS Model Directive', () => {
     });
     port = db.port;
     host = db.endpoint;
-    await addRDSPortInboundRule({
-      region,
-      port: db.port,
-      cidrIp: publicIpCidr,
-    });
+
+    ipAddresses.push(await getIpAddress(IPIFY_URL));
+    ipAddresses.push(await getIpAddress(AWSCHECKIP_URL));
+
+    await Promise.all(
+      ipAddresses.map((ip) => addRDSPortInboundRule({
+          region,
+          port: db.port,
+          cidrIp: ip,
+        }),
+      ),
+    );
 
     const dbAdapter = new RDSTestDataProvider({
       host: db.endpoint,
@@ -160,11 +177,14 @@ describe('RDS Model Directive', () => {
   const cleanupDatabase = async (): Promise<void> => {
     // 1. Remove the IP address from the security group
     // 2. Delete the RDS instance
-    await removeRDSPortInboundRule({
-      region,
-      port: port,
-      cidrIp: publicIpCidr,
-    });
+    await Promise.all(
+      ipAddresses.map((ip) => removeRDSPortInboundRule({
+          region,
+          port,
+          cidrIp: ip,
+        }),
+      ),
+    );
     await deleteDBInstance(identifier, region);
   };
 
