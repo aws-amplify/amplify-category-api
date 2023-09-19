@@ -1570,6 +1570,7 @@ const partialSchemaTranslationBehavior: PartialSchemaTranslationBehavior = { ...
 | <code><a href="#@aws-amplify/graphql-construct-alpha.PartialSchemaTranslationBehavior.property.disableResolverDeduping">disableResolverDeduping</a></code> | <code>boolean</code> | Disable resolver deduping, this can sometimes cause problems because dedupe ordering isn't stable today, which can lead to circular dependencies across stacks if models are reordered. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.PartialSchemaTranslationBehavior.property.enableAutoIndexQueryNames">enableAutoIndexQueryNames</a></code> | <code>boolean</code> | Automate generation of query names, and as a result attaching all indexes as queries to the generated API. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.PartialSchemaTranslationBehavior.property.enableSearchNodeToNodeEncryption">enableSearchNodeToNodeEncryption</a></code> | <code>boolean</code> | If enabled, set nodeToNodeEncryption on the searchable domain (if one exists). |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.PartialSchemaTranslationBehavior.property.enableTransformerCfnOutputs">enableTransformerCfnOutputs</a></code> | <code>boolean</code> | When enabled, internal cfn outputs which existed in Amplify-generated apps will continue to be emitted. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.PartialSchemaTranslationBehavior.property.populateOwnerFieldForStaticGroupAuth">populateOwnerFieldForStaticGroupAuth</a></code> | <code>boolean</code> | Ensure that the owner field is still populated even if a static iam or group authorization applies. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.PartialSchemaTranslationBehavior.property.respectPrimaryKeyAttributesOnConnectionField">respectPrimaryKeyAttributesOnConnectionField</a></code> | <code>boolean</code> | Enable custom primary key support, there's no good reason to disable this unless trying not to update a legacy app. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.PartialSchemaTranslationBehavior.property.sandboxModeEnabled">sandboxModeEnabled</a></code> | <code>boolean</code> | Enabling sandbox mode will enable api key auth on all models in the transformed schema. |
@@ -1623,6 +1624,19 @@ Not recommended for use, prefer
 to use `Object.values(resources.additionalResources['AWS::Elasticsearch::Domain']).forEach((domain: CfnDomain) => {
   domain.NodeToNodeEncryptionOptions = { Enabled: True };
 });
+
+---
+
+##### `enableTransformerCfnOutputs`<sup>Optional</sup> <a name="enableTransformerCfnOutputs" id="@aws-amplify/graphql-construct-alpha.PartialSchemaTranslationBehavior.property.enableTransformerCfnOutputs"></a>
+
+```typescript
+public readonly enableTransformerCfnOutputs: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+When enabled, internal cfn outputs which existed in Amplify-generated apps will continue to be emitted.
 
 ---
 
@@ -1830,6 +1844,7 @@ const schemaTranslationBehavior: SchemaTranslationBehavior = { ... }
 | <code><a href="#@aws-amplify/graphql-construct-alpha.SchemaTranslationBehavior.property.disableResolverDeduping">disableResolverDeduping</a></code> | <code>boolean</code> | Disable resolver deduping, this can sometimes cause problems because dedupe ordering isn't stable today, which can lead to circular dependencies across stacks if models are reordered. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.SchemaTranslationBehavior.property.enableAutoIndexQueryNames">enableAutoIndexQueryNames</a></code> | <code>boolean</code> | Automate generation of query names, and as a result attaching all indexes as queries to the generated API. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.SchemaTranslationBehavior.property.enableSearchNodeToNodeEncryption">enableSearchNodeToNodeEncryption</a></code> | <code>boolean</code> | If enabled, set nodeToNodeEncryption on the searchable domain (if one exists). |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.SchemaTranslationBehavior.property.enableTransformerCfnOutputs">enableTransformerCfnOutputs</a></code> | <code>boolean</code> | When enabled, internal cfn outputs which existed in Amplify-generated apps will continue to be emitted. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.SchemaTranslationBehavior.property.populateOwnerFieldForStaticGroupAuth">populateOwnerFieldForStaticGroupAuth</a></code> | <code>boolean</code> | Ensure that the owner field is still populated even if a static iam or group authorization applies. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.SchemaTranslationBehavior.property.respectPrimaryKeyAttributesOnConnectionField">respectPrimaryKeyAttributesOnConnectionField</a></code> | <code>boolean</code> | Enable custom primary key support, there's no good reason to disable this unless trying not to update a legacy app. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.SchemaTranslationBehavior.property.sandboxModeEnabled">sandboxModeEnabled</a></code> | <code>boolean</code> | Enabling sandbox mode will enable api key auth on all models in the transformed schema. |
@@ -1883,6 +1898,19 @@ Not recommended for use, prefer
 to use `Object.values(resources.additionalResources['AWS::Elasticsearch::Domain']).forEach((domain: CfnDomain) => {
   domain.NodeToNodeEncryptionOptions = { Enabled: True };
 });
+
+---
+
+##### `enableTransformerCfnOutputs`<sup>Required</sup> <a name="enableTransformerCfnOutputs" id="@aws-amplify/graphql-construct-alpha.SchemaTranslationBehavior.property.enableTransformerCfnOutputs"></a>
+
+```typescript
+public readonly enableTransformerCfnOutputs: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+When enabled, internal cfn outputs which existed in Amplify-generated apps will continue to be emitted.
 
 ---
 

@@ -16,4 +16,5 @@ export const defaultSchemaTranslationBehavior: SchemaTranslationBehavior = {
   enableAutoIndexQueryNames: true,
   respectPrimaryKeyAttributesOnConnectionField: true,
   enableSearchNodeToNodeEncryption: false,
+  enableTransformerCfnOutputs: false,
 };
