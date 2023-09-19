@@ -1587,6 +1587,7 @@ public readonly disableResolverDeduping: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 Disable resolver deduping, this can sometimes cause problems because dedupe ordering isn't stable today, which can lead to circular dependencies across stacks if models are reordered.
 
@@ -1599,6 +1600,7 @@ public readonly enableAutoIndexQueryNames: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 Automate generation of query names, and as a result attaching all indexes as queries to the generated API.
 
@@ -1613,6 +1615,7 @@ public readonly enableSearchNodeToNodeEncryption: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* false
 
 If enabled, set nodeToNodeEncryption on the searchable domain (if one exists).
 
@@ -1630,6 +1633,7 @@ public readonly populateOwnerFieldForStaticGroupAuth: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 Ensure that the owner field is still populated even if a static iam or group authorization applies.
 
@@ -1642,6 +1646,7 @@ public readonly respectPrimaryKeyAttributesOnConnectionField: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 Enable custom primary key support, there's no good reason to disable this unless trying not to update a legacy app.
 
@@ -1654,6 +1659,7 @@ public readonly sandboxModeEnabled: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* false
 
 Enabling sandbox mode will enable api key auth on all models in the transformed schema.
 
@@ -1666,6 +1672,7 @@ public readonly secondaryKeyAsGSI: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 If disabled, generated.
 
@@ -1678,6 +1685,7 @@ public readonly shouldDeepMergeDirectiveConfigDefaults: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 Restore parity w/ GQLv1.
 
@@ -1690,6 +1698,7 @@ public readonly suppressApiKeyGeneration: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* false
 
 If enabled, disable api key resource generation even if specified as an auth rule on the construct.
 
@@ -1704,6 +1713,7 @@ public readonly useSubUsernameForDefaultIdentityClaim: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 Ensure that oidc and userPool auth use the `sub` field in the for the username field, which disallows new users with the same id to access data from a deleted user in the pool.
 
@@ -1837,6 +1847,7 @@ public readonly disableResolverDeduping: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 Disable resolver deduping, this can sometimes cause problems because dedupe ordering isn't stable today, which can lead to circular dependencies across stacks if models are reordered.
 
@@ -1849,6 +1860,7 @@ public readonly enableAutoIndexQueryNames: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 Automate generation of query names, and as a result attaching all indexes as queries to the generated API.
 
@@ -1863,6 +1875,7 @@ public readonly enableSearchNodeToNodeEncryption: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* false
 
 If enabled, set nodeToNodeEncryption on the searchable domain (if one exists).
 
@@ -1880,6 +1893,7 @@ public readonly populateOwnerFieldForStaticGroupAuth: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 Ensure that the owner field is still populated even if a static iam or group authorization applies.
 
@@ -1892,6 +1906,7 @@ public readonly respectPrimaryKeyAttributesOnConnectionField: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 Enable custom primary key support, there's no good reason to disable this unless trying not to update a legacy app.
 
@@ -1904,6 +1919,7 @@ public readonly sandboxModeEnabled: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* false
 
 Enabling sandbox mode will enable api key auth on all models in the transformed schema.
 
@@ -1916,6 +1932,7 @@ public readonly secondaryKeyAsGSI: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 If disabled, generated.
 
@@ -1928,6 +1945,7 @@ public readonly shouldDeepMergeDirectiveConfigDefaults: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 Restore parity w/ GQLv1.
 
@@ -1940,6 +1958,7 @@ public readonly suppressApiKeyGeneration: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* false
 
 If enabled, disable api key resource generation even if specified as an auth rule on the construct.
 
@@ -1954,6 +1973,7 @@ public readonly useSubUsernameForDefaultIdentityClaim: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 Ensure that oidc and userPool auth use the `sub` field in the for the username field, which disallows new users with the same id to access data from a deleted user in the pool.
 
