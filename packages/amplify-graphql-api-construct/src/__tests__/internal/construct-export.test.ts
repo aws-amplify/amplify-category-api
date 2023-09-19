@@ -1,15 +1,16 @@
 import * as cdk from 'aws-cdk-lib';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
+import { AmplifyGraphqlSchema } from '../../amplify-graphql-schema';
 
 describe('AmplifyGraphqlApi', () => {
   describe('getGeneratedFunctionSlots', () => {
     it('returns slots, and includes a known slot', () => {
       const { generatedFunctionSlots } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
-        schema: /* GraphQL */ `
+        schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
           type Todo @model @auth(rules: [{ allow: public }]) {
             description: String!
           }
-        `,
+        `),
         authorizationConfig: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },

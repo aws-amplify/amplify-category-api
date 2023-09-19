@@ -5,7 +5,6 @@ import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { AssetProps } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   convertAuthorizationModesToTransformerAuthConfig,
-  preprocessSchema,
   convertToResolverConfig,
   defaultSchemaTranslationBehavior,
   AssetManager,
@@ -13,17 +12,11 @@ import {
   getGeneratedFunctionSlots,
   CodegenAssets,
 } from './internal';
-import type { AmplifyGraphqlApiResources, AmplifyGraphqlApiProps, FunctionSlot } from './types';
+import type { AmplifyGraphqlApiResources, AmplifyGraphqlApiProps, FunctionSlot, IBackendOutputStorageStrategy } from './types';
 import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
 
 // These will be imported from CLI in future
-import {
-  GraphqlOutput,
-  GraphqlOutputKey,
-  BackendOutputStorageStrategy,
-  AwsAppsyncAuthenticationType,
-  StackMetadataBackendOutputStorageStrategy,
-} from './graphql-output';
+import { GraphqlOutput, GraphqlOutputKey, AwsAppsyncAuthenticationType, StackMetadataBackendOutputStorageStrategy } from './graphql-output';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
@@ -49,7 +42,7 @@ import {
  * ```
  * `resources.<ResourceType>.<ResourceName>` - you can then perform any CDK action on these resulting resoureces.
  */
-export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends Construct {
+export class AmplifyGraphqlApi extends Construct {
   /**
    * Generated resources.
    */
@@ -66,12 +59,11 @@ export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends 
    */
   public readonly generatedFunctionSlots: FunctionSlot[];
 
-  constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps<SchemaType>) {
+  constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps) {
     super(scope, id);
 
     const {
-      schema: unprocessedSchema,
-      schemaPreprocessor,
+      schema,
       authorizationConfig,
       conflictResolution,
       functionSlots,
@@ -86,10 +78,8 @@ export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends 
     const { authConfig, identityPoolId, adminRoles, authSynthParameters } =
       convertAuthorizationModesToTransformerAuthConfig(authorizationConfig);
 
-    const { processedSchema, processedFunctionSlots } = preprocessSchema(unprocessedSchema, schemaPreprocessor);
-
     validateFunctionSlots(functionSlots ?? []);
-    const separatedFunctionSlots = separateSlots([...(functionSlots ?? []), ...(processedFunctionSlots ?? [])]);
+    const separatedFunctionSlots = separateSlots([...(functionSlots ?? []), ...schema.functionSlots]);
 
     // Allow amplifyEnvironmentName to be retrieve from context, and use value 'NONE' if no value can be found.
     // amplifyEnvironmentName is required for logical id suffixing, as well as Exports from the nested stacks.
@@ -115,7 +105,7 @@ export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends 
         apiName: props.apiName ?? id,
         ...authSynthParameters,
       },
-      schema: processedSchema,
+      schema: schema.definition,
       userDefinedSlots: parseUserDefinedSlots(separatedFunctionSlots),
       transformersFactoryArgs: {
         authConfig,
@@ -134,7 +124,7 @@ export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends 
       },
     });
 
-    this.codegenAssets = new CodegenAssets(this, 'CodegenAssets', { modelSchema: processedSchema });
+    this.codegenAssets = new CodegenAssets(this, 'AmplifyCodegenAssets', { modelSchema: schema.definition });
 
     this.resources = getGeneratedResources(this);
     this.generatedFunctionSlots = getGeneratedFunctionSlots(assetManager.resolverAssets);
@@ -145,7 +135,7 @@ export class AmplifyGraphqlApi<SchemaType = AmplifyGraphqlApiResources> extends 
    * Stores graphql api output to be used for client config generation
    * @param outputStorageStrategy Strategy to store construct outputs. If no strategy is provided a default strategy will be used.
    */
-  private storeOutput(outputStorageStrategy?: BackendOutputStorageStrategy<GraphqlOutput>): void {
+  private storeOutput(outputStorageStrategy?: IBackendOutputStorageStrategy): void {
     const stack = Stack.of(this);
     const output: GraphqlOutput = {
       version: '1',

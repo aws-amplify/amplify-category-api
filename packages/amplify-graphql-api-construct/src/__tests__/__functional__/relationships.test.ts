@@ -1,15 +1,16 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
+import { AmplifyGraphqlSchema } from '../../amplify-graphql-schema';
 
 /**
  * Utility to wrap construct creation a basic synth step to smoke test
- * @param buildApp callback to create the resources in the stack
+ * @param schema schema to synthesize
  */
 const verifySchema = (schema: string): void => {
   const stack = new cdk.Stack();
   new AmplifyGraphqlApi(stack, 'TestApi', {
-    schema,
+    schema: AmplifyGraphqlSchema.fromString(schema),
     authorizationConfig: {
       apiKeyConfig: { expires: cdk.Duration.days(7) },
     },

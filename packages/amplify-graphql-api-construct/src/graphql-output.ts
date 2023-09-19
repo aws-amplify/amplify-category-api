@@ -2,6 +2,7 @@
 
 import { CfnOutput, Stack } from 'aws-cdk-lib';
 import { z } from 'zod';
+import { BackendOutputEntry, IBackendOutputStorageStrategy } from './types';
 
 const AwsAppsyncAuthenticationType = z.enum(['API_KEY', 'AWS_LAMBDA', 'AWS_IAM', 'OPENID_CONNECT', 'AMAZON_COGNITO_USER_POOLS']);
 export type AwsAppsyncAuthenticationType = z.infer<typeof AwsAppsyncAuthenticationType>;
@@ -18,31 +19,21 @@ export const graphqlOutputSchemaV1 = z.object({
   }),
 });
 
+/**
+ * The versioned graphql schema output, used to describe the possible shapes
+ * which graphql metadata could be stored.
+ */
 export const versionedGraphqlOutputSchema = z.discriminatedUnion('version', [
   graphqlOutputSchemaV1,
   // this is where additional api major version schemas would go
 ]);
 
+/**
+ * Type representing the graphql construct output metadata.
+ */
 export type GraphqlOutput = z.infer<typeof versionedGraphqlOutputSchema>;
 
 export const GraphqlOutputKey = 'graphqlOutput';
-
-// Types that need to be exported from CLI types package
-export type BackendOutputEntry<T extends Record<string, string> = Record<string, string>> = {
-  readonly version: string;
-  readonly payload: T;
-};
-
-type BackendOutput = Record<string, BackendOutputEntry>;
-
-export type BackendOutputStorageStrategy<T extends BackendOutputEntry> = {
-  addBackendOutputEntry(keyName: string, backendOutputEntry: T): void;
-
-  /**
-   * Write all pending data to the destination
-   */
-  flush(): void;
-};
 
 export const amplifyStackMetadataKey = 'AWS::Amplify::Output';
 
@@ -69,8 +60,9 @@ export type BackendOutputStackMetadata = z.infer<typeof backendOutputStackMetada
 /**
  * Implementation of BackendOutputStorageStrategy that stores config data in stack metadata and outputs
  */
-export class StackMetadataBackendOutputStorageStrategy implements BackendOutputStorageStrategy<BackendOutputEntry> {
+export class StackMetadataBackendOutputStorageStrategy implements IBackendOutputStorageStrategy {
   private readonly metadata: BackendOutputStackMetadata = {};
+
   /**
    * Initialize the instance with a stack.
    *

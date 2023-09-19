@@ -1,6 +1,6 @@
 **/__mocks__/**
 **/__tests__/**
 src
-vpc-db-lambda
+streaming-lambda
 tsconfig.json
 tsconfig.tsbuildinfo

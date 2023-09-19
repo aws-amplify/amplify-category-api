@@ -1,6 +1,8 @@
 **/__mocks__/**
 **/__tests__/**
 src
-vpc-db-lambda
+publish-notification-lambda
+rds-lambda
+rds-patching-lambda
 tsconfig.json
 tsconfig.tsbuildinfo

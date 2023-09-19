@@ -1,17 +1,18 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
+import { AmplifyGraphqlSchema } from '../../amplify-graphql-schema';
 
 describe('storeOutput', () => {
   describe('default outputStorageStrategy', () => {
     test('stores output with outputStorageStrategy', () => {
       const stack = new cdk.Stack();
       new AmplifyGraphqlApi(stack, 'TestApi', {
-        schema: /* GraphQL */ `
+        schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
           type Todo @model @auth(rules: [{ allow: public }]) {
             description: String!
           }
-        `,
+        `),
         authorizationConfig: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
@@ -88,11 +89,11 @@ describe('storeOutput', () => {
     test('stores output with outputStorageStrategy', () => {
       const stack = new cdk.Stack();
       new AmplifyGraphqlApi(stack, 'TestApi', {
-        schema: /* GraphQL */ `
+        schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
           type Todo @model @auth(rules: [{ allow: public }]) {
             description: String!
           }
-        `,
+        `),
         authorizationConfig: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
@@ -117,11 +118,11 @@ describe('storeOutput', () => {
     test('does not store awsAppsyncApiKey when not present and changes awsAppsyncAuthenticationType', () => {
       const stack = new cdk.Stack();
       new AmplifyGraphqlApi(stack, 'TestApi', {
-        schema: /* GraphQL */ `
+        schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
           type Todo @model {
             description: String!
           }
-        `,
+        `),
         authorizationConfig: {
           oidcConfig: {
             oidcProviderName: 'mock-provider-name',
