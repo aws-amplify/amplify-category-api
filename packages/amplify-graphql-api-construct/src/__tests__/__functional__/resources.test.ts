@@ -258,6 +258,9 @@ describe('generated resource access', () => {
           authorizationConfig: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
+          schemaTranslationBehavior: {
+            disableResolverDeduping: false,
+          },
         });
 
         expect(Object.values(cfnFunctionConfigurations).length).toEqual(14);

@@ -348,50 +348,59 @@ export type FunctionSlot = MutationFunctionSlot | QueryFunctionSlot | Subscripti
 export interface SchemaTranslationBehavior {
   /**
    * Restore parity w/ GQLv1 @model parameter behavior, where setting a single field doesn't implicitly set the other fields to null.
+   * @default true
    */
   readonly shouldDeepMergeDirectiveConfigDefaults: boolean;
 
   /**
    * Disable resolver deduping, this can sometimes cause problems because dedupe ordering isn't stable today, which can
    * lead to circular dependencies across stacks if models are reordered.
+   * @default true
    */
   readonly disableResolverDeduping: boolean;
 
   /**
    * Enabling sandbox mode will enable api key auth on all models in the transformed schema.
+   * @default false
    */
   readonly sandboxModeEnabled: boolean;
 
   /**
    * Ensure that oidc and userPool auth use the `sub` field in the for the username field, which disallows new users with the same
    * id to access data from a deleted user in the pool.
+   * @default true
    */
   readonly useSubUsernameForDefaultIdentityClaim: boolean;
 
   /**
    * Ensure that the owner field is still populated even if a static iam or group authorization applies.
+   * @default true
    */
   readonly populateOwnerFieldForStaticGroupAuth: boolean;
 
   /**
    * If enabled, disable api key resource generation even if specified as an auth rule on the construct.
    * This is a legacy parameter from the Graphql Transformer existing in Amplify CLI, not recommended to change.
+   * @default false
    */
   readonly suppressApiKeyGeneration: boolean;
 
   /**
    * If disabled, generated @index as an LSI instead of a GSI.
+   * @default true
    */
   readonly secondaryKeyAsGSI: boolean;
 
   /**
    * Automate generation of query names, and as a result attaching all indexes as queries to the generated API.
    * If enabled, @index can be provided a null name field to disable the generation of the query on the api.
+   * @default true
    */
   readonly enableAutoIndexQueryNames: boolean;
 
   /**
    * Enable custom primary key support, there's no good reason to disable this unless trying not to update a legacy app.
+   * @default true
    */
   readonly respectPrimaryKeyAttributesOnConnectionField: boolean;
 
@@ -400,6 +409,7 @@ export interface SchemaTranslationBehavior {
    * to use `Object.values(resources.additionalResources['AWS::Elasticsearch::Domain']).forEach((domain: CfnDomain) => {
    *   domain.NodeToNodeEncryptionOptions = { Enabled: True };
    * });
+   * @default false
    */
   readonly enableSearchNodeToNodeEncryption: boolean;
 }
@@ -410,50 +420,59 @@ export interface SchemaTranslationBehavior {
 export interface PartialSchemaTranslationBehavior {
   /**
    * Restore parity w/ GQLv1 @model parameter behavior, where setting a single field doesn't implicitly set the other fields to null.
+   * @default true
    */
   readonly shouldDeepMergeDirectiveConfigDefaults?: boolean;
 
   /**
    * Disable resolver deduping, this can sometimes cause problems because dedupe ordering isn't stable today, which can
    * lead to circular dependencies across stacks if models are reordered.
+   * @default true
    */
   readonly disableResolverDeduping?: boolean;
 
   /**
    * Enabling sandbox mode will enable api key auth on all models in the transformed schema.
+   * @default false
    */
   readonly sandboxModeEnabled?: boolean;
 
   /**
    * Ensure that oidc and userPool auth use the `sub` field in the for the username field, which disallows new users with the same
    * id to access data from a deleted user in the pool.
+   * @default true
    */
   readonly useSubUsernameForDefaultIdentityClaim?: boolean;
 
   /**
    * Ensure that the owner field is still populated even if a static iam or group authorization applies.
+   * @default true
    */
   readonly populateOwnerFieldForStaticGroupAuth?: boolean;
 
   /**
    * If enabled, disable api key resource generation even if specified as an auth rule on the construct.
    * This is a legacy parameter from the Graphql Transformer existing in Amplify CLI, not recommended to change.
+   * @default false
    */
   readonly suppressApiKeyGeneration?: boolean;
 
   /**
    * If disabled, generated @index as an LSI instead of a GSI.
+   * @default true
    */
   readonly secondaryKeyAsGSI?: boolean;
 
   /**
    * Automate generation of query names, and as a result attaching all indexes as queries to the generated API.
    * If enabled, @index can be provided a null name field to disable the generation of the query on the api.
+   * @default true
    */
   readonly enableAutoIndexQueryNames?: boolean;
 
   /**
    * Enable custom primary key support, there's no good reason to disable this unless trying not to update a legacy app.
+   * @default true
    */
   readonly respectPrimaryKeyAttributesOnConnectionField?: boolean;
 
@@ -462,6 +481,7 @@ export interface PartialSchemaTranslationBehavior {
    * to use `Object.values(resources.additionalResources['AWS::Elasticsearch::Domain']).forEach((domain: CfnDomain) => {
    *   domain.NodeToNodeEncryptionOptions = { Enabled: True };
    * });
+   * @default false
    */
   readonly enableSearchNodeToNodeEncryption?: boolean;
 }
