@@ -140,7 +140,6 @@ export class DefaultValueTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const typeName of this.directiveMap.keys()) {
-
       // Set the default value only for DDB datasource. For RDS, the database will set the value.
       const isDynamoDB = isDynamoDBDatasource(ctx, typeName);
       if (!isDynamoDB) {

@@ -1593,14 +1593,14 @@ describe('ModelTransformer:', () => {
       subnetAvailabilityZoneConfig: [
         {
           SubnetId: 'sub-123',
-          AvailabilityZone: 'az-123'
+          AvailabilityZone: 'az-123',
         },
         {
           SubnetId: 'sub-456',
-          AvailabilityZone: 'az-456'
+          AvailabilityZone: 'az-456',
         },
       ],
-    }
+    };
     const out = testTransform({
       schema: validSchema,
       transformers: [new ModelTransformer()],
@@ -1619,12 +1619,8 @@ describe('ModelTransformer:', () => {
     expect(sqlLambda.Properties).toBeDefined();
     expect(sqlLambda.Properties?.VpcConfig).toBeDefined();
     expect(sqlLambda.Properties?.VpcConfig?.SubnetIds).toBeDefined();
-    expect(sqlLambda.Properties?.VpcConfig?.SubnetIds).toEqual(
-      expect.arrayContaining(['sub-123', 'sub-456']),
-    );
+    expect(sqlLambda.Properties?.VpcConfig?.SubnetIds).toEqual(expect.arrayContaining(['sub-123', 'sub-456']));
     expect(sqlLambda.Properties?.VpcConfig?.SecurityGroupIds).toBeDefined();
-    expect(sqlLambda.Properties?.VpcConfig?.SecurityGroupIds).toEqual(
-      expect.arrayContaining(['sg-123']),
-    );    
+    expect(sqlLambda.Properties?.VpcConfig?.SecurityGroupIds).toEqual(expect.arrayContaining(['sg-123']));
   });
 });
