@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-construct-alpha@0.7.1...@aws-amplify/graphql-construct-alpha@0.8.0) (2023-09-20)
+
+### Features
+
+- add amplify metadata to stack description if none is provided ([58266f1](https://github.com/aws-amplify/amplify-category-api/commit/58266f108e47334e39cf5d278499e447e3fbe086))
+- disable amplify cfn outputs for cdk apps ([0c72d18](https://github.com/aws-amplify/amplify-category-api/commit/0c72d1822f8e5ccb3e04a0a49049a459b5fb49e6))
+
 ## [0.7.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-construct-alpha@0.7.0...@aws-amplify/graphql-construct-alpha@0.7.1) (2023-09-14)
 
 **Note:** Version bump only for package @aws-amplify/graphql-construct-alpha

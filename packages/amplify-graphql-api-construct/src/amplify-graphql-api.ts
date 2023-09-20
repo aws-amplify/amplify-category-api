@@ -11,6 +11,7 @@ import {
   getGeneratedResources,
   getGeneratedFunctionSlots,
   CodegenAssets,
+  addAmplifyMetadataToStackDescription,
 } from './internal';
 import type { AmplifyGraphqlApiResources, AmplifyGraphqlApiProps, FunctionSlot, IBackendOutputStorageStrategy } from './types';
 import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
@@ -74,6 +75,8 @@ export class AmplifyGraphqlApi extends Construct {
       functionNameMap,
       outputStorageStrategy,
     } = props;
+
+    addAmplifyMetadataToStackDescription(scope);
 
     const { authConfig, identityPoolId, adminRoles, authSynthParameters } =
       convertAuthorizationModesToTransformerAuthConfig(authorizationConfig);

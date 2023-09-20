@@ -1,6 +1,7 @@
 import {
   AppSyncAuthConfiguration,
   NestedStackProvider,
+  TransformParameters,
   TransformerPluginProvider,
   TransformerPluginType,
 } from '@aws-amplify/graphql-transformer-interfaces';
@@ -20,6 +21,7 @@ class TestGraphQLTransform extends GraphQLTransform {
         apiName: 'testApi',
       },
       output,
+      { enableTransformerCfnOutputs: true } as TransformParameters,
     );
   }
 }

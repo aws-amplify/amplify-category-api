@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.1.3...@aws-amplify/graphql-model-transformer@2.2.0) (2023-09-20)
+
+### Features
+
+- disable amplify cfn outputs for cdk apps ([0c72d18](https://github.com/aws-amplify/amplify-category-api/commit/0c72d1822f8e5ccb3e04a0a49049a459b5fb49e6))
+
 ## [2.1.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.1.2...@aws-amplify/graphql-model-transformer@2.1.3) (2023-09-07)
 
 ### Bug Fixes
