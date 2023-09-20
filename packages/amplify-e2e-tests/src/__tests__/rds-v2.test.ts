@@ -71,10 +71,11 @@ describe('RDS Tests', () => {
     });
     port = db.port;
     host = db.endpoint;
-    
+
     ipAddresses.push(...(await getIpRanges()));
     await Promise.all(
-      ipAddresses.map((ip) => addRDSPortInboundRule({
+      ipAddresses.map((ip) =>
+        addRDSPortInboundRule({
           region,
           port: db.port,
           cidrIp: ip,
@@ -97,7 +98,8 @@ describe('RDS Tests', () => {
     dbAdapter.cleanup();
 
     await Promise.all(
-      ipAddresses.map((ip) => removeRDSPortInboundRule({
+      ipAddresses.map((ip) =>
+        removeRDSPortInboundRule({
           region,
           port,
           cidrIp: ip,

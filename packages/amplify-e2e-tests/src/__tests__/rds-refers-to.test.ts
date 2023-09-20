@@ -98,7 +98,8 @@ describe('RDS Relational Directives', () => {
 
     ipAddresses.push(...(await getIpRanges()));
     await Promise.all(
-      ipAddresses.map((ip) => addRDSPortInboundRule({
+      ipAddresses.map((ip) =>
+        addRDSPortInboundRule({
           region,
           port: db.port,
           cidrIp: ip,
@@ -124,7 +125,8 @@ describe('RDS Relational Directives', () => {
     dbAdapter.cleanup();
 
     await Promise.all(
-      ipAddresses.map((ip) => removeRDSPortInboundRule({
+      ipAddresses.map((ip) =>
+        removeRDSPortInboundRule({
           region,
           port,
           cidrIp: ip,
