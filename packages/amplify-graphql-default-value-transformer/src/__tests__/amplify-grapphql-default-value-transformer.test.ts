@@ -1,5 +1,5 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { DatasourceType, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { DefaultValueTransformer } from '..';
@@ -310,5 +310,34 @@ describe('DefaultValueModelTransformer:', () => {
     expect(out.resolvers['Mutation.createPost.init.2.req.vtl']).toMatchSnapshot();
     const schema = parse(out.schema);
     validateModelSchema(schema);
+  });
+
+  it('default value type should not be validated for rds datasource', async () => {
+    const validSchema = `
+      type Note @model {
+          id: ID!
+          content: String!
+          createdAt: AWSDateTime @default(value: "CURRENT_TIMESTAMP")
+      }
+    `;
+
+    const modelToDatasourceMap = new Map<string, DatasourceType>();
+    modelToDatasourceMap.set('Note', {
+      dbType: 'MySQL',
+      provisionDB: false,
+    });
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer(), new DefaultValueTransformer()],
+      modelToDatasourceMap,
+    });
+    expect(out).toBeDefined();
+
+    validateModelSchema(parse(out.schema));
+    expect(out.stacks).toBeDefined();
+    expect(out.stacks.RdsApiStack).toBeDefined();
+    expect(out.stacks.RdsApiStack.Resources).toBeDefined();
+    expect(out.resolvers['Mutation.createNote.init.1.req.vtl']).toBeDefined();
+    expect(out.resolvers['Mutation.createNote.init.2.req.vtl']).toBeUndefined();
   });
 });

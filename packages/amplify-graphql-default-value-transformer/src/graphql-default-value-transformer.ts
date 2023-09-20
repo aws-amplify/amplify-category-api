@@ -1,4 +1,5 @@
 import {
+  DDB_DB_TYPE,
   DirectiveWrapper,
   generateGetArgumentsInput,
   InputObjectDefinitionWrapper,
@@ -79,7 +80,18 @@ const validate = (ctx: TransformerSchemaVisitStepContextProvider, config: Defaul
   validateModelDirective(config);
   validateFieldType(ctx, config.field.type);
   validateDirectiveArguments(config.directive);
-  validateDefaultValueType(ctx, config);
+
+  // Validate the default values only for the DynamoDB datasource.
+  // For RDS, the database determines and sets the default value. We will not validate the value in transformers.
+  const isDynamoDB = isDynamoDBDatasource(ctx, config.object.name.value);
+  if (isDynamoDB) {
+    validateDefaultValueType(ctx, config);
+  }
+};
+
+const isDynamoDBDatasource = (ctx: TransformerSchemaVisitStepContextProvider, modelName: string): boolean => {
+  const isDynamoDB = (ctx.modelToDatasourceMap.get(modelName)?.dbType ?? DDB_DB_TYPE) === DDB_DB_TYPE;
+  return isDynamoDB;
 };
 
 export class DefaultValueTransformer extends TransformerPluginBase {
@@ -128,6 +140,12 @@ export class DefaultValueTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const typeName of this.directiveMap.keys()) {
+      // Set the default value only for DDB datasource. For RDS, the database will set the value.
+      const isDynamoDB = isDynamoDBDatasource(ctx, typeName);
+      if (!isDynamoDB) {
+        continue;
+      }
+
       const snippets: string[] = [];
       for (const config of this.directiveMap.get(typeName)!) {
         const fieldName = config.field.name.value;
