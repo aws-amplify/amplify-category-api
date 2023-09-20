@@ -3603,7 +3603,7 @@
         },
         "locationInModule": {
           "filename": "src/amplify-graphql-api.ts",
-          "line": 62
+          "line": 63
         },
         "parameters": [
           {
@@ -3629,7 +3629,7 @@
       "kind": "class",
       "locationInModule": {
         "filename": "src/amplify-graphql-api.ts",
-        "line": 45
+        "line": 46
       },
       "name": "AmplifyGraphqlApi",
       "properties": [
@@ -3641,7 +3641,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 60
+            "line": 61
           },
           "name": "generatedFunctionSlots",
           "type": {
@@ -3673,7 +3673,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 49
+            "line": 50
           },
           "name": "resources",
           "type": {
@@ -5941,5 +5941,5 @@
     }
   },
   "version": "0.7.1",
-  "fingerprint": "KwRHsB46zjolWeHkFK3QZjt6bEXqi7R2jcSIoF4a8Ng="
+  "fingerprint": "FbHIY5Fhg/iELzf8taJRHhBTQCmyO8ln9zV7Jexmt3Q="
 }
