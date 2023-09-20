@@ -1,4 +1,4 @@
-import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm';
+import { SSMClient, GetParameterCommand, GetParameterCommandOutput } from '@aws-sdk/client-ssm';
 // @ts-ignore
 import { DBAdapter, DBConfig, getDBAdapter } from 'rds-query-processor';
 
@@ -6,6 +6,7 @@ let adapter: DBAdapter;
 let secretsClient: SSMClient;
 
 const delay = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
+const WAIT_COMPLETE = 'WAIT_COMPLETE';
 
 export const run = async (event): Promise<any> => {
   if (!adapter) {
@@ -25,10 +26,9 @@ const createSSMClient = (): void => {
   });
 };
 
-const wait10SecondsAndThrowError = async (): Promise<void> => {
+const wait10Seconds = async (): Promise<string> => {
   await delay(10000);
-  console.log('Unable to retrieve secret for database connection from SSM. If your database is in VPC, verify that you have VPC endpoints for SSM defined and the security group\'s inbound rule for port 443 is defined.');
-  throw new Error('Unable to get the database credentials. Check the logs for more details.');
+  return WAIT_COMPLETE;
 };
 
 const getSSMValue = async (key: string | undefined): Promise<string> => {
@@ -44,11 +44,23 @@ const getSSMValue = async (key: string | undefined): Promise<string> => {
   // the security group's inbound rule for port 443 is not defined,
   // the SSM client waits for the entire lambda execution time and times out.
   // If the parameter is not retrieved within 10 seconds, throw an error.
-  const data = await Promise.race([secretsClient.send(parameterCommand), wait10SecondsAndThrowError()]);
-  if ((data?.$metadata?.httpStatusCode && data?.$metadata?.httpStatusCode >= 400) || !data?.Parameter?.Value) {
+  const data = await Promise.race([secretsClient.send(parameterCommand), wait10Seconds()]);
+
+  // If string is returned, throw error.
+  if (
+    (typeof data === 'string' || data instanceof String) &&
+    data === WAIT_COMPLETE
+  ) {
+    console.log('Unable to retrieve secret for database connection from SSM. If your database is in VPC, verify that you have VPC endpoints for SSM defined and the security group\'s inbound rule for port 443 is defined.');
+    throw new Error('Unable to get the database credentials. Check the logs for more details.');
+  }
+
+  // Read the value from the GetParameter response.
+  const response = data as GetParameterCommandOutput;
+  if ((response?.$metadata?.httpStatusCode && response?.$metadata?.httpStatusCode >= 400) || !response?.Parameter?.Value) {
     throw new Error('Unable to get secret for database connection');
   }
-  return data.Parameter.Value;
+  return response.Parameter.Value;
 };
 
 const getDBConfig = async (): DBConfig => {

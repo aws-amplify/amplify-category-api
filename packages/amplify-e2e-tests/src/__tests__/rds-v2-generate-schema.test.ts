@@ -12,6 +12,7 @@ import {
   removeRDSPortInboundRule,
   apiGenerateSchema,
   apiGenerateSchemaWithError,
+  getIpRanges,
 } from 'amplify-category-api-e2e-core';
 import axios from 'axios';
 import { existsSync, readFileSync, writeFileSync } from 'fs-extra';
@@ -21,6 +22,7 @@ import path from 'path';
 
 describe('RDS Generate Schema tests', () => {
   let publicIpCidr = '0.0.0.0/0';
+  const ipAddresses = [];
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
 
   // Generate settings for RDS instance
@@ -55,7 +57,7 @@ describe('RDS Generate Schema tests', () => {
       port,
       username,
       password,
-      useVpc: false,
+      useVpc: true,
       apiExists: true,
     });
   });
@@ -92,11 +94,16 @@ describe('RDS Generate Schema tests', () => {
     });
     port = db.port;
     host = db.endpoint;
-    await addRDSPortInboundRule({
-      region,
-      port: db.port,
-      cidrIp: publicIpCidr,
-    });
+    
+    ipAddresses.push(...(await getIpRanges()));
+    await Promise.all(
+      ipAddresses.map((ip) => addRDSPortInboundRule({
+          region,
+          port: db.port,
+          cidrIp: ip,
+        }),
+      ),
+    );
 
     const dbAdapter = new RDSTestDataProvider({
       host: db.endpoint,
@@ -111,16 +118,18 @@ describe('RDS Generate Schema tests', () => {
       'CREATE TABLE tbl_todos (ID INT PRIMARY KEY, description VARCHAR(20))',
     ]);
     dbAdapter.cleanup();
+
+    await Promise.all(
+      ipAddresses.map((ip) => removeRDSPortInboundRule({
+          region,
+          port,
+          cidrIp: ip,
+        }),
+      ),
+    );
   };
 
   const cleanupDatabase = async () => {
-    // 1. Remove the IP address from the security group
-    // 2. Delete the RDS instance
-    await removeRDSPortInboundRule({
-      region,
-      port: port,
-      cidrIp: publicIpCidr,
-    });
     await deleteDBInstance(identifier, region);
   };
 

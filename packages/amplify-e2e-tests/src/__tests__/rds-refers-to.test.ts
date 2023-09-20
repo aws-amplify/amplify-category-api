@@ -3,31 +3,30 @@ import {
   addApiWithoutSchema,
   addRDSPortInboundRule,
   amplifyPush,
-  apiGenerateSchema,
   createNewProjectDir,
   createRDSInstance,
   deleteDBInstance,
   deleteProject,
   deleteProjectDir,
   getAppSyncApi,
+  getIpRanges,
   getProjectMeta,
   importRDSDatabase,
   initJSProjectWithProfile,
   removeRDSPortInboundRule,
 } from 'amplify-category-api-e2e-core';
-import { existsSync, writeFileSync, mkdirSync, readFileSync } from 'fs-extra';
+import { existsSync, writeFileSync } from 'fs-extra';
 import generator from 'generate-password';
 import path from 'path';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { GQLQueryHelper } from '../query-utils/gql-helper';
-import { gql } from 'graphql-transformer-core';
-import { ObjectTypeDefinitionNode, parse } from 'graphql';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 
 describe('RDS Relational Directives', () => {
   const publicIpCidr = '0.0.0.0/0';
+  const ipAddresses = [];
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
 
   // Generate settings for RDS instance
@@ -96,11 +95,16 @@ describe('RDS Relational Directives', () => {
     });
     port = db.port;
     host = db.endpoint;
-    await addRDSPortInboundRule({
-      region,
-      port: db.port,
-      cidrIp: publicIpCidr,
-    });
+
+    ipAddresses.push(...(await getIpRanges()));
+    await Promise.all(
+      ipAddresses.map((ip) => addRDSPortInboundRule({
+          region,
+          port: db.port,
+          cidrIp: ip,
+        }),
+      ),
+    );
 
     const dbAdapter = new RDSTestDataProvider({
       host: db.endpoint,
@@ -118,16 +122,18 @@ describe('RDS Relational Directives', () => {
       'CREATE TABLE Task (id VARCHAR(40) PRIMARY KEY, description VARCHAR(255))',
     ]);
     dbAdapter.cleanup();
+
+    await Promise.all(
+      ipAddresses.map((ip) => removeRDSPortInboundRule({
+          region,
+          port,
+          cidrIp: ip,
+        }),
+      ),
+    );
   };
 
   const cleanupDatabase = async (): Promise<void> => {
-    // 1. Remove the IP address from the security group
-    // 2. Delete the RDS instance
-    await removeRDSPortInboundRule({
-      region,
-      port: port,
-      cidrIp: publicIpCidr,
-    });
     await deleteDBInstance(identifier, region);
   };
 
@@ -147,7 +153,7 @@ describe('RDS Relational Directives', () => {
       port,
       username,
       password,
-      useVpc: false,
+      useVpc: true,
       apiExists: true,
     });
 

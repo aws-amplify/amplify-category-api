@@ -212,8 +212,6 @@ describe('RDS Tests', () => {
       },
     });
 
-    // VPC will not have VPC endpoints for SSM defined and the security group's inbound rule for port 443 is not defined.
-    // Expect the listComponents query to fail with an error.
     expect(appSyncClient).toBeDefined();
 
     const result = await listComponents(appSyncClient);

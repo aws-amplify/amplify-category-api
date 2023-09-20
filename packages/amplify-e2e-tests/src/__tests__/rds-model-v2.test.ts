@@ -133,6 +133,7 @@ describe('RDS Model Directive', () => {
     // 1. Create a RDS Instance
     // 2. Add the external IP address of the current machine to security group inbound rule to allow public access
     // 3. Connect to the database and execute DDL
+    // 4. Remove the inbound rules.
 
     const db = await createRDSInstance({
       identifier,
@@ -172,11 +173,7 @@ describe('RDS Model Directive', () => {
       'CREATE TABLE Student (studentId INT NOT NULL, classId CHAR(1) NOT NULL, FirstName VARCHAR(20), LastName VARCHAR(50), PRIMARY KEY (studentId, classId))',
     ]);
     dbAdapter.cleanup();
-  };
 
-  const cleanupDatabase = async (): Promise<void> => {
-    // 1. Remove the IP address from the security group
-    // 2. Delete the RDS instance
     await Promise.all(
       ipAddresses.map((ip) => removeRDSPortInboundRule({
           region,
@@ -185,6 +182,9 @@ describe('RDS Model Directive', () => {
         }),
       ),
     );
+  };
+
+  const cleanupDatabase = async (): Promise<void> => {
     await deleteDBInstance(identifier, region);
   };
 
@@ -204,7 +204,7 @@ describe('RDS Model Directive', () => {
       port,
       username,
       password,
-      useVpc: false,
+      useVpc: true,
       apiExists: true,
     });
 

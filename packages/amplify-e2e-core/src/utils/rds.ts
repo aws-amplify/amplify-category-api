@@ -7,10 +7,14 @@ import {
 } from '@aws-sdk/client-rds';
 import { EC2Client, AuthorizeSecurityGroupIngressCommand, RevokeSecurityGroupIngressCommand } from '@aws-sdk/client-ec2';
 import { knex } from 'knex';
+import axios from 'axios';
 
 const DEFAULT_DB_INSTANCE_TYPE = 'db.m5.large';
 const DEFAULT_DB_STORAGE = 8;
 const DEFAULT_SECURITY_GROUP = 'default';
+
+const IPIFY_URL = 'https://api.ipify.org/';
+const AWSCHECKIP_URL = 'https://checkip.amazonaws.com/';
 
 /**
  * Creates a new RDS instance using the given input configuration and returns the details of the created RDS instance.
@@ -267,4 +271,14 @@ export const getResource = (resources: Map<string, any>, resourcePrefix: string,
     }
   }
   return undefined;
+};
+
+export const getIpRanges = async (): Promise<string[]> => {
+  return Promise.all(
+    [IPIFY_URL, AWSCHECKIP_URL].map(async (url) => {
+      const response = await axios(url);
+      const ipParts = response.data.trim().split('.');
+      return `${ipParts[0]}.${ipParts[1]}.0.0/16`;
+    }),
+  );
 };

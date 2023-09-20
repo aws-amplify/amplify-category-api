@@ -7,6 +7,7 @@ import {
   deleteDBInstance,
   deleteProject,
   deleteProjectDir,
+  getIpRanges,
   importRDSDatabase,
   initJSProjectWithProfile,
   removeRDSPortInboundRule,
@@ -18,7 +19,8 @@ import { ObjectTypeDefinitionNode, parse } from 'graphql';
 import path from 'path';
 
 describe('RDS Tests', () => {
-  let publicIpCidr = '0.0.0.0/0';
+  const publicIpCidr = '0.0.0.0/0';
+  const ipAddresses = [];
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
   const RDS_MAPPING_FILE = 'https://amplify-rds-layer-resources.s3.amazonaws.com/rds-layer-mapping.json';
 
@@ -34,10 +36,6 @@ describe('RDS Tests', () => {
   let projRoot;
 
   beforeAll(async () => {
-    // Get the public IP of the machine running the test
-    const url = 'http://api.ipify.org/';
-    const response = await axios(url);
-    publicIpCidr = `${response.data.trim()}/32`;
     await setupDatabase();
   });
 
@@ -73,11 +71,16 @@ describe('RDS Tests', () => {
     });
     port = db.port;
     host = db.endpoint;
-    await addRDSPortInboundRule({
-      region,
-      port: db.port,
-      cidrIp: publicIpCidr,
-    });
+    
+    ipAddresses.push(...(await getIpRanges()));
+    await Promise.all(
+      ipAddresses.map((ip) => addRDSPortInboundRule({
+          region,
+          port: db.port,
+          cidrIp: ip,
+        }),
+      ),
+    );
 
     const dbAdapter = new RDSTestDataProvider({
       host: db.endpoint,
@@ -92,16 +95,18 @@ describe('RDS Tests', () => {
       'CREATE TABLE Employee (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
     ]);
     dbAdapter.cleanup();
+
+    await Promise.all(
+      ipAddresses.map((ip) => removeRDSPortInboundRule({
+          region,
+          port,
+          cidrIp: ip,
+        }),
+      ),
+    );
   };
 
   const cleanupDatabase = async () => {
-    // 1. Remove the IP address from the security group
-    // 2. Delete the RDS instance
-    await removeRDSPortInboundRule({
-      region,
-      port: port,
-      cidrIp: publicIpCidr,
-    });
     await deleteDBInstance(identifier, region);
   };
 
@@ -120,7 +125,7 @@ describe('RDS Tests', () => {
       port,
       username,
       password,
-      useVpc: false,
+      useVpc: true,
       apiExists: true,
     });
 
