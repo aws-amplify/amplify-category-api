@@ -16,6 +16,7 @@
     "@aws-amplify/graphql-predictions-transformer": "2.1.3",
     "@aws-amplify/graphql-relational-transformer": "2.1.4",
     "@aws-amplify/graphql-searchable-transformer": "2.2.0",
+    "@aws-amplify/graphql-sql-transformer": "0.0.1",
     "@aws-amplify/graphql-transformer": "1.2.0",
     "@aws-amplify/graphql-transformer-core": "2.2.0",
     "@aws-amplify/graphql-transformer-interfaces": "3.2.0",
@@ -3485,7 +3486,7 @@
     "stability": "experimental"
   },
   "homepage": "https://github.com/aws-amplify/amplify-category-api.git",
-  "jsiiVersion": "5.1.12 (build 0675712)",
+  "jsiiVersion": "5.2.8 (build 02112e0)",
   "keywords": [
     "awscdk",
     "aws-cdk",
@@ -5976,5 +5977,5 @@
     }
   },
   "version": "0.8.0",
-  "fingerprint": "m3XHVuSTL6M4yPAxO7miEIXfx6URo1OSlrHYCjynui4="
+  "fingerprint": "nFRs7bVlx4sre99z2Y16H/zj2+MafRtnW1oneY2HhoY="
 }
