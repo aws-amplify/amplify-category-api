@@ -38,18 +38,12 @@ describe('RDS Tests', () => {
   let projRoot;
 
   beforeAll(async () => {
+    projRoot = await createNewProjectDir('rdsimportapi');
     await initProjectAndImportSchema();
   });
 
   afterAll(async () => {
     await cleanupDatabase();
-  });
-
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('rdsimportapi');
-  });
-
-  afterEach(async () => {
     const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
     if (existsSync(metaFilePath)) {
       await deleteProject(projRoot);
