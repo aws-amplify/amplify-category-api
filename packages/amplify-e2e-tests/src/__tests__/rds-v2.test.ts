@@ -8,6 +8,7 @@ import {
   deleteProject,
   deleteProjectDir,
   getIpRanges,
+  getProjectMeta,
   importRDSDatabase,
   initJSProjectWithProfile,
   removeRDSPortInboundRule,
@@ -27,16 +28,17 @@ describe('RDS Tests', () => {
   // Generate settings for RDS instance
   const username = db_user;
   const password = db_password;
-  const region = 'us-east-1';
+  let region = 'us-east-1';
   let port = 3306;
   const database = 'default_db';
   let host = 'localhost';
   const identifier = `integtest${db_identifier}`;
+  const apiName = 'rdsapi';
 
   let projRoot;
 
   beforeAll(async () => {
-    await setupDatabase();
+    await initProjectAndImportSchema();
   });
 
   afterAll(async () => {
@@ -112,12 +114,14 @@ describe('RDS Tests', () => {
     await deleteDBInstance(identifier, region);
   };
 
-  it('import workflow of mysql relational database with public access', async () => {
-    const apiName = 'rdsapi';
+  const initProjectAndImportSchema = async (): Promise<void> => {
     await initJSProjectWithProfile(projRoot, {
       disableAmplifyAppCreation: false,
     });
-    const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+
+    const metaAfterInit = getProjectMeta(projRoot);
+    region = metaAfterInit.providers.awscloudformation.Region;
+    await setupDatabase();
 
     await addApiWithoutSchema(projRoot, { transformerVersion: 2, apiName });
 
@@ -130,6 +134,10 @@ describe('RDS Tests', () => {
       useVpc: true,
       apiExists: true,
     });
+  };
+
+  it('import workflow of mysql relational database with public access', async () => {
+    const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
 
     const schemaContent = readFileSync(rdsSchemaFilePath, 'utf8');
     const schema = parse(schemaContent);

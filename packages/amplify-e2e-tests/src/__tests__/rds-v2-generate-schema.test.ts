@@ -13,6 +13,7 @@ import {
   apiGenerateSchema,
   apiGenerateSchemaWithError,
   getIpRanges,
+  getProjectMeta,
 } from 'amplify-category-api-e2e-core';
 import axios from 'axios';
 import { existsSync, readFileSync, writeFileSync } from 'fs-extra';
@@ -28,7 +29,7 @@ describe('RDS Generate Schema tests', () => {
   // Generate settings for RDS instance
   const username = db_user;
   const password = db_password;
-  const region = 'us-east-1';
+  let region = 'us-east-1';
   let port = 3306;
   const database = 'default_db';
   let host = 'localhost';
@@ -42,12 +43,15 @@ describe('RDS Generate Schema tests', () => {
     const url = 'http://api.ipify.org/';
     const response = await axios(url);
     publicIpCidr = `${response.data.trim()}/32`;
-    await setupDatabase();
 
     projRoot = await createNewProjectDir('rdsimportapi');
     await initJSProjectWithProfile(projRoot, {
       disableAmplifyAppCreation: false,
     });
+
+    const metaAfterInit = getProjectMeta(projRoot);
+    region = metaAfterInit.providers.awscloudformation.Region;
+    await setupDatabase();
 
     await addApiWithoutSchema(projRoot, { transformerVersion: 2, apiName });
 

@@ -35,7 +35,7 @@ describe('RDS Relational Directives', () => {
   // Generate settings for RDS instance
   const username = db_user;
   const password = db_password;
-  const region = 'us-east-1';
+  let region = 'us-east-1';
   let port = 3306;
   const database = 'default_db';
   let host = 'localhost';
@@ -47,7 +47,6 @@ describe('RDS Relational Directives', () => {
 
   beforeAll(async () => {
     projRoot = await createNewProjectDir('rdsmodelapi');
-    await setupDatabase();
     await initProjectAndImportSchema();
     await amplifyPush(projRoot);
 
@@ -174,6 +173,11 @@ describe('RDS Relational Directives', () => {
       disableAmplifyAppCreation: false,
       name: projName,
     });
+
+    const metaAfterInit = getProjectMeta(projRoot);
+    region = metaAfterInit.providers.awscloudformation.Region;
+    await setupDatabase();
+
     const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
 
     await addApiWithoutSchema(projRoot, { transformerVersion: 2, apiName });
