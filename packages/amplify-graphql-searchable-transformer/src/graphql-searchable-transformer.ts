@@ -389,7 +389,9 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       context.resolvers.addResolver(typeName, def.fieldName, resolver);
     }
 
-    createStackOutputs(stack, domain.domainEndpoint, context.api.apiId, domain.domainArn);
+    if (context.transformParameters.enableTransformerCfnOutputs) {
+      createStackOutputs(stack, domain.domainEndpoint, context.api.apiId, domain.domainArn);
+    }
   };
 
   object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider): void => {

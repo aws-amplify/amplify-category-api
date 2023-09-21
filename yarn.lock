@@ -491,17 +491,6 @@
     "@graphql-tools/apollo-engine-loader" "^8.0.0"
     graphql "^15.5.0"
 
-"@aws-amplify/graphql-model-transformer@2.1.2":
-  version "2.1.2"
-  resolved "https://registry.npmjs.org/@aws-amplify/graphql-model-transformer/-/graphql-model-transformer-2.1.2.tgz#d340bcc7a1940d12bd00f02f8b792e9a065f06ee"
-  integrity sha512-AwjFN+RfPDRbPAPslu6eDtI/bPT2F2rFeXktD31gB+nzE9xtwPoR3Se1/87OwsnJx7owMA7AftB7EwEAhtm6wQ==
-  dependencies:
-    "@aws-amplify/graphql-transformer-core" "2.1.2"
-    "@aws-amplify/graphql-transformer-interfaces" "3.1.2"
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.12"
-    graphql-transformer-common "4.25.1"
-
 "@aws-amplify/graphql-types-generator@3.4.0":
   version "3.4.0"
   resolved "https://registry.npmjs.org/@aws-amplify/graphql-types-generator/-/graphql-types-generator-3.4.0.tgz#f321fd3c6ba06cd277450f9acc1a4997f6fd987f"

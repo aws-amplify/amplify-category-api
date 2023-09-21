@@ -1570,6 +1570,7 @@ const partialSchemaTranslationBehavior: PartialSchemaTranslationBehavior = { ...
 | <code><a href="#@aws-amplify/graphql-construct-alpha.PartialSchemaTranslationBehavior.property.disableResolverDeduping">disableResolverDeduping</a></code> | <code>boolean</code> | Disable resolver deduping, this can sometimes cause problems because dedupe ordering isn't stable today, which can lead to circular dependencies across stacks if models are reordered. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.PartialSchemaTranslationBehavior.property.enableAutoIndexQueryNames">enableAutoIndexQueryNames</a></code> | <code>boolean</code> | Automate generation of query names, and as a result attaching all indexes as queries to the generated API. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.PartialSchemaTranslationBehavior.property.enableSearchNodeToNodeEncryption">enableSearchNodeToNodeEncryption</a></code> | <code>boolean</code> | If enabled, set nodeToNodeEncryption on the searchable domain (if one exists). |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.PartialSchemaTranslationBehavior.property.enableTransformerCfnOutputs">enableTransformerCfnOutputs</a></code> | <code>boolean</code> | When enabled, internal cfn outputs which existed in Amplify-generated apps will continue to be emitted. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.PartialSchemaTranslationBehavior.property.populateOwnerFieldForStaticGroupAuth">populateOwnerFieldForStaticGroupAuth</a></code> | <code>boolean</code> | Ensure that the owner field is still populated even if a static iam or group authorization applies. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.PartialSchemaTranslationBehavior.property.respectPrimaryKeyAttributesOnConnectionField">respectPrimaryKeyAttributesOnConnectionField</a></code> | <code>boolean</code> | Enable custom primary key support, there's no good reason to disable this unless trying not to update a legacy app. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.PartialSchemaTranslationBehavior.property.sandboxModeEnabled">sandboxModeEnabled</a></code> | <code>boolean</code> | Enabling sandbox mode will enable api key auth on all models in the transformed schema. |
@@ -1587,6 +1588,7 @@ public readonly disableResolverDeduping: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 Disable resolver deduping, this can sometimes cause problems because dedupe ordering isn't stable today, which can lead to circular dependencies across stacks if models are reordered.
 
@@ -1599,6 +1601,7 @@ public readonly enableAutoIndexQueryNames: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 Automate generation of query names, and as a result attaching all indexes as queries to the generated API.
 
@@ -1613,6 +1616,7 @@ public readonly enableSearchNodeToNodeEncryption: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* false
 
 If enabled, set nodeToNodeEncryption on the searchable domain (if one exists).
 
@@ -1623,6 +1627,19 @@ to use `Object.values(resources.additionalResources['AWS::Elasticsearch::Domain'
 
 ---
 
+##### `enableTransformerCfnOutputs`<sup>Optional</sup> <a name="enableTransformerCfnOutputs" id="@aws-amplify/graphql-construct-alpha.PartialSchemaTranslationBehavior.property.enableTransformerCfnOutputs"></a>
+
+```typescript
+public readonly enableTransformerCfnOutputs: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+When enabled, internal cfn outputs which existed in Amplify-generated apps will continue to be emitted.
+
+---
+
 ##### `populateOwnerFieldForStaticGroupAuth`<sup>Optional</sup> <a name="populateOwnerFieldForStaticGroupAuth" id="@aws-amplify/graphql-construct-alpha.PartialSchemaTranslationBehavior.property.populateOwnerFieldForStaticGroupAuth"></a>
 
 ```typescript
@@ -1630,6 +1647,7 @@ public readonly populateOwnerFieldForStaticGroupAuth: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 Ensure that the owner field is still populated even if a static iam or group authorization applies.
 
@@ -1642,6 +1660,7 @@ public readonly respectPrimaryKeyAttributesOnConnectionField: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 Enable custom primary key support, there's no good reason to disable this unless trying not to update a legacy app.
 
@@ -1654,6 +1673,7 @@ public readonly sandboxModeEnabled: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* false
 
 Enabling sandbox mode will enable api key auth on all models in the transformed schema.
 
@@ -1666,6 +1686,7 @@ public readonly secondaryKeyAsGSI: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 If disabled, generated.
 
@@ -1678,6 +1699,7 @@ public readonly shouldDeepMergeDirectiveConfigDefaults: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 Restore parity w/ GQLv1.
 
@@ -1690,6 +1712,7 @@ public readonly suppressApiKeyGeneration: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* false
 
 If enabled, disable api key resource generation even if specified as an auth rule on the construct.
 
@@ -1704,6 +1727,7 @@ public readonly useSubUsernameForDefaultIdentityClaim: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 Ensure that oidc and userPool auth use the `sub` field in the for the username field, which disallows new users with the same id to access data from a deleted user in the pool.
 
@@ -1820,6 +1844,7 @@ const schemaTranslationBehavior: SchemaTranslationBehavior = { ... }
 | <code><a href="#@aws-amplify/graphql-construct-alpha.SchemaTranslationBehavior.property.disableResolverDeduping">disableResolverDeduping</a></code> | <code>boolean</code> | Disable resolver deduping, this can sometimes cause problems because dedupe ordering isn't stable today, which can lead to circular dependencies across stacks if models are reordered. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.SchemaTranslationBehavior.property.enableAutoIndexQueryNames">enableAutoIndexQueryNames</a></code> | <code>boolean</code> | Automate generation of query names, and as a result attaching all indexes as queries to the generated API. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.SchemaTranslationBehavior.property.enableSearchNodeToNodeEncryption">enableSearchNodeToNodeEncryption</a></code> | <code>boolean</code> | If enabled, set nodeToNodeEncryption on the searchable domain (if one exists). |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.SchemaTranslationBehavior.property.enableTransformerCfnOutputs">enableTransformerCfnOutputs</a></code> | <code>boolean</code> | When enabled, internal cfn outputs which existed in Amplify-generated apps will continue to be emitted. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.SchemaTranslationBehavior.property.populateOwnerFieldForStaticGroupAuth">populateOwnerFieldForStaticGroupAuth</a></code> | <code>boolean</code> | Ensure that the owner field is still populated even if a static iam or group authorization applies. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.SchemaTranslationBehavior.property.respectPrimaryKeyAttributesOnConnectionField">respectPrimaryKeyAttributesOnConnectionField</a></code> | <code>boolean</code> | Enable custom primary key support, there's no good reason to disable this unless trying not to update a legacy app. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.SchemaTranslationBehavior.property.sandboxModeEnabled">sandboxModeEnabled</a></code> | <code>boolean</code> | Enabling sandbox mode will enable api key auth on all models in the transformed schema. |
@@ -1837,6 +1862,7 @@ public readonly disableResolverDeduping: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 Disable resolver deduping, this can sometimes cause problems because dedupe ordering isn't stable today, which can lead to circular dependencies across stacks if models are reordered.
 
@@ -1849,6 +1875,7 @@ public readonly enableAutoIndexQueryNames: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 Automate generation of query names, and as a result attaching all indexes as queries to the generated API.
 
@@ -1863,6 +1890,7 @@ public readonly enableSearchNodeToNodeEncryption: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* false
 
 If enabled, set nodeToNodeEncryption on the searchable domain (if one exists).
 
@@ -1873,6 +1901,19 @@ to use `Object.values(resources.additionalResources['AWS::Elasticsearch::Domain'
 
 ---
 
+##### `enableTransformerCfnOutputs`<sup>Required</sup> <a name="enableTransformerCfnOutputs" id="@aws-amplify/graphql-construct-alpha.SchemaTranslationBehavior.property.enableTransformerCfnOutputs"></a>
+
+```typescript
+public readonly enableTransformerCfnOutputs: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+When enabled, internal cfn outputs which existed in Amplify-generated apps will continue to be emitted.
+
+---
+
 ##### `populateOwnerFieldForStaticGroupAuth`<sup>Required</sup> <a name="populateOwnerFieldForStaticGroupAuth" id="@aws-amplify/graphql-construct-alpha.SchemaTranslationBehavior.property.populateOwnerFieldForStaticGroupAuth"></a>
 
 ```typescript
@@ -1880,6 +1921,7 @@ public readonly populateOwnerFieldForStaticGroupAuth: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 Ensure that the owner field is still populated even if a static iam or group authorization applies.
 
@@ -1892,6 +1934,7 @@ public readonly respectPrimaryKeyAttributesOnConnectionField: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 Enable custom primary key support, there's no good reason to disable this unless trying not to update a legacy app.
 
@@ -1904,6 +1947,7 @@ public readonly sandboxModeEnabled: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* false
 
 Enabling sandbox mode will enable api key auth on all models in the transformed schema.
 
@@ -1916,6 +1960,7 @@ public readonly secondaryKeyAsGSI: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 If disabled, generated.
 
@@ -1928,6 +1973,7 @@ public readonly shouldDeepMergeDirectiveConfigDefaults: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 Restore parity w/ GQLv1.
 
@@ -1940,6 +1986,7 @@ public readonly suppressApiKeyGeneration: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* false
 
 If enabled, disable api key resource generation even if specified as an auth rule on the construct.
 
@@ -1954,6 +2001,7 @@ public readonly useSubUsernameForDefaultIdentityClaim: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* true
 
 Ensure that oidc and userPool auth use the `sub` field in the for the username field, which disallows new users with the same id to access data from a deleted user in the pool.
 

@@ -221,7 +221,7 @@ export class GraphQLTransform {
     // Warning: (ae-forgotten-export) The symbol "GraphQLApi" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    protected generateGraphQlApi(stackManager: StackManagerProvider, synthParameters: SynthParameters, output: TransformerOutput): GraphQLApi;
+    protected generateGraphQlApi(stackManager: StackManagerProvider, synthParameters: SynthParameters, output: TransformerOutput, transformParameters: TransformParameters): GraphQLApi;
     // (undocumented)
     getLogs(): TransformerLog[];
     // (undocumented)

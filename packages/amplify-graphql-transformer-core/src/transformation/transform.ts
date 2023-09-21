@@ -304,7 +304,7 @@ export class GraphQLTransform {
 
     // Synth the API and make it available to allow transformer plugins to manipulate the API
     const output: TransformerOutput = context.output as TransformerOutput;
-    const api = this.generateGraphQlApi(context.stackManager, context.synthParameters, output);
+    const api = this.generateGraphQlApi(context.stackManager, context.synthParameters, output, context.transformParameters);
 
     // generate resolvers
     (context as TransformerContext).bind(api);
@@ -340,6 +340,7 @@ export class GraphQLTransform {
     stackManager: StackManagerProvider,
     synthParameters: SynthParameters,
     output: TransformerOutput,
+    transformParameters: TransformParameters,
   ): GraphQLApi {
     // Todo: Move this to its own transformer plugin to support modifying the API
     // Like setting the auth mode and enabling logging and such
@@ -377,24 +378,29 @@ export class GraphQLTransform {
         expires: apiKeyExpirationDays,
       });
 
-      new CfnOutput(Stack.of(scope), 'GraphQLAPIKeyOutput', {
-        value: apiKey.attrApiKey,
+      if (transformParameters.enableTransformerCfnOutputs) {
+        new CfnOutput(Stack.of(scope), 'GraphQLAPIKeyOutput', {
+          value: apiKey.attrApiKey,
+          description: 'Your GraphQL API ID.',
+          exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiKey']),
+        });
+      }
+    }
+
+    if (transformParameters.enableTransformerCfnOutputs) {
+      new CfnOutput(Stack.of(scope), 'GraphQLAPIIdOutput', {
+        value: api.apiId,
         description: 'Your GraphQL API ID.',
-        exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiKey']),
+        exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiId']),
+      });
+
+      new CfnOutput(Stack.of(scope), 'GraphQLAPIEndpointOutput', {
+        value: api.graphqlUrl,
+        description: 'Your GraphQL API endpoint.',
+        exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiEndpoint']),
       });
     }
 
-    new CfnOutput(Stack.of(scope), 'GraphQLAPIIdOutput', {
-      value: api.apiId,
-      description: 'Your GraphQL API ID.',
-      exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiId']),
-    });
-
-    new CfnOutput(Stack.of(scope), 'GraphQLAPIEndpointOutput', {
-      value: api.graphqlUrl,
-      description: 'Your GraphQL API endpoint.',
-      exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiEndpoint']),
-    });
     api.addToSchema(output.buildSchema());
     return api;
   }
