@@ -136,7 +136,6 @@ export class BelongsToTransformer extends TransformerPluginBase {
       .forEach((config) => {
         const modelName = config.object.name.value;
         if (isRDSModel(context as TransformerContextProvider, modelName)) {
-          setFieldMappingResolverReference(context, config.relatedType?.name?.value, modelName, config.field.name.value, true);
           return;
         }
         // a belongsTo with hasOne behaves the same as hasOne
