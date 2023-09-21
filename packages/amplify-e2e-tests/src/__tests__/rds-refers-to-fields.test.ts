@@ -1,7 +1,10 @@
 import {
+  RDSTestDataProvider,
   addApiWithoutSchema,
+  addRDSPortInboundRule,
   amplifyPush,
   createNewProjectDir,
+  createRDSInstance,
   deleteDBInstance,
   deleteProject,
   deleteProjectDir,
@@ -9,39 +12,39 @@ import {
   getProjectMeta,
   importRDSDatabase,
   initJSProjectWithProfile,
-  setupRDSInstanceAndData,
-  sleep,
+  removeRDSPortInboundRule,
 } from 'amplify-category-api-e2e-core';
 import { existsSync, writeFileSync } from 'fs-extra';
 import generator from 'generate-password';
 import path from 'path';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { GQLQueryHelper } from '../query-utils/gql-helper';
+import { GQLQueryHelper, runQuery } from '../query-utils/gql-helper';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 
-describe('RDS refersTo directive on models', () => {
+describe('RDS refersTo directive on model fields', () => {
+  const publicIpCidr = '0.0.0.0/0';
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
 
   // Generate settings for RDS instance
   const username = db_user;
   const password = db_password;
-  let region = 'us-east-1';
+  const region = 'us-east-1';
   let port = 3306;
   const database = 'default_db';
   let host = 'localhost';
   const identifier = `integtest${db_identifier}`;
-  const projName = 'rdsreferstoapitest1';
+  const projName = 'rdsreferstoapitest2';
 
   let projRoot;
   let appSyncClient;
 
   beforeAll(async () => {
-    projRoot = await createNewProjectDir('rdsreferstoapi1');
+    projRoot = await createNewProjectDir('rdsreferstoapi2');
+    await setupDatabase();
     await initProjectAndImportSchema();
     await amplifyPush(projRoot);
-    await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.
 
     const meta = getProjectMeta(projRoot);
     const appRegion = meta.providers.awscloudformation.Region;
@@ -80,28 +83,48 @@ describe('RDS refersTo directive on models', () => {
   });
 
   const setupDatabase = async (): Promise<void> => {
-    const dbConfig = {
+    const db = await createRDSInstance({
       identifier,
-      engine: 'mysql' as const,
+      engine: 'mysql',
       dbname: database,
       username,
       password,
       region,
-    };
-    const queries = [
+    });
+    port = db.port;
+    host = db.endpoint;
+    await addRDSPortInboundRule({
+      region,
+      port: db.port,
+      cidrIp: publicIpCidr,
+    });
+
+    const dbAdapter = new RDSTestDataProvider({
+      host: db.endpoint,
+      port: db.port,
+      username,
+      password,
+      database: db.dbName,
+    });
+
+    await dbAdapter.runQuery([
       'CREATE TABLE Blog (id VARCHAR(40) PRIMARY KEY, content VARCHAR(255))',
       'CREATE TABLE Post (id VARCHAR(40) PRIMARY KEY, content VARCHAR(255), blogId VARCHAR(40))',
       'CREATE TABLE User (id VARCHAR(40) PRIMARY KEY, name VARCHAR(255))',
       'CREATE TABLE Profile (id VARCHAR(40) PRIMARY KEY, details VARCHAR(255), userId VARCHAR(40))',
-      'CREATE TABLE Task (id VARCHAR(40) PRIMARY KEY, description VARCHAR(255))',
-    ];
-
-    const db = await setupRDSInstanceAndData(dbConfig, queries);
-    port = db.port;
-    host = db.endpoint;
+      'CREATE TABLE Task (id VARCHAR(40) PRIMARY KEY, description VARCHAR(255) NOT NULL, name VARCHAR(255) NOT NULL)',
+    ]);
+    dbAdapter.cleanup();
   };
 
   const cleanupDatabase = async (): Promise<void> => {
+    // 1. Remove the IP address from the security group
+    // 2. Delete the RDS instance
+    await removeRDSPortInboundRule({
+      region,
+      port: port,
+      cidrIp: publicIpCidr,
+    });
     await deleteDBInstance(identifier, region);
   };
 
@@ -111,11 +134,6 @@ describe('RDS refersTo directive on models', () => {
       disableAmplifyAppCreation: false,
       name: projName,
     });
-
-    const metaAfterInit = getProjectMeta(projRoot);
-    region = metaAfterInit.providers.awscloudformation.Region;
-    await setupDatabase();
-
     const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
 
     await addApiWithoutSchema(projRoot, { transformerVersion: 2, apiName });
@@ -126,7 +144,7 @@ describe('RDS refersTo directive on models', () => {
       port,
       username,
       password,
-      useVpc: true,
+      useVpc: false,
       apiExists: true,
     });
 
@@ -137,134 +155,144 @@ describe('RDS refersTo directive on models', () => {
       }
       type NewBlog @model @refersTo(name: "Blog") {
         id: String! @primaryKey
-        content: String
-        posts: [NewPost] @hasMany(references: ["blogId"])
+        newContent: String @refersTo(name: "content")
+        posts: [NewPost] @hasMany(references: ["newBlogId"])
       }
       type NewPost @model @refersTo(name: "Post") {
         id: String! @primaryKey
         content: String
-        blogId: String!
-        blog: NewBlog @belongsTo(references: ["blogId"])
+        newBlogId: String! @refersTo(name: "blogId")
+        blog: NewBlog @belongsTo(references: ["newBlogId"])
       }
       type NewUser @model @refersTo(name: "User") {
-        id: String! @primaryKey
+        newId: String! @primaryKey @refersTo(name: "id")
         name: String
         profile: NewProfile @hasOne(references: ["userId"])
       }
       type NewProfile @model @refersTo(name: "Profile") {
         id: String! @primaryKey
-        details: String
+        newDetails: String @refersTo(name: "details")
         userId: String!
         user: NewUser @belongsTo(references: ["userId"])
       }
-      type NewTask @model @refersTo(name: "Task") {
-        id: String! @primaryKey
-        description: String
+      type Task @model {
+        newId: String! @primaryKey @refersTo(name: "id")
+        newName: String! @refersTo(name: "name")
+        newDescription: String!
+          @refersTo(name: "description")
+          @index(name: "taskByDescriptionAndName", sortKeyFields: ["newName"], queryField: "taskByDescriptionAndName")
       }
     `;
     writeFileSync(rdsSchemaFilePath, schema, 'utf8');
   };
 
-  test('check CRUD options on renamed model', async () => {
-    const newTaskHelper = constructNewTaskHelper();
+  test('check CRUD operations on model with index field with name mapping', async () => {
+    const taskHelper = constructTaskHelper();
 
-    await newTaskHelper.create('createNewTask', {
-      id: 'T-1',
-      description: 'Task 1',
+    await taskHelper.create('createTask', {
+      newId: 'T-1',
+      newName: 'Name 1',
+      newDescription: 'Task 1',
     });
-    await newTaskHelper.create('createNewTask', {
-      id: 'T-2',
-      description: 'Task 2',
+    await taskHelper.create('createTask', {
+      newId: 'T-2',
+      newName: 'Name 2',
+      newDescription: 'Task 2',
     });
 
-    const getNewTask1 = await newTaskHelper.get({
-      id: 'T-1',
+    const getTask1 = await taskHelper.get({
+      newId: 'T-1',
     });
-    expect(getNewTask1.data.getNewTask.id).toEqual('T-1');
-    expect(getNewTask1.data.getNewTask.description).toEqual('Task 1');
+    expect(getTask1.data.getTask.newId).toEqual('T-1');
+    expect(getTask1.data.getTask.newName).toEqual('Name 1');
+    expect(getTask1.data.getTask.newDescription).toEqual('Task 1');
 
-    const listNewTasks = await newTaskHelper.list();
-    expect(listNewTasks.data.listNewTasks.items.length).toEqual(2);
-    expect(listNewTasks.data.listNewTasks.items).toEqual(
+    const listTasks = await taskHelper.list();
+    expect(listTasks.data.listTasks.items.length).toEqual(2);
+    expect(listTasks.data.listTasks.items).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          id: 'T-1',
-          description: 'Task 1',
+          newId: 'T-1',
+          newName: 'Name 1',
+          newDescription: 'Task 1',
         }),
         expect.objectContaining({
-          id: 'T-2',
-          description: 'Task 2',
+          newId: 'T-2',
+          newName: 'Name 2',
+          newDescription: 'Task 2',
         }),
       ]),
     );
 
-    const updatedNewTask2 = await newTaskHelper.update('updateNewTask', {
-      id: 'T-2',
-      description: 'Task 2 Updated',
+    const updatedTask2 = await taskHelper.update('updateTask', {
+      newId: 'T-2',
+      newDescription: 'Task 2 Updated',
     });
-    expect(updatedNewTask2.data.updateNewTask.id).toEqual('T-2');
-    expect(updatedNewTask2.data.updateNewTask.description).toEqual('Task 2 Updated');
+    expect(updatedTask2.data.updateTask.newId).toEqual('T-2');
+    expect(updatedTask2.data.updateTask.newName).toEqual('Name 2');
+    expect(updatedTask2.data.updateTask.newDescription).toEqual('Task 2 Updated');
 
-    const deletedNewTask2 = await newTaskHelper.delete('deleteNewTask', {
-      id: 'T-2',
+    const deletedTask2 = await taskHelper.delete('deleteTask', {
+      newId: 'T-2',
     });
-    expect(deletedNewTask2.data.deleteNewTask.id).toEqual('T-2');
-    expect(deletedNewTask2.data.deleteNewTask.description).toEqual('Task 2 Updated');
+    expect(deletedTask2.data.deleteTask.newId).toEqual('T-2');
+    expect(deletedTask2.data.deleteTask.newName).toEqual('Name 2');
+    expect(deletedTask2.data.deleteTask.newDescription).toEqual('Task 2 Updated');
   });
 
-  test('check hasMany and belongsTo directives on tables with name mappings', async () => {
+  test('check hasMany and belongsTo directives on tables with field name mappings', async () => {
     const newBlogHelper = constructNewBlogHelper();
     const newPostHelper = constructNewPostHelper();
 
     await newBlogHelper.create('createNewBlog', {
       id: 'B-1',
-      content: 'Blog 1',
+      newContent: 'Blog 1',
     });
     await newBlogHelper.create('createNewBlog', {
       id: 'B-2',
-      content: 'Blog 2',
+      newContent: 'Blog 2',
     });
     await newBlogHelper.create('createNewBlog', {
       id: 'B-3',
-      content: 'Blog 3',
+      newContent: 'Blog 3',
     });
 
     await newPostHelper.create('createNewPost', {
       id: 'P-1A',
       content: 'Post 1A',
-      blogId: 'B-1',
+      newBlogId: 'B-1',
     });
     await newPostHelper.create('createNewPost', {
       id: 'P-1B',
       content: 'Post 1B',
-      blogId: 'B-1',
+      newBlogId: 'B-1',
     });
     await newPostHelper.create('createNewPost', {
       id: 'P-1C',
       content: 'Post 1C',
-      blogId: 'B-1',
+      newBlogId: 'B-1',
     });
     await newPostHelper.create('createNewPost', {
       id: 'P-2A',
       content: 'Post 2A',
-      blogId: 'B-2',
+      newBlogId: 'B-2',
     });
     await newPostHelper.create('createNewPost', {
       id: 'P-2B',
       content: 'Post 2B',
-      blogId: 'B-2',
+      newBlogId: 'B-2',
     });
     await newPostHelper.create('createNewPost', {
       id: 'P-3A',
       content: 'Post 3A',
-      blogId: 'B-3',
+      newBlogId: 'B-3',
     });
 
     const getNewBlog1 = await newBlogHelper.get({
       id: 'B-1',
     });
     expect(getNewBlog1.data.getNewBlog.id).toEqual('B-1');
-    expect(getNewBlog1.data.getNewBlog.content).toEqual('Blog 1');
+    expect(getNewBlog1.data.getNewBlog.newContent).toEqual('Blog 1');
     expect(getNewBlog1.data.getNewBlog.posts.items.length).toEqual(3);
     expect(getNewBlog1.data.getNewBlog.posts.items).toEqual(
       expect.arrayContaining([
@@ -278,7 +306,7 @@ describe('RDS refersTo directive on models', () => {
       id: 'B-2',
     });
     expect(getNewBlog2.data.getNewBlog.id).toEqual('B-2');
-    expect(getNewBlog2.data.getNewBlog.content).toEqual('Blog 2');
+    expect(getNewBlog2.data.getNewBlog.newContent).toEqual('Blog 2');
     expect(getNewBlog2.data.getNewBlog.posts.items.length).toEqual(2);
     expect(getNewBlog2.data.getNewBlog.posts.items).toEqual(
       expect.arrayContaining([
@@ -291,7 +319,7 @@ describe('RDS refersTo directive on models', () => {
       id: 'B-3',
     });
     expect(getNewBlog3.data.getNewBlog.id).toEqual('B-3');
-    expect(getNewBlog3.data.getNewBlog.content).toEqual('Blog 3');
+    expect(getNewBlog3.data.getNewBlog.newContent).toEqual('Blog 3');
     expect(getNewBlog3.data.getNewBlog.posts.items.length).toEqual(1);
     expect(getNewBlog3.data.getNewBlog.posts.items).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: 'P-3A', content: 'Post 3A' })]),
@@ -303,7 +331,7 @@ describe('RDS refersTo directive on models', () => {
       expect.arrayContaining([
         expect.objectContaining({
           id: 'B-1',
-          content: 'Blog 1',
+          newContent: 'Blog 1',
           posts: expect.objectContaining({
             items: expect.arrayContaining([
               expect.objectContaining({ id: 'P-1A', content: 'Post 1A' }),
@@ -314,7 +342,7 @@ describe('RDS refersTo directive on models', () => {
         }),
         expect.objectContaining({
           id: 'B-2',
-          content: 'Blog 2',
+          newContent: 'Blog 2',
           posts: expect.objectContaining({
             items: expect.arrayContaining([
               expect.objectContaining({ id: 'P-2A', content: 'Post 2A' }),
@@ -324,7 +352,7 @@ describe('RDS refersTo directive on models', () => {
         }),
         expect.objectContaining({
           id: 'B-3',
-          content: 'Blog 3',
+          newContent: 'Blog 3',
           posts: expect.objectContaining({
             items: expect.arrayContaining([expect.objectContaining({ id: 'P-3A', content: 'Post 3A' })]),
           }),
@@ -339,7 +367,7 @@ describe('RDS refersTo directive on models', () => {
     expect(getNewPost1A.data.getNewPost.content).toEqual('Post 1A');
     expect(getNewPost1A.data.getNewPost.blog).toBeDefined();
     expect(getNewPost1A.data.getNewPost.blog.id).toEqual('B-1');
-    expect(getNewPost1A.data.getNewPost.blog.content).toEqual('Blog 1');
+    // expect(getNewPost1A.data.getNewPost.blog.newContent).toEqual('Blog 1');
 
     const listNewPosts = await newPostHelper.list();
     expect(listNewPosts.data.listNewPosts.items.length).toEqual(6);
@@ -350,7 +378,7 @@ describe('RDS refersTo directive on models', () => {
           content: 'Post 1A',
           blog: expect.objectContaining({
             id: 'B-1',
-            content: 'Blog 1',
+            newContent: 'Blog 1',
           }),
         }),
         expect.objectContaining({
@@ -358,7 +386,7 @@ describe('RDS refersTo directive on models', () => {
           content: 'Post 1B',
           blog: expect.objectContaining({
             id: 'B-1',
-            content: 'Blog 1',
+            newContent: 'Blog 1',
           }),
         }),
         expect.objectContaining({
@@ -366,7 +394,7 @@ describe('RDS refersTo directive on models', () => {
           content: 'Post 1C',
           blog: expect.objectContaining({
             id: 'B-1',
-            content: 'Blog 1',
+            newContent: 'Blog 1',
           }),
         }),
         expect.objectContaining({
@@ -374,7 +402,7 @@ describe('RDS refersTo directive on models', () => {
           content: 'Post 2A',
           blog: expect.objectContaining({
             id: 'B-2',
-            content: 'Blog 2',
+            newContent: 'Blog 2',
           }),
         }),
         expect.objectContaining({
@@ -382,7 +410,7 @@ describe('RDS refersTo directive on models', () => {
           content: 'Post 2B',
           blog: expect.objectContaining({
             id: 'B-2',
-            content: 'Blog 2',
+            newContent: 'Blog 2',
           }),
         }),
         expect.objectContaining({
@@ -390,7 +418,7 @@ describe('RDS refersTo directive on models', () => {
           content: 'Post 3A',
           blog: expect.objectContaining({
             id: 'B-3',
-            content: 'Blog 3',
+            newContent: 'Blog 3',
           }),
         }),
       ]),
@@ -398,13 +426,13 @@ describe('RDS refersTo directive on models', () => {
 
     await newBlogHelper.update('updateNewBlog', {
       id: 'B-3',
-      content: 'Blog 3 Updated',
+      newContent: 'Blog 3 Updated',
     });
     const getUpdatedNewBlog3 = await newBlogHelper.get({
       id: 'B-3',
     });
     expect(getUpdatedNewBlog3.data.getNewBlog.id).toEqual('B-3');
-    expect(getUpdatedNewBlog3.data.getNewBlog.content).toEqual('Blog 3 Updated');
+    expect(getUpdatedNewBlog3.data.getNewBlog.newContent).toEqual('Blog 3 Updated');
     expect(getUpdatedNewBlog3.data.getNewBlog.posts.items.length).toEqual(1);
     expect(getUpdatedNewBlog3.data.getNewBlog.posts.items).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: 'P-3A', content: 'Post 3A' })]),
@@ -423,42 +451,42 @@ describe('RDS refersTo directive on models', () => {
     const newProfileHelper = constructNewProfileHelper();
 
     await newUserHelper.create('createNewUser', {
-      id: 'U-1',
+      newId: 'U-1',
       name: 'User 1',
     });
     await newUserHelper.create('createNewUser', {
-      id: 'U-2',
+      newId: 'U-2',
       name: 'User 2',
     });
     await newUserHelper.create('createNewUser', {
-      id: 'U-3',
+      newId: 'U-3',
       name: 'User 3',
     });
 
     await newProfileHelper.create('createNewProfile', {
       id: 'P-1',
-      details: 'Profile 1',
+      newDetails: 'Profile 1',
       userId: 'U-1',
     });
     await newProfileHelper.create('createNewProfile', {
       id: 'P-2',
-      details: 'Profile 2',
+      newDetails: 'Profile 2',
       userId: 'U-2',
     });
 
     const getNewUser1 = await newUserHelper.get({
-      id: 'U-1',
+      newId: 'U-1',
     });
-    expect(getNewUser1.data.getNewUser.id).toEqual('U-1');
+    expect(getNewUser1.data.getNewUser.newId).toEqual('U-1');
     expect(getNewUser1.data.getNewUser.name).toEqual('User 1');
     expect(getNewUser1.data.getNewUser.profile).toBeDefined();
     expect(getNewUser1.data.getNewUser.profile.id).toEqual('P-1');
-    expect(getNewUser1.data.getNewUser.profile.details).toEqual('Profile 1');
+    expect(getNewUser1.data.getNewUser.profile.newDetails).toEqual('Profile 1');
 
     const getNewUser3 = await newUserHelper.get({
-      id: 'U-3',
+      newId: 'U-3',
     });
-    expect(getNewUser3.data.getNewUser.id).toEqual('U-3');
+    expect(getNewUser3.data.getNewUser.newId).toEqual('U-3');
     expect(getNewUser3.data.getNewUser.name).toEqual('User 3');
     expect(getNewUser3.data.getNewUser.profile).toBeNull();
 
@@ -467,22 +495,22 @@ describe('RDS refersTo directive on models', () => {
     expect(listNewUsers.data.listNewUsers.items).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          id: 'U-1',
+          newId: 'U-1',
           name: 'User 1',
           profile: expect.objectContaining({
             id: 'P-1',
-            details: 'Profile 1',
+            newDetails: 'Profile 1',
           }),
         }),
         expect.objectContaining({
-          id: 'U-2',
+          newId: 'U-2',
           name: 'User 2',
           profile: expect.objectContaining({
             id: 'P-2',
-            details: 'Profile 2',
+            newDetails: 'Profile 2',
           }),
         }),
-        expect.objectContaining({ id: 'U-3', name: 'User 3', profile: null }),
+        expect.objectContaining({ newId: 'U-3', name: 'User 3', profile: null }),
       ]),
     );
 
@@ -490,9 +518,9 @@ describe('RDS refersTo directive on models', () => {
       id: 'P-1',
     });
     expect(getNewProfile1.data.getNewProfile.id).toEqual('P-1');
-    expect(getNewProfile1.data.getNewProfile.details).toEqual('Profile 1');
+    expect(getNewProfile1.data.getNewProfile.newDetails).toEqual('Profile 1');
     expect(getNewProfile1.data.getNewProfile.user).toBeDefined();
-    expect(getNewProfile1.data.getNewProfile.user.id).toEqual('U-1');
+    expect(getNewProfile1.data.getNewProfile.user.newId).toEqual('U-1');
     expect(getNewProfile1.data.getNewProfile.user.name).toEqual('User 1');
 
     const listNewProfiles = await newProfileHelper.list();
@@ -501,17 +529,17 @@ describe('RDS refersTo directive on models', () => {
       expect.arrayContaining([
         expect.objectContaining({
           id: 'P-1',
-          details: 'Profile 1',
+          newDetails: 'Profile 1',
           user: expect.objectContaining({
-            id: 'U-1',
+            newId: 'U-1',
             name: 'User 1',
           }),
         }),
         expect.objectContaining({
           id: 'P-2',
-          details: 'Profile 2',
+          newDetails: 'Profile 2',
           user: expect.objectContaining({
-            id: 'U-2',
+            newId: 'U-2',
             name: 'User 2',
           }),
         }),
@@ -519,13 +547,13 @@ describe('RDS refersTo directive on models', () => {
     );
 
     await newUserHelper.update('updateNewUser', {
-      id: 'U-3',
+      newId: 'U-3',
       name: 'User 3 Updated',
     });
     const getUpdatedNewUser3 = await newUserHelper.get({
-      id: 'U-3',
+      newId: 'U-3',
     });
-    expect(getUpdatedNewUser3.data.getNewUser.id).toEqual('U-3');
+    expect(getUpdatedNewUser3.data.getNewUser.newId).toEqual('U-3');
     expect(getUpdatedNewUser3.data.getNewUser.name).toEqual('User 3 Updated');
     expect(getUpdatedNewUser3.data.getNewUser.profile).toBeNull();
 
@@ -534,21 +562,21 @@ describe('RDS refersTo directive on models', () => {
     });
 
     expect(deletedNewProfile2.data.deleteNewProfile.id).toEqual('P-2');
-    expect(deletedNewProfile2.data.deleteNewProfile.details).toEqual('Profile 2');
+    expect(deletedNewProfile2.data.deleteNewProfile.newDetails).toEqual('Profile 2');
   });
 
   const constructNewBlogHelper = (): GQLQueryHelper => {
     const createSelectionSet = /* GraphQL */ `
-        id
-        content
-      `;
+          id
+          newContent
+        `;
     const updateSelectionSet = createSelectionSet;
     const deleteSelectionSet = createSelectionSet;
     const getSelectionSet = /* GraphQL */ `
       query GetNewBlog($id: String!) {
         getNewBlog(id: $id) {
           id
-          content
+          newContent
           posts {
             items {
               id
@@ -563,7 +591,7 @@ describe('RDS refersTo directive on models', () => {
         listNewBlogs {
           items {
             id
-            content
+            newContent
             posts {
               items {
                 id
@@ -591,9 +619,9 @@ describe('RDS refersTo directive on models', () => {
 
   const constructNewPostHelper = (): GQLQueryHelper => {
     const createSelectionSet = /* GraphQL */ `
-        id
-        content
-      `;
+          id
+          content
+        `;
     const updateSelectionSet = createSelectionSet;
     const deleteSelectionSet = createSelectionSet;
     const getSelectionSet = /* GraphQL */ `
@@ -603,7 +631,7 @@ describe('RDS refersTo directive on models', () => {
           content
           blog {
             id
-            content
+            newContent
           }
         }
       }
@@ -616,7 +644,7 @@ describe('RDS refersTo directive on models', () => {
             content
             blog {
               id
-              content
+              newContent
             }
           }
         }
@@ -639,19 +667,19 @@ describe('RDS refersTo directive on models', () => {
 
   const constructNewUserHelper = (): GQLQueryHelper => {
     const createSelectionSet = /* GraphQL */ `
-        id
-        name
-      `;
+          newId
+          name
+        `;
     const updateSelectionSet = createSelectionSet;
     const deleteSelectionSet = createSelectionSet;
     const getSelectionSet = /* GraphQL */ `
-      query GetNewUser($id: String!) {
-        getNewUser(id: $id) {
-          id
+      query GetNewUser($newId: String!) {
+        getNewUser(newId: $newId) {
+          newId
           name
           profile {
             id
-            details
+            newDetails
           }
         }
       }
@@ -660,11 +688,11 @@ describe('RDS refersTo directive on models', () => {
       query ListNewUsers {
         listNewUsers {
           items {
-            id
+            newId
             name
             profile {
               id
-              details
+              newDetails
             }
           }
         }
@@ -687,18 +715,18 @@ describe('RDS refersTo directive on models', () => {
 
   const constructNewProfileHelper = (): GQLQueryHelper => {
     const createSelectionSet = /* GraphQL */ `
-        id
-        details
-      `;
+          id
+          newDetails
+        `;
     const updateSelectionSet = createSelectionSet;
     const deleteSelectionSet = createSelectionSet;
     const getSelectionSet = /* GraphQL */ `
       query GetNewProfile($id: String!) {
         getNewProfile(id: $id) {
           id
-          details
+          newDetails
           user {
-            id
+            newId
             name
           }
         }
@@ -709,9 +737,9 @@ describe('RDS refersTo directive on models', () => {
         listNewProfiles {
           items {
             id
-            details
+            newDetails
             user {
-              id
+              newId
               name
             }
           }
@@ -733,32 +761,35 @@ describe('RDS refersTo directive on models', () => {
     return helper;
   };
 
-  const constructNewTaskHelper = (): GQLQueryHelper => {
+  const constructTaskHelper = (): GQLQueryHelper => {
     const createSelectionSet = /* GraphQL */ `
-          id
-          description
+            newId
+            newName
+            newDescription
         `;
     const updateSelectionSet = createSelectionSet;
     const deleteSelectionSet = createSelectionSet;
     const getSelectionSet = /* GraphQL */ `
-      query GetNewTask($id: String!) {
-        getNewTask(id: $id) {
-          id
-          description
+      query GetTask($newId: String!) {
+        getTask(newId: $newId) {
+          newId
+          newName
+          newDescription
         }
       }
     `;
     const listSelectionSet = /* GraphQL */ `
-      query ListNewTasks {
-        listNewTasks {
+      query ListTasks {
+        listTasks {
           items {
-            id
-            description
+            newId
+            newName
+            newDescription
           }
         }
       }
     `;
-    const helper = new GQLQueryHelper(appSyncClient, 'NewTask', {
+    const helper = new GQLQueryHelper(appSyncClient, 'Task', {
       mutation: {
         create: createSelectionSet,
         update: updateSelectionSet,

@@ -136,7 +136,6 @@ export class BelongsToTransformer extends TransformerPluginBase {
       .forEach((config) => {
         const modelName = config.object.name.value;
         if (isRDSModel(context as TransformerContextProvider, modelName)) {
-          setFieldMappingResolverReference(context, config.relatedType?.name?.value, modelName, config.field.name.value, true);
           return;
         }
         // a belongsTo with hasOne behaves the same as hasOne
@@ -148,6 +147,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
           relatedType: config.relatedType,
         });
       });
+    setFieldMappingReferences(context, this.directiveList);
   };
 
   transformSchema = (ctx: TransformerTransformSchemaStepContextProvider): void => {
@@ -220,4 +220,15 @@ const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerConte
       `${config.relatedType.name.value} must have a relationship with ${object.name.value} in order to use @${directiveName}.`,
     );
   }
+};
+
+const setFieldMappingReferences = (context: TransformerPrepareStepContextProvider, directiveList: BelongsToDirectiveConfiguration[]) => {
+  directiveList.forEach((config) => {
+    const modelName = config.object.name.value;
+    const areFieldMappingsSupported = isRDSModel(context as TransformerContextProvider, modelName);
+    if (!areFieldMappingsSupported) {
+      return;
+    }
+    setFieldMappingResolverReference(context, config.relatedType?.name?.value, modelName, config.field.name.value);
+  });
 };
