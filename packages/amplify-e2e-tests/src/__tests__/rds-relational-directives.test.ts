@@ -629,6 +629,7 @@ describe('RDS Relational Directives', () => {
       username,
       password,
       validCredentials: true,
+      useVpc: true,
     });
     const apiName = 'rdsrelationalapi';
     const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');

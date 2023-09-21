@@ -202,6 +202,7 @@ describe('RDS Generate Schema tests', () => {
       username,
       password,
       validCredentials: true,
+      useVpc: true,
     });
 
     // The re-generated schema preserves the edits that were made
@@ -269,6 +270,7 @@ describe('RDS Generate Schema tests', () => {
       username,
       password,
       validCredentials: true,
+      useVpc: true,
     });
 
     // The re-generated schema preserves the edits that were made
