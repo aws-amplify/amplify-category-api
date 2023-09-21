@@ -33,7 +33,7 @@ export class S3Client {
   }
 
   async putBucketVersioning(bucketName: string) {
-    return await promisify<S3.Types.PutBucketVersioningRequest, {}>(
+    return await promisify<S3.Types.PutBucketVersioningRequest, object>(
       this.client.putBucketVersioning,
       {
         Bucket: bucketName,
@@ -116,7 +116,7 @@ export class S3Client {
   }
 
   async deleteBucket(bucketName: string) {
-    return await promisify<S3.Types.DeleteBucketRequest, {}>(
+    return await promisify<S3.Types.DeleteBucketRequest, object>(
       this.client.deleteBucket,
       {
         Bucket: bucketName,

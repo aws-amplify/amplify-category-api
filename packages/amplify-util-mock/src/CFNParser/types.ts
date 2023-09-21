@@ -14,7 +14,7 @@ export type CloudFormationParseContext = {
 
 export type CloudFormationWalkContext = CloudFormationParseContext & {
   walkFn: Function;
-  parent: Object;
+  parent: object;
   path: string[];
 };
 

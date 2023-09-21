@@ -81,7 +81,7 @@ export function processConditions(conditions: CloudFormationConditions, processe
   return processedConditions;
 }
 
-export function getDependencyResources(node: object | any[], params: Record<string, any> = {}): string[] {
+export function getDependencyResources(node: object | any[] | string, params: Record<string, any> = {}): string[] {
   let result: string[] = [];
   if (typeof node === 'string') {
     return [];

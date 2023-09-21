@@ -18,7 +18,7 @@ export function amplifyOverrideRoot(cwd: string, settings: { testingWithLatestCo
   });
 }
 
-export function amplifyOverrideAuth(cwd: string, settings: {}) {
+export function amplifyOverrideAuth(cwd: string, settings: object) {
   return new Promise((resolve, reject) => {
     const args = ['override', 'auth'];
 

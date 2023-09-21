@@ -113,7 +113,7 @@ export class TransformerContext {
 
   private resolverConfig: ResolverConfig;
 
-  private transformerVersion: Number;
+  private transformerVersion: number;
 
   constructor(inputSDL: string, public readonly featureFlags: FeatureFlagProvider) {
     const isInputSDLEmpty = inputSDL.trim().length === 0;
@@ -759,11 +759,11 @@ export class TransformerContext {
     return this.resolverConfig;
   }
 
-  public setTransformerVersion(version: Number) {
+  public setTransformerVersion(version: number) {
     this.transformerVersion = version;
   }
 
-  public getTransformerVersion(): Number {
+  public getTransformerVersion(): number {
     return this.transformerVersion;
   }
 

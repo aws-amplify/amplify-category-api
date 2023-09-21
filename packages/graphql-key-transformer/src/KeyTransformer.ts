@@ -718,7 +718,7 @@ export class KeyTransformer extends Transformer {
     if (this.typeExist(tableXMutationConditionInputName, ctx)) {
       const tableXMutationConditionInput = <InputObjectTypeDefinitionNode>ctx.getType(tableXMutationConditionInputName);
 
-      const fieldNames = new Set<String>();
+      const fieldNames = new Set<string>();
 
       // Get PK for the type from @key directive or default to 'id'
       const getKeyFieldNames = (): void => {
@@ -1107,8 +1107,8 @@ function setSyncQueryMapSnippet(directive: DirectiveNode, isTable: boolean) {
   const args: KeyArguments = getDirectiveArguments(directive);
   const keys = args.fields;
   const expressions: Expression[] = [];
-  const index: String = isTable ? 'dbTable' : args.name;
-  let key: String = '';
+  const index: string = isTable ? 'dbTable' : args.name;
+  let key: string = '';
   if (keys.length === 1) {
     key = `${keys[0]}+null`;
   } else if (keys.length > 1) {

@@ -6,7 +6,7 @@ jest.mock('@aws-amplify/amplify-prompts');
 jest.mock('fs-extra');
 
 jest.mock('@aws-amplify/amplify-cli-core', () => ({
-  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
+  ...jest.requireActual('@aws-amplify/amplify-cli-core'),
   pathManager: {
     findProjectRoot: jest.fn().mockReturnValue('somePath'),
     getBackendDirPath: jest.fn().mockReturnValue('mockProjectPath'),

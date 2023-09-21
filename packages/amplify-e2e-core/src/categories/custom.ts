@@ -47,7 +47,7 @@ export function addCFNCustomResource(cwd: string, settings: any): Promise<void> 
   });
 }
 
-export function buildCustomResources(cwd: string, settings: {}) {
+export function buildCustomResources(cwd: string, settings: object) {
   return new Promise((resolve, reject) => {
     const args = ['custom', 'build'];
 

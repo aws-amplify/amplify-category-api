@@ -36,7 +36,7 @@ export interface ProjectOptions {
   disableFunctionOverrides?: boolean;
   disablePipelineFunctionOverrides?: boolean;
   disableResolverOverrides?: boolean;
-  buildParameters?: Object;
+  buildParameters?: object;
   featureFlags: FeatureFlagProvider;
   sanityCheckRules: SanityCheckRules;
 }
@@ -379,7 +379,7 @@ async function writeDeploymentToDisk(
   deployment: DeploymentResources,
   directory: string,
   rootStackFileName: string = 'rootStack.json',
-  buildParameters: Object,
+  buildParameters: object,
 ) {
   // Delete the last deployments resources.
   await emptyDirectory(directory);

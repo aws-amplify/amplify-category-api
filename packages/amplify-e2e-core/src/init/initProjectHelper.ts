@@ -97,7 +97,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
   });
 }
 
-export function initAndroidProjectWithProfile(cwd: string, settings: Object): Promise<void> {
+export function initAndroidProjectWithProfile(cwd: string, settings: object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
   addCITags(cwd);
@@ -147,7 +147,7 @@ export function createRandomName() {
   return uuid().replace(regExp, '').substring(0, length);
 }
 
-export function initIosProjectWithProfile(cwd: string, settings: Object): Promise<void> {
+export function initIosProjectWithProfile(cwd: string, settings: object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
   addCITags(cwd);
@@ -190,7 +190,7 @@ export function initIosProjectWithProfile(cwd: string, settings: Object): Promis
   });
 }
 
-export function initFlutterProjectWithProfile(cwd: string, settings: Object): Promise<void> {
+export function initFlutterProjectWithProfile(cwd: string, settings: object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
   addCITags(cwd);
@@ -395,7 +395,7 @@ export function updatedInitNewEnvWithProfile(cwd: string, s: { envName: string }
   });
 }
 
-export function amplifyInitSandbox(cwd: string, settings: {}): Promise<void> {
+export function amplifyInitSandbox(cwd: string, settings: object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;
 

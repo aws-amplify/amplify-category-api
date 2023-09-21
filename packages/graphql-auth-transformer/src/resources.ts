@@ -1005,7 +1005,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
       : ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable;
   }
 
-  public makeIAMPolicyForRole(isAuthPolicy: Boolean, resources: Set<string>): ManagedPolicy[] {
+  public makeIAMPolicyForRole(isAuthPolicy: boolean, resources: Set<string>): ManagedPolicy[] {
     const policies = new Array<ManagedPolicy>();
     const authPiece = isAuthPolicy ? 'auth' : 'unauth';
     let policyResources: object[] = [];

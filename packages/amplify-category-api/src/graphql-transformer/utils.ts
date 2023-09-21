@@ -217,7 +217,7 @@ export async function writeDeploymentToDisk(
   deployment: DeploymentResources,
   directory: string,
   rootStackFileName = 'rootStack.json',
-  buildParameters: Object,
+  buildParameters: object,
 ) {
   fs.ensureDirSync(directory);
   // Delete the last deployments resources except for tsconfig if present

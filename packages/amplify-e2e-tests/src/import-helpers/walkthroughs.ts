@@ -128,11 +128,11 @@ export const addS3WithAuthConfigurationMismatchErrorExit = (cwd: string, setting
 
 export const headlessPullExpectError = (
   projectRoot: string,
-  amplifyParameters: Object,
-  providersParameter: Object,
+  amplifyParameters: object,
+  providersParameter: object,
   errorMessage: string,
-  categoriesParameter?: Object,
-  frontendParameter?: Object,
+  categoriesParameter?: object,
+  frontendParameter?: object,
 ): Promise<void> => {
   const pullCommand: string[] = [
     'pull',
@@ -167,10 +167,10 @@ export const headlessPullExpectError = (
 
 export const headlessPull = (
   projectRoot: string,
-  amplifyParameters: Object,
-  providersParameter: Object,
-  categoriesParameter?: Object,
-  frontendParameter?: Object,
+  amplifyParameters: object,
+  providersParameter: object,
+  categoriesParameter?: object,
+  frontendParameter?: object,
 ): Promise<void> => {
   const pullCommand: string[] = [
     'pull',

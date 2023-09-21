@@ -1,6 +1,6 @@
 export interface FeatureFlagProvider {
   getBoolean(featureName: string, defaultValue?: boolean | null): boolean;
-  getNumber(featureName: string, defaultValue?: Number): Number;
+  getNumber(featureName: string, defaultValue?: number): number;
   getObject(featureName: string, defaultValue?: object): object;
 }
 

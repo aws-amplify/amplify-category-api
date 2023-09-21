@@ -3,7 +3,7 @@ import { getAmplifyMeta } from './index';
 export class ConfigOverrideManager {
   private static instance: ConfigOverrideManager = null;
 
-  private overrides: {};
+  private overrides: object;
 
   private amplifyMeta: any = {};
 
@@ -14,7 +14,7 @@ export class ConfigOverrideManager {
     });
   }
 
-  addOverride(category: string, override: {}) {
+  addOverride(category: string, override: object) {
     this.overrides[category] = override;
   }
 

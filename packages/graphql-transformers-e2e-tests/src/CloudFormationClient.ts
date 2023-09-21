@@ -59,7 +59,7 @@ export class CloudFormationClient {
   }
 
   async deleteStack(name: string) {
-    return promisify<CloudFormation.Types.DeleteStackInput, {}>(this.client.deleteStack, { StackName: name }, this.client);
+    return promisify<CloudFormation.Types.DeleteStackInput, object>(this.client.deleteStack, { StackName: name }, this.client);
   }
 
   async describeStack(name: string): Promise<CloudFormation.Stack> {

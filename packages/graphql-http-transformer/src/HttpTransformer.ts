@@ -17,13 +17,13 @@ const HTTP_STACK_NAME = 'HttpStack';
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
 export interface HttpHeader {
-  key: String;
-  value: String;
+  key: string;
+  value: string;
 }
 
 interface HttpDirectiveArgs {
   method?: HttpMethod;
-  url: String;
+  url: string;
   headers: HttpHeader[];
 }
 

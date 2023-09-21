@@ -73,7 +73,7 @@ export async function authenticateUser(username: string, tempPassword: string, p
   return signinResult.getSignInUserSession();
 }
 
-export async function deleteUser(accessToken: string): Promise<{}> {
+export async function deleteUser(accessToken: string): Promise<object> {
   return new Promise((res, rej) => {
     const params: DeleteUserRequest = {
       AccessToken: accessToken,
@@ -172,7 +172,7 @@ export async function createUserPool(client: CognitoClient, userPoolName: string
   });
 }
 
-export async function deleteUserPool(client: CognitoClient, userPoolId: string): Promise<{}> {
+export async function deleteUserPool(client: CognitoClient, userPoolId: string): Promise<object> {
   return new Promise((res, rej) => {
     const params: DeleteUserPoolRequest = {
       UserPoolId: userPoolId,

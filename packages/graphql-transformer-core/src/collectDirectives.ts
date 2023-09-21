@@ -61,7 +61,7 @@ export function collectDirectivesByTypeNames(sdl: string) {
   return { types, directives: Array.from(directives) };
 }
 
-export function collectDirectivesByType(sdl: string): Object {
+export function collectDirectivesByType(sdl: string): object {
   if (!sdl) {
     return {};
   }

@@ -613,7 +613,7 @@ export class DynamoDBModelTransformer extends Transformer {
     return Boolean(type in ctx.nodeMap);
   }
 
-  private generateModelXConnectionType(ctx: TransformerContext, def: ObjectTypeDefinitionNode, isSync: Boolean = false): void {
+  private generateModelXConnectionType(ctx: TransformerContext, def: ObjectTypeDefinitionNode, isSync: boolean = false): void {
     const tableXConnectionName = ModelResourceIDs.ModelConnectionTypeName(def.name.value);
     if (this.typeExist(tableXConnectionName, ctx)) {
       return;

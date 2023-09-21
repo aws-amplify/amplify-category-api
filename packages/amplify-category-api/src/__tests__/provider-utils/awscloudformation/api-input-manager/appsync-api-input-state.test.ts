@@ -4,7 +4,7 @@ import { AppsyncApiInputState } from '../../../../provider-utils/awscloudformati
 jest.mock('fs-extra');
 
 jest.mock('@aws-amplify/amplify-cli-core', () => ({
-  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
+  ...jest.requireActual('@aws-amplify/amplify-cli-core'),
   pathManager: {
     getBackendDirPath: jest.fn().mockReturnValue('mockbackendDirPath'),
     findProjectRoot: jest.fn().mockReturnValue('mockProject'),

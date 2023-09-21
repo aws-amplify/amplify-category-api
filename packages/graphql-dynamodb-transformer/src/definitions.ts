@@ -319,7 +319,7 @@ export function makeDeleteInputObject(obj: ObjectTypeDefinitionNode, isSync: boo
 export function makeModelXFilterInputObject(
   obj: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
   ctx: TransformerContext,
-  supportsConditions: Boolean,
+  supportsConditions: boolean,
 ): InputObjectTypeDefinitionNode {
   const name = ModelResourceIDs.ModelFilterInputTypeName(obj.name.value);
   const fields: InputValueDefinitionNode[] = obj.fields
@@ -404,7 +404,7 @@ export function makeModelXFilterInputObject(
 export function makeModelXConditionInputObject(
   obj: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
   ctx: TransformerContext,
-  supportsConditions: Boolean,
+  supportsConditions: boolean,
 ): InputObjectTypeDefinitionNode {
   const name = ModelResourceIDs.ModelConditionInputTypeName(obj.name.value);
   const fields: InputValueDefinitionNode[] = obj.fields
@@ -489,7 +489,7 @@ export function makeModelXConditionInputObject(
 export function makeEnumFilterInputObjects(
   obj: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
   ctx: TransformerContext,
-  supportsConditions: Boolean,
+  supportsConditions: boolean,
 ): InputObjectTypeDefinitionNode[] {
   return obj.fields
     .filter((field: FieldDefinitionNode) => {
@@ -582,7 +582,7 @@ export function makeModelSortDirectionEnumObject(): EnumTypeDefinitionNode {
   };
 }
 
-export function makeModelScalarFilterInputObject(type: string, supportsConditions: Boolean): InputObjectTypeDefinitionNode {
+export function makeModelScalarFilterInputObject(type: string, supportsConditions: boolean): InputObjectTypeDefinitionNode {
   const name = ModelResourceIDs.ModelFilterScalarInputTypeName(type, !supportsConditions);
   const conditions = getScalarConditions(type);
   const fields: InputValueDefinitionNode[] = conditions.map((condition: string) => ({
@@ -740,7 +740,7 @@ export function makeAttributeTypeEnum(): EnumTypeDefinitionNode {
   };
 }
 
-export function makeModelConnectionType(typeName: string, isSync: Boolean = false): ObjectTypeExtensionNode {
+export function makeModelConnectionType(typeName: string, isSync: boolean = false): ObjectTypeExtensionNode {
   const connectionName = ModelResourceIDs.ModelConnectionTypeName(typeName);
   let connectionTypeExtension = blankObjectExtension(connectionName);
   connectionTypeExtension = extensionWithFields(connectionTypeExtension, [
@@ -797,7 +797,7 @@ export function makeModelConnectionField(
   return makeField(fieldName, args, makeNamedType(ModelResourceIDs.ModelConnectionTypeName(returnTypeName)), directives);
 }
 
-export function makeScalarFilterInputs(supportsConditions: Boolean): InputObjectTypeDefinitionNode[] {
+export function makeScalarFilterInputs(supportsConditions: boolean): InputObjectTypeDefinitionNode[] {
   const inputs = [
     makeModelScalarFilterInputObject('String', supportsConditions),
     makeModelScalarFilterInputObject('ID', supportsConditions),

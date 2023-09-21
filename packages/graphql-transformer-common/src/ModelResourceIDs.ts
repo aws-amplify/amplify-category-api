@@ -36,7 +36,7 @@ export class ModelResourceIDs {
     return `Model${name}FilterInput`;
   }
 
-  static ModelFilterScalarInputTypeName(name: string, includeFilter: Boolean, isSubscriptionFilter: boolean = false): string {
+  static ModelFilterScalarInputTypeName(name: string, includeFilter: boolean, isSubscriptionFilter: boolean = false): string {
     const nameOverride = DEFAULT_SCALARS[name];
     if (nameOverride) {
       return `Model${isSubscriptionFilter ? 'Subscription' : ''}${nameOverride}${includeFilter ? 'Filter' : ''}Input`;
@@ -80,7 +80,7 @@ export class ModelResourceIDs {
     return `Model${modelName}${keyName}CompositeKeyInput`;
   }
 
-  static ModelFilterListInputTypeName(name: string, includeFilter: Boolean, isSubscriptionFilter: boolean = false): string {
+  static ModelFilterListInputTypeName(name: string, includeFilter: boolean, isSubscriptionFilter: boolean = false): string {
     const nameOverride = DEFAULT_SCALARS[name];
     if (nameOverride) {
       return `Model${isSubscriptionFilter ? 'Subscription' : ''}${nameOverride}List${includeFilter ? 'Filter' : ''}Input`;
@@ -88,7 +88,7 @@ export class ModelResourceIDs {
     return `Model${isSubscriptionFilter ? 'Subscription' : ''}${name}List${includeFilter ? 'Filter' : ''}Input`;
   }
 
-  static ModelScalarFilterInputTypeName(name: string, includeFilter: Boolean): string {
+  static ModelScalarFilterInputTypeName(name: string, includeFilter: boolean): string {
     const nameOverride = DEFAULT_SCALARS[name];
     if (nameOverride) {
       return `Model${nameOverride}${includeFilter ? 'Filter' : ''}Input`;

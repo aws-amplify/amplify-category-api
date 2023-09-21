@@ -6,7 +6,7 @@ import { DirectiveNode, ArgumentNode, valueFromASTUntyped } from 'graphql';
 export function getDirectiveArguments(directive: DirectiveNode): any {
   return directive.arguments
     ? directive.arguments.reduce(
-        (acc: {}, arg: ArgumentNode) => ({
+        (acc: object, arg: ArgumentNode) => ({
           ...acc,
           [arg.name.value]: valueFromASTUntyped(arg.value),
         }),

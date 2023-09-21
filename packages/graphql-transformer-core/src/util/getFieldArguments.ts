@@ -7,7 +7,7 @@ import { FieldDefinitionNode } from 'graphql';
 export function getFieldArguments(type: any): any {
   return type.fields
     ? type.fields.reduce(
-        (acc: {}, arg: FieldDefinitionNode) => ({
+        (acc: object, arg: FieldDefinitionNode) => ({
           ...acc,
           [arg.name.value]: getBaseType(arg.type),
         }),

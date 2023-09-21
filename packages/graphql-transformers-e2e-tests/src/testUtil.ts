@@ -86,7 +86,7 @@ export function expectNullableInputValues(type: InputObjectTypeDefinitionNode, f
   }
 }
 
-export function expectExactKeys(obj: Object, expectedSet: Set<string>) {
+export function expectExactKeys(obj: object, expectedSet: Set<string>) {
   const resourceSet = new Set(Object.keys(obj));
   expectedSet.forEach((item) => {
     expect(resourceSet.has(item)).toBeTruthy();
