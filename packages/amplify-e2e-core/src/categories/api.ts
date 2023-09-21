@@ -1070,7 +1070,7 @@ export const importRDSDatabase = (cwd: string, opts: ImportApiOptions & { apiExi
     promptDBInformation(importCommands, options);
 
     if (options.useVpc) {
-      importCommands.wait(/.*Unable to connect to the database from this machine. Would you like to try from VPC.*/).sendConfirmYes();
+      importCommands.wait(/.*Unable to connect to the database from this machine. Would you like to try from VPC.*/).sendYes();
     }
 
     importCommands.wait(/.*Successfully imported the database schema into.*/).run((err: Error) => {
