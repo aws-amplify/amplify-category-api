@@ -57,16 +57,9 @@ describe('AmplifyApigwResourceStack', () => {
           permissions: {
             setting: PermissionSetting.PRIVATE,
             groups: {
-              'admin': [
-                CrudOperation.CREATE,
-                CrudOperation.UPDATE,
-                CrudOperation.READ,
-                CrudOperation.DELETE,
-              ],
-              'member': [
-                CrudOperation.READ,
-              ]
-            }
+              admin: [CrudOperation.CREATE, CrudOperation.UPDATE, CrudOperation.READ, CrudOperation.DELETE],
+              member: [CrudOperation.READ],
+            },
           },
         },
         '/items/{id}/foobar': {
@@ -74,16 +67,9 @@ describe('AmplifyApigwResourceStack', () => {
           permissions: {
             setting: PermissionSetting.PRIVATE,
             groups: {
-              'admin': [
-                CrudOperation.CREATE,
-                CrudOperation.UPDATE,
-                CrudOperation.READ,
-                CrudOperation.DELETE,
-              ],
-              'member': [
-                CrudOperation.READ,
-              ]
-            }
+              admin: [CrudOperation.CREATE, CrudOperation.UPDATE, CrudOperation.READ, CrudOperation.DELETE],
+              member: [CrudOperation.READ],
+            },
           },
         },
       },
