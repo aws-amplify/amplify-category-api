@@ -34,6 +34,8 @@
     "access": "public"
   },
   "bundledDependencies": [
+    "@aws-amplify/backend-output-schemas",
+    "@aws-amplify/backend-output-storage",
     "@aws-amplify/graphql-transformer",
     "@aws-amplify/graphql-transformer-core",
     "@aws-amplify/graphql-transformer-interfaces",
@@ -68,6 +70,8 @@
     "universalify"
   ],
   "dependencies": {
+    "@aws-amplify/backend-output-schemas": "^0.2.0-alpha.3",
+    "@aws-amplify/backend-output-storage": "^0.1.1-alpha.0",
     "@aws-amplify/graphql-auth-transformer": "3.1.3",
     "@aws-amplify/graphql-default-value-transformer": "2.1.3",
     "@aws-amplify/graphql-function-transformer": "2.1.2",
@@ -134,7 +138,8 @@
   "jest": {
     "testURL": "http://localhost",
     "transform": {
-      "^.+\\.tsx?$": "ts-jest"
+      "^.+\\.tsx?$": "ts-jest",
+      "^.*backend-output-(storage|schemas).*\\.js$": "babel-jest"
     },
     "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [
@@ -144,6 +149,9 @@
       "jsx",
       "json",
       "node"
+    ],
+    "transformIgnorePatterns": [
+      "/(?!node_modules)/"
     ],
     "collectCoverage": true,
     "coverageThreshold": {
