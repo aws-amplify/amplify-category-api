@@ -118,9 +118,9 @@ new AmplifyGraphqlApi(scope: Construct, id: string, props: AmplifyGraphqlApiProp
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
-| <code><a href="#@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.Initializer.parameter.props">props</a></code> | <code><a href="#@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApiProps">AmplifyGraphqlApiProps</a></code> | *No description.* |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | the scope to create this construct within. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.Initializer.parameter.id">id</a></code> | <code>string</code> | the id to use for this api. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.Initializer.parameter.props">props</a></code> | <code><a href="#@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApiProps">AmplifyGraphqlApiProps</a></code> | the properties used to configure the generated api. |
 
 ---
 
@@ -128,17 +128,23 @@ new AmplifyGraphqlApi(scope: Construct, id: string, props: AmplifyGraphqlApiProp
 
 - *Type:* constructs.Construct
 
+the scope to create this construct within.
+
 ---
 
 ##### `id`<sup>Required</sup> <a name="id" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.Initializer.parameter.id"></a>
 
 - *Type:* string
 
+the id to use for this api.
+
 ---
 
 ##### `props`<sup>Required</sup> <a name="props" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.Initializer.parameter.props"></a>
 
 - *Type:* <a href="#@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApiProps">AmplifyGraphqlApiProps</a>
+
+the properties used to configure the generated api.
 
 ---
 

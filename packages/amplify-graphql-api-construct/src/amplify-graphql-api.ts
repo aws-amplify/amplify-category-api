@@ -60,6 +60,13 @@ export class AmplifyGraphqlApi extends Construct {
    */
   public readonly generatedFunctionSlots: FunctionSlot[];
 
+  /**
+   * New AmplifyGraphqlApi construct, this will create an appsync api with authorization, a schema, and all necessary resolvers, functions,
+   * and datasources.
+   * @param scope the scope to create this construct within.
+   * @param id the id to use for this api.
+   * @param props the properties used to configure the generated api.
+   */
   constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps) {
     super(scope, id);
 
