@@ -14,6 +14,7 @@ import {
   importRDSDatabase,
   initJSProjectWithProfile,
   removeRDSPortInboundRule,
+  sleep,
 } from 'amplify-category-api-e2e-core';
 import { existsSync, writeFileSync } from 'fs-extra';
 import generator from 'generate-password';
@@ -46,6 +47,7 @@ describe('RDS Relational Directives', () => {
     projRoot = await createNewProjectDir('rdsreferstoapi1');
     await initProjectAndImportSchema();
     await amplifyPush(projRoot);
+    await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.
 
     const meta = getProjectMeta(projRoot);
     const appRegion = meta.providers.awscloudformation.Region;

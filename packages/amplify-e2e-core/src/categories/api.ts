@@ -1139,6 +1139,9 @@ export function apiGenerateSchemaWithError(cwd: string, opts: ImportApiOptions &
     if (!options?.validCredentials) {
       promptDBInformation(generateSchemaCommands, options);
     }
+    if (options.useVpc) {
+      generateSchemaCommands.wait(/.*Unable to connect to the database from this machine. Would you like to try from VPC.*/).sendYes();
+    }
     generateSchemaCommands.wait(options.errMessage);
     generateSchemaCommands.run((err: Error) => {
       if (!err) {

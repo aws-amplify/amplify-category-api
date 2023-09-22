@@ -13,6 +13,7 @@ import {
   initJSProjectWithProfile,
   updateSchema,
   getResource,
+  sleep,
 } from 'amplify-category-api-e2e-core';
 import { existsSync, readFileSync } from 'fs-extra';
 import generator from 'generate-password';
@@ -185,6 +186,7 @@ describe('RDS Tests', () => {
     expect(rdsPatchingSubscription.Properties.FilterPolicy.Region).toBeDefined();
 
     await amplifyPush(projRoot);
+    await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.
 
     // Get the AppSync API details after deployment
     const meta = getProjectMeta(projRoot);

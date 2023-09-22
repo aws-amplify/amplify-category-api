@@ -14,6 +14,7 @@ import {
   initJSProjectWithProfile,
   removeRDSPortInboundRule,
   getResource,
+  sleep,
 } from 'amplify-category-api-e2e-core';
 import { existsSync, readFileSync } from 'fs-extra';
 import generator from 'generate-password';
@@ -53,6 +54,7 @@ describe('RDS Model Directive', () => {
     projRoot = await createNewProjectDir('rdsmodelapi');
     await initProjectAndImportSchema();
     await amplifyPush(projRoot);
+    await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.
 
     await verifyApiEndpointAndCreateClient();
     verifySQLLambdaIsInVpc();
