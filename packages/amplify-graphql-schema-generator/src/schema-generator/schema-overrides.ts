@@ -1,10 +1,11 @@
 import { DocumentNode, FieldDefinitionNode, ObjectTypeDefinitionNode, StringValueNode, visit } from 'graphql';
-import { isArrayOrObject, findMatchingField, getNonModelTypes, isOfType, isNonNullType } from 'graphql-transformer-common';
+import { isArrayOrObject, getNonModelTypes, isOfType, isNonNullType } from 'graphql-transformer-common';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { FieldWrapper, ObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
 
 const MODEL_DIRECTIVE_NAME = 'model';
 const REFERS_TO_DIRECTIVE_NAME = 'refersTo';
+const RELATIONAL_DIRECTIVES = ['hasOne', 'hasMany', 'belongsTo'];
 
 export const applySchemaOverrides = (document: DocumentNode, existingDocument?: DocumentNode | undefined): DocumentNode => {
   if (!existingDocument) {
@@ -20,7 +21,9 @@ export const applySchemaOverrides = (document: DocumentNode, existingDocument?: 
           return;
         }
 
-        const correspondingField = findMatchingField(node, parentObjectType, existingDocument);
+        const columnName = getMappedName(node);
+        const tableName = getMappedName(parentObjectType);
+        const correspondingField = findMatchingField(columnName, tableName, existingDocument);
         if (!correspondingField) return;
 
         // eslint-disable-next-line consistent-return
@@ -29,7 +32,7 @@ export const applySchemaOverrides = (document: DocumentNode, existingDocument?: 
     },
     ObjectTypeDefinition: {
       leave: (node: ObjectTypeDefinitionNode, key, parent, path, ancestors) => {
-        const tableName = getTableName(node);
+        const tableName = getMappedName(node);
         const correspondingModel = findMatchingModel(tableName, existingDocument);
         if (!correspondingModel) return;
 
@@ -46,13 +49,12 @@ export const applySchemaOverrides = (document: DocumentNode, existingDocument?: 
 };
 
 const preserveRelationalDirectives = (document: DocumentNode, existingDocument: DocumentNode): DocumentNode => {
-  const RELATIONAL_DIRECTIVES = ['hasOne', 'hasMany', 'belongsTo'];
   const documentWrapper = document as any;
 
   existingDocument.definitions
     .filter((def) => def.kind === 'ObjectTypeDefinition' && def.directives.find((dir) => dir.name.value === MODEL_DIRECTIVE_NAME))
     .forEach((existingObject: ObjectTypeDefinitionNode) => {
-      const existingTableName = getTableName(existingObject);
+      const existingTableName = getMappedName(existingObject);
       const newObject = findMatchingModel(existingTableName, document);
       if (!newObject) {
         return;
@@ -68,7 +70,7 @@ const preserveRelationalDirectives = (document: DocumentNode, existingDocument: 
       if (relationalFields.length > 0) {
         // If relational fields are found on a model,
         // remove the existing model and add the new one with the relational fields to preserve manual edits.
-        const excludedDefinitions = documentWrapper.definitions.filter((def) => getTableName(def) !== existingTableName);
+        const excludedDefinitions = documentWrapper.definitions.filter((def) => getMappedName(def) !== existingTableName);
         documentWrapper.definitions = [...excludedDefinitions, newObjectWrapper.serialize()];
       }
     });
@@ -80,6 +82,7 @@ export const applyFieldOverrides = (field: FieldDefinitionNode, existingField: F
   return {
     ...field,
     ...applyJSONFieldTypeOverrides(field, existingField),
+    ...applyFieldNameOverrides(field, existingField),
   };
 };
 
@@ -90,7 +93,10 @@ export const applyModelOverrides = (obj: ObjectTypeDefinitionNode, existingObj: 
   };
 };
 
-export const applyJSONFieldTypeOverrides = (field: FieldDefinitionNode, existingField: FieldDefinitionNode): FieldDefinitionNode => {
+export const applyJSONFieldTypeOverrides = (
+  field: FieldDefinitionNode,
+  existingField: FieldDefinitionNode,
+): Partial<FieldDefinitionNode> => {
   const isJSONType = isOfType(field?.type, 'AWSJSON');
   if (!isJSONType) {
     return field;
@@ -104,14 +110,13 @@ export const applyJSONFieldTypeOverrides = (field: FieldDefinitionNode, existing
   checkDestructiveNullabilityChange(field, existingField);
 
   return {
-    ...field,
-    ...{ type: existingField?.type },
+    type: existingField?.type,
   };
 };
 
 export const applyModelNameOverrides = (obj: ObjectTypeDefinitionNode, existingObj: ObjectTypeDefinitionNode): ObjectTypeDefinitionNode => {
-  const tableName = getTableName(obj);
-  const existingTableName = getTableName(existingObj);
+  const tableName = getMappedName(obj);
+  const existingTableName = getMappedName(existingObj);
   const existingTypeName = existingObj?.name?.value;
 
   if (tableName !== existingTableName && tableName !== existingTypeName) {
@@ -141,6 +146,41 @@ export const applyModelNameOverrides = (obj: ObjectTypeDefinitionNode, existingO
   };
 };
 
+export const applyFieldNameOverrides = (field: FieldDefinitionNode, existingField: FieldDefinitionNode): Partial<FieldDefinitionNode> => {
+  const columnName = getMappedName(field);
+  const existingColumnName = getMappedName(existingField);
+  const existingFieldName = existingField?.name?.value;
+
+  if (columnName !== existingColumnName && columnName !== existingFieldName) {
+    return field;
+  }
+  const existingFieldIsRelational = existingField?.directives?.find((dir) => RELATIONAL_DIRECTIVES.includes(dir?.name?.value));
+  const existingFieldHasRefersTo = existingField?.directives?.find((dir) => dir?.name?.value === REFERS_TO_DIRECTIVE_NAME);
+  if (existingFieldIsRelational && existingFieldHasRefersTo) {
+    throw new Error(`Field "${existingFieldName}" cannot be renamed because it is a relational field.`);
+  }
+  if (columnName === existingFieldName) {
+    // In this case, there is no need for refersTo since edits were made to keep the original field name.
+    // For example, post: Post @refersTo(name: "posts") -> field posts: Post
+    return {
+      ...{ name: existingField?.name },
+      ...{ directives: field?.directives?.filter((dir) => dir.name.value !== REFERS_TO_DIRECTIVE_NAME) },
+    };
+  }
+  // In this case, keep the edited name and refersTo directive if it exists.
+  // For example, post: Post @refersTo(name: "posts") -> myPost: Post @refersTo(name: "posts")
+  // Or post: Post -> myPost: Post @refersTo(name: "post")
+  return {
+    ...{ name: existingField?.name },
+    ...{
+      directives: [
+        ...existingField?.directives?.filter((dir) => dir.name.value === REFERS_TO_DIRECTIVE_NAME),
+        ...field?.directives?.filter((dir) => dir.name.value !== REFERS_TO_DIRECTIVE_NAME),
+      ],
+    },
+  };
+};
+
 export const getParentNode = (ancestors: any[]): ObjectTypeDefinitionNode | undefined => {
   if (ancestors && ancestors?.length > 0) {
     return ancestors[ancestors.length - 1] as ObjectTypeDefinitionNode;
@@ -157,16 +197,17 @@ export const checkDestructiveNullabilityChange = (field: FieldDefinitionNode, ex
   }
 };
 
-const getTableName = (object: ObjectTypeDefinitionNode): string => {
-  const refersToDirective = object.directives.find((dir) => dir.name.value === REFERS_TO_DIRECTIVE_NAME);
+const getMappedName = (node: ObjectTypeDefinitionNode | FieldDefinitionNode): string => {
+  const nodeName = node?.name?.value;
+  const refersToDirective = node.directives.find((dir) => dir.name.value === REFERS_TO_DIRECTIVE_NAME);
   if (!refersToDirective) {
-    return object?.name?.value;
+    return nodeName;
   }
-  const tableName = refersToDirective?.arguments?.find((arg) => arg?.name?.value === 'name');
-  if (!tableName) {
-    return object?.name?.value;
+  const mappedName = refersToDirective?.arguments?.find((arg) => arg?.name?.value === 'name');
+  if (!mappedName) {
+    return nodeName;
   }
-  return (tableName?.value as StringValueNode)?.value;
+  return (mappedName?.value as StringValueNode)?.value;
 };
 
 const findMatchingModel = (tableName: string, existingDocument: DocumentNode): ObjectTypeDefinitionNode | undefined => {
@@ -174,9 +215,17 @@ const findMatchingModel = (tableName: string, existingDocument: DocumentNode): O
     (def) =>
       def?.kind === 'ObjectTypeDefinition' &&
       def?.directives?.find((dir) => dir?.name?.value === MODEL_DIRECTIVE_NAME) &&
-      (def?.name?.value === tableName || getTableName(def) === tableName),
+      (def?.name?.value === tableName || getMappedName(def) === tableName),
   );
   if (matchedModel) {
     return matchedModel as ObjectTypeDefinitionNode;
   }
+};
+
+export const findMatchingField = (columnName: string, taleName: string, document: DocumentNode): FieldDefinitionNode | undefined => {
+  const matchingObject = findMatchingModel(taleName, document);
+  if (!matchingObject) {
+    return;
+  }
+  return matchingObject?.fields?.find((field) => field?.name?.value === columnName || getMappedName(field) === columnName);
 };

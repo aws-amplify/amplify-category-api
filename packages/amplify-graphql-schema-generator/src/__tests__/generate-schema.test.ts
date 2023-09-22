@@ -1,4 +1,4 @@
-import { convertToGraphQLTypeName, printSchema } from '../schema-generator/generate-schema';
+import { convertToGraphQLTypeName, printSchema, convertToGraphQLFieldName } from '../schema-generator/generate-schema';
 import { Engine, Field, Model, Schema } from '../schema-representation';
 import { generateGraphQLSchema } from '../schema-generator';
 import { parse } from 'graphql';
@@ -30,6 +30,41 @@ describe('Type name conversions', () => {
     model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
     model.addField(new Field('details', { kind: 'Scalar', name: 'String' }));
     model.setPrimaryKey(['id']);
+    dbschema.addModel(model);
+
+    const graphqlSchema = generateGraphQLSchema(dbschema);
+    expect(graphqlSchema).toMatchSnapshot();
+  });
+});
+
+describe('Field name conversions', () => {
+  it('GraphQL idiomatic field name conversions', () => {
+    // leave as-is
+    expect(convertToGraphQLFieldName('posts')).toEqual('posts');
+    expect(convertToGraphQLFieldName('postscolumn')).toEqual('postscolumn');
+    // Camel case
+    expect(convertToGraphQLFieldName('employees_salary')).toEqual('employeesSalary');
+    // Remove special characters not supported in GraphQL
+    expect(convertToGraphQLFieldName('Employees_salaries-Column')).toEqual('employeesSalariesColumn');
+    expect(convertToGraphQLFieldName('_employee_Salaries-column')).toEqual('employeeSalariesColumn');
+    expect(convertToGraphQLFieldName('Employees$salaries-#Table%log@Rates!types')).toEqual('employeesSalariesTableLogRatesTypes');
+    expect(convertToGraphQLFieldName('ID')).toEqual('iD');
+    expect(convertToGraphQLFieldName('MyID')).toEqual('myID');
+  });
+
+  it('infers refersTo from column names', () => {
+    const dbschema = new Schema(new Engine('MySQL'));
+    let model = new Model('users');
+    model.addField(new Field('Id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('name_field', { kind: 'Scalar', name: 'String' }));
+    model.setPrimaryKey(['Id', 'name_field']);
+    dbschema.addModel(model);
+
+    model = new Model('profile');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('Details', { kind: 'Scalar', name: 'String' }));
+    model.setPrimaryKey(['id']);
+    model.addIndex('profilesByDetails', ['Details']);
     dbschema.addModel(model);
 
     const graphqlSchema = generateGraphQLSchema(dbschema);

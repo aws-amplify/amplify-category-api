@@ -414,18 +414,6 @@ export function makeListType(type: TypeNode): ListTypeNode {
   };
 }
 
-export const findMatchingField = (
-  field: FieldDefinitionNode,
-  objectType: ObjectTypeDefinitionNode,
-  document: DocumentNode,
-): FieldDefinitionNode | undefined => {
-  const matchingObject = findObjectDefinition(document, objectType?.name?.value);
-  if (!matchingObject) {
-    return;
-  }
-  return matchingObject?.fields?.find((f) => f?.name?.value === field?.name?.value);
-};
-
 export const findObjectDefinition = (document: DocumentNode, name: string): ObjectTypeDefinitionNode | undefined => {
   return document.definitions?.find((def) => def?.kind === 'ObjectTypeDefinition' && def?.name?.value === name) as
     | ObjectTypeDefinitionNode

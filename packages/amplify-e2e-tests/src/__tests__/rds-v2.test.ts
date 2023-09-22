@@ -109,9 +109,9 @@ describe('RDS Tests', () => {
     expect(employeeObjectType).toBeDefined();
 
     // Verify the fields in the generated schema on type 'Contact'
-    const contactIdFieldType = contactObjectType.fields.find((f) => f.name.value === 'ID');
-    const contactFirstNameFieldType = contactObjectType.fields.find((f) => f.name.value === 'FirstName');
-    const contactLastNameFieldType = contactObjectType.fields.find((f) => f.name.value === 'LastName');
+    const contactIdFieldType = contactObjectType.fields.find((f) => f.name.value === 'id');
+    const contactFirstNameFieldType = contactObjectType.fields.find((f) => f.name.value === 'firstName');
+    const contactLastNameFieldType = contactObjectType.fields.find((f) => f.name.value === 'lastName');
 
     expect(contactIdFieldType).toBeDefined();
     expect(contactFirstNameFieldType).toBeDefined();

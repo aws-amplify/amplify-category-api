@@ -77,6 +77,7 @@ describe('RDS Generate Schema tests', () => {
       'CREATE TABLE Contact (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
       'CREATE TABLE Person (ID INT PRIMARY KEY, Info JSON NOT NULL)',
       'CREATE TABLE tbl_todos (ID INT PRIMARY KEY, description VARCHAR(20))',
+      'CREATE TABLE Task (Id INT PRIMARY KEY, Description VARCHAR(20), task_name VARCHAR(20))',
     ];
 
     const db = await setupRDSInstanceAndData(dbConfig, queries);
@@ -104,18 +105,18 @@ describe('RDS Generate Schema tests', () => {
     expect(personObjectType).toBeDefined();
 
     // Verify the fields in the generated schema on type 'Contact'
-    const contactIdFieldType = contactObjectType.fields.find((f) => f.name.value === 'ID');
-    const contactFirstNameFieldType = contactObjectType.fields.find((f) => f.name.value === 'FirstName');
-    const contactLastNameFieldType = contactObjectType.fields.find((f) => f.name.value === 'LastName');
+    const contactIdFieldType = contactObjectType.fields.find((f) => f.name.value === 'id');
+    const contactFirstNameFieldType = contactObjectType.fields.find((f) => f.name.value === 'firstName');
+    const contactLastNameFieldType = contactObjectType.fields.find((f) => f.name.value === 'lastName');
     expect(contactIdFieldType).toBeDefined();
     expect(contactFirstNameFieldType).toBeDefined();
     expect(contactLastNameFieldType).toBeDefined();
-    // PrimaryKey directive must be defined on Id field.
+    // PrimaryKey directive must be defined on id field.
     expect(contactIdFieldType.directives.find((d) => d.name.value === 'primaryKey')).toBeDefined();
 
     // Verify the fields in the generated schema on type 'Person' before making edits
-    const personsIdFieldType = personObjectType.fields.find((f) => f.name.value === 'ID');
-    const personsInfoFieldType = personObjectType.fields.find((f) => f.name.value === 'Info') as any;
+    const personsIdFieldType = personObjectType.fields.find((f) => f.name.value === 'id');
+    const personsInfoFieldType = personObjectType.fields.find((f) => f.name.value === 'info') as any;
     expect(personsIdFieldType).toBeDefined();
     expect(personsInfoFieldType).toBeDefined();
     expect(personsInfoFieldType.type?.type?.name?.value).toEqual('AWSJSON');
@@ -128,18 +129,24 @@ describe('RDS Generate Schema tests', () => {
         }
 
         type Contact @model {
-            ID: Int! @primaryKey
-            FirstName: String
-            LastName: String
+            id: Int! @primaryKey
+            firstName: String
+            lastName: String
         }
 
         type Person @model {
-            ID: Int! @primaryKey
-            Info: [String]!
+            id: Int! @primaryKey
+            info: [String]!
+        }
+
+        type Task @model {
+          id: Int! @refersTo(name: "Id") @primaryKey
+          description: String @refersTo(name: "Description")
+          taskName: String @refersTo(name: "task_name")
         }
 
         type TblTodo @refersTo(name: "tbl_todos") @model {
-            ID: Int! @primaryKey
+            id: Int! @primaryKey
             description: String
         }
       `;
@@ -181,7 +188,7 @@ describe('RDS Generate Schema tests', () => {
     expect(inferredRefersTo).toBeDefined();
 
     // Verify the fields in the generated schema on mapped model are as expected
-    const todoIdFieldType = mappedTodoObjectType.fields.find((f) => f.name.value === 'ID');
+    const todoIdFieldType = mappedTodoObjectType.fields.find((f) => f.name.value === 'id');
     const todoDescriptionFieldType = mappedTodoObjectType.fields.find((f) => f.name.value === 'description');
     expect(todoIdFieldType).toBeDefined();
     expect(todoDescriptionFieldType).toBeDefined();
@@ -196,18 +203,24 @@ describe('RDS Generate Schema tests', () => {
         }
 
         type Contact @model {
-            ID: Int! @primaryKey
-            FirstName: String
-            LastName: String
+            id: Int! @primaryKey
+            firstName: String
+            lastName: String
         }
 
         type Person @model {
-            ID: Int! @primaryKey
-            Info: [String]!
+            id: Int! @primaryKey
+            info: [String]!
+        }
+
+        type Task @model {
+          id: Int! @refersTo(name: "Id") @primaryKey
+          description: String @refersTo(name: "Description")
+          taskName: String @refersTo(name: "task_name")
         }
 
         type Todo @refersTo(name: "tbl_todos") @model {
-            ID: Int! @primaryKey
+            id: Int! @primaryKey
             description: String
         }
       `;
@@ -220,6 +233,105 @@ describe('RDS Generate Schema tests', () => {
       password,
       validCredentials: true,
       useVpc: true,
+    });
+
+    // The re-generated schema preserves the edits that were made
+    const regeneratedSchema = readFileSync(rdsSchemaFilePath, 'utf8');
+    expect(regeneratedSchema.replace(/\s/g, '')).toEqual(editedSchema.replace(/\s/g, ''));
+  });
+
+  it('infers and preserves the field name mapping edits for mysql relational database', async () => {
+    const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+    const schemaContent = readFileSync(rdsSchemaFilePath, 'utf8');
+    const schema = parse(schemaContent);
+
+    // Generated schema should have the model containing field mappings
+    const taskModel = schema.definitions.find(
+      (d) => d.kind === 'ObjectTypeDefinition' && d.name.value === 'Task',
+    ) as ObjectTypeDefinitionNode;
+    expect(taskModel).toBeDefined();
+
+    // No model level refers to exists
+    const modelLevelRefersTo = taskModel?.directives?.find(
+      (d) =>
+        d?.name?.value === 'refersTo' &&
+        d?.arguments?.find((arg) => arg?.name?.value === 'name' && (arg?.value as StringValueNode)?.value === 'Task'),
+    );
+    expect(modelLevelRefersTo).toBeUndefined();
+
+    // Inferred field names are as expected
+    const idField = taskModel.fields.find((f) => f.name.value === 'id');
+    const descriptionField = taskModel.fields.find((f) => f.name.value === 'description');
+    const taskNameField = taskModel.fields.find((f) => f.name.value === 'taskName');
+    expect(idField).toBeDefined();
+    expect(descriptionField).toBeDefined();
+    expect(taskNameField).toBeDefined();
+
+    // Check expected directives on id field
+    expect(idField?.directives?.find((d) => d.name.value === 'primaryKey')).toBeDefined();
+    expect(
+      idField?.directives?.find(
+        (d) =>
+          d?.name?.value === 'refersTo' &&
+          d?.arguments?.find((arg) => arg?.name?.value === 'name' && (arg?.value as StringValueNode)?.value === 'Id'),
+      ),
+    ).toBeDefined();
+
+    // Verify name mapping for description field
+    expect(
+      descriptionField?.directives?.find(
+        (d) =>
+          d?.name?.value === 'refersTo' &&
+          d?.arguments?.find((arg) => arg?.name?.value === 'name' && (arg?.value as StringValueNode)?.value === 'Description'),
+      ),
+    ).toBeDefined();
+
+    // Verify name mapping for task_name field
+    expect(
+      taskNameField?.directives?.find(
+        (d) =>
+          d?.name?.value === 'refersTo' &&
+          d?.arguments?.find((arg) => arg?.name?.value === 'name' && (arg?.value as StringValueNode)?.value === 'task_name'),
+      ),
+    ).toBeDefined();
+
+    // Make edits to the generated schema to update the inferred field name mappings
+    const editedSchema = `
+        input AMPLIFY {
+            engine: String = "mysql"
+            globalAuthRule: AuthRule = {allow: public}
+        }
+
+        type Contact @model {
+            id: Int! @primaryKey
+            firstName: String
+            lastName: String
+        }
+
+        type Person @model {
+            id: Int! @primaryKey
+            info: [String]!
+        }
+
+        type Task @model {
+          ID: Int! @refersTo(name: "Id") @primaryKey
+          Description: String
+          taskName: String @refersTo(name: "task_name")
+        }
+
+        type Todo @refersTo(name: "tbl_todos") @model {
+          id: Int! @primaryKey
+          description: String
+        }
+    `;
+    writeFileSync(rdsSchemaFilePath, editedSchema);
+    await apiGenerateSchema(projRoot, {
+      database,
+      host,
+      port,
+      username,
+      password,
+      validCredentials: true,
     });
 
     // The re-generated schema preserves the edits that were made
