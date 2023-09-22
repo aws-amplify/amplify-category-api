@@ -16,12 +16,7 @@ const DEFAULT_SECURITY_GROUP = 'default';
 const IPIFY_URL = 'https://api.ipify.org/';
 const AWSCHECKIP_URL = 'https://checkip.amazonaws.com/';
 
-/**
- * Creates a new RDS instance using the given input configuration and returns the details of the created RDS instance.
- * @param config Configuration of the database instance
- * @returns EndPoint address, port and database name of the created RDS instance.
- */
-export const createRDSInstance = async (config: {
+type RDSConfig = {
   identifier: string;
   engine: 'mysql';
   dbname: string;
@@ -31,7 +26,14 @@ export const createRDSInstance = async (config: {
   instanceClass?: string;
   storage?: number;
   publiclyAccessible?: boolean;
-}): Promise<{ endpoint: string; port: number; dbName: string }> => {
+};
+
+/**
+ * Creates a new RDS instance using the given input configuration and returns the details of the created RDS instance.
+ * @param config Configuration of the database instance
+ * @returns EndPoint address, port and database name of the created RDS instance.
+ */
+export const createRDSInstance = async (config: RDSConfig): Promise<{ endpoint: string; port: number; dbName: string }> => {
   const client = new RDSClient({ region: config.region });
   const params: CreateDBInstanceCommandInput = {
     /** input parameters */
@@ -78,6 +80,55 @@ export const createRDSInstance = async (config: {
     console.error(error);
     throw new Error('Error in creating RDS instance.');
   }
+};
+
+/**
+ * Creates a new RDS instance using the given input configuration, runs the given queries and returns the details of the created RDS instance.
+ * @param config Configuration of the database instance
+ * @param queries Initial queries to be executed
+ * @returns EndPoint address, port and database name of the created RDS instance.
+ */
+export const setupRDSInstanceAndData = async (
+  config: RDSConfig,
+  queries?: string[],
+): Promise<{ endpoint: string; port: number; dbName: string }> => {
+  const dbConfig = await createRDSInstance(config);
+
+  if (queries && queries.length > 0) {
+    const ipAddresses = await getIpRanges();
+    await Promise.all(
+      ipAddresses.map((ip) =>
+        addRDSPortInboundRule({
+          region: config.region,
+          port: dbConfig.port,
+          cidrIp: ip,
+        }),
+      ),
+    );
+
+    const dbAdapter = new RDSTestDataProvider({
+      host: dbConfig.endpoint,
+      port: dbConfig.port,
+      username: config.username,
+      password: config.password,
+      database: config.dbname,
+    });
+
+    await dbAdapter.runQuery(queries);
+    dbAdapter.cleanup();
+
+    await Promise.all(
+      ipAddresses.map((ip) =>
+        removeRDSPortInboundRule({
+          region: config.region,
+          port: dbConfig.port,
+          cidrIp: ip,
+        }),
+      ),
+    );
+  }
+
+  return dbConfig;
 };
 
 /**

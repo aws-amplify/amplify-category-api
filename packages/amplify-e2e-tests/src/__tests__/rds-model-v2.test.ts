@@ -1,10 +1,7 @@
 import {
-  RDSTestDataProvider,
   addApiWithoutSchema,
-  addRDSPortInboundRule,
   amplifyPush,
   createNewProjectDir,
-  createRDSInstance,
   deleteDBInstance,
   deleteProject,
   deleteProjectDir,
@@ -12,9 +9,9 @@ import {
   getProjectMeta,
   importRDSDatabase,
   initJSProjectWithProfile,
-  removeRDSPortInboundRule,
   getResource,
   sleep,
+  setupRDSInstanceAndData,
 } from 'amplify-category-api-e2e-core';
 import { existsSync, readFileSync } from 'fs-extra';
 import generator from 'generate-password';
@@ -22,19 +19,14 @@ import { ObjectTypeDefinitionNode, parse } from 'graphql';
 import path from 'path';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
-import axios from 'axios';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 
 const CDK_FUNCTION_TYPE = 'AWS::Lambda::Function';
 const CDK_VPC_ENDPOINT_TYPE = 'AWS::EC2::VPCEndpoint';
-const IPIFY_URL = 'https://api.ipify.org/';
-const AWSCHECKIP_URL = 'https://checkip.amazonaws.com/';
 
 describe('RDS Model Directive', () => {
-  const publicIpCidr = '0.0.0.0/0';
-  const ipAddresses = [];
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
 
   // Generate settings for RDS instance
@@ -123,68 +115,25 @@ describe('RDS Model Directive', () => {
     await cleanupDatabase();
   });
 
-  const getIpAddress = async (url: string): Promise<string> => {
-    const response = await axios(url);
-    const ipParts = response.data.trim().split('.');
-    return `${ipParts[0]}.${ipParts[1]}.0.0/16`;
-  };
-
   const setupDatabase = async (): Promise<void> => {
-    // This test performs the below
-    // 1. Create a RDS Instance
-    // 2. Add the external IP address of the current machine to security group inbound rule to allow public access
-    // 3. Connect to the database and execute DDL
-    // 4. Remove the inbound rules.
-
-    const db = await createRDSInstance({
+    const dbConfig = {
       identifier,
-      engine: 'mysql',
+      engine: 'mysql' as const,
       dbname: database,
       username,
       password,
       region,
-    });
-    port = db.port;
-    host = db.endpoint;
-
-    ipAddresses.push(await getIpAddress(IPIFY_URL));
-    ipAddresses.push(await getIpAddress(AWSCHECKIP_URL));
-
-    await Promise.all(
-      ipAddresses.map((ip) =>
-        addRDSPortInboundRule({
-          region,
-          port: db.port,
-          cidrIp: ip,
-        }),
-      ),
-    );
-
-    const dbAdapter = new RDSTestDataProvider({
-      host: db.endpoint,
-      port: db.port,
-      username,
-      password,
-      database: db.dbName,
-    });
-
-    await dbAdapter.runQuery([
+    };
+    const queries = [
       'CREATE TABLE Contact (id VARCHAR(40) PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
       'CREATE TABLE Person (personId INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
       'CREATE TABLE Employee (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
       'CREATE TABLE Student (studentId INT NOT NULL, classId CHAR(1) NOT NULL, FirstName VARCHAR(20), LastName VARCHAR(50), PRIMARY KEY (studentId, classId))',
-    ]);
-    dbAdapter.cleanup();
+    ];
 
-    await Promise.all(
-      ipAddresses.map((ip) =>
-        removeRDSPortInboundRule({
-          region,
-          port,
-          cidrIp: ip,
-        }),
-      ),
-    );
+    const db = await setupRDSInstanceAndData(dbConfig, queries);
+    port = db.port;
+    host = db.endpoint;
   };
 
   const cleanupDatabase = async (): Promise<void> => {

@@ -1,17 +1,13 @@
 import {
-  RDSTestDataProvider,
   addApiWithoutSchema,
-  addRDSPortInboundRule,
   createNewProjectDir,
-  createRDSInstance,
   deleteDBInstance,
   deleteProject,
   deleteProjectDir,
-  getIpRanges,
   getProjectMeta,
   importRDSDatabase,
   initJSProjectWithProfile,
-  removeRDSPortInboundRule,
+  setupRDSInstanceAndData,
 } from 'amplify-category-api-e2e-core';
 import axios from 'axios';
 import { existsSync, readFileSync } from 'fs-extra';
@@ -20,8 +16,6 @@ import { ObjectTypeDefinitionNode, parse } from 'graphql';
 import path from 'path';
 
 describe('RDS Tests', () => {
-  const publicIpCidr = '0.0.0.0/0';
-  const ipAddresses = [];
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
   const RDS_MAPPING_FILE = 'https://amplify-rds-layer-resources.s3.amazonaws.com/rds-layer-mapping.json';
 
@@ -52,56 +46,23 @@ describe('RDS Tests', () => {
   });
 
   const setupDatabase = async () => {
-    // This test performs the below
-    // 1. Create a RDS Instance
-    // 2. Add the external IP address of the current machine to security group inbound rule to allow public access
-    // 3. Connect to the database and execute DDL
-
-    const db = await createRDSInstance({
+    const dbConfig = {
       identifier,
-      engine: 'mysql',
+      engine: 'mysql' as const,
       dbname: database,
       username,
       password,
       region,
-    });
-    port = db.port;
-    host = db.endpoint;
-
-    ipAddresses.push(...(await getIpRanges()));
-    await Promise.all(
-      ipAddresses.map((ip) =>
-        addRDSPortInboundRule({
-          region,
-          port: db.port,
-          cidrIp: ip,
-        }),
-      ),
-    );
-
-    const dbAdapter = new RDSTestDataProvider({
-      host: db.endpoint,
-      port: db.port,
-      username,
-      password,
-      database: db.dbName,
-    });
-    await dbAdapter.runQuery([
+    };
+    const queries = [
       'CREATE TABLE Contact (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
       'CREATE TABLE Person (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
       'CREATE TABLE Employee (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
-    ]);
-    dbAdapter.cleanup();
+    ];
 
-    await Promise.all(
-      ipAddresses.map((ip) =>
-        removeRDSPortInboundRule({
-          region,
-          port,
-          cidrIp: ip,
-        }),
-      ),
-    );
+    const db = await setupRDSInstanceAndData(dbConfig, queries);
+    port = db.port;
+    host = db.endpoint;
   };
 
   const cleanupDatabase = async () => {

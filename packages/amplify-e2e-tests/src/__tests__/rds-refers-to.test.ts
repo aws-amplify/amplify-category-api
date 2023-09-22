@@ -1,19 +1,15 @@
 import {
-  RDSTestDataProvider,
   addApiWithoutSchema,
-  addRDSPortInboundRule,
   amplifyPush,
   createNewProjectDir,
-  createRDSInstance,
   deleteDBInstance,
   deleteProject,
   deleteProjectDir,
   getAppSyncApi,
-  getIpRanges,
   getProjectMeta,
   importRDSDatabase,
   initJSProjectWithProfile,
-  removeRDSPortInboundRule,
+  setupRDSInstanceAndData,
   sleep,
 } from 'amplify-category-api-e2e-core';
 import { existsSync, writeFileSync } from 'fs-extra';
@@ -26,8 +22,6 @@ import { GQLQueryHelper } from '../query-utils/gql-helper';
 (global as any).fetch = require('node-fetch');
 
 describe('RDS Relational Directives', () => {
-  const publicIpCidr = '0.0.0.0/0';
-  const ipAddresses = [];
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
 
   // Generate settings for RDS instance
@@ -86,54 +80,25 @@ describe('RDS Relational Directives', () => {
   });
 
   const setupDatabase = async (): Promise<void> => {
-    const db = await createRDSInstance({
+    const dbConfig = {
       identifier,
-      engine: 'mysql',
+      engine: 'mysql' as const,
       dbname: database,
       username,
       password,
       region,
-    });
-    port = db.port;
-    host = db.endpoint;
-
-    ipAddresses.push(...(await getIpRanges()));
-    await Promise.all(
-      ipAddresses.map((ip) =>
-        addRDSPortInboundRule({
-          region,
-          port: db.port,
-          cidrIp: ip,
-        }),
-      ),
-    );
-
-    const dbAdapter = new RDSTestDataProvider({
-      host: db.endpoint,
-      port: db.port,
-      username,
-      password,
-      database: db.dbName,
-    });
-
-    await dbAdapter.runQuery([
+    };
+    const queries = [
       'CREATE TABLE Blog (id VARCHAR(40) PRIMARY KEY, content VARCHAR(255))',
       'CREATE TABLE Post (id VARCHAR(40) PRIMARY KEY, content VARCHAR(255), blogId VARCHAR(40))',
       'CREATE TABLE User (id VARCHAR(40) PRIMARY KEY, name VARCHAR(255))',
       'CREATE TABLE Profile (id VARCHAR(40) PRIMARY KEY, details VARCHAR(255), userId VARCHAR(40))',
       'CREATE TABLE Task (id VARCHAR(40) PRIMARY KEY, description VARCHAR(255))',
-    ]);
-    dbAdapter.cleanup();
+    ];
 
-    await Promise.all(
-      ipAddresses.map((ip) =>
-        removeRDSPortInboundRule({
-          region,
-          port,
-          cidrIp: ip,
-        }),
-      ),
-    );
+    const db = await setupRDSInstanceAndData(dbConfig, queries);
+    port = db.port;
+    host = db.endpoint;
   };
 
   const cleanupDatabase = async (): Promise<void> => {
