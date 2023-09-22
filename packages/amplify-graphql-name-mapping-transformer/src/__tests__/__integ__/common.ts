@@ -39,10 +39,25 @@ export const expectedResolversForModelWithRefersTo = (modelName: string) => [
   `Query.list${modelName}s.req.vtl`,
 ];
 
+export const expectedResolversForFieldWithRefersTo = (modelName: string) => [
+  `Mutation.create${modelName}.preUpdate.1.req.vtl`,
+  `Mutation.update${modelName}.preUpdate.1.req.vtl`,
+  `Mutation.delete${modelName}.preUpdate.1.req.vtl`,
+  `Query.get${modelName}.preDataLoad.1.req.vtl`,
+  `Query.list${modelName}s.preDataLoad.1.req.vtl`,
+];
+
 export const testTableNameMapping = (modelName: string, tableName: string, out: DeploymentResources) => {
   const expectedResolvers: string[] = expectedResolversForModelWithRefersTo(modelName);
   expectedResolvers.forEach((resolver) => {
     expect(out.resolvers[resolver]).toContain(`lambdaInput.table = "${tableName}"`);
+    expect(out.resolvers[resolver]).toMatchSnapshot();
+  });
+};
+
+export const testColumnNameMapping = (modelName: string, out: DeploymentResources) => {
+  const expectedResolvers: string[] = expectedResolversForFieldWithRefersTo(modelName);
+  expectedResolvers.forEach((resolver) => {
     expect(out.resolvers[resolver]).toMatchSnapshot();
   });
 };

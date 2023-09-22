@@ -1,5 +1,35 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`@refersTo with RDS Models model field names are mapped 1`] = `
+"#set( $fieldMap = {\\"title\\":\\"description\\"} )
+#set( $ctx.stash.fieldMap = $fieldMap )
+$util.toJson({})"
+`;
+
+exports[`@refersTo with RDS Models model field names are mapped 2`] = `
+"#set( $fieldMap = {\\"title\\":\\"description\\"} )
+#set( $ctx.stash.fieldMap = $fieldMap )
+$util.toJson({})"
+`;
+
+exports[`@refersTo with RDS Models model field names are mapped 3`] = `
+"#set( $fieldMap = {\\"title\\":\\"description\\"} )
+#set( $ctx.stash.fieldMap = $fieldMap )
+$util.toJson({})"
+`;
+
+exports[`@refersTo with RDS Models model field names are mapped 4`] = `
+"#set( $fieldMap = {\\"title\\":\\"description\\"} )
+#set( $ctx.stash.fieldMap = $fieldMap )
+$util.toJson({})"
+`;
+
+exports[`@refersTo with RDS Models model field names are mapped 5`] = `
+"#set( $fieldMap = {\\"title\\":\\"description\\"} )
+#set( $ctx.stash.fieldMap = $fieldMap )
+$util.toJson({})"
+`;
+
 exports[`@refersTo with RDS Models model table names are mapped 1`] = `
 "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
