@@ -6,7 +6,6 @@ import { AppSyncAuthConfiguration, AppSyncAuthMode } from '@aws-amplify/graphql-
 import { DocumentNode, ObjectTypeDefinitionNode, Kind, parse } from 'graphql';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { HasManyTransformer, BelongsToTransformer, HasOneTransformer } from '..';
-import { DatasourceType } from '@aws-amplify/graphql-transformer-core';
 
 const iamDefaultConfig: AppSyncAuthConfiguration = {
   defaultAuthentication: {
@@ -71,14 +70,8 @@ test('ModelXConnection type is getting the directives added, when a field has @h
     postUserId: ID! @index(name: "byUser")
     message: String
   }`;
-  const modelToDatasourceMap = new Map<string, DatasourceType>();
-  ['User', 'Post'].map((modelName) => {
-    modelToDatasourceMap.set(modelName, {
-      dbType: 'DDB',
-      provisionDB: true,
-    });
-  });
-  const transformer = getTransformer(withAuthModes(iamDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']), modelToDatasourceMap);
+
+  const transformer = getTransformer(withAuthModes(iamDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
   const out = transformer.transform(validSchema);
   const schemaDoc = parse(out.schema);
   const queryType = getObjectType(schemaDoc, 'Query');
@@ -124,15 +117,7 @@ test('ModelXConnection type is getting the directives added, when a field has @c
     posts: [PostEditor] @hasMany(indexName: "byEditor", fields: ["id"])
   }`;
 
-  const modelToDatasourceMap = new Map<string, DatasourceType>();
-  ['User', 'Post', 'PostEditor'].map((modelName) => {
-    modelToDatasourceMap.set(modelName, {
-      dbType: 'DDB',
-      provisionDB: true,
-    });
-  });
-
-  const transformer = getTransformer(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']), modelToDatasourceMap);
+  const transformer = getTransformer(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
   const out = transformer.transform(schema);
   const schemaDoc = parse(out.schema);
 
@@ -143,7 +128,7 @@ test('ModelXConnection type is getting the directives added, when a field has @c
   expect((modelPostEditorConnectionType as any).directives.some((dir: any) => dir.name.value === 'aws_cognito_user_pools')).toBe(true);
 });
 
-const getTransformer = (authConfig: AppSyncAuthConfiguration, modelToDatasourceMap: Map<string, DatasourceType>) => ({
+const getTransformer = (authConfig: AppSyncAuthConfiguration) => ({
   transform: (schema: string) => {
     return testTransform({
       schema,
@@ -155,7 +140,6 @@ const getTransformer = (authConfig: AppSyncAuthConfiguration, modelToDatasourceM
         new BelongsToTransformer(),
         new AuthTransformer(),
       ],
-      modelToDatasourceMap,
     });
   },
 });
