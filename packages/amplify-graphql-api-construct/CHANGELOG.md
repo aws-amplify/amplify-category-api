@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.1-pat-test.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-construct-alpha@0.8.0...@aws-amplify/graphql-construct-alpha@0.8.1-pat-test.0) (2023-09-22)
+
+### Bug Fixes
+
+- add missing jsdoc for construct constructor ([19463f6](https://github.com/aws-amplify/amplify-category-api/commit/19463f6195c301dcd483890507d4f7bf31dd6376))
+
 # [0.8.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-construct-alpha@0.7.1...@aws-amplify/graphql-construct-alpha@0.8.0) (2023-09-20)
 
 ### Features
