@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
+import { graphqlOutputKey } from '@aws-amplify/backend-output-schemas';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlSchema } from '../../amplify-graphql-schema';
 
@@ -21,18 +22,16 @@ describe('storeOutput', () => {
 
       expect(template.toJSON().Metadata).toMatchInlineSnapshot(`
         Object {
-          "AWS::Amplify::Output": Object {
-            "graphqlOutput": Object {
-              "stackOutputs": Array [
-                "awsAppsyncApiId",
-                "awsAppsyncApiEndpoint",
-                "awsAppsyncAuthenticationType",
-                "awsAppsyncRegion",
-                "amplifyApiModelSchemaS3Uri",
-                "awsAppsyncApiKey",
-              ],
-              "version": "1",
-            },
+          "AWS::Amplify::GraphQL": Object {
+            "stackOutputs": Array [
+              "awsAppsyncApiId",
+              "awsAppsyncApiEndpoint",
+              "awsAppsyncAuthenticationType",
+              "awsAppsyncRegion",
+              "amplifyApiModelSchemaS3Uri",
+              "awsAppsyncApiKey",
+            ],
+            "version": "1",
           },
         }
       `);
@@ -101,7 +100,7 @@ describe('storeOutput', () => {
       });
 
       expect(addBackendOutputEntry).toBeCalledTimes(1);
-      expect(addBackendOutputEntry).toBeCalledWith('graphqlOutput', {
+      expect(addBackendOutputEntry).toBeCalledWith(graphqlOutputKey, {
         version: '1',
         payload: {
           awsAppsyncApiEndpoint: expect.stringMatching(tokenRegex),
@@ -135,7 +134,7 @@ describe('storeOutput', () => {
       });
 
       expect(addBackendOutputEntry).toBeCalledTimes(1);
-      expect(addBackendOutputEntry).toBeCalledWith('graphqlOutput', {
+      expect(addBackendOutputEntry).toBeCalledWith(graphqlOutputKey, {
         version: '1',
         payload: {
           awsAppsyncApiId: expect.stringMatching(tokenRegex),

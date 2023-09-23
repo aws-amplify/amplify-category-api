@@ -3697,7 +3697,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 602
+        "line": 599
       },
       "name": "AmplifyGraphqlApiCfnResources",
       "properties": [
@@ -3710,7 +3710,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 651
+            "line": 648
           },
           "name": "additionalCfnResources",
           "type": {
@@ -3731,7 +3731,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 631
+            "line": 628
           },
           "name": "cfnDataSources",
           "type": {
@@ -3752,7 +3752,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 626
+            "line": 623
           },
           "name": "cfnFunctionConfigurations",
           "type": {
@@ -3773,7 +3773,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 646
+            "line": 643
           },
           "name": "cfnFunctions",
           "type": {
@@ -3794,7 +3794,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 606
+            "line": 603
           },
           "name": "cfnGraphqlApi",
           "type": {
@@ -3810,7 +3810,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 611
+            "line": 608
           },
           "name": "cfnGraphqlSchema",
           "type": {
@@ -3826,7 +3826,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 621
+            "line": 618
           },
           "name": "cfnResolvers",
           "type": {
@@ -3847,7 +3847,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 641
+            "line": 638
           },
           "name": "cfnRoles",
           "type": {
@@ -3868,7 +3868,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 636
+            "line": 633
           },
           "name": "cfnTables",
           "type": {
@@ -3889,7 +3889,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 616
+            "line": 613
           },
           "name": "cfnApiKey",
           "optional": true,
@@ -4157,7 +4157,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 658
+        "line": 655
       },
       "name": "AmplifyGraphqlApiResources",
       "properties": [
@@ -4170,7 +4170,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 682
+            "line": 679
           },
           "name": "cfnResources",
           "type": {
@@ -4186,7 +4186,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 677
+            "line": 674
           },
           "name": "functions",
           "type": {
@@ -4207,7 +4207,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 662
+            "line": 659
           },
           "name": "graphqlApi",
           "type": {
@@ -4223,7 +4223,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 687
+            "line": 684
           },
           "name": "nestedStacks",
           "type": {
@@ -4244,7 +4244,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 672
+            "line": 669
           },
           "name": "roles",
           "type": {
@@ -4265,7 +4265,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 667
+            "line": 664
           },
           "name": "tables",
           "type": {
@@ -5038,7 +5038,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 593
+        "line": 590
       },
       "name": "IGenericBackendOutputEntry",
       "properties": [
@@ -5050,7 +5050,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 595
+            "line": 592
           },
           "name": "payload",
           "type": {
@@ -5070,7 +5070,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 594
+            "line": 591
           },
           "name": "version",
           "type": {
@@ -5921,5 +5921,5 @@
     }
   },
   "version": "0.7.1",
-  "fingerprint": "kRXDnwLGcUExlo1kTHL88+3tY7sQO5kHwvzfTCDzor4="
+  "fingerprint": "KVo3BdVzo9l0QwsWT00geJZ0XjcbD2brNrBEetYXfsQ="
 }
