@@ -111,6 +111,8 @@
       "@aws-amplify/graphql-construct-alpha/@aws-amplify/graphql-predictions-transformer",
       "@aws-amplify/graphql-construct-alpha/@aws-amplify/graphql-relational-transformer",
       "@aws-amplify/graphql-construct-alpha/@aws-amplify/graphql-searchable-transformer",
+      "@aws-amplify/graphql-construct-alpha/@aws-amplify/backend-output-schemas",
+      "@aws-amplify/graphql-construct-alpha/@aws-amplify/backend-output-storage",
       "@aws-amplify/graphql-construct-alpha/fs-extra",
       "@aws-amplify/graphql-construct-alpha/graphql",
       "@aws-amplify/graphql-construct-alpha/graphql-transformer-common",
