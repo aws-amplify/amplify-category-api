@@ -398,6 +398,40 @@ describe('apply schema overrides for models with refersTo', () => {
     const updatedDocument = applySchemaOverrides(document, editedDocument);
     stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
   });
+
+  it('should not allow duplicate model name mappings in edited schema', () => {
+    const generatedSchemas = [
+      `
+        type Post @model {
+            id: String! @primaryKey
+            content: String
+        }
+      `,
+      `
+        type MyPost @model @refersTo(name: "Post") {
+            id: String! @primaryKey
+            content: String
+        }
+      `,
+    ];
+    const editedSchema = `
+        type Post @model {
+            id: String! @primaryKey
+            content: String
+        }
+        type MyPost @refersTo(name: "Post") @model {
+            id: String! @primaryKey
+            content: String
+        }
+    `;
+    const editedDocument = parse(editedSchema);
+    generatedSchemas.forEach((generatedSchema) => {
+      const document = parse(generatedSchema);
+      expect(() => applySchemaOverrides(document, editedDocument)).toThrowErrorMatchingInlineSnapshot(
+        `"Models Post, MyPost are mapped to the same table Post. Remove the duplicate mapping."`,
+      );
+    });
+  });
 });
 
 describe('apply schema overrides for model fields with refersTo', () => {

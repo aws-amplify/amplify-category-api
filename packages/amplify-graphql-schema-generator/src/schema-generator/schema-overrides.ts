@@ -33,6 +33,7 @@ export const applySchemaOverrides = (document: DocumentNode, existingDocument?: 
     ObjectTypeDefinition: {
       leave: (node: ObjectTypeDefinitionNode, key, parent, path, ancestors) => {
         const tableName = getMappedName(node);
+        checkDuplicateModelMapping(tableName, existingDocument);
         const correspondingModel = findMatchingModel(tableName, existingDocument);
         if (!correspondingModel) return;
 
@@ -228,4 +229,20 @@ export const findMatchingField = (columnName: string, taleName: string, document
     return;
   }
   return matchingObject?.fields?.find((field) => field?.name?.value === columnName || getMappedName(field) === columnName);
+};
+
+const checkDuplicateModelMapping = (tableName: string, document: DocumentNode) => {
+  const matchedModels = document.definitions.filter(
+    (def) =>
+      def?.kind === 'ObjectTypeDefinition' &&
+      def?.directives?.find((dir) => dir?.name?.value === MODEL_DIRECTIVE_NAME) &&
+      (def?.name?.value === tableName || getMappedName(def) === tableName),
+  );
+  if (matchedModels?.length > 1) {
+    throw new Error(
+      `Models ${matchedModels
+        .map((model) => (model as ObjectTypeDefinitionNode)?.name?.value)
+        .join(', ')} are mapped to the same table ${tableName}. Remove the duplicate mapping.`,
+    );
+  }
 };
