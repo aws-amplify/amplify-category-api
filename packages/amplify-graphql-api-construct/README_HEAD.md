@@ -19,13 +19,13 @@ We then wire this through to import a user pool which was already deployed (crea
 ```ts
 import { App, Stack } from 'aws-cdk-lib';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
-import { AmplifyGraphqlApi, AmplifyGraphqlSchema } from '@aws-amplify/graphql-construct-alpha';
+import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-construct-alpha';
 
 const app = new App();
 const stack = new Stack(app, 'TodoStack');
 
 new AmplifyGraphqlApi(stack, 'TodoApp', {
-  schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
+  schema: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
     type Todo @model @auth(rules: [{ allow: owner }]) {
       description: String!
       completed: Boolean
@@ -47,13 +47,13 @@ full access to, and customers requesting with api key will only have read permis
 ```ts
 import { App, Stack } from 'aws-cdk-lib';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
-import { AmplifyGraphqlApi, AmplifyGraphqlSchema } from '@aws-amplify/graphql-construct-alpha';
+import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-construct-alpha';
 
 const app = new App();
 const stack = new Stack(app, 'BlogStack');
 
 new AmplifyGraphqlApi(stack, 'BlogApp', {
-  schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
+  schema: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
     type Blog @model @auth(rules: [{ allow: public, operations: [read] }, { allow: groups, groups: ["Author", "Admin"] }]) {
       title: String!
       description: String
@@ -66,6 +66,57 @@ new AmplifyGraphqlApi(stack, 'BlogApp', {
       blog: Blog @belongsTo
     }
   `),
+  authorizationConfig: {
+    defaultAuthMode: 'API_KEY',
+    apiKeyConfig: {
+      description: 'Api Key for public access',
+      expires: cdk.Duration.days(7),
+    },
+    userPoolConfig: {
+      userPool: UserPool.fromUserPoolId(stack, 'ImportedUserPool', '<YOUR_USER_POOL_ID>'),
+    },
+  },
+});
+```
+
+### Import GraphQL Schema from files, instead of inline.
+
+In this example, we import the schema definition itself from one or more local file, rather than an inline graphql string.
+
+```graphql
+# todo.graphql
+type Todo @model @auth(rules: [{ allow: owner }]) {
+  content: String!
+  done: Boolean
+}
+```
+
+```graphql
+# blog.graphql
+type Blog @model @auth(rules: [{ allow: owner }, { allow: public, operations: [read] }]) {
+  title: String!
+  description: String
+  posts: [Post] @hasMany
+}
+
+type Post @model @auth(rules: [{ allow: owner }, { allow: public, operations: [read] }]) {
+  title: String!
+  content: [String]
+  blog: Blog @belongsTo
+}
+```
+
+```ts
+// app.ts
+import { App, Stack } from 'aws-cdk-lib';
+import { UserPool } from 'aws-cdk-lib/aws-cognito';
+import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-construct-alpha';
+
+const app = new App();
+const stack = new Stack(app, 'MultiFileStack');
+
+new AmplifyGraphqlApi(stack, 'MultiFileDefinition', {
+  schema: AmplifyGraphqlDefinition.fromFiles(path.join(__dirname, 'todo.graphql'), path.join(__dirname, 'blog.graphql')),
   authorizationConfig: {
     defaultAuthMode: 'API_KEY',
     apiKeyConfig: {
