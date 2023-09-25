@@ -412,6 +412,12 @@ export interface SchemaTranslationBehavior {
    * @default false
    */
   readonly enableSearchNodeToNodeEncryption: boolean;
+
+  /**
+   * When enabled, internal cfn outputs which existed in Amplify-generated apps will continue to be emitted.
+   * @default false
+   */
+  readonly enableTransformerCfnOutputs: boolean;
 }
 
 /**
@@ -484,6 +490,12 @@ export interface PartialSchemaTranslationBehavior {
    * @default false
    */
   readonly enableSearchNodeToNodeEncryption?: boolean;
+
+  /**
+   * When enabled, internal cfn outputs which existed in Amplify-generated apps will continue to be emitted.
+   * @default false
+   */
+  readonly enableTransformerCfnOutputs?: boolean;
 }
 
 /**

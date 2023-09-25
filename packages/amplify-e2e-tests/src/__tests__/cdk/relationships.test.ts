@@ -16,8 +16,8 @@ describe('CDK GraphQL Transformer - Relationships', () => {
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'relationships'));
     const name = await initCDKProject(projRoot, templatePath);
     const outputs = await cdkDeploy(projRoot, '--all');
-    apiEndpoint = outputs[name].GraphQLAPIEndpointOutput;
-    apiKey = outputs[name].GraphQLAPIKeyOutput;
+    apiEndpoint = outputs[name].awsAppsyncApiEndpoint;
+    apiKey = outputs[name].awsAppsyncApiKey;
   });
 
   /**

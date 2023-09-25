@@ -205,6 +205,7 @@ export interface PartialSchemaTranslationBehavior {
     readonly disableResolverDeduping?: boolean;
     readonly enableAutoIndexQueryNames?: boolean;
     readonly enableSearchNodeToNodeEncryption?: boolean;
+    readonly enableTransformerCfnOutputs?: boolean;
     readonly populateOwnerFieldForStaticGroupAuth?: boolean;
     readonly respectPrimaryKeyAttributesOnConnectionField?: boolean;
     readonly sandboxModeEnabled?: boolean;
@@ -225,6 +226,7 @@ export interface SchemaTranslationBehavior {
     readonly disableResolverDeduping: boolean;
     readonly enableAutoIndexQueryNames: boolean;
     readonly enableSearchNodeToNodeEncryption: boolean;
+    readonly enableTransformerCfnOutputs: boolean;
     readonly populateOwnerFieldForStaticGroupAuth: boolean;
     readonly respectPrimaryKeyAttributesOnConnectionField: boolean;
     readonly sandboxModeEnabled: boolean;
