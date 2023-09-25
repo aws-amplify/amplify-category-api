@@ -9,7 +9,6 @@ import {
   getProjectMeta,
   importRDSDatabase,
   initJSProjectWithProfile,
-  removeRDSPortInboundRule,
   setupRDSInstanceAndData,
   sleep,
 } from 'amplify-category-api-e2e-core';
@@ -127,7 +126,7 @@ describe('RDS refersTo directive on model fields', () => {
       port,
       username,
       password,
-      useVpc: false,
+      useVpc: true,
       apiExists: true,
     });
 
