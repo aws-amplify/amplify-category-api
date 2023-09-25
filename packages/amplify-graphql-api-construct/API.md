@@ -24,14 +24,7 @@ import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { MappingTemplate } from 'aws-cdk-lib/aws-appsync';
 import { NestedStack } from 'aws-cdk-lib';
-import { SchemaFile } from 'aws-cdk-lib/aws-appsync';
 import { z } from 'zod';
-
-// @public
-export interface AmplifyApiSchemaPreprocessorOutput {
-    readonly processedFunctionSlots?: FunctionSlot[];
-    readonly processedSchema: string;
-}
 
 // @public
 export class AmplifyGraphqlApi extends Construct {
@@ -59,14 +52,14 @@ export interface AmplifyGraphqlApiProps {
     readonly apiName?: string;
     readonly authorizationConfig: AuthorizationConfig;
     readonly conflictResolution?: ConflictResolution;
+    readonly definition: IAmplifyGraphqlDefinition;
     readonly functionNameMap?: Record<string, IFunction>;
     readonly functionSlots?: FunctionSlot[];
     readonly outputStorageStrategy?: IBackendOutputStorageStrategy;
     readonly predictionsBucket?: IBucket;
-    readonly schema: IAmplifyGraphqlSchema;
-    readonly schemaTranslationBehavior?: PartialSchemaTranslationBehavior;
     readonly stackMappings?: Record<string, string>;
     readonly transformers?: any[];
+    readonly translationBehavior?: PartialTranslationBehavior;
 }
 
 // @public
@@ -80,9 +73,9 @@ export interface AmplifyGraphqlApiResources {
 }
 
 // @public
-export class AmplifyGraphqlSchema {
-    static fromSchemaFiles(...schemaFiles: SchemaFile[]): IAmplifyGraphqlSchema;
-    static fromString(schema: string): IAmplifyGraphqlSchema;
+export class AmplifyGraphqlDefinition {
+    static fromFiles(...filePaths: string[]): IAmplifyGraphqlDefinition;
+    static fromString(schema: string): IAmplifyGraphqlDefinition;
 }
 
 // @public
@@ -163,9 +156,9 @@ export interface IAMAuthorizationConfig {
 }
 
 // @public
-export interface IAmplifyGraphqlSchema {
-    readonly definition: string;
+export interface IAmplifyGraphqlDefinition {
     readonly functionSlots: FunctionSlot[];
+    readonly schema: string;
 }
 
 // @public
@@ -201,7 +194,7 @@ export interface OptimisticConflictResolutionStrategy extends ConflictResolution
 }
 
 // @public
-export interface PartialSchemaTranslationBehavior {
+export interface PartialTranslationBehavior {
     readonly disableResolverDeduping?: boolean;
     readonly enableAutoIndexQueryNames?: boolean;
     readonly enableSearchNodeToNodeEncryption?: boolean;
@@ -222,7 +215,13 @@ export interface QueryFunctionSlot extends FunctionSlotBase {
 }
 
 // @public
-export interface SchemaTranslationBehavior {
+export interface SubscriptionFunctionSlot extends FunctionSlotBase {
+    readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preSubscribe';
+    readonly typeName: 'Subscription';
+}
+
+// @public
+export interface TranslationBehavior {
     readonly disableResolverDeduping: boolean;
     readonly enableAutoIndexQueryNames: boolean;
     readonly enableSearchNodeToNodeEncryption: boolean;
@@ -234,12 +233,6 @@ export interface SchemaTranslationBehavior {
     readonly shouldDeepMergeDirectiveConfigDefaults: boolean;
     readonly suppressApiKeyGeneration: boolean;
     readonly useSubUsernameForDefaultIdentityClaim: boolean;
-}
-
-// @public
-export interface SubscriptionFunctionSlot extends FunctionSlotBase {
-    readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preSubscribe';
-    readonly typeName: 'Subscription';
 }
 
 // @public
