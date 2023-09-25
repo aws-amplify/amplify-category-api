@@ -13,6 +13,7 @@ import {
   initJSProjectWithProfile,
   updateSchema,
   getResource,
+  sleep,
 } from 'amplify-category-api-e2e-core';
 import { existsSync, readFileSync } from 'fs-extra';
 import generator from 'generate-password';
@@ -185,6 +186,7 @@ describe('RDS Tests', () => {
     expect(rdsPatchingSubscription.Properties.FilterPolicy.Region).toBeDefined();
 
     await amplifyPush(projRoot);
+    await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.
 
     // Get the AppSync API details after deployment
     const meta = getProjectMeta(projRoot);
@@ -212,8 +214,6 @@ describe('RDS Tests', () => {
       },
     });
 
-    // VPC will not have VPC endpoints for SSM defined and the security group's inbound rule for port 443 is not defined.
-    // Expect the listComponents query to fail with an error.
     expect(appSyncClient).toBeDefined();
 
     const result = await listComponents(appSyncClient);

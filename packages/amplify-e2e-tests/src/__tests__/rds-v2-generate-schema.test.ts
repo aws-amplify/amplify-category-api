@@ -1,32 +1,28 @@
 import {
-  RDSTestDataProvider,
   addApiWithoutSchema,
-  addRDSPortInboundRule,
   createNewProjectDir,
-  createRDSInstance,
   deleteDBInstance,
   deleteProject,
   deleteProjectDir,
   importRDSDatabase,
   initJSProjectWithProfile,
-  removeRDSPortInboundRule,
   apiGenerateSchema,
   apiGenerateSchemaWithError,
+  getProjectMeta,
+  setupRDSInstanceAndData,
 } from 'amplify-category-api-e2e-core';
-import axios from 'axios';
 import { existsSync, readFileSync, writeFileSync } from 'fs-extra';
 import generator from 'generate-password';
 import { ObjectTypeDefinitionNode, StringValueNode, parse } from 'graphql';
 import path from 'path';
 
 describe('RDS Generate Schema tests', () => {
-  let publicIpCidr = '0.0.0.0/0';
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
 
   // Generate settings for RDS instance
   const username = db_user;
   const password = db_password;
-  const region = 'us-east-1';
+  let region = 'us-east-1';
   let port = 3306;
   const database = 'default_db';
   let host = 'localhost';
@@ -36,16 +32,14 @@ describe('RDS Generate Schema tests', () => {
   let projRoot;
 
   beforeAll(async () => {
-    // Get the public IP of the machine running the test
-    const url = 'http://api.ipify.org/';
-    const response = await axios(url);
-    publicIpCidr = `${response.data.trim()}/32`;
-    await setupDatabase();
-
     projRoot = await createNewProjectDir('rdsimportapi');
     await initJSProjectWithProfile(projRoot, {
       disableAmplifyAppCreation: false,
     });
+
+    const metaAfterInit = getProjectMeta(projRoot);
+    region = metaAfterInit.providers.awscloudformation.Region;
+    await setupDatabase();
 
     await addApiWithoutSchema(projRoot, { transformerVersion: 2, apiName });
 
@@ -55,7 +49,7 @@ describe('RDS Generate Schema tests', () => {
       port,
       username,
       password,
-      useVpc: false,
+      useVpc: true,
       apiExists: true,
     });
   });
@@ -70,57 +64,27 @@ describe('RDS Generate Schema tests', () => {
     deleteProjectDir(projRoot);
   });
 
-  // beforeEach(async () => {
-  // });
-
-  // afterEach(async () => {
-  // });
-
   const setupDatabase = async () => {
-    // This test performs the below
-    // 1. Create a RDS Instance
-    // 2. Add the external IP address of the current machine to security group inbound rule to allow public access
-    // 3. Connect to the database and execute DDL
-
-    const db = await createRDSInstance({
+    const dbConfig = {
       identifier,
-      engine: 'mysql',
+      engine: 'mysql' as const,
       dbname: database,
       username,
       password,
       region,
-    });
-    port = db.port;
-    host = db.endpoint;
-    await addRDSPortInboundRule({
-      region,
-      port: db.port,
-      cidrIp: publicIpCidr,
-    });
-
-    const dbAdapter = new RDSTestDataProvider({
-      host: db.endpoint,
-      port: db.port,
-      username,
-      password,
-      database: db.dbName,
-    });
-    await dbAdapter.runQuery([
+    };
+    const queries = [
       'CREATE TABLE Contact (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
       'CREATE TABLE Person (ID INT PRIMARY KEY, Info JSON NOT NULL)',
       'CREATE TABLE tbl_todos (ID INT PRIMARY KEY, description VARCHAR(20))',
-    ]);
-    dbAdapter.cleanup();
+    ];
+
+    const db = await setupRDSInstanceAndData(dbConfig, queries);
+    port = db.port;
+    host = db.endpoint;
   };
 
   const cleanupDatabase = async () => {
-    // 1. Remove the IP address from the security group
-    // 2. Delete the RDS instance
-    await removeRDSPortInboundRule({
-      region,
-      port: port,
-      cidrIp: publicIpCidr,
-    });
     await deleteDBInstance(identifier, region);
   };
 
@@ -187,6 +151,7 @@ describe('RDS Generate Schema tests', () => {
       username,
       password,
       validCredentials: true,
+      useVpc: true,
     });
 
     // The re-generated schema preserves the edits that were made
@@ -254,6 +219,7 @@ describe('RDS Generate Schema tests', () => {
       username,
       password,
       validCredentials: true,
+      useVpc: true,
     });
 
     // The re-generated schema preserves the edits that were made
@@ -279,6 +245,7 @@ describe('RDS Generate Schema tests', () => {
       username,
       password,
       validCredentials: true,
+      useVpc: true,
       errMessage: `The schema file at ${rdsSchemaFilePath} is not a valid GraphQL document. Syntax Error: Cannot parse the unexpected character "/".`,
     });
   });

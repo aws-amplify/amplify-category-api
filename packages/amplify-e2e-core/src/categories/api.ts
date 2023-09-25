@@ -18,6 +18,8 @@ import { multiSelect, singleSelect } from '../utils/selectors';
 import { selectRuntime, selectTemplate } from './lambda-function';
 import { modifiedApi } from './resources/modified-api-index';
 
+const VPC_DEPLOYMENT_WAIT_TIME = 1000 * 60 * 12; // 12 minutes;
+
 export function getSchemaPath(schemaName: string): string {
   return path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'schemas', schemaName);
 }
@@ -1054,7 +1056,7 @@ export const importRDSDatabase = (cwd: string, opts: ImportApiOptions & { apiExi
     const importCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['import', 'api', '--debug'], {
       cwd,
       stripColors: true,
-      noOutputTimeout: vpcLambdaDeploymentDelayMS,
+      noOutputTimeout: VPC_DEPLOYMENT_WAIT_TIME,
     });
     if (!options.apiExists) {
       importCommands
@@ -1070,7 +1072,7 @@ export const importRDSDatabase = (cwd: string, opts: ImportApiOptions & { apiExi
     promptDBInformation(importCommands, options);
 
     if (options.useVpc) {
-      importCommands.wait(/.*Unable to connect to the database from this machine. Would you like to try from VPC.*/).sendConfirmYes();
+      importCommands.wait(/.*Unable to connect to the database from this machine. Would you like to try from VPC.*/).sendYes();
     }
 
     importCommands.wait(/.*Successfully imported the database schema into.*/).run((err: Error) => {
@@ -1108,9 +1110,13 @@ export function apiGenerateSchema(cwd: string, opts: ImportApiOptions & { validC
     const generateSchemaCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['generate-schema', 'api'], {
       cwd,
       stripColors: true,
+      noOutputTimeout: VPC_DEPLOYMENT_WAIT_TIME,
     });
     if (!options?.validCredentials) {
       promptDBInformation(generateSchemaCommands, options);
+    }
+    if (options.useVpc) {
+      generateSchemaCommands.wait(/.*Unable to connect to the database from this machine. Would you like to try from VPC.*/).sendYes();
     }
     generateSchemaCommands.run((err: Error) => {
       if (!err) {
@@ -1128,9 +1134,13 @@ export function apiGenerateSchemaWithError(cwd: string, opts: ImportApiOptions &
     const generateSchemaCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['generate-schema', 'api'], {
       cwd,
       stripColors: true,
+      noOutputTimeout: VPC_DEPLOYMENT_WAIT_TIME,
     });
     if (!options?.validCredentials) {
       promptDBInformation(generateSchemaCommands, options);
+    }
+    if (options.useVpc) {
+      generateSchemaCommands.wait(/.*Unable to connect to the database from this machine. Would you like to try from VPC.*/).sendYes();
     }
     generateSchemaCommands.wait(options.errMessage);
     generateSchemaCommands.run((err: Error) => {

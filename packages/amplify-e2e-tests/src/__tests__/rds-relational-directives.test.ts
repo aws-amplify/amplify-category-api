@@ -1,11 +1,8 @@
 import {
-  RDSTestDataProvider,
   addApiWithoutSchema,
-  addRDSPortInboundRule,
   amplifyPush,
   apiGenerateSchema,
   createNewProjectDir,
-  createRDSInstance,
   deleteDBInstance,
   deleteProject,
   deleteProjectDir,
@@ -13,7 +10,8 @@ import {
   getProjectMeta,
   importRDSDatabase,
   initJSProjectWithProfile,
-  removeRDSPortInboundRule,
+  setupRDSInstanceAndData,
+  sleep,
 } from 'amplify-category-api-e2e-core';
 import { existsSync, writeFileSync, mkdirSync, readFileSync } from 'fs-extra';
 import generator from 'generate-password';
@@ -27,13 +25,12 @@ import { ObjectTypeDefinitionNode, parse } from 'graphql';
 (global as any).fetch = require('node-fetch');
 
 describe('RDS Relational Directives', () => {
-  const publicIpCidr = '0.0.0.0/0';
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
 
   // Generate settings for RDS instance
   const username = db_user;
   const password = db_password;
-  const region = 'us-east-1';
+  let region = 'us-east-1';
   let port = 3306;
   const database = 'default_db';
   let host = 'localhost';
@@ -45,9 +42,9 @@ describe('RDS Relational Directives', () => {
 
   beforeAll(async () => {
     projRoot = await createNewProjectDir('rdsmodelapi');
-    await setupDatabase();
     await initProjectAndImportSchema();
     await amplifyPush(projRoot);
+    await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.
 
     const meta = getProjectMeta(projRoot);
     const appRegion = meta.providers.awscloudformation.Region;
@@ -86,36 +83,15 @@ describe('RDS Relational Directives', () => {
   });
 
   const setupDatabase = async (): Promise<void> => {
-    // This test performs the below
-    // 1. Create a RDS Instance
-    // 2. Add the external IP address of the current machine to security group inbound rule to allow public access
-    // 3. Connect to the database and execute DDL
-
-    const db = await createRDSInstance({
+    const dbConfig = {
       identifier,
-      engine: 'mysql',
+      engine: 'mysql' as const,
       dbname: database,
       username,
       password,
       region,
-    });
-    port = db.port;
-    host = db.endpoint;
-    await addRDSPortInboundRule({
-      region,
-      port: db.port,
-      cidrIp: publicIpCidr,
-    });
-
-    const dbAdapter = new RDSTestDataProvider({
-      host: db.endpoint,
-      port: db.port,
-      username,
-      password,
-      database: db.dbName,
-    });
-
-    await dbAdapter.runQuery([
+    };
+    const queries = [
       'CREATE TABLE Blog (id VARCHAR(40) PRIMARY KEY, content VARCHAR(255))',
       'CREATE TABLE Post (id VARCHAR(40) PRIMARY KEY, content VARCHAR(255), blogId VARCHAR(40))',
       'CREATE TABLE User (id VARCHAR(40) PRIMARY KEY, name VARCHAR(255))',
@@ -129,18 +105,14 @@ describe('RDS Relational Directives', () => {
       `,
       "INSERT INTO ZipCode VALUES ('20158', 'Hamilton', 'VA', 'US')",
       "INSERT INTO ZipCode VALUES ('20160', 'Lincoln', 'VA', 'US')",
-    ]);
-    dbAdapter.cleanup();
+    ];
+
+    const db = await setupRDSInstanceAndData(dbConfig, queries);
+    port = db.port;
+    host = db.endpoint;
   };
 
   const cleanupDatabase = async (): Promise<void> => {
-    // 1. Remove the IP address from the security group
-    // 2. Delete the RDS instance
-    await removeRDSPortInboundRule({
-      region,
-      port: port,
-      cidrIp: publicIpCidr,
-    });
     await deleteDBInstance(identifier, region);
   };
 
@@ -163,6 +135,11 @@ describe('RDS Relational Directives', () => {
       disableAmplifyAppCreation: false,
       name: projName,
     });
+
+    const metaAfterInit = getProjectMeta(projRoot);
+    region = metaAfterInit.providers.awscloudformation.Region;
+    await setupDatabase();
+
     const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
 
     await addApiWithoutSchema(projRoot, { transformerVersion: 2, apiName });
@@ -173,7 +150,7 @@ describe('RDS Relational Directives', () => {
       port,
       username,
       password,
-      useVpc: false,
+      useVpc: true,
       apiExists: true,
     });
 
@@ -614,6 +591,7 @@ describe('RDS Relational Directives', () => {
       username,
       password,
       validCredentials: true,
+      useVpc: true,
     });
     const apiName = 'rdsrelationalapi';
     const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
