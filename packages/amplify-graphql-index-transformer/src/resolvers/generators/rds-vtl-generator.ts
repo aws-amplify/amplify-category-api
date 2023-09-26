@@ -22,6 +22,13 @@ export class RDSIndexVTLGenerator implements IndexVTLGenerator {
         set(ref('lambdaInput.operationName'), str(operationName)),
         set(ref('lambdaInput.args.metadata'), obj({})),
         set(ref('lambdaInput.args.metadata.keys'), list([])),
+        set(ref('lambdaInput.args.metadata.fieldMap'), obj({})),
+        qref(
+          methodCall(
+            ref('lambdaInput.args.metadata.fieldMap.putAll'),
+            methodCall(ref('util.defaultIfNull'), ref('context.stash.fieldMap'), obj({})),
+          ),
+        ),
         qref(
           methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
         ),

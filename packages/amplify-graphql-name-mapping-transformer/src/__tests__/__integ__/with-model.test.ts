@@ -2,7 +2,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
 import { DDB_DB_TYPE, MYSQL_DB_TYPE, DBType } from '@aws-amplify/graphql-transformer-core';
-import { constructModelToDataSourceMap, testTableNameMapping } from './common';
+import { constructModelToDataSourceMap, testTableNameMapping, testColumnNameMapping } from './common';
 import { RefersToTransformer } from '../../graphql-refers-to-transformer';
 
 const transformSchema = (schema: string, dbType: DBType) => {
@@ -76,5 +76,16 @@ describe('@refersTo with RDS Models', () => {
     `;
     const out = transformSchema(basicSchema, MYSQL_DB_TYPE);
     testTableNameMapping('Todo', 'Task', out);
+  });
+
+  it('model field names are mapped', () => {
+    const basicSchema = /* GraphQL */ `
+      type Todo @model {
+        id: ID!
+        title: String! @refersTo(name: "description")
+      }
+    `;
+    const out = transformSchema(basicSchema, MYSQL_DB_TYPE);
+    testColumnNameMapping('Todo', out);
   });
 });

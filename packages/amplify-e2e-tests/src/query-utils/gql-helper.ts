@@ -127,3 +127,14 @@ export class GQLQueryHelper {
     return listResult;
   };
 }
+
+export const runQuery = async (client: AWSAppSyncClient<any>, query: string, variables: any): Promise<any> => {
+  const result = await client.query({
+    query: gql`
+      ${query}
+    `,
+    variables,
+    fetchPolicy: 'no-cache',
+  });
+  return result;
+};

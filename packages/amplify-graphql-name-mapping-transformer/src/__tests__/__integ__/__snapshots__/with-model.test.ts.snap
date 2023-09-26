@@ -1,5 +1,35 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`@refersTo with RDS Models model field names are mapped 1`] = `
+"#set( $fieldMap = {\\"title\\":\\"description\\"} )
+#set( $ctx.stash.fieldMap = $fieldMap )
+$util.toJson({})"
+`;
+
+exports[`@refersTo with RDS Models model field names are mapped 2`] = `
+"#set( $fieldMap = {\\"title\\":\\"description\\"} )
+#set( $ctx.stash.fieldMap = $fieldMap )
+$util.toJson({})"
+`;
+
+exports[`@refersTo with RDS Models model field names are mapped 3`] = `
+"#set( $fieldMap = {\\"title\\":\\"description\\"} )
+#set( $ctx.stash.fieldMap = $fieldMap )
+$util.toJson({})"
+`;
+
+exports[`@refersTo with RDS Models model field names are mapped 4`] = `
+"#set( $fieldMap = {\\"title\\":\\"description\\"} )
+#set( $ctx.stash.fieldMap = $fieldMap )
+$util.toJson({})"
+`;
+
+exports[`@refersTo with RDS Models model field names are mapped 5`] = `
+"#set( $fieldMap = {\\"title\\":\\"description\\"} )
+#set( $ctx.stash.fieldMap = $fieldMap )
+$util.toJson({})"
+`;
+
 exports[`@refersTo with RDS Models model table names are mapped 1`] = `
 "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
@@ -10,6 +40,8 @@ exports[`@refersTo with RDS Models model table names are mapped 1`] = `
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.fieldMap = {} )
+$util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 ## Set the default values to put request **
 #set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -33,6 +65,8 @@ exports[`@refersTo with RDS Models model table names are mapped 2`] = `
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.fieldMap = {} )
+$util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 ## Set the default values to put request **
 #set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -57,6 +91,8 @@ exports[`@refersTo with RDS Models model table names are mapped 3`] = `
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.fieldMap = {} )
+$util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.condition = $util.defaultIfNull($context.arguments.condition, {}) )
 {
@@ -77,6 +113,8 @@ exports[`@refersTo with RDS Models model table names are mapped 4`] = `
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.fieldMap = {} )
+$util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, {})))
@@ -98,6 +136,8 @@ exports[`@refersTo with RDS Models model table names are mapped 5`] = `
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.fieldMap = {} )
+$util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))

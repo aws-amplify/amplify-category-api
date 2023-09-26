@@ -1,53 +1,13 @@
 import { attributeTypeFromType } from '@aws-amplify/graphql-index-transformer';
-import { getKeySchema, getTable, MappingTemplate } from '@aws-amplify/graphql-transformer-core';
-import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { getTable } from '@aws-amplify/graphql-transformer-core';
+import { TransformerContextProvider, TransformerPrepareStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from 'aws-cdk-lib';
 import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import {
-  and,
-  bool,
-  compoundExpression,
-  DynamoDBMappingTemplate,
-  equals,
-  Expression,
-  ifElse,
-  iff,
-  int,
-  isNullOrEmpty,
-  list,
-  methodCall,
-  not,
-  nul,
-  obj,
-  ObjectNode,
-  or,
-  print,
-  qref,
-  raw,
-  ref,
-  set,
-  str,
-  toJson,
-} from 'graphql-mapping-template';
-import {
-  applyCompositeKeyConditionExpression,
-  applyKeyConditionExpression,
-  attributeTypeFromScalar,
-  ModelResourceIDs,
-  NONE_VALUE,
-  ResolverResourceIDs,
-  ResourceConstants,
-  setArgs,
-  toCamelCase,
-} from 'graphql-transformer-common';
+import { ref } from 'graphql-mapping-template';
+import { ModelResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { getSortKeyFields } from './schema';
-import { HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from './types';
+import { HasManyDirectiveConfiguration } from './types';
 import { getConnectionAttributeName, getObjectPrimaryKey } from './utils';
-
-const CONNECTION_STACK = 'ConnectionStack';
-const authFilter = ref('ctx.stash.authFilter');
-const PARTITION_KEY_VALUE = 'partitionKeyValue';
-const SORT_KEY_VALUE = 'sortKeyValue';
 
 /**
  * adds GSI to the table if it doesn't already exists for connection
@@ -162,4 +122,18 @@ function getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject(
 
 export const condenseRangeKey = (fields: string[]): string => {
   return fields.join(ModelResourceIDs.ModelCompositeKeySeparator());
+};
+
+export const setFieldMappingResolverReference = (
+  context: TransformerPrepareStepContextProvider,
+  mappedModelName: string,
+  typeName: string,
+  fieldName: string,
+  isList: boolean = false,
+) => {
+  const modelFieldMap = context.resourceHelper.getModelFieldMap(mappedModelName);
+  if (!modelFieldMap.getMappedFields().length) {
+    return;
+  }
+  modelFieldMap.addResolverReference({ typeName: typeName, fieldName: fieldName, isList: isList });
 };
