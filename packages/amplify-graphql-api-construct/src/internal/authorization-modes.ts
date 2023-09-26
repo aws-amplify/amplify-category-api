@@ -139,7 +139,7 @@ export const convertAuthorizationModesToTransformerAuthConfig = (authModes: Auth
 });
 
 /**
- * Transformt he authorization config into the transformer synth parameters pertaining to auth.
+ * Transform the authorization config into the transformer synth parameters pertaining to auth.
  * @param authModes the auth modes provided to the construct.
  * @returns a record of params to be consumed by the transformer.
  */
