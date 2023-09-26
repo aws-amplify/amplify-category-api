@@ -19,7 +19,7 @@ describe('generated resource access', () => {
               description: String!
             }
           `),
-          authorizationConfig: {
+          authorizationModes: {
             userPoolConfig: { userPool },
           },
         });
@@ -40,7 +40,7 @@ describe('generated resource access', () => {
               description: String!
             }
           `),
-          authorizationConfig: {
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
@@ -61,7 +61,7 @@ describe('generated resource access', () => {
               description: String!
             }
           `),
-          authorizationConfig: {
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
@@ -88,7 +88,7 @@ describe('generated resource access', () => {
               description: String!
             }
           `),
-          authorizationConfig: {
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
@@ -108,7 +108,7 @@ describe('generated resource access', () => {
               description: String! @index
             }
           `),
-          authorizationConfig: {
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
@@ -145,7 +145,7 @@ describe('generated resource access', () => {
               todo: Todo @belongsTo
             }
           `),
-          authorizationConfig: {
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
@@ -192,7 +192,7 @@ describe('generated resource access', () => {
               description: String!
             }
           `),
-          authorizationConfig: {
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
@@ -213,7 +213,7 @@ describe('generated resource access', () => {
               description: String!
             }
           `),
-          authorizationConfig: {
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
@@ -233,7 +233,7 @@ describe('generated resource access', () => {
               echo(message: String!): String! @function(name: "echo")
             }
           `),
-          authorizationConfig: {
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
@@ -255,7 +255,7 @@ describe('generated resource access', () => {
               description: String!
             }
           `),
-          authorizationConfig: {
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
           translationBehavior: {
@@ -305,7 +305,7 @@ describe('generated resource access', () => {
               posts: [Post] @manyToMany(relationName: "PostAuthors")
             }
           `),
-          authorizationConfig: {
+          authorizationModes: {
             userPoolConfig: { userPool },
           },
         });
@@ -336,7 +336,7 @@ describe('generated resource access', () => {
               detectionType: 'VERSION',
             },
           },
-          authorizationConfig: {
+          authorizationModes: {
             userPoolConfig: { userPool },
           },
         });
@@ -359,7 +359,7 @@ describe('generated resource access', () => {
               description: String!
             }
           `),
-          authorizationConfig: {
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
@@ -381,7 +381,7 @@ describe('generated resource access', () => {
               description: String!
             }
           `),
-          authorizationConfig: {
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
@@ -401,7 +401,7 @@ describe('generated resource access', () => {
               description: String!
             }
           `),
-          authorizationConfig: {
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
@@ -425,7 +425,7 @@ describe('generated resource access', () => {
               description: String!
             }
           `),
-          authorizationConfig: {
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
@@ -447,7 +447,7 @@ describe('generated resource access', () => {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
       });
@@ -464,7 +464,7 @@ describe('generated resource access', () => {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
       });
@@ -482,7 +482,7 @@ describe('generated resource access', () => {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
       });
@@ -500,7 +500,7 @@ describe('generated resource access', () => {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
       });

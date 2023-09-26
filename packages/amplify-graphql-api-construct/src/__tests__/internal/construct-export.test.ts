@@ -11,7 +11,7 @@ describe('AmplifyGraphqlApi', () => {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
       });

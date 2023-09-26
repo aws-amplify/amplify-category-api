@@ -72,7 +72,7 @@ export class AmplifyGraphqlApi extends Construct {
 
     const {
       definition,
-      authorizationConfig,
+      authorizationModes,
       conflictResolution,
       functionSlots,
       transformers,
@@ -86,7 +86,7 @@ export class AmplifyGraphqlApi extends Construct {
     addAmplifyMetadataToStackDescription(scope);
 
     const { authConfig, identityPoolId, adminRoles, authSynthParameters } =
-      convertAuthorizationModesToTransformerAuthConfig(authorizationConfig);
+      convertAuthorizationModesToTransformerAuthConfig(authorizationModes);
 
     validateFunctionSlots(functionSlots ?? []);
     const separatedFunctionSlots = separateSlots([...(functionSlots ?? []), ...definition.functionSlots]);

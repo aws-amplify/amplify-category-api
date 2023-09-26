@@ -25,7 +25,7 @@ describe('auth modes', () => {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
       });
@@ -45,7 +45,7 @@ describe('auth modes', () => {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           iamConfig: {
             identityPoolId: identityPool.logicalId,
             authenticatedUserRole,
@@ -68,12 +68,13 @@ describe('auth modes', () => {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           iamConfig: {
+            identityPoolId: 'identityPool123',
             authenticatedUserRole,
             unauthenticatedUserRole,
-            adminRoles: [authenticatedUserRole],
           },
+          adminRoles: [authenticatedUserRole],
         },
       });
     });
@@ -89,7 +90,7 @@ describe('auth modes', () => {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           userPoolConfig: { userPool },
         },
       });
@@ -106,7 +107,7 @@ describe('auth modes', () => {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           lambdaConfig: {
             function: authFunction,
             ttl: cdk.Duration.minutes(5),
@@ -124,7 +125,7 @@ describe('auth modes', () => {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           oidcConfig: {
             oidcProviderName: 'testProvider',
             oidcIssuerUrl: 'https://test.client/',

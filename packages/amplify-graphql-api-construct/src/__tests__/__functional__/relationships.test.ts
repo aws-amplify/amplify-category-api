@@ -11,7 +11,7 @@ const verifySchema = (schema: string): void => {
   const stack = new cdk.Stack();
   new AmplifyGraphqlApi(stack, 'TestApi', {
     definition: AmplifyGraphqlDefinition.fromString(schema),
-    authorizationConfig: {
+    authorizationModes: {
       apiKeyConfig: { expires: cdk.Duration.days(7) },
     },
   });

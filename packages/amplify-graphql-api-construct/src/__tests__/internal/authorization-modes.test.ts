@@ -21,6 +21,7 @@ describe('convertAuthorizationModesToTransformerAuthConfig', () => {
       authSynthParameters: { authenticatedUserRoleName, unauthenticatedUserRoleName },
     } = convertAuthorizationModesToTransformerAuthConfig({
       iamConfig: {
+        identityPoolId: 'identitypool123',
         authenticatedUserRole,
         unauthenticatedUserRole,
       },
@@ -38,6 +39,7 @@ describe('convertAuthorizationModesToTransformerAuthConfig', () => {
         expires: { toDays: () => 7 } as Duration,
       },
       iamConfig: {
+        identityPoolId: 'identitypool123',
         authenticatedUserRole,
         unauthenticatedUserRole,
       },

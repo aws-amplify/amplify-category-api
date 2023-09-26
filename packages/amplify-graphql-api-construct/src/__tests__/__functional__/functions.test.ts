@@ -14,7 +14,7 @@ describe('function directive', () => {
           repeat(message: String!): String! @function(name: "repeat")
         }
       `),
-      authorizationConfig: {
+      authorizationModes: {
         apiKeyConfig: { expires: cdk.Duration.days(7) },
       },
     });
@@ -117,7 +117,7 @@ describe('function directive', () => {
           functionNameMap: {
             repeat: referencedFunction,
           },
-          authorizationConfig: {
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         }),
@@ -145,7 +145,7 @@ describe('function directive', () => {
       functionNameMap: {
         repeat: referencedFunction,
       },
-      authorizationConfig: {
+      authorizationModes: {
         apiKeyConfig: { expires: cdk.Duration.days(7) },
       },
     });
@@ -197,7 +197,7 @@ describe('function directive', () => {
       functionNameMap: {
         repeat: referencedFunction,
       },
-      authorizationConfig: {
+      authorizationModes: {
         apiKeyConfig: { expires: cdk.Duration.days(7) },
       },
     });

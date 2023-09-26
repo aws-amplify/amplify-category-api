@@ -23,22 +23,17 @@ export interface IAMAuthorizationConfig {
   /**
    * ID for the Cognito Identity Pool vending auth and unauth roles.
    */
-  readonly identityPoolId?: string;
+  readonly identityPoolId: string;
 
   /**
    * Authenticated user role, applies to { provider: iam, allow: private } access.
    */
-  readonly authenticatedUserRole?: IRole;
+  readonly authenticatedUserRole: IRole;
 
   /**
    * Unauthenticated user role, applies to { provider: iam, allow: public } access.
    */
-  readonly unauthenticatedUserRole?: IRole;
-
-  /**
-   * A list of roles granted full R/W access to the Api.
-   */
-  readonly adminRoles?: IRole[];
+  readonly unauthenticatedUserRole: IRole;
 }
 
 /**
@@ -115,12 +110,11 @@ export interface LambdaAuthorizationConfig {
 }
 
 /**
- * Authorization Config to apply to the Api.
- * At least one config must be provided, and if more than one are provided,
- * a defaultAuthMode must be specified.
+ * Authorization Modes to apply to the Api.
+ * At least one modes must be provided, and if more than one are provided a defaultAuthMode must be specified.
  * For more information on Amplify Api auth, refer to https://docs.amplify.aws/cli/graphql/authorization-rules/#authorization-strategies
  */
-export interface AuthorizationConfig {
+export interface AuthorizationModes {
   /**
    * Default auth mode to provide to the Api, required if more than one config type is specified.
    */
@@ -155,6 +149,11 @@ export interface AuthorizationConfig {
    * Applies to 'custom' auth strategy.
    */
   readonly lambdaConfig?: LambdaAuthorizationConfig;
+
+  /**
+   * A list of roles granted full R/W access to the Api.
+   */
+  readonly adminRoles?: IRole[];
 }
 
 /**
@@ -551,10 +550,10 @@ export interface AmplifyGraphqlApiProps {
   readonly apiName?: string;
 
   /**
-   * Required auth config for the Api. This object must be a superset of the configured auth providers in the Api definition.
+   * Required auth modes for the Api. This object must be a superset of the configured auth providers in the Api definition.
    * For more information, refer to https://docs.amplify.aws/cli/graphql/authorization-rules/
    */
-  readonly authorizationConfig: AuthorizationConfig;
+  readonly authorizationModes: AuthorizationModes;
 
   /**
    * Lambda functions referenced in the definitions's @function directives. The keys of this object are expected to be the

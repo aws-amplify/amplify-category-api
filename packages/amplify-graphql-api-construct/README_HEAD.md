@@ -31,7 +31,7 @@ new AmplifyGraphqlApi(stack, 'TodoApp', {
       completed: Boolean
     }
   `),
-  authorizationConfig: {
+  authorizationModes: {
     userPoolConfig: {
       userPool: UserPool.fromUserPoolId(stack, 'ImportedUserPool', '<YOUR_USER_POOL_ID>'),
     },
@@ -66,7 +66,7 @@ new AmplifyGraphqlApi(stack, 'BlogApp', {
       blog: Blog @belongsTo
     }
   `),
-  authorizationConfig: {
+  authorizationModes: {
     defaultAuthMode: 'API_KEY',
     apiKeyConfig: {
       description: 'Api Key for public access',
@@ -117,7 +117,7 @@ const stack = new Stack(app, 'MultiFileStack');
 
 new AmplifyGraphqlApi(stack, 'MultiFileDefinition', {
   schema: AmplifyGraphqlDefinition.fromFiles(path.join(__dirname, 'todo.graphql'), path.join(__dirname, 'blog.graphql')),
-  authorizationConfig: {
+  authorizationModes: {
     defaultAuthMode: 'API_KEY',
     apiKeyConfig: {
       description: 'Api Key for public access',

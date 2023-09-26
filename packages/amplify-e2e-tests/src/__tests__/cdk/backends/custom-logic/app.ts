@@ -25,7 +25,7 @@ const api = new AmplifyGraphqlApi(stack, 'GraphqlApi', {
   functionNameMap: {
     reverse: new NodejsFunction(stack, 'Reverse', { entry: path.join(__dirname, 'reverse.ts') }),
   },
-  authorizationConfig: {
+  authorizationModes: {
     apiKeyConfig: { expires: Duration.days(7) },
   },
 });

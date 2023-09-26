@@ -18,7 +18,7 @@ new AmplifyGraphqlApi(stack, 'GraphqlApi', {
       description: String!
     }
   `),
-  authorizationConfig: {
+  authorizationModes: {
     apiKeyConfig: { expires: Duration.days(7) },
   },
 });

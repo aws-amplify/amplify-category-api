@@ -24,7 +24,7 @@ describe('supports different props configurations', () => {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
         functionSlots: [
@@ -59,7 +59,7 @@ describe('supports different props configurations', () => {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
         stackMappings: {
@@ -77,7 +77,7 @@ describe('supports different props configurations', () => {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
         conflictResolution: {
@@ -98,7 +98,7 @@ describe('supports different props configurations', () => {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
         conflictResolution: {
@@ -121,7 +121,7 @@ describe('supports different props configurations', () => {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
         conflictResolution: {
