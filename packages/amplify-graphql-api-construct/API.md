@@ -28,7 +28,10 @@ import { NestedStack } from 'aws-cdk-lib';
 // @public
 export class AmplifyGraphqlApi extends Construct {
     constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps);
+    readonly apiKey: string | undefined;
     readonly generatedFunctionSlots: FunctionSlot[];
+    readonly graphqlUrl: string;
+    readonly realtimeUrl: string;
     readonly resources: AmplifyGraphqlApiResources;
 }
 
