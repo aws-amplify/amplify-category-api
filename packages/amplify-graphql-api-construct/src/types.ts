@@ -111,14 +111,14 @@ export interface LambdaAuthorizationConfig {
 
 /**
  * Authorization Modes to apply to the Api.
- * At least one modes must be provided, and if more than one are provided a defaultAuthMode must be specified.
+ * At least one modes must be provided, and if more than one are provided a defaultAuthorizationMode must be specified.
  * For more information on Amplify Api auth, refer to https://docs.amplify.aws/cli/graphql/authorization-rules/#authorization-strategies
  */
 export interface AuthorizationModes {
   /**
    * Default auth mode to provide to the Api, required if more than one config type is specified.
    */
-  readonly defaultAuthMode?: 'AWS_IAM' | 'AMAZON_COGNITO_USER_POOLS' | 'OPENID_CONNECT' | 'API_KEY' | 'AWS_LAMBDA';
+  readonly defaultAuthorizationMode?: 'AWS_IAM' | 'AMAZON_COGNITO_USER_POOLS' | 'OPENID_CONNECT' | 'API_KEY' | 'AWS_LAMBDA';
 
   /**
    * IAM Auth config, required if an 'iam' auth provider is specified in the Api.

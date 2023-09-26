@@ -4,7 +4,7 @@
 
 This package vends an L3 CDK Construct wrapping the behavior of the Amplify GraphQL Transformer. This enables quick development and interation of AppSync APIs which support the Amplify GraphQL Directives. For more information on schema modeling in GraphQL, please refer to the [amplify developer docs](https://docs.amplify.aws/cli/graphql/overview/).
 
-The primary way to use this construct is to invoke it with a provided schema (either as an inline graphql string, or as one or more `appsync.SchemaFile`) objects, and with authorization config provided. There are 5 supported methods for authorization of an AppSync API, all of which are supported by this construct. For more information on authorization rule definitions in Amplify, refer to the [authorization docs](https://docs.amplify.aws/cli/graphql/authorization-rules/). Note: currently at least one authorization rule is required, and if multiple are specified, a `defaultAuthMode` must be specified on the api as well. Specified authorization modes must be a superset of those configured in the graphql schema.
+The primary way to use this construct is to invoke it with a provided schema (either as an inline graphql string, or as one or more `appsync.SchemaFile`) objects, and with authorization config provided. There are 5 supported methods for authorization of an AppSync API, all of which are supported by this construct. For more information on authorization rule definitions in Amplify, refer to the [authorization docs](https://docs.amplify.aws/cli/graphql/authorization-rules/). Note: currently at least one authorization rule is required, and if multiple are specified, a `defaultAuthorizationMode` must be specified on the api as well. Specified authorization modes must be a superset of those configured in the graphql schema.
 
 ## Examples
 
@@ -67,7 +67,7 @@ new AmplifyGraphqlApi(stack, 'BlogApp', {
     }
   `),
   authorizationModes: {
-    defaultAuthMode: 'API_KEY',
+    defaultAuthorizationMode: 'API_KEY',
     apiKeyConfig: {
       description: 'Api Key for public access',
       expires: cdk.Duration.days(7),
@@ -118,7 +118,7 @@ const stack = new Stack(app, 'MultiFileStack');
 new AmplifyGraphqlApi(stack, 'MultiFileDefinition', {
   schema: AmplifyGraphqlDefinition.fromFiles(path.join(__dirname, 'todo.graphql'), path.join(__dirname, 'blog.graphql')),
   authorizationModes: {
-    defaultAuthMode: 'API_KEY',
+    defaultAuthorizationMode: 'API_KEY',
     apiKeyConfig: {
       description: 'Api Key for public access',
       expires: cdk.Duration.days(7),
@@ -772,7 +772,7 @@ Optional description for the Api Key to attach to the Api.
 
 Authorization Modes to apply to the Api.
 
-At least one modes must be provided, and if more than one are provided a defaultAuthMode must be specified.
+At least one modes must be provided, and if more than one are provided a defaultAuthorizationMode must be specified.
 For more information on Amplify Api auth, refer to https://docs.amplify.aws/cli/graphql/authorization-rules/#authorization-strategies
 
 #### Initializer <a name="Initializer" id="@aws-amplify/graphql-construct-alpha.AuthorizationModes.Initializer"></a>
@@ -789,7 +789,7 @@ const authorizationModes: AuthorizationModes = { ... }
 | --- | --- | --- |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.AuthorizationModes.property.adminRoles">adminRoles</a></code> | <code>aws-cdk-lib.aws_iam.IRole[]</code> | A list of roles granted full R/W access to the Api. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.AuthorizationModes.property.apiKeyConfig">apiKeyConfig</a></code> | <code><a href="#@aws-amplify/graphql-construct-alpha.ApiKeyAuthorizationConfig">ApiKeyAuthorizationConfig</a></code> | AppSync Api Key config, required if a 'apiKey' auth provider is specified in the Api. |
-| <code><a href="#@aws-amplify/graphql-construct-alpha.AuthorizationModes.property.defaultAuthMode">defaultAuthMode</a></code> | <code>string</code> | Default auth mode to provide to the Api, required if more than one config type is specified. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AuthorizationModes.property.defaultAuthorizationMode">defaultAuthorizationMode</a></code> | <code>string</code> | Default auth mode to provide to the Api, required if more than one config type is specified. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.AuthorizationModes.property.iamConfig">iamConfig</a></code> | <code><a href="#@aws-amplify/graphql-construct-alpha.IAMAuthorizationConfig">IAMAuthorizationConfig</a></code> | IAM Auth config, required if an 'iam' auth provider is specified in the Api. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.AuthorizationModes.property.lambdaConfig">lambdaConfig</a></code> | <code><a href="#@aws-amplify/graphql-construct-alpha.LambdaAuthorizationConfig">LambdaAuthorizationConfig</a></code> | Lambda config, required if a 'function' auth provider is specified in the Api. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.AuthorizationModes.property.oidcConfig">oidcConfig</a></code> | <code><a href="#@aws-amplify/graphql-construct-alpha.OIDCAuthorizationConfig">OIDCAuthorizationConfig</a></code> | Cognito OIDC config, required if a 'oidc' auth provider is specified in the Api. |
@@ -823,10 +823,10 @@ Applies to 'public' auth strategy.
 
 ---
 
-##### `defaultAuthMode`<sup>Optional</sup> <a name="defaultAuthMode" id="@aws-amplify/graphql-construct-alpha.AuthorizationModes.property.defaultAuthMode"></a>
+##### `defaultAuthorizationMode`<sup>Optional</sup> <a name="defaultAuthorizationMode" id="@aws-amplify/graphql-construct-alpha.AuthorizationModes.property.defaultAuthorizationMode"></a>
 
 ```typescript
-public readonly defaultAuthMode: string;
+public readonly defaultAuthorizationMode: string;
 ```
 
 - *Type:* string

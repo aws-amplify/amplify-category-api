@@ -83,11 +83,11 @@ const convertAuthConfigToAppSyncAuth = (authModes: AuthorizationModes): AppSyncA
   if (authProviders.length === 0) {
     throw new Error('At least one auth config is required, but none were found.');
   }
-  if (authProviders.length > 1 && !authModes.defaultAuthMode) {
-    throw new Error('A defaultAuthMode is required if multiple auth modes are configured.');
+  if (authProviders.length > 1 && !authModes.defaultAuthorizationMode) {
+    throw new Error('A defaultAuthorizationMode is required if multiple authorization modes are configured.');
   }
 
-  // In the case of a single mode, defaultAuthMode is not required, just use the provided value.
+  // In the case of a single mode, defaultAuthorizationMode is not required, just use the provided value.
   if (authProviders.length === 1) {
     return {
       defaultAuthentication: authProviders[0],
@@ -97,8 +97,10 @@ const convertAuthConfigToAppSyncAuth = (authModes: AuthorizationModes): AppSyncA
 
   // For multi-auth, partition into the defaultMode and non-default modes.
   return {
-    defaultAuthentication: authProviders.filter((provider) => provider.authenticationType === authModes.defaultAuthMode)[0],
-    additionalAuthenticationProviders: authProviders.filter((provider) => provider.authenticationType !== authModes.defaultAuthMode),
+    defaultAuthentication: authProviders.filter((provider) => provider.authenticationType === authModes.defaultAuthorizationMode)[0],
+    additionalAuthenticationProviders: authProviders.filter(
+      (provider) => provider.authenticationType !== authModes.defaultAuthorizationMode,
+    ),
   };
 };
 

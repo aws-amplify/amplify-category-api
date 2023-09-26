@@ -88,7 +88,7 @@ export interface ApiKeyAuthorizationConfig {
 export interface AuthorizationModes {
     readonly adminRoles?: IRole[];
     readonly apiKeyConfig?: ApiKeyAuthorizationConfig;
-    readonly defaultAuthMode?: 'AWS_IAM' | 'AMAZON_COGNITO_USER_POOLS' | 'OPENID_CONNECT' | 'API_KEY' | 'AWS_LAMBDA';
+    readonly defaultAuthorizationMode?: 'AWS_IAM' | 'AMAZON_COGNITO_USER_POOLS' | 'OPENID_CONNECT' | 'API_KEY' | 'AWS_LAMBDA';
     readonly iamConfig?: IAMAuthorizationConfig;
     readonly lambdaConfig?: LambdaAuthorizationConfig;
     readonly oidcConfig?: OIDCAuthorizationConfig;
