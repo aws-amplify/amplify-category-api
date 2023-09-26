@@ -139,7 +139,7 @@ const getTransformer = (authConfig: AppSyncAuthConfiguration) => ({
         new HasManyTransformer(),
         new BelongsToTransformer(),
         new AuthTransformer(),
-      ]
+      ],
     });
   },
 });

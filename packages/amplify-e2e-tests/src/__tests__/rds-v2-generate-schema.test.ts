@@ -74,9 +74,9 @@ describe('RDS Generate Schema tests', () => {
       region,
     };
     const queries = [
-      'CREATE TABLE Contact (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
-      'CREATE TABLE Person (ID INT PRIMARY KEY, Info JSON NOT NULL)',
-      'CREATE TABLE tbl_todos (ID INT PRIMARY KEY, description VARCHAR(20))',
+      'CREATE TABLE Contact (id INT PRIMARY KEY, firstName VARCHAR(20), lastName VARCHAR(50))',
+      'CREATE TABLE Person (id INT PRIMARY KEY, info JSON NOT NULL)',
+      'CREATE TABLE tbl_todos (id INT PRIMARY KEY, description VARCHAR(20))',
       'CREATE TABLE Task (Id INT PRIMARY KEY, Description VARCHAR(20), task_name VARCHAR(20))',
     ];
 

@@ -55,9 +55,9 @@ describe('RDS Tests', () => {
       region,
     };
     const queries = [
-      'CREATE TABLE Contact (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
-      'CREATE TABLE Person (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
-      'CREATE TABLE Employee (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
+      'CREATE TABLE Contact (id INT PRIMARY KEY, firstName VARCHAR(20), lastName VARCHAR(50))',
+      'CREATE TABLE Person (id INT PRIMARY KEY, firstName VARCHAR(20), lastName VARCHAR(50))',
+      'CREATE TABLE Employee (id INT PRIMARY KEY, firstName VARCHAR(20), lastName VARCHAR(50))',
     ];
 
     const db = await setupRDSInstanceAndData(dbConfig, queries);
