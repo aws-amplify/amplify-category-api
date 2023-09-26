@@ -347,7 +347,7 @@ export class InvalidTransformerError extends Error {
 function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncConfigLambda;
 
 // @public (undocumented)
-export const isRDSModel: (context: TransformerContextProvider, modelName: string) => boolean | undefined;
+export const isRDSModel: (ctx: TransformerContextProvider, typename: string) => boolean;
 
 // @public (undocumented)
 export class MappingTemplate {

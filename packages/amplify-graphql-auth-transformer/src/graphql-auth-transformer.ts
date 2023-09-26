@@ -530,7 +530,10 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
             '$util.toJson({"version":"2018-05-29","payload":{}})',
             `${typeName}.${fieldName}.req.vtl`,
           ),
-          MappingTemplate.s3MappingTemplateFromString(this.getVtlGenerator(ctx, def.name.value).generateFieldResolverForOwner(fieldName), `${typeName}.${fieldName}.res.vtl`),
+          MappingTemplate.s3MappingTemplateFromString(
+            this.getVtlGenerator(ctx, def.name.value).generateFieldResolverForOwner(fieldName),
+            `${typeName}.${fieldName}.res.vtl`,
+          ),
           ['init'],
           ['finish'],
         ),
@@ -695,7 +698,10 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     if (fieldRoles) {
       const roleDefinitions = fieldRoles.map((r) => this.roleMap.get(r)!);
       const hasSubsEnabled = this.modelDirectiveConfig.get(typeName)!.subscriptions?.level === 'on';
-      relatedAuthExpression = `${this.getVtlGenerator(ctx, def.name.value).setDeniedFieldFlag('Mutation', hasSubsEnabled)}\n${relatedAuthExpression}`;
+      relatedAuthExpression = `${this.getVtlGenerator(ctx, def.name.value).setDeniedFieldFlag(
+        'Mutation',
+        hasSubsEnabled,
+      )}\n${relatedAuthExpression}`;
       fieldAuthExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForField(
         this.configuredAuthProviders,
         roleDefinitions,
@@ -921,7 +927,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       isRDSModel(ctx, def.name.value)
         ? ctx.api.host.getDataSource(RDSLambdaDataSourceLogicalID)
         : ctx.api.host.getDataSource(`${def.name.value}Table`)
-      ) as DataSourceProvider;
+    ) as DataSourceProvider;
     const requestExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthRequestExpression();
     const authExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForUpdate(
       this.configuredAuthProviders,

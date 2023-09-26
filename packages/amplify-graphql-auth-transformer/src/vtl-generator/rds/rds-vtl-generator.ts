@@ -34,7 +34,7 @@ export class RDSAuthVTLGenerator implements AuthVTLGenerator {
   ): string => generateDefaultRDSExpression();
 
   generateFieldAuthResponse = (operation: string, fieldName: string, subscriptionsEnabled: boolean): string =>
-  generateDefaultRDSExpression();
+    generateDefaultRDSExpression();
 
   generateAuthExpressionForQueries = (
     ctx: TransformerContextProvider,

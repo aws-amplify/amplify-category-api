@@ -124,6 +124,10 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     generateResolvers: (context: TransformerContextProvider) => void;
     // (undocumented)
     getRelatedModelObject: (ctx: TransformerContextProvider, typeName: string) => ObjectTypeDefinitionNode;
+    // Warning: (ae-forgotten-export) The symbol "AuthVTLGenerator" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    getVtlGenerator: (ctx: TransformerContextProvider, typename: string) => AuthVTLGenerator;
     // (undocumented)
     object: (def: ObjectTypeDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)
@@ -143,7 +147,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     // (undocumented)
     protectSearchResolver: (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode, typeName: string, fieldName: string, acm: AccessControlMatrix) => void;
     // (undocumented)
-    protectSubscriptionResolver: (ctx: TransformerContextProvider, typeName: string, fieldName: string, subscriptionRoles: Array<RoleDefinition>) => void;
+    protectSubscriptionResolver: (ctx: TransformerContextProvider, typeName: string, fieldName: string, subscriptionRoles: Array<RoleDefinition>, def: ObjectTypeDefinitionNode) => void;
     // (undocumented)
     protectSyncResolver: (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode, typeName: string, fieldName: string, acm: AccessControlMatrix) => void;
     // (undocumented)

@@ -593,8 +593,8 @@ const getKeySchemaAndPartitionKey = (
   def: ObjectTypeDefinitionNode,
   indexName: string | undefined = undefined,
 ): {
-  keySchema: any,
-  primaryKey: any,
+  keySchema: any;
+  primaryKey: any;
 } => {
   let keySchema: any;
   let partitionKey: string;
@@ -616,7 +616,7 @@ const getKeySchemaAndPartitionKey = (
   return {
     keySchema,
     primaryKey: partitionKey,
-  }
+  };
 };
 
 /**
