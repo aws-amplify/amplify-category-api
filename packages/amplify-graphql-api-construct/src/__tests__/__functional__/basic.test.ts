@@ -17,7 +17,7 @@ describe('basic functionality', () => {
           description: String!
         }
       `),
-      authorizationConfig: {
+      authorizationModes: {
         userPoolConfig: { userPool },
       },
     });
@@ -47,7 +47,7 @@ describe('basic functionality', () => {
           description: String!
         }
       `),
-      authorizationConfig: {
+      authorizationModes: {
         userPoolConfig: { userPool },
       },
       conflictResolution: {
@@ -96,7 +96,7 @@ describe('basic functionality', () => {
           description: String!
         }
       `),
-      authorizationConfig: {
+      authorizationModes: {
         userPoolConfig: { userPool },
       },
     });
@@ -123,7 +123,7 @@ describe('basic functionality', () => {
           blog: Blog @belongsTo
         }
       `),
-      authorizationConfig: {
+      authorizationModes: {
         apiKeyConfig: { expires: cdk.Duration.days(7) },
       },
     });

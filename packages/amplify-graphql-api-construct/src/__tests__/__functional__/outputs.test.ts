@@ -13,7 +13,7 @@ describe('storeOutput', () => {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
       });
@@ -94,7 +94,7 @@ describe('storeOutput', () => {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
         outputStorageStrategy,
@@ -123,7 +123,7 @@ describe('storeOutput', () => {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           oidcConfig: {
             oidcProviderName: 'mock-provider-name',
             oidcIssuerUrl: 'mock-issuer-url',

@@ -4,7 +4,7 @@ export type {
   OIDCAuthorizationConfig,
   ApiKeyAuthorizationConfig,
   LambdaAuthorizationConfig,
-  AuthorizationConfig,
+  AuthorizationModes,
   PartialTranslationBehavior,
   AmplifyGraphqlApiProps,
   AmplifyGraphqlApiResources,

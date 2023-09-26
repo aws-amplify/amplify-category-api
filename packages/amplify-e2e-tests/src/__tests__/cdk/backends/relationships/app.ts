@@ -39,7 +39,7 @@ new AmplifyGraphqlApi(stack, 'GraphqlApi', {
       posts: [Post] @manyToMany(relationName: "PostTags")
     }
   `),
-  authorizationConfig: {
+  authorizationModes: {
     apiKeyConfig: { expires: Duration.days(7) },
   },
 });

@@ -50,7 +50,7 @@ export interface AmplifyGraphqlApiCfnResources {
 // @public
 export interface AmplifyGraphqlApiProps {
     readonly apiName?: string;
-    readonly authorizationConfig: AuthorizationConfig;
+    readonly authorizationModes: AuthorizationModes;
     readonly conflictResolution?: ConflictResolution;
     readonly definition: IAmplifyGraphqlDefinition;
     readonly functionNameMap?: Record<string, IFunction>;
@@ -85,9 +85,10 @@ export interface ApiKeyAuthorizationConfig {
 }
 
 // @public
-export interface AuthorizationConfig {
+export interface AuthorizationModes {
+    readonly adminRoles?: IRole[];
     readonly apiKeyConfig?: ApiKeyAuthorizationConfig;
-    readonly defaultAuthMode?: 'AWS_IAM' | 'AMAZON_COGNITO_USER_POOLS' | 'OPENID_CONNECT' | 'API_KEY' | 'AWS_LAMBDA';
+    readonly defaultAuthorizationMode?: 'AWS_IAM' | 'AMAZON_COGNITO_USER_POOLS' | 'OPENID_CONNECT' | 'API_KEY' | 'AWS_LAMBDA';
     readonly iamConfig?: IAMAuthorizationConfig;
     readonly lambdaConfig?: LambdaAuthorizationConfig;
     readonly oidcConfig?: OIDCAuthorizationConfig;
@@ -149,10 +150,9 @@ export type GraphqlOutput = z.infer<typeof versionedGraphqlOutputSchema>;
 
 // @public
 export interface IAMAuthorizationConfig {
-    readonly adminRoles?: IRole[];
-    readonly authenticatedUserRole?: IRole;
-    readonly identityPoolId?: string;
-    readonly unauthenticatedUserRole?: IRole;
+    readonly authenticatedUserRole: IRole;
+    readonly identityPoolId: string;
+    readonly unauthenticatedUserRole: IRole;
 }
 
 // @public

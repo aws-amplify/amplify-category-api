@@ -4,7 +4,7 @@
 
 This package vends an L3 CDK Construct wrapping the behavior of the Amplify GraphQL Transformer. This enables quick development and interation of AppSync APIs which support the Amplify GraphQL Directives. For more information on schema modeling in GraphQL, please refer to the [amplify developer docs](https://docs.amplify.aws/cli/graphql/overview/).
 
-The primary way to use this construct is to invoke it with a provided schema (either as an inline graphql string, or as one or more `appsync.SchemaFile`) objects, and with authorization config provided. There are 5 supported methods for authorization of an AppSync API, all of which are supported by this construct. For more information on authorization rule definitions in Amplify, refer to the [authorization docs](https://docs.amplify.aws/cli/graphql/authorization-rules/). Note: currently at least one authorization rule is required, and if multiple are specified, a `defaultAuthMode` must be specified on the api as well. Specified authorization modes must be a superset of those configured in the graphql schema.
+The primary way to use this construct is to invoke it with a provided schema (either as an inline graphql string, or as one or more `appsync.SchemaFile`) objects, and with authorization config provided. There are 5 supported methods for authorization of an AppSync API, all of which are supported by this construct. For more information on authorization rule definitions in Amplify, refer to the [authorization docs](https://docs.amplify.aws/cli/graphql/authorization-rules/). Note: currently at least one authorization rule is required, and if multiple are specified, a `defaultAuthorizationMode` must be specified on the api as well. Specified authorization modes must be a superset of those configured in the graphql schema.
 
 ## Examples
 
@@ -31,7 +31,7 @@ new AmplifyGraphqlApi(stack, 'TodoApp', {
       completed: Boolean
     }
   `),
-  authorizationConfig: {
+  authorizationModes: {
     userPoolConfig: {
       userPool: UserPool.fromUserPoolId(stack, 'ImportedUserPool', '<YOUR_USER_POOL_ID>'),
     },
@@ -66,8 +66,8 @@ new AmplifyGraphqlApi(stack, 'BlogApp', {
       blog: Blog @belongsTo
     }
   `),
-  authorizationConfig: {
-    defaultAuthMode: 'API_KEY',
+  authorizationModes: {
+    defaultAuthorizationMode: 'API_KEY',
     apiKeyConfig: {
       description: 'Api Key for public access',
       expires: cdk.Duration.days(7),
@@ -116,12 +116,9 @@ const app = new App();
 const stack = new Stack(app, 'MultiFileStack');
 
 new AmplifyGraphqlApi(stack, 'MultiFileDefinition', {
-  schema: AmplifyGraphqlDefinition.fromFiles(
-    path.join(__dirname, 'todo.graphql'),
-    path.join(__dirname, 'blog.graphql'),
-  ),
-  authorizationConfig: {
-    defaultAuthMode: 'API_KEY',
+  schema: AmplifyGraphqlDefinition.fromFiles(path.join(__dirname, 'todo.graphql'), path.join(__dirname, 'blog.graphql')),
+  authorizationModes: {
+    defaultAuthorizationMode: 'API_KEY',
     apiKeyConfig: {
       description: 'Api Key for public access',
       expires: cdk.Duration.days(7),
@@ -463,7 +460,7 @@ const amplifyGraphqlApiProps: AmplifyGraphqlApiProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApiProps.property.authorizationConfig">authorizationConfig</a></code> | <code><a href="#@aws-amplify/graphql-construct-alpha.AuthorizationConfig">AuthorizationConfig</a></code> | Required auth config for the Api. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApiProps.property.authorizationModes">authorizationModes</a></code> | <code><a href="#@aws-amplify/graphql-construct-alpha.AuthorizationModes">AuthorizationModes</a></code> | Required auth modes for the Api. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApiProps.property.definition">definition</a></code> | <code><a href="#@aws-amplify/graphql-construct-alpha.IAmplifyGraphqlDefinition">IAmplifyGraphqlDefinition</a></code> | The definition to transform in a full Api. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApiProps.property.apiName">apiName</a></code> | <code>string</code> | Name to be used for the AppSync Api. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApiProps.property.conflictResolution">conflictResolution</a></code> | <code><a href="#@aws-amplify/graphql-construct-alpha.ConflictResolution">ConflictResolution</a></code> | Configure conflict resolution on the Api, which is required to enable DataStore Api functionality. |
@@ -477,15 +474,15 @@ const amplifyGraphqlApiProps: AmplifyGraphqlApiProps = { ... }
 
 ---
 
-##### `authorizationConfig`<sup>Required</sup> <a name="authorizationConfig" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApiProps.property.authorizationConfig"></a>
+##### `authorizationModes`<sup>Required</sup> <a name="authorizationModes" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApiProps.property.authorizationModes"></a>
 
 ```typescript
-public readonly authorizationConfig: AuthorizationConfig;
+public readonly authorizationModes: AuthorizationModes;
 ```
 
-- *Type:* <a href="#@aws-amplify/graphql-construct-alpha.AuthorizationConfig">AuthorizationConfig</a>
+- *Type:* <a href="#@aws-amplify/graphql-construct-alpha.AuthorizationModes">AuthorizationModes</a>
 
-Required auth config for the Api.
+Required auth modes for the Api.
 
 This object must be a superset of the configured auth providers in the Api definition.
 For more information, refer to https://docs.amplify.aws/cli/graphql/authorization-rules/
@@ -771,36 +768,48 @@ Optional description for the Api Key to attach to the Api.
 
 ---
 
-### AuthorizationConfig <a name="AuthorizationConfig" id="@aws-amplify/graphql-construct-alpha.AuthorizationConfig"></a>
+### AuthorizationModes <a name="AuthorizationModes" id="@aws-amplify/graphql-construct-alpha.AuthorizationModes"></a>
 
-Authorization Config to apply to the Api.
+Authorization Modes to apply to the Api.
 
-At least one config must be provided, and if more than one are provided,
-a defaultAuthMode must be specified.
+At least one modes must be provided, and if more than one are provided a defaultAuthorizationMode must be specified.
 For more information on Amplify Api auth, refer to https://docs.amplify.aws/cli/graphql/authorization-rules/#authorization-strategies
 
-#### Initializer <a name="Initializer" id="@aws-amplify/graphql-construct-alpha.AuthorizationConfig.Initializer"></a>
+#### Initializer <a name="Initializer" id="@aws-amplify/graphql-construct-alpha.AuthorizationModes.Initializer"></a>
 
 ```typescript
-import { AuthorizationConfig } from '@aws-amplify/graphql-construct-alpha'
+import { AuthorizationModes } from '@aws-amplify/graphql-construct-alpha'
 
-const authorizationConfig: AuthorizationConfig = { ... }
+const authorizationModes: AuthorizationModes = { ... }
 ```
 
 #### Properties <a name="Properties" id="Properties"></a>
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@aws-amplify/graphql-construct-alpha.AuthorizationConfig.property.apiKeyConfig">apiKeyConfig</a></code> | <code><a href="#@aws-amplify/graphql-construct-alpha.ApiKeyAuthorizationConfig">ApiKeyAuthorizationConfig</a></code> | AppSync Api Key config, required if a 'apiKey' auth provider is specified in the Api. |
-| <code><a href="#@aws-amplify/graphql-construct-alpha.AuthorizationConfig.property.defaultAuthMode">defaultAuthMode</a></code> | <code>string</code> | Default auth mode to provide to the Api, required if more than one config type is specified. |
-| <code><a href="#@aws-amplify/graphql-construct-alpha.AuthorizationConfig.property.iamConfig">iamConfig</a></code> | <code><a href="#@aws-amplify/graphql-construct-alpha.IAMAuthorizationConfig">IAMAuthorizationConfig</a></code> | IAM Auth config, required if an 'iam' auth provider is specified in the Api. |
-| <code><a href="#@aws-amplify/graphql-construct-alpha.AuthorizationConfig.property.lambdaConfig">lambdaConfig</a></code> | <code><a href="#@aws-amplify/graphql-construct-alpha.LambdaAuthorizationConfig">LambdaAuthorizationConfig</a></code> | Lambda config, required if a 'function' auth provider is specified in the Api. |
-| <code><a href="#@aws-amplify/graphql-construct-alpha.AuthorizationConfig.property.oidcConfig">oidcConfig</a></code> | <code><a href="#@aws-amplify/graphql-construct-alpha.OIDCAuthorizationConfig">OIDCAuthorizationConfig</a></code> | Cognito OIDC config, required if a 'oidc' auth provider is specified in the Api. |
-| <code><a href="#@aws-amplify/graphql-construct-alpha.AuthorizationConfig.property.userPoolConfig">userPoolConfig</a></code> | <code><a href="#@aws-amplify/graphql-construct-alpha.UserPoolAuthorizationConfig">UserPoolAuthorizationConfig</a></code> | Cognito UserPool config, required if a 'userPools' auth provider is specified in the Api. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AuthorizationModes.property.adminRoles">adminRoles</a></code> | <code>aws-cdk-lib.aws_iam.IRole[]</code> | A list of roles granted full R/W access to the Api. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AuthorizationModes.property.apiKeyConfig">apiKeyConfig</a></code> | <code><a href="#@aws-amplify/graphql-construct-alpha.ApiKeyAuthorizationConfig">ApiKeyAuthorizationConfig</a></code> | AppSync Api Key config, required if a 'apiKey' auth provider is specified in the Api. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AuthorizationModes.property.defaultAuthorizationMode">defaultAuthorizationMode</a></code> | <code>string</code> | Default auth mode to provide to the Api, required if more than one config type is specified. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AuthorizationModes.property.iamConfig">iamConfig</a></code> | <code><a href="#@aws-amplify/graphql-construct-alpha.IAMAuthorizationConfig">IAMAuthorizationConfig</a></code> | IAM Auth config, required if an 'iam' auth provider is specified in the Api. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AuthorizationModes.property.lambdaConfig">lambdaConfig</a></code> | <code><a href="#@aws-amplify/graphql-construct-alpha.LambdaAuthorizationConfig">LambdaAuthorizationConfig</a></code> | Lambda config, required if a 'function' auth provider is specified in the Api. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AuthorizationModes.property.oidcConfig">oidcConfig</a></code> | <code><a href="#@aws-amplify/graphql-construct-alpha.OIDCAuthorizationConfig">OIDCAuthorizationConfig</a></code> | Cognito OIDC config, required if a 'oidc' auth provider is specified in the Api. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AuthorizationModes.property.userPoolConfig">userPoolConfig</a></code> | <code><a href="#@aws-amplify/graphql-construct-alpha.UserPoolAuthorizationConfig">UserPoolAuthorizationConfig</a></code> | Cognito UserPool config, required if a 'userPools' auth provider is specified in the Api. |
 
 ---
 
-##### `apiKeyConfig`<sup>Optional</sup> <a name="apiKeyConfig" id="@aws-amplify/graphql-construct-alpha.AuthorizationConfig.property.apiKeyConfig"></a>
+##### `adminRoles`<sup>Optional</sup> <a name="adminRoles" id="@aws-amplify/graphql-construct-alpha.AuthorizationModes.property.adminRoles"></a>
+
+```typescript
+public readonly adminRoles: IRole[];
+```
+
+- *Type:* aws-cdk-lib.aws_iam.IRole[]
+
+A list of roles granted full R/W access to the Api.
+
+---
+
+##### `apiKeyConfig`<sup>Optional</sup> <a name="apiKeyConfig" id="@aws-amplify/graphql-construct-alpha.AuthorizationModes.property.apiKeyConfig"></a>
 
 ```typescript
 public readonly apiKeyConfig: ApiKeyAuthorizationConfig;
@@ -814,10 +823,10 @@ Applies to 'public' auth strategy.
 
 ---
 
-##### `defaultAuthMode`<sup>Optional</sup> <a name="defaultAuthMode" id="@aws-amplify/graphql-construct-alpha.AuthorizationConfig.property.defaultAuthMode"></a>
+##### `defaultAuthorizationMode`<sup>Optional</sup> <a name="defaultAuthorizationMode" id="@aws-amplify/graphql-construct-alpha.AuthorizationModes.property.defaultAuthorizationMode"></a>
 
 ```typescript
-public readonly defaultAuthMode: string;
+public readonly defaultAuthorizationMode: string;
 ```
 
 - *Type:* string
@@ -826,7 +835,7 @@ Default auth mode to provide to the Api, required if more than one config type i
 
 ---
 
-##### `iamConfig`<sup>Optional</sup> <a name="iamConfig" id="@aws-amplify/graphql-construct-alpha.AuthorizationConfig.property.iamConfig"></a>
+##### `iamConfig`<sup>Optional</sup> <a name="iamConfig" id="@aws-amplify/graphql-construct-alpha.AuthorizationModes.property.iamConfig"></a>
 
 ```typescript
 public readonly iamConfig: IAMAuthorizationConfig;
@@ -840,7 +849,7 @@ Applies to 'public' and 'private' auth strategies.
 
 ---
 
-##### `lambdaConfig`<sup>Optional</sup> <a name="lambdaConfig" id="@aws-amplify/graphql-construct-alpha.AuthorizationConfig.property.lambdaConfig"></a>
+##### `lambdaConfig`<sup>Optional</sup> <a name="lambdaConfig" id="@aws-amplify/graphql-construct-alpha.AuthorizationModes.property.lambdaConfig"></a>
 
 ```typescript
 public readonly lambdaConfig: LambdaAuthorizationConfig;
@@ -854,7 +863,7 @@ Applies to 'custom' auth strategy.
 
 ---
 
-##### `oidcConfig`<sup>Optional</sup> <a name="oidcConfig" id="@aws-amplify/graphql-construct-alpha.AuthorizationConfig.property.oidcConfig"></a>
+##### `oidcConfig`<sup>Optional</sup> <a name="oidcConfig" id="@aws-amplify/graphql-construct-alpha.AuthorizationModes.property.oidcConfig"></a>
 
 ```typescript
 public readonly oidcConfig: OIDCAuthorizationConfig;
@@ -868,7 +877,7 @@ Applies to 'owner', 'private', and 'group' auth strategies.
 
 ---
 
-##### `userPoolConfig`<sup>Optional</sup> <a name="userPoolConfig" id="@aws-amplify/graphql-construct-alpha.AuthorizationConfig.property.userPoolConfig"></a>
+##### `userPoolConfig`<sup>Optional</sup> <a name="userPoolConfig" id="@aws-amplify/graphql-construct-alpha.AuthorizationModes.property.userPoolConfig"></a>
 
 ```typescript
 public readonly userPoolConfig: UserPoolAuthorizationConfig;
@@ -1241,26 +1250,13 @@ const iAMAuthorizationConfig: IAMAuthorizationConfig = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@aws-amplify/graphql-construct-alpha.IAMAuthorizationConfig.property.adminRoles">adminRoles</a></code> | <code>aws-cdk-lib.aws_iam.IRole[]</code> | A list of roles granted full R/W access to the Api. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.IAMAuthorizationConfig.property.authenticatedUserRole">authenticatedUserRole</a></code> | <code>aws-cdk-lib.aws_iam.IRole</code> | Authenticated user role, applies to { provider: iam, allow: private } access. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.IAMAuthorizationConfig.property.identityPoolId">identityPoolId</a></code> | <code>string</code> | ID for the Cognito Identity Pool vending auth and unauth roles. |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.IAMAuthorizationConfig.property.unauthenticatedUserRole">unauthenticatedUserRole</a></code> | <code>aws-cdk-lib.aws_iam.IRole</code> | Unauthenticated user role, applies to { provider: iam, allow: public } access. |
 
 ---
 
-##### `adminRoles`<sup>Optional</sup> <a name="adminRoles" id="@aws-amplify/graphql-construct-alpha.IAMAuthorizationConfig.property.adminRoles"></a>
-
-```typescript
-public readonly adminRoles: IRole[];
-```
-
-- *Type:* aws-cdk-lib.aws_iam.IRole[]
-
-A list of roles granted full R/W access to the Api.
-
----
-
-##### `authenticatedUserRole`<sup>Optional</sup> <a name="authenticatedUserRole" id="@aws-amplify/graphql-construct-alpha.IAMAuthorizationConfig.property.authenticatedUserRole"></a>
+##### `authenticatedUserRole`<sup>Required</sup> <a name="authenticatedUserRole" id="@aws-amplify/graphql-construct-alpha.IAMAuthorizationConfig.property.authenticatedUserRole"></a>
 
 ```typescript
 public readonly authenticatedUserRole: IRole;
@@ -1272,7 +1268,7 @@ Authenticated user role, applies to { provider: iam, allow: private } access.
 
 ---
 
-##### `identityPoolId`<sup>Optional</sup> <a name="identityPoolId" id="@aws-amplify/graphql-construct-alpha.IAMAuthorizationConfig.property.identityPoolId"></a>
+##### `identityPoolId`<sup>Required</sup> <a name="identityPoolId" id="@aws-amplify/graphql-construct-alpha.IAMAuthorizationConfig.property.identityPoolId"></a>
 
 ```typescript
 public readonly identityPoolId: string;
@@ -1284,7 +1280,7 @@ ID for the Cognito Identity Pool vending auth and unauth roles.
 
 ---
 
-##### `unauthenticatedUserRole`<sup>Optional</sup> <a name="unauthenticatedUserRole" id="@aws-amplify/graphql-construct-alpha.IAMAuthorizationConfig.property.unauthenticatedUserRole"></a>
+##### `unauthenticatedUserRole`<sup>Required</sup> <a name="unauthenticatedUserRole" id="@aws-amplify/graphql-construct-alpha.IAMAuthorizationConfig.property.unauthenticatedUserRole"></a>
 
 ```typescript
 public readonly unauthenticatedUserRole: IRole;

@@ -23,7 +23,7 @@ describe('predictions category', () => {
             recognizeTextFromImage: String @predictions(actions: [identifyText])
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
         predictionsBucket: s3.Bucket.fromBucketName(stack, 'PredictionsBucket', 'predictions-bucket'),
@@ -39,7 +39,7 @@ describe('predictions category', () => {
           recognizeTextFromImage: String @predictions(actions: [identifyText])
         }
       `),
-      authorizationConfig: {
+      authorizationModes: {
         apiKeyConfig: { expires: cdk.Duration.days(7) },
       },
       predictionsBucket: new s3.Bucket(stack, 'PredictionsBucket'),
@@ -58,7 +58,7 @@ describe('predictions category', () => {
           recognizeTextFromImage: String @predictions(actions: [identifyText])
         }
       `),
-      authorizationConfig: {
+      authorizationModes: {
         apiKeyConfig: { expires: cdk.Duration.days(7) },
       },
       predictionsBucket: new s3.Bucket(stack, 'PredictionsBucket'),
