@@ -1,11 +1,7 @@
 /**
- * To all ye who venture into the world of jest and babel config, I wish ye the best of luck
- *
- * This file is here because for some reason babel-jest in jest 26 does not load config from the package.json file
- * https://github.com/jestjs/jest/issues/6229#issuecomment-419885857
- *
- * Also note that during the build of this package we are transforming a couple node_modules in place.
- * See the build script in package.json for specifics.
+ * During the build of this package we are transforming a couple node_modules in place.
+ * This config is used for that transformation
+ * See the transform-deps script in package.json for specifics on which packages are being transformed
  */
 
 module.exports = (api) => {

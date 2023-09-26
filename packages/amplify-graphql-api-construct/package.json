@@ -140,8 +140,7 @@
   "jest": {
     "testURL": "http://localhost",
     "transform": {
-      "^.+\\.tsx?$": "ts-jest",
-      "\\.js$": "babel-jest"
+      "^.+\\.tsx?$": "ts-jest"
     },
     "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [
@@ -151,9 +150,6 @@
       "jsx",
       "json",
       "node"
-    ],
-    "transformIgnorePatterns": [
-      "/node_modules/@aws-amplify/(?!(backend-output-storage|backend-output-schemas)/)"
     ],
     "collectCoverage": true,
     "coverageThreshold": {
