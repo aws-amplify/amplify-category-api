@@ -45,7 +45,7 @@ describe('addAmplifyMetadataToStackDescription', () => {
       expect(metadataPayload.createdOn).toEqual(platformName);
       expect(metadataPayload.createdBy).toEqual('AmplifyCDK');
       expect(metadataPayload.createdWith).toMatch(/^[0-9]*\.[0-9]*\.[0-9]*/);
-      expect(metadataPayload.stackType).toEqual('graphql-api');
+      expect(metadataPayload.stackType).toEqual('api-AppSync');
     },
   );
 
