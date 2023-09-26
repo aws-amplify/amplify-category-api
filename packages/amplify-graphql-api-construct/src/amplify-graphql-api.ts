@@ -3,6 +3,8 @@ import { executeTransform } from '@aws-amplify/graphql-transformer';
 import { NestedStack, Stack } from 'aws-cdk-lib';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { AssetProps } from '@aws-amplify/graphql-transformer-interfaces';
+import { StackMetadataBackendOutputStorageStrategy } from '@aws-amplify/backend-output-storage';
+import { graphqlOutputKey } from '@aws-amplify/backend-output-schemas';
 import type { GraphqlOutput, AwsAppsyncAuthenticationType } from '@aws-amplify/backend-output-schemas';
 import {
   convertAuthorizationModesToTransformerAuthConfig,
@@ -16,6 +18,8 @@ import {
 } from './internal';
 import type { AmplifyGraphqlApiResources, AmplifyGraphqlApiProps, FunctionSlot, IBackendOutputStorageStrategy } from './types';
 import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
+
+// These will be imported from CLI in future
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
@@ -143,30 +147,25 @@ export class AmplifyGraphqlApi extends Construct {
    * Stores graphql api output to be used for client config generation
    * @param outputStorageStrategy Strategy to store construct outputs. If no strategy is provided a default strategy will be used.
    */
-  private storeOutput(outputStorageStrategy?: IBackendOutputStorageStrategy): void {
-    // this is a terrible hack that uses an IIFE to be able to dynamically import ESM modules in a non-async context
-    void (async () => {
-      const stack = Stack.of(this);
-      if (!outputStorageStrategy) {
-        const { StackMetadataBackendOutputStorageStrategy } = await import('@aws-amplify/backend-output-storage');
-        outputStorageStrategy = new StackMetadataBackendOutputStorageStrategy(stack);
-      }
-      const output: GraphqlOutput = {
-        version: '1',
-        payload: {
-          awsAppsyncApiId: this.resources.cfnResources.cfnGraphqlApi.attrApiId,
-          awsAppsyncApiEndpoint: this.resources.cfnResources.cfnGraphqlApi.attrGraphQlUrl,
-          awsAppsyncAuthenticationType: this.resources.cfnResources.cfnGraphqlApi.authenticationType as AwsAppsyncAuthenticationType,
-          awsAppsyncRegion: stack.region,
-          amplifyApiModelSchemaS3Uri: this.codegenAssets.modelSchemaS3Uri,
-        },
-      };
-      const { graphqlOutputKey } = await import('@aws-amplify/backend-output-schemas');
-      if (this.resources.cfnResources.cfnApiKey) {
-        output.payload.awsAppsyncApiKey = this.resources.cfnResources.cfnApiKey.attrApiKey;
-      }
+  private storeOutput(
+    outputStorageStrategy: IBackendOutputStorageStrategy = new StackMetadataBackendOutputStorageStrategy(Stack.of(this)),
+  ): void {
+    const stack = Stack.of(this);
+    const output: GraphqlOutput = {
+      version: '1',
+      payload: {
+        awsAppsyncApiId: this.resources.cfnResources.cfnGraphqlApi.attrApiId,
+        awsAppsyncApiEndpoint: this.resources.cfnResources.cfnGraphqlApi.attrGraphQlUrl,
+        awsAppsyncAuthenticationType: this.resources.cfnResources.cfnGraphqlApi.authenticationType as AwsAppsyncAuthenticationType,
+        awsAppsyncRegion: stack.region,
+        amplifyApiModelSchemaS3Uri: this.codegenAssets.modelSchemaS3Uri,
+      },
+    };
 
-      outputStorageStrategy.addBackendOutputEntry(graphqlOutputKey, output);
-    })();
+    if (this.resources.cfnResources.cfnApiKey) {
+      output.payload.awsAppsyncApiKey = this.resources.cfnResources.cfnApiKey.attrApiKey;
+    }
+
+    outputStorageStrategy.addBackendOutputEntry(graphqlOutputKey, output);
   }
 }
