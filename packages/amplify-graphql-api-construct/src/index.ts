@@ -25,8 +25,8 @@ export type {
   ConflictResolutionStrategy,
   SchemaTranslationBehavior,
   IAmplifyGraphqlSchema,
-  IGenericBackendOutputStorageStrategy,
-  IGenericBackendOutputEntry,
+  IBackendOutputStorageStrategy as IGenericBackendOutputStorageStrategy,
+  IBackendOutputEntry as IGenericBackendOutputEntry,
 } from './types';
-export { AmplifyGraphqlApi } from './amplify-graphql-api.js';
+export { AmplifyGraphqlApi } from './amplify-graphql-api';
 export { AmplifyGraphqlSchema } from './amplify-graphql-schema';

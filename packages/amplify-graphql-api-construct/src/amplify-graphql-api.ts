@@ -16,7 +16,7 @@ import {
   CodegenAssets,
   addAmplifyMetadataToStackDescription,
 } from './internal';
-import type { AmplifyGraphqlApiResources, AmplifyGraphqlApiProps, FunctionSlot, IGenericBackendOutputStorageStrategy } from './types';
+import type { AmplifyGraphqlApiResources, AmplifyGraphqlApiProps, FunctionSlot, IBackendOutputStorageStrategy } from './types';
 import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
 
 // These will be imported from CLI in future
@@ -148,7 +148,7 @@ export class AmplifyGraphqlApi extends Construct {
    * @param outputStorageStrategy Strategy to store construct outputs. If no strategy is provided a default strategy will be used.
    */
   private storeOutput(
-    outputStorageStrategy: IGenericBackendOutputStorageStrategy = new StackMetadataBackendOutputStorageStrategy(Stack.of(this)),
+    outputStorageStrategy: IBackendOutputStorageStrategy = new StackMetadataBackendOutputStorageStrategy(Stack.of(this)),
   ): void {
     const stack = Stack.of(this);
     const output: GraphqlOutput = {

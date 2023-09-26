@@ -516,6 +516,34 @@ export interface IAmplifyGraphqlSchema {
 }
 
 /**
+ * Entry representing the required output from the backend for codegen generate commands to work.
+ */
+export interface IBackendOutputEntry {
+  /**
+   * The protocol version for this backend output.
+   */
+  readonly version: string;
+
+  /**
+   * The string-map payload of generated config values.
+   */
+  readonly payload: Record<string, string>;
+}
+
+/**
+ * Backend output strategy used to write config required for codegen tasks.
+ */
+export interface IBackendOutputStorageStrategy {
+  /**
+   * Add an entry to backend output.
+   * @param keyName the key
+   * @param backendOutputEntry the record to store in the backend output
+   */
+  // eslint-disable-next-line @typescript-eslint/method-signature-style
+  addBackendOutputEntry(keyName: string, backendOutputEntry: IBackendOutputEntry): void;
+}
+
+/**
  * Input props for the AmplifyGraphqlApi construct. Specifies what the input to transform into an API, and configurations for
  * the transformation process.
  */
@@ -585,23 +613,7 @@ export interface AmplifyGraphqlApiProps {
   /**
    * Strategy to store construct outputs. If no outputStorageStrategey is provided a default strategy will be used.
    */
-  readonly outputStorageStrategy?: IGenericBackendOutputStorageStrategy;
-}
-
-/**
- * Writer that sets stack output and metadata that is needed by client config
- */
-export interface IGenericBackendOutputStorageStrategy {
-  // eslint-disable-next-line @typescript-eslint/method-signature-style
-  addBackendOutputEntry(keyName: string, backendOutputEntry: IGenericBackendOutputEntry): void;
-}
-
-/**
- * Versioned record of data to store in stack metadata and output
- */
-export interface IGenericBackendOutputEntry {
-  readonly version: string;
-  readonly payload: Record<string, string>;
+  readonly outputStorageStrategy?: IBackendOutputStorageStrategy;
 }
 
 /**
