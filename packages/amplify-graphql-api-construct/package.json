@@ -17,7 +17,7 @@
     "clean": "rimraf lib dist tsconfig.json tsconfig.tsbuildinfo node_modules",
     "test": "jest",
     "test-watch": "jest --watch",
-    "transform-deps": "dir=node_modules/@aws-amplify/backend-output-schemas yarn transform-in-place && dir=node_modules/@aws-amplify/backend-output-storage",
+    "transform-deps": "dir=node_modules/@aws-amplify/backend-output-schemas yarn transform-in-place && dir=node_modules/@aws-amplify/backend-output-storage yarn transform-in-place",
     "transform-in-place": "npx babel $dir --extensions .js --out-dir transpiled --copy-files && cp -r transpiled/* $dir && rimraf transpiled",
     "extract-api": "ts-node --project extract-api.tsconfig.json ../../scripts/extract-api.ts",
     "update-readme": "cp README_HEAD.md README.md && jsii && jsii-docgen --readme --output README.md",
