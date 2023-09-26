@@ -25,7 +25,6 @@ import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { MappingTemplate } from 'aws-cdk-lib/aws-appsync';
 import { NestedStack } from 'aws-cdk-lib';
 import { SchemaFile } from 'aws-cdk-lib/aws-appsync';
-import { z } from 'zod';
 
 // @public
 export interface AmplifyApiSchemaPreprocessorOutput {
@@ -61,7 +60,7 @@ export interface AmplifyGraphqlApiProps {
     readonly conflictResolution?: ConflictResolution;
     readonly functionNameMap?: Record<string, IFunction>;
     readonly functionSlots?: FunctionSlot[];
-    readonly outputStorageStrategy?: IBackendOutputStorageStrategy;
+    readonly outputStorageStrategy?: IGenericBackendOutputStorageStrategy;
     readonly predictionsBucket?: IBucket;
     readonly schema: IAmplifyGraphqlSchema;
     readonly schemaTranslationBehavior?: PartialSchemaTranslationBehavior;
@@ -107,12 +106,6 @@ export interface AutomergeConflictResolutionStrategy extends ConflictResolutionS
 }
 
 // @public
-export interface BackendOutputEntry {
-    readonly payload: Record<string, string>;
-    readonly version: string;
-}
-
-// @public
 export type ConflictDetectionType = 'VERSION' | 'NONE';
 
 // @public
@@ -152,9 +145,6 @@ export interface FunctionSlotOverride {
 }
 
 // @public
-export type GraphqlOutput = z.infer<typeof versionedGraphqlOutputSchema>;
-
-// @public
 export interface IAMAuthorizationConfig {
     readonly adminRoles?: IRole[];
     readonly authenticatedUserRole?: IRole;
@@ -169,9 +159,14 @@ export interface IAmplifyGraphqlSchema {
 }
 
 // @public
-export interface IBackendOutputStorageStrategy {
-    addBackendOutputEntry(keyName: string, strategy: BackendOutputEntry): void;
-    flush(): void;
+export interface IGenericBackendOutputEntry {
+    readonly payload: Record<string, string>;
+    readonly version: string;
+}
+
+// @public
+export interface IGenericBackendOutputStorageStrategy {
+    addBackendOutputEntry(keyName: string, backendOutputEntry: IGenericBackendOutputEntry): void;
 }
 
 // @public
@@ -246,53 +241,6 @@ export interface SubscriptionFunctionSlot extends FunctionSlotBase {
 export interface UserPoolAuthorizationConfig {
     readonly userPool: IUserPool;
 }
-
-// @public
-export const versionedGraphqlOutputSchema: z.ZodDiscriminatedUnion<"version", [z.ZodObject<{
-    version: z.ZodLiteral<"1">;
-    payload: z.ZodObject<{
-        awsAppsyncRegion: z.ZodString;
-        awsAppsyncApiEndpoint: z.ZodString;
-        awsAppsyncAuthenticationType: z.ZodEnum<["API_KEY", "AWS_LAMBDA", "AWS_IAM", "OPENID_CONNECT", "AMAZON_COGNITO_USER_POOLS"]>;
-        awsAppsyncApiKey: z.ZodOptional<z.ZodString>;
-        awsAppsyncApiId: z.ZodString;
-        amplifyApiModelSchemaS3Uri: z.ZodString;
-    }, "strip", z.ZodTypeAny, {
-        awsAppsyncRegion: string;
-        awsAppsyncApiEndpoint: string;
-        awsAppsyncAuthenticationType: "AWS_LAMBDA" | "API_KEY" | "AMAZON_COGNITO_USER_POOLS" | "AWS_IAM" | "OPENID_CONNECT";
-        awsAppsyncApiId: string;
-        amplifyApiModelSchemaS3Uri: string;
-        awsAppsyncApiKey?: string | undefined;
-    }, {
-        awsAppsyncRegion: string;
-        awsAppsyncApiEndpoint: string;
-        awsAppsyncAuthenticationType: "AWS_LAMBDA" | "API_KEY" | "AMAZON_COGNITO_USER_POOLS" | "AWS_IAM" | "OPENID_CONNECT";
-        awsAppsyncApiId: string;
-        amplifyApiModelSchemaS3Uri: string;
-        awsAppsyncApiKey?: string | undefined;
-    }>;
-}, "strip", z.ZodTypeAny, {
-    version: "1";
-    payload: {
-        awsAppsyncRegion: string;
-        awsAppsyncApiEndpoint: string;
-        awsAppsyncAuthenticationType: "AWS_LAMBDA" | "API_KEY" | "AMAZON_COGNITO_USER_POOLS" | "AWS_IAM" | "OPENID_CONNECT";
-        awsAppsyncApiId: string;
-        amplifyApiModelSchemaS3Uri: string;
-        awsAppsyncApiKey?: string | undefined;
-    };
-}, {
-    version: "1";
-    payload: {
-        awsAppsyncRegion: string;
-        awsAppsyncApiEndpoint: string;
-        awsAppsyncAuthenticationType: "AWS_LAMBDA" | "API_KEY" | "AMAZON_COGNITO_USER_POOLS" | "AWS_IAM" | "OPENID_CONNECT";
-        awsAppsyncApiId: string;
-        amplifyApiModelSchemaS3Uri: string;
-        awsAppsyncApiKey?: string | undefined;
-    };
-}>]>;
 
 // (No @packageDocumentation comment for this package)
 
