@@ -61,6 +61,21 @@ export class AmplifyGraphqlApi extends Construct {
   public readonly generatedFunctionSlots: FunctionSlot[];
 
   /**
+   * Graphql URL For the generated API. May be a CDK Token.
+   */
+  public readonly graphqlUrl: string;
+
+  /**
+   * Realtime URL For the generated API. May be a CDK Token.
+   */
+  public readonly realtimeUrl: string;
+
+  /**
+   * Generated Api Key if generated. May be a CDK Token.
+   */
+  public readonly apiKey: string | undefined;
+
+  /**
    * New AmplifyGraphqlApi construct, this will create an appsync api with authorization, a schema, and all necessary resolvers, functions,
    * and datasources.
    * @param scope the scope to create this construct within.
@@ -139,6 +154,10 @@ export class AmplifyGraphqlApi extends Construct {
     this.resources = getGeneratedResources(this);
     this.generatedFunctionSlots = getGeneratedFunctionSlots(assetManager.resolverAssets);
     this.storeOutput(outputStorageStrategy);
+
+    this.graphqlUrl = this.resources.cfnResources.cfnGraphqlApi.attrGraphQlUrl;
+    this.realtimeUrl = this.resources.cfnResources.cfnGraphqlApi.attrRealtimeUrl;
+    this.apiKey = this.resources.cfnResources.cfnApiKey?.attrApiKey;
   }
 
   /**
