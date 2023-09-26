@@ -19,8 +19,6 @@ import {
 import type { AmplifyGraphqlApiResources, AmplifyGraphqlApiProps, FunctionSlot, IBackendOutputStorageStrategy } from './types';
 import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
 
-// These will be imported from CLI in future
-
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
  *

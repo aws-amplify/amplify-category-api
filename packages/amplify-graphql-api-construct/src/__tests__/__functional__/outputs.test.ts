@@ -74,15 +74,12 @@ describe('storeOutput', () => {
     const s3UriTokenRegex = /s3:\/\/\$\{Token\[TOKEN\.\d+\]\}\/.*/;
 
     const addBackendOutputEntry = jest.fn();
-    const flush = jest.fn();
     const outputStorageStrategy = {
       addBackendOutputEntry,
-      flush,
     };
 
     afterEach(() => {
       addBackendOutputEntry.mockReset();
-      flush.mockReset();
     });
 
     test('stores output with outputStorageStrategy', () => {
@@ -111,7 +108,6 @@ describe('storeOutput', () => {
           amplifyApiModelSchemaS3Uri: expect.stringMatching(s3UriTokenRegex),
         },
       });
-      expect(flush).not.toBeCalled();
     });
 
     test('does not store awsAppsyncApiKey when not present and changes awsAppsyncAuthenticationType', () => {
@@ -144,7 +140,6 @@ describe('storeOutput', () => {
           amplifyApiModelSchemaS3Uri: expect.stringMatching(s3UriTokenRegex),
         },
       });
-      expect(flush).not.toBeCalled();
     });
   });
 });
