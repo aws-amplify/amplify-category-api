@@ -17,7 +17,7 @@ describe('check for unsupported RDS directives', () => {
     );
   });
 
-  it('should throw error if predictions diFrective is present on a query type field', () => {
+  it('should throw error if predictions directive is present on a query type field', () => {
     const schema = `
             type Query {
                 recognizeTextFromImage: String @predictions(actions: [identifyText])
