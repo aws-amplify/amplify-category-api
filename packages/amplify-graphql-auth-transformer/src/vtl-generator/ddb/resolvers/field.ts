@@ -32,7 +32,7 @@ import {
   fieldIsList,
   IS_AUTHORIZED_FLAG,
   API_KEY_AUTH_TYPE,
-} from '../utils';
+} from '../../../utils';
 import {
   generateStaticRoleExpression,
   apiKeyExpression,

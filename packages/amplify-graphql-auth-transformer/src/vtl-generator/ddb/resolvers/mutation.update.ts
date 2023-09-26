@@ -36,7 +36,7 @@ import {
   ALLOWED_FIELDS,
   NULL_ALLOWED_FIELDS,
   DENIED_FIELDS,
-} from '../utils';
+} from '../../../utils';
 import {
   getIdentityClaimExp,
   responseCheckForErrors,
