@@ -5,30 +5,6 @@ describe('check for unsupported RDS directives', () => {
   modelToDatasourceMap.set('Post', { dbType: 'MySQL' });
   modelToDatasourceMap.set('Tag', { dbType: 'DDB' });
 
-  it('should throw error if auth directive is present on a model', () => {
-    const schema = `
-            type Post @model @auth(rules: [{allow: owner}]) {
-                id: ID!
-                title: String!
-            }
-        `;
-    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
-      `"@auth directive on type \\"Post\\"  is not supported on RDS datasource. Following directives are not supported on RDS datasource: auth, searchable, predictions, function, manyToMany, http, mapsTo"`,
-    );
-  });
-
-  it('should throw error if auth directive is present on a field', () => {
-    const schema = `
-            type Post @model {
-                id: ID!
-                title: String! @auth(rules: [{allow: owner}])
-            }
-        `;
-    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
-      `"@auth directive on type \\"Post\\" and field \\"title\\" is not supported on RDS datasource. Following directives are not supported on RDS datasource: auth, searchable, predictions, function, manyToMany, http, mapsTo"`,
-    );
-  });
-
   it('should throw error if searchable directive is present on a model', () => {
     const schema = `
             type Post @model @searchable {
@@ -37,18 +13,18 @@ describe('check for unsupported RDS directives', () => {
             }
         `;
     expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
-      `"@searchable directive on type \\"Post\\"  is not supported on RDS datasource. Following directives are not supported on RDS datasource: auth, searchable, predictions, function, manyToMany, http, mapsTo"`,
+      `"@searchable directive on type \\"Post\\"  is not supported on RDS datasource. Following directives are not supported on RDS datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
     );
   });
 
-  it('should throw error if predictions directive is present on a query type field', () => {
+  it('should throw error if predictions diFrective is present on a query type field', () => {
     const schema = `
             type Query {
                 recognizeTextFromImage: String @predictions(actions: [identifyText])
             }
         `;
     expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
-      `"@predictions directive on type \\"Query\\" and field \\"recognizeTextFromImage\\" is not supported on RDS datasource. Following directives are not supported on RDS datasource: auth, searchable, predictions, function, manyToMany, http, mapsTo"`,
+      `"@predictions directive on type \\"Query\\" and field \\"recognizeTextFromImage\\" is not supported on RDS datasource. Following directives are not supported on RDS datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
     );
   });
 
@@ -59,7 +35,7 @@ describe('check for unsupported RDS directives', () => {
             }
         `;
     expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
-      `"@function directive on type \\"Query\\" and field \\"echo\\" is not supported on RDS datasource. Following directives are not supported on RDS datasource: auth, searchable, predictions, function, manyToMany, http, mapsTo"`,
+      `"@function directive on type \\"Query\\" and field \\"echo\\" is not supported on RDS datasource. Following directives are not supported on RDS datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
     );
   });
 
@@ -79,7 +55,7 @@ describe('check for unsupported RDS directives', () => {
             }
         `;
     expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
-      `"@manyToMany directive on type \\"Post\\" and field \\"tags\\" is not supported on RDS datasource. Following directives are not supported on RDS datasource: auth, searchable, predictions, function, manyToMany, http, mapsTo"`,
+      `"@manyToMany directive on type \\"Post\\" and field \\"tags\\" is not supported on RDS datasource. Following directives are not supported on RDS datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
     );
   });
 
@@ -97,7 +73,7 @@ describe('check for unsupported RDS directives', () => {
             }
         `;
     expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
-      `"@http directive on type \\"Query\\" and field \\"listPosts\\" is not supported on RDS datasource. Following directives are not supported on RDS datasource: auth, searchable, predictions, function, manyToMany, http, mapsTo"`,
+      `"@http directive on type \\"Query\\" and field \\"listPosts\\" is not supported on RDS datasource. Following directives are not supported on RDS datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
     );
   });
 
@@ -109,7 +85,7 @@ describe('check for unsupported RDS directives', () => {
             }
         `;
     expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
-      `"@mapsTo directive on type \\"Post\\"  is not supported on RDS datasource. Following directives are not supported on RDS datasource: auth, searchable, predictions, function, manyToMany, http, mapsTo"`,
+      `"@mapsTo directive on type \\"Post\\"  is not supported on RDS datasource. Following directives are not supported on RDS datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
     );
   });
 
