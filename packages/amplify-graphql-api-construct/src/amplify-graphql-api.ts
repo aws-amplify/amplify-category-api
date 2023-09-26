@@ -6,11 +6,12 @@ import { AssetProps } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   convertAuthorizationModesToTransformerAuthConfig,
   convertToResolverConfig,
-  defaultSchemaTranslationBehavior,
+  defaultTranslationBehavior,
   AssetManager,
   getGeneratedResources,
   getGeneratedFunctionSlots,
   CodegenAssets,
+  addAmplifyMetadataToStackDescription,
 } from './internal';
 import type { AmplifyGraphqlApiResources, AmplifyGraphqlApiProps, FunctionSlot, IBackendOutputStorageStrategy } from './types';
 import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
@@ -44,7 +45,7 @@ import { GraphqlOutput, GraphqlOutputKey, AwsAppsyncAuthenticationType, StackMet
  */
 export class AmplifyGraphqlApi extends Construct {
   /**
-   * Generated resources.
+   * Generated L1 and L2 CDK resources.
    */
   public readonly resources: AmplifyGraphqlApiResources;
 
@@ -59,27 +60,36 @@ export class AmplifyGraphqlApi extends Construct {
    */
   public readonly generatedFunctionSlots: FunctionSlot[];
 
+  /**
+   * New AmplifyGraphqlApi construct, this will create an appsync api with authorization, a schema, and all necessary resolvers, functions,
+   * and datasources.
+   * @param scope the scope to create this construct within.
+   * @param id the id to use for this api.
+   * @param props the properties used to configure the generated api.
+   */
   constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps) {
     super(scope, id);
 
     const {
-      schema,
-      authorizationConfig,
+      definition,
+      authorizationModes,
       conflictResolution,
       functionSlots,
       transformers,
       predictionsBucket,
       stackMappings,
-      schemaTranslationBehavior,
+      translationBehavior,
       functionNameMap,
       outputStorageStrategy,
     } = props;
 
+    addAmplifyMetadataToStackDescription(scope);
+
     const { authConfig, identityPoolId, adminRoles, authSynthParameters } =
-      convertAuthorizationModesToTransformerAuthConfig(authorizationConfig);
+      convertAuthorizationModesToTransformerAuthConfig(authorizationModes);
 
     validateFunctionSlots(functionSlots ?? []);
-    const separatedFunctionSlots = separateSlots([...(functionSlots ?? []), ...schema.functionSlots]);
+    const separatedFunctionSlots = separateSlots([...(functionSlots ?? []), ...definition.functionSlots]);
 
     // Allow amplifyEnvironmentName to be retrieve from context, and use value 'NONE' if no value can be found.
     // amplifyEnvironmentName is required for logical id suffixing, as well as Exports from the nested stacks.
@@ -105,7 +115,7 @@ export class AmplifyGraphqlApi extends Construct {
         apiName: props.apiName ?? id,
         ...authSynthParameters,
       },
-      schema: schema.definition,
+      schema: definition.schema,
       userDefinedSlots: parseUserDefinedSlots(separatedFunctionSlots),
       transformersFactoryArgs: {
         authConfig,
@@ -119,12 +129,12 @@ export class AmplifyGraphqlApi extends Construct {
       stackMapping: stackMappings ?? {},
       resolverConfig: conflictResolution ? convertToResolverConfig(conflictResolution) : undefined,
       transformParameters: {
-        ...defaultSchemaTranslationBehavior,
-        ...(schemaTranslationBehavior ?? {}),
+        ...defaultTranslationBehavior,
+        ...(translationBehavior ?? {}),
       },
     });
 
-    this.codegenAssets = new CodegenAssets(this, 'AmplifyCodegenAssets', { modelSchema: schema.definition });
+    this.codegenAssets = new CodegenAssets(this, 'AmplifyCodegenAssets', { modelSchema: definition.schema });
 
     this.resources = getGeneratedResources(this);
     this.generatedFunctionSlots = getGeneratedFunctionSlots(assetManager.resolverAssets);

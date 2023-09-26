@@ -242,7 +242,7 @@ export class ApigwStackTransform {
   }
 }
 
-function convertCrudOperationsToCfnPermissions(crudOps: CrudOperation[]) {
+export function convertCrudOperationsToCfnPermissions(crudOps: CrudOperation[]) {
   const opMap: Record<CrudOperation, string[]> = {
     [CrudOperation.CREATE]: ['/POST'],
     [CrudOperation.READ]: ['/GET'],

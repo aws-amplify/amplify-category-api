@@ -4,9 +4,8 @@ export type {
   OIDCAuthorizationConfig,
   ApiKeyAuthorizationConfig,
   LambdaAuthorizationConfig,
-  AuthorizationConfig,
-  PartialSchemaTranslationBehavior,
-  AmplifyApiSchemaPreprocessorOutput,
+  AuthorizationModes,
+  PartialTranslationBehavior,
   AmplifyGraphqlApiProps,
   AmplifyGraphqlApiResources,
   AmplifyGraphqlApiCfnResources,
@@ -23,13 +22,13 @@ export type {
   AutomergeConflictResolutionStrategy,
   ConflictResolutionStrategyBase,
   ConflictResolutionStrategy,
-  SchemaTranslationBehavior,
-  IAmplifyGraphqlSchema,
+  TranslationBehavior,
+  IAmplifyGraphqlDefinition,
   IBackendOutputStorageStrategy,
   BackendOutputEntry,
 } from './types';
 export { AmplifyGraphqlApi } from './amplify-graphql-api';
-export { AmplifyGraphqlSchema } from './amplify-graphql-schema';
+export { AmplifyGraphqlDefinition } from './amplify-graphql-definition';
 
 // remove these exports when provided by cli
 export { GraphqlOutput, versionedGraphqlOutputSchema } from './graphql-output';

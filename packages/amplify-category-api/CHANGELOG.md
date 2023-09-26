@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.7.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.6.4...@aws-amplify/amplify-category-api@5.7.0) (2023-09-20)
+
+### Features
+
+- disable amplify cfn outputs for cdk apps ([0c72d18](https://github.com/aws-amplify/amplify-category-api/commit/0c72d1822f8e5ccb3e04a0a49049a459b5fb49e6))
+
 ## [5.6.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.6.3...@aws-amplify/amplify-category-api@5.6.4) (2023-09-13)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api

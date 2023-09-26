@@ -291,6 +291,7 @@ const generateTransformParameters = (
       pathManager.getCurrentCloudBackendDirPath(),
     ),
     sandboxModeEnabled,
+    enableTransformerCfnOutputs: true,
   };
 };
 

@@ -16,90 +16,144 @@ import { IFunction, CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
 
 /**
- * Configuration for IAM Authorization on the Graphql API.
+ * Configuration for IAM Authorization on the Graphql Api.
+ * @struct - required since this interface begins with an 'I'
  */
 export interface IAMAuthorizationConfig {
-  readonly identityPoolId?: string;
-  readonly authenticatedUserRole?: IRole;
-  readonly unauthenticatedUserRole?: IRole;
-  readonly adminRoles?: IRole[];
+  /**
+   * ID for the Cognito Identity Pool vending auth and unauth roles.
+   */
+  readonly identityPoolId: string;
+
+  /**
+   * Authenticated user role, applies to { provider: iam, allow: private } access.
+   */
+  readonly authenticatedUserRole: IRole;
+
+  /**
+   * Unauthenticated user role, applies to { provider: iam, allow: public } access.
+   */
+  readonly unauthenticatedUserRole: IRole;
 }
 
 /**
- * Configuration for Cognito UserPool Authorization on the Graphql API.
+ * Configuration for Cognito UserPool Authorization on the Graphql Api.
  */
 export interface UserPoolAuthorizationConfig {
+  /**
+   * The Cognito User Pool which is used to authenticated JWT tokens, and vends group and user information.
+   */
   readonly userPool: IUserPool;
 }
 
 /**
- * Configuration for OpenId Connect Authorization on the Graphql API.
+ * Configuration for OpenId Connect Authorization on the Graphql Api.
  */
 export interface OIDCAuthorizationConfig {
+  /**
+   * The issuer for the OIDC configuration.
+   */
   readonly oidcProviderName: string;
+
+  /**
+   * Url for the OIDC token issuer.
+   */
   readonly oidcIssuerUrl: string;
+
+  /**
+   * The client identifier of the Relying party at the OpenID identity provider.
+   * A regular expression can be specified so AppSync can validate against multiple client identifiers at a time. Example
+   */
   readonly clientId?: string;
+
+  /**
+   * The duration an OIDC token is valid after being authenticated by OIDC provider.
+   * auth_time claim in OIDC token is required for this validation to work.
+   */
   readonly tokenExpiryFromAuth: Duration;
+
+  /**
+   * The duration an OIDC token is valid after being issued to a user.
+   * This validation uses iat claim of OIDC token.
+   */
   readonly tokenExpiryFromIssue: Duration;
 }
 
 /**
- * Configuration for API Keys on the Graphql API.
+ * Configuration for Api Keys on the Graphql Api.
  */
 export interface ApiKeyAuthorizationConfig {
+  /**
+   * Optional description for the Api Key to attach to the Api.
+   */
   readonly description?: string;
+
+  /**
+   * A duration representing the time from Cloudformation deploy until expiry.
+   */
   readonly expires: Duration;
 }
 
 /**
- * Configuration for Custom Lambda authorization on the Graphql API.
+ * Configuration for Custom Lambda authorization on the Graphql Api.
  */
 export interface LambdaAuthorizationConfig {
+  /**
+   * The authorizer lambda function.
+   */
   readonly function: IFunction;
+
+  /**
+   * How long the results are cached.
+   */
   readonly ttl: Duration;
 }
 
 /**
- * Authorization Config to apply to the API.
- * At least one config must be provided, and if more than one are provided,
- * a defaultAuthMode must be specified.
- * For more information on Amplify API auth, refer to https://docs.amplify.aws/cli/graphql/authorization-rules/#authorization-strategies
+ * Authorization Modes to apply to the Api.
+ * At least one modes must be provided, and if more than one are provided a defaultAuthorizationMode must be specified.
+ * For more information on Amplify Api auth, refer to https://docs.amplify.aws/cli/graphql/authorization-rules/#authorization-strategies
  */
-export interface AuthorizationConfig {
+export interface AuthorizationModes {
   /**
-   * Default auth mode to provide to the API, required if more than one config type is specified.
+   * Default auth mode to provide to the Api, required if more than one config type is specified.
    */
-  readonly defaultAuthMode?: 'AWS_IAM' | 'AMAZON_COGNITO_USER_POOLS' | 'OPENID_CONNECT' | 'API_KEY' | 'AWS_LAMBDA';
+  readonly defaultAuthorizationMode?: 'AWS_IAM' | 'AMAZON_COGNITO_USER_POOLS' | 'OPENID_CONNECT' | 'API_KEY' | 'AWS_LAMBDA';
 
   /**
-   * IAM Auth config, required if an 'iam' auth provider is specified in the API.
+   * IAM Auth config, required if an 'iam' auth provider is specified in the Api.
    * Applies to 'public' and 'private' auth strategies.
    */
   readonly iamConfig?: IAMAuthorizationConfig;
 
   /**
-   * Cognito UserPool config, required if a 'userPools' auth provider is specified in the API.
+   * Cognito UserPool config, required if a 'userPools' auth provider is specified in the Api.
    * Applies to 'owner', 'private', and 'group' auth strategies.
    */
   readonly userPoolConfig?: UserPoolAuthorizationConfig;
 
   /**
-   * Cognito OIDC config, required if a 'oidc' auth provider is specified in the API.
+   * Cognito OIDC config, required if a 'oidc' auth provider is specified in the Api.
    * Applies to 'owner', 'private', and 'group' auth strategies.
    */
   readonly oidcConfig?: OIDCAuthorizationConfig;
 
   /**
-   * AppSync API Key config, required if a 'apiKey' auth provider is specified in the API.
+   * AppSync Api Key config, required if a 'apiKey' auth provider is specified in the Api.
    * Applies to 'public' auth strategy.
    */
   readonly apiKeyConfig?: ApiKeyAuthorizationConfig;
 
   /**
-   * Lambda config, required if a 'function' auth provider is specified in the API.
+   * Lambda config, required if a 'function' auth provider is specified in the Api.
    * Applies to 'custom' auth strategy.
    */
   readonly lambdaConfig?: LambdaAuthorizationConfig;
+
+  /**
+   * A list of roles granted full R/W access to the Api.
+   */
+  readonly adminRoles?: IRole[];
 }
 
 /**
@@ -111,6 +165,9 @@ export type ConflictDetectionType = 'VERSION' | 'NONE';
  * Common parameters for conflict resolution.
  */
 export interface ConflictResolutionStrategyBase {
+  /**
+   * The conflict detection type used for resolution.
+   */
   readonly detectionType: ConflictDetectionType;
 }
 
@@ -118,6 +175,10 @@ export interface ConflictResolutionStrategyBase {
  * Enable optimistic concurrency on the project.
  */
 export interface AutomergeConflictResolutionStrategy extends ConflictResolutionStrategyBase {
+  /**
+   * This conflict resolution strategy executes an auto-merge.
+   * For more information, refer to https://docs.aws.amazon.com/appsync/latest/devguide/conflict-detection-and-sync.html#conflict-detection-and-resolution
+   */
   readonly handlerType: 'AUTOMERGE';
 }
 
@@ -125,6 +186,10 @@ export interface AutomergeConflictResolutionStrategy extends ConflictResolutionS
  * Enable automerge on the project.
  */
 export interface OptimisticConflictResolutionStrategy extends ConflictResolutionStrategyBase {
+  /**
+   * This conflict resolution strategy the _version to perform optimistic concurrency.
+   * For more information, refer to https://docs.aws.amazon.com/appsync/latest/devguide/conflict-detection-and-sync.html#conflict-detection-and-resolution
+   */
   readonly handlerType: 'OPTIMISTIC_CONCURRENCY';
 }
 
@@ -132,7 +197,16 @@ export interface OptimisticConflictResolutionStrategy extends ConflictResolution
  * Enable custom sync on the project, powered by a lambda.
  */
 export interface CustomConflictResolutionStrategy extends ConflictResolutionStrategyBase {
+  /**
+   * This conflict resolution strategy uses a lambda handler type.
+   * For more information, refer to https://docs.aws.amazon.com/appsync/latest/devguide/conflict-detection-and-sync.html#conflict-detection-and-resolution
+
+   */
   readonly handlerType: 'LAMBDA';
+
+  /**
+   * The function which will be invoked for conflict resolution.
+   */
   readonly conflictHandler: IFunction;
 }
 
@@ -160,26 +234,18 @@ export interface ConflictResolution {
 }
 
 /**
- * Custom type representing a processed schema output.
- */
-export interface AmplifyApiSchemaPreprocessorOutput {
-  /**
-   * Schema generated as an output of the preprocessing step.
-   */
-  readonly processedSchema: string;
-
-  /**
-   * Custom functions extracted during preprocessing.
-   */
-  readonly processedFunctionSlots?: FunctionSlot[];
-}
-
-/**
  * Params exposed to support configuring and overriding pipelined slots. This allows configuration of the underlying function,
  * including the request and response mapping templates.
  */
 export interface FunctionSlotOverride {
+  /**
+   * Override request mapping template for the function slot. Executed before the datasource is invoked.
+   */
   readonly requestMappingTemplate?: MappingTemplate;
+
+  /**
+   * Override response mapping template for the function slot. Executed after the datasource is invoked.
+   */
   readonly responseMappingTemplate?: MappingTemplate;
 }
 
@@ -187,8 +253,20 @@ export interface FunctionSlotOverride {
  * Common slot parameters.
  */
 export interface FunctionSlotBase {
+  /**
+   * The field to attach this function to on the Api definition.
+   */
   readonly fieldName: string;
+
+  /**
+   * The slot index to use to inject this into the execution pipeline.
+   * For more information on slotting, refer to https://docs.amplify.aws/cli/graphql/custom-business-logic/#extend-amplify-generated-resolvers
+   */
   readonly slotIndex: number;
+
+  /**
+   * The overridden behavior for this slot.
+   */
   readonly function: FunctionSlotOverride;
 }
 
@@ -196,7 +274,15 @@ export interface FunctionSlotBase {
  * Slot types for Mutation Resolvers.
  */
 export interface MutationFunctionSlot extends FunctionSlotBase {
+  /**
+   * This slot type applies to the Mutation type on the Api definition.
+   */
   readonly typeName: 'Mutation';
+
+  /**
+   * The slot name to inject this behavior into.
+   * For more information on slotting, refer to https://docs.amplify.aws/cli/graphql/custom-business-logic/#extend-amplify-generated-resolvers
+   */
   readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preUpdate' | 'postUpdate' | 'finish';
 }
 
@@ -204,7 +290,15 @@ export interface MutationFunctionSlot extends FunctionSlotBase {
  * Slot types for Query Resolvers.
  */
 export interface QueryFunctionSlot extends FunctionSlotBase {
+  /**
+   * This slot type applies to the Query type on the Api definition.
+   */
   readonly typeName: 'Query';
+
+  /**
+   * The slot name to inject this behavior into.
+   * For more information on slotting, refer to https://docs.amplify.aws/cli/graphql/custom-business-logic/#extend-amplify-generated-resolvers
+   */
   readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preDataLoad' | 'postDataLoad' | 'finish';
 }
 
@@ -212,7 +306,15 @@ export interface QueryFunctionSlot extends FunctionSlotBase {
  * Slot types for Subscription Resolvers.
  */
 export interface SubscriptionFunctionSlot extends FunctionSlotBase {
+  /**
+   * This slot type applies to the Subscription type on the Api definition.
+   */
   readonly typeName: 'Subscription';
+
+  /**
+   * The slot name to inject this behavior into.
+   * For more information on slotting, refer to https://docs.amplify.aws/cli/graphql/custom-business-logic/#extend-amplify-generated-resolvers
+   */
   readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preSubscribe';
 }
 
@@ -227,53 +329,62 @@ export type FunctionSlot = MutationFunctionSlot | QueryFunctionSlot | Subscripti
  * a single location, and isn't spread around the transformers, where they can
  * have different default behaviors.
  */
-export interface SchemaTranslationBehavior {
+export interface TranslationBehavior {
   /**
    * Restore parity w/ GQLv1 @model parameter behavior, where setting a single field doesn't implicitly set the other fields to null.
+   * @default true
    */
   readonly shouldDeepMergeDirectiveConfigDefaults: boolean;
 
   /**
    * Disable resolver deduping, this can sometimes cause problems because dedupe ordering isn't stable today, which can
    * lead to circular dependencies across stacks if models are reordered.
+   * @default true
    */
   readonly disableResolverDeduping: boolean;
 
   /**
    * Enabling sandbox mode will enable api key auth on all models in the transformed schema.
+   * @default false
    */
   readonly sandboxModeEnabled: boolean;
 
   /**
    * Ensure that oidc and userPool auth use the `sub` field in the for the username field, which disallows new users with the same
    * id to access data from a deleted user in the pool.
+   * @default true
    */
   readonly useSubUsernameForDefaultIdentityClaim: boolean;
 
   /**
    * Ensure that the owner field is still populated even if a static iam or group authorization applies.
+   * @default true
    */
   readonly populateOwnerFieldForStaticGroupAuth: boolean;
 
   /**
    * If enabled, disable api key resource generation even if specified as an auth rule on the construct.
    * This is a legacy parameter from the Graphql Transformer existing in Amplify CLI, not recommended to change.
+   * @default false
    */
   readonly suppressApiKeyGeneration: boolean;
 
   /**
    * If disabled, generated @index as an LSI instead of a GSI.
+   * @default true
    */
   readonly secondaryKeyAsGSI: boolean;
 
   /**
-   * Automate generation of query names, and as a result attaching all indexes as queries to the generated API.
-   * If enabled, @index can be provided a null name field to disable the generation of the query on the api.
+   * Automate generation of query names, and as a result attaching all indexes as queries to the generated Api.
+   * If enabled, @index can be provided a null name field to disable the generation of the query on the Api.
+   * @default true
    */
   readonly enableAutoIndexQueryNames: boolean;
 
   /**
    * Enable custom primary key support, there's no good reason to disable this unless trying not to update a legacy app.
+   * @default true
    */
   readonly respectPrimaryKeyAttributesOnConnectionField: boolean;
 
@@ -282,57 +393,76 @@ export interface SchemaTranslationBehavior {
    * to use `Object.values(resources.additionalResources['AWS::Elasticsearch::Domain']).forEach((domain: CfnDomain) => {
    *   domain.NodeToNodeEncryptionOptions = { Enabled: True };
    * });
+   * @default false
    */
   readonly enableSearchNodeToNodeEncryption: boolean;
+
+  /**
+   * When enabled, internal cfn outputs which existed in Amplify-generated apps will continue to be emitted.
+   * @default false
+   */
+  readonly enableTransformerCfnOutputs: boolean;
 }
 
-export interface PartialSchemaTranslationBehavior {
+/**
+ * A utility interface equivalent to Partial<TranslationBehavior>.
+ */
+export interface PartialTranslationBehavior {
   /**
    * Restore parity w/ GQLv1 @model parameter behavior, where setting a single field doesn't implicitly set the other fields to null.
+   * @default true
    */
   readonly shouldDeepMergeDirectiveConfigDefaults?: boolean;
 
   /**
    * Disable resolver deduping, this can sometimes cause problems because dedupe ordering isn't stable today, which can
    * lead to circular dependencies across stacks if models are reordered.
+   * @default true
    */
   readonly disableResolverDeduping?: boolean;
 
   /**
    * Enabling sandbox mode will enable api key auth on all models in the transformed schema.
+   * @default false
    */
   readonly sandboxModeEnabled?: boolean;
 
   /**
    * Ensure that oidc and userPool auth use the `sub` field in the for the username field, which disallows new users with the same
    * id to access data from a deleted user in the pool.
+   * @default true
    */
   readonly useSubUsernameForDefaultIdentityClaim?: boolean;
 
   /**
    * Ensure that the owner field is still populated even if a static iam or group authorization applies.
+   * @default true
    */
   readonly populateOwnerFieldForStaticGroupAuth?: boolean;
 
   /**
    * If enabled, disable api key resource generation even if specified as an auth rule on the construct.
    * This is a legacy parameter from the Graphql Transformer existing in Amplify CLI, not recommended to change.
+   * @default false
    */
   readonly suppressApiKeyGeneration?: boolean;
 
   /**
    * If disabled, generated @index as an LSI instead of a GSI.
+   * @default true
    */
   readonly secondaryKeyAsGSI?: boolean;
 
   /**
-   * Automate generation of query names, and as a result attaching all indexes as queries to the generated API.
-   * If enabled, @index can be provided a null name field to disable the generation of the query on the api.
+   * Automate generation of query names, and as a result attaching all indexes as queries to the generated Api.
+   * If enabled, @index can be provided a null name field to disable the generation of the query on the Api.
+   * @default true
    */
   readonly enableAutoIndexQueryNames?: boolean;
 
   /**
    * Enable custom primary key support, there's no good reason to disable this unless trying not to update a legacy app.
+   * @default true
    */
   readonly respectPrimaryKeyAttributesOnConnectionField?: boolean;
 
@@ -341,32 +471,52 @@ export interface PartialSchemaTranslationBehavior {
    * to use `Object.values(resources.additionalResources['AWS::Elasticsearch::Domain']).forEach((domain: CfnDomain) => {
    *   domain.NodeToNodeEncryptionOptions = { Enabled: True };
    * });
+   * @default false
    */
   readonly enableSearchNodeToNodeEncryption?: boolean;
+
+  /**
+   * When enabled, internal cfn outputs which existed in Amplify-generated apps will continue to be emitted.
+   * @default false
+   */
+  readonly enableTransformerCfnOutputs?: boolean;
 }
 
 /**
- * Graphql schema definition, which can be implemented in multiple ways.
+ * Graphql Api definition, which can be implemented in multiple ways.
  */
-export interface IAmplifyGraphqlSchema {
+export interface IAmplifyGraphqlDefinition {
   /**
-   * Return the schema definition as a graphql string.
+   * Return the schema definition as a graphql string, with amplify directives allowed.
    * @returns the rendered schema.
    */
-  readonly definition: string;
+  readonly schema: string;
 
   /**
-   * Retrieve any function slots defined explicitly in the schema.
+   * Retrieve any function slots defined explicitly in the Api definition.
    * @returns generated function slots
    */
   readonly functionSlots: FunctionSlot[];
 }
 
+/**
+ * Entry representing the required output from the backend for codegen generate commands to work.
+ */
 export interface BackendOutputEntry {
+  /**
+   * The protocol version for this backend output.
+   */
   readonly version: string;
+
+  /**
+   * The string-map payload of generated config values.
+   */
   readonly payload: Record<string, string>;
 }
 
+/**
+ * Backend output strategy used to write config required for codegen tasks.
+ */
 export interface IBackendOutputStorageStrategy {
   /**
    * Add an entry to backend output.
@@ -384,37 +534,37 @@ export interface IBackendOutputStorageStrategy {
 }
 
 /**
- * Input props for the AmplifyGraphqlApi construct. Specifies what the input to transform into an API, and configurations for
+ * Input props for the AmplifyGraphqlApi construct. Specifies what the input to transform into an Api, and configurations for
  * the transformation process.
  */
 export interface AmplifyGraphqlApiProps {
   /**
-   * The schema to transform in a full API.
+   * The definition to transform in a full Api.
    */
-  readonly schema: IAmplifyGraphqlSchema;
+  readonly definition: IAmplifyGraphqlDefinition;
 
   /**
-   * Name to be used for the appsync api.
+   * Name to be used for the AppSync Api.
    * Default: construct id.
    */
   readonly apiName?: string;
 
   /**
-   * Required auth config for the API. This object must be a superset of the configured auth providers in the graphql schema.
+   * Required auth modes for the Api. This object must be a superset of the configured auth providers in the Api definition.
    * For more information, refer to https://docs.amplify.aws/cli/graphql/authorization-rules/
    */
-  readonly authorizationConfig: AuthorizationConfig;
+  readonly authorizationModes: AuthorizationModes;
 
   /**
-   * Lambda functions referenced in the schema's @function directives. The keys of this object are expected to be the
-   * function name provided in the schema, and value is the function that name refers to. If a name is not found in this
+   * Lambda functions referenced in the definitions's @function directives. The keys of this object are expected to be the
+   * function name provided in the definition, and value is the function that name refers to. If a name is not found in this
    * map, then it is interpreted as the `functionName`, and an arn will be constructed using the current aws account and region
    * (or overridden values, if set in the directive).
    */
   readonly functionNameMap?: Record<string, IFunction>;
 
   /**
-   * Configure conflict resolution on the API, which is required to enable DataStore API functionality.
+   * Configure conflict resolution on the Api, which is required to enable DataStore Api functionality.
    * For more information, refer to https://docs.amplify.aws/lib/datastore/getting-started/q/platform/js/
    */
   readonly conflictResolution?: ConflictResolution;
@@ -445,10 +595,10 @@ export interface AmplifyGraphqlApiProps {
   readonly predictionsBucket?: IBucket;
 
   /**
-   * This replaces feature flags from the API construct, for general information on what these parameters do,
+   * This replaces feature flags from the Api construct, for general information on what these parameters do,
    * refer to https://docs.amplify.aws/cli/reference/feature-flags/#graphQLTransformer
    */
-  readonly schemaTranslationBehavior?: PartialSchemaTranslationBehavior;
+  readonly translationBehavior?: PartialTranslationBehavior;
 
   /**
    * Strategy to store construct outputs. If no outputStorageStrategey is provided a default strategy will be used.
@@ -457,12 +607,12 @@ export interface AmplifyGraphqlApiProps {
 }
 
 /**
- * L1 CDK resources from the API which were generated as part of the transform.
+ * L1 CDK resources from the Api which were generated as part of the transform.
  * These are potentially stored under nested stacks, but presented organized by type instead.
  */
 export interface AmplifyGraphqlApiCfnResources {
   /**
-   * The Generated AppSync API L1 Resource
+   * The Generated AppSync Api L1 Resource
    */
   readonly cfnGraphqlApi: CfnGraphQLApi;
 
@@ -472,7 +622,7 @@ export interface AmplifyGraphqlApiCfnResources {
   readonly cfnGraphqlSchema: CfnGraphQLSchema;
 
   /**
-   * The Generated AppSync API Key L1 Resource
+   * The Generated AppSync Api Key L1 Resource
    */
   readonly cfnApiKey?: CfnApiKey;
 
@@ -513,12 +663,12 @@ export interface AmplifyGraphqlApiCfnResources {
 }
 
 /**
- * Accessible resources from the API which were generated as part of the transform.
+ * Accessible resources from the Api which were generated as part of the transform.
  * These are potentially stored under nested stacks, but presented organized by type instead.
  */
 export interface AmplifyGraphqlApiResources {
   /**
-   * The Generated AppSync API L2 Resource, includes the Schema.
+   * The Generated AppSync Api L2 Resource, includes the Schema.
    */
   readonly graphqlApi: IGraphqlApi;
 
@@ -543,7 +693,7 @@ export interface AmplifyGraphqlApiResources {
   readonly cfnResources: AmplifyGraphqlApiCfnResources;
 
   /**
-   * Nested Stacks generated by the API Construct.
+   * Nested Stacks generated by the Api Construct.
    */
   readonly nestedStacks: Record<string, NestedStack>;
 }

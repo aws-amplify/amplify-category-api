@@ -1,19 +1,19 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
-import { AmplifyGraphqlSchema } from '../../amplify-graphql-schema';
+import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 
 describe('storeOutput', () => {
   describe('default outputStorageStrategy', () => {
     test('stores output with outputStorageStrategy', () => {
       const stack = new cdk.Stack();
       new AmplifyGraphqlApi(stack, 'TestApi', {
-        schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
           type Todo @model @auth(rules: [{ allow: public }]) {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
       });
@@ -89,12 +89,12 @@ describe('storeOutput', () => {
     test('stores output with outputStorageStrategy', () => {
       const stack = new cdk.Stack();
       new AmplifyGraphqlApi(stack, 'TestApi', {
-        schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
           type Todo @model @auth(rules: [{ allow: public }]) {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
         outputStorageStrategy,
@@ -118,12 +118,12 @@ describe('storeOutput', () => {
     test('does not store awsAppsyncApiKey when not present and changes awsAppsyncAuthenticationType', () => {
       const stack = new cdk.Stack();
       new AmplifyGraphqlApi(stack, 'TestApi', {
-        schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
           type Todo @model {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           oidcConfig: {
             oidcProviderName: 'mock-provider-name',
             oidcIssuerUrl: 'mock-issuer-url',

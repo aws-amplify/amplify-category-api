@@ -26,7 +26,7 @@ describe('CDK GraphQL Transformer', () => {
       const templatePath = path.resolve(path.join(__dirname, 'backends', 'base-cdk'));
       const name = await initCDKProject(projRoot, templatePath, cdkVersion);
       const outputs = await cdkDeploy(projRoot, '--all');
-      const { GraphQLAPIEndpointOutput: apiEndpoint, GraphQLAPIKeyOutput: apiKey } = outputs[name];
+      const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
 
       const result = await graphql(
         apiEndpoint,
