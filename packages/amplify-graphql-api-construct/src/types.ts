@@ -505,7 +505,7 @@ export interface IAmplifyGraphqlDefinition {
 /**
  * Entry representing the required output from the backend for codegen generate commands to work.
  */
-export interface BackendOutputEntry {
+export interface IBackendOutputEntry {
   /**
    * The protocol version for this backend output.
    */
@@ -524,16 +524,10 @@ export interface IBackendOutputStorageStrategy {
   /**
    * Add an entry to backend output.
    * @param keyName the key
-   * @param strategy the backend output strategy information.
+   * @param backendOutputEntry the record to store in the backend output
    */
   // eslint-disable-next-line @typescript-eslint/method-signature-style
-  addBackendOutputEntry(keyName: string, strategy: BackendOutputEntry): void;
-
-  /**
-   * Write all pending data to the destination
-   */
-  // eslint-disable-next-line @typescript-eslint/method-signature-style
-  flush(): void;
+  addBackendOutputEntry(keyName: string, backendOutputEntry: IBackendOutputEntry): void;
 }
 
 /**

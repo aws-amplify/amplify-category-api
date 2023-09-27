@@ -11,12 +11,15 @@
   "license": "Apache-2.0",
   "main": "lib/index.js",
   "scripts": {
-    "build": "jsii",
+    "build": "yarn config set script-shell bash && yarn transform-deps && yarn config delete script-shell && jsii",
     "watch": "jsii -w",
     "package": "jsii-pacmak",
     "clean": "rimraf lib dist tsconfig.json tsconfig.tsbuildinfo node_modules",
     "test": "jest",
     "test-watch": "jest --watch",
+    "transform-deps": "dir=node_modules/@aws-amplify/backend-output-schemas yarn transform-in-place && dir=node_modules/@aws-amplify/backend-output-storage yarn transform-in-place",
+    "transform-in-place": "npx babel $dir --extensions .js --out-dir transpiled --copy-files && cp -r transpiled/* $dir && rimraf transpiled && yarn force-cjs-module $dir",
+    "force-cjs-module": "ts-node --project extract-api.tsconfig.json ./remove-module-type-from-package-json.ts",
     "extract-api": "ts-node --project extract-api.tsconfig.json ../../scripts/extract-api.ts",
     "update-readme": "cp README_HEAD.md README.md && jsii && jsii-docgen --readme --output README.md",
     "prepublishOnly": "jsii && git add .jsii && git commit -m \"chore: update .jsii assembly\" --no-verify"
@@ -34,6 +37,8 @@
     "access": "public"
   },
   "bundledDependencies": [
+    "@aws-amplify/backend-output-schemas",
+    "@aws-amplify/backend-output-storage",
     "@aws-amplify/graphql-transformer",
     "@aws-amplify/graphql-transformer-core",
     "@aws-amplify/graphql-transformer-interfaces",
@@ -68,6 +73,8 @@
     "universalify"
   ],
   "dependencies": {
+    "@aws-amplify/backend-output-schemas": "^0.2.0-alpha.3",
+    "@aws-amplify/backend-output-storage": "^0.1.1-alpha.0",
     "@aws-amplify/graphql-auth-transformer": "3.1.4",
     "@aws-amplify/graphql-default-value-transformer": "2.1.4",
     "@aws-amplify/graphql-function-transformer": "2.1.3",

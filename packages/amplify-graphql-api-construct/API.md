@@ -45,7 +45,6 @@ import { NoneDataSource } from 'aws-cdk-lib/aws-appsync';
 import { OpenSearchDataSource } from 'aws-cdk-lib/aws-appsync';
 import { RdsDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Resolver } from 'aws-cdk-lib/aws-appsync';
-import { z } from 'zod';
 
 // @public
 export interface AddFunctionProps {
@@ -147,12 +146,6 @@ export interface AutomergeConflictResolutionStrategy extends ConflictResolutionS
 }
 
 // @public
-export interface BackendOutputEntry {
-    readonly payload: Record<string, string>;
-    readonly version: string;
-}
-
-// @public
 export type ConflictDetectionType = 'VERSION' | 'NONE';
 
 // @public
@@ -192,9 +185,6 @@ export interface FunctionSlotOverride {
 }
 
 // @public
-export type GraphqlOutput = z.infer<typeof versionedGraphqlOutputSchema>;
-
-// @public
 export interface IAMAuthorizationConfig {
     readonly authenticatedUserRole: IRole;
     readonly identityPoolId: string;
@@ -208,9 +198,14 @@ export interface IAmplifyGraphqlDefinition {
 }
 
 // @public
+export interface IBackendOutputEntry {
+    readonly payload: Record<string, string>;
+    readonly version: string;
+}
+
+// @public
 export interface IBackendOutputStorageStrategy {
-    addBackendOutputEntry(keyName: string, strategy: BackendOutputEntry): void;
-    flush(): void;
+    addBackendOutputEntry(keyName: string, backendOutputEntry: IBackendOutputEntry): void;
 }
 
 // @public
@@ -285,53 +280,6 @@ export interface TranslationBehavior {
 export interface UserPoolAuthorizationConfig {
     readonly userPool: IUserPool;
 }
-
-// @public
-export const versionedGraphqlOutputSchema: z.ZodDiscriminatedUnion<"version", [z.ZodObject<{
-    version: z.ZodLiteral<"1">;
-    payload: z.ZodObject<{
-        awsAppsyncRegion: z.ZodString;
-        awsAppsyncApiEndpoint: z.ZodString;
-        awsAppsyncAuthenticationType: z.ZodEnum<["API_KEY", "AWS_LAMBDA", "AWS_IAM", "OPENID_CONNECT", "AMAZON_COGNITO_USER_POOLS"]>;
-        awsAppsyncApiKey: z.ZodOptional<z.ZodString>;
-        awsAppsyncApiId: z.ZodString;
-        amplifyApiModelSchemaS3Uri: z.ZodString;
-    }, "strip", z.ZodTypeAny, {
-        awsAppsyncRegion: string;
-        awsAppsyncApiEndpoint: string;
-        awsAppsyncAuthenticationType: "AWS_LAMBDA" | "API_KEY" | "AMAZON_COGNITO_USER_POOLS" | "AWS_IAM" | "OPENID_CONNECT";
-        awsAppsyncApiId: string;
-        amplifyApiModelSchemaS3Uri: string;
-        awsAppsyncApiKey?: string | undefined;
-    }, {
-        awsAppsyncRegion: string;
-        awsAppsyncApiEndpoint: string;
-        awsAppsyncAuthenticationType: "AWS_LAMBDA" | "API_KEY" | "AMAZON_COGNITO_USER_POOLS" | "AWS_IAM" | "OPENID_CONNECT";
-        awsAppsyncApiId: string;
-        amplifyApiModelSchemaS3Uri: string;
-        awsAppsyncApiKey?: string | undefined;
-    }>;
-}, "strip", z.ZodTypeAny, {
-    version: "1";
-    payload: {
-        awsAppsyncRegion: string;
-        awsAppsyncApiEndpoint: string;
-        awsAppsyncAuthenticationType: "AWS_LAMBDA" | "API_KEY" | "AMAZON_COGNITO_USER_POOLS" | "AWS_IAM" | "OPENID_CONNECT";
-        awsAppsyncApiId: string;
-        amplifyApiModelSchemaS3Uri: string;
-        awsAppsyncApiKey?: string | undefined;
-    };
-}, {
-    version: "1";
-    payload: {
-        awsAppsyncRegion: string;
-        awsAppsyncApiEndpoint: string;
-        awsAppsyncAuthenticationType: "AWS_LAMBDA" | "API_KEY" | "AMAZON_COGNITO_USER_POOLS" | "AWS_IAM" | "OPENID_CONNECT";
-        awsAppsyncApiId: string;
-        amplifyApiModelSchemaS3Uri: string;
-        awsAppsyncApiKey?: string | undefined;
-    };
-}>]>;
 
 // (No @packageDocumentation comment for this package)
 

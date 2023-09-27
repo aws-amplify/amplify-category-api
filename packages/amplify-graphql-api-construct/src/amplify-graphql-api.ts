@@ -3,6 +3,9 @@ import { executeTransform } from '@aws-amplify/graphql-transformer';
 import { NestedStack, Stack } from 'aws-cdk-lib';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { AssetProps } from '@aws-amplify/graphql-transformer-interfaces';
+import { StackMetadataBackendOutputStorageStrategy } from '@aws-amplify/backend-output-storage';
+import { graphqlOutputKey } from '@aws-amplify/backend-output-schemas';
+import type { GraphqlOutput, AwsAppsyncAuthenticationType } from '@aws-amplify/backend-output-schemas';
 import {
   AppsyncFunction,
   DataSourceOptions,
@@ -43,7 +46,6 @@ import {
   CodegenAssets,
   addAmplifyMetadataToStackDescription,
 } from './internal';
-import { GraphqlOutput, GraphqlOutputKey, AwsAppsyncAuthenticationType, StackMetadataBackendOutputStorageStrategy } from './graphql-output';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
@@ -190,7 +192,9 @@ export class AmplifyGraphqlApi extends Construct {
    * Stores graphql api output to be used for client config generation
    * @param outputStorageStrategy Strategy to store construct outputs. If no strategy is provided a default strategy will be used.
    */
-  private storeOutput(outputStorageStrategy?: IBackendOutputStorageStrategy): void {
+  private storeOutput(
+    outputStorageStrategy: IBackendOutputStorageStrategy = new StackMetadataBackendOutputStorageStrategy(Stack.of(this)),
+  ): void {
     const stack = Stack.of(this);
     const output: GraphqlOutput = {
       version: '1',
@@ -207,13 +211,7 @@ export class AmplifyGraphqlApi extends Construct {
       output.payload.awsAppsyncApiKey = this.resources.cfnResources.cfnApiKey.attrApiKey;
     }
 
-    const strategy = outputStorageStrategy ? outputStorageStrategy : new StackMetadataBackendOutputStorageStrategy(stack);
-    strategy.addBackendOutputEntry(GraphqlOutputKey, output);
-
-    // only flush if using default outputStorageStrategy
-    if (!outputStorageStrategy) {
-      strategy.flush();
-    }
+    outputStorageStrategy.addBackendOutputEntry(graphqlOutputKey, output);
   }
 
   /**
