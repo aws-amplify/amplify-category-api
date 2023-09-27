@@ -1,6 +1,6 @@
 {
-  "name": "@aws-amplify/graphql-construct-alpha",
-  "version": "0.9.0",
+  "name": "@aws-amplify/api-graphql-construct",
+  "version": "1.0.0",
   "description": "AppSync GraphQL Api Construct using Amplify GraphQL Transformer.",
   "repository": {
     "type": "git",
@@ -124,7 +124,7 @@
     "aws-cdk-lib": "^2.80.0",
     "constructs": "^10.0.5"
   },
-  "stability": "experimental",
+  "stability": "stable",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",

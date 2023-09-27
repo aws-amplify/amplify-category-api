@@ -130,7 +130,7 @@ const attachCurrentVersions = (deps: string[]): string[] => {
 const validateNohoistsAreConfigured = (deps: string[]): string[] => {
   const nohoistValues = new Set(getRootPackageJson().workspaces.nohoist);
   return deps
-    .map((depName) => `@aws-amplify/graphql-construct-alpha/${depName}`)
+    .map((depName) => `@aws-amplify/api-graphql-construct/${depName}`)
     .filter((depPath) => !nohoistValues.has(depPath))
     .map((depPath) => `${depPath} not found in root package.json nohoist config`);
 };
