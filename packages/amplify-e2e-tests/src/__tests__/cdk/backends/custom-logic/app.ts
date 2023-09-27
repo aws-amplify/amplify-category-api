@@ -2,7 +2,7 @@
 import 'source-map-support/register';
 import { App, Stack, Duration } from 'aws-cdk-lib';
 // @ts-ignore
-import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/api-graphql-construct';
+import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Resolver, Code, FunctionRuntime } from 'aws-cdk-lib/aws-appsync';
 import * as path from 'path';
