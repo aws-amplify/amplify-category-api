@@ -37,12 +37,9 @@ describe('CDK Resource Utilities', () => {
       `,
     );
 
-    expect(result).toMatchSnapshot({
-      body: {
-        data: {
-          echo: 'Hello, Appsync!',
-        },
-      },
-    });
+    expect(result.statusCode).toEqual(200);
+    const echoedMessage = result.body.data.echo;
+    expect(echoedMessage).toBeDefined();
+    expect(echoedMessage).toEqual('Hello, Appsync!');
   });
 });
