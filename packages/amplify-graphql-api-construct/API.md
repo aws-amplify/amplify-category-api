@@ -4,6 +4,8 @@
 
 ```ts
 
+import { AppsyncFunction } from 'aws-cdk-lib/aws-appsync';
+import { BaseDataSource } from 'aws-cdk-lib/aws-appsync';
 import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
@@ -14,21 +16,62 @@ import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import { CfnResource } from 'aws-cdk-lib';
 import { CfnRole } from 'aws-cdk-lib/aws-iam';
 import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
+import { Code } from 'aws-cdk-lib/aws-appsync';
 import { Construct } from 'constructs';
+import { DataSourceOptions } from 'aws-cdk-lib/aws-appsync';
 import { Duration } from 'aws-cdk-lib';
+import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
+import { ElasticsearchDataSource } from 'aws-cdk-lib/aws-appsync';
+import { EventBridgeDataSource } from 'aws-cdk-lib/aws-appsync';
+import { ExtendedResolverProps } from 'aws-cdk-lib/aws-appsync';
+import { FunctionRuntime } from 'aws-cdk-lib/aws-appsync';
+import { HttpDataSource } from 'aws-cdk-lib/aws-appsync';
+import { HttpDataSourceOptions } from 'aws-cdk-lib/aws-appsync';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
+import { IDomain } from 'aws-cdk-lib/aws-elasticsearch';
+import { IDomain as IDomain_2 } from 'aws-cdk-lib/aws-opensearchservice';
+import { IEventBus } from 'aws-cdk-lib/aws-events';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { IGraphqlApi } from 'aws-cdk-lib/aws-appsync';
 import { IRole } from 'aws-cdk-lib/aws-iam';
+import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
+import { IServerlessCluster } from 'aws-cdk-lib/aws-rds';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
+import { LambdaDataSource } from 'aws-cdk-lib/aws-appsync';
 import { MappingTemplate } from 'aws-cdk-lib/aws-appsync';
 import { NestedStack } from 'aws-cdk-lib';
+import { NoneDataSource } from 'aws-cdk-lib/aws-appsync';
+import { OpenSearchDataSource } from 'aws-cdk-lib/aws-appsync';
+import { RdsDataSource } from 'aws-cdk-lib/aws-appsync';
+import { Resolver } from 'aws-cdk-lib/aws-appsync';
 import { z } from 'zod';
+
+// @public
+export interface AddFunctionProps {
+    readonly code?: Code;
+    readonly dataSource: BaseDataSource;
+    readonly description?: string;
+    readonly name: string;
+    readonly requestMappingTemplate?: MappingTemplate;
+    readonly responseMappingTemplate?: MappingTemplate;
+    readonly runtime?: FunctionRuntime;
+}
 
 // @public
 export class AmplifyGraphqlApi extends Construct {
     constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps);
+    addDynamoDbDataSource(id: string, table: ITable, options?: DataSourceOptions): DynamoDbDataSource;
+    // @deprecated
+    addElasticsearchDataSource(id: string, domain: IDomain, options?: DataSourceOptions): ElasticsearchDataSource;
+    addEventBridgeDataSource(id: string, eventBus: IEventBus, options?: DataSourceOptions): EventBridgeDataSource;
+    addFunction(id: string, props: AddFunctionProps): AppsyncFunction;
+    addHttpDataSource(id: string, endpoint: string, options?: HttpDataSourceOptions): HttpDataSource;
+    addLambdaDataSource(id: string, lambdaFunction: IFunction, options?: DataSourceOptions): LambdaDataSource;
+    addNoneDataSource(id: string, options?: DataSourceOptions): NoneDataSource;
+    addOpenSearchDataSource(id: string, domain: IDomain_2, options?: DataSourceOptions): OpenSearchDataSource;
+    addRdsDataSource(id: string, serverlessCluster: IServerlessCluster, secretStore: ISecret, databaseName?: string, options?: DataSourceOptions): RdsDataSource;
+    addResolver(id: string, props: ExtendedResolverProps): Resolver;
     readonly apiKey: string | undefined;
     readonly generatedFunctionSlots: FunctionSlot[];
     readonly graphqlUrl: string;
