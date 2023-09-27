@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.9.0-updated-output.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-construct-alpha@0.8.0...@aws-amplify/graphql-construct-alpha@0.9.0-updated-output.0) (2023-09-27)
+
+### Bug Fixes
+
+- add missing jsdoc for construct constructor ([19463f6](https://github.com/aws-amplify/amplify-category-api/commit/19463f6195c301dcd483890507d4f7bf31dd6376))
+
+### Features
+
+- add api properties without needing to drop into generated l1 resources ([cb104df](https://github.com/aws-amplify/amplify-category-api/commit/cb104dfb96022a5f811fcdd5bed96f04dbdfb12c))
+- allow adding resolvers, functions, and data sources without leaving l3 ([b0d9746](https://github.com/aws-amplify/amplify-category-api/commit/b0d97465a62db7151e0793e6fbec9da954b48839))
+- rename authorizationConfig into authorizationModes, and move adminRoles up ([#1888](https://github.com/aws-amplify/amplify-category-api/issues/1888)) ([7148814](https://github.com/aws-amplify/amplify-category-api/commit/714881476a962cb0f681bc68a7f309fe43e97a60))
+
 # [0.8.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-construct-alpha@0.7.1...@aws-amplify/graphql-construct-alpha@0.8.0) (2023-09-20)
 
 ### Features

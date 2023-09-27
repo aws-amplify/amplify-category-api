@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-api",
-  "version": "5.7.0",
+  "version": "5.7.1-updated-output.0",
   "description": "Amplify CLI API Category Plugin",
   "repository": {
     "type": "git",
