@@ -537,6 +537,7 @@ export interface IBackendOutputStorageStrategy {
 export interface AmplifyGraphqlApiProps {
   /**
    * The definition to transform in a full Api.
+   * Can be constructed via the AmplifyGraphqlDefinition class.
    */
   readonly definition: IAmplifyGraphqlDefinition;
 

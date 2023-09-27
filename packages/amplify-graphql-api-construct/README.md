@@ -998,6 +998,8 @@ public readonly definition: IAmplifyGraphqlDefinition;
 
 The definition to transform in a full Api.
 
+Can be constructed via the AmplifyGraphqlDefinition class.
+
 ---
 
 ##### `apiName`<sup>Optional</sup> <a name="apiName" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApiProps.property.apiName"></a>
