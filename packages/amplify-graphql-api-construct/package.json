@@ -11,7 +11,7 @@
   "license": "Apache-2.0",
   "main": "lib/index.js",
   "scripts": {
-    "build": "yarn transform-deps && jsii",
+    "build": "yarn config set script-shell && bash yarn transform-deps && yarn config delete script-shell && jsii",
     "watch": "jsii -w",
     "package": "jsii-pacmak",
     "clean": "rimraf lib dist tsconfig.json tsconfig.tsbuildinfo node_modules",

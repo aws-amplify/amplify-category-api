@@ -1437,51 +1437,6 @@ For more information, refer to https://docs.aws.amazon.com/appsync/latest/devgui
 
 ---
 
-### BackendOutputEntry <a name="BackendOutputEntry" id="@aws-amplify/graphql-construct-alpha.BackendOutputEntry"></a>
-
-Entry representing the required output from the backend for codegen generate commands to work.
-
-#### Initializer <a name="Initializer" id="@aws-amplify/graphql-construct-alpha.BackendOutputEntry.Initializer"></a>
-
-```typescript
-import { BackendOutputEntry } from '@aws-amplify/graphql-construct-alpha'
-
-const backendOutputEntry: BackendOutputEntry = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@aws-amplify/graphql-construct-alpha.BackendOutputEntry.property.payload">payload</a></code> | <code>{[ key: string ]: string}</code> | The string-map payload of generated config values. |
-| <code><a href="#@aws-amplify/graphql-construct-alpha.BackendOutputEntry.property.version">version</a></code> | <code>string</code> | The protocol version for this backend output. |
-
----
-
-##### `payload`<sup>Required</sup> <a name="payload" id="@aws-amplify/graphql-construct-alpha.BackendOutputEntry.property.payload"></a>
-
-```typescript
-public readonly payload: {[ key: string ]: string};
-```
-
-- *Type:* {[ key: string ]: string}
-
-The string-map payload of generated config values.
-
----
-
-##### `version`<sup>Required</sup> <a name="version" id="@aws-amplify/graphql-construct-alpha.BackendOutputEntry.property.version"></a>
-
-```typescript
-public readonly version: string;
-```
-
-- *Type:* string
-
-The protocol version for this backend output.
-
----
-
 ### ConflictResolution <a name="ConflictResolution" id="@aws-amplify/graphql-construct-alpha.ConflictResolution"></a>
 
 Project level configuration for conflict resolution.
@@ -2746,6 +2701,46 @@ Return the schema definition as a graphql string, with amplify directives allowe
 
 ---
 
+### IBackendOutputEntry <a name="IBackendOutputEntry" id="@aws-amplify/graphql-construct-alpha.IBackendOutputEntry"></a>
+
+- *Implemented By:* <a href="#@aws-amplify/graphql-construct-alpha.IBackendOutputEntry">IBackendOutputEntry</a>
+
+Entry representing the required output from the backend for codegen generate commands to work.
+
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.IBackendOutputEntry.property.payload">payload</a></code> | <code>{[ key: string ]: string}</code> | The string-map payload of generated config values. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.IBackendOutputEntry.property.version">version</a></code> | <code>string</code> | The protocol version for this backend output. |
+
+---
+
+##### `payload`<sup>Required</sup> <a name="payload" id="@aws-amplify/graphql-construct-alpha.IBackendOutputEntry.property.payload"></a>
+
+```typescript
+public readonly payload: {[ key: string ]: string};
+```
+
+- *Type:* {[ key: string ]: string}
+
+The string-map payload of generated config values.
+
+---
+
+##### `version`<sup>Required</sup> <a name="version" id="@aws-amplify/graphql-construct-alpha.IBackendOutputEntry.property.version"></a>
+
+```typescript
+public readonly version: string;
+```
+
+- *Type:* string
+
+The protocol version for this backend output.
+
+---
+
 ### IBackendOutputStorageStrategy <a name="IBackendOutputStorageStrategy" id="@aws-amplify/graphql-construct-alpha.IBackendOutputStorageStrategy"></a>
 
 - *Implemented By:* <a href="#@aws-amplify/graphql-construct-alpha.IBackendOutputStorageStrategy">IBackendOutputStorageStrategy</a>
@@ -2757,14 +2752,13 @@ Backend output strategy used to write config required for codegen tasks.
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.IBackendOutputStorageStrategy.addBackendOutputEntry">addBackendOutputEntry</a></code> | Add an entry to backend output. |
-| <code><a href="#@aws-amplify/graphql-construct-alpha.IBackendOutputStorageStrategy.flush">flush</a></code> | Write all pending data to the destination. |
 
 ---
 
 ##### `addBackendOutputEntry` <a name="addBackendOutputEntry" id="@aws-amplify/graphql-construct-alpha.IBackendOutputStorageStrategy.addBackendOutputEntry"></a>
 
 ```typescript
-public addBackendOutputEntry(keyName: string, strategy: BackendOutputEntry): void
+public addBackendOutputEntry(keyName: string, backendOutputEntry: IBackendOutputEntry): void
 ```
 
 Add an entry to backend output.
@@ -2777,20 +2771,12 @@ the key.
 
 ---
 
-###### `strategy`<sup>Required</sup> <a name="strategy" id="@aws-amplify/graphql-construct-alpha.IBackendOutputStorageStrategy.addBackendOutputEntry.parameter.strategy"></a>
+###### `backendOutputEntry`<sup>Required</sup> <a name="backendOutputEntry" id="@aws-amplify/graphql-construct-alpha.IBackendOutputStorageStrategy.addBackendOutputEntry.parameter.backendOutputEntry"></a>
 
-- *Type:* <a href="#@aws-amplify/graphql-construct-alpha.BackendOutputEntry">BackendOutputEntry</a>
+- *Type:* <a href="#@aws-amplify/graphql-construct-alpha.IBackendOutputEntry">IBackendOutputEntry</a>
 
-the backend output strategy information.
+the record to store in the backend output.
 
 ---
-
-##### `flush` <a name="flush" id="@aws-amplify/graphql-construct-alpha.IBackendOutputStorageStrategy.flush"></a>
-
-```typescript
-public flush(): void
-```
-
-Write all pending data to the destination.
 
 
