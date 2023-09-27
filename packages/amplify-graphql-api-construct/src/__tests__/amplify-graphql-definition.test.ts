@@ -1,8 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import { SchemaFile } from 'aws-cdk-lib/aws-appsync';
-import { AmplifyGraphqlSchema } from '../amplify-graphql-schema';
+import { AmplifyGraphqlDefinition } from '../amplify-graphql-definition';
 
 const TEST_SCHEMA = /* GraphQL */ `
   type Todo @model {
@@ -11,12 +10,12 @@ const TEST_SCHEMA = /* GraphQL */ `
   }
 `;
 
-describe('AmplifyGraphqlSchema', () => {
+describe('AmplifyGraphqlDefinition', () => {
   describe('fromString', () => {
     it('returns the provided string and no functions', () => {
-      const schema = AmplifyGraphqlSchema.fromString(TEST_SCHEMA);
-      expect(schema.definition).toEqual(TEST_SCHEMA);
-      expect(schema.functionSlots.length).toEqual(0);
+      const definition = AmplifyGraphqlDefinition.fromString(TEST_SCHEMA);
+      expect(definition.schema).toEqual(TEST_SCHEMA);
+      expect(definition.functionSlots.length).toEqual(0);
     });
   });
 
@@ -34,10 +33,9 @@ describe('AmplifyGraphqlSchema', () => {
     it('extracts the definition from a single schema file', () => {
       const schemaFilePath = path.join(tmpDir, 'schema.graphql');
       fs.writeFileSync(schemaFilePath, TEST_SCHEMA);
-      const schemaFile = SchemaFile.fromAsset(schemaFilePath);
-      const schema = AmplifyGraphqlSchema.fromSchemaFiles(schemaFile);
-      expect(schema.definition).toEqual(TEST_SCHEMA);
-      expect(schema.functionSlots.length).toEqual(0);
+      const definition = AmplifyGraphqlDefinition.fromFiles(schemaFilePath);
+      expect(definition.schema).toEqual(TEST_SCHEMA);
+      expect(definition.functionSlots.length).toEqual(0);
     });
 
     it('extracts the definition from the schema files, appended in-order', () => {
@@ -56,11 +54,9 @@ describe('AmplifyGraphqlSchema', () => {
       const rdsSchemaFilePath = path.join(tmpDir, 'schema.rds.graphql');
       fs.writeFileSync(schemaFilePath, TEST_SCHEMA);
       fs.writeFileSync(rdsSchemaFilePath, rdsTestSchema);
-      const schemaFile = SchemaFile.fromAsset(schemaFilePath);
-      const rdsSchemaFile = SchemaFile.fromAsset(rdsSchemaFilePath);
-      const schema = AmplifyGraphqlSchema.fromSchemaFiles(schemaFile, rdsSchemaFile);
-      expect(schema.definition).toEqual(`${TEST_SCHEMA}${os.EOL}${rdsTestSchema}`);
-      expect(schema.functionSlots.length).toEqual(0);
+      const definition = AmplifyGraphqlDefinition.fromFiles(schemaFilePath, rdsSchemaFilePath);
+      expect(definition.schema).toEqual(`${TEST_SCHEMA}${os.EOL}${rdsTestSchema}`);
+      expect(definition.functionSlots.length).toEqual(0);
     });
   });
 });

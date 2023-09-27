@@ -2,7 +2,7 @@
 import 'source-map-support/register';
 import { App, Stack, Duration } from 'aws-cdk-lib';
 // @ts-ignore
-import { AmplifyGraphqlApi, AmplifyGraphqlSchema } from '@aws-amplify/graphql-construct-alpha';
+import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-construct-alpha';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Resolver, Code, FunctionRuntime } from 'aws-cdk-lib/aws-appsync';
 import * as path from 'path';
@@ -16,7 +16,7 @@ const stack = new Stack(app, packageJson.name.replace(/_/g, '-'), {
 });
 
 const api = new AmplifyGraphqlApi(stack, 'GraphqlApi', {
-  schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
+  definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
     type Query {
       reverse(message: String): String @function(name: "reverse")
       echo(message: String): String
@@ -25,7 +25,7 @@ const api = new AmplifyGraphqlApi(stack, 'GraphqlApi', {
   functionNameMap: {
     reverse: new NodejsFunction(stack, 'Reverse', { entry: path.join(__dirname, 'reverse.ts') }),
   },
-  authorizationConfig: {
+  authorizationModes: {
     apiKeyConfig: { expires: Duration.days(7) },
   },
 });

@@ -8,6 +8,9 @@ import {
   CfnDataSource,
   IGraphqlApi,
   MappingTemplate,
+  BaseDataSource,
+  Code,
+  FunctionRuntime,
 } from 'aws-cdk-lib/aws-appsync';
 import { CfnTable, ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IRole, CfnRole } from 'aws-cdk-lib/aws-iam';
@@ -16,33 +19,28 @@ import { IFunction, CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
 
 /**
- * Configuration for IAM Authorization on the Graphql API.
+ * Configuration for IAM Authorization on the Graphql Api.
  * @struct - required since this interface begins with an 'I'
  */
 export interface IAMAuthorizationConfig {
   /**
    * ID for the Cognito Identity Pool vending auth and unauth roles.
    */
-  readonly identityPoolId?: string;
+  readonly identityPoolId: string;
 
   /**
    * Authenticated user role, applies to { provider: iam, allow: private } access.
    */
-  readonly authenticatedUserRole?: IRole;
+  readonly authenticatedUserRole: IRole;
 
   /**
    * Unauthenticated user role, applies to { provider: iam, allow: public } access.
    */
-  readonly unauthenticatedUserRole?: IRole;
-
-  /**
-   * A list of roles granted full R/W access to the API.
-   */
-  readonly adminRoles?: IRole[];
+  readonly unauthenticatedUserRole: IRole;
 }
 
 /**
- * Configuration for Cognito UserPool Authorization on the Graphql API.
+ * Configuration for Cognito UserPool Authorization on the Graphql Api.
  */
 export interface UserPoolAuthorizationConfig {
   /**
@@ -52,7 +50,7 @@ export interface UserPoolAuthorizationConfig {
 }
 
 /**
- * Configuration for OpenId Connect Authorization on the Graphql API.
+ * Configuration for OpenId Connect Authorization on the Graphql Api.
  */
 export interface OIDCAuthorizationConfig {
   /**
@@ -85,11 +83,11 @@ export interface OIDCAuthorizationConfig {
 }
 
 /**
- * Configuration for API Keys on the Graphql API.
+ * Configuration for Api Keys on the Graphql Api.
  */
 export interface ApiKeyAuthorizationConfig {
   /**
-   * Optional description for the api key to attach to the API.
+   * Optional description for the Api Key to attach to the Api.
    */
   readonly description?: string;
 
@@ -100,7 +98,7 @@ export interface ApiKeyAuthorizationConfig {
 }
 
 /**
- * Configuration for Custom Lambda authorization on the Graphql API.
+ * Configuration for Custom Lambda authorization on the Graphql Api.
  */
 export interface LambdaAuthorizationConfig {
   /**
@@ -115,46 +113,50 @@ export interface LambdaAuthorizationConfig {
 }
 
 /**
- * Authorization Config to apply to the API.
- * At least one config must be provided, and if more than one are provided,
- * a defaultAuthMode must be specified.
- * For more information on Amplify API auth, refer to https://docs.amplify.aws/cli/graphql/authorization-rules/#authorization-strategies
+ * Authorization Modes to apply to the Api.
+ * At least one modes must be provided, and if more than one are provided a defaultAuthorizationMode must be specified.
+ * For more information on Amplify Api auth, refer to https://docs.amplify.aws/cli/graphql/authorization-rules/#authorization-strategies
  */
-export interface AuthorizationConfig {
+export interface AuthorizationModes {
   /**
-   * Default auth mode to provide to the API, required if more than one config type is specified.
+   * Default auth mode to provide to the Api, required if more than one config type is specified.
    */
-  readonly defaultAuthMode?: 'AWS_IAM' | 'AMAZON_COGNITO_USER_POOLS' | 'OPENID_CONNECT' | 'API_KEY' | 'AWS_LAMBDA';
+  readonly defaultAuthorizationMode?: 'AWS_IAM' | 'AMAZON_COGNITO_USER_POOLS' | 'OPENID_CONNECT' | 'API_KEY' | 'AWS_LAMBDA';
 
   /**
-   * IAM Auth config, required if an 'iam' auth provider is specified in the API.
+   * IAM Auth config, required if an 'iam' auth provider is specified in the Api.
    * Applies to 'public' and 'private' auth strategies.
    */
   readonly iamConfig?: IAMAuthorizationConfig;
 
   /**
-   * Cognito UserPool config, required if a 'userPools' auth provider is specified in the API.
+   * Cognito UserPool config, required if a 'userPools' auth provider is specified in the Api.
    * Applies to 'owner', 'private', and 'group' auth strategies.
    */
   readonly userPoolConfig?: UserPoolAuthorizationConfig;
 
   /**
-   * Cognito OIDC config, required if a 'oidc' auth provider is specified in the API.
+   * Cognito OIDC config, required if a 'oidc' auth provider is specified in the Api.
    * Applies to 'owner', 'private', and 'group' auth strategies.
    */
   readonly oidcConfig?: OIDCAuthorizationConfig;
 
   /**
-   * AppSync API Key config, required if a 'apiKey' auth provider is specified in the API.
+   * AppSync Api Key config, required if a 'apiKey' auth provider is specified in the Api.
    * Applies to 'public' auth strategy.
    */
   readonly apiKeyConfig?: ApiKeyAuthorizationConfig;
 
   /**
-   * Lambda config, required if a 'function' auth provider is specified in the API.
+   * Lambda config, required if a 'function' auth provider is specified in the Api.
    * Applies to 'custom' auth strategy.
    */
   readonly lambdaConfig?: LambdaAuthorizationConfig;
+
+  /**
+   * A list of roles granted full R/W access to the Api.
+   */
+  readonly adminRoles?: IRole[];
 }
 
 /**
@@ -235,21 +237,6 @@ export interface ConflictResolution {
 }
 
 /**
- * Custom type representing a processed schema output.
- */
-export interface AmplifyApiSchemaPreprocessorOutput {
-  /**
-   * Schema generated as an output of the preprocessing step.
-   */
-  readonly processedSchema: string;
-
-  /**
-   * Custom functions extracted during preprocessing.
-   */
-  readonly processedFunctionSlots?: FunctionSlot[];
-}
-
-/**
  * Params exposed to support configuring and overriding pipelined slots. This allows configuration of the underlying function,
  * including the request and response mapping templates.
  */
@@ -270,7 +257,7 @@ export interface FunctionSlotOverride {
  */
 export interface FunctionSlotBase {
   /**
-   * The field to attach this function to on the schema.
+   * The field to attach this function to on the Api definition.
    */
   readonly fieldName: string;
 
@@ -291,7 +278,7 @@ export interface FunctionSlotBase {
  */
 export interface MutationFunctionSlot extends FunctionSlotBase {
   /**
-   * This slot type applies to the Mutation type on the schema.
+   * This slot type applies to the Mutation type on the Api definition.
    */
   readonly typeName: 'Mutation';
 
@@ -307,7 +294,7 @@ export interface MutationFunctionSlot extends FunctionSlotBase {
  */
 export interface QueryFunctionSlot extends FunctionSlotBase {
   /**
-   * This slot type applies to the Query type on the schema.
+   * This slot type applies to the Query type on the Api definition.
    */
   readonly typeName: 'Query';
 
@@ -323,7 +310,7 @@ export interface QueryFunctionSlot extends FunctionSlotBase {
  */
 export interface SubscriptionFunctionSlot extends FunctionSlotBase {
   /**
-   * This slot type applies to the Subscription type on the schema.
+   * This slot type applies to the Subscription type on the Api definition.
    */
   readonly typeName: 'Subscription';
 
@@ -345,7 +332,7 @@ export type FunctionSlot = MutationFunctionSlot | QueryFunctionSlot | Subscripti
  * a single location, and isn't spread around the transformers, where they can
  * have different default behaviors.
  */
-export interface SchemaTranslationBehavior {
+export interface TranslationBehavior {
   /**
    * Restore parity w/ GQLv1 @model parameter behavior, where setting a single field doesn't implicitly set the other fields to null.
    * @default true
@@ -392,8 +379,8 @@ export interface SchemaTranslationBehavior {
   readonly secondaryKeyAsGSI: boolean;
 
   /**
-   * Automate generation of query names, and as a result attaching all indexes as queries to the generated API.
-   * If enabled, @index can be provided a null name field to disable the generation of the query on the api.
+   * Automate generation of query names, and as a result attaching all indexes as queries to the generated Api.
+   * If enabled, @index can be provided a null name field to disable the generation of the query on the Api.
    * @default true
    */
   readonly enableAutoIndexQueryNames: boolean;
@@ -421,9 +408,9 @@ export interface SchemaTranslationBehavior {
 }
 
 /**
- * A utility interface equivalent to Partial<SchemaTranslationBehavior>.
+ * A utility interface equivalent to Partial<TranslationBehavior>.
  */
-export interface PartialSchemaTranslationBehavior {
+export interface PartialTranslationBehavior {
   /**
    * Restore parity w/ GQLv1 @model parameter behavior, where setting a single field doesn't implicitly set the other fields to null.
    * @default true
@@ -470,8 +457,8 @@ export interface PartialSchemaTranslationBehavior {
   readonly secondaryKeyAsGSI?: boolean;
 
   /**
-   * Automate generation of query names, and as a result attaching all indexes as queries to the generated API.
-   * If enabled, @index can be provided a null name field to disable the generation of the query on the api.
+   * Automate generation of query names, and as a result attaching all indexes as queries to the generated Api.
+   * If enabled, @index can be provided a null name field to disable the generation of the query on the Api.
    * @default true
    */
   readonly enableAutoIndexQueryNames?: boolean;
@@ -499,17 +486,17 @@ export interface PartialSchemaTranslationBehavior {
 }
 
 /**
- * Graphql schema definition, which can be implemented in multiple ways.
+ * Graphql Api definition, which can be implemented in multiple ways.
  */
-export interface IAmplifyGraphqlSchema {
+export interface IAmplifyGraphqlDefinition {
   /**
-   * Return the schema definition as a graphql string.
+   * Return the schema definition as a graphql string, with amplify directives allowed.
    * @returns the rendered schema.
    */
-  readonly definition: string;
+  readonly schema: string;
 
   /**
-   * Retrieve any function slots defined explicitly in the schema.
+   * Retrieve any function slots defined explicitly in the Api definition.
    * @returns generated function slots
    */
   readonly functionSlots: FunctionSlot[];
@@ -518,7 +505,7 @@ export interface IAmplifyGraphqlSchema {
 /**
  * Entry representing the required output from the backend for codegen generate commands to work.
  */
-export interface BackendOutputEntry {
+export interface IBackendOutputEntry {
   /**
    * The protocol version for this backend output.
    */
@@ -537,50 +524,45 @@ export interface IBackendOutputStorageStrategy {
   /**
    * Add an entry to backend output.
    * @param keyName the key
-   * @param strategy the backend output strategy information.
+   * @param backendOutputEntry the record to store in the backend output
    */
   // eslint-disable-next-line @typescript-eslint/method-signature-style
-  addBackendOutputEntry(keyName: string, strategy: BackendOutputEntry): void;
-
-  /**
-   * Write all pending data to the destination
-   */
-  // eslint-disable-next-line @typescript-eslint/method-signature-style
-  flush(): void;
+  addBackendOutputEntry(keyName: string, backendOutputEntry: IBackendOutputEntry): void;
 }
 
 /**
- * Input props for the AmplifyGraphqlApi construct. Specifies what the input to transform into an API, and configurations for
+ * Input props for the AmplifyGraphqlApi construct. Specifies what the input to transform into an Api, and configurations for
  * the transformation process.
  */
 export interface AmplifyGraphqlApiProps {
   /**
-   * The schema to transform in a full API.
+   * The definition to transform in a full Api.
+   * Can be constructed via the AmplifyGraphqlDefinition class.
    */
-  readonly schema: IAmplifyGraphqlSchema;
+  readonly definition: IAmplifyGraphqlDefinition;
 
   /**
-   * Name to be used for the appsync api.
+   * Name to be used for the AppSync Api.
    * Default: construct id.
    */
   readonly apiName?: string;
 
   /**
-   * Required auth config for the API. This object must be a superset of the configured auth providers in the graphql schema.
+   * Required auth modes for the Api. This object must be a superset of the configured auth providers in the Api definition.
    * For more information, refer to https://docs.amplify.aws/cli/graphql/authorization-rules/
    */
-  readonly authorizationConfig: AuthorizationConfig;
+  readonly authorizationModes: AuthorizationModes;
 
   /**
-   * Lambda functions referenced in the schema's @function directives. The keys of this object are expected to be the
-   * function name provided in the schema, and value is the function that name refers to. If a name is not found in this
+   * Lambda functions referenced in the definitions's @function directives. The keys of this object are expected to be the
+   * function name provided in the definition, and value is the function that name refers to. If a name is not found in this
    * map, then it is interpreted as the `functionName`, and an arn will be constructed using the current aws account and region
    * (or overridden values, if set in the directive).
    */
   readonly functionNameMap?: Record<string, IFunction>;
 
   /**
-   * Configure conflict resolution on the API, which is required to enable DataStore API functionality.
+   * Configure conflict resolution on the Api, which is required to enable DataStore Api functionality.
    * For more information, refer to https://docs.amplify.aws/lib/datastore/getting-started/q/platform/js/
    */
   readonly conflictResolution?: ConflictResolution;
@@ -611,10 +593,10 @@ export interface AmplifyGraphqlApiProps {
   readonly predictionsBucket?: IBucket;
 
   /**
-   * This replaces feature flags from the API construct, for general information on what these parameters do,
+   * This replaces feature flags from the Api construct, for general information on what these parameters do,
    * refer to https://docs.amplify.aws/cli/reference/feature-flags/#graphQLTransformer
    */
-  readonly schemaTranslationBehavior?: PartialSchemaTranslationBehavior;
+  readonly translationBehavior?: PartialTranslationBehavior;
 
   /**
    * Strategy to store construct outputs. If no outputStorageStrategey is provided a default strategy will be used.
@@ -623,12 +605,12 @@ export interface AmplifyGraphqlApiProps {
 }
 
 /**
- * L1 CDK resources from the API which were generated as part of the transform.
+ * L1 CDK resources from the Api which were generated as part of the transform.
  * These are potentially stored under nested stacks, but presented organized by type instead.
  */
 export interface AmplifyGraphqlApiCfnResources {
   /**
-   * The Generated AppSync API L1 Resource
+   * The Generated AppSync Api L1 Resource
    */
   readonly cfnGraphqlApi: CfnGraphQLApi;
 
@@ -638,7 +620,7 @@ export interface AmplifyGraphqlApiCfnResources {
   readonly cfnGraphqlSchema: CfnGraphQLSchema;
 
   /**
-   * The Generated AppSync API Key L1 Resource
+   * The Generated AppSync Api Key L1 Resource
    */
   readonly cfnApiKey?: CfnApiKey;
 
@@ -679,12 +661,12 @@ export interface AmplifyGraphqlApiCfnResources {
 }
 
 /**
- * Accessible resources from the API which were generated as part of the transform.
+ * Accessible resources from the Api which were generated as part of the transform.
  * These are potentially stored under nested stacks, but presented organized by type instead.
  */
 export interface AmplifyGraphqlApiResources {
   /**
-   * The Generated AppSync API L2 Resource, includes the Schema.
+   * The Generated AppSync Api L2 Resource, includes the Schema.
    */
   readonly graphqlApi: IGraphqlApi;
 
@@ -709,7 +691,58 @@ export interface AmplifyGraphqlApiResources {
   readonly cfnResources: AmplifyGraphqlApiCfnResources;
 
   /**
-   * Nested Stacks generated by the API Construct.
+   * Nested Stacks generated by the Api Construct.
    */
   readonly nestedStacks: Record<string, NestedStack>;
+}
+
+/**
+ * Input type properties when adding a new appsync.AppsyncFunction to the generated API.
+ * This is equivalent to the Omit<appsync.AppsyncFunctionProps, 'api'>.
+ */
+export interface AddFunctionProps {
+  /**
+   * the data source linked to this AppSync Function
+   */
+  readonly dataSource: BaseDataSource;
+
+  /**
+   * the name of the AppSync Function
+   */
+  readonly name: string;
+
+  /**
+   * the description for this AppSync Function
+   *
+   * @default - no description
+   */
+  readonly description?: string;
+
+  /**
+   * the request mapping template for the AppSync Function
+   *
+   * @default - no request mapping template
+   */
+  readonly requestMappingTemplate?: MappingTemplate;
+
+  /**
+   * the response mapping template for the AppSync Function
+   *
+   * @default - no response mapping template
+   */
+  readonly responseMappingTemplate?: MappingTemplate;
+
+  /**
+   * The functions runtime
+   *
+   * @default - no function runtime, VTL mapping templates used
+   */
+  readonly runtime?: FunctionRuntime;
+
+  /**
+   * The function code
+   *
+   * @default - no code is used
+   */
+  readonly code?: Code;
 }

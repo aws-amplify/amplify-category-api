@@ -3,7 +3,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { MappingTemplate } from 'aws-cdk-lib/aws-appsync';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
-import { AmplifyGraphqlSchema } from '../../amplify-graphql-schema';
+import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 
 /**
  * Utility to wrap construct creation a basic synth step to smoke test
@@ -19,12 +19,12 @@ describe('supports different props configurations', () => {
   it('supports custom slots', () => {
     verifySynth((stack) => {
       new AmplifyGraphqlApi(stack, 'TestApi', {
-        schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
           type Todo @model @auth(rules: [{ allow: public }]) {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
         functionSlots: [
@@ -54,12 +54,12 @@ describe('supports different props configurations', () => {
   it('supports stack mappings', () => {
     verifySynth((stack) => {
       new AmplifyGraphqlApi(stack, 'TestApi', {
-        schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
           type Todo @model @auth(rules: [{ allow: public }]) {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
         stackMappings: {
@@ -72,12 +72,12 @@ describe('supports different props configurations', () => {
   it('supports conflict resolution with automerge', () => {
     verifySynth((stack) => {
       new AmplifyGraphqlApi(stack, 'TestApi', {
-        schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
           type Todo @model @auth(rules: [{ allow: public }]) {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
         conflictResolution: {
@@ -93,12 +93,12 @@ describe('supports different props configurations', () => {
   it('supports conflict resolution with optimistic concurrency', () => {
     verifySynth((stack) => {
       new AmplifyGraphqlApi(stack, 'TestApi', {
-        schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
           type Todo @model @auth(rules: [{ allow: public }]) {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
         conflictResolution: {
@@ -116,12 +116,12 @@ describe('supports different props configurations', () => {
       const conflictHandler = lambda.Function.fromFunctionName(stack, 'ImportedFunction', 'conflict-handler');
 
       new AmplifyGraphqlApi(stack, 'TestApi', {
-        schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
           type Todo @model @auth(rules: [{ allow: public }]) {
             description: String!
           }
         `),
-        authorizationConfig: {
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
         conflictResolution: {

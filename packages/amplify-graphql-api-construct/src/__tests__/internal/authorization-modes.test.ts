@@ -21,6 +21,7 @@ describe('convertAuthorizationModesToTransformerAuthConfig', () => {
       authSynthParameters: { authenticatedUserRoleName, unauthenticatedUserRoleName },
     } = convertAuthorizationModesToTransformerAuthConfig({
       iamConfig: {
+        identityPoolId: 'identitypool123',
         authenticatedUserRole,
         unauthenticatedUserRole,
       },
@@ -33,11 +34,12 @@ describe('convertAuthorizationModesToTransformerAuthConfig', () => {
     const authenticatedUserRole = { roleName: 'testAuthRole' } as IRole;
     const unauthenticatedUserRole = { roleName: 'testUnauthRole' } as IRole;
     const { authConfig } = convertAuthorizationModesToTransformerAuthConfig({
-      defaultAuthMode: 'API_KEY',
+      defaultAuthorizationMode: 'API_KEY',
       apiKeyConfig: {
         expires: { toDays: () => 7 } as Duration,
       },
       iamConfig: {
+        identityPoolId: 'identitypool123',
         authenticatedUserRole,
         unauthenticatedUserRole,
       },
