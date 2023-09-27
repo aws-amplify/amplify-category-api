@@ -204,6 +204,16 @@ the properties used to configure the generated api.
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addDynamoDbDataSource">addDynamoDbDataSource</a></code> | Add a new DynamoDB data source to this API. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addElasticsearchDataSource">addElasticsearchDataSource</a></code> | Add a new elasticsearch data source to this API. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addEventBridgeDataSource">addEventBridgeDataSource</a></code> | Add an EventBridge data source to this api. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addFunction">addFunction</a></code> | Add an appsync function to the api. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addHttpDataSource">addHttpDataSource</a></code> | Add a new http data source to this API. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addLambdaDataSource">addLambdaDataSource</a></code> | Add a new Lambda data source to this API. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addNoneDataSource">addNoneDataSource</a></code> | Add a new dummy data source to this API. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addOpenSearchDataSource">addOpenSearchDataSource</a></code> | dd a new OpenSearch data source to this API. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addRdsDataSource">addRdsDataSource</a></code> | Add a new Rds data source to this API. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addResolver">addResolver</a></code> | Add a resolver to the api. |
 
 ---
 
@@ -214,6 +224,335 @@ public toString(): string
 ```
 
 Returns a string representation of this construct.
+
+##### `addDynamoDbDataSource` <a name="addDynamoDbDataSource" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addDynamoDbDataSource"></a>
+
+```typescript
+public addDynamoDbDataSource(id: string, table: ITable, options?: DataSourceOptions): DynamoDbDataSource
+```
+
+Add a new DynamoDB data source to this API.
+
+This is a proxy method to the L2 GraphqlApi Construct.
+
+###### `id`<sup>Required</sup> <a name="id" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addDynamoDbDataSource.parameter.id"></a>
+
+- *Type:* string
+
+The data source's id.
+
+---
+
+###### `table`<sup>Required</sup> <a name="table" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addDynamoDbDataSource.parameter.table"></a>
+
+- *Type:* aws-cdk-lib.aws_dynamodb.ITable
+
+The DynamoDB table backing this data source.
+
+---
+
+###### `options`<sup>Optional</sup> <a name="options" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addDynamoDbDataSource.parameter.options"></a>
+
+- *Type:* aws-cdk-lib.aws_appsync.DataSourceOptions
+
+The optional configuration for this data source.
+
+---
+
+##### ~~`addElasticsearchDataSource`~~ <a name="addElasticsearchDataSource" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addElasticsearchDataSource"></a>
+
+```typescript
+public addElasticsearchDataSource(id: string, domain: IDomain, options?: DataSourceOptions): ElasticsearchDataSource
+```
+
+Add a new elasticsearch data source to this API.
+
+This is a proxy method to the L2 GraphqlApi Construct.
+
+###### `id`<sup>Required</sup> <a name="id" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addElasticsearchDataSource.parameter.id"></a>
+
+- *Type:* string
+
+The data source's id.
+
+---
+
+###### `domain`<sup>Required</sup> <a name="domain" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addElasticsearchDataSource.parameter.domain"></a>
+
+- *Type:* aws-cdk-lib.aws_elasticsearch.IDomain
+
+The elasticsearch domain for this data source.
+
+---
+
+###### `options`<sup>Optional</sup> <a name="options" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addElasticsearchDataSource.parameter.options"></a>
+
+- *Type:* aws-cdk-lib.aws_appsync.DataSourceOptions
+
+The optional configuration for this data source.
+
+---
+
+##### `addEventBridgeDataSource` <a name="addEventBridgeDataSource" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addEventBridgeDataSource"></a>
+
+```typescript
+public addEventBridgeDataSource(id: string, eventBus: IEventBus, options?: DataSourceOptions): EventBridgeDataSource
+```
+
+Add an EventBridge data source to this api.
+
+This is a proxy method to the L2 GraphqlApi Construct.
+
+###### `id`<sup>Required</sup> <a name="id" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addEventBridgeDataSource.parameter.id"></a>
+
+- *Type:* string
+
+The data source's id.
+
+---
+
+###### `eventBus`<sup>Required</sup> <a name="eventBus" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addEventBridgeDataSource.parameter.eventBus"></a>
+
+- *Type:* aws-cdk-lib.aws_events.IEventBus
+
+The EventBridge EventBus on which to put events.
+
+---
+
+###### `options`<sup>Optional</sup> <a name="options" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addEventBridgeDataSource.parameter.options"></a>
+
+- *Type:* aws-cdk-lib.aws_appsync.DataSourceOptions
+
+The optional configuration for this data source.
+
+---
+
+##### `addFunction` <a name="addFunction" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addFunction"></a>
+
+```typescript
+public addFunction(id: string, props: AddFunctionProps): AppsyncFunction
+```
+
+Add an appsync function to the api.
+
+###### `id`<sup>Required</sup> <a name="id" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addFunction.parameter.id"></a>
+
+- *Type:* string
+
+the function's id.
+
+---
+
+###### `props`<sup>Required</sup> <a name="props" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addFunction.parameter.props"></a>
+
+- *Type:* <a href="#@aws-amplify/graphql-construct-alpha.AddFunctionProps">AddFunctionProps</a>
+
+---
+
+##### `addHttpDataSource` <a name="addHttpDataSource" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addHttpDataSource"></a>
+
+```typescript
+public addHttpDataSource(id: string, endpoint: string, options?: HttpDataSourceOptions): HttpDataSource
+```
+
+Add a new http data source to this API.
+
+This is a proxy method to the L2 GraphqlApi Construct.
+
+###### `id`<sup>Required</sup> <a name="id" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addHttpDataSource.parameter.id"></a>
+
+- *Type:* string
+
+The data source's id.
+
+---
+
+###### `endpoint`<sup>Required</sup> <a name="endpoint" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addHttpDataSource.parameter.endpoint"></a>
+
+- *Type:* string
+
+The http endpoint.
+
+---
+
+###### `options`<sup>Optional</sup> <a name="options" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addHttpDataSource.parameter.options"></a>
+
+- *Type:* aws-cdk-lib.aws_appsync.HttpDataSourceOptions
+
+The optional configuration for this data source.
+
+---
+
+##### `addLambdaDataSource` <a name="addLambdaDataSource" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addLambdaDataSource"></a>
+
+```typescript
+public addLambdaDataSource(id: string, lambdaFunction: IFunction, options?: DataSourceOptions): LambdaDataSource
+```
+
+Add a new Lambda data source to this API.
+
+This is a proxy method to the L2 GraphqlApi Construct.
+
+###### `id`<sup>Required</sup> <a name="id" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addLambdaDataSource.parameter.id"></a>
+
+- *Type:* string
+
+The data source's id.
+
+---
+
+###### `lambdaFunction`<sup>Required</sup> <a name="lambdaFunction" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addLambdaDataSource.parameter.lambdaFunction"></a>
+
+- *Type:* aws-cdk-lib.aws_lambda.IFunction
+
+The Lambda function to call to interact with this data source.
+
+---
+
+###### `options`<sup>Optional</sup> <a name="options" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addLambdaDataSource.parameter.options"></a>
+
+- *Type:* aws-cdk-lib.aws_appsync.DataSourceOptions
+
+The optional configuration for this data source.
+
+---
+
+##### `addNoneDataSource` <a name="addNoneDataSource" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addNoneDataSource"></a>
+
+```typescript
+public addNoneDataSource(id: string, options?: DataSourceOptions): NoneDataSource
+```
+
+Add a new dummy data source to this API.
+
+This is a proxy method to the L2 GraphqlApi Construct.
+Useful for pipeline resolvers and for backend changes that don't require a data source.
+
+###### `id`<sup>Required</sup> <a name="id" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addNoneDataSource.parameter.id"></a>
+
+- *Type:* string
+
+The data source's id.
+
+---
+
+###### `options`<sup>Optional</sup> <a name="options" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addNoneDataSource.parameter.options"></a>
+
+- *Type:* aws-cdk-lib.aws_appsync.DataSourceOptions
+
+The optional configuration for this data source.
+
+---
+
+##### `addOpenSearchDataSource` <a name="addOpenSearchDataSource" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addOpenSearchDataSource"></a>
+
+```typescript
+public addOpenSearchDataSource(id: string, domain: IDomain, options?: DataSourceOptions): OpenSearchDataSource
+```
+
+dd a new OpenSearch data source to this API.
+
+This is a proxy method to the L2 GraphqlApi Construct.
+
+###### `id`<sup>Required</sup> <a name="id" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addOpenSearchDataSource.parameter.id"></a>
+
+- *Type:* string
+
+The data source's id.
+
+---
+
+###### `domain`<sup>Required</sup> <a name="domain" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addOpenSearchDataSource.parameter.domain"></a>
+
+- *Type:* aws-cdk-lib.aws_opensearchservice.IDomain
+
+The OpenSearch domain for this data source.
+
+---
+
+###### `options`<sup>Optional</sup> <a name="options" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addOpenSearchDataSource.parameter.options"></a>
+
+- *Type:* aws-cdk-lib.aws_appsync.DataSourceOptions
+
+The optional configuration for this data source.
+
+---
+
+##### `addRdsDataSource` <a name="addRdsDataSource" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addRdsDataSource"></a>
+
+```typescript
+public addRdsDataSource(id: string, serverlessCluster: IServerlessCluster, secretStore: ISecret, databaseName?: string, options?: DataSourceOptions): RdsDataSource
+```
+
+Add a new Rds data source to this API.
+
+This is a proxy method to the L2 GraphqlApi Construct.
+
+###### `id`<sup>Required</sup> <a name="id" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addRdsDataSource.parameter.id"></a>
+
+- *Type:* string
+
+The data source's id.
+
+---
+
+###### `serverlessCluster`<sup>Required</sup> <a name="serverlessCluster" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addRdsDataSource.parameter.serverlessCluster"></a>
+
+- *Type:* aws-cdk-lib.aws_rds.IServerlessCluster
+
+The serverless cluster to interact with this data source.
+
+---
+
+###### `secretStore`<sup>Required</sup> <a name="secretStore" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addRdsDataSource.parameter.secretStore"></a>
+
+- *Type:* aws-cdk-lib.aws_secretsmanager.ISecret
+
+The secret store that contains the username and password for the serverless cluster.
+
+---
+
+###### `databaseName`<sup>Optional</sup> <a name="databaseName" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addRdsDataSource.parameter.databaseName"></a>
+
+- *Type:* string
+
+The optional name of the database to use within the cluster.
+
+---
+
+###### `options`<sup>Optional</sup> <a name="options" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addRdsDataSource.parameter.options"></a>
+
+- *Type:* aws-cdk-lib.aws_appsync.DataSourceOptions
+
+The optional configuration for this data source.
+
+---
+
+##### `addResolver` <a name="addResolver" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addResolver"></a>
+
+```typescript
+public addResolver(id: string, props: ExtendedResolverProps): Resolver
+```
+
+Add a resolver to the api.
+
+This is a proxy method to the L2 GraphqlApi Construct.
+
+###### `id`<sup>Required</sup> <a name="id" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addResolver.parameter.id"></a>
+
+- *Type:* string
+
+The resolver's id.
+
+---
+
+###### `props`<sup>Required</sup> <a name="props" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApi.addResolver.parameter.props"></a>
+
+- *Type:* aws-cdk-lib.aws_appsync.ExtendedResolverProps
+
+the resolver properties.
+
+---
 
 #### Static Functions <a name="Static Functions" id="Static Functions"></a>
 
@@ -334,6 +673,121 @@ May be a CDK Token.
 
 
 ## Structs <a name="Structs" id="Structs"></a>
+
+### AddFunctionProps <a name="AddFunctionProps" id="@aws-amplify/graphql-construct-alpha.AddFunctionProps"></a>
+
+Input type properties when adding a new appsync.AppsyncFunction to the generated API. This is equivalent to the Omit<appsync.AppsyncFunctionProps, 'api'>.
+
+#### Initializer <a name="Initializer" id="@aws-amplify/graphql-construct-alpha.AddFunctionProps.Initializer"></a>
+
+```typescript
+import { AddFunctionProps } from '@aws-amplify/graphql-construct-alpha'
+
+const addFunctionProps: AddFunctionProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AddFunctionProps.property.dataSource">dataSource</a></code> | <code>aws-cdk-lib.aws_appsync.BaseDataSource</code> | the data source linked to this AppSync Function. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AddFunctionProps.property.name">name</a></code> | <code>string</code> | the name of the AppSync Function. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AddFunctionProps.property.code">code</a></code> | <code>aws-cdk-lib.aws_appsync.Code</code> | The function code. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AddFunctionProps.property.description">description</a></code> | <code>string</code> | the description for this AppSync Function. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AddFunctionProps.property.requestMappingTemplate">requestMappingTemplate</a></code> | <code>aws-cdk-lib.aws_appsync.MappingTemplate</code> | the request mapping template for the AppSync Function. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AddFunctionProps.property.responseMappingTemplate">responseMappingTemplate</a></code> | <code>aws-cdk-lib.aws_appsync.MappingTemplate</code> | the response mapping template for the AppSync Function. |
+| <code><a href="#@aws-amplify/graphql-construct-alpha.AddFunctionProps.property.runtime">runtime</a></code> | <code>aws-cdk-lib.aws_appsync.FunctionRuntime</code> | The functions runtime. |
+
+---
+
+##### `dataSource`<sup>Required</sup> <a name="dataSource" id="@aws-amplify/graphql-construct-alpha.AddFunctionProps.property.dataSource"></a>
+
+```typescript
+public readonly dataSource: BaseDataSource;
+```
+
+- *Type:* aws-cdk-lib.aws_appsync.BaseDataSource
+
+the data source linked to this AppSync Function.
+
+---
+
+##### `name`<sup>Required</sup> <a name="name" id="@aws-amplify/graphql-construct-alpha.AddFunctionProps.property.name"></a>
+
+```typescript
+public readonly name: string;
+```
+
+- *Type:* string
+
+the name of the AppSync Function.
+
+---
+
+##### `code`<sup>Optional</sup> <a name="code" id="@aws-amplify/graphql-construct-alpha.AddFunctionProps.property.code"></a>
+
+```typescript
+public readonly code: Code;
+```
+
+- *Type:* aws-cdk-lib.aws_appsync.Code
+- *Default:* no code is used
+
+The function code.
+
+---
+
+##### `description`<sup>Optional</sup> <a name="description" id="@aws-amplify/graphql-construct-alpha.AddFunctionProps.property.description"></a>
+
+```typescript
+public readonly description: string;
+```
+
+- *Type:* string
+- *Default:* no description
+
+the description for this AppSync Function.
+
+---
+
+##### `requestMappingTemplate`<sup>Optional</sup> <a name="requestMappingTemplate" id="@aws-amplify/graphql-construct-alpha.AddFunctionProps.property.requestMappingTemplate"></a>
+
+```typescript
+public readonly requestMappingTemplate: MappingTemplate;
+```
+
+- *Type:* aws-cdk-lib.aws_appsync.MappingTemplate
+- *Default:* no request mapping template
+
+the request mapping template for the AppSync Function.
+
+---
+
+##### `responseMappingTemplate`<sup>Optional</sup> <a name="responseMappingTemplate" id="@aws-amplify/graphql-construct-alpha.AddFunctionProps.property.responseMappingTemplate"></a>
+
+```typescript
+public readonly responseMappingTemplate: MappingTemplate;
+```
+
+- *Type:* aws-cdk-lib.aws_appsync.MappingTemplate
+- *Default:* no response mapping template
+
+the response mapping template for the AppSync Function.
+
+---
+
+##### `runtime`<sup>Optional</sup> <a name="runtime" id="@aws-amplify/graphql-construct-alpha.AddFunctionProps.property.runtime"></a>
+
+```typescript
+public readonly runtime: FunctionRuntime;
+```
+
+- *Type:* aws-cdk-lib.aws_appsync.FunctionRuntime
+- *Default:* no function runtime, VTL mapping templates used
+
+The functions runtime.
+
+---
 
 ### AmplifyGraphqlApiCfnResources <a name="AmplifyGraphqlApiCfnResources" id="@aws-amplify/graphql-construct-alpha.AmplifyGraphqlApiCfnResources"></a>
 
