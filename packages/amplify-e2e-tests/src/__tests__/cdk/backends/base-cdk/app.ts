@@ -2,7 +2,7 @@
 import 'source-map-support/register';
 import { App, Stack, Duration } from 'aws-cdk-lib';
 // @ts-ignore
-import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-construct-alpha';
+import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
 
 const packageJson = require('../package.json');
 
