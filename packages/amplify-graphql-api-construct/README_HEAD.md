@@ -1,6 +1,6 @@
 # Amplify Graphql API Construct
 
-[![View on Construct Hub](https://constructs.dev/badge?package=%40aws-amplify%2Fgraphql-construct-alpha)](https://constructs.dev/packages/@aws-amplify/graphql-construct-alpha)
+[![View on Construct Hub](https://constructs.dev/badge?package=%40aws-amplify%2Fgraphql-construct-alpha)](https://constructs.dev/packages/@aws-amplify/graphql-api-construct)
 
 This package vends an L3 CDK Construct wrapping the behavior of the Amplify GraphQL Transformer. This enables quick development and interation of AppSync APIs which support the Amplify GraphQL Directives. For more information on schema modeling in GraphQL, please refer to the [amplify developer docs](https://docs.amplify.aws/cli/graphql/overview/).
 
@@ -19,13 +19,13 @@ We then wire this through to import a user pool which was already deployed (crea
 ```ts
 import { App, Stack } from 'aws-cdk-lib';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
-import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-construct-alpha';
+import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
 
 const app = new App();
 const stack = new Stack(app, 'TodoStack');
 
 new AmplifyGraphqlApi(stack, 'TodoApp', {
-  schema: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+  definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
     type Todo @model @auth(rules: [{ allow: owner }]) {
       description: String!
       completed: Boolean
@@ -47,13 +47,13 @@ full access to, and customers requesting with api key will only have read permis
 ```ts
 import { App, Stack } from 'aws-cdk-lib';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
-import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-construct-alpha';
+import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
 
 const app = new App();
 const stack = new Stack(app, 'BlogStack');
 
 new AmplifyGraphqlApi(stack, 'BlogApp', {
-  schema: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+  definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
     type Blog @model @auth(rules: [{ allow: public, operations: [read] }, { allow: groups, groups: ["Author", "Admin"] }]) {
       title: String!
       description: String
@@ -110,13 +110,13 @@ type Post @model @auth(rules: [{ allow: owner }, { allow: public, operations: [r
 // app.ts
 import { App, Stack } from 'aws-cdk-lib';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
-import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-construct-alpha';
+import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
 
 const app = new App();
 const stack = new Stack(app, 'MultiFileStack');
 
 new AmplifyGraphqlApi(stack, 'MultiFileDefinition', {
-  schema: AmplifyGraphqlDefinition.fromFiles(path.join(__dirname, 'todo.graphql'), path.join(__dirname, 'blog.graphql')),
+  definition: AmplifyGraphqlDefinition.fromFiles(path.join(__dirname, 'todo.graphql'), path.join(__dirname, 'blog.graphql')),
   authorizationModes: {
     defaultAuthorizationMode: 'API_KEY',
     apiKeyConfig: {

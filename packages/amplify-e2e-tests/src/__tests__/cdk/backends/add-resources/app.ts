@@ -4,7 +4,7 @@ import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
 // @ts-ignore
-import * as graphql from '@aws-amplify/graphql-construct-alpha';
+import * as graphql from '@aws-amplify/graphql-api-construct';
 
 const packageJson = require('../package.json');
 

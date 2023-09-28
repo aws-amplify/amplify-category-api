@@ -1,6 +1,6 @@
 {
-  "name": "@aws-amplify/graphql-construct-alpha",
-  "version": "0.9.0",
+  "name": "@aws-amplify/graphql-api-construct",
+  "version": "1.0.0",
   "description": "AppSync GraphQL Api Construct using Amplify GraphQL Transformer.",
   "repository": {
     "type": "git",
@@ -11,6 +11,7 @@
   "license": "Apache-2.0",
   "main": "lib/index.js",
   "scripts": {
+    "jsii": "jsii",
     "build": "yarn config set script-shell bash && yarn transform-deps && yarn config delete script-shell && jsii",
     "watch": "jsii -w",
     "package": "jsii-pacmak",
@@ -124,7 +125,7 @@
     "aws-cdk-lib": "^2.80.0",
     "constructs": "^10.0.5"
   },
-  "stability": "experimental",
+  "stability": "stable",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
