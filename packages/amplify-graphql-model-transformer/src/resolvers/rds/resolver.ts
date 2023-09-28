@@ -3,8 +3,10 @@ import {
   Expression,
   compoundExpression,
   ifElse,
+  iff,
   list,
   methodCall,
+  not,
   obj,
   printBlock,
   qref,
@@ -377,6 +379,7 @@ export const generateLambdaRequestTemplate = (
       set(ref('lambdaInput.operationName'), str(operationName)),
       set(ref('lambdaInput.args.metadata'), obj({})),
       set(ref('lambdaInput.args.metadata.keys'), list([])),
+      constructAuthFilterStatement('lambdaInput.args.metadata.authFilter'),
       constructNonScalarFieldsStatement(tableName, ctx),
       constructFieldMappingInput(),
       qref(
@@ -464,3 +467,9 @@ export const constructFieldMappingInput = (): Expression => {
     ),
   ]);
 };
+
+export const constructAuthFilterStatement = (keyName: string): Expression => 
+  iff(
+    not(methodCall(ref('util.isNullOrEmpty'), ref('ctx.stash.authFilter'))),
+    set(ref(keyName), ref('ctx.stash.authFilter')),
+  );

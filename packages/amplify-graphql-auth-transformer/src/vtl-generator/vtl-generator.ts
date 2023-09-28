@@ -17,7 +17,7 @@ export interface AuthVTLGenerator {
     fields: ReadonlyArray<FieldDefinitionNode>,
   ) => string;
 
-  generateAuthRequestExpression: () => string;
+  generateAuthRequestExpression: (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode) => string;
 
   generateAuthExpressionForDelete: (
     providers: ConfiguredAuthProviders,

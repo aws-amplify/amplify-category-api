@@ -1,8 +1,11 @@
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import { ConfiguredAuthProviders, RoleDefinition, RelationalPrimaryMapConfig } from '../../utils';
+import { ConfiguredAuthProviders, RoleDefinition } from '../../utils';
 import { AuthVTLGenerator } from '../vtl-generator';
 import { generateDefaultRDSExpression } from './resolvers';
+import { generateAuthExpressionForQueries } from './resolvers/query';
+import { generateAuthExpressionForCreate, generateAuthExpressionForDelete, generateAuthExpressionForUpdate, generateAuthRequestExpression } from './resolvers/mutation';
+import { generateAuthExpressionForSubscriptions } from './resolvers/subscription';
 
 export class RDSAuthVTLGenerator implements AuthVTLGenerator {
   generateAuthExpressionForCreate = (
@@ -10,21 +13,24 @@ export class RDSAuthVTLGenerator implements AuthVTLGenerator {
     providers: ConfiguredAuthProviders,
     roles: Array<RoleDefinition>,
     fields: ReadonlyArray<FieldDefinitionNode>,
-  ): string => generateDefaultRDSExpression();
+  ): string => generateAuthExpressionForCreate(ctx, providers, roles, fields);
 
   generateAuthExpressionForUpdate = (
     providers: ConfiguredAuthProviders,
     roles: Array<RoleDefinition>,
     fields: ReadonlyArray<FieldDefinitionNode>,
-  ): string => generateDefaultRDSExpression();
+  ): string => generateAuthExpressionForUpdate(providers, roles, fields);
 
-  generateAuthRequestExpression = (): string => generateDefaultRDSExpression();
+  generateAuthRequestExpression = (
+    ctx: TransformerContextProvider,
+    def: ObjectTypeDefinitionNode,
+  ): string => generateAuthRequestExpression(ctx, def);
 
   generateAuthExpressionForDelete = (
     providers: ConfiguredAuthProviders,
     roles: Array<RoleDefinition>,
     fields: ReadonlyArray<FieldDefinitionNode>,
-  ): string => generateDefaultRDSExpression();
+  ): string => generateAuthExpressionForDelete(providers, roles, fields);
 
   generateAuthExpressionForField = (
     providers: ConfiguredAuthProviders,
@@ -43,7 +49,7 @@ export class RDSAuthVTLGenerator implements AuthVTLGenerator {
     fields: ReadonlyArray<FieldDefinitionNode>,
     def: ObjectTypeDefinitionNode,
     indexName: string | undefined,
-  ): string => generateDefaultRDSExpression();
+  ): string => generateAuthExpressionForQueries(ctx, providers, roles, fields, def, indexName);
 
   generateAuthExpressionForSearchQueries = (
     providers: ConfiguredAuthProviders,
@@ -53,7 +59,7 @@ export class RDSAuthVTLGenerator implements AuthVTLGenerator {
   ): string => generateDefaultRDSExpression();
 
   generateAuthExpressionForSubscriptions = (providers: ConfiguredAuthProviders, roles: Array<RoleDefinition>): string =>
-    generateDefaultRDSExpression();
+  generateAuthExpressionForSubscriptions(providers, roles);
 
   setDeniedFieldFlag = (operation: string, subscriptionsEnabled: boolean): string => generateDefaultRDSExpression();
 

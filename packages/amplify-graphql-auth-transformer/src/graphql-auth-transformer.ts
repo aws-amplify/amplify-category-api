@@ -928,7 +928,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         ? ctx.api.host.getDataSource(RDSLambdaDataSourceLogicalID)
         : ctx.api.host.getDataSource(`${def.name.value}Table`)
     ) as DataSourceProvider;
-    const requestExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthRequestExpression();
+    const requestExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthRequestExpression(ctx, def);
     const authExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForUpdate(
       this.configuredAuthProviders,
       totalRoles,
@@ -952,8 +952,13 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     // only roles with full delete on every field can delete
     const deleteRoles = acm.getRolesPerOperation('delete', true).map((role) => this.roleMap.get(role)!);
-    const dataSource = ctx.api.host.getDataSource(`${def.name.value}Table`) as DataSourceProvider;
-    const requestExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthRequestExpression();
+    const { RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
+    const dataSource = (
+      isRDSModel(ctx, def.name.value)
+        ? ctx.api.host.getDataSource(RDSLambdaDataSourceLogicalID)
+        : ctx.api.host.getDataSource(`${def.name.value}Table`)
+    ) as DataSourceProvider;
+    const requestExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthRequestExpression(ctx, def);
     const authExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForDelete(
       this.configuredAuthProviders,
       deleteRoles,
