@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.17.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.16.0...amplify-category-api-e2e-tests@3.17.0) (2023-09-28)
+
+### Features
+
+- bump graphql construct to stable/v1 ([#1876](https://github.com/aws-amplify/amplify-category-api/issues/1876)) ([9f66e9c](https://github.com/aws-amplify/amplify-category-api/commit/9f66e9c5610bc47a2ab75775a46135aeca8df990))
+
 # [3.16.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.15.1...amplify-category-api-e2e-tests@3.16.0) (2023-09-27)
 
 ### Features
