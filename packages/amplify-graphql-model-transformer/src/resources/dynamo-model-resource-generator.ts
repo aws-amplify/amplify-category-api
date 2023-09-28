@@ -26,33 +26,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     if (this.isProvisioned()) {
       // add model related-parameters to the root stack
       const rootStack = cdk.Stack.of(ctx.stackManager.scope);
-      new cdk.CfnParameter(rootStack, ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
-        description: 'The number of read IOPS the table should support.',
-        type: 'Number',
-        default: 5,
-      });
-      new cdk.CfnParameter(rootStack, ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS, {
-        description: 'The number of write IOPS the table should support.',
-        type: 'Number',
-        default: 5,
-      });
-      new cdk.CfnParameter(rootStack, ResourceConstants.PARAMETERS.DynamoDBBillingMode, {
-        description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
-        default: 'PAY_PER_REQUEST',
-        allowedValues: ['PAY_PER_REQUEST', 'PROVISIONED'],
-      });
-      new cdk.CfnParameter(rootStack, ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery, {
-        description: 'Whether to enable Point in Time Recovery on the table.',
-        type: 'String',
-        default: 'false',
-        allowedValues: ['true', 'false'],
-      });
-      new cdk.CfnParameter(rootStack, ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption, {
-        description: 'Enable server side encryption powered by KMS.',
-        type: 'String',
-        default: 'true',
-        allowedValues: ['true', 'false'],
-      });
+      this.createDynamoDBParamters(rootStack, false);
     }
 
     this.models.forEach((model) => {
@@ -78,43 +52,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     const tableName = context.resourceHelper.generateTableName(modelName);
 
     // Add parameters.
-    const readIops = new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
-      description: 'The number of read IOPS the table should support.',
-      type: 'Number',
-      default: 5,
-    });
-    const writeIops = new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS, {
-      description: 'The number of write IOPS the table should support.',
-      type: 'Number',
-      default: 5,
-    });
-    const billingMode = new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBBillingMode, {
-      description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
-      type: 'String',
-      default: 'PAY_PER_REQUEST',
-      allowedValues: ['PAY_PER_REQUEST', 'PROVISIONED'],
-    });
-    const pointInTimeRecovery = new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery, {
-      description: 'Whether to enable Point in Time Recovery on the table.',
-      type: 'String',
-      default: 'false',
-      allowedValues: ['true', 'false'],
-    });
-    const enableSSE = new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption, {
-      description: 'Enable server side encryption powered by KMS.',
-      type: 'String',
-      default: 'true',
-      allowedValues: ['true', 'false'],
-    });
-    // add the connection between the root and nested stack so the values can be passed down
-    (scope as cdk.NestedStack).setParameter(readIops.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS));
-    (scope as cdk.NestedStack).setParameter(writeIops.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS));
-    (scope as cdk.NestedStack).setParameter(billingMode.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBBillingMode));
-    (scope as cdk.NestedStack).setParameter(
-      pointInTimeRecovery.node.id,
-      cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery),
-    );
-    (scope as cdk.NestedStack).setParameter(enableSSE.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption));
+    const { readIops, writeIops, billingMode, pointInTimeRecovery, enableSSE } = this.createDynamoDBParamters(scope, true);
 
     // Add conditions.
     new cdk.CfnCondition(scope, ResourceConstants.CONDITIONS.HasEnvironmentParameter, {
@@ -185,7 +123,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
   protected createModelTableDataSource(
     def: ObjectTypeDefinitionNode,
     context: TransformerContextProvider,
-    table: Table | ITable,
+    table: ITable,
     scope: Construct,
     role: iam.Role,
     dataSourceLogicalName: string,
@@ -222,6 +160,60 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     // add the data source
     context.dataSources.add(def!, dataSource);
     this.datasourceMap[def!.name.value] = dataSource;
+  }
+
+  protected createDynamoDBParamters(scope: Construct, isNestedStack: boolean): Record<string, cdk.CfnParameter> {
+    const readIops = new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
+      description: 'The number of read IOPS the table should support.',
+      type: 'Number',
+      default: 5,
+    });
+    const writeIops = new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS, {
+      description: 'The number of write IOPS the table should support.',
+      type: 'Number',
+      default: 5,
+    });
+    const billingMode = new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBBillingMode, {
+      description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
+      type: 'String',
+      default: 'PAY_PER_REQUEST',
+      allowedValues: ['PAY_PER_REQUEST', 'PROVISIONED'],
+    });
+    const pointInTimeRecovery = new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery, {
+      description: 'Whether to enable Point in Time Recovery on the table.',
+      type: 'String',
+      default: 'false',
+      allowedValues: ['true', 'false'],
+    });
+    const enableSSE = new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption, {
+      description: 'Enable server side encryption powered by KMS.',
+      type: 'String',
+      default: 'true',
+      allowedValues: ['true', 'false'],
+    });
+
+    if (isNestedStack) {
+      // add the connection between the root and nested stack so the values can be passed down
+      (scope as cdk.NestedStack).setParameter(readIops.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS));
+      (scope as cdk.NestedStack).setParameter(writeIops.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS));
+      (scope as cdk.NestedStack).setParameter(billingMode.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBBillingMode));
+      (scope as cdk.NestedStack).setParameter(
+        pointInTimeRecovery.node.id,
+        cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery),
+      );
+      (scope as cdk.NestedStack).setParameter(
+        enableSSE.node.id,
+        cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption),
+      );
+    }
+
+    return {
+      readIops,
+      writeIops,
+      billingMode,
+      pointInTimeRecovery,
+      enableSSE,
+    };
   }
 
   /**

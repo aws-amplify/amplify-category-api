@@ -1,8 +1,20 @@
-import { DynamoDB } from 'aws-sdk';
+import { DynamoDB } from 'aws-sdk'; // TODO: use v3 SDK once CLI bumps the version
 import type { CreateTableInput, KeySchema, Projection, TableDescription, UpdateTableInput } from 'aws-sdk/clients/dynamodb';
 
 const ddbClient = new DynamoDB();
 
+const finished: AWSCDKAsyncCustomResource.IsCompleteResponse = {
+  IsComplete: true,
+};
+const notFinished: AWSCDKAsyncCustomResource.IsCompleteResponse = {
+  IsComplete: false,
+};
+
+/**
+ * Util function to log especially for nested objects and arrays
+ * @param msg
+ * @param other arrays of arguments to be logged
+ */
 const log = (msg: string, ...other: any[]) => {
   console.log(
     msg,
@@ -10,9 +22,12 @@ const log = (msg: string, ...other: any[]) => {
   );
 };
 
-export const onEvent = async (
-  event: AWSCDKAsyncCustomResource.OnEventRequest,
-): Promise<AWSCDKAsyncCustomResource.OnEventResponse | void> => {
+/**
+ * OnEvent handler to process the CFN event, including `Create`, `Update` and `Delete`
+ * @param event CFN event
+ * @returns Response object which is sent back to CFN
+ */
+export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): Promise<AWSCDKAsyncCustomResource.OnEventResponse> => {
   console.log(event);
   const tableDef = extractTableInputFromEvent(event);
   console.log('Input table state: ', tableDef);
@@ -106,13 +121,25 @@ export const onEvent = async (
       }
       try {
         await ddbClient.deleteTable({ TableName: event.PhysicalResourceId }).promise();
+        result = {
+          PhysicalResourceId: event.PhysicalResourceId,
+        };
+        return result;
       } catch (err) {
         // TODO only swallow NotExist errors
       }
+    default:
+      throw new Error(`Event type ${event.RequestType} is not supported`);
   }
   // after this function exits, the state machine will invoke isComplete in a loop until it returns finished or the state machine times out
 };
 
+/**
+ * IsComplete handler invoked based on a query interval to check the progress of the event
+ * This function also kick offs the additional steps of updates if they are any
+ * @param event CFN event
+ * @returns Response object with `isComplete` bool attribute to indicate the completeness of process
+ */
 export const isComplete = async (
   event: AWSCDKAsyncCustomResource.IsCompleteRequest,
 ): Promise<AWSCDKAsyncCustomResource.IsCompleteResponse> => {
@@ -162,14 +189,12 @@ export const isComplete = async (
   // a response of notFinished in this function will cause the function to be invoked again by the state machine after some time
 };
 
-const finished: AWSCDKAsyncCustomResource.IsCompleteResponse = {
-  IsComplete: true,
-};
-const notFinished: AWSCDKAsyncCustomResource.IsCompleteResponse = {
-  IsComplete: false,
-};
-
-// compares the currentState with the endState to determine a next update step that will get the table closer to the end state
+/**
+ * Compares the currentState with the endState to determine a next update step that will get the table closer to the end state
+ * @param currentState table description result from DynamoDB SDK call
+ * @param endState The input table state from user
+ * @returns UpdateTableInput object including the next GSI update only. Undefined if no next steps
+ */
 export const getNextGSIUpdate = (currentState: TableDescription, endState: CustomDDB.Input): UpdateTableInput | undefined => {
   const endStateGSIs = endState.GlobalSecondaryIndexes || [];
   const endStateGSINames = endStateGSIs.map((gsi) => gsi.IndexName);
@@ -232,6 +257,9 @@ export const getNextGSIUpdate = (currentState: TableDescription, endState: Custo
   return undefined;
 };
 
+/**
+ * Data to be extracted from create table SDK call response
+ */
 type CreateTableResponse = {
   tableName: string;
   tableArn: string;
@@ -292,6 +320,11 @@ const removeUndefinedAttributes = (obj: Record<string, any>): Record<string, any
   return obj;
 };
 
+/**
+ * Util function to convert user's input state of table to create table input recognized by DynamoDB SDK
+ * @param props The table input from user. TODO: use types for the input
+ * @returns CreateTableInput object
+ */
 const toCreateTableInput = (props: any): CreateTableInput => {
   const createTableInput: CreateTableInput = {
     TableName: props.TableName,
@@ -311,6 +344,11 @@ const toCreateTableInput = (props: any): CreateTableInput => {
   return removeUndefinedAttributes(createTableInput) as CreateTableInput;
 };
 
+/**
+ * Util function to make CreateTable DynamoDB call
+ * @param input CreateTableInput object
+ * @returns Response including table name, table ARN and stream ARN
+ */
 const createNewTable = async (input: CreateTableInput): Promise<CreateTableResponse> => {
   const tableName = input.TableName;
   const createTableInput: CreateTableInput = input;
@@ -318,6 +356,11 @@ const createNewTable = async (input: CreateTableInput): Promise<CreateTableRespo
   return { tableName, tableArn: result.TableDescription?.TableArn!, streamArn: result.TableDescription?.LatestStreamArn };
 };
 
+/**
+ * Util function to check if the provided table exists
+ * @param tableName table name
+ * @returns boolean to indicate existence of table
+ */
 const doesTableExist = async (tableName: string): Promise<boolean> => {
   try {
     await ddbClient.describeTable({ TableName: tableName }).promise();
@@ -330,6 +373,12 @@ const doesTableExist = async (tableName: string): Promise<boolean> => {
   }
 };
 
+/**
+ * Util function to check the GSI changes regarding to projection type and non-key attribute
+ * @param currentProjection current state of GSI projection
+ * @param endProjection end state of GSI projection
+ * @returns boolean to indicate the change of projection
+ */
 const isProjectionModified = (currentProjection: Projection, endProjection: Projection): boolean => {
   // first see if the projection type is changed
   if (currentProjection.ProjectionType !== endProjection.ProjectionType) return true;
@@ -349,6 +398,12 @@ const isProjectionModified = (currentProjection: Projection, endProjection: Proj
   return false;
 };
 
+/**
+ * Util function to check if the key schema(partition key & sort key) is changed
+ * @param currentSchema current state of key schema
+ * @param endSchema end state of key schema
+ * @returns boolean indicates the change of key schema
+ */
 const isKeySchemaModified = (currentSchema: KeySchema, endSchema: KeySchema): boolean => {
   const currentHashKey = currentSchema.find((schema) => schema.KeyType === 'HASH');
   const endHashKey = endSchema.find((schema) => schema.KeyType === 'HASH');
@@ -374,7 +429,7 @@ const isKeySchemaModified = (currentSchema: KeySchema, endSchema: KeySchema): bo
 /**
  * Configuration for retry limits
  */
-export type RetrySettings = {
+type RetrySettings = {
   times: number; // specifying 1 will execute func once and if not successful, retry one time
   delayMS: number; // delay between each attempt to execute func (there is no initial delay)
   timeoutMS: number; // total amount of time to retry execution
@@ -389,7 +444,7 @@ const defaultSettings: RetrySettings = {
 };
 
 /**
- * Retries the function func until the predicate pred returns true, or until one of the retry limits is met.
+ * Retries the function func until the success predicate returns true, or until one of the retry limits is met.
  * @param func The function to retry
  * @param successPredicate The predicate that determines successful output of func
  * @param settings Retry limits (defaults to defaultSettings above)
@@ -437,4 +492,9 @@ const retry = async <T>(
   throw new Error('Retry-able function did not match predicate within the given retry constraints');
 };
 
+/**
+ * Util function to sleep for seconds
+ * @param milliseconds time to sleep
+ * @returns void
+ */
 const sleep = async (milliseconds: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, milliseconds));

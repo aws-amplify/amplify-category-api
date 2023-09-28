@@ -5,22 +5,19 @@ import { ObjectTypeDefinitionNode } from 'graphql';
 import { setResourceName } from '@aws-amplify/graphql-transformer-core';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
-import { DynamoDBModelVTLGenerator, ModelVTLGenerator } from '../resolvers';
 
 import { Duration, aws_iam, aws_lambda, custom_resources, aws_logs } from 'aws-cdk-lib';
 import { CustomResource } from 'aws-cdk-lib';
-import { DynamoModelResourceGenerator } from './dynamo-model-resource-generator';
+import { DynamoModelResourceGenerator } from '../dynamo-model-resource-generator';
 import * as path from 'path';
 
 export const ITERATIVE_TABLE_STACK_NAME = 'AmplifyTableManager';
-export const CUSTOM_DDB_CFN_TYPE = 'Custom::AmplifyManagedDynamoDBTable';
+export const CUSTOM_DDB_CFN_TYPE = 'Custom::AmplifyDynamoDBTable';
 /**
- * DynamoModelResourceGenerator is an implementation of ModelResourceGenerator,
- * providing necessary utilities to generate the DynamoDB resources for models
+ * AmplifyDynamoModelResourceGenerator is an subclass of DynamoModelResourceGenerator,
+ * provisioning the DynamoDB tables with the custom resource instead of pre-defined DynamoDB table CFN template
  */
-export class IterativeDynamoModelResourceGenerator extends DynamoModelResourceGenerator {
-  protected readonly generatorType = 'DynamoModelResourceGenerator';
-  // Base path lambdas
+export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGenerator {
   private customResourceServiceToken: string = '';
 
   generateResources(ctx: TransformerContextProvider): void {
@@ -31,33 +28,7 @@ export class IterativeDynamoModelResourceGenerator extends DynamoModelResourceGe
     if (this.isProvisioned()) {
       // add model related-parameters to the root stack
       const rootStack = cdk.Stack.of(ctx.stackManager.scope);
-      new cdk.CfnParameter(rootStack, ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
-        description: 'The number of read IOPS the table should support.',
-        type: 'Number',
-        default: 5,
-      });
-      new cdk.CfnParameter(rootStack, ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS, {
-        description: 'The number of write IOPS the table should support.',
-        type: 'Number',
-        default: 5,
-      });
-      new cdk.CfnParameter(rootStack, ResourceConstants.PARAMETERS.DynamoDBBillingMode, {
-        description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
-        default: 'PAY_PER_REQUEST',
-        allowedValues: ['PAY_PER_REQUEST', 'PROVISIONED'],
-      });
-      new cdk.CfnParameter(rootStack, ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery, {
-        description: 'Whether to enable Point in Time Recovery on the table.',
-        type: 'String',
-        default: 'false',
-        allowedValues: ['true', 'false'],
-      });
-      new cdk.CfnParameter(rootStack, ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption, {
-        description: 'Enable server side encryption powered by KMS.',
-        type: 'String',
-        default: 'true',
-        allowedValues: ['true', 'false'],
-      });
+      this.createDynamoDBParamters(rootStack, false);
 
       const tableManagerStack = ctx.stackManager.getScopeFor('AmplifyTableCustomProvider', ITERATIVE_TABLE_STACK_NAME);
       this.createCustomProviderResource(tableManagerStack, ctx);
@@ -75,7 +46,7 @@ export class IterativeDynamoModelResourceGenerator extends DynamoModelResourceGe
     this.generateResolvers(ctx);
   }
 
-  createCustomProviderResource(scope: Construct, context: TransformerContextProvider): void {
+  protected createCustomProviderResource(scope: Construct, context: TransformerContextProvider): void {
     // Policy that grants access to Create/Update/Delete DynamoDB tables
     const ddbManagerPolicy = new aws_iam.Policy(scope, 'CreateUpdateDeleteTablesPolicy');
     ddbManagerPolicy.addStatements(
@@ -86,19 +57,21 @@ export class IterativeDynamoModelResourceGenerator extends DynamoModelResourceGe
       }),
     );
 
-    const lambdaCode = aws_lambda.Code.fromAsset(path.join(__dirname, '..', '..', 'lib', 'resources', 'custom-resource-lambda'));
+    const lambdaCode = aws_lambda.Code.fromAsset(
+      path.join(__dirname, '..', '..', '..', 'lib', 'resources', 'amplify-dynamodb-table', 'custom-resource-lambda'),
+    );
 
     // lambda that will handle DDB CFN events
-    const gsiOnEventHandler = new aws_lambda.Function(scope, ResourceConstants.RESOURCES.TableOnEventHandlerLogicalID, {
-      runtime: aws_lambda.Runtime.NODEJS_16_X,
+    const gsiOnEventHandler = new aws_lambda.Function(scope, ResourceConstants.RESOURCES.TableManagerOnEventHandlerLogicalID, {
+      runtime: aws_lambda.Runtime.NODEJS_18_X,
       code: lambdaCode,
       handler: 'custom-resource-handler.onEvent',
       timeout: Duration.minutes(14),
     });
 
     // lambda that will poll for provisioning to complete
-    const gsiIsCompleteHandler = new aws_lambda.Function(scope, ResourceConstants.RESOURCES.TableIsCompleteHandlerLogicalID, {
-      runtime: aws_lambda.Runtime.NODEJS_16_X,
+    const gsiIsCompleteHandler = new aws_lambda.Function(scope, ResourceConstants.RESOURCES.TableManagerIsCompleteHandlerLogicalID, {
+      runtime: aws_lambda.Runtime.NODEJS_18_X,
       code: lambdaCode,
       handler: 'custom-resource-handler.isComplete',
       timeout: Duration.minutes(14),
@@ -106,7 +79,7 @@ export class IterativeDynamoModelResourceGenerator extends DynamoModelResourceGe
 
     ddbManagerPolicy.attachToRole(gsiOnEventHandler.role!);
     ddbManagerPolicy.attachToRole(gsiIsCompleteHandler.role!);
-    const gsiCustomProvider = new custom_resources.Provider(scope, ResourceConstants.RESOURCES.TableCustomProviderLogicalID, {
+    const gsiCustomProvider = new custom_resources.Provider(scope, ResourceConstants.RESOURCES.TableManagerCustomProviderLogicalID, {
       onEventHandler: gsiOnEventHandler,
       isCompleteHandler: gsiIsCompleteHandler,
       logRetention: aws_logs.RetentionDays.ONE_MONTH,
@@ -116,56 +89,15 @@ export class IterativeDynamoModelResourceGenerator extends DynamoModelResourceGe
     this.customResourceServiceToken = gsiCustomProvider.serviceToken;
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  getVTLGenerator(): ModelVTLGenerator {
-    return new DynamoDBModelVTLGenerator();
-  }
-
   protected createModelTable(scope: Construct, def: ObjectTypeDefinitionNode, context: TransformerContextProvider): void {
     const modelName = def!.name.value;
     const tableLogicalName = ModelResourceIDs.ModelTableResourceID(modelName);
     const tableName = context.resourceHelper.generateTableName(modelName);
 
     // Add parameters.
-    const readIops = new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
-      description: 'The number of read IOPS the table should support.',
-      type: 'Number',
-      default: 5,
-    });
-    const writeIops = new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS, {
-      description: 'The number of write IOPS the table should support.',
-      type: 'Number',
-      default: 5,
-    });
-    const billingMode = new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBBillingMode, {
-      description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
-      type: 'String',
-      default: 'PAY_PER_REQUEST',
-      allowedValues: ['PAY_PER_REQUEST', 'PROVISIONED'],
-    });
-    const pointInTimeRecovery = new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery, {
-      description: 'Whether to enable Point in Time Recovery on the table.',
-      type: 'String',
-      default: 'false',
-      allowedValues: ['true', 'false'],
-    });
-    const enableSSE = new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption, {
-      description: 'Enable server side encryption powered by KMS.',
-      type: 'String',
-      default: 'true',
-      allowedValues: ['true', 'false'],
-    });
-    // // add the connection between the root and nested stack so the values can be passed down
-    (scope as cdk.NestedStack).setParameter(readIops.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS));
-    (scope as cdk.NestedStack).setParameter(writeIops.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS));
-    (scope as cdk.NestedStack).setParameter(billingMode.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBBillingMode));
-    (scope as cdk.NestedStack).setParameter(
-      pointInTimeRecovery.node.id,
-      cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery),
-    );
-    (scope as cdk.NestedStack).setParameter(enableSSE.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption));
+    const { readIops, writeIops, billingMode, pointInTimeRecovery, enableSSE } = this.createDynamoDBParamters(scope, true);
 
-    // // Add conditions.
+    // Add conditions.
     new cdk.CfnCondition(scope, ResourceConstants.CONDITIONS.HasEnvironmentParameter, {
       expression: cdk.Fn.conditionNot(cdk.Fn.conditionEquals(context.synthParameters.amplifyEnvironmentName, ResourceConstants.NONE)),
     });
@@ -212,7 +144,7 @@ export class IterativeDynamoModelResourceGenerator extends DynamoModelResourceGe
     setResourceName(tableResource, { name: modelName, setOnDefaultChild: true });
 
     // construct a wrapper around the custom table to allow normal CDK operations on top of it
-    const table = Table.fromTableAttributes(scope, `CustomTable${tableLogicalName}`, {
+    const table = Table.fromTableAttributes(scope, `AmplifyTable${tableLogicalName}`, {
       tableArn: tableResource.getAttString('TableArn'),
       tableStreamArn: tableResource.getAttString('TableStreamArn'),
     });

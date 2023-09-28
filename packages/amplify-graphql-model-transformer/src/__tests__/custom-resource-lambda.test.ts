@@ -1,5 +1,5 @@
-import { getNextGSIUpdate } from '../resources/custom-resource-lambda/custom-resource-handler';
-import * as CustomDDB from '../resources/custom-resource-types';
+import { getNextGSIUpdate } from '../resources/amplify-dynamodb-table/custom-resource-lambda/custom-resource-handler';
+import * as CustomDDB from '../resources/amplify-dynamodb-table/custom-resource-types';
 import { DynamoDB } from 'aws-sdk';
 
 describe('Custom Resource Lambda Tests', () => {
@@ -163,7 +163,7 @@ describe('Custom Resource Lambda Tests', () => {
       const nextUpdate = getNextGSIUpdate(currentState, endState);
       expect(nextUpdate).toMatchSnapshot();
     });
-    it('should compute end state correctly', () => {
+    it('should compute end state correctly in which no additional update step is defined', () => {
       const currentState: DynamoDB.TableDescription = {
         AttributeDefinitions: [
           {
