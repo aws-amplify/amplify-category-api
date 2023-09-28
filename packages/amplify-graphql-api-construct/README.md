@@ -968,7 +968,7 @@ const amplifyGraphqlApiProps: AmplifyGraphqlApiProps = { ... }
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.outputStorageStrategy">outputStorageStrategy</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.IBackendOutputStorageStrategy">IBackendOutputStorageStrategy</a></code> | Strategy to store construct outputs. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.predictionsBucket">predictionsBucket</a></code> | <code>aws-cdk-lib.aws_s3.IBucket</code> | If using predictions, a bucket must be provided which will be used to search for assets. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.stackMappings">stackMappings</a></code> | <code>{[ key: string ]: string}</code> | StackMappings override the assigned nested stack on a per-resource basis. |
-| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.transformers">transformers</a></code> | <code>any[]</code> | Provide a list of additional custom transformers which are injected into the transform process. |
+| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.transformerPlugins">transformerPlugins</a></code> | <code>any[]</code> | Provide a list of additional custom transformers which are injected into the transform process. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.translationBehavior">translationBehavior</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior">PartialTranslationBehavior</a></code> | This replaces feature flags from the Api construct, for general information on what these parameters do, refer to https://docs.amplify.aws/cli/reference/feature-flags/#graphQLTransformer. |
 
 ---
@@ -1101,15 +1101,17 @@ then re-added from a new stack.
 
 ---
 
-##### `transformers`<sup>Optional</sup> <a name="transformers" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.transformers"></a>
+##### `transformerPlugins`<sup>Optional</sup> <a name="transformerPlugins" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.transformerPlugins"></a>
 
 ```typescript
-public readonly transformers: any[];
+public readonly transformerPlugins: any[];
 ```
 
 - *Type:* any[]
 
 Provide a list of additional custom transformers which are injected into the transform process.
+
+These custom transformers must be implemented with aws-cdk-lib >=2.80.0, and
 
 ---
 

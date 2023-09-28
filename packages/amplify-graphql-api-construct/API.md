@@ -103,7 +103,7 @@ export interface AmplifyGraphqlApiProps {
     readonly outputStorageStrategy?: IBackendOutputStorageStrategy;
     readonly predictionsBucket?: IBucket;
     readonly stackMappings?: Record<string, string>;
-    readonly transformers?: any[];
+    readonly transformerPlugins?: any[];
     readonly translationBehavior?: PartialTranslationBehavior;
 }
 

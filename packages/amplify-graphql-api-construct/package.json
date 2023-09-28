@@ -11,6 +11,7 @@
   "license": "Apache-2.0",
   "main": "lib/index.js",
   "scripts": {
+    "jsii": "jsii",
     "build": "yarn config set script-shell bash && yarn transform-deps && yarn config delete script-shell && jsii",
     "watch": "jsii -w",
     "package": "jsii-pacmak",
