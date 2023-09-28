@@ -21,7 +21,7 @@ import {
   parens,
   int,
 } from 'graphql-mapping-template';
-import { COGNITO_AUTH_TYPE, ConfiguredAuthProviders, IS_AUTHORIZED_FLAG, OIDC_AUTH_TYPE, RoleDefinition, splitRoles } from '../utils';
+import { COGNITO_AUTH_TYPE, ConfiguredAuthProviders, IS_AUTHORIZED_FLAG, OIDC_AUTH_TYPE, RoleDefinition, splitRoles } from '../../../utils';
 import {
   generateStaticRoleExpression,
   apiKeyExpression,

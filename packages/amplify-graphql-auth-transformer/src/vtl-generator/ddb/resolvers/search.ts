@@ -31,7 +31,7 @@ import {
   fieldIsList,
   API_KEY_AUTH_TYPE,
   IAM_AUTH_TYPE,
-} from '../utils';
+} from '../../../utils';
 import {
   getIdentityClaimExp,
   emptyPayload,

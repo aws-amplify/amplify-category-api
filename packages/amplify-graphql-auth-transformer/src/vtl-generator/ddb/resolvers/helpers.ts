@@ -32,7 +32,7 @@ import {
   IAM_AUTH_TYPE,
   IDENTITY_CLAIM_DELIMITER,
   ALLOWED_FIELDS,
-} from '../utils';
+} from '../../../utils';
 
 // note in the resolver that operation is protected by auth
 export const setHasAuthExpression: Expression = qref(methodCall(ref('ctx.stash.put'), str('hasAuth'), bool(true)));

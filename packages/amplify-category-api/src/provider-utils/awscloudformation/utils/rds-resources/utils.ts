@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { DatasourceType, MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 
 export const checkForUnsupportedDirectives = (schema: string, modelToDatasourceMap: Map<string, DatasourceType>): void => {
-  const unsupportedRDSDirectives = ['auth', 'searchable', 'predictions', 'function', 'manyToMany', 'http', 'mapsTo'];
+  const unsupportedRDSDirectives = ['searchable', 'predictions', 'function', 'manyToMany', 'http', 'mapsTo'];
   if (_.isEmpty(schema) || _.isEmpty(modelToDatasourceMap)) {
     return;
   }

@@ -1,4 +1,4 @@
-import { FieldDefinitionNode } from 'graphql';
+import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import {
   compoundExpression,
   Expression,
@@ -34,7 +34,9 @@ import {
   fieldIsList,
   RelationalPrimaryMapConfig,
   IDENTITY_CLAIM_DELIMITER,
-} from '../utils';
+  getPartitionKey,
+  getRelationalPrimaryMap,
+} from '../../../utils';
 import {
   getIdentityClaimExp,
   getOwnerClaim,
@@ -48,6 +50,8 @@ import {
   generateOwnerMultiClaimExpression,
   generateInvalidClaimsCondition,
 } from './helpers';
+import { InvalidDirectiveError, getKeySchema, getTable } from '@aws-amplify/graphql-transformer-core';
+import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
   const staticRoleExpression: Array<Expression> = [];
@@ -525,15 +529,17 @@ const generateAuthFilter = (roles: Array<RoleDefinition>, fields: ReadonlyArray<
  * Generates the auth filter for the queries
  */
 export const generateAuthExpressionForQueries = (
+  ctx: TransformerContextProvider,
   providers: ConfiguredAuthProviders,
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
-  keySchema: dynamodb.CfnTable.KeySchemaProperty[],
-  isIndexQuery = false,
-  primaryKey: string | undefined = undefined,
+  def: ObjectTypeDefinitionNode,
+  indexName: string | undefined = undefined,
 ): string => {
   const { cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } =
     splitRoles(roles);
+  const isIndexQuery = !!indexName;
+  const { keySchema, primaryKey } = getKeySchemaAndPartitionKey(ctx, def, indexName);
   const primaryFields = keySchema.map((att) => att.attributeName);
   const sortKeyFields = keySchema.filter((att) => att.keyType === 'RANGE').map((att) => att.attributeName);
   const getNonPrimaryFieldRoles = (rolesToFilter: RoleDefinition[]): RoleDefinition[] =>
@@ -582,17 +588,52 @@ export const generateAuthExpressionForQueries = (
   return printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
 };
 
+const getKeySchemaAndPartitionKey = (
+  ctx: TransformerContextProvider,
+  def: ObjectTypeDefinitionNode,
+  indexName: string | undefined = undefined,
+): {
+  keySchema: any;
+  primaryKey: any;
+} => {
+  let keySchema: any;
+  let partitionKey: string;
+  const table = getTable(ctx, def);
+  try {
+    if (indexName) {
+      /* eslint-disable @typescript-eslint/no-explicit-any */
+      keySchema = getKeySchema(table, indexName);
+      /* eslint-enable */
+    } else {
+      /* eslint-disable @typescript-eslint/no-explicit-any */
+      keySchema = table.keySchema;
+      partitionKey = getPartitionKey(table.keySchema);
+      /* eslint-enable */
+    }
+  } catch (err) {
+    throw new InvalidDirectiveError(`Could not fetch keySchema for ${def.name.value}.`);
+  }
+  return {
+    keySchema,
+    primaryKey: partitionKey,
+  };
+};
+
 /**
  * Generates auth filters for relational queries
  */
 export const generateAuthExpressionForRelationQuery = (
+  ctx: TransformerContextProvider,
+  def: ObjectTypeDefinitionNode,
+  field: FieldDefinitionNode,
+  relatedModelObject: ObjectTypeDefinitionNode,
   providers: ConfiguredAuthProviders,
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
-  primaryFieldMap: RelationalPrimaryMapConfig,
 ): string => {
   const { cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } =
     splitRoles(roles);
+  const primaryFieldMap = getRelationalPrimaryMap(ctx, def, field, relatedModelObject);
   const getNonPrimaryFieldRoles = (rolesToFilter: RoleDefinition[]): RoleDefinition[] =>
     rolesToFilter.filter((role) => !primaryFieldMap.has(role.entity));
   const totalAuthExpressions: Array<Expression> = [setHasAuthExpression, set(ref(IS_AUTHORIZED_FLAG), bool(false))];

@@ -5,10 +5,9 @@ import {
   InvalidDirectiveError,
   MappingTemplate,
   TransformerResolver,
-  getTable,
-  getKeySchema,
   getSortKeyFieldNames,
   generateGetArgumentsInput,
+  isRDSModel,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
@@ -55,21 +54,6 @@ import {
   getSortKeyConnectionAttributeName,
   getObjectPrimaryKey,
 } from '@aws-amplify/graphql-relational-transformer';
-import {
-  generateAuthExpressionForCreate,
-  generateAuthExpressionForUpdate,
-  generateAuthRequestExpression,
-  generateAuthExpressionForDelete,
-  generateAuthExpressionForField,
-  generateFieldAuthResponse,
-  generateAuthExpressionForQueries,
-  generateAuthExpressionForSearchQueries,
-  generateAuthExpressionForSubscriptions,
-  setDeniedFieldFlag,
-  generateAuthExpressionForRelationQuery,
-  generateFieldResolverForOwner,
-} from './resolvers';
-import { generateSandboxExpressionForField } from './resolvers/field';
 import { AccessControlMatrix } from './accesscontrol';
 import {
   AUTH_PROVIDER_DIRECTIVE_MAP,
@@ -106,12 +90,13 @@ import {
   getScopeForField,
   NONE_DS,
   hasRelationalDirective,
-  getPartitionKey,
-  getRelationalPrimaryMap,
   getAuthDirectiveRules,
   READ_MODEL_OPERATIONS,
 } from './utils';
 import { defaultIdentityClaimWarning, ownerCanReassignWarning, ownerFieldCaseWarning } from './utils/warnings';
+import { DDBAuthVTLGenerator } from './vtl-generator/ddb/ddb-vtl-generator';
+import { RDSAuthVTLGenerator } from './vtl-generator/rds/rds-vtl-generator';
+import { AuthVTLGenerator } from './vtl-generator/vtl-generator';
 
 /**
  * util to get allowed roles for field
@@ -469,7 +454,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       const subscriptionFieldNames = getSubscriptionFieldNames(this.modelDirectiveConfig.get(modelName)!);
       const subscriptionRoles = acm.getRolesPerOperation('listen').map((role) => this.roleMap.get(role)!);
       subscriptionFieldNames.forEach((subscription) => {
-        this.protectSubscriptionResolver(context, subscription.typeName, subscription.fieldName, subscriptionRoles);
+        this.protectSubscriptionResolver(context, subscription.typeName, subscription.fieldName, subscriptionRoles, def);
       });
 
       if (context.transformParameters.useSubUsernameForDefaultIdentityClaim) {
@@ -526,7 +511,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         'finish',
         undefined,
         MappingTemplate.s3MappingTemplateFromString(
-          generateFieldResolverForOwner(fieldName),
+          this.getVtlGenerator(ctx, def.name.value).generateFieldResolverForOwner(fieldName),
           `${typeName}.${fieldName}.{slotName}.{slotIndex}.res.vtl`,
         ),
       );
@@ -545,7 +530,10 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
             '$util.toJson({"version":"2018-05-29","payload":{}})',
             `${typeName}.${fieldName}.req.vtl`,
           ),
-          MappingTemplate.s3MappingTemplateFromString(generateFieldResolverForOwner(fieldName), `${typeName}.${fieldName}.res.vtl`),
+          MappingTemplate.s3MappingTemplateFromString(
+            this.getVtlGenerator(ctx, def.name.value).generateFieldResolverForOwner(fieldName),
+            `${typeName}.${fieldName}.res.vtl`,
+          ),
           ['init'],
           ['finish'],
         ),
@@ -631,15 +619,13 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   ): void => {
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     const roleDefinitions = acm.getRolesPerOperation('get').map((r) => this.roleMap.get(r)!);
-    const tableKeySchema = getTable(ctx, def).keySchema;
-    const primaryKey = getPartitionKey(tableKeySchema);
-    const authExpression = generateAuthExpressionForQueries(
+    const authExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForQueries(
+      ctx,
       this.configuredAuthProviders,
       roleDefinitions,
       def.fields ?? [],
-      tableKeySchema,
-      false,
-      primaryKey,
+      def,
+      undefined,
     );
     resolver.addToSlot(
       'auth',
@@ -657,31 +643,13 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   ): void => {
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     const roleDefinitions = acm.getRolesPerOperation('list').map((r) => this.roleMap.get(r)!);
-    // let primaryFields: Array<string>;
-    let keySchema: any;
-    let partitionKey: string;
-    const table = getTable(ctx, def);
-    try {
-      if (indexName) {
-        /* eslint-disable @typescript-eslint/no-explicit-any */
-        keySchema = getKeySchema(table, indexName);
-        /* eslint-enable */
-      } else {
-        /* eslint-disable @typescript-eslint/no-explicit-any */
-        keySchema = table.keySchema;
-        partitionKey = getPartitionKey(table.keySchema);
-        /* eslint-enable */
-      }
-    } catch (err) {
-      throw new InvalidDirectiveError(`Could not fetch keySchema for ${def.name.value}.`);
-    }
-    const authExpression = generateAuthExpressionForQueries(
+    const authExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForQueries(
+      ctx,
       this.configuredAuthProviders,
       roleDefinitions,
       def.fields ?? [],
-      keySchema,
-      !!indexName,
-      partitionKey,
+      def,
+      indexName,
     );
     resolver.addToSlot(
       'auth',
@@ -710,24 +678,36 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
           ...acm.getRolesPerOperation('listen'),
         ]),
       ].map((r) => this.roleMap.get(r)!);
-      const relationalPrimaryMap = getRelationalPrimaryMap(ctx, def, field, relatedModelObject);
-      relatedAuthExpression = generateAuthExpressionForRelationQuery(
+      relatedAuthExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForRelationQuery(
+        ctx,
+        def,
+        field,
+        relatedModelObject,
         this.configuredAuthProviders,
         roleDefinitions,
         relatedModelObject.fields ?? [],
-        relationalPrimaryMap,
       );
     } else {
       // if the related @model does not have auth we need to add a sandbox mode expression
-      relatedAuthExpression = generateSandboxExpressionForField(ctx.transformParameters.sandboxModeEnabled);
+      relatedAuthExpression = this.getVtlGenerator(ctx, def.name.value).generateSandboxExpressionForField(
+        ctx.transformParameters.sandboxModeEnabled,
+      );
     }
     // if there is field auth on the relational query then we need to add field auth read rules first
     // in the request we then add the rules of the related type
     if (fieldRoles) {
       const roleDefinitions = fieldRoles.map((r) => this.roleMap.get(r)!);
       const hasSubsEnabled = this.modelDirectiveConfig.get(typeName)!.subscriptions?.level === 'on';
-      relatedAuthExpression = `${setDeniedFieldFlag('Mutation', hasSubsEnabled)}\n${relatedAuthExpression}`;
-      fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
+      relatedAuthExpression = `${this.getVtlGenerator(ctx, def.name.value).setDeniedFieldFlag(
+        'Mutation',
+        hasSubsEnabled,
+      )}\n${relatedAuthExpression}`;
+      fieldAuthExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForField(
+        this.configuredAuthProviders,
+        roleDefinitions,
+        def.fields ?? [],
+        undefined,
+      );
     }
     const resolver = ctx.resolvers.getResolver(typeName, field.name.value) as TransformerResolverProvider;
     if (fieldAuthExpression) {
@@ -760,8 +740,14 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     if (ctx.isProjectUsingDataStore()) {
       const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
       const roleDefinitions = acm.getRolesPerOperation('sync').map((r) => this.roleMap.get(r)!);
-      const keySchema = getTable(ctx, def).keySchema;
-      const authExpression = generateAuthExpressionForQueries(this.configuredAuthProviders, roleDefinitions, def.fields ?? [], keySchema);
+      const authExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForQueries(
+        ctx,
+        this.configuredAuthProviders,
+        roleDefinitions,
+        def.fields ?? [],
+        def,
+        undefined,
+      );
       resolver.addToSlot(
         'auth',
         MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
@@ -805,7 +791,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     });
     // add readonly fields with all the fields every role has access to
     allowedAggFields.push(...leastAllowedFields);
-    const authExpression = generateAuthExpressionForSearchQueries(
+    const authExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForSearchQueries(
       this.configuredAuthProviders,
       readRoleDefinitions,
       modelFields,
@@ -841,7 +827,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       /* eslint-disable @typescript-eslint/no-explicit-any */
       const fieldResolver = ctx.api.host.getResolver(typeName, fieldName) as any;
       /* eslint-enable */
-      const fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, [], fieldName);
+      const fieldAuthExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForField(
+        this.configuredAuthProviders,
+        roleDefinitions,
+        [],
+        fieldName,
+      );
       if (!ctx.api.host.hasDataSource(NONE_DS)) {
         ctx.api.host.addNoneDataSource(NONE_DS);
       }
@@ -854,14 +845,14 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       );
       (fieldResolver.pipelineConfig.functions as string[]).unshift(authFunction.functionId);
     } else {
-      const fieldAuthExpression = generateAuthExpressionForField(
+      const fieldAuthExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForField(
         this.configuredAuthProviders,
         roleDefinitions,
         def.fields ?? [],
         fieldName,
       );
       const subsEnabled = hasModelDirective ? this.modelDirectiveConfig.get(typeName)!.subscriptions?.level === 'on' : false;
-      const fieldResponse = generateFieldAuthResponse('Mutation', fieldName, subsEnabled);
+      const fieldResponse = this.getVtlGenerator(ctx, def.name.value).generateFieldAuthResponse('Mutation', fieldName, subsEnabled);
       const resolver = ctx.resolvers.addResolver(
         typeName,
         fieldName,
@@ -895,7 +886,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       roleDefinition.allowedFields = this.addAutoGeneratedFields(ctx, def, allowedFields, fields);
       return roleDefinition;
     });
-    const authExpression = generateAuthExpressionForCreate(ctx, this.configuredAuthProviders, createRoles, def.fields ?? []);
+    const authExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForCreate(
+      ctx,
+      this.configuredAuthProviders,
+      createRoles,
+      def.fields ?? [],
+    );
     resolver.addToSlot(
       'auth',
       MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
@@ -926,9 +922,18 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
 
       return roleDefinition;
     });
-    const dataSource = ctx.api.host.getDataSource(`${def.name.value}Table`) as DataSourceProvider;
-    const requestExpression = generateAuthRequestExpression();
-    const authExpression = generateAuthExpressionForUpdate(this.configuredAuthProviders, totalRoles, def.fields ?? []);
+    const { RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
+    const dataSource = (
+      isRDSModel(ctx, def.name.value)
+        ? ctx.api.host.getDataSource(RDSLambdaDataSourceLogicalID)
+        : ctx.api.host.getDataSource(`${def.name.value}Table`)
+    ) as DataSourceProvider;
+    const requestExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthRequestExpression();
+    const authExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForUpdate(
+      this.configuredAuthProviders,
+      totalRoles,
+      def.fields ?? [],
+    );
     resolver.addToSlot(
       'auth',
       MappingTemplate.s3MappingTemplateFromString(requestExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
@@ -948,8 +953,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     // only roles with full delete on every field can delete
     const deleteRoles = acm.getRolesPerOperation('delete', true).map((role) => this.roleMap.get(role)!);
     const dataSource = ctx.api.host.getDataSource(`${def.name.value}Table`) as DataSourceProvider;
-    const requestExpression = generateAuthRequestExpression();
-    const authExpression = generateAuthExpressionForDelete(this.configuredAuthProviders, deleteRoles, def.fields ?? []);
+    const requestExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthRequestExpression();
+    const authExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForDelete(
+      this.configuredAuthProviders,
+      deleteRoles,
+      def.fields ?? [],
+    );
     resolver.addToSlot(
       'auth',
       MappingTemplate.s3MappingTemplateFromString(requestExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
@@ -963,9 +972,13 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     typeName: string,
     fieldName: string,
     subscriptionRoles: Array<RoleDefinition>,
+    def: ObjectTypeDefinitionNode,
   ): void => {
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
-    const authExpression = generateAuthExpressionForSubscriptions(this.configuredAuthProviders, subscriptionRoles);
+    const authExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForSubscriptions(
+      this.configuredAuthProviders,
+      subscriptionRoles,
+    );
     resolver.addToSlot(
       'auth',
       MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
@@ -1462,5 +1475,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   addAutoGeneratedDataStoreFields = (ctx: TransformerContextProvider, allowedFields: Set<string>): void => {
     const dataStoreFields = ctx.isProjectUsingDataStore() ? ['_version', '_deleted', '_lastChangedAt'] : [];
     dataStoreFields.forEach((item) => allowedFields.add(item));
+  };
+
+  getVtlGenerator = (ctx: TransformerContextProvider, typename: string): AuthVTLGenerator => {
+    if (isRDSModel(ctx, typename)) {
+      return new RDSAuthVTLGenerator();
+    }
+    return new DDBAuthVTLGenerator();
   };
 }

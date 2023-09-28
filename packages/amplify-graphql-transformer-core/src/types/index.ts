@@ -8,4 +8,5 @@ export {
   RDSConnectionSecrets,
   ImportedDataSourceConfig,
   RDSDataSourceConfig,
+  ModelDatasourceType,
 } from './import-appsync-api-types';
