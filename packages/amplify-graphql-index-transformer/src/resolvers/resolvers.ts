@@ -51,10 +51,13 @@ const API_KEY = 'API Key Authorization';
  * replaceDdbPrimaryKey
  */
 export function replaceDdbPrimaryKey(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
+  const useAmplifyMangedTableResources = ctx.transformParameters.useAmplifyManagedTableResources
   // Replace the table's primary key with the value from @primaryKey
   const { field, object } = config;
   const table = getTable(ctx, object) as any;
-  const cfnTable = table.table;
+  const cfnTable = useAmplifyMangedTableResources
+    ? table.node.defaultChild.node.defaultChild
+    : table.table;
   const tableAttrDefs = table.attributeDefinitions;
   const tableKeySchema = table.keySchema;
   const keySchema = getDdbKeySchema(config);
@@ -82,8 +85,13 @@ export function replaceDdbPrimaryKey(config: PrimaryKeyDirectiveConfiguration, c
   }
 
   // CDK does not support modifying all of these things, so keep them in sync.
-  cfnTable.keySchema = table.keySchema;
-  cfnTable.attributeDefinitions = table.attributeDefinitions;
+  if (useAmplifyMangedTableResources) {
+    cfnTable.addPropertyOverride('KeySchema', table.keySchema);
+    cfnTable.addPropertyOverride('AttributeDefinitions', table.attributeDefinitions);
+  } else {
+    cfnTable.keySchema = table.keySchema;
+    cfnTable.attributeDefinitions = table.attributeDefinitions;
+  }
 }
 
 /**
@@ -374,20 +382,36 @@ export function appendSecondaryIndex(config: IndexDirectiveConfiguration, ctx: T
       readCapacity: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
       writeCapacity: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
     });
+    
 
     // At the L2 level, the CDK does not handle the way Amplify sets GSI read and write capacity
     // very well. At the L1 level, the CDK does not create the correct IAM policy for accessing the
     // GSI. To get around these issues, keep the L1 and L2 GSI list in sync.
-    const cfnTable = table.table;
-    cfnTable.globalSecondaryIndexes = appendIndex(cfnTable.globalSecondaryIndexes, {
-      indexName: name,
-      keySchema,
-      projection: { projectionType: 'ALL' },
-      provisionedThroughput: cdk.Fn.conditionIf(ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling, cdk.Fn.ref('AWS::NoValue'), {
-        ReadCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
-        WriteCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
-      }),
-    });
+    if (!ctx.transformParameters.useAmplifyManagedTableResources) {
+      const cfnTable = table.table;
+      cfnTable.globalSecondaryIndexes = appendIndex(cfnTable.globalSecondaryIndexes, {
+        indexName: name,
+        keySchema,
+        projection: { projectionType: 'ALL' },
+        provisionedThroughput: cdk.Fn.conditionIf(ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling, cdk.Fn.ref('AWS::NoValue'), {
+          ReadCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
+          WriteCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
+        }),
+      });  
+    } else {
+      const cfnTable = table.node.defaultChild.node.defaultChild as cdk.CfnCustomResource;
+      const idx = table.globalSecondaryIndexes.length - 1;
+      cfnTable.addOverride(`Properties.GlobalSecondaryIndexes.${idx}`, {
+        indexName: name,
+        keySchema,
+        projection: { projectionType: 'ALL' },
+        provisionedThroughput: cdk.Fn.conditionIf(ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling, cdk.Fn.ref('AWS::NoValue'), {
+          ReadCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
+          WriteCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
+        }),
+      })
+    }
+
   }
 }
 

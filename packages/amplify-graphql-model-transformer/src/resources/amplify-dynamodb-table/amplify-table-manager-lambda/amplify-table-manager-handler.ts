@@ -279,9 +279,33 @@ const extractTableInputFromEvent = (
   delete resourceProperties.ServiceToken;
 
   // cast the remaining resource properties to the DynamoDB API call input type
-  const tableDef = convertStringToBooleanOrNumber(resourceProperties) as CustomDDB.Input;
+  const tableDef = capitalizeKeysInObject(convertStringToBooleanOrNumber(resourceProperties))  as CustomDDB.Input;
   return tableDef;
 };
+
+const capitalizeKeysInObject = (obj: { [key: string]: any }): { [key: string]: any } => {
+  const capitalizedObject: { [key: string]: any } = {};
+
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      const capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1);
+      const value = obj[key];
+
+      if (Array.isArray(value)) {
+        capitalizedObject[capitalizedKey] = value.map(v => capitalizeKeysInObject(v))
+      }
+      else if (typeof value === 'object' && value !== null) {
+        // If the value is an object, recursively capitalize its keys
+        capitalizedObject[capitalizedKey] = capitalizeKeysInObject(value);
+      } else {
+        capitalizedObject[capitalizedKey] = value;
+      }
+    }
+  }
+
+  return capitalizedObject;
+};
+
 /**
  * Util function to convert string values to the correct form
  * Such as 'true' to true, '5' to 5
@@ -290,7 +314,10 @@ const extractTableInputFromEvent = (
  */
 const convertStringToBooleanOrNumber = (obj: Record<string, any>): Record<string, any> => {
   for (const key in obj) {
-    if (typeof obj[key] === 'object') {
+    if (Array.isArray(obj[key])) {
+      obj[key] = obj[key].map((o: Record<string, any>) => convertStringToBooleanOrNumber(o));
+    }
+    else if (typeof obj[key] === 'object') {
       // If the property is an object, recursively call the function
       obj[key] = convertStringToBooleanOrNumber(obj[key]);
     } else if (typeof obj[key] === 'string') {
@@ -312,7 +339,12 @@ const convertStringToBooleanOrNumber = (obj: Record<string, any>): Record<string
  */
 const removeUndefinedAttributes = (obj: Record<string, any>): Record<string, any> => {
   for (const key in obj) {
-    if (obj[key] === undefined) {
+    if (Array.isArray(obj[key])) {
+      obj[key].map((o: Record<string, any>) => removeUndefinedAttributes(o));
+    } else if (typeof obj[key] === 'object') {
+      removeUndefinedAttributes(obj[key]);
+    }
+    else if (obj[key] === undefined) {
       // Use the delete operator to remove the attribute if it's undefined
       delete obj[key];
     }
@@ -339,7 +371,7 @@ const toCreateTableInput = (props: any): CreateTableInput => {
         }
       : undefined,
     ProvisionedThroughput: props.ProvisionedThroughput,
-    SSESpecification: props.SSESpecification ? { Enabled: props.SSESpecification.sseEnabled } : undefined,
+    SSESpecification: props.SSESpecification ? { Enabled: props.SSESpecification.SseEnabled } : undefined,
   };
   return removeUndefinedAttributes(createTableInput) as CreateTableInput;
 };

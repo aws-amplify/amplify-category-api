@@ -409,18 +409,33 @@ export function updateTableForConnection(config: HasManyDirectiveConfiguration, 
   // At the L2 level, the CDK does not handle the way Amplify sets GSI read and write capacity
   // very well. At the L1 level, the CDK does not create the correct IAM policy for accessing the
   // GSI. To get around these issues, keep the L1 and L2 GSI list in sync.
-  const cfnTable = table.table;
   const gsi = gsis.find((gsi: any) => gsi.indexName === indexName);
 
-  cfnTable.globalSecondaryIndexes = appendIndex(cfnTable.globalSecondaryIndexes, {
-    indexName,
-    keySchema: gsi.keySchema,
-    projection: { projectionType: 'ALL' },
-    provisionedThroughput: cdk.Fn.conditionIf(ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling, cdk.Fn.ref('AWS::NoValue'), {
-      ReadCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
-      WriteCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
-    }),
-  });
+  if (!ctx.transformParameters.useAmplifyManagedTableResources) {
+    const cfnTable = table.table;
+    cfnTable.globalSecondaryIndexes = appendIndex(cfnTable.globalSecondaryIndexes, {
+      indexName,
+      keySchema: gsi.keySchema,
+      projection: { projectionType: 'ALL' },
+      provisionedThroughput: cdk.Fn.conditionIf(ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling, cdk.Fn.ref('AWS::NoValue'), {
+        ReadCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
+        WriteCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
+      }),
+    });  
+  }
+  else {
+    const cfnTable = table.node.defaultChild.node.defaultChild as cdk.CfnCustomResource;
+    const idx = table.globalSecondaryIndexes.length - 1;
+    cfnTable.addOverride(`Properties.GlobalSecondaryIndexes.${idx}`, {
+      indexName,
+      keySchema: gsi.keySchema,
+      projection: { projectionType: 'ALL' },
+      provisionedThroughput: cdk.Fn.conditionIf(ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling, cdk.Fn.ref('AWS::NoValue'), {
+        ReadCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
+        WriteCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
+      }),
+    })
+  }
 }
 
 function appendIndex(list: any, newIndex: any): any[] {
