@@ -251,8 +251,8 @@ function main(): void {
   );
   const splitConstructTests = splitTests(
     {
-      identifier: 'run_construct_tests',
-      buildspec: 'codebuild_specs/run_e2e_tests.yml',
+      identifier: 'run_cdk_tests',
+      buildspec: 'codebuild_specs/run_cdk_tests.yml',
       env: {
         'compute-type': 'BUILD_GENERAL1_MEDIUM',
       },

@@ -516,7 +516,7 @@ batch:
       depend-on:
         - publish_to_local_registry
     - identifier: add_resources_base_cdk_custom_logic_relationships
-      buildspec: codebuild_specs/run_e2e_tests.yml
+      buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
