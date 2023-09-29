@@ -418,7 +418,7 @@ function runCDKTest {
     FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
 
     if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
-        cd $(pwd)/packages/amplify-graphql-api-construct-test
+        cd $(pwd)/packages/amplify-graphql-api-construct-tests
     fi
 
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
