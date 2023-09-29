@@ -99,21 +99,23 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
       sseEnabled: cdk.Fn.conditionIf(useSSE.logicalId, true, false),
     };
 
-    const streamArnOutputId = `GetAtt${ModelResourceIDs.ModelTableStreamArn(def!.name.value)}`;
-    if (table.tableStreamArn) {
-      new cdk.CfnOutput(cdk.Stack.of(scope), streamArnOutputId, {
-        value: table.tableStreamArn,
-        description: 'Your DynamoDB table StreamArn.',
-        exportName: cdk.Fn.join(':', [context.api.apiId, 'GetAtt', tableLogicalName, 'StreamArn']),
+    if (context.transformParameters.enableTransformerCfnOutputs) {
+      if (table.tableStreamArn) {
+        const streamArnOutputId = `GetAtt${ModelResourceIDs.ModelTableStreamArn(def!.name.value)}`;
+        new cdk.CfnOutput(cdk.Stack.of(scope), streamArnOutputId, {
+          value: table.tableStreamArn,
+          description: 'Your DynamoDB table StreamArn.',
+          exportName: cdk.Fn.join(':', [context.api.apiId, 'GetAtt', tableLogicalName, 'StreamArn']),
+        });
+      }
+
+      const tableNameOutputId = `GetAtt${tableLogicalName}Name`;
+      new cdk.CfnOutput(cdk.Stack.of(scope), tableNameOutputId, {
+        value: table.tableName,
+        description: 'Your DynamoDB table name.',
+        exportName: cdk.Fn.join(':', [context.api.apiId, 'GetAtt', tableLogicalName, 'Name']),
       });
     }
-
-    const tableNameOutputId = `GetAtt${tableLogicalName}Name`;
-    new cdk.CfnOutput(cdk.Stack.of(scope), tableNameOutputId, {
-      value: table.tableName,
-      description: 'Your DynamoDB table name.',
-      exportName: cdk.Fn.join(':', [context.api.apiId, 'GetAtt', tableLogicalName, 'Name']),
-    });
 
     const role = this.createIAMRole(context, def, scope, tableName);
     const tableDataSourceLogicalName = `${def!.name.value}Table`;
@@ -150,12 +152,14 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
       datasourceDynamoDb.versioned = true;
     }
 
-    const datasourceOutputId = `GetAtt${datasourceRoleLogicalID}Name`;
-    new cdk.CfnOutput(cdk.Stack.of(scope), datasourceOutputId, {
-      value: dataSource.ds.attrName,
-      description: 'Your model DataSource name.',
-      exportName: cdk.Fn.join(':', [context.api.apiId, 'GetAtt', datasourceRoleLogicalID, 'Name']),
-    });
+    if (context.transformParameters.enableTransformerCfnOutputs) {
+      const datasourceOutputId = `GetAtt${datasourceRoleLogicalID}Name`;
+      new cdk.CfnOutput(cdk.Stack.of(scope), datasourceOutputId, {
+        value: dataSource.ds.attrName,
+        description: 'Your model DataSource name.',
+        exportName: cdk.Fn.join(':', [context.api.apiId, 'GetAtt', datasourceRoleLogicalID, 'Name']),
+      });
+    }
 
     // add the data source
     context.dataSources.add(def!, dataSource);

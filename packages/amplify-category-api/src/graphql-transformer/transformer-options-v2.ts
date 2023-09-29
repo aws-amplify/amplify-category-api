@@ -293,6 +293,7 @@ const generateTransformParameters = (
     sandboxModeEnabled,
     // Values used for AmplifyGraphqlApi construct ONLY
     useAmplifyManagedTableResources: false,
+    enableTransformerCfnOutputs: true,
   };
 };
 

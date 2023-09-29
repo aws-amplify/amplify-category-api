@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
+import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 
 /**
  * Utility to wrap construct creation a basic synth step to smoke test
@@ -17,12 +18,12 @@ describe('predictions category', () => {
   it('synths with predictions config', () => {
     verifySynth((stack) => {
       new AmplifyGraphqlApi(stack, 'TestApi', {
-        schema: /* GraphQL */ `
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
           type Query {
             recognizeTextFromImage: String @predictions(actions: [identifyText])
           }
-        `,
-        authorizationConfig: {
+        `),
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
         predictionsBucket: s3.Bucket.fromBucketName(stack, 'PredictionsBucket', 'predictions-bucket'),
@@ -33,12 +34,12 @@ describe('predictions category', () => {
   it('generates a nested stack for predictions directive', () => {
     const stack = new cdk.Stack();
     const api = new AmplifyGraphqlApi(stack, 'TestApi', {
-      schema: /* GraphQL */ `
+      definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
         type Query {
           recognizeTextFromImage: String @predictions(actions: [identifyText])
         }
-      `,
-      authorizationConfig: {
+      `),
+      authorizationModes: {
         apiKeyConfig: { expires: cdk.Duration.days(7) },
       },
       predictionsBucket: new s3.Bucket(stack, 'PredictionsBucket'),
@@ -52,12 +53,12 @@ describe('predictions category', () => {
   it('generates a resolver and iam policy without fn::sub when a real bucket is passed in', () => {
     const stack = new cdk.Stack();
     const api = new AmplifyGraphqlApi(stack, 'TestApi', {
-      schema: /* GraphQL */ `
+      definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
         type Query {
           recognizeTextFromImage: String @predictions(actions: [identifyText])
         }
-      `,
-      authorizationConfig: {
+      `),
+      authorizationModes: {
         apiKeyConfig: { expires: cdk.Duration.days(7) },
       },
       predictionsBucket: new s3.Bucket(stack, 'PredictionsBucket'),

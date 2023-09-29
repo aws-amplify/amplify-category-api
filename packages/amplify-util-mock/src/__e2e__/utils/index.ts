@@ -61,6 +61,7 @@ export const defaultTransformParams: Pick<ExecuteTransformConfig, 'transformersF
     respectPrimaryKeyAttributesOnConnectionField: true,
     enableSearchNodeToNodeEncryption: false,
     useAmplifyManagedTableResources: false,
+    enableTransformerCfnOutputs: true,
   },
 };
 

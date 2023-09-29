@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { createNewProjectDir, deleteProjectDir, initCDKProject, cdkDeploy, cdkDestroy } from 'amplify-category-api-e2e-core';
-import { graphql } from './graphql-utils';
+import { graphql } from './graphql-request';
 
 describe('CDK GraphQL Transformer - Relationships', () => {
   let projRoot: string;
@@ -16,8 +16,8 @@ describe('CDK GraphQL Transformer - Relationships', () => {
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'relationships'));
     const name = await initCDKProject(projRoot, templatePath);
     const outputs = await cdkDeploy(projRoot, '--all');
-    apiEndpoint = outputs[name].GraphQLAPIEndpointOutput;
-    apiKey = outputs[name].GraphQLAPIKeyOutput;
+    apiEndpoint = outputs[name].awsAppsyncApiEndpoint;
+    apiKey = outputs[name].awsAppsyncApiKey;
   });
 
   /**
