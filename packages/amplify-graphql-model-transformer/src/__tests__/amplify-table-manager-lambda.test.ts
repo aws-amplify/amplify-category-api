@@ -1,5 +1,5 @@
-import { getNextGSIUpdate } from '../resources/amplify-dynamodb-table/custom-resource-lambda/custom-resource-handler';
-import * as CustomDDB from '../resources/amplify-dynamodb-table/custom-resource-types';
+import { getNextGSIUpdate } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
+import * as CustomDDB from '../resources/amplify-dynamodb-table/amplify-table-types';
 import { DynamoDB } from 'aws-sdk';
 
 describe('Custom Resource Lambda Tests', () => {

@@ -26,7 +26,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     if (this.isProvisioned()) {
       // add model related-parameters to the root stack
       const rootStack = cdk.Stack.of(ctx.stackManager.scope);
-      this.createDynamoDBParamters(rootStack, false);
+      this.createDynamoDBParameters(rootStack, false);
     }
 
     this.models.forEach((model) => {
@@ -52,7 +52,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     const tableName = context.resourceHelper.generateTableName(modelName);
 
     // Add parameters.
-    const { readIops, writeIops, billingMode, pointInTimeRecovery, enableSSE } = this.createDynamoDBParamters(scope, true);
+    const { readIops, writeIops, billingMode, pointInTimeRecovery, enableSSE } = this.createDynamoDBParameters(scope, true);
 
     // Add conditions.
     new cdk.CfnCondition(scope, ResourceConstants.CONDITIONS.HasEnvironmentParameter, {
@@ -162,7 +162,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     this.datasourceMap[def!.name.value] = dataSource;
   }
 
-  protected createDynamoDBParamters(scope: Construct, isNestedStack: boolean): Record<string, cdk.CfnParameter> {
+  protected createDynamoDBParameters(scope: Construct, isNestedStack: boolean): Record<string, cdk.CfnParameter> {
     const readIops = new cdk.CfnParameter(scope, ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
       description: 'The number of read IOPS the table should support.',
       type: 'Number',

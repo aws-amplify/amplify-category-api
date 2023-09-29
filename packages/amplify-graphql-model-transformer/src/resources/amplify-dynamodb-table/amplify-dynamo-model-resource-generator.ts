@@ -14,7 +14,7 @@ import * as path from 'path';
 export const ITERATIVE_TABLE_STACK_NAME = 'AmplifyTableManager';
 export const CUSTOM_DDB_CFN_TYPE = 'Custom::AmplifyDynamoDBTable';
 /**
- * AmplifyDynamoModelResourceGenerator is an subclass of DynamoModelResourceGenerator,
+ * AmplifyDynamoModelResourceGenerator is a subclass of DynamoModelResourceGenerator,
  * provisioning the DynamoDB tables with the custom resource instead of pre-defined DynamoDB table CFN template
  */
 export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGenerator {
@@ -28,7 +28,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
     if (this.isProvisioned()) {
       // add model related-parameters to the root stack
       const rootStack = cdk.Stack.of(ctx.stackManager.scope);
-      this.createDynamoDBParamters(rootStack, false);
+      this.createDynamoDBParameters(rootStack, false);
 
       const tableManagerStack = ctx.stackManager.getScopeFor('AmplifyTableCustomProvider', ITERATIVE_TABLE_STACK_NAME);
       this.createCustomProviderResource(tableManagerStack, ctx);
@@ -58,14 +58,14 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
     );
 
     const lambdaCode = aws_lambda.Code.fromAsset(
-      path.join(__dirname, '..', '..', '..', 'lib', 'resources', 'amplify-dynamodb-table', 'custom-resource-lambda'),
+      path.join(__dirname, '..', '..', '..', 'lib', 'resources', 'amplify-dynamodb-table', 'amplify-table-manager-lambda'),
     );
 
     // lambda that will handle DDB CFN events
     const gsiOnEventHandler = new aws_lambda.Function(scope, ResourceConstants.RESOURCES.TableManagerOnEventHandlerLogicalID, {
       runtime: aws_lambda.Runtime.NODEJS_18_X,
       code: lambdaCode,
-      handler: 'custom-resource-handler.onEvent',
+      handler: 'amplify-table-manager-handler.onEvent',
       timeout: Duration.minutes(14),
     });
 
@@ -73,7 +73,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
     const gsiIsCompleteHandler = new aws_lambda.Function(scope, ResourceConstants.RESOURCES.TableManagerIsCompleteHandlerLogicalID, {
       runtime: aws_lambda.Runtime.NODEJS_18_X,
       code: lambdaCode,
-      handler: 'custom-resource-handler.isComplete',
+      handler: 'amplify-table-manager-handler.isComplete',
       timeout: Duration.minutes(14),
     });
 
@@ -95,7 +95,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
     const tableName = context.resourceHelper.generateTableName(modelName);
 
     // Add parameters.
-    const { readIops, writeIops, billingMode, pointInTimeRecovery, enableSSE } = this.createDynamoDBParamters(scope, true);
+    const { readIops, writeIops, billingMode, pointInTimeRecovery, enableSSE } = this.createDynamoDBParameters(scope, true);
 
     // Add conditions.
     new cdk.CfnCondition(scope, ResourceConstants.CONDITIONS.HasEnvironmentParameter, {
