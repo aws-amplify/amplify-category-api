@@ -23,6 +23,7 @@ export const applySchemaOverrides = (document: DocumentNode, existingDocument?: 
 
         const columnName = getMappedName(node);
         const tableName = getMappedName(parentObjectType);
+        checkDuplicateFieldMapping(columnName, tableName, existingDocument);
         const correspondingField = findMatchingField(columnName, tableName, existingDocument);
         if (!correspondingField) return;
 
@@ -232,17 +233,29 @@ export const findMatchingField = (columnName: string, taleName: string, document
 };
 
 const checkDuplicateModelMapping = (tableName: string, document: DocumentNode) => {
-  const matchedModels = document.definitions.filter(
-    (def) =>
-      def?.kind === 'ObjectTypeDefinition' &&
-      def?.directives?.find((dir) => dir?.name?.value === MODEL_DIRECTIVE_NAME) &&
-      (def?.name?.value === tableName || getMappedName(def) === tableName),
+  const matchedTypes = document.definitions.filter(
+    (def) => def?.kind === 'ObjectTypeDefinition' && (def?.name?.value === tableName || getMappedName(def) === tableName),
   );
-  if (matchedModels?.length > 1) {
+  if (matchedTypes?.length > 1) {
     throw new Error(
-      `Models ${matchedModels
-        .map((model) => (model as ObjectTypeDefinitionNode)?.name?.value)
+      `Types ${matchedTypes
+        .map((type) => (type as ObjectTypeDefinitionNode)?.name?.value)
         .join(', ')} are mapped to the same table ${tableName}. Remove the duplicate mapping.`,
+    );
+  }
+};
+
+const checkDuplicateFieldMapping = (columnName: string, tableName: string, document: DocumentNode) => {
+  const matchingObject = findMatchingModel(tableName, document);
+  if (!matchingObject) {
+    return;
+  }
+  const matchedFields = matchingObject?.fields?.filter((def) => def?.name?.value === columnName || getMappedName(def) === columnName);
+  if (matchedFields?.length > 1) {
+    throw new Error(
+      `Fields ${matchedFields
+        .map((field) => field?.name?.value)
+        .join(', ')} are mapped to the same column ${columnName}. Remove the duplicate mapping.`,
     );
   }
 };

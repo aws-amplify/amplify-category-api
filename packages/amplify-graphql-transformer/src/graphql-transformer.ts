@@ -87,9 +87,9 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
     new DefaultValueTransformer(),
     authTransformer,
     new MapsToTransformer(),
+    new SqlTransformer(),
     new RefersToTransformer(),
     new SearchableModelTransformer(),
-    new SqlTransformer(),
     ...(options?.customTransformers ?? []),
   ];
 };

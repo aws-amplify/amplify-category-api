@@ -50,6 +50,13 @@ describe('Field name conversions', () => {
     expect(convertToGraphQLFieldName('Employees$salaries-#Table%log@Rates!types')).toEqual('employeesSalariesTableLogRatesTypes');
     expect(convertToGraphQLFieldName('ID')).toEqual('iD');
     expect(convertToGraphQLFieldName('MyID')).toEqual('myID');
+    // Remove numeric or special character prefix
+    expect(convertToGraphQLFieldName('1Employee')).toEqual('employee');
+    expect(convertToGraphQLFieldName('12_123Employee')).toEqual('employee');
+    expect(convertToGraphQLFieldName('_123Employee')).toEqual('employee');
+    expect(convertToGraphQLFieldName('-#123Employee')).toEqual('employee');
+    expect(convertToGraphQLFieldName('123-Employee_345')).toEqual('employee345');
+    expect(convertToGraphQLFieldName('123__Employee_345')).toEqual('employee345');
   });
 
   it('infers refersTo from column names', () => {

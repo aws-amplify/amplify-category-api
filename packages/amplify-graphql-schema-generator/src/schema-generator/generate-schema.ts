@@ -381,8 +381,12 @@ export const convertToGraphQLTypeName = (modelName: string): string => {
 };
 
 export const convertToGraphQLFieldName = (fieldName: string): string => {
+  // Remove leading digits and non-alphabetic characters
   // Convert non-alphanumeric characters to underscores
-  const cleanedInput = fieldName.replace(/[^a-zA-Z0-9_]+/g, '_').trim();
+  const cleanedInput = fieldName
+    .replace(/^[^a-zA-Z]+/, '')
+    .replace(/[^a-zA-Z0-9_]+/g, '_')
+    .trim();
 
   // Convert to camelCase
   return toCamelCase(cleanedInput?.split('_'));

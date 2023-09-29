@@ -400,20 +400,12 @@ describe('apply schema overrides for models with refersTo', () => {
   });
 
   it('should not allow duplicate model name mappings in edited schema', () => {
-    const generatedSchemas = [
-      `
+    let generatedSchema = `
         type Post @model {
             id: String! @primaryKey
             content: String
         }
-      `,
-      `
-        type MyPost @model @refersTo(name: "Post") {
-            id: String! @primaryKey
-            content: String
-        }
-      `,
-    ];
+    `;
     const editedSchema = `
         type Post @model {
             id: String! @primaryKey
@@ -425,12 +417,69 @@ describe('apply schema overrides for models with refersTo', () => {
         }
     `;
     const editedDocument = parse(editedSchema);
-    generatedSchemas.forEach((generatedSchema) => {
-      const document = parse(generatedSchema);
-      expect(() => applySchemaOverrides(document, editedDocument)).toThrowErrorMatchingInlineSnapshot(
-        `"Models Post, MyPost are mapped to the same table Post. Remove the duplicate mapping."`,
-      );
-    });
+    expect(() => applySchemaOverrides(parse(generatedSchema), editedDocument)).toThrowErrorMatchingInlineSnapshot(
+      `"Types Post, MyPost are mapped to the same table Post. Remove the duplicate mapping."`,
+    );
+
+    generatedSchema = `
+        type MyPost @model @refersTo(name: "Post") {
+            id: String! @primaryKey
+            content: String
+        }
+    `;
+    expect(() => applySchemaOverrides(parse(generatedSchema), editedDocument)).toThrowErrorMatchingInlineSnapshot(
+      `"Types Post, MyPost are mapped to the same table Post. Remove the duplicate mapping."`,
+    );
+  });
+
+  it('should allow overrides on models used as output to custom queries', () => {
+    const document = parse(`
+            type ZipCode @refersTo(name: "zip_code") @model {
+                id: ID!
+                stateName: String @refersTo(name: "state_name")
+            }
+        `);
+    const editedSchema = `
+            type Zip @refersTo(name: "zip_code") @model {
+                id: ID!
+                state: String @refersTo(name: "state_name")
+            }
+            type Query {
+                getZipCodeByState(state: String!): [Zip] @sql(statement: "SELECT * FROM zip_code WHERE state_name = :state")
+            }
+        `;
+    const editedDocument = parse(editedSchema);
+    const updatedDocument = applySchemaOverrides(document, editedDocument);
+    stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
+  });
+
+  it('should not allow duplicate types mapping to same table as output to custom queries', () => {
+    const document = parse(`
+            type ZipCode @refersTo(name: "zip_code") @model {
+                id: ID!
+                stateName: String @refersTo(name: "state_name")
+            }
+            type Query {
+                getZipCodeByState(state: String!): [ZipCode] @sql(statement: "SELECT * FROM zip_code WHERE state_name = :state")
+            }
+        `);
+    const editedSchema = `
+            type Zip @refersTo(name: "zip_code") @model {
+                id: ID!
+                state: String @refersTo(name: "state_name")
+            }
+            type zip_code {
+                id: ID!
+                state_name: String
+            }
+            type Query {
+                getZipCodeByState(state: String!): [Zip] @sql(statement: "SELECT * FROM zip_code WHERE state_name = :state")
+            }
+        `;
+    const editedDocument = parse(editedSchema);
+    expect(() => applySchemaOverrides(document, editedDocument)).toThrowErrorMatchingInlineSnapshot(
+      `"Types Zip, zip_code are mapped to the same table zip_code. Remove the duplicate mapping."`,
+    );
   });
 });
 
@@ -501,9 +550,8 @@ describe('apply schema overrides for model fields with refersTo', () => {
     stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
   });
 
-  it('should retain other directives on mapped fields', () => {
-    const documents = [
-      parse(`
+  it('should retain renaming of fields referenced with relational directive', () => {
+    const document = parse(`
               type Profile @model {
                   id: String! @primaryKey
                   details: String
@@ -514,9 +562,27 @@ describe('apply schema overrides for model fields with refersTo', () => {
                   id: String! @primaryKey
                   name: String @refersTo(name: "nameField")
               }
-          `),
+        `);
+    const editedSchema = `type Portfolio @refersTo(name: "Profile") @model {
+            myId: String! @refersTo(name: "id") @primaryKey
+            details: String
+            myUserId: String @refersTo(name: "userId") @index(sortKeyFields: ["id"])
+            user: User @belongsTo(references: "myUserId")
+        }
 
-      parse(`
+        type User @refersTo(name: "Users") @model {
+            id: String! @primaryKey
+            myName: String @refersTo(name: "nameField")
+            portfolio: Portfolio @hasOne(references: "myUserId")
+        }
+      `;
+    const editedDocument = parse(editedSchema);
+    const updatedDocument = applySchemaOverrides(document, editedDocument);
+    stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
+  });
+
+  it('should retain removing the renaming of fields referenced with relational directive', () => {
+    const document = parse(`
               type Profile @model {
                   myId: String! @refersTo(name: "id") @primaryKey
                   details: String
@@ -527,23 +593,8 @@ describe('apply schema overrides for model fields with refersTo', () => {
                   id: String! @primaryKey
                   myName: String @refersTo(name: "name")
               }
-          `),
-    ];
-    const editedSchemas = [
-      `type Portfolio @refersTo(name: "Profile") @model {
-              myId: String! @refersTo(name: "id") @primaryKey
-              details: String
-              myUserId: String @refersTo(name: "userId") @index(sortKeyFields: ["id"])
-              user: User @belongsTo(references: "myUserId")
-          }
-      
-          type User @refersTo(name: "Users") @model {
-              id: String! @primaryKey
-              myName: String @refersTo(name: "nameField")
-              portfolio: Portfolio @hasOne(references: "myUserId")
-          }`,
-
-      `type Profile @model {
+        `);
+    const editedSchema = `type Profile @model {
               id: String! @primaryKey
               details: String
               userId: String @index(sortKeyFields: ["id"])
@@ -554,13 +605,10 @@ describe('apply schema overrides for model fields with refersTo', () => {
               id: String! @primaryKey
               name: String
               profile: Profile @hasOne(references: "userId")
-          }`,
-    ];
-    documents.forEach((document, index) => {
-      const editedDocument = parse(editedSchemas[index]);
-      const updatedDocument = applySchemaOverrides(document, editedDocument);
-      stringsMatchWithoutWhitespace(print(updatedDocument), editedSchemas[index]);
-    });
+        }`;
+    const editedDocument = parse(editedSchema);
+    const updatedDocument = applySchemaOverrides(document, editedDocument);
+    stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
   });
 
   it('should retain relational directives', () => {
@@ -593,6 +641,37 @@ describe('apply schema overrides for model fields with refersTo', () => {
     const editedDocument = parse(editedSchema);
     expect(() => applySchemaOverrides(document, editedDocument)).toThrowErrorMatchingInlineSnapshot(
       `"Field \\"user\\" cannot be renamed because it is a relational field."`,
+    );
+  });
+
+  it('should not allow duplicate field name mappings in edited schema', () => {
+    const generatedSchema = `
+        type Post @model {
+            id: String! @primaryKey
+            content: String
+        }
+    `;
+    const document = parse(generatedSchema);
+    let editedSchema = `
+        type Post @model {
+            id: String! @primaryKey
+            content: String
+            newContent: String @refersTo(name: "content")
+        }
+    `;
+    expect(() => applySchemaOverrides(document, parse(editedSchema))).toThrowErrorMatchingInlineSnapshot(
+      `"Fields content, newContent are mapped to the same column content. Remove the duplicate mapping."`,
+    );
+
+    editedSchema = `
+        type Post @model {
+            id: String! @primaryKey
+            newContent: String @refersTo(name: "content")
+            brandNewContent: String @refersTo(name: "content")
+        }
+    `;
+    expect(() => applySchemaOverrides(parse(generatedSchema), parse(editedSchema))).toThrowErrorMatchingInlineSnapshot(
+      `"Fields newContent, brandNewContent are mapped to the same column content. Remove the duplicate mapping."`,
     );
   });
 });
