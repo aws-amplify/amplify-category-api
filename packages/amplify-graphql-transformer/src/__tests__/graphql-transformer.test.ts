@@ -8,7 +8,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces/src';
-import { CfnParameter, CfnParameterProps, NestedStack, Stack } from 'aws-cdk-lib';
+import { NestedStack, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import * as fs from 'fs-extra';
@@ -56,6 +56,7 @@ const defaultTransformConfig: TransformConfig = {
     respectPrimaryKeyAttributesOnConnectionField: false,
     enableSearchNodeToNodeEncryption: false,
     useAmplifyManagedTableResources: false,
+    enableTransformerCfnOutputs: true,
   },
 };
 

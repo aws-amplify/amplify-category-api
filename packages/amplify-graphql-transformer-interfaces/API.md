@@ -732,6 +732,7 @@ export interface TransformParameterProvider {
 
 // @public (undocumented)
 export type TransformParameters = {
+    enableTransformerCfnOutputs: boolean;
     shouldDeepMergeDirectiveConfigDefaults: boolean;
     disableResolverDeduping: boolean;
     sandboxModeEnabled: boolean;

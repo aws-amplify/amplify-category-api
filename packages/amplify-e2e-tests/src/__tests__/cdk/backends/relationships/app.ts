@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import { App, Stack, Duration } from 'aws-cdk-lib';
-import { AmplifyGraphqlApi } from '@aws-amplify/graphql-construct-alpha';
+// @ts-ignore
+import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
 
 const packageJson = require('../package.json');
 
@@ -11,7 +12,7 @@ const stack = new Stack(app, packageJson.name.replace(/_/g, '-'), {
 });
 
 new AmplifyGraphqlApi(stack, 'GraphqlApi', {
-  schema: /* GraphQL */ `
+  definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
     type Blog @model @auth(rules: [{ allow: public }]) {
       title: String!
       description: String!
@@ -37,8 +38,8 @@ new AmplifyGraphqlApi(stack, 'GraphqlApi', {
       name: String!
       posts: [Post] @manyToMany(relationName: "PostTags")
     }
-  `,
-  authorizationConfig: {
+  `),
+  authorizationModes: {
     apiKeyConfig: { expires: Duration.days(7) },
   },
 });

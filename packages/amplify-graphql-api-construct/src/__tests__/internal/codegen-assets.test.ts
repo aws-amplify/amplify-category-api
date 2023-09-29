@@ -12,7 +12,8 @@ describe('CodegenAssets', () => {
       }
     `;
 
-    const assets = new CodegenAssets(stack, 'TestAssets', { modelSchema });
+    // id on here matters, since the generated logicalId is used for the backend processor.
+    const assets = new CodegenAssets(stack, 'AmplifyCodegenAssets', { modelSchema });
 
     expect(assets.modelSchemaS3Uri).toBeDefined();
     expect(assets.modelSchemaS3Uri).toMatch(/s3:\/\/\${Token\[TOKEN\.[a-zA-Z0-9]*?\]}\/model-schema\.graphql/);

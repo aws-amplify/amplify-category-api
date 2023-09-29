@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import { App, Stack, Duration } from 'aws-cdk-lib';
-import { AmplifyGraphqlApi } from '@aws-amplify/graphql-construct-alpha';
+// @ts-ignore
+import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
 
 const packageJson = require('../package.json');
 
@@ -12,12 +13,12 @@ const stack = new Stack(app, packageJson.name.replace(/_/g, '-'), {
 
 new AmplifyGraphqlApi(stack, 'GraphqlApi', {
   apiName: 'MyGraphQLApi',
-  schema: /* GraphQL */ `
+  definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
     type Todo @model @auth(rules: [{ allow: public }]) {
       description: String!
     }
-  `,
-  authorizationConfig: {
+  `),
+  authorizationModes: {
     apiKeyConfig: { expires: Duration.days(7) },
   },
 });

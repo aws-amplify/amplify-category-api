@@ -5,7 +5,10 @@
  * have different default behaviors.
  */
 export type TransformParameters = {
-  // General Model Params
+  // General Params
+  enableTransformerCfnOutputs: boolean;
+
+  // Model Params
   shouldDeepMergeDirectiveConfigDefaults: boolean;
   disableResolverDeduping: boolean;
   sandboxModeEnabled: boolean;

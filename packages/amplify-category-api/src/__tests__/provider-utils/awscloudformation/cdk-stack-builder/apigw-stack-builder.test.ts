@@ -1,7 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AmplifyApigwResourceStack } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/apigw-stack-builder';
-import { PermissionSetting } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/types';
+import { CrudOperation, PermissionSetting } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/types';
+import { convertCrudOperationsToCfnPermissions } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/apigw-stack-transform';
 
 describe('AmplifyApigwResourceStack', () => {
   test('generateStackResources should synthesize the way we expected', () => {
@@ -43,5 +44,51 @@ describe('AmplifyApigwResourceStack', () => {
         Ref: 'myapi',
       },
     });
+  });
+  test('addIamPolicyResourceForUserPoolGroup should generate correct IAM policies when {} is used in path', () => {
+    const app = new cdk.App();
+    const mockResourceName = 'mockRestAPIName';
+    const mockAuthRoleLogicalId = 'mockAuthRoleLogicalId';
+    const cliInputs = {
+      version: 1,
+      paths: {
+        '/book/{isbn}': {
+          lambdaFunction: 'lambdaFunction1',
+          permissions: {
+            setting: PermissionSetting.PRIVATE,
+            groups: {
+              admin: [CrudOperation.CREATE, CrudOperation.UPDATE, CrudOperation.READ, CrudOperation.DELETE],
+              member: [CrudOperation.READ],
+            },
+          },
+        },
+        '/items/{id}/foobar': {
+          lambdaFunction: 'lambdaFunction2',
+          permissions: {
+            setting: PermissionSetting.PRIVATE,
+            groups: {
+              admin: [CrudOperation.CREATE, CrudOperation.UPDATE, CrudOperation.READ, CrudOperation.DELETE],
+              member: [CrudOperation.READ],
+            },
+          },
+        },
+      },
+    };
+    const amplifyApigwStack = new AmplifyApigwResourceStack(app, 'amplifyapigwstack', cliInputs);
+    const pathsWithUserPoolGroups = Object.entries(cliInputs.paths).filter(([_, path]) => !!path?.permissions?.groups);
+    for (const [pathName, path] of pathsWithUserPoolGroups) {
+      for (const [groupName, crudOps] of Object.entries(path.permissions.groups)) {
+        amplifyApigwStack.addIamPolicyResourceForUserPoolGroup(
+          mockResourceName,
+          mockAuthRoleLogicalId,
+          groupName,
+          pathName,
+          convertCrudOperationsToCfnPermissions(crudOps),
+        );
+      }
+    }
+
+    const template = Template.fromStack(amplifyApigwStack);
+    expect(template.findResources('AWS::IAM::Policy')).toMatchSnapshot();
   });
 });

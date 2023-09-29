@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.7.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.7.0...@aws-amplify/amplify-category-api@5.7.1) (2023-09-27)
+
+### Bug Fixes
+
+- **apigw:** replace path param with wildcard ([#1880](https://github.com/aws-amplify/amplify-category-api/issues/1880)) ([25b6523](https://github.com/aws-amplify/amplify-category-api/commit/25b65238b5e35e03b1275f432693d8dd6c8fc966))
+
+# [5.7.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.6.4...@aws-amplify/amplify-category-api@5.7.0) (2023-09-20)
+
+### Features
+
+- disable amplify cfn outputs for cdk apps ([0c72d18](https://github.com/aws-amplify/amplify-category-api/commit/0c72d1822f8e5ccb3e04a0a49049a459b5fb49e6))
+
+## [5.6.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.6.3...@aws-amplify/amplify-category-api@5.6.4) (2023-09-13)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+## [5.6.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.6.2...@aws-amplify/amplify-category-api@5.6.3) (2023-09-07)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
 ## [5.6.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.6.1...@aws-amplify/amplify-category-api@5.6.2) (2023-08-30)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api
