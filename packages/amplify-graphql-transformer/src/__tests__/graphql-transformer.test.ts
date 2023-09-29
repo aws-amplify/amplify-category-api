@@ -55,6 +55,7 @@ const defaultTransformConfig: TransformConfig = {
     enableAutoIndexQueryNames: false,
     respectPrimaryKeyAttributesOnConnectionField: false,
     enableSearchNodeToNodeEncryption: false,
+    useAmplifyManagedTableResources: false,
   },
 };
 

@@ -28,7 +28,7 @@ import {
   TransformerTransformSchemaStepContextProvider,
   TransformerValidationStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { ITable, StreamViewType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
+import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import {
@@ -72,6 +72,7 @@ import { ModelResourceGenerator } from './resources/model-resource-generator';
 import { DynamoModelResourceGenerator } from './resources/dynamo-model-resource-generator';
 import { RdsModelResourceGenerator } from './resources/rds-model-resource-generator';
 import { ModelTransformerOptions } from './types';
+import { AmplifyDynamoModelResourceGenerator } from './resources/amplify-dynamodb-table/amplify-dynamo-model-resource-generator';
 
 /**
  * Nullable
@@ -145,6 +146,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   }
 
   before = (ctx: TransformerBeforeStepContextProvider): void => {
+    if (ctx.transformParameters.useAmplifyManagedTableResources) {
+      this.resourceGeneratorMap.set(DDB_DB_TYPE, new AmplifyDynamoModelResourceGenerator());
+    }
     const datasourceMapValues: Array<DatasourceType> = Array.from(ctx.modelToDatasourceMap.values());
     if (datasourceMapValues.some((value) => value.dbType === DDB_DB_TYPE && value.provisionDB)) {
       this.resourceGeneratorMap.get(DDB_DB_TYPE)?.enableGenerator();
