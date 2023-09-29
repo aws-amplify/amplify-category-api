@@ -391,7 +391,6 @@ export interface TranslationBehavior {
    */
   readonly respectPrimaryKeyAttributesOnConnectionField: boolean;
 
-
   /**
    * Used for AmplifyGrapqhlApi construct ONLY
    * If enabled, the table resources will be generated under custom resource provider,
