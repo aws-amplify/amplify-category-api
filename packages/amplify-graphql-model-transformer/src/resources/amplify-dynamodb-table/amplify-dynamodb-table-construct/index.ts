@@ -23,12 +23,12 @@ const RANGE_KEY_TYPE = 'RANGE';
 // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
 const MAX_LOCAL_SECONDARY_INDEX_COUNT = 5;
 
-const CUSTOM_DDB_CFN_TYPE = 'Custom::AmplifyManagedDynamoDBTable';
+export const CUSTOM_DDB_CFN_TYPE = 'Custom::AmplifyDynamoDBTable';
 
-export interface AmplifyMangedTableProps extends TableProps {
+export interface AmplifyDynamoDBTableProps extends TableProps {
   customResourceServiceToken: string;
 }
-export class AmplifyManagedTable extends Resource {
+export class AmplifyDynamoDBTable extends Resource {
   public readonly encryptionKey?: kms.IKey;
   public readonly tableArn: string;
   public readonly tableName: string;
@@ -50,7 +50,7 @@ export class AmplifyManagedTable extends Resource {
 
   private readonly billingMode: BillingMode;
 
-  constructor(scope: Construct, id: string, props: AmplifyMangedTableProps) {
+  constructor(scope: Construct, id: string, props: AmplifyDynamoDBTableProps) {
     super(scope, id, {
       physicalName: props.tableName,
     });

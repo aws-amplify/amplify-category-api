@@ -3,17 +3,15 @@ import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-int
 import { ModelResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { setResourceName } from '@aws-amplify/graphql-transformer-core';
-import { AttributeType, BillingMode, StreamViewType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
+import { AttributeType, StreamViewType, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 
 import { Duration, aws_iam, aws_lambda, custom_resources, aws_logs } from 'aws-cdk-lib';
-import { CustomResource } from 'aws-cdk-lib';
 import { DynamoModelResourceGenerator } from '../dynamo-model-resource-generator';
 import * as path from 'path';
-import { AmplifyManagedTable } from './amplify-managed-table';
+import { AmplifyDynamoDBTable } from './amplify-dynamodb-table-construct';
 
 export const ITERATIVE_TABLE_STACK_NAME = 'AmplifyTableManager';
-export const CUSTOM_DDB_CFN_TYPE = 'Custom::AmplifyDynamoDBTable';
 /**
  * AmplifyDynamoModelResourceGenerator is a subclass of DynamoModelResourceGenerator,
  * provisioning the DynamoDB tables with the custom resource instead of pre-defined DynamoDB table CFN template
@@ -115,7 +113,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
     const removalPolicy = this.options.EnableDeletionProtection ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY;
 
     // TODO: The attribute of encryption and TTL should be added
-    const table = new AmplifyManagedTable(scope, `${tableLogicalName}`, {
+    const table = new AmplifyDynamoDBTable(scope, `${tableLogicalName}`, {
       customResourceServiceToken: this.customResourceServiceToken,
       tableName,
       partitionKey: {
