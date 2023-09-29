@@ -51,13 +51,11 @@ const API_KEY = 'API Key Authorization';
  * replaceDdbPrimaryKey
  */
 export function replaceDdbPrimaryKey(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
-  const useAmplifyMangedTableResources = ctx.transformParameters.useAmplifyManagedTableResources
+  const useAmplifyMangedTableResources = ctx.transformParameters.useAmplifyManagedTableResources;
   // Replace the table's primary key with the value from @primaryKey
   const { field, object } = config;
   const table = getTable(ctx, object) as any;
-  const cfnTable = useAmplifyMangedTableResources
-    ? table.node.defaultChild.node.defaultChild
-    : table.table;
+  const cfnTable = useAmplifyMangedTableResources ? table.node.defaultChild.node.defaultChild : table.table;
   const tableAttrDefs = table.attributeDefinitions;
   const tableKeySchema = table.keySchema;
   const keySchema = getDdbKeySchema(config);
@@ -382,7 +380,6 @@ export function appendSecondaryIndex(config: IndexDirectiveConfiguration, ctx: T
       readCapacity: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
       writeCapacity: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
     });
-    
 
     // At the L2 level, the CDK does not handle the way Amplify sets GSI read and write capacity
     // very well. At the L1 level, the CDK does not create the correct IAM policy for accessing the
@@ -397,7 +394,7 @@ export function appendSecondaryIndex(config: IndexDirectiveConfiguration, ctx: T
           ReadCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
           WriteCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
         }),
-      });  
+      });
     } else {
       const cfnTable = table.node.defaultChild.node.defaultChild as cdk.CfnCustomResource;
       const idx = table.globalSecondaryIndexes.length - 1;
@@ -409,9 +406,8 @@ export function appendSecondaryIndex(config: IndexDirectiveConfiguration, ctx: T
           ReadCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
           WriteCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
         }),
-      })
+      });
     }
-
   }
 }
 

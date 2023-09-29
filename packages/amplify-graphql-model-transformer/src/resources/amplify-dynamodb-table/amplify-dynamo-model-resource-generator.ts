@@ -131,7 +131,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
     const tableRepresentative = table.tableFromAttr;
 
     const cfnTable = table.node.defaultChild?.node.defaultChild as cdk.CfnCustomResource;
-    setResourceName(cfnTable, { name: modelName, setOnDefaultChild: false} );
+    setResourceName(cfnTable, { name: modelName, setOnDefaultChild: false });
     cfnTable.addPropertyOverride(
       'ProvisionedThroughput',
       cdk.Fn.conditionIf(usePayPerRequestBilling.logicalId, cdk.Fn.ref('AWS::NoValue'), {

@@ -2,9 +2,7 @@ import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ModelTransformer } from '../graphql-model-transformer';
 import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
-import {
-  ITERATIVE_TABLE_STACK_NAME,
-} from '../resources/amplify-dynamodb-table/amplify-dynamo-model-resource-generator';
+import { ITERATIVE_TABLE_STACK_NAME } from '../resources/amplify-dynamodb-table/amplify-dynamo-model-resource-generator';
 import { CUSTOM_DDB_CFN_TYPE } from '../resources/amplify-dynamodb-table/amplify-dynamodb-table-construct';
 
 describe('ModelTransformer:', () => {

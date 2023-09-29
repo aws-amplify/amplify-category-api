@@ -279,7 +279,7 @@ const extractTableInputFromEvent = (
   delete resourceProperties.ServiceToken;
 
   // cast the remaining resource properties to the DynamoDB API call input type
-  const tableDef = capitalizeKeysInObject(convertStringToBooleanOrNumber(resourceProperties))  as CustomDDB.Input;
+  const tableDef = capitalizeKeysInObject(convertStringToBooleanOrNumber(resourceProperties)) as CustomDDB.Input;
   return tableDef;
 };
 
@@ -292,9 +292,8 @@ const capitalizeKeysInObject = (obj: { [key: string]: any }): { [key: string]: a
       const value = obj[key];
 
       if (Array.isArray(value)) {
-        capitalizedObject[capitalizedKey] = value.map(v => capitalizeKeysInObject(v))
-      }
-      else if (typeof value === 'object' && value !== null) {
+        capitalizedObject[capitalizedKey] = value.map((v) => capitalizeKeysInObject(v));
+      } else if (typeof value === 'object' && value !== null) {
         // If the value is an object, recursively capitalize its keys
         capitalizedObject[capitalizedKey] = capitalizeKeysInObject(value);
       } else {
@@ -316,8 +315,7 @@ const convertStringToBooleanOrNumber = (obj: Record<string, any>): Record<string
   for (const key in obj) {
     if (Array.isArray(obj[key])) {
       obj[key] = obj[key].map((o: Record<string, any>) => convertStringToBooleanOrNumber(o));
-    }
-    else if (typeof obj[key] === 'object') {
+    } else if (typeof obj[key] === 'object') {
       // If the property is an object, recursively call the function
       obj[key] = convertStringToBooleanOrNumber(obj[key]);
     } else if (typeof obj[key] === 'string') {
@@ -343,8 +341,7 @@ const removeUndefinedAttributes = (obj: Record<string, any>): Record<string, any
       obj[key].map((o: Record<string, any>) => removeUndefinedAttributes(o));
     } else if (typeof obj[key] === 'object') {
       removeUndefinedAttributes(obj[key]);
-    }
-    else if (obj[key] === undefined) {
+    } else if (obj[key] === undefined) {
       // Use the delete operator to remove the attribute if it's undefined
       delete obj[key];
     }

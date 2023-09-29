@@ -421,9 +421,8 @@ export function updateTableForConnection(config: HasManyDirectiveConfiguration, 
         ReadCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
         WriteCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
       }),
-    });  
-  }
-  else {
+    });
+  } else {
     const cfnTable = table.node.defaultChild.node.defaultChild as cdk.CfnCustomResource;
     const idx = table.globalSecondaryIndexes.length - 1;
     cfnTable.addOverride(`Properties.GlobalSecondaryIndexes.${idx}`, {
@@ -434,7 +433,7 @@ export function updateTableForConnection(config: HasManyDirectiveConfiguration, 
         ReadCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
         WriteCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
       }),
-    })
+    });
   }
 }
 
