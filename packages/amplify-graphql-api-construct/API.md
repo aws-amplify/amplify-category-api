@@ -265,6 +265,7 @@ export interface SubscriptionFunctionSlot extends FunctionSlotBase {
 export interface TranslationBehavior {
     readonly disableResolverDeduping: boolean;
     readonly enableAutoIndexQueryNames: boolean;
+    // (undocumented)
     readonly enableSearchNodeToNodeEncryption: boolean;
     readonly enableTransformerCfnOutputs: boolean;
     readonly populateOwnerFieldForStaticGroupAuth: boolean;
@@ -273,6 +274,7 @@ export interface TranslationBehavior {
     readonly secondaryKeyAsGSI: boolean;
     readonly shouldDeepMergeDirectiveConfigDefaults: boolean;
     readonly suppressApiKeyGeneration: boolean;
+    readonly useAmplifyManagedTableResources: boolean;
     readonly useSubUsernameForDefaultIdentityClaim: boolean;
 }
 

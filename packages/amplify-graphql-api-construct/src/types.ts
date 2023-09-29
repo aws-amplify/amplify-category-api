@@ -397,7 +397,7 @@ export interface TranslationBehavior {
    * If enabled, the table resources will be generated under custom resource provider,
    * which enables the multiple GSI updates within one deployment phase
    */
-  useAmplifyManagedTableResources: boolean;
+  readonly useAmplifyManagedTableResources: boolean;
 
   readonly enableSearchNodeToNodeEncryption: boolean;
 
