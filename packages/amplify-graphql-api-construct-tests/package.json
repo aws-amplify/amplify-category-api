@@ -78,9 +78,6 @@
       "json",
       "node"
     ],
-    "setupFilesAfterEnv": [
-      "<rootDir>/src/setup-tests.ts"
-    ],
     "globals": {
       "window": {},
       "ts-jest": {
