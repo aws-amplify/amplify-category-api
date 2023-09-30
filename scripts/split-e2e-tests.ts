@@ -249,6 +249,18 @@ function main(): void {
     join(REPO_ROOT, 'packages', 'amplify-e2e-tests'),
     false,
   );
+  const splitConstructTests = splitTests(
+    {
+      identifier: 'run_cdk_tests',
+      buildspec: 'codebuild_specs/run_cdk_tests.yml',
+      env: {
+        'compute-type': 'BUILD_GENERAL1_MEDIUM',
+      },
+      'depend-on': ['publish_to_local_registry'],
+    },
+    join(REPO_ROOT, 'packages', 'amplify-graphql-api-construct-tests'),
+    false,
+  );
   const splitGqlTests = splitTests(
     {
       identifier: 'gql_e2e_tests',
@@ -307,7 +319,14 @@ function main(): void {
     },
   );
   let outputPath = CODEBUILD_GENERATE_CONFIG_PATH;
-  let allBuilds = [...splitE2ETests, ...splitGqlTests, ...splitMigrationV5Tests, ...splitMigrationV6Tests, ...splitMigrationV10Tests];
+  let allBuilds = [
+    ...splitE2ETests,
+    ...splitConstructTests,
+    ...splitGqlTests,
+    ...splitMigrationV5Tests,
+    ...splitMigrationV6Tests,
+    ...splitMigrationV10Tests,
+  ];
   if (filteredTests.length > 0) {
     allBuilds = allBuilds.filter((build) => filteredTests.includes(build.identifier));
     if (filteredTests.includes(DEBUG_FLAG)) {

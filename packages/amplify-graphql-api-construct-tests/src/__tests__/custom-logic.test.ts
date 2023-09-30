@@ -1,6 +1,8 @@
 import * as path from 'path';
 import { createNewProjectDir, deleteProjectDir, initCDKProject, cdkDeploy, cdkDestroy } from 'amplify-category-api-e2e-core';
-import { graphql } from './graphql-request';
+import { graphql } from '../graphql-request';
+
+jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
 
 describe('CDK GraphQL Transformer - Custom Logic', () => {
   let projRoot: string;
