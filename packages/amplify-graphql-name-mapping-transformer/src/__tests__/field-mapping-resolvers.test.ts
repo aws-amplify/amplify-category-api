@@ -185,23 +185,23 @@ describe('attachResponseMappingSlot', () => {
 });
 
 describe('attachFieldMappingSlot', () => {
-  it('uses the preUpdate slot for Mutations', () => {
+  it('uses the preAuth slot for Mutations', () => {
     attachFieldMappingSlot({
       resolver: resolver_typed,
       resolverTypeName: 'Mutation',
       resolverFieldName: 'createTestType',
       fieldMap: singleTestFieldMap,
     });
-    expect(addToSlot_mock.mock.calls[0][0]).toBe('preUpdate');
+    expect(addToSlot_mock.mock.calls[0][0]).toBe('preAuth');
   });
 
-  it('uses the preDataLoad slot for Queries', () => {
+  it('uses the preAuth slot for Queries', () => {
     attachFieldMappingSlot({
       resolver: resolver_typed,
       resolverTypeName: 'Query',
       resolverFieldName: 'getTestType',
       fieldMap: singleTestFieldMap,
     });
-    expect(addToSlot_mock.mock.calls[0][0]).toBe('preDataLoad');
+    expect(addToSlot_mock.mock.calls[0][0]).toBe('preAuth');
   });
 });

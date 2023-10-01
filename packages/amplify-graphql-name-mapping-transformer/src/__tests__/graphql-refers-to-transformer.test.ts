@@ -111,7 +111,7 @@ describe('@refersTo directive on models', () => {
     stubDirective.arguments = [];
     expect(() =>
       refersToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
-    ).toThrowErrorMatchingInlineSnapshot(`"refersTo is only supported on RDS models. DDBModel is not an RDS model."`);
+    ).toThrowErrorMatchingInlineSnapshot(`"@refersTo is only supported on RDS models. DDBModel is not an RDS model."`);
   });
 
   it('requires a name to be specified', () => {
@@ -167,7 +167,7 @@ describe('@refersTo directive on models', () => {
   });
 });
 
-describe.only('@refersTo directive on fields', () => {
+describe('@refersTo directive on fields', () => {
   const hostStub = 'host_stub';
   const setModelNameMapping_mock = jest.fn();
   const getResolver_mock = jest.fn();
