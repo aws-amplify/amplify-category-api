@@ -2,19 +2,19 @@ import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
-import { AmplifyGraphqlSchema } from '../../amplify-graphql-schema';
+import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 
 describe('function directive', () => {
   it('references a function by name defined elsewhere', () => {
     const stack = new cdk.Stack();
     const api = new AmplifyGraphqlApi(stack, 'TestApi', {
       apiName: 'MyApi',
-      schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
+      definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
         type Query {
           repeat(message: String!): String! @function(name: "repeat")
         }
       `),
-      authorizationConfig: {
+      authorizationModes: {
         apiKeyConfig: { expires: cdk.Duration.days(7) },
       },
     });
@@ -109,7 +109,7 @@ describe('function directive', () => {
       () =>
         new AmplifyGraphqlApi(stack, 'TestApi', {
           apiName: 'MyApi',
-          schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
             type Query {
               repeat(message: String!): String! @function(name: "repeat")
             }
@@ -117,7 +117,7 @@ describe('function directive', () => {
           functionNameMap: {
             repeat: referencedFunction,
           },
-          authorizationConfig: {
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         }),
@@ -137,7 +137,7 @@ describe('function directive', () => {
 
     const api = new AmplifyGraphqlApi(stack, 'TestApi', {
       apiName: 'MyApi',
-      schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
+      definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
         type Query {
           repeat(message: String!): String! @function(name: "repeat")
         }
@@ -145,7 +145,7 @@ describe('function directive', () => {
       functionNameMap: {
         repeat: referencedFunction,
       },
-      authorizationConfig: {
+      authorizationModes: {
         apiKeyConfig: { expires: cdk.Duration.days(7) },
       },
     });
@@ -189,7 +189,7 @@ describe('function directive', () => {
 
     const api = new AmplifyGraphqlApi(stack, 'TestApi', {
       apiName: 'MyApi',
-      schema: AmplifyGraphqlSchema.fromString(/* GraphQL */ `
+      definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
         type Query {
           repeat(message: String!): String! @function(name: "repeat")
         }
@@ -197,7 +197,7 @@ describe('function directive', () => {
       functionNameMap: {
         repeat: referencedFunction,
       },
-      authorizationConfig: {
+      authorizationModes: {
         apiKeyConfig: { expires: cdk.Duration.days(7) },
       },
     });
