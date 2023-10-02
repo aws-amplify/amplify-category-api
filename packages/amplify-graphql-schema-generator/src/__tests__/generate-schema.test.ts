@@ -12,10 +12,24 @@ describe('Type name conversions', () => {
     expect(convertToGraphQLTypeName('Lotuses')).toEqual('Lotus');
     // Pascal case
     expect(convertToGraphQLTypeName('employees_salaries')).toEqual('EmployeesSalary');
+
     // Remove special characters not supported in GraphQL
     expect(convertToGraphQLTypeName('Employees_salaries-Tables')).toEqual('EmployeesSalariesTable');
     expect(convertToGraphQLTypeName('_employee_Salaries-tables')).toEqual('EmployeeSalariesTable');
     expect(convertToGraphQLTypeName('Employees$salaries-#Table%log@Rates!types')).toEqual('EmployeesSalariesTableLogRatesType');
+
+    // Remove numeric or special character prefix
+    expect(convertToGraphQLTypeName('1Employee')).toEqual('Employee');
+    expect(convertToGraphQLTypeName('12_123Employee')).toEqual('Employee');
+    expect(convertToGraphQLTypeName('_123Employee')).toEqual('Employee');
+    expect(convertToGraphQLTypeName('-#123Employee')).toEqual('Employee');
+    expect(convertToGraphQLTypeName('123-Employee_345')).toEqual('Employee345');
+    expect(convertToGraphQLTypeName('123__Employee_345')).toEqual('Employee345');
+
+    // If only non-alphabetic characters are present, use a meaningful name
+    expect(convertToGraphQLTypeName('123')).toEqual('Model123');
+    expect(convertToGraphQLTypeName('_123')).toEqual('Model123');
+    expect(convertToGraphQLTypeName('_#123')).toEqual('Model123');
   });
 
   it('infers refersTo from model name', () => {
@@ -44,12 +58,14 @@ describe('Field name conversions', () => {
     expect(convertToGraphQLFieldName('postscolumn')).toEqual('postscolumn');
     // Camel case
     expect(convertToGraphQLFieldName('employees_salary')).toEqual('employeesSalary');
+
     // Remove special characters not supported in GraphQL
     expect(convertToGraphQLFieldName('Employees_salaries-Column')).toEqual('employeesSalariesColumn');
     expect(convertToGraphQLFieldName('_employee_Salaries-column')).toEqual('employeeSalariesColumn');
     expect(convertToGraphQLFieldName('Employees$salaries-#Table%log@Rates!types')).toEqual('employeesSalariesTableLogRatesTypes');
     expect(convertToGraphQLFieldName('ID')).toEqual('iD');
     expect(convertToGraphQLFieldName('MyID')).toEqual('myID');
+
     // Remove numeric or special character prefix
     expect(convertToGraphQLFieldName('1Employee')).toEqual('employee');
     expect(convertToGraphQLFieldName('12_123Employee')).toEqual('employee');
@@ -57,6 +73,11 @@ describe('Field name conversions', () => {
     expect(convertToGraphQLFieldName('-#123Employee')).toEqual('employee');
     expect(convertToGraphQLFieldName('123-Employee_345')).toEqual('employee345');
     expect(convertToGraphQLFieldName('123__Employee_345')).toEqual('employee345');
+
+    // If only non-alphabetic characters are present, use a meaningful name
+    expect(convertToGraphQLFieldName('123')).toEqual('field123');
+    expect(convertToGraphQLFieldName('_123')).toEqual('field123');
+    expect(convertToGraphQLFieldName('_#123')).toEqual('field123');
   });
 
   it('infers refersTo from column names', () => {

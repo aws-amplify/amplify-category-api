@@ -373,23 +373,34 @@ export const getRefersToDirective = (name: string): DirectiveNode => {
 };
 
 export const convertToGraphQLTypeName = (modelName: string): string => {
-  // Convert non-alphanumeric characters to underscores
-  const cleanedInput = modelName.replace(/[^a-zA-Z0-9_]+/g, '_').trim();
+  const cleanedInput = cleanMappedName(modelName);
 
   // Convert to PascalCase and Singularize
   return singular(toPascalCase(cleanedInput?.split('_')));
 };
 
 export const convertToGraphQLFieldName = (fieldName: string): string => {
+  const cleanedInput = cleanMappedName(fieldName, true);
+
+  // Convert to camelCase
+  return toCamelCase(cleanedInput?.split('_'));
+};
+
+const cleanMappedName = (name: string, isField: boolean = false): string => {
+  // If it does not have any alphabetic characters, use a meaningful name
+  if (!name?.match(/[a-zA-Z]/)) {
+    const suffix = name?.replace(/[^0-9]+/g, '');
+    return isField ? `field${suffix}` : `Model${suffix}`;
+  }
+
   // Remove leading digits and non-alphabetic characters
   // Convert non-alphanumeric characters to underscores
-  const cleanedInput = fieldName
+  const cleanedInput = name
     .replace(/^[^a-zA-Z]+/, '')
     .replace(/[^a-zA-Z0-9_]+/g, '_')
     .trim();
 
-  // Convert to camelCase
-  return toCamelCase(cleanedInput?.split('_'));
+  return cleanedInput;
 };
 
 export const printSchema = (document: DocumentNode): string => {
