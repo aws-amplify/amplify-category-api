@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.7.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.7.1...@aws-amplify/amplify-category-api@5.7.2) (2023-10-02)
+
+### Bug Fixes
+
+- change the ttl to integer ([#1901](https://github.com/aws-amplify/amplify-category-api/issues/1901)) ([9cfaa02](https://github.com/aws-amplify/amplify-category-api/commit/9cfaa02b429f3933d44c5dd117105a816d24ef6c))
+
 ## [5.7.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.7.0...@aws-amplify/amplify-category-api@5.7.1) (2023-09-27)
 
 ### Bug Fixes
