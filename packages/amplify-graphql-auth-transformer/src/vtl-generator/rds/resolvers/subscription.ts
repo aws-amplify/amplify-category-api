@@ -4,7 +4,7 @@ import { generateAuthRulesFromRoles, validateAuthResult } from './common';
 
 export const generateAuthExpressionForSubscriptions = (providers: ConfiguredAuthProviders, roles: Array<RoleDefinition>): string => {
   const expressions = [];
-  expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, [])));
+  expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, [], true)));
   expressions.push(
     set(
       ref('authResult'),

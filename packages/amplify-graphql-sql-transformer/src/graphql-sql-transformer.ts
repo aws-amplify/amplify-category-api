@@ -7,7 +7,7 @@ import {
 } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from 'aws-cdk-lib';
-import { obj, str, ref, printBlock, compoundExpression, Expression, set, methodCall, ifElse, toJson } from 'graphql-mapping-template';
+import { obj, str, ref, printBlock, compoundExpression, Expression, set, methodCall, ifElse, toJson, iff, notEquals, not } from 'graphql-mapping-template';
 import { ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { DirectiveNode, ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
 
@@ -105,12 +105,31 @@ export class SqlTransformer extends TransformerPluginBase {
           ),
         );
 
+        resolver.addToSlot(
+          'postAuth',
+          MappingTemplate.s3MappingTemplateFromString(
+            generateAuthExpressionForSandboxMode(context.transformParameters.sandboxModeEnabled),
+            `${config.resolverTypeName}.${config.resolverFieldName}.{slotName}.{slotIndex}.req.vtl`,
+          ),
+        );
         resolver.setScope(context.stackManager.getScopeFor(resolverResourceId, SQL_DIRECTIVE_STACK));
         context.resolvers.addResolver(config.resolverTypeName, config.resolverFieldName, resolver);
       });
     });
   };
 }
+
+const generateAuthExpressionForSandboxMode = (enabled: boolean): string => {
+  let exp;
+  const API_KEY = 'API Key Authorization';
+
+  if (enabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY)), methodCall(ref('util.unauthorized')));
+  else exp = methodCall(ref('util.unauthorized'));
+
+  return printBlock(`Sandbox Mode ${enabled ? 'Enabled' : 'Disabled'}`)(
+    compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), exp), toJson(obj({}))]),
+  );
+};
 
 const getStatement = (config: SqlDirectiveConfiguration, customQueries: Map<string, string>): string => {
   if (config.reference && !customQueries.has(config.reference)) {

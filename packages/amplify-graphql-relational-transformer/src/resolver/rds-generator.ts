@@ -16,6 +16,7 @@ import {
   toJson,
   iff,
   not,
+  raw,
 } from 'graphql-mapping-template';
 import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from '../types';
 import { RelationalResolverGenerator } from './generator';
@@ -78,6 +79,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
   ): string => {
     return printBlock('Invoke RDS Lambda data source')(
       compoundExpression([
+        iff(ref('ctx.stash.deniedField'), raw('#return($util.toJson(null))')),
         set(ref('lambdaInput'), obj({})),
         set(ref('lambdaInput.args'), obj({})),
         set(ref('lambdaInput.table'), str(tableName)),
@@ -113,6 +115,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
   ): string => {
     return printBlock('Invoke RDS Lambda data source')(
       compoundExpression([
+        iff(ref('ctx.stash.deniedField'), raw('#return($util.toJson(null))')),
         set(ref('lambdaInput'), obj({})),
         set(ref('lambdaInput.args'), obj({})),
         set(ref('lambdaInput.table'), str(tableName)),

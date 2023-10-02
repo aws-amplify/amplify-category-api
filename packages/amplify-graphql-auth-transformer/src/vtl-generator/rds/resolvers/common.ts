@@ -1,6 +1,7 @@
-import { Expression, and, bool, compoundExpression, iff, list, methodCall, not, notEquals, obj, or, parens, printBlock, qref, raw, ref, set, str, toJson } from 'graphql-mapping-template';
+import { Expression, and, bool, compoundExpression, equals, forEach, ifElse, iff, list, methodCall, not, notEquals, nul, obj, or, parens, printBlock, qref, raw, ref, set, str, toJson } from 'graphql-mapping-template';
 import { FieldDefinitionNode } from 'graphql';
-import { API_KEY_AUTH_TYPE, RoleDefinition } from '../../../utils';
+import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
+import { API_KEY_AUTH_TYPE, IDENTITY_CLAIM_DELIMITER, RoleDefinition } from '../../../utils';
 
 /**
  * Generates default RDS expression
@@ -10,7 +11,11 @@ export const generateDefaultRDSExpression = (): string => {
   return printBlock('Default RDS Auth Resolver')(compoundExpression([exp, toJson(obj({}))]));
 };
 
-export const generateAuthRulesFromRoles = (roles: Array<RoleDefinition>, fields: Readonly<FieldDefinitionNode[]>): Expression[] => {
+export const generateAuthRulesFromRoles = (
+  roles: Array<RoleDefinition>,
+  fields: Readonly<FieldDefinitionNode[]>,
+  hideAllowedFields = false,
+): Expression[] => {
   const expressions = [];
   expressions.push(
     qref(methodCall(ref('ctx.stash.put'), str('hasAuth'), bool(true))),
@@ -18,14 +23,14 @@ export const generateAuthRulesFromRoles = (roles: Array<RoleDefinition>, fields:
   );
   const fieldNames = fields.map((field) => field.name.value);
   roles.forEach((role) => {
-    expressions.push(convertAuthRoleToVtl(role, fieldNames));
+    expressions.push(convertAuthRoleToVtl(role, fieldNames, hideAllowedFields));
   });
   return expressions;
 };
 
-const convertAuthRoleToVtl = (role: RoleDefinition, fields: string[]): Expression => {
+const convertAuthRoleToVtl = (role: RoleDefinition, fields: string[], hideAllowedFields = false): Expression => {
   const allowedFields = getAllowedFields(role, fields).map((field) => str(field));
-
+  const showAllowedFields = allowedFields && !hideAllowedFields && allowedFields.length > 0;
   // Api Key
   if (role.provider === 'apiKey') {
     return qref(
@@ -34,7 +39,7 @@ const convertAuthRoleToVtl = (role: RoleDefinition, fields: string[]): Expressio
         obj({
           type: str('public'),
           provider: str('apiKey'),
-          ...(allowedFields && allowedFields.length > 0) && { allowedFields: list(allowedFields) },
+          ...showAllowedFields && { allowedFields: list(allowedFields) },
         })
       )
     );
@@ -48,7 +53,7 @@ const convertAuthRoleToVtl = (role: RoleDefinition, fields: string[]): Expressio
         obj({
           type: str('custom'),
           provider: str('function'),
-          ...(allowedFields && allowedFields.length > 0) && { allowedFields: list(allowedFields) },
+          ...showAllowedFields && { allowedFields: list(allowedFields) },
         })
       )
     );
@@ -64,7 +69,7 @@ const convertAuthRoleToVtl = (role: RoleDefinition, fields: string[]): Expressio
           provider: str('iam'),
           roleArn: role.strategy === 'public' ? ref('ctx.stash.unauthRole') : ref('ctx.stash.authRole'),
           cognitoIdentityPoolId: ref('ctx.identity.cognitoIdentityPoolId'),
-          ...(allowedFields && allowedFields.length > 0) && { allowedFields: list(allowedFields) },
+          ...showAllowedFields && { allowedFields: list(allowedFields) },
         })
       )
     );
@@ -79,7 +84,7 @@ const convertAuthRoleToVtl = (role: RoleDefinition, fields: string[]): Expressio
           obj({
             type: str(role.strategy),
             provider: str('userPools'),
-            allowedFields: list(getAllowedFields(role, fields).map((field) => str(field))),
+            ...showAllowedFields && { allowedFields: list(allowedFields) },
           })
         )
       );
@@ -93,7 +98,7 @@ const convertAuthRoleToVtl = (role: RoleDefinition, fields: string[]): Expressio
             provider: str('userPools'),
             allowedGroups: list([str(role.entity)]),
             identityClaim: str(role.claim), 
-            allowedFields: list(getAllowedFields(role, fields).map((field) => str(field))),
+            ...showAllowedFields && { allowedFields: list(allowedFields) },
           })
         )
       );
@@ -108,7 +113,7 @@ const convertAuthRoleToVtl = (role: RoleDefinition, fields: string[]): Expressio
             ownerFieldName: str(role.entity),
             ownerFieldType: str(role.isEntityList ? 'string[]' : 'string'),
             identityClaim: str(role.claim), 
-            ...(allowedFields && allowedFields.length > 0) && { allowedFields: list(allowedFields) },
+            ...showAllowedFields && { allowedFields: list(allowedFields) },
           })
         )
       );
@@ -123,7 +128,7 @@ const convertAuthRoleToVtl = (role: RoleDefinition, fields: string[]): Expressio
             groupsFieldName: str(role.entity),
             groupsFieldType: str(role.isEntityList ? 'string[]' : 'string'),
             groupClaim: str(role.claim), 
-            ...(allowedFields && allowedFields.length > 0) && { allowedFields: list(allowedFields) },
+            ...showAllowedFields && { allowedFields: list(allowedFields) },
           })
         )
       );
@@ -133,7 +138,7 @@ const convertAuthRoleToVtl = (role: RoleDefinition, fields: string[]): Expressio
 };
 
 const getAllowedFields = (role: RoleDefinition, fields: string[]): string[] => {
-  if (role.allowedFields && role.allowedFields.length > 1) {
+  if (role.allowedFields && role.allowedFields.length > 0) {
     return role.allowedFields;
   }
   return fields;
@@ -183,4 +188,55 @@ export const generateSandboxExpressionForField = (sandboxEnabled: boolean): stri
   if (sandboxEnabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY_AUTH_TYPE)), methodCall(ref('util.unauthorized')));
   else exp = methodCall(ref('util.unauthorized'));
   return printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(compoundExpression([exp, toJson(obj({}))]));
+};
+
+export const emptyPayload = toJson(raw(JSON.stringify({ version: '2018-05-29', payload: {} })));
+
+/**
+ * Creates expression to deny field flag
+ */
+export const setDeniedFieldFlag = (operation: string, subscriptionsEnabled: boolean): string => {
+  if (subscriptionsEnabled) {
+    return printBlock('Check if subscriptions is protected')(
+      compoundExpression([
+        iff(
+          equals(methodCall(ref('util.defaultIfNull'), methodCall(ref('ctx.source.get'), str(OPERATION_KEY)), nul()), str(operation)),
+          qref(methodCall(ref('ctx.stash.put'), str('deniedField'), bool(true))),
+        ),
+      ]),
+    );
+  }
+  return '';
+};
+
+/**
+ * Creates field resolver for owner
+ */
+export const generateFieldResolverForOwner = (entity: string): string => {
+  const expressions: Expression[] = [
+    ifElse(
+      methodCall(ref('util.isList'), ref(`ctx.source.${entity}`)),
+      compoundExpression([
+        set(ref('ownerEntitiesList'), list([])),
+        set(ref(entity), ref(`ctx.source.${entity}`)),
+        forEach(ref('entities'), ref(entity), [
+          set(ref('ownerEntities'), ref(`entities.split("${IDENTITY_CLAIM_DELIMITER}")`)),
+          set(ref('ownerEntitiesLastIdx'), raw('$ownerEntities.size() - 1')),
+          set(ref('ownerEntitiesLast'), ref('ownerEntities[$ownerEntitiesLastIdx]')),
+          qref(methodCall(ref('ownerEntitiesList.add'), ref('ownerEntitiesLast'))),
+        ]),
+        qref(methodCall(ref(`ctx.source.${entity}.put`), ref('ownerEntitiesList'))),
+        toJson(ref('ownerEntitiesList')),
+      ]),
+      compoundExpression([
+        set(ref('ownerEntities'), ref(`ctx.source.${entity}.split("${IDENTITY_CLAIM_DELIMITER}")`)),
+        set(ref('ownerEntitiesLastIdx'), raw('$ownerEntities.size() - 1')),
+        set(ref('ownerEntitiesLast'), ref('ownerEntities[$ownerEntitiesLastIdx]')),
+        qref(methodCall(ref('ctx.source.put'), str(entity), ref('ownerEntitiesLast'))),
+        toJson(ref(`ctx.source.${entity}`)),
+      ]),
+    ),
+  ];
+
+  return printBlock('Parse owner field auth for Get')(compoundExpression(expressions));
 };
