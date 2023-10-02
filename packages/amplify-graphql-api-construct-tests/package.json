@@ -1,11 +1,11 @@
 {
-  "name": "amplify-category-api-e2e-tests",
-  "version": "3.17.0",
+  "name": "amplify-graphql-api-construct-tests",
+  "version": "1.0.0",
   "description": "E2e test suite",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",
-    "directory": "packages/amplify-e2e-tests"
+    "directory": "packages/amplify-graphql-api-construct-tests"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
@@ -17,40 +17,17 @@
   ],
   "private": true,
   "scripts": {
-    "e2e": "npm run setup-profile && jest --verbose --forceExit",
-    "build-tests": "tsc --build tsconfig.tests.json",
-    "setup-profile": "ts-node ./src/configure_tests.ts",
-    "clean-stale-test-buckets": "ts-node ./src/cleanup-stale-test-buckets.ts",
-    "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts"
+    "e2e": "jest --verbose --forceExit",
+    "build-tests": "tsc --build tsconfig.tests.json"
   },
   "dependencies": {
-    "@aws-amplify/amplify-app": "^5.0.14-aug-transformer-mv-bump.0",
-    "@aws-amplify/graphql-transformer-core": "2.2.0",
     "amplify-category-api-e2e-core": "4.3.0",
-    "aws-amplify": "^4.2.8",
-    "aws-appsync": "^4.1.1",
-    "aws-sdk": "^2.1113.0",
-    "axios": "^0.26.0",
-    "circleci-api": "^4.1.4",
-    "dotenv": "^8.2.0",
-    "esm": "^3.2.25",
-    "fs-extra": "^8.1.0",
-    "generate-password": "~1.7.0",
-    "graphql": "^15.5.0",
-    "graphql-tag": "^2.10.1",
-    "graphql-transformer-core": "8.1.12",
-    "lodash": "^4.17.21",
-    "node-fetch": "^2.6.7",
-    "uuid": "^8.3.2",
-    "ws": "^7.5.7",
-    "yargs": "^15.1.0"
+    "node-fetch": "^2.6.7"
   },
   "peerDependencies": {
     "@aws-amplify/amplify-cli-core": "4.2.4-aug-transformer-mv-bump.0"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.149",
-    "@types/ws": "^7.4.4",
     "ts-node": "^8.10.2"
   },
   "jest": {
@@ -100,9 +77,6 @@
       "jsx",
       "json",
       "node"
-    ],
-    "setupFilesAfterEnv": [
-      "<rootDir>/src/setup-tests.ts"
     ],
     "globals": {
       "window": {},

@@ -55,7 +55,7 @@ const getAttributionMetadata = (): Record<string, string> => ({
   createdOn: getPlatform(),
   createdBy: 'AmplifyCDK',
   createdWith: getLibraryVersion(),
-  stackType: 'graphql-api',
+  stackType: 'api-AppSync',
 });
 
 /**
