@@ -1,6 +1,11 @@
 import { default as fetch, Request } from 'node-fetch';
 
-export const graphql = async (apiEndpoint: string, apiKey: string, query: string): Promise<{ statusCode: number; body: any }> => {
+export type GraphqlResponse = {
+  statusCode: number;
+  body: any;
+};
+
+export const graphql = async (apiEndpoint: string, apiKey: string, query: string): Promise<GraphqlResponse> => {
   const options = {
     method: 'POST',
     headers: {

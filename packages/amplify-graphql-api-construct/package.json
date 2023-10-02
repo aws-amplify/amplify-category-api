@@ -1,6 +1,6 @@
 {
-  "name": "@aws-amplify/graphql-construct-alpha",
-  "version": "0.8.0",
+  "name": "@aws-amplify/graphql-api-construct",
+  "version": "1.1.1",
   "description": "AppSync GraphQL Api Construct using Amplify GraphQL Transformer.",
   "repository": {
     "type": "git",
@@ -11,12 +11,16 @@
   "license": "Apache-2.0",
   "main": "lib/index.js",
   "scripts": {
-    "build": "jsii",
+    "jsii": "jsii",
+    "build": "yarn config set script-shell bash && yarn transform-deps && yarn config delete script-shell && jsii",
     "watch": "jsii -w",
     "package": "jsii-pacmak",
     "clean": "rimraf lib dist tsconfig.json tsconfig.tsbuildinfo node_modules",
     "test": "jest",
     "test-watch": "jest --watch",
+    "transform-deps": "dir=node_modules/@aws-amplify/backend-output-schemas yarn transform-in-place && dir=node_modules/@aws-amplify/backend-output-storage yarn transform-in-place",
+    "transform-in-place": "npx babel $dir --extensions .js --out-dir transpiled --copy-files && cp -r transpiled/* $dir && rimraf transpiled && yarn force-cjs-module $dir",
+    "force-cjs-module": "ts-node --project extract-api.tsconfig.json ./remove-module-type-from-package-json.ts",
     "extract-api": "ts-node --project extract-api.tsconfig.json ../../scripts/extract-api.ts",
     "update-readme": "cp README_HEAD.md README.md && jsii && jsii-docgen --readme --output README.md",
     "prepublishOnly": "jsii && git add .jsii && git commit -m \"chore: update .jsii assembly\" --no-verify"
@@ -34,6 +38,8 @@
     "access": "public"
   },
   "bundledDependencies": [
+    "@aws-amplify/backend-output-schemas",
+    "@aws-amplify/backend-output-storage",
     "@aws-amplify/graphql-transformer",
     "@aws-amplify/graphql-transformer-core",
     "@aws-amplify/graphql-transformer-interfaces",
@@ -69,18 +75,20 @@
     "universalify"
   ],
   "dependencies": {
-    "@aws-amplify/graphql-auth-transformer": "3.1.4",
-    "@aws-amplify/graphql-default-value-transformer": "2.1.4",
-    "@aws-amplify/graphql-function-transformer": "2.1.3",
-    "@aws-amplify/graphql-http-transformer": "2.1.3",
-    "@aws-amplify/graphql-index-transformer": "2.1.4",
-    "@aws-amplify/graphql-maps-to-transformer": "3.2.1",
-    "@aws-amplify/graphql-model-transformer": "2.2.0",
-    "@aws-amplify/graphql-predictions-transformer": "2.1.3",
-    "@aws-amplify/graphql-relational-transformer": "2.1.4",
-    "@aws-amplify/graphql-searchable-transformer": "2.2.0",
-    "@aws-amplify/graphql-transformer": "1.2.0",
-    "@aws-amplify/graphql-transformer-core": "2.2.0",
+    "@aws-amplify/backend-output-schemas": "^0.2.0-alpha.3",
+    "@aws-amplify/backend-output-storage": "^0.1.1-alpha.0",
+    "@aws-amplify/graphql-auth-transformer": "3.1.5",
+    "@aws-amplify/graphql-default-value-transformer": "2.1.5",
+    "@aws-amplify/graphql-function-transformer": "2.1.4",
+    "@aws-amplify/graphql-http-transformer": "2.1.4",
+    "@aws-amplify/graphql-index-transformer": "2.1.5",
+    "@aws-amplify/graphql-maps-to-transformer": "3.2.2",
+    "@aws-amplify/graphql-model-transformer": "2.2.1",
+    "@aws-amplify/graphql-predictions-transformer": "2.1.4",
+    "@aws-amplify/graphql-relational-transformer": "2.1.5",
+    "@aws-amplify/graphql-searchable-transformer": "2.2.1",
+    "@aws-amplify/graphql-transformer": "1.2.1",
+    "@aws-amplify/graphql-transformer-core": "2.2.1",
     "@aws-amplify/graphql-transformer-interfaces": "3.2.0",
     "@aws-amplify/graphql-sql-transformer": "0.0.1",
     "charenc": "^0.0.2",
@@ -119,7 +127,7 @@
     "aws-cdk-lib": "^2.80.0",
     "constructs": "^10.0.5"
   },
-  "stability": "experimental",
+  "stability": "stable",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",

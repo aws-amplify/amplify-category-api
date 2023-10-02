@@ -404,6 +404,18 @@
     amazon-cognito-identity-js "5.2.14"
     crypto-js "^4.1.1"
 
+"@aws-amplify/backend-output-schemas@^0.2.0-alpha.3":
+  version "0.2.0-alpha.3"
+  resolved "https://registry.npmjs.org/@aws-amplify/backend-output-schemas/-/backend-output-schemas-0.2.0-alpha.3.tgz#8d7f159a55f4f54363a10137d0e642d72e8d13dd"
+  integrity sha512-8ZH7hq0m9H3L4ajC0HyE9dOpSmje/8yaU9sueTk3TvE2r88Wa3irT5jqi5Ues8nebDVL2iKqtK9MVS8suS7zow==
+
+"@aws-amplify/backend-output-storage@^0.1.1-alpha.0":
+  version "0.1.1-alpha.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/backend-output-storage/-/backend-output-storage-0.1.1-alpha.0.tgz#19400c602a2fac9a7004e123f2419f983944381b"
+  integrity sha512-nnGaKxQH/3d8WOirJ5BlkvOgMYApTVOETnQM/Vnprtd7S1F2sdyy8ESFdi61GLULsqXNDfrLQcyY6V+ENxCeWA==
+  dependencies:
+    "@aws-amplify/backend-output-schemas" "^0.2.0-alpha.3"
+
 "@aws-amplify/cache@4.0.66":
   version "4.0.66"
   resolved "https://registry.npmjs.org/@aws-amplify/cache/-/cache-4.0.66.tgz#16977bd9a3d7740c4b98101173e4bf31983a360f"

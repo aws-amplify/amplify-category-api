@@ -3,21 +3,49 @@ import { executeTransform } from '@aws-amplify/graphql-transformer';
 import { NestedStack, Stack } from 'aws-cdk-lib';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { AssetProps } from '@aws-amplify/graphql-transformer-interfaces';
+import { StackMetadataBackendOutputStorageStrategy } from '@aws-amplify/backend-output-storage';
+import { graphqlOutputKey } from '@aws-amplify/backend-output-schemas';
+import type { GraphqlOutput, AwsAppsyncAuthenticationType } from '@aws-amplify/backend-output-schemas';
+import {
+  AppsyncFunction,
+  DataSourceOptions,
+  DynamoDbDataSource,
+  ElasticsearchDataSource,
+  EventBridgeDataSource,
+  ExtendedResolverProps,
+  HttpDataSource,
+  HttpDataSourceOptions,
+  LambdaDataSource,
+  NoneDataSource,
+  OpenSearchDataSource,
+  RdsDataSource,
+  Resolver,
+} from 'aws-cdk-lib/aws-appsync';
+import { ITable } from 'aws-cdk-lib/aws-dynamodb';
+import { IDomain } from 'aws-cdk-lib/aws-elasticsearch';
+import { IDomain as IOpenSearchDomain } from 'aws-cdk-lib/aws-opensearchservice';
+import { IEventBus } from 'aws-cdk-lib/aws-events';
+import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { IServerlessCluster } from 'aws-cdk-lib/aws-rds';
+import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
+import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
+import type {
+  AmplifyGraphqlApiResources,
+  AmplifyGraphqlApiProps,
+  FunctionSlot,
+  IBackendOutputStorageStrategy,
+  AddFunctionProps,
+} from './types';
 import {
   convertAuthorizationModesToTransformerAuthConfig,
   convertToResolverConfig,
-  defaultSchemaTranslationBehavior,
+  defaultTranslationBehavior,
   AssetManager,
   getGeneratedResources,
   getGeneratedFunctionSlots,
   CodegenAssets,
   addAmplifyMetadataToStackDescription,
 } from './internal';
-import type { AmplifyGraphqlApiResources, AmplifyGraphqlApiProps, FunctionSlot, IBackendOutputStorageStrategy } from './types';
-import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
-
-// These will be imported from CLI in future
-import { GraphqlOutput, GraphqlOutputKey, AwsAppsyncAuthenticationType, StackMetadataBackendOutputStorageStrategy } from './graphql-output';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
@@ -45,7 +73,7 @@ import { GraphqlOutput, GraphqlOutputKey, AwsAppsyncAuthenticationType, StackMet
  */
 export class AmplifyGraphqlApi extends Construct {
   /**
-   * Generated resources.
+   * Generated L1 and L2 CDK resources.
    */
   public readonly resources: AmplifyGraphqlApiResources;
 
@@ -60,18 +88,40 @@ export class AmplifyGraphqlApi extends Construct {
    */
   public readonly generatedFunctionSlots: FunctionSlot[];
 
+  /**
+   * Graphql URL For the generated API. May be a CDK Token.
+   */
+  public readonly graphqlUrl: string;
+
+  /**
+   * Realtime URL For the generated API. May be a CDK Token.
+   */
+  public readonly realtimeUrl: string;
+
+  /**
+   * Generated Api Key if generated. May be a CDK Token.
+   */
+  public readonly apiKey: string | undefined;
+
+  /**
+   * New AmplifyGraphqlApi construct, this will create an appsync api with authorization, a schema, and all necessary resolvers, functions,
+   * and datasources.
+   * @param scope the scope to create this construct within.
+   * @param id the id to use for this api.
+   * @param props the properties used to configure the generated api.
+   */
   constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps) {
     super(scope, id);
 
     const {
-      schema,
-      authorizationConfig,
+      definition,
+      authorizationModes,
       conflictResolution,
       functionSlots,
-      transformers,
+      transformerPlugins,
       predictionsBucket,
       stackMappings,
-      schemaTranslationBehavior,
+      translationBehavior,
       functionNameMap,
       outputStorageStrategy,
     } = props;
@@ -79,10 +129,10 @@ export class AmplifyGraphqlApi extends Construct {
     addAmplifyMetadataToStackDescription(scope);
 
     const { authConfig, identityPoolId, adminRoles, authSynthParameters } =
-      convertAuthorizationModesToTransformerAuthConfig(authorizationConfig);
+      convertAuthorizationModesToTransformerAuthConfig(authorizationModes);
 
     validateFunctionSlots(functionSlots ?? []);
-    const separatedFunctionSlots = separateSlots([...(functionSlots ?? []), ...schema.functionSlots]);
+    const separatedFunctionSlots = separateSlots([...(functionSlots ?? []), ...definition.functionSlots]);
 
     // Allow amplifyEnvironmentName to be retrieve from context, and use value 'NONE' if no value can be found.
     // amplifyEnvironmentName is required for logical id suffixing, as well as Exports from the nested stacks.
@@ -108,13 +158,13 @@ export class AmplifyGraphqlApi extends Construct {
         apiName: props.apiName ?? id,
         ...authSynthParameters,
       },
-      schema: schema.definition,
+      schema: definition.schema,
       userDefinedSlots: parseUserDefinedSlots(separatedFunctionSlots),
       transformersFactoryArgs: {
         authConfig,
         identityPoolId,
         adminRoles,
-        customTransformers: transformers ?? [],
+        customTransformers: transformerPlugins ?? [],
         ...(predictionsBucket ? { storageConfig: { bucketName: predictionsBucket.bucketName } } : {}),
         functionNameMap,
       },
@@ -122,23 +172,29 @@ export class AmplifyGraphqlApi extends Construct {
       stackMapping: stackMappings ?? {},
       resolverConfig: conflictResolution ? convertToResolverConfig(conflictResolution) : undefined,
       transformParameters: {
-        ...defaultSchemaTranslationBehavior,
-        ...(schemaTranslationBehavior ?? {}),
+        ...defaultTranslationBehavior,
+        ...(translationBehavior ?? {}),
       },
     });
 
-    this.codegenAssets = new CodegenAssets(this, 'AmplifyCodegenAssets', { modelSchema: schema.definition });
+    this.codegenAssets = new CodegenAssets(this, 'AmplifyCodegenAssets', { modelSchema: definition.schema });
 
     this.resources = getGeneratedResources(this);
     this.generatedFunctionSlots = getGeneratedFunctionSlots(assetManager.resolverAssets);
     this.storeOutput(outputStorageStrategy);
+
+    this.graphqlUrl = this.resources.cfnResources.cfnGraphqlApi.attrGraphQlUrl;
+    this.realtimeUrl = this.resources.cfnResources.cfnGraphqlApi.attrRealtimeUrl;
+    this.apiKey = this.resources.cfnResources.cfnApiKey?.attrApiKey;
   }
 
   /**
    * Stores graphql api output to be used for client config generation
    * @param outputStorageStrategy Strategy to store construct outputs. If no strategy is provided a default strategy will be used.
    */
-  private storeOutput(outputStorageStrategy?: IBackendOutputStorageStrategy): void {
+  private storeOutput(
+    outputStorageStrategy: IBackendOutputStorageStrategy = new StackMetadataBackendOutputStorageStrategy(Stack.of(this)),
+  ): void {
     const stack = Stack.of(this);
     const output: GraphqlOutput = {
       version: '1',
@@ -155,12 +211,129 @@ export class AmplifyGraphqlApi extends Construct {
       output.payload.awsAppsyncApiKey = this.resources.cfnResources.cfnApiKey.attrApiKey;
     }
 
-    const strategy = outputStorageStrategy ? outputStorageStrategy : new StackMetadataBackendOutputStorageStrategy(stack);
-    strategy.addBackendOutputEntry(GraphqlOutputKey, output);
+    outputStorageStrategy.addBackendOutputEntry(graphqlOutputKey, output);
+  }
 
-    // only flush if using default outputStorageStrategy
-    if (!outputStorageStrategy) {
-      strategy.flush();
-    }
+  /**
+   * The following are proxy methods to the L2 IGraphqlApi interface, to facilitate easier use of the L3 without needing
+   * to access the underlying resources.
+   */
+
+  /**
+   * Add a new DynamoDB data source to this API. This is a proxy method to the L2 GraphqlApi Construct.
+   * @param id The data source's id.
+   * @param table The DynamoDB table backing this data source.
+   * @param options The optional configuration for this data source.
+   * @returns the generated data source.
+   */
+  public addDynamoDbDataSource(id: string, table: ITable, options?: DataSourceOptions): DynamoDbDataSource {
+    return this.resources.graphqlApi.addDynamoDbDataSource(id, table, options);
+  }
+
+  /**
+   * Add a new elasticsearch data source to this API. This is a proxy method to the L2 GraphqlApi Construct.
+   * @deprecated use `addOpenSearchDataSource`
+   * @param id The data source's id.
+   * @param domain The elasticsearch domain for this data source.
+   * @param options The optional configuration for this data source.
+   * @returns the generated data source.
+   */
+  public addElasticsearchDataSource(id: string, domain: IDomain, options?: DataSourceOptions): ElasticsearchDataSource {
+    return this.resources.graphqlApi.addElasticsearchDataSource(id, domain, options);
+  }
+
+  /**
+   * Add an EventBridge data source to this api. This is a proxy method to the L2 GraphqlApi Construct.
+   * @param id The data source's id.
+   * @param eventBus The EventBridge EventBus on which to put events.
+   * @param options The optional configuration for this data source.
+   */
+  public addEventBridgeDataSource(id: string, eventBus: IEventBus, options?: DataSourceOptions): EventBridgeDataSource {
+    return this.resources.graphqlApi.addEventBridgeDataSource(id, eventBus, options);
+  }
+
+  /**
+   * Add a new http data source to this API. This is a proxy method to the L2 GraphqlApi Construct.
+   * @param id The data source's id.
+   * @param endpoint The http endpoint.
+   * @param options The optional configuration for this data source.
+   * @returns the generated data source.
+   */
+  public addHttpDataSource(id: string, endpoint: string, options?: HttpDataSourceOptions): HttpDataSource {
+    return this.resources.graphqlApi.addHttpDataSource(id, endpoint, options);
+  }
+
+  /**
+   * Add a new Lambda data source to this API. This is a proxy method to the L2 GraphqlApi Construct.
+   * @param id The data source's id.
+   * @param lambdaFunction The Lambda function to call to interact with this data source.
+   * @param options The optional configuration for this data source.
+   * @returns the generated data source.
+   */
+  public addLambdaDataSource(id: string, lambdaFunction: IFunction, options?: DataSourceOptions): LambdaDataSource {
+    return this.resources.graphqlApi.addLambdaDataSource(id, lambdaFunction, options);
+  }
+
+  /**
+   * Add a new dummy data source to this API. This is a proxy method to the L2 GraphqlApi Construct.
+   * Useful for pipeline resolvers and for backend changes that don't require a data source.
+   * @param id The data source's id.
+   * @param options The optional configuration for this data source.
+   * @returns the generated data source.
+   */
+  public addNoneDataSource(id: string, options?: DataSourceOptions): NoneDataSource {
+    return this.resources.graphqlApi.addNoneDataSource(id, options);
+  }
+
+  /**
+   * dd a new OpenSearch data source to this API. This is a proxy method to the L2 GraphqlApi Construct.
+   * @param id The data source's id.
+   * @param domain The OpenSearch domain for this data source.
+   * @param options The optional configuration for this data source.
+   * @returns the generated data source.
+   */
+  public addOpenSearchDataSource(id: string, domain: IOpenSearchDomain, options?: DataSourceOptions): OpenSearchDataSource {
+    return this.resources.graphqlApi.addOpenSearchDataSource(id, domain, options);
+  }
+
+  /**
+   * Add a new Rds data source to this API. This is a proxy method to the L2 GraphqlApi Construct.
+   * @param id The data source's id.
+   * @param serverlessCluster The serverless cluster to interact with this data source.
+   * @param secretStore The secret store that contains the username and password for the serverless cluster.
+   * @param databaseName The optional name of the database to use within the cluster.
+   * @param options The optional configuration for this data source.
+   * @returns the generated data source.
+   */
+  public addRdsDataSource(
+    id: string,
+    serverlessCluster: IServerlessCluster,
+    secretStore: ISecret,
+    databaseName?: string,
+    options?: DataSourceOptions,
+  ): RdsDataSource {
+    return this.resources.graphqlApi.addRdsDataSource(id, serverlessCluster, secretStore, databaseName, options);
+  }
+
+  /**
+   * Add a resolver to the api. This is a proxy method to the L2 GraphqlApi Construct.
+   * @param id The resolver's id.
+   * @param props the resolver properties.
+   * @returns the generated resolver.
+   */
+  public addResolver(id: string, props: ExtendedResolverProps): Resolver {
+    return this.resources.graphqlApi.createResolver(id, props);
+  }
+
+  /**
+   * Add an appsync function to the api.
+   * @param id the function's id.
+   * @returns the generated appsync function.
+   */
+  public addFunction(id: string, props: AddFunctionProps): AppsyncFunction {
+    return new AppsyncFunction(this, id, {
+      api: this.resources.graphqlApi,
+      ...props,
+    });
   }
 }
