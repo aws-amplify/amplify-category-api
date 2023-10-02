@@ -302,7 +302,7 @@ export class TransformerResolver implements TransformerResolverProvider {
                   return SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL.toString();
                 },
               });
-              dataSource += `\n$util.qr($ctx.stash.put("deltaSyncTableTtl", "${deltaSyncTableTtl}"))`;
+              dataSource += `\n$util.qr($ctx.stash.put("deltaSyncTableTtl", ${deltaSyncTableTtl}))`;
             }
           }
 

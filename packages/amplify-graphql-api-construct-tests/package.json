@@ -1,0 +1,94 @@
+{
+  "name": "amplify-graphql-api-construct-tests",
+  "version": "1.0.0",
+  "description": "E2e test suite",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-category-api.git",
+    "directory": "packages/amplify-graphql-api-construct-tests"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "index.js",
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws"
+  ],
+  "private": true,
+  "scripts": {
+    "e2e": "jest --verbose --forceExit",
+    "build-tests": "tsc --build tsconfig.tests.json"
+  },
+  "dependencies": {
+    "amplify-category-api-e2e-core": "4.3.0",
+    "node-fetch": "^2.6.7"
+  },
+  "peerDependencies": {
+    "@aws-amplify/amplify-cli-core": "4.2.4-aug-transformer-mv-bump.0"
+  },
+  "devDependencies": {
+    "ts-node": "^8.10.2"
+  },
+  "jest": {
+    "verbose": false,
+    "preset": "ts-jest",
+    "testRunner": "amplify-category-api-e2e-core/runner",
+    "testEnvironment": "amplify-category-api-e2e-core/environment",
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testURL": "http://localhost",
+    "testRegex": "(src/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "lib"
+    ],
+    "collectCoverage": false,
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!**/node_modules/**",
+      "!src/__tests__/**",
+      "!**/*.d.ts"
+    ],
+    "reporters": [
+      "default",
+      "jest-junit",
+      [
+        "amplify-category-api-e2e-core/reporter",
+        {
+          "publicPath": "./amplify-e2e-reports",
+          "filename": "index.html",
+          "expand": true
+        }
+      ],
+      [
+        "amplify-category-api-e2e-core/failed-test-reporter",
+        {
+          "publicPath": "./amplify-e2e-reports",
+          "reportPath": "./amplify-e2e-reports/amplify-e2e-failed-test.txt"
+        }
+      ]
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "globals": {
+      "window": {},
+      "ts-jest": {
+        "diagnostics": false
+      }
+    }
+  },
+  "jest-junit": {
+    "outputDirectory": "reports/junit/",
+    "outputName": "js-test-results.xml",
+    "usePathForSuiteName": "true",
+    "addFileAttribute": "true"
+  }
+}
