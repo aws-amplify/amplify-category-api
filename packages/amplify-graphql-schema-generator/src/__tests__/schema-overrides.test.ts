@@ -611,7 +611,7 @@ describe('apply schema overrides for model fields with refersTo', () => {
     stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
   });
 
-  it('should retain relational directives', () => {
+  it('should not allow renaming fields relational directives', () => {
     const document = parse(`
           type Profile @model {
               id: String! @primaryKey
