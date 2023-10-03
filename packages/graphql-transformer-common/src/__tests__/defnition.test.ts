@@ -1,5 +1,5 @@
-import { getNonModelTypes, findMatchingField } from '../definition';
-import { FieldDefinitionNode, ObjectTypeDefinitionNode, parse } from 'graphql';
+import { getNonModelTypes } from '../definition';
+import { ObjectTypeDefinitionNode, parse } from 'graphql';
 
 const testModel = `
     type Post @model {
@@ -29,30 +29,5 @@ describe('gets Non-Model Types', () => {
     const nonModelTypes = getNonModelTypes(testDocument);
     expect(nonModelTypes).toHaveLength(1);
     expect((nonModelTypes[0] as ObjectTypeDefinitionNode).name?.value).toEqual('NonModel');
-  });
-});
-
-describe('finds matching field', () => {
-  it('should return undefined if no matching field', () => {
-    const document = parse(testModel);
-    const fieldToMatch = {
-      name: {
-        value: 'nonExistentField',
-      },
-    } as FieldDefinitionNode;
-    const field = findMatchingField(fieldToMatch, document.definitions[0] as ObjectTypeDefinitionNode, document);
-    expect(field).toBeUndefined();
-  });
-
-  it('should return matching field', () => {
-    const document = parse(testModel);
-    const fieldToMatch = {
-      name: {
-        value: 'title',
-      },
-    } as FieldDefinitionNode;
-    const field = findMatchingField(fieldToMatch, document.definitions[0] as ObjectTypeDefinitionNode, document);
-    expect(field).toBeDefined();
-    expect(field?.name?.value).toEqual('title');
   });
 });

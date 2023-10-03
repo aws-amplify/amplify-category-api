@@ -10,10 +10,13 @@ import { FieldDefinitionNode } from 'graphql';
 import { ObjectTypeDefinitionNode } from 'graphql';
 
 // @public (undocumented)
+export const applyFieldNameOverrides: (field: FieldDefinitionNode, existingField: FieldDefinitionNode) => Partial<FieldDefinitionNode>;
+
+// @public (undocumented)
 export const applyFieldOverrides: (field: FieldDefinitionNode, existingField: FieldDefinitionNode) => FieldDefinitionNode;
 
 // @public (undocumented)
-export const applyJSONFieldTypeOverrides: (field: FieldDefinitionNode, existingField: FieldDefinitionNode) => FieldDefinitionNode;
+export const applyJSONFieldTypeOverrides: (field: FieldDefinitionNode, existingField: FieldDefinitionNode) => Partial<FieldDefinitionNode>;
 
 // @public (undocumented)
 export const applyModelNameOverrides: (obj: ObjectTypeDefinitionNode, existingObj: ObjectTypeDefinitionNode) => ObjectTypeDefinitionNode;
@@ -26,6 +29,9 @@ export const applySchemaOverrides: (document: DocumentNode, existingDocument?: D
 
 // @public (undocumented)
 export const checkDestructiveNullabilityChange: (field: FieldDefinitionNode, existingField: FieldDefinitionNode) => void;
+
+// @public (undocumented)
+export const convertToGraphQLFieldName: (fieldName: string) => string;
 
 // @public (undocumented)
 export const convertToGraphQLTypeName: (modelName: string) => string;
@@ -124,6 +130,9 @@ export type FieldDataType = 'String' | 'ID' | 'Int' | 'Float' | 'AWSJSON' | 'AWS
 
 // @public (undocumented)
 export type FieldType = DefaultType | CustomType | ListType | NonNullType | EnumType;
+
+// @public (undocumented)
+export const findMatchingField: (columnName: string, taleName: string, document: DocumentNode) => FieldDefinitionNode | undefined;
 
 // @public (undocumented)
 export const generateGraphQLSchema: (schema: Schema, existingSchemaDocument?: DocumentNode | undefined) => string;

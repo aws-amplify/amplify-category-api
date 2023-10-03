@@ -125,10 +125,10 @@ describe('RDS Model Directive', () => {
       region,
     };
     const queries = [
-      'CREATE TABLE Contact (id VARCHAR(40) PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
-      'CREATE TABLE Person (personId INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
-      'CREATE TABLE Employee (ID INT PRIMARY KEY, FirstName VARCHAR(20), LastName VARCHAR(50))',
-      'CREATE TABLE Student (studentId INT NOT NULL, classId CHAR(1) NOT NULL, FirstName VARCHAR(20), LastName VARCHAR(50), PRIMARY KEY (studentId, classId))',
+      'CREATE TABLE Contact (id VARCHAR(40) PRIMARY KEY, firstName VARCHAR(20), lastName VARCHAR(50))',
+      'CREATE TABLE Person (personId INT PRIMARY KEY, firstName VARCHAR(20), lastName VARCHAR(50))',
+      'CREATE TABLE Employee (id INT PRIMARY KEY, firstName VARCHAR(20), lastName VARCHAR(50))',
+      'CREATE TABLE Student (studentId INT NOT NULL, classId CHAR(1) NOT NULL, firstName VARCHAR(20), lastName VARCHAR(50), PRIMARY KEY (studentId, classId))',
     ];
 
     const db = await setupRDSInstanceAndData(dbConfig, queries);
@@ -181,8 +181,8 @@ describe('RDS Model Directive', () => {
 
     // Verify the fields in the generated schema on type 'Contacts'
     const contactsIdFieldType = contactObjectType.fields.find((f) => f.name.value === 'id');
-    const contactsFirstNameFieldType = contactObjectType.fields.find((f) => f.name.value === 'FirstName');
-    const contactsLastNameFieldType = contactObjectType.fields.find((f) => f.name.value === 'LastName');
+    const contactsFirstNameFieldType = contactObjectType.fields.find((f) => f.name.value === 'firstName');
+    const contactsLastNameFieldType = contactObjectType.fields.find((f) => f.name.value === 'lastName');
 
     expect(contactsIdFieldType).toBeDefined();
     expect(contactsFirstNameFieldType).toBeDefined();
@@ -197,47 +197,47 @@ describe('RDS Model Directive', () => {
     const contact2 = await createContact('Chris', 'Sundersingh');
 
     expect(contact1.data.createContact.id).toBeDefined();
-    expect(contact1.data.createContact.FirstName).toEqual('David');
-    expect(contact1.data.createContact.LastName).toEqual('Smith');
+    expect(contact1.data.createContact.firstName).toEqual('David');
+    expect(contact1.data.createContact.lastName).toEqual('Smith');
 
     expect(contact2.data.createContact.id).toBeDefined();
-    expect(contact2.data.createContact.FirstName).toEqual('Chris');
-    expect(contact2.data.createContact.LastName).toEqual('Sundersingh');
+    expect(contact2.data.createContact.firstName).toEqual('Chris');
+    expect(contact2.data.createContact.lastName).toEqual('Sundersingh');
 
     const getContact1 = await getContact(contact1.data.createContact.id);
     expect(getContact1.data.getContact.id).toEqual(contact1.data.createContact.id);
-    expect(getContact1.data.getContact.FirstName).toEqual('David');
-    expect(getContact1.data.getContact.LastName).toEqual('Smith');
+    expect(getContact1.data.getContact.firstName).toEqual('David');
+    expect(getContact1.data.getContact.lastName).toEqual('Smith');
 
     const contact1Updated = await updateContact(contact1.data.createContact.id, 'David', 'Jones');
     expect(contact1Updated.data.updateContact.id).toEqual(contact1.data.createContact.id);
-    expect(contact1Updated.data.updateContact.FirstName).toEqual('David');
-    expect(contact1Updated.data.updateContact.LastName).toEqual('Jones');
+    expect(contact1Updated.data.updateContact.firstName).toEqual('David');
+    expect(contact1Updated.data.updateContact.lastName).toEqual('Jones');
 
     const getContact1Updated = await getContact(contact1.data.createContact.id);
     expect(getContact1Updated.data.getContact.id).toEqual(contact1.data.createContact.id);
-    expect(getContact1Updated.data.getContact.FirstName).toEqual('David');
-    expect(getContact1Updated.data.getContact.LastName).toEqual('Jones');
+    expect(getContact1Updated.data.getContact.firstName).toEqual('David');
+    expect(getContact1Updated.data.getContact.lastName).toEqual('Jones');
 
     const listContactsResult = await listContacts();
     expect(listContactsResult.data.listContacts.items.length).toEqual(2);
     expect(listContactsResult.data.listContacts.items).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ id: contact1.data.createContact.id, FirstName: 'David', LastName: 'Jones' }),
-        expect.objectContaining({ id: contact2.data.createContact.id, FirstName: 'Chris', LastName: 'Sundersingh' }),
+        expect.objectContaining({ id: contact1.data.createContact.id, firstName: 'David', lastName: 'Jones' }),
+        expect.objectContaining({ id: contact2.data.createContact.id, firstName: 'Chris', lastName: 'Sundersingh' }),
       ]),
     );
 
     const deleteContact1 = await deleteContact(contact1.data.createContact.id);
     expect(deleteContact1.data.deleteContact.id).toEqual(contact1.data.createContact.id);
-    expect(deleteContact1.data.deleteContact.FirstName).toEqual('David');
-    expect(deleteContact1.data.deleteContact.LastName).toEqual('Jones');
+    expect(deleteContact1.data.deleteContact.firstName).toEqual('David');
+    expect(deleteContact1.data.deleteContact.lastName).toEqual('Jones');
 
     const listContactsResultAfterDelete = await listContacts();
     expect(listContactsResultAfterDelete.data.listContacts.items.length).toEqual(1);
     expect(listContactsResultAfterDelete.data.listContacts.items).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ id: contact2.data.createContact.id, FirstName: 'Chris', LastName: 'Sundersingh' }),
+        expect.objectContaining({ id: contact2.data.createContact.id, firstName: 'Chris', lastName: 'Sundersingh' }),
       ]),
     );
   });
@@ -250,58 +250,58 @@ describe('RDS Model Directive', () => {
 
     expect(student1A.data.createStudent.studentId).toEqual(1);
     expect(student1A.data.createStudent.classId).toEqual('A');
-    expect(student1A.data.createStudent.FirstName).toEqual('David');
-    expect(student1A.data.createStudent.LastName).toEqual('Smith');
+    expect(student1A.data.createStudent.firstName).toEqual('David');
+    expect(student1A.data.createStudent.lastName).toEqual('Smith');
 
     expect(student1B.data.createStudent.studentId).toEqual(1);
     expect(student1B.data.createStudent.classId).toEqual('B');
-    expect(student1B.data.createStudent.FirstName).toEqual('Chris');
-    expect(student1B.data.createStudent.LastName).toEqual('Sundersingh');
+    expect(student1B.data.createStudent.firstName).toEqual('Chris');
+    expect(student1B.data.createStudent.lastName).toEqual('Sundersingh');
 
     expect(student2A.data.createStudent.studentId).toEqual(2);
     expect(student2A.data.createStudent.classId).toEqual('A');
-    expect(student2A.data.createStudent.FirstName).toEqual('John');
-    expect(student2A.data.createStudent.LastName).toEqual('Doe');
+    expect(student2A.data.createStudent.firstName).toEqual('John');
+    expect(student2A.data.createStudent.lastName).toEqual('Doe');
 
     expect(student2B.data.createStudent.studentId).toEqual(2);
     expect(student2B.data.createStudent.classId).toEqual('B');
-    expect(student2B.data.createStudent.FirstName).toEqual('Jane');
-    expect(student2B.data.createStudent.LastName).toEqual('Doe');
+    expect(student2B.data.createStudent.firstName).toEqual('Jane');
+    expect(student2B.data.createStudent.lastName).toEqual('Doe');
 
     const student1AUpdated = await updateStudent(1, 'A', 'David', 'Jones');
     const student2AUpdated = await updateStudent(2, 'A', 'John', 'Smith');
 
     expect(student1AUpdated.data.updateStudent.studentId).toEqual(1);
     expect(student1AUpdated.data.updateStudent.classId).toEqual('A');
-    expect(student1AUpdated.data.updateStudent.FirstName).toEqual('David');
-    expect(student1AUpdated.data.updateStudent.LastName).toEqual('Jones');
+    expect(student1AUpdated.data.updateStudent.firstName).toEqual('David');
+    expect(student1AUpdated.data.updateStudent.lastName).toEqual('Jones');
 
     expect(student2AUpdated.data.updateStudent.studentId).toEqual(2);
     expect(student2AUpdated.data.updateStudent.classId).toEqual('A');
-    expect(student2AUpdated.data.updateStudent.FirstName).toEqual('John');
-    expect(student2AUpdated.data.updateStudent.LastName).toEqual('Smith');
+    expect(student2AUpdated.data.updateStudent.firstName).toEqual('John');
+    expect(student2AUpdated.data.updateStudent.lastName).toEqual('Smith');
 
     const student1ADeleted = await deleteStudent(1, 'A');
 
     expect(student1ADeleted.data.deleteStudent.studentId).toEqual(1);
     expect(student1ADeleted.data.deleteStudent.classId).toEqual('A');
-    expect(student1ADeleted.data.deleteStudent.FirstName).toEqual('David');
-    expect(student1ADeleted.data.deleteStudent.LastName).toEqual('Jones');
+    expect(student1ADeleted.data.deleteStudent.firstName).toEqual('David');
+    expect(student1ADeleted.data.deleteStudent.lastName).toEqual('Jones');
 
     const getStudent1B = await getStudent(1, 'B');
 
     expect(getStudent1B.data.getStudent.studentId).toEqual(1);
     expect(getStudent1B.data.getStudent.classId).toEqual('B');
-    expect(getStudent1B.data.getStudent.FirstName).toEqual('Chris');
-    expect(getStudent1B.data.getStudent.LastName).toEqual('Sundersingh');
+    expect(getStudent1B.data.getStudent.firstName).toEqual('Chris');
+    expect(getStudent1B.data.getStudent.lastName).toEqual('Sundersingh');
 
     const listStudentsResult = await listStudents();
     expect(listStudentsResult.data.listStudents.items.length).toEqual(3);
     expect(listStudentsResult.data.listStudents.items).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ studentId: 1, classId: 'B', FirstName: 'Chris', LastName: 'Sundersingh' }),
-        expect.objectContaining({ studentId: 2, classId: 'A', FirstName: 'John', LastName: 'Smith' }),
-        expect.objectContaining({ studentId: 2, classId: 'B', FirstName: 'Jane', LastName: 'Doe' }),
+        expect.objectContaining({ studentId: 1, classId: 'B', firstName: 'Chris', lastName: 'Sundersingh' }),
+        expect.objectContaining({ studentId: 2, classId: 'A', firstName: 'John', lastName: 'Smith' }),
+        expect.objectContaining({ studentId: 2, classId: 'B', firstName: 'Jane', lastName: 'Doe' }),
       ]),
     );
 
@@ -310,8 +310,8 @@ describe('RDS Model Directive', () => {
     expect(listStudentsResultWithLimit.data.listStudents.items.length).toEqual(2);
     expect(listStudentsResultWithLimit.data.listStudents.items).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ studentId: 1, classId: 'B', FirstName: 'Chris', LastName: 'Sundersingh' }),
-        expect.objectContaining({ studentId: 2, classId: 'A', FirstName: 'John', LastName: 'Smith' }),
+        expect.objectContaining({ studentId: 1, classId: 'B', firstName: 'Chris', lastName: 'Sundersingh' }),
+        expect.objectContaining({ studentId: 2, classId: 'A', firstName: 'John', lastName: 'Smith' }),
       ]),
     );
     expect(listStudentsResultWithLimit.data.listStudents.nextToken).toBeDefined();
@@ -319,26 +319,26 @@ describe('RDS Model Directive', () => {
     const listStudentsResultWithNextToken = await listStudents(2, listStudentsResultWithLimit.data.listStudents.nextToken);
     expect(listStudentsResultWithNextToken.data.listStudents.items.length).toEqual(1);
     expect(listStudentsResultWithNextToken.data.listStudents.items).toEqual(
-      expect.arrayContaining([expect.objectContaining({ studentId: 2, classId: 'B', FirstName: 'Jane', LastName: 'Doe' })]),
+      expect.arrayContaining([expect.objectContaining({ studentId: 2, classId: 'B', firstName: 'Jane', lastName: 'Doe' })]),
     );
     expect(listStudentsResultWithNextToken.data.listStudents.nextToken).toBeNull();
 
     // Validate filter
     const listStudentsResultWithFilter = await listStudents(10, null, {
-      and: [{ FirstName: { eq: 'John' } }, { LastName: { eq: 'Smith' } }],
+      and: [{ firstName: { eq: 'John' } }, { lastName: { eq: 'Smith' } }],
     });
     expect(listStudentsResultWithFilter.data.listStudents.items.length).toEqual(1);
     expect(listStudentsResultWithFilter.data.listStudents.items).toEqual(
-      expect.arrayContaining([expect.objectContaining({ studentId: 2, classId: 'A', FirstName: 'John', LastName: 'Smith' })]),
+      expect.arrayContaining([expect.objectContaining({ studentId: 2, classId: 'A', firstName: 'John', lastName: 'Smith' })]),
     );
     expect(listStudentsResultWithFilter.data.listStudents.nextToken).toBeNull();
 
-    const listStudentsResultWithFilter2 = await listStudents(10, null, { FirstName: { size: { eq: 4 } } });
+    const listStudentsResultWithFilter2 = await listStudents(10, null, { firstName: { size: { eq: 4 } } });
     expect(listStudentsResultWithFilter2.data.listStudents.items.length).toEqual(2);
     expect(listStudentsResultWithFilter2.data.listStudents.items).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ studentId: 2, classId: 'A', FirstName: 'John', LastName: 'Smith' }),
-        expect.objectContaining({ studentId: 2, classId: 'A', FirstName: 'John', LastName: 'Smith' }),
+        expect.objectContaining({ studentId: 2, classId: 'A', firstName: 'John', lastName: 'Smith' }),
+        expect.objectContaining({ studentId: 2, classId: 'A', firstName: 'John', lastName: 'Smith' }),
       ]),
     );
   });
@@ -373,15 +373,15 @@ describe('RDS Model Directive', () => {
       mutation CreateContact($input: CreateContactInput!, $condition: ModelContactConditionInput) {
         createContact(input: $input, condition: $condition) {
           id
-          FirstName
-          LastName
+          firstName
+          lastName
         }
       }
     `;
     const createInput = {
       input: {
-        FirstName: firstName,
-        LastName: lastName,
+        firstName,
+        lastName,
       },
     };
 
@@ -403,16 +403,16 @@ describe('RDS Model Directive', () => {
       mutation UpdateContact($input: UpdateContactInput!, $condition: ModelContactConditionInput) {
         updateContact(input: $input, condition: $condition) {
           id
-          FirstName
-          LastName
+          firstName
+          lastName
         }
       }
     `;
     const updateInput = {
       input: {
         id,
-        FirstName: firstName,
-        LastName: lastName,
+        firstName,
+        lastName,
       },
     };
     const updateResult: any = await appSyncClient.mutate({
@@ -429,8 +429,8 @@ describe('RDS Model Directive', () => {
       mutation DeleteContact($input: DeleteContactInput!, $condition: ModelContactConditionInput) {
         deleteContact(input: $input, condition: $condition) {
           id
-          FirstName
-          LastName
+          firstName
+          lastName
         }
       }
     `;
@@ -453,8 +453,8 @@ describe('RDS Model Directive', () => {
       query GetContact($id: String!) {
         getContact(id: $id) {
           id
-          FirstName
-          LastName
+          firstName
+          lastName
         }
       }
     `;
@@ -476,8 +476,8 @@ describe('RDS Model Directive', () => {
         listContacts {
           items {
             id
-            FirstName
-            LastName
+            firstName
+            lastName
           }
         }
       }
@@ -497,8 +497,8 @@ describe('RDS Model Directive', () => {
         createStudent(input: $input, condition: $condition) {
           studentId
           classId
-          FirstName
-          LastName
+          firstName
+          lastName
         }
       }
     `;
@@ -506,8 +506,8 @@ describe('RDS Model Directive', () => {
       input: {
         studentId,
         classId,
-        FirstName: firstName,
-        LastName: lastName,
+        firstName,
+        lastName,
       },
     };
     const createResult: any = await appSyncClient.mutate({
@@ -525,8 +525,8 @@ describe('RDS Model Directive', () => {
         updateStudent(input: $input, condition: $condition) {
           studentId
           classId
-          FirstName
-          LastName
+          firstName
+          lastName
         }
       }
     `;
@@ -534,8 +534,8 @@ describe('RDS Model Directive', () => {
       input: {
         studentId,
         classId,
-        FirstName: firstName,
-        LastName: lastName,
+        firstName,
+        lastName,
       },
     };
     const updateResult: any = await appSyncClient.mutate({
@@ -553,8 +553,8 @@ describe('RDS Model Directive', () => {
         deleteStudent(input: $input, condition: $condition) {
           studentId
           classId
-          FirstName
-          LastName
+          firstName
+          lastName
         }
       }
     `;
@@ -579,8 +579,8 @@ describe('RDS Model Directive', () => {
         getStudent(studentId: $studentId, classId: $classId) {
           studentId
           classId
-          FirstName
-          LastName
+          firstName
+          lastName
         }
       }
     `;
@@ -604,8 +604,8 @@ describe('RDS Model Directive', () => {
           items {
             studentId
             classId
-            FirstName
-            LastName
+            firstName
+            lastName
           }
           nextToken
         }

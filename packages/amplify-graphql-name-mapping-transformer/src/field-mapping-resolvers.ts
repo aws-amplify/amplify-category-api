@@ -51,7 +51,7 @@ export const attachInputMappingSlot = ({ resolver, resolverTypeName, resolverFie
  * Calls createPostDataLoadMapping to create a slot to map origAttrName back to currAttrName in the response
  */
 export const attachFieldMappingSlot = ({ resolver, resolverTypeName, resolverFieldName, fieldMap }: AttachInputMappingSlotParams): void => {
-  const slotName = resolverTypeName === 'Mutation' ? 'preUpdate' : 'preDataLoad';
+  const slotName = 'preAuth';
   resolver.addToSlot(
     slotName,
     MappingTemplate.s3MappingTemplateFromString(

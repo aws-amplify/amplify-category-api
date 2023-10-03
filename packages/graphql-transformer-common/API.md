@@ -70,9 +70,6 @@ export function extensionWithDirectives(object: ObjectTypeExtensionNode, directi
 export function extensionWithFields(object: ObjectTypeExtensionNode, fields: FieldDefinitionNode[]): ObjectTypeExtensionNode;
 
 // @public (undocumented)
-export const findMatchingField: (field: FieldDefinitionNode, objectType: ObjectTypeDefinitionNode, document: DocumentNode) => FieldDefinitionNode | undefined;
-
-// @public (undocumented)
 export const findObjectDefinition: (document: DocumentNode, name: string) => ObjectTypeDefinitionNode | undefined;
 
 // @public (undocumented)

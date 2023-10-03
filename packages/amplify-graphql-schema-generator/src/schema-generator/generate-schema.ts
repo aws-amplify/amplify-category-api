@@ -13,7 +13,7 @@ import {
 import { EnumType, Field, Index, Model, Schema } from '../schema-representation';
 import { applySchemaOverrides } from './schema-overrides';
 import { singular } from 'pluralize';
-import { toPascalCase } from 'graphql-transformer-common';
+import { toCamelCase, toPascalCase } from 'graphql-transformer-common';
 
 export const generateGraphQLSchema = (schema: Schema, existingSchemaDocument?: DocumentNode | undefined): string => {
   const models = schema.getModels();
@@ -63,6 +63,7 @@ export const generateGraphQLSchema = (schema: Schema, existingSchemaDocument?: D
 };
 
 const convertInternalFieldTypeToGraphQL = (field: Field, isPrimaryKeyField: boolean): FieldWrapper => {
+  const fieldName = field.name;
   const typeWrappers = [];
   let fieldType = field.type;
   while (fieldType.kind !== 'Scalar' && fieldType.kind !== 'Custom' && fieldType.kind !== 'Enum') {
@@ -70,8 +71,17 @@ const convertInternalFieldTypeToGraphQL = (field: Field, isPrimaryKeyField: bool
     fieldType = (fieldType as any).type;
   }
 
-  // construct the default directive
   const fieldDirectives = [];
+
+  // construct the refersTo directive
+  const fieldTypeName = convertToGraphQLFieldName(fieldName);
+  const fieldNameNeedsMapping = fieldTypeName !== fieldName;
+  if (fieldNameNeedsMapping) {
+    const fieldNameMappingDirective = getRefersToDirective(fieldName);
+    fieldDirectives.push(fieldNameMappingDirective);
+  }
+
+  // construct the default directive
   const fieldHasDefaultValue = field?.default && field?.default?.value;
   const fieldIsOptional = fieldHasDefaultValue && !isPrimaryKeyField;
   if (fieldHasDefaultValue) {
@@ -107,7 +117,7 @@ const convertInternalFieldTypeToGraphQL = (field: Field, isPrimaryKeyField: bool
     kind: 'FieldDefinition',
     name: {
       kind: 'Name',
-      value: field.name,
+      value: fieldTypeName,
     },
     type: {
       kind: 'NamedType',
@@ -185,7 +195,7 @@ const constructEnumType = (type: EnumType) => {
 
 const addIndexes = (type: ObjectDefinitionWrapper, indexes: Index[]): void => {
   indexes.forEach((index) => {
-    const firstField = index.getFields()[0];
+    const firstField = convertToGraphQLFieldName(index.getFields()[0]);
     const indexField = type.getField(firstField);
 
     const indexArguments = [];
@@ -216,7 +226,7 @@ const addIndexes = (type: ObjectDefinitionWrapper, indexes: Index[]): void => {
             .map((k) => {
               return {
                 kind: 'StringValue',
-                value: k,
+                value: convertToGraphQLFieldName(k),
               };
             }),
         },
@@ -241,7 +251,7 @@ const addPrimaryKey = (type: ObjectDefinitionWrapper, primaryKey: Index): void =
     return;
   }
 
-  const firstField = primaryKey.getFields()[0];
+  const firstField = convertToGraphQLFieldName(primaryKey.getFields()[0]);
   const primaryKeyField = type.getField(firstField);
   const keyArguments = [];
 
@@ -260,7 +270,7 @@ const addPrimaryKey = (type: ObjectDefinitionWrapper, primaryKey: Index): void =
           .map((k) => {
             return {
               kind: 'StringValue',
-              value: k,
+              value: convertToGraphQLFieldName(k),
             };
           }),
       },
@@ -363,11 +373,34 @@ export const getRefersToDirective = (name: string): DirectiveNode => {
 };
 
 export const convertToGraphQLTypeName = (modelName: string): string => {
-  // Convert non-alphanumeric characters to underscores
-  const cleanedInput = modelName.replace(/[^a-zA-Z0-9_]+/g, '_').trim();
+  const cleanedInput = cleanMappedName(modelName);
 
   // Convert to PascalCase and Singularize
   return singular(toPascalCase(cleanedInput?.split('_')));
+};
+
+export const convertToGraphQLFieldName = (fieldName: string): string => {
+  const cleanedInput = cleanMappedName(fieldName, true);
+
+  // Convert to camelCase
+  return toCamelCase(cleanedInput?.split('_'));
+};
+
+const cleanMappedName = (name: string, isField: boolean = false): string => {
+  // If it does not have any alphabetic characters, use a meaningful name
+  if (!name?.match(/[a-zA-Z]/)) {
+    const suffix = name?.replace(/[^0-9]+/g, '');
+    return isField ? `field${suffix}` : `Model${suffix}`;
+  }
+
+  // Remove leading digits and non-alphabetic characters
+  // Convert non-alphanumeric characters to underscores
+  const cleanedInput = name
+    .replace(/^[^a-zA-Z]+/, '')
+    .replace(/[^a-zA-Z0-9_]+/g, '_')
+    .trim();
+
+  return cleanedInput;
 };
 
 export const printSchema = (document: DocumentNode): string => {
