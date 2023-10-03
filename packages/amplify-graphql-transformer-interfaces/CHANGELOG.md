@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.3.0-rds-3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.2.0...@aws-amplify/graphql-transformer-interfaces@3.3.0-rds-3.0) (2023-10-03)
+
+### Features
+
+- **api:** add vpc endpoints for ssm ([5a4ffc4](https://github.com/aws-amplify/amplify-category-api/commit/5a4ffc4c1889536c8e1fdd1f31fe28ca4326100f))
+- **api:** custom queries support using sql directive ([5214037](https://github.com/aws-amplify/amplify-category-api/commit/52140374ca974956c5d5eac09fec91a51cfc9027))
+
 # [3.2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.1.2...@aws-amplify/graphql-transformer-interfaces@3.2.0) (2023-09-20)
 
 ### Features

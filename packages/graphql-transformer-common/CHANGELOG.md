@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.26.0-rds-3.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.25.1...graphql-transformer-common@4.26.0-rds-3.0) (2023-10-03)
+
+### Bug Fixes
+
+- handle field names starting with number ([2e9de1b](https://github.com/aws-amplify/amplify-category-api/commit/2e9de1b061ac212fad23b133ada44bfaadb1a2ff))
+
+### Features
+
+- **api:** add arrays and objects support for rds datasource ([cbfb017](https://github.com/aws-amplify/amplify-category-api/commit/cbfb017029e45c6e7cb8fea4250794d02afff4ca))
+- infer and preserve field mappings in schema ([4f8e7f4](https://github.com/aws-amplify/amplify-category-api/commit/4f8e7f43e6ba3e64702baffe60b8b4870d37ffb6))
+
 ## [4.25.1](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.25.0...graphql-transformer-common@4.25.1) (2023-08-30)
 
 **Note:** Version bump only for package graphql-transformer-common

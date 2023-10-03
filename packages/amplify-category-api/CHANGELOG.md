@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.8.0-rds-3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.7.2...@aws-amplify/amplify-category-api@5.8.0-rds-3.0) (2023-10-03)
+
+### Bug Fixes
+
+- **api:** make id optional if not a string type ([48ecac0](https://github.com/aws-amplify/amplify-category-api/commit/48ecac0989097106a531ebb898abbda7a0f1745c))
+
+### Features
+
+- **api:** add vpc endpoints for ssm ([5a4ffc4](https://github.com/aws-amplify/amplify-category-api/commit/5a4ffc4c1889536c8e1fdd1f31fe28ca4326100f))
+- **api:** custom queries support using sql directive ([5214037](https://github.com/aws-amplify/amplify-category-api/commit/52140374ca974956c5d5eac09fec91a51cfc9027))
+- **api:** refactor auth transformer to use vtl generator factory pattern ([e965d24](https://github.com/aws-amplify/amplify-category-api/commit/e965d24731fc1e2300ef0e16b61af6b39afb0cad))
+
 ## [5.7.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.7.1...@aws-amplify/amplify-category-api@5.7.2) (2023-10-02)
 
 ### Bug Fixes

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0-rds-3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-test-utils@0.2.4...@aws-amplify/graphql-transformer-test-utils@0.3.0-rds-3.0) (2023-10-03)
+
+### Features
+
+- **api:** custom queries support using sql directive ([5214037](https://github.com/aws-amplify/amplify-category-api/commit/52140374ca974956c5d5eac09fec91a51cfc9027))
+
 ## [0.2.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-test-utils@0.2.3...@aws-amplify/graphql-transformer-test-utils@0.2.4) (2023-10-02)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-test-utils

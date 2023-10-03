@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.4.0-rds-3.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.3.1...amplify-category-api-util-mock@6.4.0-rds-3.0) (2023-10-03)
+
+### Features
+
+- add refersTo directive transformer for model renaming ([#1830](https://github.com/aws-amplify/amplify-category-api/issues/1830)) ([afbd6f2](https://github.com/aws-amplify/amplify-category-api/commit/afbd6f282bc411313ce098a53a87bb8c6481aa48))
+
 ## [6.3.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.3.0...amplify-category-api-util-mock@6.3.1) (2023-10-02)
 
 **Note:** Version bump only for package amplify-category-api-util-mock

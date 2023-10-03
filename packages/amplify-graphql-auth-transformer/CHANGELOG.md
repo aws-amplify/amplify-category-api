@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.2.0-rds-3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.1.5...@aws-amplify/graphql-auth-transformer@3.2.0-rds-3.0) (2023-10-03)
+
+### Features
+
+- **api:** refactor auth transformer to use vtl generator factory pattern ([e965d24](https://github.com/aws-amplify/amplify-category-api/commit/e965d24731fc1e2300ef0e16b61af6b39afb0cad))
+- refersTo supports field name mappings on RDS models ([#1865](https://github.com/aws-amplify/amplify-category-api/issues/1865)) ([ee60011](https://github.com/aws-amplify/amplify-category-api/commit/ee60011f5c41d0442e1096dd16d80e94b900745a))
+
 ## [3.1.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.1.4...@aws-amplify/graphql-auth-transformer@3.1.5) (2023-10-02)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer

@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.18.0-rds-3.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.17.1...amplify-category-api-e2e-tests@3.18.0-rds-3.0) (2023-10-03)
+
+### Bug Fixes
+
+- **api:** make id optional if not a string type ([48ecac0](https://github.com/aws-amplify/amplify-category-api/commit/48ecac0989097106a531ebb898abbda7a0f1745c))
+
+### Features
+
+- add refersTo directive transformer for model renaming ([#1830](https://github.com/aws-amplify/amplify-category-api/issues/1830)) ([afbd6f2](https://github.com/aws-amplify/amplify-category-api/commit/afbd6f282bc411313ce098a53a87bb8c6481aa48))
+- **api:** custom queries support using sql directive ([5214037](https://github.com/aws-amplify/amplify-category-api/commit/52140374ca974956c5d5eac09fec91a51cfc9027))
+- **api:** specify include or exclude tables option to generate schema ([1fa52a1](https://github.com/aws-amplify/amplify-category-api/commit/1fa52a1f0c0d7bf82caebc94241774ac3b5c8aa1))
+- infer and preserve field mappings in schema ([4f8e7f4](https://github.com/aws-amplify/amplify-category-api/commit/4f8e7f43e6ba3e64702baffe60b8b4870d37ffb6))
+- infer refersTo for models in the import flow and preserve edits during schema regeneration ([#1845](https://github.com/aws-amplify/amplify-category-api/issues/1845)) ([2631c02](https://github.com/aws-amplify/amplify-category-api/commit/2631c027395a35d9841669f2aa034af93cbeb9fc))
+- refersTo supports field name mappings on RDS models ([#1865](https://github.com/aws-amplify/amplify-category-api/issues/1865)) ([ee60011](https://github.com/aws-amplify/amplify-category-api/commit/ee60011f5c41d0442e1096dd16d80e94b900745a))
+
 ## [3.17.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.17.0...amplify-category-api-e2e-tests@3.17.1) (2023-10-02)
 
 ### Bug Fixes

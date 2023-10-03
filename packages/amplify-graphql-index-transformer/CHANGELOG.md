@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0-rds-3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.1.5...@aws-amplify/graphql-index-transformer@2.2.0-rds-3.0) (2023-10-03)
+
+### Features
+
+- add refersTo directive transformer for model renaming ([#1830](https://github.com/aws-amplify/amplify-category-api/issues/1830)) ([afbd6f2](https://github.com/aws-amplify/amplify-category-api/commit/afbd6f282bc411313ce098a53a87bb8c6481aa48))
+- refersTo supports field name mappings on RDS models ([#1865](https://github.com/aws-amplify/amplify-category-api/issues/1865)) ([ee60011](https://github.com/aws-amplify/amplify-category-api/commit/ee60011f5c41d0442e1096dd16d80e94b900745a))
+
 ## [2.1.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.1.4...@aws-amplify/graphql-index-transformer@2.1.5) (2023-10-02)
 
 **Note:** Version bump only for package @aws-amplify/graphql-index-transformer
