@@ -224,6 +224,232 @@ describe('Custom Resource Lambda Tests', () => {
       expect(nextUpdate).toBeUndefined();
     });
   });
+  describe('Compute GSI deletion', () => {
+    const currentState: DynamoDB.TableDescription = {
+      AttributeDefinitions: [
+        {
+          AttributeName: 'pk',
+          AttributeType: 'S',
+        },
+        {
+          AttributeName: 'sk',
+          AttributeType: 'S',
+        },
+      ],
+      TableName: 'test-table',
+      KeySchema: [
+        {
+          AttributeName: 'pk',
+          KeyType: 'HASH',
+        },
+      ],
+      BillingModeSummary: {
+        BillingMode: 'PAY_PER_REQUEST',
+      },
+      GlobalSecondaryIndexes: [
+        {
+          IndexName: 'gsi1',
+          KeySchema: [
+            {
+              AttributeName: 'sk',
+              KeyType: 'HASH',
+            },
+          ],
+          Projection: {
+            ProjectionType: 'ALL',
+          },
+          IndexStatus: 'ACTIVE',
+        },
+      ],
+    };
+    const baseTableDef = {
+      tableName: 'test-table',
+      attributeDefinitions: [
+        {
+          attributeName: 'pk',
+          attributeType: 'S',
+        },
+        {
+          attributeName: 'sk',
+          attributeType: 'S',
+        },
+      ],
+      keySchema: [
+        {
+          attributeName: 'pk',
+          keyType: 'HASH',
+        },
+      ],
+      billingMode: 'PAY_PER_REQUEST',
+    };
+    it('when the index is removed completely', () => {
+      const endState: CustomDDB.Input = {
+        ...baseTableDef,
+      };
+      const nextUpdate = getNextGSIUpdate(currentState, endState);
+      expect(nextUpdate).toMatchSnapshot();
+    });
+    it('when the hash key is renamed', () => {
+      const endState: CustomDDB.Input = {
+        ...baseTableDef,
+        attributeDefinitions: [
+          {
+            attributeName: 'pk',
+            attributeType: 'S',
+          },
+          {
+            attributeName: 'sk',
+            attributeType: 'S',
+          },
+          {
+            attributeName: 'newKey',
+            attributeType: 'S',
+          },
+        ],
+        globalSecondaryIndexes: [
+          {
+            indexName: 'gsi1',
+            keySchema: [
+              {
+                attributeName: 'newKey',
+                keyType: 'HASH',
+              },
+            ],
+            projection: {
+              projectionType: 'ALL',
+            },
+          },
+        ],
+      };
+      const nextUpdate = getNextGSIUpdate(currentState, endState);
+      expect(nextUpdate).toMatchSnapshot();
+    });
+    it('when the sort key is modified', () => {
+      const endState: CustomDDB.Input = {
+        ...baseTableDef,
+        attributeDefinitions: [
+          {
+            attributeName: 'pk',
+            attributeType: 'S',
+          },
+          {
+            attributeName: 'sk',
+            attributeType: 'S',
+          },
+          {
+            attributeName: 'newKey',
+            attributeType: 'S',
+          },
+          {
+            attributeName: 'newKey2',
+            attributeType: 'S',
+          },
+        ],
+        globalSecondaryIndexes: [
+          {
+            indexName: 'gsi1',
+            keySchema: [
+              {
+                attributeName: 'newKey',
+                keyType: 'HASH',
+              },
+              {
+                attributeName: 'newKey2',
+                keyType: 'RANGE',
+              },
+            ],
+            projection: {
+              projectionType: 'ALL',
+            },
+          },
+        ],
+      };
+      const nextUpdate = getNextGSIUpdate(currentState, endState);
+      expect(nextUpdate).toMatchSnapshot();
+    });
+    it('when projection type is modified', () => {
+      const endState: CustomDDB.Input = {
+        ...baseTableDef,
+        attributeDefinitions: [
+          {
+            attributeName: 'pk',
+            attributeType: 'S',
+          },
+          {
+            attributeName: 'sk',
+            attributeType: 'S',
+          },
+        ],
+        globalSecondaryIndexes: [
+          {
+            indexName: 'gsi1',
+            keySchema: [
+              {
+                attributeName: 'sk',
+                keyType: 'HASH',
+              },
+            ],
+            projection: {
+              projectionType: 'KEYS_ONLY',
+            },
+          },
+        ],
+      };
+      const nextUpdate = getNextGSIUpdate(currentState, endState);
+      expect(nextUpdate).toMatchSnapshot();
+    });
+    it('when non key attributes are modified', () => {
+      const modifiedCurrentState: DynamoDB.TableDescription = {
+        ...currentState,
+        GlobalSecondaryIndexes: [
+          {
+            IndexName: 'gsi1',
+            KeySchema: [
+              {
+                AttributeName: 'sk',
+                KeyType: 'HASH',
+              },
+            ],
+            Projection: {
+              ProjectionType: 'INCLUDE',
+              NonKeyAttributes: ['name'],
+            },
+            IndexStatus: 'ACTIVE',
+          },
+        ],
+      };
+      const endState: CustomDDB.Input = {
+        ...baseTableDef,
+        attributeDefinitions: [
+          {
+            attributeName: 'pk',
+            attributeType: 'S',
+          },
+          {
+            attributeName: 'sk',
+            attributeType: 'S',
+          },
+        ],
+        globalSecondaryIndexes: [
+          {
+            indexName: 'gsi1',
+            keySchema: [
+              {
+                attributeName: 'sk',
+                keyType: 'HASH',
+              },
+            ],
+            projection: {
+              projectionType: 'INCLUDE',
+              nonKeyAttributes: ['name', 'description'],
+            },
+          },
+        ],
+      };
+      const nextUpdate = getNextGSIUpdate(modifiedCurrentState, endState);
+      expect(nextUpdate).toMatchSnapshot();
+    });
+  });
   describe('Extract table definition input from event test', () => {
     it('should extract the correct table definition from event object', () => {
       const mockEvent = {
