@@ -60,6 +60,9 @@ $util.qr($authRules.add({
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
 #end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
 ## [End] Authorization rules. **"
 `;
 
@@ -103,6 +106,9 @@ $util.qr($authRules.add({
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
 #end
 ## [End] Authorization rules. **"
 `;
@@ -176,6 +182,9 @@ $util.qr($authRules.add({
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
 #end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
 ## [End] Authorization rules. **"
 `;
 
@@ -219,6 +228,9 @@ $util.qr($authRules.add({
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
 #end
 ## [End] Authorization rules. **"
 `;
@@ -298,6 +310,9 @@ $util.qr($authRules.add({
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
 #end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
 ## [End] Authorization rules. **"
 `;
 
@@ -344,6 +359,9 @@ $util.qr($authRules.add({
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
 #end
 ## [End] Authorization rules. **"
 `;
@@ -423,6 +441,9 @@ $util.qr($authRules.add({
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
 #end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
 ## [End] Authorization rules. **"
 `;
 
@@ -469,6 +490,9 @@ $util.qr($authRules.add({
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
 #end
 ## [End] Authorization rules. **"
 `;
@@ -560,6 +584,9 @@ $util.qr($authRules.add({
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
 #end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
 ## [End] Authorization rules. **"
 `;
 
@@ -612,6 +639,9 @@ $util.qr($authRules.add({
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
 #end
 ## [End] Authorization rules. **"
 `;
@@ -691,6 +721,9 @@ $util.qr($authRules.add({
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
 #end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
 ## [End] Authorization rules. **"
 `;
 
@@ -737,6 +770,9 @@ $util.qr($authRules.add({
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
 #end
 ## [End] Authorization rules. **"
 `;
@@ -816,6 +852,9 @@ $util.qr($authRules.add({
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
 #end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
 ## [End] Authorization rules. **"
 `;
 
@@ -862,6 +901,9 @@ $util.qr($authRules.add({
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
 #end
 ## [End] Authorization rules. **"
 `;
@@ -935,6 +977,9 @@ $util.qr($authRules.add({
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
 #end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
 ## [End] Authorization rules. **"
 `;
 
@@ -978,6 +1023,9 @@ $util.qr($authRules.add({
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
 #end
 ## [End] Authorization rules. **"
 `;
@@ -1055,6 +1103,9 @@ $util.qr($authRules.add({
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
 #end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
 ## [End] Authorization rules. **"
 `;
 
@@ -1100,6 +1151,9 @@ $util.qr($authRules.add({
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
 #end
 ## [End] Authorization rules. **"
 `;
@@ -1177,6 +1231,9 @@ $util.qr($authRules.add({
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
 #end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
 ## [End] Authorization rules. **"
 `;
 
@@ -1222,6 +1279,9 @@ $util.qr($authRules.add({
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
 #end
 ## [End] Authorization rules. **"
 `;
@@ -1295,6 +1355,9 @@ $util.qr($authRules.add({
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
 #end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
 ## [End] Authorization rules. **"
 `;
 
@@ -1338,6 +1401,9 @@ $util.qr($authRules.add({
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
 #end
 ## [End] Authorization rules. **"
 `;
@@ -1417,6 +1483,9 @@ $util.qr($authRules.add({
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
 #end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
 ## [End] Authorization rules. **"
 `;
 
@@ -1463,6 +1532,9 @@ $util.qr($authRules.add({
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
 #end
 ## [End] Authorization rules. **"
 `;
@@ -1542,6 +1614,9 @@ $util.qr($authRules.add({
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
 #end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
 ## [End] Authorization rules. **"
 `;
 
@@ -1588,6 +1663,9 @@ $util.qr($authRules.add({
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
 #end
 ## [End] Authorization rules. **"
 `;
@@ -1679,6 +1757,9 @@ $util.qr($authRules.add({
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
 #end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
 ## [End] Authorization rules. **"
 `;
 
@@ -1731,6 +1812,9 @@ $util.qr($authRules.add({
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
 #end
 ## [End] Authorization rules. **"
 `;
@@ -1810,6 +1894,9 @@ $util.qr($authRules.add({
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
 #end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
 ## [End] Authorization rules. **"
 `;
 
@@ -1856,6 +1943,9 @@ $util.qr($authRules.add({
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
 #end
 ## [End] Authorization rules. **"
 `;
@@ -1935,6 +2025,9 @@ $util.qr($authRules.add({
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
 #end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
 ## [End] Authorization rules. **"
 `;
 
@@ -1981,6 +2074,9 @@ $util.qr($authRules.add({
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
 $util.unauthorized
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
 #end
 ## [End] Authorization rules. **"
 `;

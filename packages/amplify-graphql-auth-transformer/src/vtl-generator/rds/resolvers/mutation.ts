@@ -56,7 +56,10 @@ const generateMutationExpression = (
         ),
     ),
   );
-  expressions.push(validateAuthResult());
+  expressions.push(
+    validateAuthResult(),
+    constructAuthorizedInputStatement('ctx.args.input'),
+  );
   return printBlock('Authorization rules')(compoundExpression(expressions));
 }
 
