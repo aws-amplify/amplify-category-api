@@ -25,6 +25,7 @@ import { IBucket } from 'aws-cdk-lib/aws-s3';
 export interface IAMAuthorizationConfig {
   /**
    * ID for the Cognito Identity Pool vending auth and unauth roles.
+   * Format: `<region>:<id string>`
    */
   readonly identityPoolId: string;
 

@@ -1736,6 +1736,8 @@ public readonly identityPoolId: string;
 
 ID for the Cognito Identity Pool vending auth and unauth roles.
 
+Format: `<region>:<id string>`
+
 ---
 
 ##### `unauthenticatedUserRole`<sup>Required</sup> <a name="unauthenticatedUserRole" id="@aws-amplify/graphql-api-construct.IAMAuthorizationConfig.property.unauthenticatedUserRole"></a>
