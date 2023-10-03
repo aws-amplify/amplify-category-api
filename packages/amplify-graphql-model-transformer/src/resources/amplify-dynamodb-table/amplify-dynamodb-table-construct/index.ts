@@ -1,4 +1,4 @@
-import { aws_iam as iam, aws_kms as kms, CustomResource, Lazy, Resource } from 'aws-cdk-lib';
+import { aws_kms as kms, CustomResource, Lazy, Resource } from 'aws-cdk-lib';
 import {
   Attribute,
   BillingMode,
@@ -10,7 +10,6 @@ import {
   ProjectionType,
   SchemaOptions,
   SecondaryIndexProps,
-  StreamViewType,
   Table,
   TableEncryption,
   TableProps,
@@ -70,26 +69,26 @@ export class AmplifyDynamoDBTable extends Resource {
       serviceToken: this.customResourceServiceToken,
       resourceType: CUSTOM_DDB_CFN_TYPE,
       properties: {
-        TableName: this.tableName,
-        AttributeDefinitions: this.attributeDefinitions,
-        KeySchema: this.keySchema,
-        GlobalSecondaryIndexes: Lazy.any({ produce: () => this.globalSecondaryIndexes }, { omitEmptyArray: true }),
-        LocalSecondaryIndexes: Lazy.any({ produce: () => this.localSecondaryIndexes }, { omitEmptyArray: true }),
-        PointInTimeRecoverySpecification:
+        tableName: this.tableName,
+        attributeDefinitions: this.attributeDefinitions,
+        keySchema: this.keySchema,
+        globalSecondaryIndexes: Lazy.any({ produce: () => this.globalSecondaryIndexes }, { omitEmptyArray: true }),
+        localSecondaryIndexes: Lazy.any({ produce: () => this.localSecondaryIndexes }, { omitEmptyArray: true }),
+        pointInTimeRecoverySpecification:
           props.pointInTimeRecovery != null ? { pointInTimeRecoveryEnabled: props.pointInTimeRecovery } : undefined,
-        BillingMode: this.billingMode === BillingMode.PAY_PER_REQUEST ? this.billingMode : undefined,
-        ProvisionedThroughput:
+        billingMode: this.billingMode === BillingMode.PAY_PER_REQUEST ? this.billingMode : undefined,
+        provisionedThroughput:
           this.billingMode === BillingMode.PAY_PER_REQUEST
             ? undefined
             : {
                 readCapacityUnits: props.readCapacity || 5,
                 writeCapacityUnits: props.writeCapacity || 5,
               },
-        SSESpecification: sseSpecification,
-        StreamSpecification: streamSpecification,
-        TableClass: props.tableClass,
-        TimeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined,
-        DeletionProtectionEnabled: props.deletionProtection,
+        sseSpecification: sseSpecification,
+        streamSpecification: streamSpecification,
+        tableClass: props.tableClass,
+        timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined,
+        deletionProtectionEnabled: props.deletionProtection,
       },
       removalPolicy: props.removalPolicy,
     });

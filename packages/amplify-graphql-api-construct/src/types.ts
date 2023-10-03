@@ -488,7 +488,7 @@ export interface PartialTranslationBehavior {
    * When enabled, amplify DynamoDB table will be generated instead of CFN pre-defined DynamoDB table
    * @default false
    */
-  readonly useAmplifyManagedTableResources: boolean;
+  readonly useAmplifyManagedTableResources?: boolean;
 }
 
 /**

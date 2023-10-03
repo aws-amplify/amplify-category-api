@@ -59,7 +59,7 @@ export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
         throw new Error(`Could not find ${event.PhysicalResourceId} to update`);
       }
       // determine if table needs replacement
-      if (isKeySchemaModified(describeTableResult.Table.KeySchema!, tableDef.KeySchema)) {
+      if (isKeySchemaModified(describeTableResult.Table.KeySchema!, tableDef.keySchema)) {
         console.log('Update requires replacement');
 
         console.log('Deleting the old table');
@@ -196,8 +196,8 @@ export const isComplete = async (
  * @returns UpdateTableInput object including the next GSI update only. Undefined if no next steps
  */
 export const getNextGSIUpdate = (currentState: TableDescription, endState: CustomDDB.Input): UpdateTableInput | undefined => {
-  const endStateGSIs = endState.GlobalSecondaryIndexes || [];
-  const endStateGSINames = endStateGSIs.map((gsi) => gsi.IndexName);
+  const endStateGSIs = endState.globalSecondaryIndexes || [];
+  const endStateGSINames = endStateGSIs.map((gsi) => gsi.indexName);
 
   const currentStateGSIs = currentState.GlobalSecondaryIndexes || [];
   const currentStateGSINames = currentStateGSIs.map((gsi) => gsi.IndexName);
@@ -207,11 +207,11 @@ export const getNextGSIUpdate = (currentState: TableDescription, endState: Custo
     // check if the index has been removed entirely
     if (!endStateGSINames.includes(currentGSI.IndexName!)) return true;
     // get the end state of this GSI
-    const respectiveEndStateGSI = endStateGSIs.find((endStateGSI) => endStateGSI.IndexName === currentGSI.IndexName)!;
+    const respectiveEndStateGSI = endStateGSIs.find((endStateGSI) => endStateGSI.indexName === currentGSI.IndexName)!;
     // detect if projection has changed
-    if (isProjectionModified(currentGSI.Projection!, respectiveEndStateGSI.Projection!)) return true;
+    if (isProjectionModified(currentGSI.Projection!, respectiveEndStateGSI.projection!)) return true;
     // detect if key schema has changed
-    if (isKeySchemaModified(currentGSI.KeySchema!, respectiveEndStateGSI.KeySchema!)) return true;
+    if (isKeySchemaModified(currentGSI.KeySchema!, respectiveEndStateGSI.keySchema!)) return true;
     // if we got here, then the GSI does not need to be removed
     return false;
   };
@@ -230,24 +230,26 @@ export const getNextGSIUpdate = (currentState: TableDescription, endState: Custo
   }
 
   // if we get here, then find a GSI that needs to be created and construct an update request
-  const gsiRequiresCreationPredicate = (endStateGSI: DynamoDB.GlobalSecondaryIndex): boolean =>
-    !currentStateGSINames.includes(endStateGSI.IndexName);
+  const gsiRequiresCreationPredicate = (endStateGSI: CustomDDB.GlobalSecondaryIndexProperty): boolean =>
+    !currentStateGSINames.includes(endStateGSI.indexName);
 
   const gsiToAdd = endStateGSIs.find(gsiRequiresCreationPredicate);
   if (gsiToAdd) {
-    const attributeNamesToInclude = gsiToAdd.KeySchema.map((schema) => schema.AttributeName);
+    const attributeNamesToInclude = gsiToAdd.keySchema.map((schema) => schema.attributeName);
     const gsiToAddAction = removeUndefinedAttributes({
-      IndexName: gsiToAdd.IndexName,
-      KeySchema: gsiToAdd.KeySchema,
-      Projection: gsiToAdd.Projection,
-      ProvisionedThroughput: gsiToAdd.ProvisionedThroughput,
-    }) as DynamoDB.CreateGlobalSecondaryIndexAction;
+      IndexName: gsiToAdd.indexName,
+      KeySchema: gsiToAdd.keySchema,
+      Projection: gsiToAdd.projection,
+      ProvisionedThroughput: gsiToAdd.provisionedThroughput,
+    });
     return {
       TableName: currentState.TableName!,
-      AttributeDefinitions: endState.AttributeDefinitions.filter((def) => attributeNamesToInclude.includes(def.AttributeName)),
+      AttributeDefinitions: endState.attributeDefinitions
+        ?.filter((def) => attributeNamesToInclude.includes(def.attributeName))
+        .map((def) => capitalizeKeysInObject(def)) as DynamoDB.AttributeDefinitions,
       GlobalSecondaryIndexUpdates: [
         {
-          Create: gsiToAddAction,
+          Create: capitalizeKeysInObject(gsiToAddAction) as DynamoDB.CreateGlobalSecondaryIndexAction,
         },
       ],
     };
@@ -271,7 +273,7 @@ type CreateTableResponse = {
  * @param event Event for onEvent or isComplete
  * @returns The table input for Custom dynamoDB Table
  */
-const extractTableInputFromEvent = (
+export const extractTableInputFromEvent = (
   event: AWSCDKAsyncCustomResource.OnEventRequest | AWSCDKAsyncCustomResource.IsCompleteRequest,
 ): CustomDDB.Input => {
   // isolate the resource properties from the event and remove the service token
@@ -279,7 +281,8 @@ const extractTableInputFromEvent = (
   delete resourceProperties.ServiceToken;
 
   // cast the remaining resource properties to the DynamoDB API call input type
-  const tableDef = capitalizeKeysInObject(convertStringToBooleanOrNumber(resourceProperties)) as CustomDDB.Input;
+  // const tableDef = capitalizeKeysInObject(convertStringToBooleanOrNumber(resourceProperties)) as CustomDDB.Input;
+  const tableDef = convertStringToBooleanOrNumber(resourceProperties) as CustomDDB.Input;
   return tableDef;
 };
 
@@ -354,23 +357,23 @@ const removeUndefinedAttributes = (obj: Record<string, any>): Record<string, any
  * @param props The table input from user. TODO: use types for the input
  * @returns CreateTableInput object
  */
-const toCreateTableInput = (props: any): CreateTableInput => {
-  const createTableInput: CreateTableInput = {
-    TableName: props.TableName,
-    AttributeDefinitions: props.AttributeDefinitions,
-    KeySchema: props.KeySchema,
-    GlobalSecondaryIndexes: props.GlobalSecondaryIndexes,
-    BillingMode: props.BillingMode,
-    StreamSpecification: props.StreamSpecification
+const toCreateTableInput = (props: CustomDDB.Input): CreateTableInput => {
+  const createTableInput = {
+    TableName: props.tableName,
+    AttributeDefinitions: props.attributeDefinitions,
+    KeySchema: props.keySchema,
+    GlobalSecondaryIndexes: props.globalSecondaryIndexes,
+    BillingMode: props.billingMode,
+    StreamSpecification: props.streamSpecification
       ? {
           StreamEnabled: true,
-          StreamViewType: props.StreamSpecification.StreamViewType,
+          StreamViewType: props.streamSpecification.streamViewType,
         }
       : undefined,
-    ProvisionedThroughput: props.ProvisionedThroughput,
-    SSESpecification: props.SSESpecification ? { Enabled: props.SSESpecification.SseEnabled } : undefined,
+    ProvisionedThroughput: props.provisionedThroughput,
+    SSESpecification: props.sseSpecification ? { Enabled: props.sseSpecification.sseEnabled } : undefined,
   };
-  return removeUndefinedAttributes(createTableInput) as CreateTableInput;
+  return capitalizeKeysInObject(removeUndefinedAttributes(createTableInput)) as CreateTableInput;
 };
 
 /**
@@ -408,15 +411,15 @@ const doesTableExist = async (tableName: string): Promise<boolean> => {
  * @param endProjection end state of GSI projection
  * @returns boolean to indicate the change of projection
  */
-const isProjectionModified = (currentProjection: Projection, endProjection: Projection): boolean => {
+const isProjectionModified = (currentProjection: Projection, endProjection: CustomDDB.ProjectionProperty): boolean => {
   // first see if the projection type is changed
-  if (currentProjection.ProjectionType !== endProjection.ProjectionType) return true;
+  if (currentProjection.ProjectionType !== endProjection.projectionType) return true;
 
   // if projection type is all for both then no need to check projection attributes
   if (currentProjection.ProjectionType === 'ALL') return false;
 
   const currentNonKeyAttributes = currentProjection.NonKeyAttributes || [];
-  const endNonKeyAttributes = currentProjection.NonKeyAttributes || [];
+  const endNonKeyAttributes = endProjection.nonKeyAttributes || [];
   // if an attribute has been added or removed
   if (currentNonKeyAttributes.length !== endNonKeyAttributes.length) return true;
 
@@ -433,14 +436,14 @@ const isProjectionModified = (currentProjection: Projection, endProjection: Proj
  * @param endSchema end state of key schema
  * @returns boolean indicates the change of key schema
  */
-const isKeySchemaModified = (currentSchema: KeySchema, endSchema: KeySchema): boolean => {
+const isKeySchemaModified = (currentSchema: KeySchema, endSchema: Array<CustomDDB.KeySchemaProperty>): boolean => {
   const currentHashKey = currentSchema.find((schema) => schema.KeyType === 'HASH');
-  const endHashKey = endSchema.find((schema) => schema.KeyType === 'HASH');
+  const endHashKey = endSchema.find((schema) => schema.keyType === 'HASH');
   // check if hash key attribute name is modified
-  if (currentHashKey?.AttributeName !== endHashKey?.AttributeName) return true;
+  if (currentHashKey?.AttributeName !== endHashKey?.attributeName) return true;
 
   const currentSortKey = currentSchema.find((schema) => schema.KeyType === 'RANGE');
-  const endSortKey = endSchema.find((schema) => schema.KeyType === 'RANGE');
+  const endSortKey = endSchema.find((schema) => schema.keyType === 'RANGE');
 
   // if a sort key doesn't exist in current or end state, then we're done, the schemas are the same
   if (currentSortKey === undefined && endSortKey === undefined) return false;
@@ -449,7 +452,7 @@ const isKeySchemaModified = (currentSchema: KeySchema, endSchema: KeySchema): bo
   if ((currentSortKey === undefined && endSortKey !== undefined) || (currentSortKey !== undefined && endSortKey === undefined)) return true;
 
   // check if sort key attribute name is modified
-  if (currentSortKey?.AttributeName !== endSortKey?.AttributeName) return true;
+  if (currentSortKey?.AttributeName !== endSortKey?.attributeName) return true;
 
   // if we got here then the hash and range key are not modified
   return false;

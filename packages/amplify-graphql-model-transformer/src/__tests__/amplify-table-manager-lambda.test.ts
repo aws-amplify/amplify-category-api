@@ -1,55 +1,57 @@
 import { getNextGSIUpdate } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
 import * as CustomDDB from '../resources/amplify-dynamodb-table/amplify-table-types';
 import { DynamoDB } from 'aws-sdk';
+import { extractTableInputFromEvent } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
+import { RequestType } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda-types';
 
 describe('Custom Resource Lambda Tests', () => {
   describe('Get next GSI update', () => {
     const endState: CustomDDB.Input = {
-      TableName: 'test-table',
-      AttributeDefinitions: [
+      tableName: 'test-table',
+      attributeDefinitions: [
         {
-          AttributeName: 'pk',
-          AttributeType: 'S',
+          attributeName: 'pk',
+          attributeType: 'S',
         },
         {
-          AttributeName: 'sk',
-          AttributeType: 'S',
+          attributeName: 'sk',
+          attributeType: 'S',
         },
         {
-          AttributeName: 'newKey',
-          AttributeType: 'S',
-        },
-      ],
-      KeySchema: [
-        {
-          AttributeName: 'pk',
-          KeyType: 'HASH',
+          attributeName: 'newKey',
+          attributeType: 'S',
         },
       ],
-      BillingMode: 'PAY_PER_REQUEST',
-      GlobalSecondaryIndexes: [
+      keySchema: [
         {
-          IndexName: 'gsi2',
-          KeySchema: [
+          attributeName: 'pk',
+          keyType: 'HASH',
+        },
+      ],
+      billingMode: 'PAY_PER_REQUEST',
+      globalSecondaryIndexes: [
+        {
+          indexName: 'gsi2',
+          keySchema: [
             {
-              AttributeName: 'sk',
-              KeyType: 'HASH',
+              attributeName: 'sk',
+              keyType: 'HASH',
             },
           ],
-          Projection: {
-            ProjectionType: 'ALL',
+          projection: {
+            projectionType: 'ALL',
           },
         },
         {
-          IndexName: 'gsi3',
-          KeySchema: [
+          indexName: 'gsi3',
+          keySchema: [
             {
-              AttributeName: 'newKey',
-              KeyType: 'HASH',
+              attributeName: 'newKey',
+              keyType: 'HASH',
             },
           ],
-          Projection: {
-            ProjectionType: 'ALL',
+          projection: {
+            projectionType: 'ALL',
           },
         },
       ],
@@ -220,6 +222,78 @@ describe('Custom Resource Lambda Tests', () => {
       };
       const nextUpdate = getNextGSIUpdate(currentState, endState);
       expect(nextUpdate).toBeUndefined();
+    });
+  });
+  describe('Extract table definition input from event test', () => {
+    it('should extract the correct table definition from event object', () => {
+      const mockEvent = {
+        ServiceToken: 'mockServiceToken',
+        ResponseURL: 'mockResponseURL',
+        StackId: 'mockStackId',
+        RequestId: 'mockRequestId',
+        LogicalResourceId: 'mockLogicalResourceId',
+        ResourceType: 'mockResourceType',
+        RequestType: 'Create' as RequestType,
+        ResourceProperties: {
+          ServiceToken: 'mockServiceToken',
+          tableName: 'mockTableName',
+          attributeDefinitions: [
+            {
+              attributeName: 'todoId',
+              attributeType: 'S',
+            },
+            {
+              attributeName: 'name',
+              attributeType: 'S',
+            },
+            {
+              attributeName: 'name2',
+              attributeType: 'S',
+            },
+          ],
+          keySchema: [
+            {
+              attributeName: 'todoId',
+              keyType: 'HASH',
+            },
+            {
+              attributeName: 'name',
+              keyType: 'RANGE',
+            },
+          ],
+          globalSecondaryIndexes: [
+            {
+              indexName: 'byName2',
+              keySchema: [
+                {
+                  attributeName: 'name2',
+                  keyType: 'HASH',
+                },
+              ],
+              projection: {
+                projectionType: 'ALL',
+              },
+              provisionedThroughput: {
+                readCapacityUnits: '5',
+                writeCapacityUnits: '5',
+              },
+            },
+          ],
+          billingMode: 'PROVISIONED',
+          provisionedThroughput: {
+            readCapacityUnits: '5',
+            writeCapacityUnits: '5',
+          },
+          sseSpecification: {
+            sseEnabled: 'true',
+          },
+          streamSpecification: {
+            streamViewType: 'NEW_AND_OLD_IMAGES',
+          },
+        },
+      };
+      const tableDef = extractTableInputFromEvent(mockEvent);
+      expect(tableDef).toMatchSnapshot();
     });
   });
 });

@@ -84,8 +84,8 @@ export function replaceDdbPrimaryKey(config: PrimaryKeyDirectiveConfiguration, c
 
   // CDK does not support modifying all of these things, so keep them in sync.
   if (useAmplifyMangedTableResources) {
-    cfnTable.addPropertyOverride('KeySchema', table.keySchema);
-    cfnTable.addPropertyOverride('AttributeDefinitions', table.attributeDefinitions);
+    cfnTable.addPropertyOverride('keySchema', table.keySchema);
+    cfnTable.addPropertyOverride('attributeDefinitions', table.attributeDefinitions);
   } else {
     cfnTable.keySchema = table.keySchema;
     cfnTable.attributeDefinitions = table.attributeDefinitions;
@@ -398,7 +398,7 @@ export function appendSecondaryIndex(config: IndexDirectiveConfiguration, ctx: T
     } else {
       const cfnTable = table.node.defaultChild.node.defaultChild as cdk.CfnCustomResource;
       const idx = table.globalSecondaryIndexes.length - 1;
-      cfnTable.addOverride(`Properties.GlobalSecondaryIndexes.${idx}`, {
+      cfnTable.addOverride(`Properties.globalSecondaryIndexes.${idx}`, {
         indexName: name,
         keySchema,
         projection: { projectionType: 'ALL' },

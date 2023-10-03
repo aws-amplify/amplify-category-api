@@ -425,7 +425,7 @@ export function updateTableForConnection(config: HasManyDirectiveConfiguration, 
   } else {
     const cfnTable = table.node.defaultChild.node.defaultChild as cdk.CfnCustomResource;
     const idx = table.globalSecondaryIndexes.length - 1;
-    cfnTable.addOverride(`Properties.GlobalSecondaryIndexes.${idx}`, {
+    cfnTable.addOverride(`Properties.globalSecondaryIndexes.${idx}`, {
       indexName,
       keySchema: gsi.keySchema,
       projection: { projectionType: 'ALL' },

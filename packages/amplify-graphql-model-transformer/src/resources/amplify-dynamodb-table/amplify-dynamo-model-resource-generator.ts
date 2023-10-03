@@ -133,21 +133,21 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
     const cfnTable = table.node.defaultChild?.node.defaultChild as cdk.CfnCustomResource;
     setResourceName(cfnTable, { name: modelName, setOnDefaultChild: false });
     cfnTable.addPropertyOverride(
-      'ProvisionedThroughput',
+      'provisionedThroughput',
       cdk.Fn.conditionIf(usePayPerRequestBilling.logicalId, cdk.Fn.ref('AWS::NoValue'), {
         ReadCapacityUnits: readIops,
         WriteCapacityUnits: writeIops,
       }),
     );
     cfnTable.addPropertyOverride(
-      'PointInTimeRecoverySpecification',
+      'pointInTimeRecoverySpecification',
       cdk.Fn.conditionIf(usePointInTimeRecovery.logicalId, { PointInTimeRecoveryEnabled: true }, cdk.Fn.ref('AWS::NoValue')),
     );
     cfnTable.addPropertyOverride(
-      'BillingMode',
+      'billingMode',
       cdk.Fn.conditionIf(usePayPerRequestBilling.logicalId, 'PAY_PER_REQUEST', cdk.Fn.ref('AWS::NoValue')).toString(),
     );
-    cfnTable.addPropertyOverride('SSESpecification', {
+    cfnTable.addPropertyOverride('sseSpecification', {
       sseEnabled: cdk.Fn.conditionIf(useSSE.logicalId, true, false),
     });
 
