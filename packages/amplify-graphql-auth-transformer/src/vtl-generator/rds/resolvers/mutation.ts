@@ -10,25 +10,7 @@ export const generateAuthExpressionForCreate = (
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
 ): string => {
-  const expressions = [];
-  const operation = 'create';
-  expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, fields)));
-  expressions.push(
-    set(
-      ref('authResult'),
-      methodCall(
-        ref('util.authRules.mutationAuth'),
-        ref('authRules'),
-        str(operation),
-        ref('ctx.args.input'),
-      ),
-    ),
-  );
-  expressions.push(
-    validateAuthResult(),
-    constructAuthorizedInputStatement('ctx.args.input'),
-  );
-  return printBlock('Authorization rules')(compoundExpression(expressions));
+  return generateMutationExpression(roles, fields, 'create');
 };
 
 export const generateAuthExpressionForUpdate = (
@@ -36,23 +18,7 @@ export const generateAuthExpressionForUpdate = (
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
 ): string => {
-  const expressions = [];
-  const operation = 'update';
-  expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, fields)));
-  expressions.push(
-    set(
-      ref('authResult'),
-      methodCall(
-        ref('util.authRules.mutationAuth'),
-        ref('authRules'),
-        str(operation),
-        ref('ctx.args.input'),
-        ref('ctx.source'),
-      ),
-    ),
-  );
-  expressions.push(validateAuthResult());
-  return printBlock('Authorization rules')(compoundExpression(expressions));
+  return generateMutationExpression(roles, fields, 'update', true);
 };
 
 export const generateAuthExpressionForDelete = (
@@ -60,24 +26,39 @@ export const generateAuthExpressionForDelete = (
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
 ): string => {
+  return generateMutationExpression(roles, fields, 'delete', true);
+};
+
+const generateMutationExpression = (
+  roles: Array<RoleDefinition>,
+  fields: ReadonlyArray<FieldDefinitionNode>,
+  operation: 'create' | 'update' | 'delete',
+  includeExistingRecord = false,
+): string => {
   const expressions = [];
-  const operation = 'delete';
   expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, fields)));
   expressions.push(
     set(
       ref('authResult'),
-      methodCall(
-        ref('util.authRules.mutationAuth'),
-        ref('authRules'),
-        str(operation),
-        ref('ctx.args.input'),
-        ref('ctx.source'),
-      ),
+      includeExistingRecord 
+        ? methodCall(
+          ref('util.authRules.mutationAuth'),
+          ref('authRules'),
+          str(operation),
+          ref('ctx.args.input'),
+          ref('ctx.source'),
+        )
+        : methodCall(
+          ref('util.authRules.mutationAuth'),
+          ref('authRules'),
+          str(operation),
+          ref('ctx.args.input'),
+        ),
     ),
   );
   expressions.push(validateAuthResult());
   return printBlock('Authorization rules')(compoundExpression(expressions));
-};
+}
 
 export const generateAuthRequestExpression = (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode): string => {
   const mappedTableName = ctx.resourceHelper.getModelNameMapping(def.name.value);
