@@ -16,8 +16,7 @@ const stack = new Stack(app, packageJson.name.replace(/_/g, '-'), {
 });
 
 const userPool = new UserPool(stack, 'TestPool', {});
-// const identityPoolId = new CfnIdentityPool(stack, 'TestIdentityPool', { allowUnauthenticatedIdentities: true }).attrId;
-const identityPoolId = 'us-west-2:54ee61c9-8d51-46aa-8898-33e8578d2f75'; // Random id, value not used in this test
+const identityPoolId = new CfnIdentityPool(stack, 'TestIdentityPool', { allowUnauthenticatedIdentities: true }).logicalId;
 const appsync = new ServicePrincipal('appsync.amazonaws.com');
 const authenticatedUserRole = new Role(stack, 'TestAuthRole', { assumedBy: appsync });
 const unauthenticatedUserRole = new Role(stack, 'TestUnauthRole', { assumedBy: appsync });
