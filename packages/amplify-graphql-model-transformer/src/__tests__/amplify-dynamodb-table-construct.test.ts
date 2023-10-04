@@ -17,6 +17,7 @@ describe('Amplify DynamoDB Table Construct Tests', () => {
       encryption: TableEncryption.DEFAULT,
     });
     const template = Template.fromStack(stack);
+    // The correct template should be generated with default input
     template.hasResourceProperties(CUSTOM_DDB_CFN_TYPE, {
       ServiceToken: 'mockResourceServiceToken',
       tableName: 'mockTableName',
@@ -43,6 +44,7 @@ describe('Amplify DynamoDB Table Construct Tests', () => {
         sseEnabled: false,
       },
     });
+    // The correct key schema of table should be returned
     expect(table.schema()).toEqual({
       partitionKey: {
         name: 'id',

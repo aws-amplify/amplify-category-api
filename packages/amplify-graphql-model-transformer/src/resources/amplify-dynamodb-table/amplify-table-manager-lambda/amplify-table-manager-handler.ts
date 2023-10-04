@@ -236,20 +236,20 @@ export const getNextGSIUpdate = (currentState: TableDescription, endState: Custo
   const gsiToAdd = endStateGSIs.find(gsiRequiresCreationPredicate);
   if (gsiToAdd) {
     const attributeNamesToInclude = gsiToAdd.keySchema.map((schema) => schema.attributeName);
-    const gsiToAddAction = removeUndefinedAttributes({
+    const gsiToAddAction = {
       IndexName: gsiToAdd.indexName,
       KeySchema: gsiToAdd.keySchema,
       Projection: gsiToAdd.projection,
       ProvisionedThroughput: gsiToAdd.provisionedThroughput,
-    });
+    };
     return {
       TableName: currentState.TableName!,
       AttributeDefinitions: endState.attributeDefinitions
         ?.filter((def) => attributeNamesToInclude.includes(def.attributeName))
-        .map((def) => capitalizeKeysInObject(def)) as DynamoDB.AttributeDefinitions,
+        .map((def) => usePascalCaseForObjectKeys(def)) as DynamoDB.AttributeDefinitions,
       GlobalSecondaryIndexUpdates: [
         {
-          Create: capitalizeKeysInObject(gsiToAddAction) as DynamoDB.CreateGlobalSecondaryIndexAction,
+          Create: parsePropertiesToDynamoDBInput(gsiToAddAction) as DynamoDB.CreateGlobalSecondaryIndexAction,
         },
       ],
     };
@@ -269,7 +269,8 @@ type CreateTableResponse = {
 };
 
 /**
- * Extract the custom DynamoDB table properties from event
+ * Extract the custom DynamoDB table properties from event, during which the service token will be removed
+ * and the string values will be correctly parsed to boolean or number
  * @param event Event for onEvent or isComplete
  * @returns The table input for Custom dynamoDB Table
  */
@@ -281,31 +282,46 @@ export const extractTableInputFromEvent = (
   delete resourceProperties.ServiceToken;
 
   // cast the remaining resource properties to the DynamoDB API call input type
-  // const tableDef = capitalizeKeysInObject(convertStringToBooleanOrNumber(resourceProperties)) as CustomDDB.Input;
+  // const tableDef = usePascalCaseForObjectKeys(convertStringToBooleanOrNumber(resourceProperties)) as CustomDDB.Input;
   const tableDef = convertStringToBooleanOrNumber(resourceProperties) as CustomDDB.Input;
   return tableDef;
 };
 
-const capitalizeKeysInObject = (obj: { [key: string]: any }): { [key: string]: any } => {
-  const capitalizedObject: { [key: string]: any } = {};
+/**
+ * Parse the properties to the form supported by DynamoDB SDK call, in which the undefined properties will be removed first
+ * and then the object keys will be converted to PascalCase
+ * @param obj input object
+ * @returns object in the form recognized by DynamoDB SDK call
+ */
+const parsePropertiesToDynamoDBInput = (obj: { [key: string]: any }): { [key: string]: any } => {
+  return usePascalCaseForObjectKeys(removeUndefinedAttributes(obj));
+};
+
+/**
+ * Util function to convert keys in object to PascalCase
+ * @param obj input object
+ * @returns object with keys in PascalCase
+ */
+const usePascalCaseForObjectKeys = (obj: { [key: string]: any }): { [key: string]: any } => {
+  const result: { [key: string]: any } = {};
 
   for (const key in obj) {
-    if (obj.hasOwnProperty(key)) {
+    if (obj.hasOwnProperty(key) && key !== '') {
       const capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1);
       const value = obj[key];
 
       if (Array.isArray(value)) {
-        capitalizedObject[capitalizedKey] = value.map((v) => capitalizeKeysInObject(v));
+        result[capitalizedKey] = value.map((v) => usePascalCaseForObjectKeys(v));
       } else if (typeof value === 'object' && value !== null) {
         // If the value is an object, recursively capitalize its keys
-        capitalizedObject[capitalizedKey] = capitalizeKeysInObject(value);
+        result[capitalizedKey] = usePascalCaseForObjectKeys(value);
       } else {
-        capitalizedObject[capitalizedKey] = value;
+        result[capitalizedKey] = value;
       }
     }
   }
 
-  return capitalizedObject;
+  return result;
 };
 
 /**
@@ -357,7 +373,7 @@ const removeUndefinedAttributes = (obj: Record<string, any>): Record<string, any
  * @param props The table input from user. TODO: use types for the input
  * @returns CreateTableInput object
  */
-const toCreateTableInput = (props: CustomDDB.Input): CreateTableInput => {
+export const toCreateTableInput = (props: CustomDDB.Input): CreateTableInput => {
   const createTableInput = {
     TableName: props.tableName,
     AttributeDefinitions: props.attributeDefinitions,
@@ -373,7 +389,7 @@ const toCreateTableInput = (props: CustomDDB.Input): CreateTableInput => {
     ProvisionedThroughput: props.provisionedThroughput,
     SSESpecification: props.sseSpecification ? { Enabled: props.sseSpecification.sseEnabled } : undefined,
   };
-  return capitalizeKeysInObject(removeUndefinedAttributes(createTableInput)) as CreateTableInput;
+  return parsePropertiesToDynamoDBInput(createTableInput) as CreateTableInput;
 };
 
 /**

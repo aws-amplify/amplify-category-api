@@ -1,4 +1,7 @@
-import { getNextGSIUpdate } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
+import {
+  getNextGSIUpdate,
+  toCreateTableInput,
+} from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
 import * as CustomDDB from '../resources/amplify-dynamodb-table/amplify-table-types';
 import { DynamoDB } from 'aws-sdk';
 import { extractTableInputFromEvent } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
@@ -451,7 +454,7 @@ describe('Custom Resource Lambda Tests', () => {
     });
   });
   describe('Extract table definition input from event test', () => {
-    it('should extract the correct table definition from event object', () => {
+    it('should extract the correct table definition from event object and parse it into create table input', () => {
       const mockEvent = {
         ServiceToken: 'mockServiceToken',
         ResponseURL: 'mockResponseURL',
@@ -520,6 +523,8 @@ describe('Custom Resource Lambda Tests', () => {
       };
       const tableDef = extractTableInputFromEvent(mockEvent);
       expect(tableDef).toMatchSnapshot();
+      const createTableInput = toCreateTableInput(tableDef);
+      expect(createTableInput).toMatchSnapshot();
     });
   });
 });
