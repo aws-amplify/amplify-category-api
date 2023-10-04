@@ -282,7 +282,6 @@ export const extractTableInputFromEvent = (
   delete resourceProperties.ServiceToken;
 
   // cast the remaining resource properties to the DynamoDB API call input type
-  // const tableDef = usePascalCaseForObjectKeys(convertStringToBooleanOrNumber(resourceProperties)) as CustomDDB.Input;
   const tableDef = convertStringToBooleanOrNumber(resourceProperties) as CustomDDB.Input;
   return tableDef;
 };
