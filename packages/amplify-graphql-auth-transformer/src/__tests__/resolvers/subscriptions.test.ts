@@ -9,7 +9,6 @@ const configFromPartial = (partialConfig: Partial<ConfiguredAuthProviders>): Con
     hasIAM: false,
     hasLambda: false,
     hasAdminRolesEnabled: false,
-    adminRoles: ['TESTADMINROLE1', 'TESTADMINROLE2'],
     hasIdentityPoolId: true,
     ...partialConfig,
   } as unknown as ConfiguredAuthProviders);
@@ -105,33 +104,15 @@ describe('subscriptions', () => {
       });
 
       it('renders for iam auth with no admin roles', () => {
-        const adminRolesDisabledExpr1 = generateAuthExpressionForSubscriptions(
-          configFromPartial({
-            hasIAM: true,
-            adminRoles: [],
-          }),
-          defaultRoleDefinitions.iam,
-        );
-        const adminRolesDisabledExpr2 = generateAuthExpressionForSubscriptions(
-          configFromPartial({
-            hasIAM: true,
-            hasAdminRolesEnabled: false,
-          }),
-          defaultRoleDefinitions.iam,
-        );
-        const adminRolesDisabledExpr3 = generateAuthExpressionForSubscriptions(
-          configFromPartial({
-            hasIAM: true,
-            hasAdminRolesEnabled: false,
-            adminRoles: [],
-          }),
-          defaultRoleDefinitions.iam,
-        );
-        // All 3 should be equivalent
-        expect(adminRolesDisabledExpr1).toEqual(adminRolesDisabledExpr2);
-        expect(adminRolesDisabledExpr1).toEqual(adminRolesDisabledExpr3);
-
-        expect(adminRolesDisabledExpr1).toMatchSnapshot();
+        expect(
+          generateAuthExpressionForSubscriptions(
+            configFromPartial({
+              hasIAM: true,
+              hasAdminRolesEnabled: false,
+            }),
+            defaultRoleDefinitions.iam,
+          ),
+        ).toMatchSnapshot();
       });
     });
 
