@@ -41,7 +41,6 @@ import { IFunction } from 'aws-cdk-lib/aws-lambda';
  * Used to determine how to create a new GraphQLTransform
  */
 export type TransformerFactoryArgs = {
-  synthParameters?: SynthParameters;
   authConfig?: any;
   storageConfig?: any;
   adminRoles?: Array<string>;
@@ -66,7 +65,10 @@ export type TransformConfig = {
 
 export const constructTransformerChain = (options?: TransformerFactoryArgs): TransformerPluginProvider[] => {
   const modelTransformer = new ModelTransformer();
-  const authTransformer = new AuthTransformer({ synthParameters: options?.synthParameters });
+  const authTransformer = new AuthTransformer({
+    adminRoles: options?.adminRoles,
+    identityPoolId: options?.identityPoolId,
+  });
   const indexTransformer = new IndexTransformer();
   const hasOneTransformer = new HasOneTransformer();
 

@@ -28,9 +28,7 @@ test('simple model with public auth rule and amplify admin app is present', () =
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        synthParameters: {
-          adminRoles: ADMIN_UI_ROLES,
-        },
+        adminRoles: ADMIN_UI_ROLES,
       }),
     ],
   });
@@ -85,9 +83,7 @@ test('model with public auth rule without all operations and amplify admin app i
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        synthParameters: {
-          adminRoles: ADMIN_UI_ROLES,
-        },
+        adminRoles: ADMIN_UI_ROLES,
       }),
     ],
   });
@@ -127,9 +123,7 @@ test('simple model with private auth rule and amplify admin app is present', () 
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        synthParameters: {
-          adminRoles: ADMIN_UI_ROLES,
-        },
+        adminRoles: ADMIN_UI_ROLES,
       }),
     ],
   });
@@ -188,9 +182,7 @@ test('simple model with private auth rule, few operations, and amplify admin app
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        synthParameters: {
-          adminRoles: ADMIN_UI_ROLES,
-        },
+        adminRoles: ADMIN_UI_ROLES,
       }),
     ],
   });
@@ -235,9 +227,7 @@ test('simple model with private IAM auth rule, few operations, and amplify admin
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        synthParameters: {
-          identityPoolId: 'testIdentityPoolId',
-        },
+        identityPoolId: 'testIdentityPoolId',
       }),
     ],
   });
@@ -282,9 +272,7 @@ test('simple model with AdminUI enabled should add IAM policy only for fields th
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        synthParameters: {
-          adminRoles: ADMIN_UI_ROLES,
-        },
+        adminRoles: ADMIN_UI_ROLES,
       }),
     ],
   });
@@ -346,9 +334,7 @@ test('admin roles should be return the field name inside field resolvers', () =>
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        synthParameters: {
-          adminRoles: ADMIN_UI_ROLES,
-        },
+        adminRoles: ADMIN_UI_ROLES,
       }),
     ],
   });

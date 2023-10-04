@@ -60,7 +60,6 @@ export type TransformConfig = {
 
 // @public (undocumented)
 export type TransformerFactoryArgs = {
-    synthParameters?: SynthParameters;
     authConfig?: any;
     storageConfig?: any;
     adminRoles?: Array<string>;

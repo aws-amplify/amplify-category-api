@@ -595,7 +595,7 @@ describe('iam checks', () => {
     const out = testTransform({
       schema,
       authConfig: iamDefaultConfig,
-      transformers: [new ModelTransformer(), new AuthTransformer({ synthParameters: { identityPoolId } })],
+      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId })],
     });
     expect(out).toBeDefined();
     const createResolver = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
@@ -613,7 +613,7 @@ describe('iam checks', () => {
     const out = testTransform({
       schema,
       authConfig: iamDefaultConfig,
-      transformers: [new ModelTransformer(), new AuthTransformer({ synthParameters: { identityPoolId } })],
+      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId })],
     });
     expect(out).toBeDefined();
     const createResolver = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
@@ -627,7 +627,7 @@ describe('iam checks', () => {
     const out = testTransform({
       schema,
       authConfig: iamDefaultConfig,
-      transformers: [new ModelTransformer(), new AuthTransformer({ synthParameters: { adminRoles } })],
+      transformers: [new ModelTransformer(), new AuthTransformer({ adminRoles })],
     });
     expect(out).toBeDefined();
     const createResolver = out.resolvers['Mutation.createPost.auth.1.req.vtl'];

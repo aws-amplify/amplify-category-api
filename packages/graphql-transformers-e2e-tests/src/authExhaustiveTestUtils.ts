@@ -480,7 +480,7 @@ export const deploySchema = async (
   const out = testTransform({
     schema,
     authConfig,
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer({ synthParameters: { identityPoolId } })],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer({ identityPoolId })],
   });
 
   const customS3Client = new S3Client(REGION);
