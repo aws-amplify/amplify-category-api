@@ -7,6 +7,9 @@ import {
   DescribeDBInstancesCommand,
   DescribeDBInstancesCommandOutput,
   DescribeDBInstancesCommandInput,
+  DescribeDBProxiesCommand,
+  DescribeDBProxiesCommandOutput,
+  DescribeDBProxiesCommandInput,
   DescribeDBSubnetGroupsCommand,
 } from '@aws-sdk/client-rds';
 import {
@@ -51,6 +54,36 @@ export type VpcConfig = {
   vpcId: string;
   subnetIds: string[];
   securityGroupIds: string[];
+};
+
+const checkHostInDBProxies = async (hostname: string, region: string): Promise<VpcConfig | undefined> => {
+  const client = new RDSClient({ region });
+  const params: DescribeDBProxiesCommandInput = {
+    Filters: [
+      {
+        Name: 'engine',
+        Values: DB_ENGINES,
+      },
+    ],
+  };
+
+  const command = new DescribeDBProxiesCommand(params);
+  const response: DescribeDBProxiesCommandOutput = await client.send(command);
+
+  if (!response.DBProxies) {
+    throw new Error('Error in fetching DB Instances');
+  }
+
+  const proxy = response.DBProxies.find((p) => p?.Endpoint === hostname);
+  if (!proxy) {
+    return undefined;
+  }
+
+  return {
+    vpcId: proxy.VpcId,
+    subnetIds: proxy.VpcSubnetIds,
+    securityGroupIds: proxy.VpcSecurityGroupIds
+  };
 };
 
 const checkHostInDBInstances = async (hostname: string, region: string): Promise<VpcConfig | undefined> => {
@@ -134,12 +167,37 @@ const getSubnetIds = async (
 };
 
 /**
- * Searches for the host in DB Instances and DB Clusters and returns the VPC configuration if found.
+ * Searches for the host in DB Proxies, Instances and DB Clusters and returns the VPC configuration if found.
+ *
  * @param hostname Hostname of the database.
  * @param region AWS region.
  */
-export const getHostVpc = async (hostname: string, region: string): Promise<VpcConfig | undefined> =>
-  (await checkHostInDBInstances(hostname, region)) ?? (await checkHostInDBClusters(hostname, region));
+export const getHostVpc = async (hostname: string, region: string): Promise<VpcConfig | undefined> => {
+  const proxyResult = await checkHostInDBProxies(hostname, region);
+  if (proxyResult) {
+    return proxyResult;
+  }
+
+  // TODO: Confirm warning messaging
+  const warning = `
+    The host you provided is for an RDS cluster. Consider using an RDS Proxy as your data source instead. See the documentation for
+    a discussion of how an RDS proxy can help you scale your application more effectively.
+  `;
+
+  const clusterResult = await checkHostInDBClusters(hostname, region);
+  if (clusterResult) {
+    printer.warn(warning);
+    return clusterResult;
+  }
+
+  const instanceResult = await checkHostInDBInstances(hostname, region);
+  if (instanceResult) {
+    printer.warn(warning);
+    return instanceResult;
+  }
+  
+  return undefined;
+};
 
 /**
  * Provisions a lambda function to introspect the database schema.
@@ -199,7 +257,8 @@ const deleteSchemaInspectorLambdaRole = async (lambdaName: string, region: strin
   const FUNCTION_DELETE_DELAY = 10000;
 
   await lambdaClient.send(new DeleteFunctionCommand(params));
-  // Wait for the lambda to be deleted. This is required when the lambda is deleted and recreated with the same name when there is a VPC change.
+  // Wait for the lambda to be deleted. This is required when the lambda is deleted and recreated with the same name when there is a VPC
+  // change.
   await sleep(FUNCTION_DELETE_DELAY);
 };
 
