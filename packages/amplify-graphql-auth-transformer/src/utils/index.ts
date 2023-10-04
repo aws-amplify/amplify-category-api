@@ -1,5 +1,5 @@
 import { DirectiveWrapper, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
-import { AppSyncAuthMode, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncAuthMode, SynthParameters, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { Construct } from 'constructs';
 import { MODEL_OPERATIONS, READ_MODEL_OPERATIONS } from './constants';
@@ -164,9 +164,8 @@ export const getConfiguredAuthProviders = (config: AuthTransformerConfig): Confi
   const configuredProviders: ConfiguredAuthProviders = {
     default: getAuthProvider(config.authConfig.defaultAuthentication.authenticationType),
     onlyDefaultAuthProviderConfigured: config.authConfig.additionalAuthenticationProviders.length === 0,
-    hasAdminRolesEnabled: hasIAM && config.adminRoles?.length > 0,
-    adminRoles: config.adminRoles,
-    identityPoolId: config.identityPoolId,
+    hasAdminRolesEnabled: hasIAM && config.synthParameters?.adminRoles?.length > 0,
+    hasIdentityPoolId: config.synthParameters?.identityPoolId !== null && config.synthParameters?.identityPoolId !== undefined,
     hasApiKey: providers.some((p) => p === 'API_KEY'),
     hasUserPools: providers.some((p) => p === 'AMAZON_COGNITO_USER_POOLS'),
     hasOIDC: providers.some((p) => p === 'OPENID_CONNECT'),

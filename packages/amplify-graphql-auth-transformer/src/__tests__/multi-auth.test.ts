@@ -595,16 +595,16 @@ describe('iam checks', () => {
     const out = testTransform({
       schema,
       authConfig: iamDefaultConfig,
-      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId })],
+      transformers: [new ModelTransformer(), new AuthTransformer({ synthParameters: { identityPoolId } })],
     });
     expect(out).toBeDefined();
     const createResolver = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
     expect(createResolver).toContain(
-      `#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == "${identityPoolId}" && $ctx.identity.cognitoIdentityAuthType == "authenticated") )`,
+      `#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == $ctx.stash.identityPoolId && $ctx.identity.cognitoIdentityAuthType == "authenticated") )`,
     );
     const queryResolver = out.resolvers['Query.listPosts.auth.1.req.vtl'];
     expect(queryResolver).toContain(
-      `#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == "${identityPoolId}" && $ctx.identity.cognitoIdentityAuthType == "authenticated") )`,
+      `#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == $ctx.stash.identityPoolId && $ctx.identity.cognitoIdentityAuthType == "authenticated") )`,
     );
   });
 
@@ -613,7 +613,7 @@ describe('iam checks', () => {
     const out = testTransform({
       schema,
       authConfig: iamDefaultConfig,
-      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId })],
+      transformers: [new ModelTransformer(), new AuthTransformer({ synthParameters: { identityPoolId } })],
     });
     expect(out).toBeDefined();
     const createResolver = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
@@ -627,11 +627,11 @@ describe('iam checks', () => {
     const out = testTransform({
       schema,
       authConfig: iamDefaultConfig,
-      transformers: [new ModelTransformer(), new AuthTransformer({ adminRoles })],
+      transformers: [new ModelTransformer(), new AuthTransformer({ synthParameters: { adminRoles } })],
     });
     expect(out).toBeDefined();
     const createResolver = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
-    expect(createResolver).toContain('#set( $adminRoles = ["helloWorldFunction","echoMessageFunction"] )');
+    expect(createResolver).toContain('#foreach( $adminRole in $ctx.stash.adminRoles )');
     expect(createResolver).toMatchSnapshot();
   });
 });

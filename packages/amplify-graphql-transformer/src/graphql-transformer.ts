@@ -176,7 +176,14 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
     assetProvider,
     synthParameters,
     parameterProvider,
+    transformersFactoryArgs,
   } = config;
+
+  const mergedSynthParameters = {
+    ...synthParameters,
+    ...(transformersFactoryArgs.adminRoles ? { adminRoles: transformersFactoryArgs.adminRoles } : {}),
+    ...(transformersFactoryArgs.identityPoolId ? { identityPoolId: transformersFactoryArgs.identityPoolId } : {}),
+  };
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
   const transform = constructTransform(config);
@@ -187,7 +194,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
       nestedStackProvider,
       parameterProvider,
       assetProvider,
-      synthParameters,
+      synthParameters: mergedSynthParameters,
       schema,
       datasourceConfig: {
         modelToDatasourceMap,

@@ -21,7 +21,7 @@ describe('CDK Auth Modes', () => {
     deleteProjectDir(projRoot);
   });
 
-  test('CDK deploys with all auth modes enabled', async () => {
+  test('Can be invoked with Admin Roles defined', async () => {
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'admin-role'));
     const name = await initCDKProject(projRoot, templatePath);
     const outputs = await cdkDeploy(projRoot, '--all');

@@ -11,6 +11,7 @@ import { FieldDefinitionNode } from 'graphql';
 import { GetArgumentsOptions } from '@aws-amplify/graphql-transformer-core';
 import { InterfaceTypeDefinitionNode } from 'graphql';
 import { ObjectTypeDefinitionNode } from 'graphql';
+import { SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerAuthBase } from '@aws-amplify/graphql-transformer-core';
 import { TransformerAuthProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerBeforeStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -157,11 +158,9 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
 // @public (undocumented)
 export interface AuthTransformerConfig {
     // (undocumented)
-    adminRoles?: Array<string>;
-    // (undocumented)
     authConfig?: AppSyncAuthConfiguration;
     // (undocumented)
-    identityPoolId?: string;
+    synthParameters?: Partial<SynthParameters>;
 }
 
 // @public (undocumented)
@@ -169,8 +168,6 @@ export const COGNITO_AUTH_TYPE = "User Pool Authorization";
 
 // @public (undocumented)
 export interface ConfiguredAuthProviders {
-    // (undocumented)
-    adminRoles: Array<string>;
     // (undocumented)
     default: AuthProvider;
     // (undocumented)
@@ -180,13 +177,13 @@ export interface ConfiguredAuthProviders {
     // (undocumented)
     hasIAM: boolean;
     // (undocumented)
+    hasIdentityPoolId: boolean;
+    // (undocumented)
     hasLambda: boolean;
     // (undocumented)
     hasOIDC: boolean;
     // (undocumented)
     hasUserPools: boolean;
-    // (undocumented)
-    identityPoolId?: string;
     // (undocumented)
     onlyDefaultAuthProviderConfigured: boolean;
 }

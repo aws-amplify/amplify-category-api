@@ -10,7 +10,7 @@ const configFromPartial = (partialConfig: Partial<ConfiguredAuthProviders>): Con
     hasLambda: false,
     hasAdminRolesEnabled: false,
     adminRoles: ['TESTADMINROLE1', 'TESTADMINROLE2'],
-    identityPoolId: 'TESTIDENTIFYPOOLID',
+    hasIdentityPoolId: true,
     ...partialConfig,
   } as unknown as ConfiguredAuthProviders);
 

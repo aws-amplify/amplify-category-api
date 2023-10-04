@@ -28,7 +28,9 @@ test('simple model with public auth rule and amplify admin app is present', () =
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        adminRoles: ADMIN_UI_ROLES,
+        synthParameters: {
+          adminRoles: ADMIN_UI_ROLES,
+        },
       }),
     ],
   });
@@ -83,7 +85,9 @@ test('model with public auth rule without all operations and amplify admin app i
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        adminRoles: ADMIN_UI_ROLES,
+        synthParameters: {
+          adminRoles: ADMIN_UI_ROLES,
+        },
       }),
     ],
   });
@@ -123,7 +127,9 @@ test('simple model with private auth rule and amplify admin app is present', () 
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        adminRoles: ADMIN_UI_ROLES,
+        synthParameters: {
+          adminRoles: ADMIN_UI_ROLES,
+        },
       }),
     ],
   });
@@ -182,7 +188,9 @@ test('simple model with private auth rule, few operations, and amplify admin app
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        adminRoles: ADMIN_UI_ROLES,
+        synthParameters: {
+          adminRoles: ADMIN_UI_ROLES,
+        },
       }),
     ],
   });
@@ -227,7 +235,9 @@ test('simple model with private IAM auth rule, few operations, and amplify admin
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        identityPoolId: 'testIdentityPoolId',
+        synthParameters: {
+          identityPoolId: 'testIdentityPoolId',
+        },
       }),
     ],
   });
@@ -244,7 +254,7 @@ test('simple model with private IAM auth rule, few operations, and amplify admin
 
   expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toMatchSnapshot();
   expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toContain(
-    '#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == "testIdentityPoolId" && $ctx.identity.cognitoIdentityAuthType == "authenticated") )',
+    '#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == $ctx.stash.identityPoolId && $ctx.identity.cognitoIdentityAuthType == "authenticated") )',
   );
 });
 
@@ -272,7 +282,9 @@ test('simple model with AdminUI enabled should add IAM policy only for fields th
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        adminRoles: ADMIN_UI_ROLES,
+        synthParameters: {
+          adminRoles: ADMIN_UI_ROLES,
+        },
       }),
     ],
   });
@@ -334,7 +346,9 @@ test('admin roles should be return the field name inside field resolvers', () =>
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        adminRoles: ADMIN_UI_ROLES,
+        synthParameters: {
+          adminRoles: ADMIN_UI_ROLES,
+        },
       }),
     ],
   });

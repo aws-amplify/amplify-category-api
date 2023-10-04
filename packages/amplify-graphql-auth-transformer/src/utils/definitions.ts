@@ -1,4 +1,4 @@
-import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncAuthConfiguration, SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { GetArgumentsOptions } from '@aws-amplify/graphql-transformer-core';
 
 /**
@@ -41,10 +41,7 @@ export type GetAuthRulesOptions = GetArgumentsOptions & {
 export interface AuthTransformerConfig {
   /** used mainly in the before step to pass the authConfig from the transformer core down to the directive */
   authConfig?: AppSyncAuthConfiguration;
-  /** using the iam provider the resolvers checks will lets the roles in this list pass through the acm */
-  adminRoles?: Array<string>;
-  /** when authorizing private/public @auth can also check authenticated/unauthenticated status for a given identityPoolId */
-  identityPoolId?: string;
+  synthParameters?: Partial<SynthParameters>;
 }
 
 /**
@@ -112,8 +109,7 @@ export interface ConfiguredAuthProviders {
   hasIAM: boolean;
   hasLambda: boolean;
   hasAdminRolesEnabled: boolean;
-  adminRoles: Array<string>;
-  identityPoolId?: string;
+  hasIdentityPoolId: boolean;
 }
 
 export const authDirectiveDefinition = `
