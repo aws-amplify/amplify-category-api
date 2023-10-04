@@ -4,9 +4,9 @@ import { AttributeType, StreamViewType, TableEncryption } from 'aws-cdk-lib/aws-
 import { Template } from 'aws-cdk-lib/assertions';
 
 describe('Amplify DynamoDB Table Construct Tests', () => {
-  it('render the custom type for amplify dynamodb table', () => {
+  it('render the default amplify dynamodb table in correct form', () => {
     const stack = new cdk.Stack();
-    new AmplifyDynamoDBTable(stack, 'MockTable', {
+    const table = new AmplifyDynamoDBTable(stack, 'MockTable', {
       customResourceServiceToken: 'mockResourceServiceToken',
       tableName: 'mockTableName',
       partitionKey: {
@@ -18,7 +18,99 @@ describe('Amplify DynamoDB Table Construct Tests', () => {
     });
     const template = Template.fromStack(stack);
     template.hasResourceProperties(CUSTOM_DDB_CFN_TYPE, {
+      ServiceToken: 'mockResourceServiceToken',
       tableName: 'mockTableName',
+      attributeDefinitions: [
+        {
+          attributeName: 'id',
+          attributeType: 'S',
+        },
+      ],
+      keySchema: [
+        {
+          attributeName: 'id',
+          keyType: 'HASH',
+        },
+      ],
+      streamSpecification: {
+        streamViewType: 'NEW_AND_OLD_IMAGES',
+      },
+      provisionedThroughput: {
+        readCapacityUnits: 5,
+        writeCapacityUnits: 5,
+      },
+      sseSpecification: {
+        sseEnabled: false,
+      },
     });
+    expect(table.schema()).toEqual({
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+    });
+  });
+  it('render the correct template and index schema when GSIs are added', () => {
+    const stack = new cdk.Stack();
+    const table = new AmplifyDynamoDBTable(stack, 'MockTable', {
+      customResourceServiceToken: 'mockResourceServiceToken',
+      tableName: 'mockTableName',
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      stream: StreamViewType.NEW_AND_OLD_IMAGES,
+      encryption: TableEncryption.DEFAULT,
+    });
+    table.addGlobalSecondaryIndex({
+      indexName: 'gsi1',
+      partitionKey: {
+        name: 'name',
+        type: AttributeType.STRING,
+      },
+      sortKey: {
+        name: 'description',
+        type: AttributeType.STRING,
+      },
+    });
+    const template = Template.fromStack(stack);
+    // The correct template should be generated for GSI
+    template.hasResourceProperties(CUSTOM_DDB_CFN_TYPE, {
+      globalSecondaryIndexes: [
+        {
+          indexName: 'gsi1',
+          keySchema: [
+            {
+              attributeName: 'name',
+              keyType: 'HASH',
+            },
+            {
+              attributeName: 'description',
+              keyType: 'RANGE',
+            },
+          ],
+          projection: {
+            projectionType: 'ALL',
+          },
+          provisionedThroughput: {
+            readCapacityUnits: 5,
+            writeCapacityUnits: 5,
+          },
+        },
+      ],
+    });
+    // The correct schema of gsi should be returned
+    expect(table.schema('gsi1')).toEqual({
+      partitionKey: {
+        name: 'name',
+        type: AttributeType.STRING,
+      },
+      sortKey: {
+        name: 'description',
+        type: AttributeType.STRING,
+      },
+    });
+    // Error will be thrown when index does not exist
+    expect(() => table.schema('notExist')).toThrow();
   });
 });
