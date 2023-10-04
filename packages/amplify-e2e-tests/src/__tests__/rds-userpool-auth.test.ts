@@ -1,0 +1,267 @@
+import {
+  addApiWithoutSchema,
+  addAuthUserPoolOnly,
+  addAuthWithDefault,
+  amplifyPush,
+  apiGenerateSchema,
+  createNewProjectDir,
+  deleteDBInstance,
+  deleteProject,
+  deleteProjectDir,
+  getAppSyncApi,
+  getProjectMeta,
+  importRDSDatabase,
+  initJSProjectWithProfile,
+  setupRDSInstanceAndData,
+  sleep,
+  updateAuthAddUserGroups,
+} from 'amplify-category-api-e2e-core';
+import { existsSync, writeFileSync, readFileSync } from 'fs-extra';
+import generator from 'generate-password';
+import path from 'path';
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import { schema, sqlCreateStatements } from './auth-test-schemas/userpool-provider';
+import { createModelOperationHelpers } from '../rds-v2-test-utils';
+import { setupUser, getUserPoolId, signInUser, getConfiguredAppsyncClientCognitoAuth } from '../schema-api-directives';
+
+// to deal with bug in cognito-identity-js
+(global as any).fetch = require('node-fetch');
+
+describe('RDS Relational Directives', () => {
+  const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
+
+  // Generate settings for RDS instance
+  const username = db_user;
+  const password = db_password;
+  let region = 'us-east-1';
+  let port = 3306;
+  const database = 'default_db';
+  let host = 'localhost';
+  const identifier = `integtest${db_identifier}`;
+  const projName = 'rdsuserpoolauth';
+  const userName = 'user1';
+  const groupName = 'Admin';
+  const userPassword = 'user1Password';
+
+  let projRoot;
+  let appSyncClient;
+  let modelOperationHelpers;
+
+  beforeAll(async () => {
+    projRoot = await createNewProjectDir(projName);
+    await initProjectAndImportSchema();
+    await addAuthWithDefault(projRoot, {});
+    await updateAuthAddUserGroups(projRoot, [groupName]);
+    const userPoolId = getUserPoolId(projRoot);
+    await setupUser(userPoolId, userName, userPassword, groupName);
+    const user = await signInUser(userName, userPassword);
+    await amplifyPush(projRoot);
+    await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.
+    await configureAppSyncClient(user);
+    modelOperationHelpers = createModelOperationHelpers(appSyncClient, schema);
+  });
+
+  afterAll(async () => {
+    const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+    if (existsSync(metaFilePath)) {
+      await deleteProject(projRoot);
+    }
+    deleteProjectDir(projRoot);
+    await cleanupDatabase();
+  });
+
+  const setupDatabase = async (): Promise<void> => {
+    const dbConfig = {
+      identifier,
+      engine: 'mysql' as const,
+      dbname: database,
+      username,
+      password,
+      region,
+    };
+
+    const db = await setupRDSInstanceAndData(dbConfig, sqlCreateStatements);
+    port = db.port;
+    host = db.endpoint;
+  };
+
+  const cleanupDatabase = async (): Promise<void> => {
+    await deleteDBInstance(identifier, region);
+  };
+
+  const initProjectAndImportSchema = async (): Promise<void> => {
+    const apiName = projName;
+    await initJSProjectWithProfile(projRoot, {
+      disableAmplifyAppCreation: false,
+      name: projName,
+    });
+
+    const metaAfterInit = getProjectMeta(projRoot);
+    region = metaAfterInit.providers.awscloudformation.Region;
+    await setupDatabase();
+
+    const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+
+    await addApiWithoutSchema(projRoot, { transformerVersion: 2, apiName });
+
+    await importRDSDatabase(projRoot, {
+      database,
+      host,
+      port,
+      username,
+      password,
+      useVpc: true,
+      apiExists: true,
+    });
+
+    writeFileSync(rdsSchemaFilePath, schema, 'utf8');
+  };
+
+  const configureAppSyncClient = async (user: any): Promise<void> => {
+    const meta = getProjectMeta(projRoot);
+    const appRegion = meta.providers.awscloudformation.Region;
+    const { output } = meta.api[projName];
+    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
+    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, appRegion);
+
+    expect(GraphQLAPIIdOutput).toBeDefined();
+    expect(GraphQLAPIEndpointOutput).toBeDefined();
+    expect(GraphQLAPIKeyOutput).toBeDefined();
+
+    expect(graphqlApi).toBeDefined();
+    expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
+
+    const apiEndPoint = GraphQLAPIEndpointOutput as string;
+
+    appSyncClient = new AWSAppSyncClient({
+      url: apiEndPoint,
+      region: appRegion,
+      disableOffline: true,
+      auth: {
+        type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
+        jwtToken: user.signInUserSession.idToken.jwtToken,
+      },
+    });
+  };
+
+  test('logged in user can perform CRUD operations', async () => {
+    const modelName = 'TodoPrivate';
+    const todoHelper = modelOperationHelpers[modelName];
+
+    const todo1 = {
+      id: 'T-1',
+      content: 'Todo 1',
+    };
+    const createResult = await todoHelper.create(`create${modelName}`, todo1);
+    checkResult(createResult, todo1, `create${modelName}`);
+
+    const todo1Updated = {
+      id: todo1.id,
+      content: 'Todo 1 updated',
+    };
+    const updateResult = await todoHelper.update(`update${modelName}`, todo1Updated);
+    checkResult(updateResult, todo1Updated, `update${modelName}`);
+
+    const getResult = await todoHelper.get({
+      id: todo1.id,
+    });
+    checkResult(getResult, todo1Updated, `get${modelName}`);
+
+    const listTodosResult = await todoHelper.list();
+    checkResult(listTodosResult, { items: [{ ...todo1Updated }] }, `list${modelName}s`);
+
+    const deleteResult = await todoHelper.delete(`delete${modelName}`, {
+      id: todo1.id,
+    });
+    checkResult(deleteResult, todo1Updated, `delete${modelName}`);
+  });
+
+  test('defaulted owner of a record can perform CRUD operations on it', async () => {
+    const modelName = 'TodoOwner';
+    const todoHelper = modelOperationHelpers[modelName];
+
+    const todo1 = {
+      id: 'T-1',
+      content: 'Todo 1',
+    };
+    const resultSetName = `create${modelName}`;
+    const createResult = await todoHelper.create(resultSetName, todo1);
+    expect(createResult.data[resultSetName].id).toEqual(todo1.id);
+    expect(createResult.data[resultSetName].content).toEqual(todo1.content);
+    expect(createResult.data[resultSetName].owner).toBeDefined();
+
+    const todo1WithOwner = {
+      ...todo1,
+      owner: createResult.data[resultSetName].owner,
+    };
+
+    const todo1Updated = {
+      id: todo1.id,
+      content: 'Todo 1 updated',
+      owner: todo1WithOwner.owner,
+    };
+    const updateResult = await todoHelper.update(`update${modelName}`, todo1Updated);
+    checkResult(updateResult, todo1Updated, `update${modelName}`);
+
+    const getResult = await todoHelper.get({
+      id: todo1.id,
+    });
+    checkResult(getResult, todo1Updated, `get${modelName}`);
+
+    const listTodosResult = await todoHelper.list();
+    checkResult(listTodosResult, { items: [{ ...todo1Updated }] }, `list${modelName}s`);
+
+    const deleteResult = await todoHelper.delete(`delete${modelName}`, {
+      id: todo1.id,
+    });
+    checkResult(deleteResult, todo1Updated, `delete${modelName}`);
+  });
+
+  test('custom owner field used to store owner information', async () => {
+    const modelName = 'TodoOwnerFieldString';
+    const todoHelper = modelOperationHelpers[modelName];
+
+    const todo1 = {
+      id: 'T-1',
+      content: 'Todo 1',
+    };
+    const resultSetName = `create${modelName}`;
+    const createResult = await todoHelper.create(resultSetName, todo1);
+    expect(createResult.data[resultSetName].id).toEqual(todo1.id);
+    expect(createResult.data[resultSetName].content).toEqual(todo1.content);
+    expect(createResult.data[resultSetName].author).toBeDefined();
+
+    const todo1WithOwner = {
+      ...todo1,
+      author: createResult.data[resultSetName].author,
+    };
+
+    const todo1Updated = {
+      id: todo1.id,
+      content: 'Todo 1 updated',
+      owner: todo1WithOwner.author,
+    };
+    const updateResult = await todoHelper.update(`update${modelName}`, todo1Updated);
+    checkResult(updateResult, todo1Updated, `update${modelName}`);
+
+    const getResult = await todoHelper.get({
+      id: todo1.id,
+    });
+    checkResult(getResult, todo1Updated, `get${modelName}`);
+
+    const listTodosResult = await todoHelper.list();
+    checkResult(listTodosResult, { items: [{ ...todo1Updated }] }, `list${modelName}s`);
+
+    const deleteResult = await todoHelper.delete(`delete${modelName}`, {
+      id: todo1.id,
+    });
+    checkResult(deleteResult, todo1Updated, `delete${modelName}`);
+  });
+
+  const checkResult = (result: any, expected: any, resultSetName: string, isList: boolean = false): void => {
+    expect(result).toBeDefined();
+    expect(result.data).toBeDefined();
+    expect(result.data[resultSetName]).toBeDefined();
+    expect(result.data[resultSetName]).toEqual(expected);
+  };
+});

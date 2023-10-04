@@ -1,9 +1,11 @@
 import { join } from 'path';
 import _ from 'lodash';
 import * as fs from 'fs-extra';
-import { parse } from 'graphql';
+import { parse, ObjectTypeDefinitionNode, Kind, visit, FieldDefinitionNode } from 'graphql';
 import axios from 'axios';
 import { getProjectMeta, RDSTestDataProvider, createRDSInstance, addRDSPortInboundRule } from 'amplify-category-api-e2e-core';
+import { getBaseType, isArrayOrObject } from 'graphql-transformer-common';
+import { GQLQueryHelper } from '../query-utils/gql-helper';
 
 export const verifyAmplifyMeta = (projectRoot: string, apiName: string, database: string) => {
   // Database info is updated in meta file
@@ -97,4 +99,100 @@ export const verifyRDSSchema = (projectRoot: string, apiName: string, expected: 
   }
   const schema = fs.readFileSync(rdsSchemaPath, { encoding: 'utf-8' });
   expect(schema.trim()).toEqual(expected.trim());
+};
+
+export const generateDDL = (schema: string): string[] => {
+  const document = parse(schema);
+  const sqlStatements = [];
+  const schemaVisitor = {
+    ObjectTypeDefinition: {
+      leave: (node: ObjectTypeDefinitionNode, key, parent, path, ancestors) => {
+        const tableName = node.name.value;
+        const fieldStatements = [];
+        node.fields.forEach((field, index) => {
+          fieldStatements.push(getFieldStatement(field, index === 0));
+        });
+        const sql = `CREATE TABLE ${tableName} (${fieldStatements.join(', ')});`;
+        sqlStatements.push(sql);
+      },
+    },
+  };
+  visit(document, schemaVisitor);
+  return sqlStatements;
+};
+
+const getFieldStatement = (field: FieldDefinitionNode, isPrimaryKey: boolean) => {
+  const fieldName = field.name.value;
+  const fieldType = field.type;
+  const isNonNull = fieldType.kind === Kind.NON_NULL_TYPE;
+  const baseType = getBaseType(fieldType);
+  const columnType = isArrayOrObject(fieldType, []) ? 'JSON' : convertToSQLType(baseType);
+  const sql = `${fieldName} ${columnType} ${isNonNull ? 'NOT NULL' : ''} ${isPrimaryKey ? 'PRIMARY KEY' : ''}`;
+  return sql;
+};
+
+const convertToSQLType = (type: string): string => {
+  switch (type) {
+    case 'ID':
+    case 'String':
+      return 'VARCHAR(255)';
+    case 'Int':
+      return 'INT';
+    case 'Float':
+      return 'FLOAT';
+    case 'Boolean':
+      return 'BOOLEAN';
+    case 'AWSDateTime':
+      return 'DATETIME';
+    default:
+      return 'VARCHAR(255)';
+  }
+};
+
+export const createModelOperationHelpers = (appSyncClient: any, schema: string) => {
+  const document = parse(schema);
+  const modelOperationHelpers: { [key: string]: GQLQueryHelper } = {};
+  const schemaVisitor = {
+    ObjectTypeDefinition: {
+      leave: (node: ObjectTypeDefinitionNode, key, parent, path, ancestors) => {
+        const modelName = node.name.value;
+        const selectionSetFields = node.fields.map((f) => f.name.value);
+        const selectionSet = /* GraphQL */ `
+          ${selectionSetFields.join('\n')}
+        `;
+        const primaryKeyField = selectionSetFields[0];
+        const getSelectionSet = /* GraphQL */ `
+          query Get${modelName}($${primaryKeyField}: ID!) {
+            get${modelName}(${primaryKeyField}: $${primaryKeyField}) {
+              ${selectionSetFields.join('\n')}
+            }
+          }
+        `;
+        const listSelectionSet = /* GraphQL */ `
+          query List${modelName}s {
+            list${modelName}s {
+              items {
+                ${selectionSetFields.join('\n')}
+              }
+            }
+          }
+        `;
+        const helper = new GQLQueryHelper(appSyncClient, modelName, {
+          mutation: {
+            create: selectionSet,
+            update: selectionSet,
+            delete: selectionSet,
+          },
+          query: {
+            get: getSelectionSet,
+            list: listSelectionSet,
+          },
+        });
+
+        modelOperationHelpers[modelName] = helper;
+      },
+    },
+  };
+  visit(document, schemaVisitor);
+  return modelOperationHelpers;
 };
