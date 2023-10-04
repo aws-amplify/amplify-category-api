@@ -1,5 +1,5 @@
 import { DirectiveWrapper, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
-import { AppSyncAuthMode, SynthParameters, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncAuthMode, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { Construct } from 'constructs';
 import { MODEL_OPERATIONS, READ_MODEL_OPERATIONS } from './constants';
