@@ -7,7 +7,7 @@ import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { Construct } from 'constructs';
 import { applyFileBasedOverride } from '../../../graphql-transformer/override';
 
-jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnvName' });
+jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnvName' }); // TODO EnvName can not contain capital letters
 jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
 
 test('it overrides expected resources', () => {

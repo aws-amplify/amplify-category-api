@@ -7,8 +7,10 @@ import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { Construct } from 'constructs';
 import { applyFileBasedOverride } from '../../../graphql-transformer/override';
 
-jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnvName' });
+jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnvName' }); // Env name can not have capital letters
 jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
+jest.spyOn(stateManager, 'getCurrentEnvName').mockReturnValue('testenv');
+jest.spyOn(stateManager, 'getMeta').mockReturnValue({ api: { testApi: { service: 'AppSync' } } });
 
 test('it overrides expected resources', () => {
   const validSchema = `

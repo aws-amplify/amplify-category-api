@@ -2,6 +2,7 @@ import { DirectiveNode, FieldNode, ObjectTypeDefinitionNode, ObjectTypeExtension
 
 export interface TransformerResourceHelperProvider {
   generateTableName(modelName: string): string;
+  generateDomainName(): string;
   generateIAMRoleName(name: string): string;
   setModelNameMapping(modelName: string, mappedName: string): void;
   getModelNameMapping(modelName: string): string;

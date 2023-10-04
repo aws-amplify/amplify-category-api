@@ -2,7 +2,7 @@ import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-int
 import { EbsDeviceVolumeType } from 'aws-cdk-lib/aws-ec2';
 import { CfnDomain, Domain, ElasticsearchVersion } from 'aws-cdk-lib/aws-elasticsearch';
 import { IRole, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { CfnParameter, Fn, RemovalPolicy } from 'aws-cdk-lib';
+import { CfnParameter, RemovalPolicy } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { setResourceName } from '@aws-amplify/graphql-transformer-core';
@@ -10,12 +10,11 @@ import { setResourceName } from '@aws-amplify/graphql-transformer-core';
 export const createSearchableDomain = (
   stack: Construct,
   parameterMap: Map<string, CfnParameter>,
-  apiId: string,
+  context: TransformerContextProvider,
   nodeToNodeEncryption: boolean,
 ): Domain => {
   const { OpenSearchEBSVolumeGB, OpenSearchInstanceType, OpenSearchInstanceCount } = ResourceConstants.PARAMETERS;
   const { OpenSearchDomainLogicalID } = ResourceConstants.RESOURCES;
-  const { HasEnvironmentParameter } = ResourceConstants.CONDITIONS;
 
   const domain = new Domain(stack, OpenSearchDomainLogicalID, {
     version: { version: '7.10' } as ElasticsearchVersion,
@@ -29,7 +28,7 @@ export const createSearchableDomain = (
     zoneAwareness: {
       enabled: false,
     },
-    domainName: Fn.conditionIf(HasEnvironmentParameter, Fn.ref('AWS::NoValue'), `d${apiId}`).toString(),
+    domainName: context.resourceHelper.generateDomainName(),
     removalPolicy: RemovalPolicy.DESTROY,
   });
 

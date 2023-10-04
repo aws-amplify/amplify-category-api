@@ -655,6 +655,8 @@ export interface TransformerResourceHelperProvider {
     // (undocumented)
     generateTableName(modelName: string): string;
     // (undocumented)
+    generateDomainName() : string;
+    // (undocumented)
     getFieldNameMapping(modelName: string, fieldName: string): string;
     // (undocumented)
     getModelFieldMap(modelName: string): ModelFieldMap;

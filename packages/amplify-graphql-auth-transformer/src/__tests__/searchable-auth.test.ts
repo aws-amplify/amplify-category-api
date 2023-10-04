@@ -2,8 +2,13 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse } from 'graphql';
 import { AuthTransformer, SEARCHABLE_AGGREGATE_TYPES } from '..';
+
+jest.spyOn(stateManager, 'getCurrentEnvName').mockReturnValue('testenv');
+jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
+jest.spyOn(stateManager, 'getMeta').mockReturnValue({ api: { testApi: { service: 'AppSync' } } });
 
 const getObjectType = (doc: DocumentNode, type: string): ObjectTypeDefinitionNode | undefined =>
   doc.definitions.find((def) => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as

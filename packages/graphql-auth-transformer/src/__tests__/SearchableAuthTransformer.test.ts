@@ -1,7 +1,12 @@
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
 import { ModelAuthTransformer } from '../ModelAuthTransformer';
+
+jest.spyOn(stateManager, 'getCurrentEnvName').mockReturnValue('testenv');
+jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
+jest.spyOn(stateManager, 'getMeta').mockReturnValue({ api: { testApi: { service: 'AppSync' } } });
 
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {

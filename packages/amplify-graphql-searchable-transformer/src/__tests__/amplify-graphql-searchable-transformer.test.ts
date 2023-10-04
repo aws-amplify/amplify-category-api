@@ -1,10 +1,15 @@
 import { ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { parse } from 'graphql';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { SearchableModelTransformer } from '..';
 import { ALLOWABLE_SEARCHABLE_INSTANCE_TYPES } from '../constants';
+
+jest.spyOn(stateManager, 'getCurrentEnvName').mockReturnValue('testenv');
+jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
+jest.spyOn(stateManager, 'getMeta').mockReturnValue({ api: { testApi: { service: 'AppSync' } } });
 
 test('SearchableModelTransformer validation happy case', () => {
   const validSchema = `
