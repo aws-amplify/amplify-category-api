@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.1.6...@aws-amplify/graphql-auth-transformer@3.1.7) (2023-10-05)
+
+### Bug Fixes
+
+- iam auth values can be passed as cdk tokens ([#1919](https://github.com/aws-amplify/amplify-category-api/issues/1919)) ([9297fa5](https://github.com/aws-amplify/amplify-category-api/commit/9297fa5cda87697645ad0c78b84c3004b32ac319))
+
 ## [3.1.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.1.5...@aws-amplify/graphql-auth-transformer@3.1.6) (2023-10-03)
 
 ### Bug Fixes
