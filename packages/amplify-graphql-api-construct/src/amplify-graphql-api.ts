@@ -35,6 +35,7 @@ import type {
   FunctionSlot,
   IBackendOutputStorageStrategy,
   AddFunctionProps,
+  ConflictResolution,
 } from './types';
 import {
   convertAuthorizationModesToTransformerAuthConfig,
@@ -45,6 +46,7 @@ import {
   getGeneratedFunctionSlots,
   CodegenAssets,
   addAmplifyMetadataToStackDescription,
+  getAdditionalAuthenticationTypes,
 } from './internal';
 
 /**
@@ -102,6 +104,11 @@ export class AmplifyGraphqlApi extends Construct {
    * Generated Api Key if generated. May be a CDK Token.
    */
   public readonly apiKey: string | undefined;
+
+  /**
+   * Conflict resolution setting
+   */
+  private readonly conflictResolution: ConflictResolution | undefined;
 
   /**
    * New AmplifyGraphqlApi construct, this will create an appsync api with authorization, a schema, and all necessary resolvers, functions,
@@ -180,6 +187,7 @@ export class AmplifyGraphqlApi extends Construct {
     this.codegenAssets = new CodegenAssets(this, 'AmplifyCodegenAssets', { modelSchema: definition.schema });
 
     this.resources = getGeneratedResources(this);
+    this.conflictResolution = conflictResolution;
     this.generatedFunctionSlots = getGeneratedFunctionSlots(assetManager.resolverAssets);
     this.storeOutput(outputStorageStrategy);
 
@@ -209,6 +217,15 @@ export class AmplifyGraphqlApi extends Construct {
 
     if (this.resources.cfnResources.cfnApiKey) {
       output.payload.awsAppsyncApiKey = this.resources.cfnResources.cfnApiKey.attrApiKey;
+    }
+
+    const additionalAuthTypes = getAdditionalAuthenticationTypes(this.resources.cfnResources.cfnGraphqlApi);
+    if (additionalAuthTypes) {
+      output.payload.awsAppsyncAdditionalAuthenticationTypes = additionalAuthTypes;
+    }
+
+    if (this.conflictResolution?.project?.handlerType) {
+      output.payload.awsAppsyncConflictResolutionMode = this.conflictResolution?.project?.handlerType;
     }
 
     outputStorageStrategy.addBackendOutputEntry(graphqlOutputKey, output);

@@ -3,6 +3,8 @@ import { Template, Match } from 'aws-cdk-lib/assertions';
 import { graphqlOutputKey } from '@aws-amplify/backend-output-schemas';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
+import { UserPool } from 'aws-cdk-lib/aws-cognito';
+import { ArnPrincipal, Role } from 'aws-cdk-lib/aws-iam';
 
 describe('storeOutput', () => {
   describe('default outputStorageStrategy', () => {
@@ -15,7 +17,26 @@ describe('storeOutput', () => {
           }
         `),
         authorizationModes: {
+          defaultAuthorizationMode: 'API_KEY',
           apiKeyConfig: { expires: cdk.Duration.days(7) },
+          iamConfig: {
+            identityPoolId: 'abc',
+            unauthenticatedUserRole: new Role(stack, 'testUnauthRole', {
+              assumedBy: new ArnPrincipal('aws:iam::1234:root'),
+            }),
+            authenticatedUserRole: new Role(stack, 'testAuthRole', {
+              assumedBy: new ArnPrincipal('aws:iam::1234:root'),
+            }),
+          },
+          userPoolConfig: {
+            userPool: new UserPool(stack, 'testUserPool'),
+          },
+        },
+        conflictResolution: {
+          project: {
+            handlerType: 'AUTOMERGE',
+            detectionType: 'NONE',
+          },
         },
       });
       const template = Template.fromStack(stack);
@@ -30,6 +51,8 @@ describe('storeOutput', () => {
               "awsAppsyncRegion",
               "amplifyApiModelSchemaS3Uri",
               "awsAppsyncApiKey",
+              "awsAppsyncAdditionalAuthenticationTypes",
+              "awsAppsyncConflictResolutionMode",
             ],
             "version": "1",
           },
