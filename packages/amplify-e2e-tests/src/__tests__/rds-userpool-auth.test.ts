@@ -1,9 +1,7 @@
 import {
+  addApiWithAllAuthModes,
   addApiWithoutSchema,
-  addAuthUserPoolOnly,
-  addAuthWithDefault,
   amplifyPush,
-  apiGenerateSchema,
   createNewProjectDir,
   deleteDBInstance,
   deleteProject,
@@ -16,10 +14,9 @@ import {
   sleep,
   updateAuthAddUserGroups,
 } from 'amplify-category-api-e2e-core';
-import { existsSync, writeFileSync, readFileSync } from 'fs-extra';
+import { existsSync, writeFileSync, removeSync } from 'fs-extra';
 import generator from 'generate-password';
 import path from 'path';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { schema, sqlCreateStatements } from './auth-test-schemas/userpool-provider';
 import { createModelOperationHelpers } from '../rds-v2-test-utils';
 import { setupUser, getUserPoolId, signInUser, getConfiguredAppsyncClientCognitoAuth } from '../schema-api-directives';
@@ -39,26 +36,30 @@ describe('RDS Relational Directives', () => {
   let host = 'localhost';
   const identifier = `integtest${db_identifier}`;
   const projName = 'rdsuserpoolauth';
-  const userName = 'user1';
-  const groupName = 'Admin';
-  const userPassword = 'user1Password';
+  const userName1 = 'user1';
+  const userName2 = 'user2';
+  const adminGroupName = 'Admin';
+  const devGroupName = 'Dev';
+  const userPassword = 'user@Password';
 
   let projRoot;
-  let appSyncClient;
-  let modelOperationHelpers;
+  const appSyncClients = {};
 
   beforeAll(async () => {
     projRoot = await createNewProjectDir(projName);
     await initProjectAndImportSchema();
-    await addAuthWithDefault(projRoot, {});
-    await updateAuthAddUserGroups(projRoot, [groupName]);
+    await updateAuthAddUserGroups(projRoot, [adminGroupName, devGroupName]);
     const userPoolId = getUserPoolId(projRoot);
-    await setupUser(userPoolId, userName, userPassword, groupName);
-    const user = await signInUser(userName, userPassword);
+    await setupUser(userPoolId, userName1, userPassword, adminGroupName);
+    await setupUser(userPoolId, userName2, userPassword, devGroupName);
+    const userMap = {};
+    const user1 = await signInUser(userName1, userPassword);
+    userMap[userName1] = user1;
+    const user2 = await signInUser(userName2, userPassword);
+    userMap[userName2] = user2;
     await amplifyPush(projRoot);
     await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.
-    await configureAppSyncClient(user);
-    modelOperationHelpers = createModelOperationHelpers(appSyncClient, schema);
+    await configureAppSyncClients(userMap);
   });
 
   afterAll(async () => {
@@ -101,8 +102,10 @@ describe('RDS Relational Directives', () => {
     await setupDatabase();
 
     const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+    const ddbSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.graphql');
 
-    await addApiWithoutSchema(projRoot, { transformerVersion: 2, apiName });
+    await addApiWithAllAuthModes(projRoot, { transformerVersion: 2, apiName });
+    removeSync(ddbSchemaFilePath);
 
     await importRDSDatabase(projRoot, {
       database,
@@ -117,7 +120,7 @@ describe('RDS Relational Directives', () => {
     writeFileSync(rdsSchemaFilePath, schema, 'utf8');
   };
 
-  const configureAppSyncClient = async (user: any): Promise<void> => {
+  const configureAppSyncClients = async (userMap: { [key: string]: any }): Promise<void> => {
     const meta = getProjectMeta(projRoot);
     const appRegion = meta.providers.awscloudformation.Region;
     const { output } = meta.api[projName];
@@ -133,19 +136,15 @@ describe('RDS Relational Directives', () => {
 
     const apiEndPoint = GraphQLAPIEndpointOutput as string;
 
-    appSyncClient = new AWSAppSyncClient({
-      url: apiEndPoint,
-      region: appRegion,
-      disableOffline: true,
-      auth: {
-        type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
-        jwtToken: user.signInUserSession.idToken.jwtToken,
-      },
+    Object.keys(userMap)?.map((userName: string) => {
+      const userAppSyncClient = getConfiguredAppsyncClientCognitoAuth(apiEndPoint, appRegion, userMap[userName]);
+      appSyncClients[userName] = userAppSyncClient;
     });
   };
 
   test('logged in user can perform CRUD operations', async () => {
     const modelName = 'TodoPrivate';
+    const modelOperationHelpers = createModelOperationHelpers(configureAppSyncClients[userName1], schema);
     const todoHelper = modelOperationHelpers[modelName];
 
     const todo1 = {
@@ -176,8 +175,9 @@ describe('RDS Relational Directives', () => {
     checkResult(deleteResult, todo1Updated, `delete${modelName}`);
   });
 
-  test('defaulted owner of a record can perform CRUD operations on it', async () => {
+  test('owner a record can perform CRUD operations using default owner field', async () => {
     const modelName = 'TodoOwner';
+    const modelOperationHelpers = createModelOperationHelpers(configureAppSyncClients[userName1], schema);
     const todoHelper = modelOperationHelpers[modelName];
 
     const todo1 = {
@@ -219,6 +219,7 @@ describe('RDS Relational Directives', () => {
 
   test('custom owner field used to store owner information', async () => {
     const modelName = 'TodoOwnerFieldString';
+    const modelOperationHelpers = createModelOperationHelpers(configureAppSyncClients[userName1], schema);
     const todoHelper = modelOperationHelpers[modelName];
 
     const todo1 = {
