@@ -409,22 +409,17 @@
     amazon-cognito-identity-js "5.2.14"
     crypto-js "^4.1.1"
 
-"@aws-amplify/backend-output-schemas@^0.2.0-alpha.3":
-  version "0.2.0-alpha.3"
-  resolved "https://registry.npmjs.org/@aws-amplify/backend-output-schemas/-/backend-output-schemas-0.2.0-alpha.3.tgz#8d7f159a55f4f54363a10137d0e642d72e8d13dd"
-  integrity sha512-8ZH7hq0m9H3L4ajC0HyE9dOpSmje/8yaU9sueTk3TvE2r88Wa3irT5jqi5Ues8nebDVL2iKqtK9MVS8suS7zow==
-
-"@aws-amplify/backend-output-schemas@^0.2.0-alpha.6":
+"@aws-amplify/backend-output-schemas@^0.2.0-alpha.5", "@aws-amplify/backend-output-schemas@^0.2.0-alpha.6":
   version "0.2.0-alpha.6"
   resolved "https://registry.npmjs.org/@aws-amplify/backend-output-schemas/-/backend-output-schemas-0.2.0-alpha.6.tgz#7be3bc03fc8c3721e3acbd530c1aad8aa0569e16"
   integrity sha512-279FoCDUgi1CX348xxih7VZbGBwh/xYp95b+t+FKbI+H/m6H8cvJgJld2v5TvQPowz9Zo1vZ/9hVAKhNFNtYSA==
 
-"@aws-amplify/backend-output-storage@^0.1.1-alpha.0":
-  version "0.1.1-alpha.0"
-  resolved "https://registry.npmjs.org/@aws-amplify/backend-output-storage/-/backend-output-storage-0.1.1-alpha.0.tgz#19400c602a2fac9a7004e123f2419f983944381b"
-  integrity sha512-nnGaKxQH/3d8WOirJ5BlkvOgMYApTVOETnQM/Vnprtd7S1F2sdyy8ESFdi61GLULsqXNDfrLQcyY6V+ENxCeWA==
+"@aws-amplify/backend-output-storage@^0.1.1-alpha.2":
+  version "0.1.1-alpha.2"
+  resolved "https://registry.npmjs.org/@aws-amplify/backend-output-storage/-/backend-output-storage-0.1.1-alpha.2.tgz#8c0c01a2053c768322c07a567c6ec459aedfa972"
+  integrity sha512-mmQzB0jF6PCCZwh443kmeg7o9xENFEUb33lrr8tNtmuZjL42vGB1Rcx4BV7DaWY1QzH4ZhIjx50KYA8Ro0jUYg==
   dependencies:
-    "@aws-amplify/backend-output-schemas" "^0.2.0-alpha.3"
+    "@aws-amplify/backend-output-schemas" "^0.2.0-alpha.5"
 
 "@aws-amplify/cache@4.0.66":
   version "4.0.66"
