@@ -175,7 +175,7 @@ describe('RDS Relational Directives', () => {
     checkResult(deleteResult, todo1Updated, `delete${modelName}`);
   });
 
-  test('owner a record can perform CRUD operations using default owner field', async () => {
+  test('owner of a record can perform CRUD operations using default owner field', async () => {
     const modelName = 'TodoOwner';
     const modelOperationHelpers = createModelOperationHelpers(configureAppSyncClients[userName1], schema);
     const todoHelper = modelOperationHelpers[modelName];
@@ -230,17 +230,166 @@ describe('RDS Relational Directives', () => {
     const createResult = await todoHelper.create(resultSetName, todo1);
     expect(createResult.data[resultSetName].id).toEqual(todo1.id);
     expect(createResult.data[resultSetName].content).toEqual(todo1.content);
-    expect(createResult.data[resultSetName].author).toBeDefined();
+    expect(createResult.data[resultSetName].author).toEqual(userName1);
 
     const todo1WithOwner = {
       ...todo1,
-      author: createResult.data[resultSetName].author,
+      author: userName1,
     };
 
     const todo1Updated = {
       id: todo1.id,
       content: 'Todo 1 updated',
-      owner: todo1WithOwner.author,
+      author: todo1WithOwner.author,
+    };
+    const updateResult = await todoHelper.update(`update${modelName}`, todo1Updated);
+    checkResult(updateResult, todo1Updated, `update${modelName}`);
+
+    const getResult = await todoHelper.get({
+      id: todo1.id,
+    });
+    checkResult(getResult, todo1Updated, `get${modelName}`);
+
+    const listTodosResult = await todoHelper.list();
+    checkResult(listTodosResult, { items: [{ ...todo1Updated }] }, `list${modelName}s`);
+
+    const deleteResult = await todoHelper.delete(`delete${modelName}`, {
+      id: todo1.id,
+    });
+    checkResult(deleteResult, todo1Updated, `delete${modelName}`);
+  });
+
+  test('list of owners used to store owner information', async () => {
+    const modelName = 'TodoOwnerFieldList';
+    const modelOperationHelpers = createModelOperationHelpers(configureAppSyncClients[userName1], schema);
+    const todoHelper = modelOperationHelpers[modelName];
+
+    const todo1 = {
+      id: 'T-1',
+      content: 'Todo 1',
+      authors: [userName1],
+    };
+    const resultSetName = `create${modelName}`;
+    const createResult = await todoHelper.create(resultSetName, todo1);
+    expect(createResult.data[resultSetName].id).toEqual(todo1.id);
+    expect(createResult.data[resultSetName].content).toEqual(todo1.content);
+    expect(createResult.data[resultSetName].authors).toEqual([userName1]);
+
+    const todo1Updated = {
+      id: todo1.id,
+      content: 'Todo 1 updated',
+      authors: [userName1],
+    };
+    const updateResult = await todoHelper.update(`update${modelName}`, todo1Updated);
+    checkResult(updateResult, todo1Updated, `update${modelName}`);
+
+    const getResult = await todoHelper.get({
+      id: todo1.id,
+    });
+    checkResult(getResult, todo1Updated, `get${modelName}`);
+
+    const listTodosResult = await todoHelper.list();
+    checkResult(listTodosResult, { items: [{ ...todo1Updated }] }, `list${modelName}s`);
+
+    const deleteResult = await todoHelper.delete(`delete${modelName}`, {
+      id: todo1.id,
+    });
+    checkResult(deleteResult, todo1Updated, `delete${modelName}`);
+  });
+
+  test('users in static group can perform CRUD operations', async () => {
+    const modelName = 'TodoStaticGroup';
+    const modelOperationHelpers = createModelOperationHelpers(configureAppSyncClients[userName1], schema);
+    const todoHelper = modelOperationHelpers[modelName];
+
+    const todo1 = {
+      id: 'T-1',
+      content: 'Todo 1',
+    };
+    const resultSetName = `create${modelName}`;
+    const createResult = await todoHelper.create(resultSetName, todo1);
+    expect(createResult.data[resultSetName].id).toEqual(todo1.id);
+    expect(createResult.data[resultSetName].content).toEqual(todo1.content);
+
+    const todo1Updated = {
+      id: todo1.id,
+      content: 'Todo 1 updated',
+    };
+    const updateResult = await todoHelper.update(`update${modelName}`, todo1Updated);
+    checkResult(updateResult, todo1Updated, `update${modelName}`);
+
+    const getResult = await todoHelper.get({
+      id: todo1.id,
+    });
+    checkResult(getResult, todo1Updated, `get${modelName}`);
+
+    const listTodosResult = await todoHelper.list();
+    checkResult(listTodosResult, { items: [{ ...todo1Updated }] }, `list${modelName}s`);
+
+    const deleteResult = await todoHelper.delete(`delete${modelName}`, {
+      id: todo1.id,
+    });
+    checkResult(deleteResult, todo1Updated, `delete${modelName}`);
+  });
+
+  test('users in group stored as string can perform CRUD operations', async () => {
+    const modelName = 'TodoGroupFieldString';
+    const modelOperationHelpers = createModelOperationHelpers(configureAppSyncClients[userName1], schema);
+    const todoHelper = modelOperationHelpers[modelName];
+
+    const todo1 = {
+      id: 'T-1',
+      content: 'Todo 1',
+      group: adminGroupName,
+    };
+    const resultSetName = `create${modelName}`;
+    const createResult = await todoHelper.create(resultSetName, todo1);
+    expect(createResult.data[resultSetName].id).toEqual(todo1.id);
+    expect(createResult.data[resultSetName].content).toEqual(todo1.content);
+    expect(createResult.data[resultSetName].group).toEqual(adminGroupName);
+
+    const todo1Updated = {
+      id: todo1.id,
+      content: 'Todo 1 updated',
+      group: adminGroupName,
+    };
+    const updateResult = await todoHelper.update(`update${modelName}`, todo1Updated);
+    checkResult(updateResult, todo1Updated, `update${modelName}`);
+
+    const getResult = await todoHelper.get({
+      id: todo1.id,
+    });
+    checkResult(getResult, todo1Updated, `get${modelName}`);
+
+    const listTodosResult = await todoHelper.list();
+    checkResult(listTodosResult, { items: [{ ...todo1Updated }] }, `list${modelName}s`);
+
+    const deleteResult = await todoHelper.delete(`delete${modelName}`, {
+      id: todo1.id,
+    });
+    checkResult(deleteResult, todo1Updated, `delete${modelName}`);
+  });
+
+  test('users in groups stored as list can perform CRUD operations', async () => {
+    const modelName = 'TodoGroupFieldList';
+    const modelOperationHelpers = createModelOperationHelpers(configureAppSyncClients[userName1], schema);
+    const todoHelper = modelOperationHelpers[modelName];
+
+    const todo1 = {
+      id: 'T-1',
+      content: 'Todo 1',
+      groups: [adminGroupName],
+    };
+    const resultSetName = `create${modelName}`;
+    const createResult = await todoHelper.create(resultSetName, todo1);
+    expect(createResult.data[resultSetName].id).toEqual(todo1.id);
+    expect(createResult.data[resultSetName].content).toEqual(todo1.content);
+    expect(createResult.data[resultSetName].groups).toEqual([adminGroupName]);
+
+    const todo1Updated = {
+      id: todo1.id,
+      content: 'Todo 1 updated',
+      groups: [adminGroupName],
     };
     const updateResult = await todoHelper.update(`update${modelName}`, todo1Updated);
     checkResult(updateResult, todo1Updated, `update${modelName}`);
