@@ -13,7 +13,7 @@ const stack = new Stack(app, packageJson.name.replace(/_/g, '-'), {
   env: { region: process.env.CLI_REGION || 'us-west-2' },
 });
 
-const identityPoolId = new CfnIdentityPool(stack, 'TestIdentityPool', { allowUnauthenticatedIdentities: true }).logicalId;
+const identityPoolId = new CfnIdentityPool(stack, 'TestIdentityPool', { allowUnauthenticatedIdentities: true }).ref;
 const appsync = new ServicePrincipal('appsync.amazonaws.com');
 const authenticatedUserRole = new Role(stack, 'TestAuthRole', { assumedBy: appsync });
 const unauthenticatedUserRole = new Role(stack, 'TestUnauthRole', { assumedBy: appsync });
