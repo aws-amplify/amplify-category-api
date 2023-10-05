@@ -1,3 +1,4 @@
+import { DeploymentResources } from '@aws-amplify/graphql-transformer-test-utils';
 import { ObjectTypeDefinitionNode, FieldDefinitionNode, DocumentNode, Kind } from 'graphql';
 
 /**
@@ -13,3 +14,15 @@ export const getObjectType = (doc: DocumentNode, type: string): ObjectTypeDefini
  */
 export const getField = (obj: ObjectTypeDefinitionNode, fieldName: string): FieldDefinitionNode | void =>
   obj.fields?.find((f) => f.name.value === fieldName);
+
+export const expectStashValueLike = (out: DeploymentResources, stackName: string, expectedStashRecord: string): void => {
+  const resolverLogicalId = `Create${stackName}Resolver`;
+  const serializedBeforeTemplate = JSON.stringify(out.stacks[stackName].Resources![resolverLogicalId].Properties.RequestMappingTemplate);
+  expect(serializedBeforeTemplate).toContain(expectedStashRecord);
+};
+
+export const expectNoStashValueLike = (out: DeploymentResources, stackName: string, expectedStashRecord: string): void => {
+  const resolverLogicalId = `Create${stackName}Resolver`;
+  const serializedBeforeTemplate = JSON.stringify(out.stacks[stackName].Resources![resolverLogicalId].Properties.RequestMappingTemplate);
+  expect(serializedBeforeTemplate).not.toContain(expectedStashRecord);
+};

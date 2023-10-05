@@ -140,6 +140,7 @@ export type TestTransformParameters = {
     modelToDatasourceMap?: Map<string, DatasourceType>;
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
     overrideConfig?: OverrideConfig;
+    synthParameters?: Partial<SynthParameters>;
 };
 
 // @public (undocumented)
