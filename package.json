@@ -100,7 +100,6 @@
       "@aws-amplify/graphql-api-construct/@aws-amplify/graphql-transformer",
       "@aws-amplify/graphql-api-construct/@aws-amplify/graphql-transformer-core",
       "@aws-amplify/graphql-api-construct/@aws-amplify/graphql-transformer-interfaces",
-      "@aws-amplify/graphql-api-construct/zod",
       "@aws-amplify/graphql-api-construct/@aws-amplify/graphql-auth-transformer",
       "@aws-amplify/graphql-api-construct/@aws-amplify/graphql-default-value-transformer",
       "@aws-amplify/graphql-api-construct/@aws-amplify/graphql-function-transformer",

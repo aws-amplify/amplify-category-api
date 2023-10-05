@@ -38,8 +38,7 @@
     "object-hash": "^3.0.0",
     "pluralize": "^8.0.0",
     "ts-dedent": "^2.0.0",
-    "universalify": "^2.0.0",
-    "zod": "^3.21.4"
+    "universalify": "^2.0.0"
   },
   "dependencies": {
     "aws-cdk-lib": "^2.80.0",
@@ -3487,7 +3486,7 @@
     "stability": "stable"
   },
   "homepage": "https://github.com/aws-amplify/amplify-category-api.git",
-  "jsiiVersion": "5.1.12 (build 0675712)",
+  "jsiiVersion": "5.2.11 (build f6c85b3)",
   "keywords": [
     "awscdk",
     "aws-cdk",
@@ -6567,5 +6566,5 @@
     }
   },
   "version": "1.1.2",
-  "fingerprint": "6AzmWBQpj0qu1vu0XGpLmhwwoPRbLsnxiJXemyTLCUE="
+  "fingerprint": "wInoi35QfWjblAWELSUyBCWPO1Kp7Ac7CBLN3D8Mu0g="
 }
