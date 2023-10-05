@@ -211,8 +211,6 @@ export class AmplifyGraphqlApi extends Construct {
         awsAppsyncApiId: this.resources.cfnResources.cfnGraphqlApi.attrApiId,
         awsAppsyncApiEndpoint: this.resources.cfnResources.cfnGraphqlApi.attrGraphQlUrl,
         awsAppsyncAuthenticationType: this.resources.cfnResources.cfnGraphqlApi.authenticationType as AwsAppsyncAuthenticationType,
-        awsAppsyncAdditionalAuthenticationTypes: this.getAdditionalAuthenticationTypes(this.resources.cfnResources.cfnGraphqlApi),
-        awsAppsyncConflictResolutionMode: this.conflictResolution?.project?.handlerType,
         awsAppsyncRegion: stack.region,
         amplifyApiModelSchemaS3Uri: this.codegenAssets.modelSchemaS3Uri,
       },
@@ -220,6 +218,15 @@ export class AmplifyGraphqlApi extends Construct {
 
     if (this.resources.cfnResources.cfnApiKey) {
       output.payload.awsAppsyncApiKey = this.resources.cfnResources.cfnApiKey.attrApiKey;
+    }
+
+    const additionalAuthTypes = this.getAdditionalAuthenticationTypes(this.resources.cfnResources.cfnGraphqlApi);
+    if (additionalAuthTypes) {
+      output.payload.awsAppsyncAdditionalAuthenticationTypes = additionalAuthTypes;
+    }
+
+    if (this.conflictResolution?.project?.handlerType) {
+      output.payload.awsAppsyncConflictResolutionMode = this.conflictResolution?.project?.handlerType;
     }
 
     outputStorageStrategy.addBackendOutputEntry(graphqlOutputKey, output);
