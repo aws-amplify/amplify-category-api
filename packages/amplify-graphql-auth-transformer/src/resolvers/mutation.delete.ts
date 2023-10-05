@@ -56,20 +56,15 @@ const apiKeyExpression = (roles: Array<RoleDefinition>): Expression | null => {
 /**
  * No need to combine allowed fields as the request can only be signed by one iam role
  */
-const iamExpression = (
-  roles: Array<RoleDefinition>,
-  hasAdminRolesEnabled = false,
-  adminRoles: Array<string> = [],
-  identityPoolId?: string,
-): Expression | null => {
+const iamExpression = (roles: Array<RoleDefinition>, hasAdminRolesEnabled = false, hasIdentityPoolId: boolean): Expression | null => {
   const expression = new Array<Expression>();
   // allow if using an admin role
   if (hasAdminRolesEnabled) {
-    expression.push(iamAdminRoleCheckExpression(adminRoles));
+    expression.push(iamAdminRoleCheckExpression());
   }
   if (roles.length > 0) {
     roles.forEach((role) => {
-      expression.push(iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)), identityPoolId));
+      expression.push(iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)), hasIdentityPoolId));
     });
   } else {
     expression.push(ref('util.unauthorized()'));
@@ -211,7 +206,7 @@ export const generateAuthExpressionForDelete = (
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
   }
   if (providers.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.adminRoles, providers.identityPoolId));
+    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.hasIdentityPoolId));
   }
   if (providers.hasLambda) {
     totalAuthExpressions.push(lambdaExpression(lambdaRoles));
