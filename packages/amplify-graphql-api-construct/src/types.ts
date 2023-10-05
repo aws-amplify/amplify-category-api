@@ -395,6 +395,8 @@ export interface TranslationBehavior {
    * Used for AmplifyGrapqhlApi construct ONLY
    * If enabled, the table resources will be generated under custom resource provider,
    * which enables the multiple GSI updates within one deployment phase
+   * @default false
+   * @experimental
    */
   readonly useAmplifyManagedTableResources: boolean;
 
@@ -487,6 +489,7 @@ export interface PartialTranslationBehavior {
   /**
    * When enabled, amplify DynamoDB table will be generated instead of CFN pre-defined DynamoDB table
    * @default false
+   * @experimental
    */
   readonly useAmplifyManagedTableResources?: boolean;
 }

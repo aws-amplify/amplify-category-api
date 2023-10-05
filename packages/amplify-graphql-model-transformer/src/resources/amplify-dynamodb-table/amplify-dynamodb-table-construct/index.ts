@@ -65,6 +65,8 @@ export class AmplifyDynamoDBTable extends Resource {
 
     this.validateProvisioning(props);
 
+    // The 'Default' id is used for setting the construct default child
+    // Refer https://docs.aws.amazon.com/cdk/api/v2/docs/constructs.Node.html#defaultchild
     this.table = new CustomResource(this, 'Default', {
       serviceToken: this.customResourceServiceToken,
       resourceType: CUSTOM_DDB_CFN_TYPE,
