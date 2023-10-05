@@ -414,6 +414,11 @@
   resolved "https://registry.npmjs.org/@aws-amplify/backend-output-schemas/-/backend-output-schemas-0.2.0-alpha.3.tgz#8d7f159a55f4f54363a10137d0e642d72e8d13dd"
   integrity sha512-8ZH7hq0m9H3L4ajC0HyE9dOpSmje/8yaU9sueTk3TvE2r88Wa3irT5jqi5Ues8nebDVL2iKqtK9MVS8suS7zow==
 
+"@aws-amplify/backend-output-schemas@^0.2.0-alpha.6":
+  version "0.2.0-alpha.6"
+  resolved "https://registry.npmjs.org/@aws-amplify/backend-output-schemas/-/backend-output-schemas-0.2.0-alpha.6.tgz#7be3bc03fc8c3721e3acbd530c1aad8aa0569e16"
+  integrity sha512-279FoCDUgi1CX348xxih7VZbGBwh/xYp95b+t+FKbI+H/m6H8cvJgJld2v5TvQPowz9Zo1vZ/9hVAKhNFNtYSA==
+
 "@aws-amplify/backend-output-storage@^0.1.1-alpha.0":
   version "0.1.1-alpha.0"
   resolved "https://registry.npmjs.org/@aws-amplify/backend-output-storage/-/backend-output-storage-0.1.1-alpha.0.tgz#19400c602a2fac9a7004e123f2419f983944381b"

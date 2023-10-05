@@ -8,6 +8,7 @@ import { graphqlOutputKey } from '@aws-amplify/backend-output-schemas';
 import type { GraphqlOutput, AwsAppsyncAuthenticationType } from '@aws-amplify/backend-output-schemas';
 import {
   AppsyncFunction,
+  CfnGraphQLApi,
   DataSourceOptions,
   DynamoDbDataSource,
   ElasticsearchDataSource,
@@ -35,6 +36,7 @@ import type {
   FunctionSlot,
   IBackendOutputStorageStrategy,
   AddFunctionProps,
+  ConflictResolution,
 } from './types';
 import {
   convertAuthorizationModesToTransformerAuthConfig,
@@ -46,6 +48,7 @@ import {
   CodegenAssets,
   addAmplifyMetadataToStackDescription,
 } from './internal';
+import { isArray } from 'lodash';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
@@ -102,6 +105,11 @@ export class AmplifyGraphqlApi extends Construct {
    * Generated Api Key if generated. May be a CDK Token.
    */
   public readonly apiKey: string | undefined;
+
+  /**
+   * Conflict resolution setting
+   */
+  public readonly conflictResolution: ConflictResolution | undefined;
 
   /**
    * New AmplifyGraphqlApi construct, this will create an appsync api with authorization, a schema, and all necessary resolvers, functions,
@@ -180,6 +188,7 @@ export class AmplifyGraphqlApi extends Construct {
     this.codegenAssets = new CodegenAssets(this, 'AmplifyCodegenAssets', { modelSchema: definition.schema });
 
     this.resources = getGeneratedResources(this);
+    this.conflictResolution = conflictResolution;
     this.generatedFunctionSlots = getGeneratedFunctionSlots(assetManager.resolverAssets);
     this.storeOutput(outputStorageStrategy);
 
@@ -202,6 +211,8 @@ export class AmplifyGraphqlApi extends Construct {
         awsAppsyncApiId: this.resources.cfnResources.cfnGraphqlApi.attrApiId,
         awsAppsyncApiEndpoint: this.resources.cfnResources.cfnGraphqlApi.attrGraphQlUrl,
         awsAppsyncAuthenticationType: this.resources.cfnResources.cfnGraphqlApi.authenticationType as AwsAppsyncAuthenticationType,
+        awsAppsyncAdditionalAuthenticationTypes: this.getAdditionalAuthenticationTypes(this.resources.cfnResources.cfnGraphqlApi),
+        awsAppsyncConflictResolutionMode: this.conflictResolution?.project?.handlerType,
         awsAppsyncRegion: stack.region,
         amplifyApiModelSchemaS3Uri: this.codegenAssets.modelSchemaS3Uri,
       },
@@ -212,6 +223,22 @@ export class AmplifyGraphqlApi extends Construct {
     }
 
     outputStorageStrategy.addBackendOutputEntry(graphqlOutputKey, output);
+  }
+
+  /**
+   * Transforms additionalAuthenticationTypes for storage in CFN output
+   */
+  private getAdditionalAuthenticationTypes(cfnGraphqlApi: CfnGraphQLApi): string | undefined {
+    if (!isArray(cfnGraphqlApi.additionalAuthenticationProviders)) {
+      return;
+    }
+
+    return (cfnGraphqlApi.additionalAuthenticationProviders as CfnGraphQLApi.AdditionalAuthenticationProviderProperty[])
+      .map(
+        (additionalAuthenticationProvider: CfnGraphQLApi.AdditionalAuthenticationProviderProperty) =>
+          additionalAuthenticationProvider.authenticationType,
+      )
+      .join(',');
   }
 
   /**
