@@ -6,16 +6,31 @@ import {
   ImportedRDSType,
   ImportedDataSourceConfig,
 } from '@aws-amplify/graphql-transformer-core';
-import { SSMClient } from './ssmClient';
-import { MySQLDataSourceAdapter, Schema, Engine, DataSourceAdapter, MySQLDataSourceConfig } from '@aws-amplify/graphql-schema-generator';
+import { MySQLDataSourceAdapter, DataSourceAdapter, MySQLDataSourceConfig } from '@aws-amplify/graphql-schema-generator';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { DeleteFunctionCommand, LambdaClient } from '@aws-sdk/client-lambda';
 import { DeleteRoleCommand, IAMClient } from '@aws-sdk/client-iam';
 import { getAppSyncAPIName } from '../amplify-meta-utils';
-import { databaseConfigurationInputWalkthrough } from '../../service-walkthroughs/import-appsync-api-walkthrough';
+import { databaseConfigurationInputWalkthrough } from '../../service-walkthroughs/appSync-rds-db-config';
+import { SSMClient } from './ssmClient';
 
 const secretNames = ['database', 'host', 'port', 'username', 'password'];
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const isConnectionSecrets = (obj: any): obj is RDSConnectionSecrets => {
+  if (typeof obj !== 'object' || obj === null) {
+    return false;
+  }
+
+  return secretNames.every((secretName) => secretName in obj);
+}
+
+/**
+ * Derive name of schema inspector lambda
+ * @param appId the Amplify App ID
+ * @param envName the Amplify environment name
+ * @returns the name of the schema inspector lambda
+ */
 export const getVpcMetadataLambdaName = (appId: string, envName: string): string => {
   if (appId && envName) {
     return `${appId}-rds-schema-inspector-${envName}`;
@@ -23,6 +38,14 @@ export const getVpcMetadataLambdaName = (appId: string, envName: string): string
   throw new Error('AppId and environment name are required to generate the schema inspector lambda.');
 };
 
+/**
+ * Get database connection information from SSM
+ * @param context the Amplify CLI context
+ * @param secretsKey the "key" part of the SSM path of the parameter to retrieve
+ * @param apiName the AppSync API name
+ * @param envName the Amplify environment name
+ * @returns a promise that resolves to the database connection information, or undefined if no connection information is stored
+ */
 export const getExistingConnectionSecrets = async (
   context: $TSContext,
   secretsKey: string,
@@ -39,7 +62,7 @@ export const getExistingConnectionSecrets = async (
     );
 
     if (_.isEmpty(secrets)) {
-      return;
+      return undefined;
     }
 
     const existingSecrets = secretNames
@@ -55,17 +78,29 @@ export const getExistingConnectionSecrets = async (
       .reduce((result, current) => {
         if (!_.isEmpty(current)) {
           return Object.assign(result, current);
+        } else {
+          return current;
         }
       }, {});
 
-    if (existingSecrets && Object.keys(existingSecrets)?.length === secretNames?.length) {
+    if (isConnectionSecrets(existingSecrets)) {
       return existingSecrets;
+    } else {
+      return undefined;
     }
   } catch (error) {
-    return;
+    return undefined;
   }
 };
 
+/**
+ * Get SSM paths for database connection information
+ * @param context the Amplify CLI context
+ * @param apiName the AppSync API name
+ * @param secretsKey the "key" part of the SSM path of the parameter to retrieve
+ * @param envName the Amplify environment name
+ * @returns a promise that resolves to the database connection information, or undefined if no connection information is stored
+ */
 export const getExistingConnectionSecretNames = async (
   context: $TSContext,
   apiName: string,
@@ -81,7 +116,7 @@ export const getExistingConnectionSecretNames = async (
     );
 
     if (_.isEmpty(secrets)) {
-      return;
+      return undefined;
     }
 
     const existingSecrets = secretNames
@@ -97,18 +132,34 @@ export const getExistingConnectionSecretNames = async (
       .reduce((result, current) => {
         if (!_.isEmpty(current)) {
           return Object.assign(result, current);
+        } else {
+          return current;
         }
       }, {});
 
-    if (existingSecrets && Object.keys(existingSecrets)?.length === secretNames?.length) {
+    if (isConnectionSecrets(existingSecrets)) {
       return existingSecrets;
+    } else {
+      return undefined;
     }
   } catch (error) {
-    return;
+    return undefined;
   }
 };
 
-export const storeConnectionSecrets = async (context: $TSContext, secrets: RDSConnectionSecrets, apiName: string, secretsKey: string) => {
+/**
+ * Store database connection information into SSM
+ * @param context the Amplify CLI context
+ * @param secrets the connection information to store
+ * @param apiName the AppSync API name
+ * @param secretsKey the prefix of the SSM path of the parameter to store
+ */
+export const storeConnectionSecrets = async (
+  context: $TSContext,
+  secrets: RDSConnectionSecrets,
+  apiName: string,
+  secretsKey: string
+): Promise<void> => {
   const environmentName = stateManager.getCurrentEnvName();
   const appId = stateManager.getAppID();
 
@@ -119,7 +170,19 @@ export const storeConnectionSecrets = async (context: $TSContext, secrets: RDSCo
   });
 };
 
-export const deleteConnectionSecrets = async (context: $TSContext, secretsKey: string, apiName: string, envName?: string) => {
+/**
+ * Delete database connection information from SSM
+ * @param context the Amplify CLI context
+ * @param secretsKey the prefix of the SSM path of the parameter to store
+ * @param apiName the AppSync API name
+ * @param envName the Amplify environment name
+ */
+export const deleteConnectionSecrets = async (
+  context: $TSContext,
+  secretsKey: string,
+  apiName: string,
+  envName?: string
+): Promise<void> => {
   const environmentName = stateManager.getCurrentEnvName();
   const meta = stateManager.getMeta();
   const { AmplifyAppId } = meta.providers.awscloudformation;
@@ -135,6 +198,10 @@ export const deleteConnectionSecrets = async (context: $TSContext, secretsKey: s
 };
 
 // TODO: This is not used. Leaving it here for now. Generate schema step already checks for connection.
+/**
+ * Try to establish a connection using the provided connection information
+ * @param config the database connection information
+ */
 export const testDatabaseConnection = async (config: RDSConnectionSecrets): Promise<boolean> => {
   // Establish the connection
   let adapter: DataSourceAdapter;
@@ -158,8 +225,19 @@ export const testDatabaseConnection = async (config: RDSConnectionSecrets): Prom
 };
 
 // this will be an extension point when we support multiple database imports.
+/**
+ * Returns the prefix for the database configuration SSM paths
+ * @returns the prefix for the database configuration SSM paths
+ */
 export const getSecretsKey = (): string => 'schema';
 
+/**
+ * Retrieves the database name from SSM
+ * @param context the Amplify CLI context
+ * @param apiName the AppSync API name
+ * @param secretsKey the prefix of the SSM path of the parameter to store
+ * @returns a Promise that resolves to the database name, or undefined if the name isn't at the expected SSM path
+ */
 export const getDatabaseName = async (context: $TSContext, apiName: string, secretsKey: string): Promise<string | undefined> => {
   const environmentName = stateManager.getCurrentEnvName();
   const appId = stateManager.getAppID();
@@ -168,12 +246,16 @@ export const getDatabaseName = async (context: $TSContext, apiName: string, secr
   const secrets = await ssmClient.getSecrets([getParameterStoreSecretPath('database', secretsKey, apiName, environmentName, appId)]);
 
   if (_.isEmpty(secrets)) {
-    return;
+    return undefined;
   }
 
   return secrets[0].secretValue;
 };
 
+/**
+ * Deletes the IAM role for the schema inspector lambda
+ * @param lambdaName the function name of the schema inspector lambda
+ */
 export const deleteSchemaInspectorLambdaRole = async (lambdaName: string): Promise<void> => {
   const roleName = `${lambdaName}-execution-role`;
   const client = new IAMClient({});
@@ -181,6 +263,10 @@ export const deleteSchemaInspectorLambdaRole = async (lambdaName: string): Promi
   await client.send(command);
 };
 
+/**
+ * Deletes the schema inspector lambda and associated IAM role
+ * @param context the Amplify CLI context
+ */
 export const removeVpcSchemaInspectorLambda = async (context: $TSContext): Promise<void> => {
   try {
     // Delete the lambda function
@@ -203,11 +289,17 @@ export const removeVpcSchemaInspectorLambda = async (context: $TSContext): Promi
   }
 };
 
+/**
+ * Retrieve database connection information from SSM
+ * @param context the Amplify CLI context
+ * @param secretsKey the prefix of the SSM path of the parameter to store
+ * @param engine the database engine type to retrieve connection info for
+ */
 export const getConnectionSecrets = async (
   context: $TSContext,
   secretsKey: string,
   engine: ImportedRDSType,
-): Promise<{ secrets: RDSConnectionSecrets; storeSecrets: boolean }> => {
+): Promise<{ secrets: RDSConnectionSecrets & {engine: ImportedRDSType}; storeSecrets: boolean }> => {
   const apiName = getAppSyncAPIName();
   const existingSecrets = await getExistingConnectionSecrets(context, secretsKey, apiName);
   if (existingSecrets) {
