@@ -3,16 +3,15 @@ import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-int
 import { ModelResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { setResourceName } from '@aws-amplify/graphql-transformer-core';
-import { Table } from 'aws-cdk-lib/aws-dynamodb';
+import { AttributeType, StreamViewType, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 
 import { Duration, aws_iam, aws_lambda, custom_resources, aws_logs } from 'aws-cdk-lib';
-import { CustomResource } from 'aws-cdk-lib';
 import { DynamoModelResourceGenerator } from '../dynamo-model-resource-generator';
 import * as path from 'path';
+import { AmplifyDynamoDBTable } from './amplify-dynamodb-table-construct';
 
 export const ITERATIVE_TABLE_STACK_NAME = 'AmplifyTableManager';
-export const CUSTOM_DDB_CFN_TYPE = 'Custom::AmplifyDynamoDBTable';
 /**
  * AmplifyDynamoModelResourceGenerator is a subclass of DynamoModelResourceGenerator,
  * provisioning the DynamoDB tables with the custom resource instead of pre-defined DynamoDB table CFN template
@@ -63,7 +62,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
 
     // lambda that will handle DDB CFN events
     const gsiOnEventHandler = new aws_lambda.Function(scope, ResourceConstants.RESOURCES.TableManagerOnEventHandlerLogicalID, {
-      runtime: aws_lambda.Runtime.NODEJS_18_X,
+      runtime: aws_lambda.Runtime.NODEJS_16_X,
       code: lambdaCode,
       handler: 'amplify-table-manager-handler.onEvent',
       timeout: Duration.minutes(14),
@@ -71,7 +70,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
 
     // lambda that will poll for provisioning to complete
     const gsiIsCompleteHandler = new aws_lambda.Function(scope, ResourceConstants.RESOURCES.TableManagerIsCompleteHandlerLogicalID, {
-      runtime: aws_lambda.Runtime.NODEJS_18_X,
+      runtime: aws_lambda.Runtime.NODEJS_16_X,
       code: lambdaCode,
       handler: 'amplify-table-manager-handler.isComplete',
       timeout: Duration.minutes(14),
@@ -113,59 +112,42 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
 
     const removalPolicy = this.options.EnableDeletionProtection ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY;
 
-    // TODO: The following lines for custom resource creation will be wrapped into a new internal construct
     // TODO: The attribute of encryption and TTL should be added
-    const defaultTableState = {
-      TableName: tableName,
-      AttributeDefinitions: [
-        {
-          AttributeName: 'id',
-          AttributeType: 'S',
-        },
-      ],
-      KeySchema: [
-        {
-          AttributeName: 'id',
-          KeyType: 'HASH',
-        },
-      ],
-      StreamSpecification: {
-        StreamViewType: 'NEW_AND_OLD_IMAGES',
+    const table = new AmplifyDynamoDBTable(scope, `${tableLogicalName}`, {
+      customResourceServiceToken: this.customResourceServiceToken,
+      tableName,
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
       },
-    };
-    const tableResource = new CustomResource(scope, tableLogicalName, {
-      serviceToken: this.customResourceServiceToken,
-      resourceType: CUSTOM_DDB_CFN_TYPE,
-      properties: {
-        ...defaultTableState,
-      },
+      stream: StreamViewType.NEW_AND_OLD_IMAGES,
+      encryption: TableEncryption.DEFAULT,
       removalPolicy,
+      ...(context.isProjectUsingDataStore() ? { timeToLiveAttribute: '_ttl' } : undefined),
     });
-    setResourceName(tableResource, { name: modelName, setOnDefaultChild: true });
+    setResourceName(table, { name: modelName, setOnDefaultChild: false });
 
     // construct a wrapper around the custom table to allow normal CDK operations on top of it
-    const table = Table.fromTableAttributes(scope, `AmplifyTable${tableLogicalName}`, {
-      tableArn: tableResource.getAttString('TableArn'),
-      tableStreamArn: tableResource.getAttString('TableStreamArn'),
-    });
-    const cfnTable = tableResource.node.defaultChild as cdk.CfnCustomResource;
+    const tableRepresentative = table.tableFromAttr;
 
+    const cfnTable = table.node.defaultChild?.node.defaultChild as cdk.CfnCustomResource;
+    setResourceName(cfnTable, { name: modelName, setOnDefaultChild: false });
     cfnTable.addPropertyOverride(
-      'ProvisonedThroughput',
+      'provisionedThroughput',
       cdk.Fn.conditionIf(usePayPerRequestBilling.logicalId, cdk.Fn.ref('AWS::NoValue'), {
         ReadCapacityUnits: readIops,
         WriteCapacityUnits: writeIops,
       }),
     );
     cfnTable.addPropertyOverride(
-      'PointInTimeRecoverySpecification',
+      'pointInTimeRecoverySpecification',
       cdk.Fn.conditionIf(usePointInTimeRecovery.logicalId, { PointInTimeRecoveryEnabled: true }, cdk.Fn.ref('AWS::NoValue')),
     );
     cfnTable.addPropertyOverride(
-      'BillingMode',
+      'billingMode',
       cdk.Fn.conditionIf(usePayPerRequestBilling.logicalId, 'PAY_PER_REQUEST', cdk.Fn.ref('AWS::NoValue')).toString(),
     );
-    cfnTable.addPropertyOverride('SSESpecification', {
+    cfnTable.addPropertyOverride('sseSpecification', {
       sseEnabled: cdk.Fn.conditionIf(useSSE.logicalId, true, false),
     });
 
@@ -187,6 +169,6 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
 
     const role = this.createIAMRole(context, def, scope, tableName);
     const tableDataSourceLogicalName = `${def!.name.value}Table`;
-    this.createModelTableDataSource(def, context, table, scope, role, tableDataSourceLogicalName);
+    this.createModelTableDataSource(def, context, tableRepresentative, scope, role, tableDataSourceLogicalName);
   }
 }

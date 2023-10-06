@@ -246,6 +246,7 @@ export interface PartialTranslationBehavior {
     readonly secondaryKeyAsGSI?: boolean;
     readonly shouldDeepMergeDirectiveConfigDefaults?: boolean;
     readonly suppressApiKeyGeneration?: boolean;
+    readonly useAmplifyManagedTableResources?: boolean;
     readonly useSubUsernameForDefaultIdentityClaim?: boolean;
 }
 

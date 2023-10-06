@@ -3533,7 +3533,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 706
+        "line": 714
       },
       "name": "AddFunctionProps",
       "properties": [
@@ -3546,7 +3546,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 710
+            "line": 718
           },
           "name": "dataSource",
           "type": {
@@ -3562,7 +3562,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 715
+            "line": 723
           },
           "name": "name",
           "type": {
@@ -3579,7 +3579,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 750
+            "line": 758
           },
           "name": "code",
           "optional": true,
@@ -3597,7 +3597,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 722
+            "line": 730
           },
           "name": "description",
           "optional": true,
@@ -3615,7 +3615,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 729
+            "line": 737
           },
           "name": "requestMappingTemplate",
           "optional": true,
@@ -3633,7 +3633,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 736
+            "line": 744
           },
           "name": "responseMappingTemplate",
           "optional": true,
@@ -3651,7 +3651,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 743
+            "line": 751
           },
           "name": "runtime",
           "optional": true,
@@ -4296,7 +4296,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 614
+        "line": 622
       },
       "name": "AmplifyGraphqlApiCfnResources",
       "properties": [
@@ -4309,7 +4309,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 663
+            "line": 671
           },
           "name": "additionalCfnResources",
           "type": {
@@ -4330,7 +4330,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 643
+            "line": 651
           },
           "name": "cfnDataSources",
           "type": {
@@ -4351,7 +4351,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 638
+            "line": 646
           },
           "name": "cfnFunctionConfigurations",
           "type": {
@@ -4372,7 +4372,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 658
+            "line": 666
           },
           "name": "cfnFunctions",
           "type": {
@@ -4393,7 +4393,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 618
+            "line": 626
           },
           "name": "cfnGraphqlApi",
           "type": {
@@ -4409,7 +4409,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 623
+            "line": 631
           },
           "name": "cfnGraphqlSchema",
           "type": {
@@ -4425,7 +4425,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 633
+            "line": 641
           },
           "name": "cfnResolvers",
           "type": {
@@ -4446,7 +4446,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 653
+            "line": 661
           },
           "name": "cfnRoles",
           "type": {
@@ -4467,7 +4467,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 648
+            "line": 656
           },
           "name": "cfnTables",
           "type": {
@@ -4488,7 +4488,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 628
+            "line": 636
           },
           "name": "cfnApiKey",
           "optional": true,
@@ -4511,7 +4511,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 538
+        "line": 546
       },
       "name": "AmplifyGraphqlApiProps",
       "properties": [
@@ -4525,7 +4525,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 555
+            "line": 563
           },
           "name": "authorizationModes",
           "type": {
@@ -4542,7 +4542,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 543
+            "line": 551
           },
           "name": "definition",
           "type": {
@@ -4559,7 +4559,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 549
+            "line": 557
           },
           "name": "apiName",
           "optional": true,
@@ -4577,7 +4577,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 569
+            "line": 577
           },
           "name": "conflictResolution",
           "optional": true,
@@ -4597,7 +4597,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 563
+            "line": 571
           },
           "name": "functionNameMap",
           "optional": true,
@@ -4620,7 +4620,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 584
+            "line": 592
           },
           "name": "functionSlots",
           "optional": true,
@@ -4655,7 +4655,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 607
+            "line": 615
           },
           "name": "outputStorageStrategy",
           "optional": true,
@@ -4672,7 +4672,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 596
+            "line": 604
           },
           "name": "predictionsBucket",
           "optional": true,
@@ -4690,7 +4690,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 578
+            "line": 586
           },
           "name": "stackMappings",
           "optional": true,
@@ -4716,7 +4716,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 591
+            "line": 599
           },
           "name": "transformerPlugins",
           "optional": true,
@@ -4738,7 +4738,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 602
+            "line": 610
           },
           "name": "translationBehavior",
           "optional": true,
@@ -4761,7 +4761,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 670
+        "line": 678
       },
       "name": "AmplifyGraphqlApiResources",
       "properties": [
@@ -4774,7 +4774,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 694
+            "line": 702
           },
           "name": "cfnResources",
           "type": {
@@ -4790,7 +4790,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 689
+            "line": 697
           },
           "name": "functions",
           "type": {
@@ -4811,7 +4811,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 674
+            "line": 682
           },
           "name": "graphqlApi",
           "type": {
@@ -4827,7 +4827,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 699
+            "line": 707
           },
           "name": "nestedStacks",
           "type": {
@@ -4848,7 +4848,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 684
+            "line": 692
           },
           "name": "roles",
           "type": {
@@ -4869,7 +4869,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 679
+            "line": 687
           },
           "name": "tables",
           "type": {
@@ -5571,7 +5571,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 492
+        "line": 500
       },
       "name": "IAmplifyGraphqlDefinition",
       "properties": [
@@ -5585,7 +5585,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 503
+            "line": 511
           },
           "name": "functionSlots",
           "type": {
@@ -5619,7 +5619,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 497
+            "line": 505
           },
           "name": "schema",
           "type": {
@@ -5639,7 +5639,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 509
+        "line": 517
       },
       "name": "IBackendOutputEntry",
       "properties": [
@@ -5652,7 +5652,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 518
+            "line": 526
           },
           "name": "payload",
           "type": {
@@ -5673,7 +5673,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 513
+            "line": 521
           },
           "name": "version",
           "type": {
@@ -5693,7 +5693,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 524
+        "line": 532
       },
       "methods": [
         {
@@ -5704,7 +5704,7 @@
           },
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 531
+            "line": 539
           },
           "name": "addBackendOutputEntry",
           "parameters": [
@@ -5987,7 +5987,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 414
+        "line": 415
       },
       "name": "PartialTranslationBehavior",
       "properties": [
@@ -6001,7 +6001,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 426
+            "line": 427
           },
           "name": "disableResolverDeduping",
           "optional": true,
@@ -6023,7 +6023,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 465
+            "line": 466
           },
           "name": "enableAutoIndexQueryNames",
           "optional": true,
@@ -6042,7 +6042,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 480
+            "line": 481
           },
           "name": "enableSearchNodeToNodeEncryption",
           "optional": true,
@@ -6060,7 +6060,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 486
+            "line": 487
           },
           "name": "enableTransformerCfnOutputs",
           "optional": true,
@@ -6078,7 +6078,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 445
+            "line": 446
           },
           "name": "populateOwnerFieldForStaticGroupAuth",
           "optional": true,
@@ -6096,7 +6096,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 471
+            "line": 472
           },
           "name": "respectPrimaryKeyAttributesOnConnectionField",
           "optional": true,
@@ -6114,7 +6114,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 432
+            "line": 433
           },
           "name": "sandboxModeEnabled",
           "optional": true,
@@ -6135,7 +6135,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 458
+            "line": 459
           },
           "name": "secondaryKeyAsGSI",
           "optional": true,
@@ -6156,7 +6156,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 419
+            "line": 420
           },
           "name": "shouldDeepMergeDirectiveConfigDefaults",
           "optional": true,
@@ -6175,9 +6175,27 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 452
+            "line": 453
           },
           "name": "suppressApiKeyGeneration",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "experimental",
+            "summary": "When enabled, amplify DynamoDB table will be generated instead of CFN pre-defined DynamoDB table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 494
+          },
+          "name": "useAmplifyManagedTableResources",
           "optional": true,
           "type": {
             "primitive": "boolean"
@@ -6193,7 +6211,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 439
+            "line": 440
           },
           "name": "useSubUsernameForDefaultIdentityClaim",
           "optional": true,
@@ -6374,7 +6392,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 402
+            "line": 403
           },
           "name": "enableSearchNodeToNodeEncryption",
           "type": {
@@ -6391,7 +6409,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 408
+            "line": 409
           },
           "name": "enableTransformerCfnOutputs",
           "type": {
@@ -6510,13 +6528,14 @@
         {
           "abstract": true,
           "docs": {
-            "stability": "stable",
+            "default": "false",
+            "stability": "experimental",
             "summary": "Used for AmplifyGrapqhlApi construct ONLY If enabled, the table resources will be generated under custom resource provider, which enables the multiple GSI updates within one deployment phase."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 400
+            "line": 401
           },
           "name": "useAmplifyManagedTableResources",
           "type": {
@@ -6579,5 +6598,5 @@
     }
   },
   "version": "1.1.0",
-  "fingerprint": "44T7u1lyS+ucY2prUQ1gGTvVqh6PW4PBvxMydv8uFJM="
+  "fingerprint": "TNnrj9LedZbN69hWQ01I45EQfZWawIiiR9IuP2LcBU8="
 }
