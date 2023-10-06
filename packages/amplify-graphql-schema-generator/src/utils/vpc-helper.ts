@@ -179,20 +179,20 @@ export const getHostVpc = async (hostname: string, region: string): Promise<VpcC
   }
 
   // TODO: Confirm warning messaging
-  const warning = `
-    The host you provided is for an RDS cluster. Consider using an RDS Proxy as your data source instead. See the documentation for
-    a discussion of how an RDS proxy can help you scale your application more effectively.
-  `;
+  const warning = (clusterOrInstance: string): string => {
+    return `The host you provided is for an RDS ${clusterOrInstance}. Consider using an RDS Proxy as your data source instead.\n` +
+    'See the documentation for a discussion of how an RDS proxy can help you scale your application more effectively.';
+  }
 
   const clusterResult = await checkHostInDBClusters(hostname, region);
   if (clusterResult) {
-    printer.warn(warning);
+    printer.warn(warning('cluster'));
     return clusterResult;
   }
 
   const instanceResult = await checkHostInDBInstances(hostname, region);
   if (instanceResult) {
-    printer.warn(warning);
+    printer.warn(warning('instance'));
     return instanceResult;
   }
   
