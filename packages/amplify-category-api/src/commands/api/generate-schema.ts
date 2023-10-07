@@ -14,6 +14,7 @@ import {
 } from '../../provider-utils/awscloudformation/utils/rds-resources/database-resources';
 import { writeSchemaFile, generateRDSSchema } from '../../provider-utils/awscloudformation/utils/graphql-schema-utils';
 import { PREVIEW_BANNER } from '../../category-constants';
+import { InputObjectTypeDefinitionNode, StringValueNode, parse } from 'graphql';
 
 const subcommand = 'generate-schema';
 
@@ -32,7 +33,13 @@ export const run = async (context: $TSContext) => {
     return;
   }
 
-  const engine = ImportedRDSType.MYSQL;
+  const definitions = parse(fs.readFileSync(pathToSchemaFile, 'utf8')).definitions;
+  const amplifyInputType = definitions.find((d: any) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'AMPLIFY') as InputObjectTypeDefinitionNode;
+  let engine = (amplifyInputType?.fields.find((f: any) => f.name.value === 'engine').defaultValue as StringValueNode).value as ImportedRDSType;
+
+  if (!engine) {
+    engine = ImportedRDSType.MYSQL;
+  }
   const secretsKey = getSecretsKey();
   const database = await getDatabaseName(context, apiName, secretsKey);
   if (!database) {

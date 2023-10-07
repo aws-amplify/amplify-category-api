@@ -2,7 +2,7 @@ import { TransformerSecrets } from '@aws-amplify/graphql-transformer-interfaces'
 
 export enum ImportedRDSType {
   MYSQL = 'mysql',
-  POSTGRESQL = 'postgresql',
+  POSTGRESQL = 'postgres',
 }
 
 export type ImportedDataSourceType = ImportedRDSType;

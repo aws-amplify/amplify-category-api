@@ -10,6 +10,8 @@ import {
   MySQLDataSourceConfig,
   getHostVpc,
   provisionSchemaInspectorLambda,
+  PostgresDataSourceAdapter,
+  PostgresDataSourceConfig,
 } from '@aws-amplify/graphql-schema-generator';
 import { constructRDSGlobalAmplifyInput, readRDSSchema } from './rds-input-utils';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
@@ -38,15 +40,19 @@ export const generateRDSSchema = async (
       adapter = new MySQLDataSourceAdapter(databaseConfig as MySQLDataSourceConfig);
       schema = new Schema(new Engine('MySQL'));
       break;
+    case ImportedRDSType.POSTGRESQL:
+      adapter = new PostgresDataSourceAdapter(databaseConfig as PostgresDataSourceConfig);
+      schema = new Schema(new Engine('Postgres'));
+      break;
     default:
-      printer.error('Only MySQL Data Source is supported.');
+      printer.error('Only MySQL and Postgres Data Sources are supported.');
   }
 
   try {
     await adapter.initialize();
   } catch (error) {
     // If connection is unsuccessful, try connecting from VPC
-    if (error.code === 'ETIMEDOUT') {
+    if (error.code === 'ETIMEDOUT' || error.name === 'KnexTimeoutError') {
       const canConnectFromVpc = await retryWithVpcLambda(context, databaseConfig, adapter);
       if (!canConnectFromVpc) {
         throw new AmplifyError('UserInputError', {
