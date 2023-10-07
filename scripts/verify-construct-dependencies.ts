@@ -92,7 +92,7 @@ const computeDepsClosure = (deps: string[]): DepsClosure => {
 
 /**
  * Remove semver portion from package descriptor
- * e.g. zod@^3.1.12 => zod, or @aws-amplify/graphql-transformer@1.1.2 => @aws-amplify/graphql-transformer.
+ * e.g. @aws-amplify/graphql-transformer@1.1.2 => @aws-amplify/graphql-transformer.
  * @param vals values which we're going to remove semver string segments
  * @returns the values without semver string segments
  */
