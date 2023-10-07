@@ -38,6 +38,7 @@
     "graphql-transformer-common": "4.25.1",
     "knex": "~2.4.0",
     "mysql2": "~2.3.3",
+    "pg": "~8.11.3",
     "ora": "^4.0.3",
     "pluralize": "^8.0.0",
     "@types/pluralize": "^0.0.29"

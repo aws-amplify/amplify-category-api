@@ -44,7 +44,7 @@ import * as fs from 'fs-extra';
 import ora from 'ora';
 import { printer } from '@aws-amplify/amplify-prompts';
 
-const DB_ENGINES = ['aurora-mysql', 'mysql'];
+const DB_ENGINES = ['aurora-mysql', 'mysql', 'postgres', 'aurora-postgresql'];
 const spinner = ora('');
 
 /**

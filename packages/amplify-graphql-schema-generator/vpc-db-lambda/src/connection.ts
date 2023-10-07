@@ -11,7 +11,7 @@ export const establishDBConnection = (config: any): any => {
   };
   try {
     return knex({
-      client: 'mysql2',
+      client: config.engine === 'postgres' ? 'pg' : 'mysql2',
       connection: databaseConfig,
       pool: {
         min: 5,
