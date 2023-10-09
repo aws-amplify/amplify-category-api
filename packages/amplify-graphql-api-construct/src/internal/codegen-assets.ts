@@ -35,6 +35,7 @@ export class CodegenAssets extends Construct {
     new BucketDeployment(this, `${id}Deployment`, {
       destinationBucket: bucket,
       sources: [Source.data(MODEL_SCHEMA_KEY, props.modelSchema)],
+      memoryLimit: 512,
     });
 
     this.modelSchemaS3Uri = getS3UriForBucketAndKey(bucket, MODEL_SCHEMA_KEY);
