@@ -24,7 +24,12 @@ import {
 } from 'graphql';
 import { TransformerContextOutputProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { stripDirectives } from '../utils/strip-directives';
-import { DEFAULT_SCHEMA_DEFINITION } from '../utils/defaultSchema';
+import {
+  DEFAULT_SCHEMA_DEFINITION,
+  DEFAULT_QUERY_OPERATION,
+  DEFAULT_MUTATION_OPERATION,
+  DEFAULT_SUBSCRIPTION_OPERATION,
+} from '../utils/defaultSchema';
 
 const AMPLIFY = 'AMPLIFY';
 
@@ -97,35 +102,35 @@ export class TransformerOutput implements TransformerContextOutputProvider {
         default:
         /* pass any others */
       }
+    }
 
-      // We add the extension nodes last so that the order of input documents does not matter.
-      // At this point, all input documents have been processed so the base types will be present.
-      for (const ext of extensionNodes) {
-        switch (ext.kind) {
-          case Kind.OBJECT_TYPE_EXTENSION:
-            this.addObjectExtension(ext);
-            break;
-          case Kind.INTERFACE_TYPE_EXTENSION:
-            this.addInterfaceExtension(ext);
-            break;
-          case Kind.UNION_TYPE_EXTENSION:
-            this.addUnionExtension(ext);
-            break;
-          case Kind.ENUM_TYPE_EXTENSION:
-            this.addEnumExtension(ext);
-            break;
-          case Kind.INPUT_OBJECT_TYPE_EXTENSION:
-            this.addInputExtension(ext);
-            break;
-          // case Kind.SCALAR_TYPE_EXTENSION:
-          default:
-            continue;
-        }
+    // We add the extension nodes last so that the order of input documents does not matter.
+    // At this point, all input documents have been processed so the base types will be present.
+    for (const ext of extensionNodes) {
+      switch (ext.kind) {
+        case Kind.OBJECT_TYPE_EXTENSION:
+          this.addObjectExtension(ext);
+          break;
+        case Kind.INTERFACE_TYPE_EXTENSION:
+          this.addInterfaceExtension(ext);
+          break;
+        case Kind.UNION_TYPE_EXTENSION:
+          this.addUnionExtension(ext);
+          break;
+        case Kind.ENUM_TYPE_EXTENSION:
+          this.addEnumExtension(ext);
+          break;
+        case Kind.INPUT_OBJECT_TYPE_EXTENSION:
+          this.addInputExtension(ext);
+          break;
+        // case Kind.SCALAR_TYPE_EXTENSION:
+        default:
+          continue;
       }
-      // If no schema definition is provided then fill with the default one.
-      if (!this.getSchema()) {
-        this.putSchema(DEFAULT_SCHEMA_DEFINITION);
-      }
+    }
+    // If no schema definition is provided then fill with the default one.
+    if (!this.getSchema()) {
+      this.putSchema(DEFAULT_SCHEMA_DEFINITION);
     }
   }
 
@@ -163,6 +168,16 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     }
   }
 
+  public addDefaultQuery(): void {
+    this.addOperationType(DEFAULT_QUERY_OPERATION);
+  }
+
+  public ensureQuery(): void {
+    if (!this.getQueryTypeName()) {
+      this.addDefaultQuery();
+    }
+  }
+
   public getMutationTypeName(): string | undefined {
     const schemaNode = this.getSchema();
     const mutationTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'mutation');
@@ -178,6 +193,16 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     }
   }
 
+  public addDefaultMutation(): void {
+    this.addOperationType(DEFAULT_MUTATION_OPERATION);
+  }
+
+  public ensureMutation(): void {
+    if (!this.getMutationTypeName()) {
+      this.addDefaultMutation();
+    }
+  }
+
   public getSubscriptionTypeName(): string | undefined {
     const schemaNode = this.getSchema();
     const subscriptionTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'subscription');
@@ -190,6 +215,16 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     const subscriptionTypeName = this.getSubscriptionTypeName();
     if (subscriptionTypeName) {
       return this.nodeMap[subscriptionTypeName] as ObjectTypeDefinitionNode | undefined;
+    }
+  }
+
+  public addDefaultSubscription(): void {
+    this.addOperationType(DEFAULT_SUBSCRIPTION_OPERATION);
+  }
+
+  public ensureSubscription(): void {
+    if (!this.getSubscriptionTypeName()) {
+      this.addDefaultSubscription();
     }
   }
 
@@ -214,6 +249,16 @@ export class TransformerOutput implements TransformerContextOutputProvider {
 
   public hasType(name: string): boolean {
     return name in this.nodeMap;
+  }
+
+  public addOperationType(operation: OperationTypeDefinitionNode) {
+    const schemaNode = this.getSchema();
+    if (schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === operation.operation)) {
+      throw new Error(`Conflicting ${operation.operation} operation found.`);
+    } else {
+      const updatedSchema = TransformerOutput.makeSchema([...schemaNode.operationTypes, operation]);
+      this.putSchema(updatedSchema);
+    }
   }
 
   /**
@@ -263,6 +308,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
    * @param fields The fields to add the query type.
    */
   public addQueryFields(fields: FieldDefinitionNode[]) {
+    this.ensureQuery();
     const queryTypeName = this.getQueryTypeName();
     if (queryTypeName) {
       if (!this.getType(queryTypeName)) {
@@ -280,6 +326,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
    * @param fields The fields to add the mutation type.
    */
   public addMutationFields(fields: FieldDefinitionNode[]) {
+    this.ensureMutation();
     const mutationTypeName = this.getMutationTypeName();
     if (mutationTypeName) {
       if (!this.getType(mutationTypeName)) {
@@ -297,6 +344,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
    * @param fields The fields to add the subscription type.
    */
   public addSubscriptionFields(fields: FieldDefinitionNode[]) {
+    this.ensureSubscription();
     const subscriptionTypeName = this.getSubscriptionTypeName();
     if (subscriptionTypeName) {
       if (!this.getType(subscriptionTypeName)) {
