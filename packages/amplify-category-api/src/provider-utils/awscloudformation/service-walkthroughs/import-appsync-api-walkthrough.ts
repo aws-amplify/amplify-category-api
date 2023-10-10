@@ -38,7 +38,6 @@ export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<
     apiName = await getCfnApiArtifactHandler(context).createArtifacts(importAPIRequest);
   }
 
-  const engine = ImportedRDSType.MYSQL;
   const apiResourceDir = getAPIResourceDir(apiName);
   const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
   const secretsKey = await getSecretsKey();
@@ -49,7 +48,8 @@ export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<
       apiName: apiName,
     };
   }
-
+  
+  const engine = await promptDatabaseEngine();
   const databaseConfig: ImportedDataSourceConfig = await databaseConfigurationInputWalkthrough(engine);
 
   await writeDefaultGraphQLSchema(context, pathToSchemaFile, databaseConfig);
@@ -59,6 +59,21 @@ export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<
     apiName,
     dataSourceConfig: databaseConfig,
   };
+};
+
+const promptDatabaseEngine = async (): Promise<ImportedRDSType> => {
+  const engine = await prompter.pick<'one', string>('Select the database type:', [
+    {
+      name: 'MySQL',
+      value: ImportedRDSType.MYSQL as string,
+    },
+    {
+      name: 'PostgreSQL',
+      value: ImportedRDSType.POSTGRESQL as string,
+    },
+  ]);
+
+  return engine as ImportedRDSType;
 };
 
 /**
@@ -79,6 +94,57 @@ export const writeDefaultGraphQLSchema = async (
   } else {
     throw new Error(`Data source type ${dataSourceType} is not supported.`);
   }
+};
+
+/**
+ * CLI walkthrough for database configuration
+ * @param engine Database type
+ * @returns Return the database configuration customer has selected
+ */
+export const databaseConfigurationInputWalkthrough = async (engine: ImportedDataSourceType): Promise<ImportedDataSourceConfig> => {
+  printer.info('Please provide the following database connection information:');
+  const url = await prompter.input('Enter the database url or host name:');
+  const defaultPorts = {
+    [ImportedRDSType.MYSQL]: 3306,
+    [ImportedRDSType.POSTGRESQL]: 5432,
+  };
+  let isValidUrl = true;
+  const parsedDatabaseUrl = parseDatabaseUrl(url);
+  let { host, port, database, username, password } = parsedDatabaseUrl;
+
+  if (!host) {
+    isValidUrl = false;
+    host = url;
+  }
+  if (!isValidUrl || !port) {
+    port = await prompter.input<'one', number>('Enter the port number:', {
+      transform: (input) => Number.parseInt(input, 10),
+      validate: integer(),
+      initial: defaultPorts[engine] ?? 3306,
+    });
+  }
+
+  // Get the database user credentials
+  if (!isValidUrl || !username) {
+    username = await prompter.input('Enter the username:');
+  }
+
+  if (!isValidUrl || !password) {
+    password = await prompter.input('Enter the password:', { hidden: true });
+  }
+
+  if (!isValidUrl || !database) {
+    database = await prompter.input('Enter the database name:');
+  }
+
+  return {
+    engine,
+    database,
+    host,
+    port,
+    username,
+    password,
+  };
 };
 
 /**
