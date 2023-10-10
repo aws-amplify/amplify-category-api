@@ -10,7 +10,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -21,6 +21,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -52,7 +53,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -63,6 +64,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -94,7 +96,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -105,6 +107,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -136,7 +139,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -147,6 +150,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -178,7 +182,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -189,6 +193,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -220,7 +225,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -231,6 +236,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -265,7 +271,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -276,6 +282,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -310,7 +317,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -321,6 +328,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -355,7 +363,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -366,6 +374,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -400,7 +409,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -411,6 +420,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -445,7 +455,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -456,6 +466,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -490,7 +501,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -501,6 +512,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -540,7 +552,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -551,6 +563,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -590,7 +603,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -601,6 +614,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -640,7 +654,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -651,6 +665,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -685,7 +700,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -696,6 +711,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -730,7 +746,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -741,6 +757,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -775,7 +792,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -786,6 +803,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -820,7 +838,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -831,6 +849,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -865,7 +884,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -876,6 +895,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -910,7 +930,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -921,6 +941,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -952,7 +973,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -963,6 +984,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -994,7 +1016,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -1005,6 +1027,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1036,7 +1059,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -1047,6 +1070,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1080,7 +1104,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -1091,6 +1115,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1124,7 +1149,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -1135,6 +1160,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1168,7 +1194,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -1179,6 +1205,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1212,7 +1239,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -1223,6 +1250,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1256,7 +1284,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -1267,6 +1295,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1300,7 +1329,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -1311,6 +1340,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1342,7 +1372,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -1353,6 +1383,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1384,7 +1415,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -1395,6 +1426,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1426,7 +1458,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -1437,6 +1469,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1471,7 +1504,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -1482,6 +1515,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1516,7 +1550,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -1527,6 +1561,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1561,7 +1596,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -1572,6 +1607,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1606,7 +1642,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -1617,6 +1653,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1651,7 +1688,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -1662,6 +1699,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1696,7 +1734,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -1707,6 +1745,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1746,7 +1785,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -1757,6 +1796,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1796,7 +1836,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -1807,6 +1847,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1846,7 +1887,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -1857,6 +1898,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1891,7 +1933,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -1902,6 +1944,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1936,7 +1979,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -1947,6 +1990,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1981,7 +2025,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -1992,6 +2036,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -2026,7 +2071,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -2037,6 +2082,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -2071,7 +2117,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -2082,6 +2128,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -2116,7 +2163,7 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #if( $util.isNullOrEmpty($ctx.args.filter) )
@@ -2127,6 +2174,7 @@ $util.unauthorized
 } )
   #end
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 

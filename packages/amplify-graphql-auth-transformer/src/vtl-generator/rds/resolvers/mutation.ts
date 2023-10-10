@@ -2,7 +2,7 @@ import { compoundExpression, list, methodCall, obj, printBlock, qref, ref, set, 
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { ConfiguredAuthProviders, RoleDefinition } from '../../../utils';
-import { constructAuthorizedInputStatement, generateAuthRulesFromRoles, validateAuthResult } from './common';
+import { constructAuthorizedInputStatement, emptyPayload, generateAuthRulesFromRoles, validateAuthResult } from './common';
 
 export const generateAuthExpressionForCreate = (
   ctx: TransformerContextProvider,
@@ -45,7 +45,7 @@ const generateMutationExpression = (
         : methodCall(ref('util.authRules.mutationAuth'), ref('authRules'), str(operation), ref('ctx.args.input')),
     ),
   );
-  expressions.push(validateAuthResult(), constructAuthorizedInputStatement('ctx.args.input'));
+  expressions.push(validateAuthResult(), constructAuthorizedInputStatement('ctx.args.input'), emptyPayload);
   return printBlock('Authorization rules')(compoundExpression(expressions));
 };
 

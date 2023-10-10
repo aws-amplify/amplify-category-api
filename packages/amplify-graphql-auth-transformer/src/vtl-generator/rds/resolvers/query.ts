@@ -16,7 +16,7 @@ export const generateAuthExpressionForQueries = (
   const expressions = [];
   expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, fields, true)));
   expressions.push(set(ref('authResult'), methodCall(ref('util.authRules.queryAuth'), ref('authRules'))));
-  expressions.push(validateAuthResult(), constructAuthFilter());
+  expressions.push(validateAuthResult(), constructAuthFilter(), emptyPayload);
   return printBlock('Authorization rules')(compoundExpression(expressions));
 };
 
@@ -63,6 +63,6 @@ export const generateAuthExpressionForRelationQuery = (
   const expressions = [];
   expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, fields, true)));
   expressions.push(set(ref('authResult'), methodCall(ref('util.authRules.queryAuth'), ref('authRules'))));
-  expressions.push(validateAuthResult(), constructAuthFilter());
+  expressions.push(validateAuthResult(), constructAuthFilter(), emptyPayload);
   return printBlock('Authorization rules')(compoundExpression(expressions));
 };

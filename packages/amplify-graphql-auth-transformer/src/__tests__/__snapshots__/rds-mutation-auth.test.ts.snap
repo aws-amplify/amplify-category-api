@@ -11,11 +11,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -58,11 +59,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -105,11 +107,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -133,11 +136,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -180,11 +184,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -227,11 +232,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -258,11 +264,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -308,11 +315,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -358,11 +366,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -389,11 +398,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -439,11 +449,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -489,11 +500,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -526,11 +538,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -582,11 +595,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -638,11 +652,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -669,11 +684,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -719,11 +735,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -769,11 +786,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -800,11 +818,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -850,11 +869,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -900,11 +920,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -928,11 +949,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -975,11 +997,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1022,11 +1045,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1052,11 +1076,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1101,11 +1126,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1150,11 +1176,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1180,11 +1207,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1229,11 +1257,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1278,11 +1307,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1306,11 +1336,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1353,11 +1384,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1400,11 +1432,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1431,11 +1464,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1481,11 +1515,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1531,11 +1566,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1562,11 +1598,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1612,11 +1649,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1662,11 +1700,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1699,11 +1738,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1755,11 +1795,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1811,11 +1852,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1842,11 +1884,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1892,11 +1935,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1942,11 +1986,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -1973,11 +2018,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -2023,11 +2069,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 
@@ -2073,11 +2120,12 @@ $util.qr($authRules.add({
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
-$util.unauthorized
+  $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization rules. **"
 `;
 

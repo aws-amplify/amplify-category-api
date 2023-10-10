@@ -31,7 +31,7 @@ import { API_KEY_AUTH_TYPE, IDENTITY_CLAIM_DELIMITER, RoleDefinition } from '../
  * Generates default RDS expression
  */
 export const generateDefaultRDSExpression = (): string => {
-  const exp = methodCall(ref('util.unauthorized'));
+  const exp = ref('util.unauthorized()');
   return printBlock('Default RDS Auth Resolver')(compoundExpression([exp, toJson(obj({}))]));
 };
 
@@ -164,7 +164,7 @@ const getAllowedFields = (role: RoleDefinition, fields: string[]): string[] => {
 
 export const validateAuthResult = (): Expression => {
   return compoundExpression([
-    iff(or([not(ref('authResult')), parens(and([ref('authResult'), not(ref('authResult.authorized'))]))]), ref('util.unauthorized')),
+    iff(or([not(ref('authResult')), parens(and([ref('authResult'), not(ref('authResult.authorized'))]))]), methodCall(ref('util.unauthorized'))),
   ]);
 };
 
@@ -187,7 +187,7 @@ export const constructAuthorizedInputStatement = (keyName: string): Expression =
 export const generateSandboxExpressionForField = (sandboxEnabled: boolean): string => {
   let exp: Expression;
   if (sandboxEnabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY_AUTH_TYPE)), methodCall(ref('util.unauthorized')));
-  else exp = methodCall(ref('util.unauthorized'));
+  else exp = ref('util.unauthorized()');
   return printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(compoundExpression([exp, toJson(obj({}))]));
 };
 

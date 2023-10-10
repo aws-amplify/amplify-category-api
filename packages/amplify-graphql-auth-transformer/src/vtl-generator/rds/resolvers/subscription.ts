@@ -1,6 +1,6 @@
 import { and, compoundExpression, ifElse, iff, list, methodCall, not, obj, printBlock, ref, set } from 'graphql-mapping-template';
 import { ConfiguredAuthProviders, RoleDefinition } from '../../../utils';
-import { generateAuthRulesFromRoles, validateAuthResult } from './common';
+import { emptyPayload, generateAuthRulesFromRoles, validateAuthResult } from './common';
 
 export const generateAuthExpressionForSubscriptions = (providers: ConfiguredAuthProviders, roles: Array<RoleDefinition>): string => {
   const expressions = [];
@@ -24,6 +24,8 @@ export const generateAuthExpressionForSubscriptions = (providers: ConfiguredAuth
       ),
     ),
   );
+
+  expressions.push(emptyPayload);
 
   return printBlock('Authorization rules')(compoundExpression(expressions));
 };
