@@ -71,7 +71,7 @@ const checkHostInDBProxies = async (hostname: string, region: string): Promise<V
   const response: DescribeDBProxiesCommandOutput = await client.send(command);
 
   if (!response.DBProxies) {
-    throw new Error('Error in fetching DB Instances');
+    throw new Error('Error in fetching DB Proxies');
   }
 
   const proxy = response.DBProxies.find((p) => p?.Endpoint === hostname);
@@ -167,10 +167,11 @@ const getSubnetIds = async (
 };
 
 /**
- * Searches for the host in DB Proxies, Instances and DB Clusters and returns the VPC configuration if found.
+ * Searches for the host in DB Proxies, then DB Clusters, and finally DB Instances. Returns the VPC configuration if found.
  *
  * @param hostname Hostname of the database.
  * @param region AWS region.
+ * @returns the VpcConfig for the database or undefined if not found.
  */
 export const getHostVpc = async (hostname: string, region: string): Promise<VpcConfig | undefined> => {
   const proxyResult = await checkHostInDBProxies(hostname, region);

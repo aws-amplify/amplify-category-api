@@ -2,6 +2,7 @@ import {
   RDSClient,
   DescribeDBClustersCommandOutput,
   DescribeDBInstancesCommandOutput,
+  DescribeDBProxiesCommandOutput,
   DescribeDBSubnetGroupsCommandOutput,
 } from '@aws-sdk/client-rds';
 
@@ -14,10 +15,14 @@ const subnetIds = ['subnet-1111111111', 'subnet-2222222222'];
 const securityGroupIds = ['sg-abc123'];
 
 describe('detect VPC settings', () => {
-  it('should detect VPC settings for an RDS instance', async () => {
+  it('should detect VPC settings for an RDS instance after checking proxy and cluster', async () => {
     // TS complains about resolving values in the spy.
     // Cast it through never to overcome the compile error.
-    sendSpy.mockResolvedValueOnce(instanceResponse as never);
+    sendSpy
+      .mockResolvedValueOnce(emptyProxyResponse as never)
+      .mockResolvedValueOnce(clusterResponse as never)
+      .mockResolvedValueOnce(instanceResponse as never)
+      .mockRejectedValue('Should not make any other calls' as never);
 
     const result = await getHostVpc('mock-rds-cluster-instance-1.aaaaaaaaaaaa.us-west-2.rds.amazonaws.com', 'us-west-2');
 
@@ -29,13 +34,16 @@ describe('detect VPC settings', () => {
     expect(result?.securityGroupIds.length).toEqual(securityGroupIds.length);
   });
 
-  it('should detect VPC settings for an RDS cluster', async () => {
+  it('should detect VPC settings for an RDS cluster after checking proxy', async () => {
+    // Note that the cluster response doesn't include subnet information,
+    // so it requires an additional call.
     // TS complains about resolving values in the spy.
     // Cast it through never to overcome the compile error.
     sendSpy
-      .mockResolvedValueOnce(instanceResponse as never)
+      .mockResolvedValueOnce(emptyProxyResponse as never)
       .mockResolvedValueOnce(clusterResponse as never)
-      .mockResolvedValueOnce(subnetResponse as never);
+      .mockResolvedValueOnce(subnetResponse as never)
+      .mockRejectedValue('Should not make any other calls' as never);
 
     const result = await getHostVpc('mock-rds-cluster.cluster-abc123.us-west-2.rds.amazonaws.com', 'us-west-2');
 
@@ -46,6 +54,38 @@ describe('detect VPC settings', () => {
     expect(result?.securityGroupIds).toEqual(expect.arrayContaining(securityGroupIds));
     expect(result?.securityGroupIds.length).toEqual(securityGroupIds.length);
   });
+
+  it('should detect VPC settings for an RDS proxy', async () => {
+    // TS complains about resolving values in the spy.
+    // Cast it through never to overcome the compile error.
+    sendSpy
+      .mockResolvedValueOnce(proxyResponse as never)
+      .mockRejectedValue('Should not make any other calls' as never);
+
+    const result = await getHostVpc('mock-rds-cluster.proxy-abc123.us-west-2.rds.amazonaws.com', 'us-west-2');
+
+    expect(result).toBeDefined();
+    expect(result?.vpcId).toEqual(vpcId);
+    expect(result?.subnetIds).toEqual(expect.arrayContaining(subnetIds));
+    expect(result?.subnetIds.length).toEqual(subnetIds.length);
+    expect(result?.securityGroupIds).toEqual(expect.arrayContaining(securityGroupIds));
+    expect(result?.securityGroupIds.length).toEqual(securityGroupIds.length);
+  });
+
+  it('should return undefined for non-matching hosts', async () => {
+    // TS complains about resolving values in the spy.
+    // Cast it through never to overcome the compile error.
+    sendSpy
+      .mockResolvedValueOnce(emptyProxyResponse as never)
+      .mockResolvedValueOnce(clusterResponse as never)
+      .mockResolvedValueOnce(instanceResponse as never)
+      .mockRejectedValue('Should not make any other calls' as never);
+
+    const result = await getHostVpc('nonexistent-host.cluster-abc123.us-west-2.rds.amazonaws.com', 'us-west-2');
+
+    expect(result).toBeUndefined();
+  });
+
 });
 
 const instanceResponse: DescribeDBInstancesCommandOutput = {
@@ -205,6 +245,37 @@ const clusterResponse: DescribeDBClustersCommandOutput = {
         MaxCapacity: 64,
       },
       NetworkType: 'IPV4',
+    },
+  ],
+};
+
+const emptyProxyResponse: DescribeDBProxiesCommandOutput = { $metadata: {}, DBProxies: [] };
+
+const proxyResponse: DescribeDBProxiesCommandOutput = {
+  $metadata: {},
+  DBProxies: [
+    {
+      DBProxyName: 'mockproxy',
+      DBProxyArn: 'arn:aws:rds:us-west-2:123456789012:db-proxy:prx-00001111222233334',
+      Status: 'available',
+      EngineFamily: 'MYSQL',
+      VpcId: vpcId,
+      VpcSecurityGroupIds: securityGroupIds,
+      VpcSubnetIds: subnetIds,
+      Auth: [
+        {
+          AuthScheme: 'SECRETS',
+          SecretArn: 'arn:aws:secretsmanager:us-west-2:123456789012:secret:ProxyClusterSecret-AAAAAAAAAAAA-aaaaaa',
+          IAMAuth: 'DISABLED',
+        },
+      ],
+      RoleArn: 'arn:aws:iam::123456789012:role/Stack-ClusterProxyRole-1111111111111',
+      Endpoint: 'mock-rds-cluster.proxy-abc123.us-west-2.rds.amazonaws.com',
+      RequireTLS: true,
+      IdleClientTimeout: 1800,
+      DebugLogging: false,
+      CreatedDate: new Date(),
+      UpdatedDate: new Date(),
     },
   ],
 };
