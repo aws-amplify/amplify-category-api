@@ -13,21 +13,29 @@ describe('testDataSourceAdapter', () => {
       password: 'password',
     };
     const adapter = new PostgresDataSourceAdapter(config);
-    expect(adapter.mapDataType('varchar', true, 'table', 'field', 'varchar')).toEqual({
-      kind: 'Scalar',
-      name: 'String',
+    ['char', 'varchar', 'text'].forEach((type) => {
+      expect(adapter.mapDataType(type, true, 'table', 'field', type)).toEqual({
+        kind: 'Scalar',
+        name: 'String',
+      });
     });
-    expect(adapter.mapDataType('char', true, 'table', 'field', 'varchar')).toEqual({
-      kind: 'Scalar',
-      name: 'String',
+    ['boolean', 'bool'].forEach((type) => {
+      expect(adapter.mapDataType(type, true, 'table', 'field', type)).toEqual({
+        kind: 'Scalar',
+        name: 'Boolean',
+      });
     });
-    expect(adapter.mapDataType('bool', true, 'table', 'field', 'bool')).toEqual({
-      kind: 'Scalar',
-      name: 'Boolean',
+    ['bigint','int8','bigserial','bit','int','int4','int2','smallint','smallserial','serial','serial4'].forEach((type) => {
+      expect(adapter.mapDataType(type, true, 'table', 'field', type)).toEqual({
+        kind: 'Scalar',
+        name: 'Int',
+      });
     });
-    expect(adapter.mapDataType('decimal', true, 'table', 'field', 'decimal')).toEqual({
-      kind: 'Scalar',
-      name: 'Float',
+    ['float8','money','numeric','decimal','real','float4'].forEach((type) => {
+      expect(adapter.mapDataType(type, true, 'table', 'field', type)).toEqual({
+        kind: 'Scalar',
+        name: 'Float',
+      });
     });
     expect(adapter.mapDataType('uuid', true, 'table', 'field', 'uuid')).toEqual({
       kind: 'Scalar',
@@ -41,17 +49,23 @@ describe('testDataSourceAdapter', () => {
       kind: 'Scalar',
       name: 'AWSTime',
     });
-    expect(adapter.mapDataType('json', true, 'table', 'field', 'json')).toEqual({
-      kind: 'Scalar',
-      name: 'AWSJSON',
+    ['box','circle','json','jsonb','line','lseg','path','point','polygon'].forEach((type) => {
+      expect(adapter.mapDataType(type, true, 'table', 'field', type)).toEqual({
+        kind: 'Scalar',
+        name: 'AWSJSON',
+      });
     });
-    expect(adapter.mapDataType('datetime', true, 'table', 'field', 'datetime')).toEqual({
-      kind: 'Scalar',
-      name: 'AWSDateTime',
+    ['datetime', 'timestamp'].forEach((type) => {
+      expect(adapter.mapDataType(type, true, 'table', 'field', type)).toEqual({
+        kind: 'Scalar',
+        name: 'AWSDateTime',
+      });
     });
-    expect(adapter.mapDataType('inet', true, 'table', 'field', 'inet')).toEqual({
-      kind: 'Scalar',
-      name: 'AWSIPAddress',
+    ['cidr','inet'].forEach((type) => {
+      expect(adapter.mapDataType(type, true, 'table', 'field', type)).toEqual({
+        kind: 'Scalar',
+        name: 'AWSIPAddress',
+      });
     });
     expect(adapter.mapDataType('varchar', true, 'table', 'field', '_varchar')).toEqual({
       kind: 'List',
