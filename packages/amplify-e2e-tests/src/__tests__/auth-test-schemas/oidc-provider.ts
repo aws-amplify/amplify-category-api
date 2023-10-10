@@ -40,6 +40,16 @@ export const schema = `
     content: String
     groupsField: [String]
   }
+
+  type Query {
+    customGetTodoPrivate(id: ID!): [TodoPrivate] @sql(statement: "SELECT * FROM TodoPrivate WHERE id = :id") @auth(rules: [{ allow: private }])
+    customGetTodoStaticGroup(id: ID!): [TodoStaticGroup] @sql(statement: "SELECT * FROM TodoStaticGroup WHERE id = :id") @auth(rules: [{ allow: groups, groups: ["Admin"], provider: oidc, groupClaim: "user_groups" }])
+  }
+
+  type Mutation {
+    addTodoPrivate(id: ID!, content: String) @sql(statement: "INSERT INTO TodoPrivate VALUES(:id, :content)") @auth(rules: [{ allow: private }])
+    addTodoStaticGroup(id: ID!, content: String) @sql(statement: "INSERT INTO TodoStaticGroup VALUES(:id, :content)") @auth(rules: [{ allow: groups, groups: ["Admin"], provider: oidc, groupClaim: "user_groups" }])
+  }
 `;
 
 export const sqlCreateStatements = generateDDL(schema);

@@ -17,6 +17,7 @@ import path from 'path';
 import { schema, sqlCreateStatements } from './auth-test-schemas/userpool-provider';
 import { createModelOperationHelpers, configureAppSyncClients, checkOperationResult, checkListItemExistence } from '../rds-v2-test-utils';
 import { setupUser, getUserPoolId, signInUser, configureAmplify } from '../schema-api-directives';
+import { gql } from 'graphql-tag';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -716,5 +717,121 @@ describe('RDS Cognito userpool provider Auth tests', () => {
       id: todo['id'],
     });
     checkOperationResult(deleteResult, todoUpdated, `delete${modelName}`);
+  });
+
+  test('logged in user can perform custom operations', async () => {
+    const appSyncClient = appSyncClients[userPoolProvider][userName2];
+    const todo = {
+      id: 'todocustom1',
+      content: 'Todo',
+    };
+    const createTodoCustom = /* GraphQL */ `
+      mutation CreateTodoCustom($input: TodoPrivate!) {
+        addTodoPrivate(input: $input) {}
+      }
+    `;
+    const createResult = await appSyncClient.mutate({
+      mutation: gql(createTodoCustom),
+      fetchPolicy: 'no-cache',
+      variables: {
+        input: todo,
+      },
+    });
+    expect(createResult.data.addTodoPrivate).toEqual(null);
+
+    const getTodoCustom = /* GraphQL */ `
+      query GetTodoCustom($id: ID!) {
+        customGetTodoPrivate(id: $id) {
+          id
+          content
+        }
+      }
+    `;
+    const getResult = await appSyncClient.query({
+      query: gql(getTodoCustom),
+      fetchPolicy: 'no-cache',
+      variables: {
+        id: todo.id,
+      },
+    });
+    checkListItemExistence(getResult, 'customGetTodoPrivate', todo.id, true);
+  });
+
+  test('users in static group can perform custom operations', async () => {
+    const appSyncClient = appSyncClients[userPoolProvider][userName1];
+    const todo = {
+      id: 'todocustom2',
+      content: 'Todo',
+    };
+    const createTodoCustom = /* GraphQL */ `
+      mutation CreateTodoCustom($input: TodoStaticGroup!) {
+        addTodoStaticGroup(input: $input) {}
+      }
+    `;
+    const createResult = await appSyncClient.mutate({
+      mutation: gql(createTodoCustom),
+      fetchPolicy: 'no-cache',
+      variables: {
+        input: todo,
+      },
+    });
+    expect(createResult.data.addTodoStaticGroup).toEqual(null);
+
+    const getTodoCustom = /* GraphQL */ `
+      query GetTodoCustom($id: ID!) {
+        customGetTodoStaticGroup(id: $id) {
+          id
+          content
+        }
+      }
+    `;
+    const getResult = await appSyncClient.query({
+      query: gql(getTodoCustom),
+      fetchPolicy: 'no-cache',
+      variables: {
+        id: todo.id,
+      },
+    });
+    checkListItemExistence(getResult, 'customGetTodoStaticGroup', todo.id, true);
+  });
+
+  test('users not in static group cannot perform custom operations', async () => {
+    const appSyncClient = appSyncClients[userPoolProvider][userName2];
+    const todo = {
+      id: 'todocustom3',
+      content: 'Todo',
+    };
+    const createTodoCustom = /* GraphQL */ `
+      mutation CreateTodoCustom($input: TodoStaticGroup!) {
+        addTodoStaticGroup(input: $input) {}
+      }
+    `;
+    await expect(async () => {
+      await appSyncClient.mutate({
+        mutation: gql(createTodoCustom),
+        fetchPolicy: 'no-cache',
+        variables: {
+          input: todo,
+        },
+      });
+    }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access addTodoStaticGroup on type Mutation"`);
+
+    const getTodoCustom = /* GraphQL */ `
+      query GetTodoCustom($id: ID!) {
+        customGetTodoStaticGroup(id: $id) {
+          id
+          content
+        }
+      }
+    `;
+    await expect(async () => {
+      await appSyncClient.query({
+        query: gql(getTodoCustom),
+        fetchPolicy: 'no-cache',
+        variables: {
+          id: todo.id,
+        },
+      });
+    }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access customGetTodoStaticGroup on type Query"`);
   });
 });
