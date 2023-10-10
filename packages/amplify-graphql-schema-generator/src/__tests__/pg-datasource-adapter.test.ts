@@ -29,6 +29,30 @@ describe('testDataSourceAdapter', () => {
       kind: 'Scalar',
       name: 'Float',
     });
+    expect(adapter.mapDataType('uuid', true, 'table', 'field', 'uuid')).toEqual({
+      kind: 'Scalar',
+      name: 'ID',
+    });
+    expect(adapter.mapDataType('date', true, 'table', 'field', 'date')).toEqual({
+      kind: 'Scalar',
+      name: 'AWSDate',
+    });
+    expect(adapter.mapDataType('time', true, 'table', 'field', 'time')).toEqual({
+      kind: 'Scalar',
+      name: 'AWSTime',
+    });
+    expect(adapter.mapDataType('json', true, 'table', 'field', 'json')).toEqual({
+      kind: 'Scalar',
+      name: 'AWSJSON',
+    });
+    expect(adapter.mapDataType('datetime', true, 'table', 'field', 'datetime')).toEqual({
+      kind: 'Scalar',
+      name: 'AWSDateTime',
+    });
+    expect(adapter.mapDataType('inet', true, 'table', 'field', 'inet')).toEqual({
+      kind: 'Scalar',
+      name: 'AWSIPAddress',
+    });
     expect(adapter.mapDataType('varchar', true, 'table', 'field', '_varchar')).toEqual({
       kind: 'List',
       type: {
