@@ -821,13 +821,14 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   ): void => {
     const roleDefinitions = roles.map((r) => this.roleMap.get(r)!);
     const hasModelDirective = def.directives.some((dir) => dir.name.value === 'model');
+    const fieldNode = def.fields.find((f) => f.name.value === fieldName);
     const scope = getScopeForField(ctx, def, fieldName, hasModelDirective);
     if (ctx.api.host.hasResolver(typeName, fieldName)) {
       // TODO: move pipeline resolvers created in the api host to the resolver manager
       /* eslint-disable @typescript-eslint/no-explicit-any */
       const fieldResolver = ctx.api.host.getResolver(typeName, fieldName) as any;
       /* eslint-enable */
-      const fieldAuthExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForField(
+      const fieldAuthExpression = this.getVtlGenerator(ctx, def.name.value, fieldNode).generateAuthExpressionForField(
         this.configuredAuthProviders,
         roleDefinitions,
         [],
@@ -845,28 +846,43 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       );
       (fieldResolver.pipelineConfig.functions as string[]).unshift(authFunction.functionId);
     } else {
-      const fieldAuthExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForField(
+      const fieldAuthExpression = this.getVtlGenerator(ctx, def.name.value, fieldNode).generateAuthExpressionForField(
         this.configuredAuthProviders,
         roleDefinitions,
         def.fields ?? [],
         fieldName,
       );
       const subsEnabled = hasModelDirective ? this.modelDirectiveConfig.get(typeName)!.subscriptions?.level === 'on' : false;
-      const fieldResponse = this.getVtlGenerator(ctx, def.name.value).generateFieldAuthResponse('Mutation', fieldName, subsEnabled);
-      const resolver = ctx.resolvers.addResolver(
-        typeName,
+      const fieldResponse = this.getVtlGenerator(ctx, def.name.value, fieldNode).generateFieldAuthResponse(
+        'Mutation',
         fieldName,
-        new TransformerResolver(
+        subsEnabled,
+      );
+      const existingResolver = ctx.resolvers.hasResolver(typeName, fieldName);
+      if (existingResolver) {
+        const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
+        resolver.addToSlot(
+          'auth',
+          MappingTemplate.s3MappingTemplateFromString(fieldAuthExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
+          MappingTemplate.s3MappingTemplateFromString(fieldResponse, `${typeName}.${fieldName}.{slotName}.{slotIndex}.res.vtl`),
+        );
+        resolver.setScope(scope);
+      } else {
+        const resolver = ctx.resolvers.addResolver(
           typeName,
           fieldName,
-          ResolverResourceIDs.ResolverResourceID(typeName, fieldName),
-          MappingTemplate.s3MappingTemplateFromString(fieldAuthExpression, `${typeName}.${fieldName}.req.vtl`),
-          MappingTemplate.s3MappingTemplateFromString(fieldResponse, `${typeName}.${fieldName}.res.vtl`),
-          ['init'],
-          ['finish'],
-        ),
-      );
-      resolver.setScope(scope);
+          new TransformerResolver(
+            typeName,
+            fieldName,
+            ResolverResourceIDs.ResolverResourceID(typeName, fieldName),
+            MappingTemplate.s3MappingTemplateFromString(fieldAuthExpression, `${typeName}.${fieldName}.req.vtl`),
+            MappingTemplate.s3MappingTemplateFromString(fieldResponse, `${typeName}.${fieldName}.res.vtl`),
+            ['init'],
+            ['finish'],
+          ),
+        );
+        resolver.setScope(scope);
+      }
     }
   };
 
@@ -928,7 +944,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         ? ctx.api.host.getDataSource(RDSLambdaDataSourceLogicalID)
         : ctx.api.host.getDataSource(`${def.name.value}Table`)
     ) as DataSourceProvider;
-    const requestExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthRequestExpression();
+    const requestExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthRequestExpression(ctx, def);
     const authExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForUpdate(
       this.configuredAuthProviders,
       totalRoles,
@@ -952,8 +968,13 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     // only roles with full delete on every field can delete
     const deleteRoles = acm.getRolesPerOperation('delete', true).map((role) => this.roleMap.get(role)!);
-    const dataSource = ctx.api.host.getDataSource(`${def.name.value}Table`) as DataSourceProvider;
-    const requestExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthRequestExpression();
+    const { RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
+    const dataSource = (
+      isRDSModel(ctx, def.name.value)
+        ? ctx.api.host.getDataSource(RDSLambdaDataSourceLogicalID)
+        : ctx.api.host.getDataSource(`${def.name.value}Table`)
+    ) as DataSourceProvider;
+    const requestExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthRequestExpression(ctx, def);
     const authExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForDelete(
       this.configuredAuthProviders,
       deleteRoles,
@@ -1477,7 +1498,13 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     dataStoreFields.forEach((item) => allowedFields.add(item));
   };
 
-  getVtlGenerator = (ctx: TransformerContextProvider, typename: string): AuthVTLGenerator => {
+  getVtlGenerator = (ctx: TransformerContextProvider, typename: string, field?: FieldDefinitionNode): AuthVTLGenerator => {
+    // If the field contains SQL directive, treat it as RDS operation.
+    if (field && field.directives.some((dir) => dir.name.value === 'sql')) {
+      return new RDSAuthVTLGenerator();
+    }
+
+    // Check based on schema file
     if (isRDSModel(ctx, typename)) {
       return new RDSAuthVTLGenerator();
     }

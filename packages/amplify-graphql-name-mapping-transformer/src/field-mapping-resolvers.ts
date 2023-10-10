@@ -51,9 +51,8 @@ export const attachInputMappingSlot = ({ resolver, resolverTypeName, resolverFie
  * Calls createPostDataLoadMapping to create a slot to map origAttrName back to currAttrName in the response
  */
 export const attachFieldMappingSlot = ({ resolver, resolverTypeName, resolverFieldName, fieldMap }: AttachInputMappingSlotParams): void => {
-  const slotName = 'preAuth';
   resolver.addToSlot(
-    slotName,
+    'preAuth',
     MappingTemplate.s3MappingTemplateFromString(
       print(compoundExpression([createFieldMapExpression(fieldMap), toJson(raw('{}'))])),
       `${resolverTypeName}.${resolverFieldName}.{slotName}.{slotIndex}.req.vtl`,

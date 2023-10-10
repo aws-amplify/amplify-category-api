@@ -301,6 +301,9 @@ input ModelStringKeyConditionInput {
 
 exports[`@hasMany directive with RDS datasource composite key should generate correct resolvers 2`] = `
 "## [Start] Invoke RDS Lambda data source. **
+#if( $ctx.stash.deniedField )
+  #return($util.toJson(null))
+#end
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
 #set( $lambdaInput.table = \\"Part\\" )
@@ -618,6 +621,9 @@ input ModelSubscriptionPostFilterInput {
 
 exports[`@hasMany directive with RDS datasource happy case should generate correct resolvers 2`] = `
 "## [Start] Invoke RDS Lambda data source. **
+#if( $ctx.stash.deniedField )
+  #return($util.toJson(null))
+#end
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
 #set( $lambdaInput.table = \\"Post\\" )

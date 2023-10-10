@@ -67,6 +67,6 @@ export class RDSModelVTLGenerator implements ModelVTLGenerator {
   }
 
   generateDefaultResponseMappingTemplate(config: ModelDefaultResponseConfig): string {
-    return generateDefaultLambdaResponseMappingTemplate(false);
+    return generateDefaultLambdaResponseMappingTemplate(false, config.mutation);
   }
 }

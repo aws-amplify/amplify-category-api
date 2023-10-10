@@ -4612,6 +4612,7 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments.i
 }
 ## [End] Invoke RDS Lambda data source. **",
   "Mutation.createNote.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
@@ -4644,6 +4645,7 @@ $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.k
 }
 ## [End] Invoke RDS Lambda data source. **",
   "Mutation.deleteNote.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
@@ -4687,6 +4689,7 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments.i
 }
 ## [End] Invoke RDS Lambda data source. **",
   "Mutation.updateNote.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
@@ -4707,6 +4710,9 @@ $util.toJson({})
 #set( $lambdaInput.operationName = \\"getNote\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
+#end
 #set( $lambdaInput.args.metadata.nonScalarFields = [\\"tags\\", \\"attachments\\"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
@@ -4740,6 +4746,9 @@ $util.toJson({})
 #set( $lambdaInput.operationName = \\"listNotes\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
+#end
 #set( $lambdaInput.args.metadata.nonScalarFields = [\\"tags\\", \\"attachments\\"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))

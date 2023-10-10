@@ -127,7 +127,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     // Warning: (ae-forgotten-export) The symbol "AuthVTLGenerator" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    getVtlGenerator: (ctx: TransformerContextProvider, typename: string) => AuthVTLGenerator;
+    getVtlGenerator: (ctx: TransformerContextProvider, typename: string, field?: FieldDefinitionNode) => AuthVTLGenerator;
     // (undocumented)
     object: (def: ObjectTypeDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)
