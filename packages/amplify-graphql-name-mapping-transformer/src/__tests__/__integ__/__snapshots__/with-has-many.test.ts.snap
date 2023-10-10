@@ -244,6 +244,9 @@ exports[`@refersTo with @hasMany for RDS Models model table names are mapped 4`]
 #set( $lambdaInput.operationName = \\"getEmployee\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
+#end
 #set( $lambdaInput.args.metadata.nonScalarFields = [\\"tasks\\"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
@@ -267,6 +270,9 @@ exports[`@refersTo with @hasMany for RDS Models model table names are mapped 5`]
 #set( $lambdaInput.operationName = \\"listEmployees\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
+#end
 #set( $lambdaInput.args.metadata.nonScalarFields = [\\"tasks\\"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
@@ -363,6 +369,9 @@ exports[`@refersTo with @hasMany for RDS Models model table names are mapped 9`]
 #set( $lambdaInput.operationName = \\"getTask\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
+#end
 #set( $lambdaInput.args.metadata.nonScalarFields = [\\"employee\\"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
@@ -386,6 +395,9 @@ exports[`@refersTo with @hasMany for RDS Models model table names are mapped 10`
 #set( $lambdaInput.operationName = \\"listTasks\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
+#end
 #set( $lambdaInput.args.metadata.nonScalarFields = [\\"employee\\"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
@@ -402,6 +414,9 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 
 exports[`@refersTo with @hasMany for RDS Models model table names are mapped 11`] = `
 "## [Start] Invoke RDS Lambda data source. **
+#if( $ctx.stash.deniedField )
+  #return($util.toJson(null))
+#end
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
 #set( $lambdaInput.table = \\"Todo\\" )
@@ -429,6 +444,9 @@ $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.k
 
 exports[`@refersTo with @hasMany for RDS Models model table names are mapped 12`] = `
 "## [Start] Invoke RDS Lambda data source. **
+#if( $ctx.stash.deniedField )
+  #return($util.toJson(null))
+#end
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
 #set( $lambdaInput.table = \\"Person\\" )
