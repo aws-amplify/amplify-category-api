@@ -59,6 +59,10 @@ describe('ecs stack', () => {
             },
           ],
         },
+        {
+          Effect: 'Allow',
+          Action: 's3:ListBucket',
+        },
       ],
     });
 
