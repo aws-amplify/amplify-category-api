@@ -1,10 +1,10 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import { graphqlOutputKey } from '@aws-amplify/backend-output-schemas';
-import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
-import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { ArnPrincipal, Role } from 'aws-cdk-lib/aws-iam';
+import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
+import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 
 describe('storeOutput', () => {
   describe('default outputStorageStrategy', () => {
@@ -85,6 +85,50 @@ describe('storeOutput', () => {
         Match.exact({
           Value: {
             'Fn::GetAtt': [Object.keys(template.findResources('AWS::AppSync::ApiKey'))[0], 'ApiKey'],
+          },
+        }),
+      );
+    });
+
+    test('adds the model introspection schema uri when a transformer is provided', () => {
+      const stack = new cdk.Stack();
+      new AmplifyGraphqlApi(stack, 'TestApi', {
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+          type Todo @model @auth(rules: [{ allow: public }]) {
+            description: String!
+          }
+        `),
+        authorizationModes: { apiKeyConfig: { expires: cdk.Duration.days(7) } },
+        modelIntrospectionSchemaProvider: {
+          transformModelSchemaIntoModelIntrospectionSchema: () => '{"mock":"schema"}',
+        },
+      });
+      const template = Template.fromStack(stack);
+
+      expect(template.toJSON().Metadata).toMatchInlineSnapshot(`
+        Object {
+          "AWS::Amplify::GraphQL": Object {
+            "stackOutputs": Array [
+              "awsAppsyncApiId",
+              "awsAppsyncApiEndpoint",
+              "awsAppsyncAuthenticationType",
+              "awsAppsyncRegion",
+              "amplifyApiModelSchemaS3Uri",
+              "amplifyApiModelIntrospectionSchemaS3Uri",
+              "awsAppsyncApiKey",
+            ],
+            "version": "1",
+          },
+        }
+      `);
+      template.hasOutput(
+        'amplifyApiModelIntrospectionSchemaS3Uri',
+        Match.exact({
+          Value: {
+            'Fn::Join': [
+              '',
+              ['s3://', { Ref: 'TestApiAmplifyCodegenAssetsAmplifyCodegenAssetsBucket243298FE' }, '/model-introspection-schema.graphql'],
+            ],
           },
         }),
       );

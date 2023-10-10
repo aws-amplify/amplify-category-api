@@ -504,6 +504,19 @@ export interface IAmplifyGraphqlDefinition {
 }
 
 /**
+ * Class to transform a model schema into a model introspection schema.
+ * @experimental
+ */
+export abstract class ModelIntrospectionSchemaProvider {
+  /**
+   * Given a model-annotated graphql schema as a string, produce the model introspection schema as a string.
+   * @param modelSchema the grpahql model schema to transform.
+   * @returns the modelIntrospection schema as defined here https://github.com/aws-amplify/amplify-codegen/blob/main/packages/appsync-modelgen-plugin/schemas/introspection/1/ModelIntrospectionSchema.json
+   */
+  abstract transformModelSchemaIntoModelIntrospectionSchema(modelSchema: string): string;
+}
+
+/**
  * Entry representing the required output from the backend for codegen generate commands to work.
  */
 export interface IBackendOutputEntry {
@@ -605,6 +618,13 @@ export interface AmplifyGraphqlApiProps {
    * Strategy to store construct outputs. If no outputStorageStrategey is provided a default strategy will be used.
    */
   readonly outputStorageStrategy?: IBackendOutputStorageStrategy;
+
+  /**
+   * Utility class to inject schema transformation steps into the construct definition, in order to attach model introspection
+   * into the cloudformation metadata.
+   * @experimental
+   */
+  readonly modelIntrospectionSchemaProvider?: ModelIntrospectionSchemaProvider;
 }
 
 /**

@@ -137,6 +137,7 @@ export class AmplifyGraphqlApi extends Construct {
       translationBehavior,
       functionNameMap,
       outputStorageStrategy,
+      modelIntrospectionSchemaProvider,
     } = props;
 
     addAmplifyMetadataToStackDescription(scope);
@@ -190,7 +191,14 @@ export class AmplifyGraphqlApi extends Construct {
       },
     });
 
-    this.codegenAssets = new CodegenAssets(this, 'AmplifyCodegenAssets', { modelSchema: definition.schema });
+    const modelIntrospectionSchema = modelIntrospectionSchemaProvider
+      ? modelIntrospectionSchemaProvider.transformModelSchemaIntoModelIntrospectionSchema(definition.schema)
+      : undefined;
+
+    this.codegenAssets = new CodegenAssets(this, 'AmplifyCodegenAssets', {
+      modelSchema: definition.schema,
+      modelIntrospectionSchema,
+    });
 
     this.resources = getGeneratedResources(this);
     this.conflictResolution = conflictResolution;
@@ -218,6 +226,9 @@ export class AmplifyGraphqlApi extends Construct {
         awsAppsyncAuthenticationType: this.resources.cfnResources.cfnGraphqlApi.authenticationType as AwsAppsyncAuthenticationType,
         awsAppsyncRegion: stack.region,
         amplifyApiModelSchemaS3Uri: this.codegenAssets.modelSchemaS3Uri,
+        ...(this.codegenAssets.modelIntrospectionSchemaS3Uri
+          ? { amplifyApiModelIntrospectionSchemaS3Uri: this.codegenAssets.modelIntrospectionSchemaS3Uri }
+          : {}),
       },
     };
 

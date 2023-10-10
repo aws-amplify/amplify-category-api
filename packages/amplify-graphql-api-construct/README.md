@@ -971,6 +971,7 @@ const amplifyGraphqlApiProps: AmplifyGraphqlApiProps = { ... }
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.conflictResolution">conflictResolution</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.ConflictResolution">ConflictResolution</a></code> | Configure conflict resolution on the Api, which is required to enable DataStore Api functionality. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.functionNameMap">functionNameMap</a></code> | <code>{[ key: string ]: aws-cdk-lib.aws_lambda.IFunction}</code> | Lambda functions referenced in the definitions's. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.functionSlots">functionSlots</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.MutationFunctionSlot">MutationFunctionSlot</a> \| <a href="#@aws-amplify/graphql-api-construct.QueryFunctionSlot">QueryFunctionSlot</a> \| <a href="#@aws-amplify/graphql-api-construct.SubscriptionFunctionSlot">SubscriptionFunctionSlot</a>[]</code> | Overrides for a given slot in the generated resolver pipelines. |
+| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.modelIntrospectionSchemaProvider">modelIntrospectionSchemaProvider</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.ModelIntrospectionSchemaProvider">ModelIntrospectionSchemaProvider</a></code> | Utility class to inject schema transformation steps into the construct definition, in order to attach model introspection into the cloudformation metadata. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.outputStorageStrategy">outputStorageStrategy</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.IBackendOutputStorageStrategy">IBackendOutputStorageStrategy</a></code> | Strategy to store construct outputs. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.predictionsBucket">predictionsBucket</a></code> | <code>aws-cdk-lib.aws_s3.IBucket</code> | If using predictions, a bucket must be provided which will be used to search for assets. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.stackMappings">stackMappings</a></code> | <code>{[ key: string ]: string}</code> | StackMappings override the assigned nested stack on a per-resource basis. |
@@ -1060,6 +1061,18 @@ Overrides for a given slot in the generated resolver pipelines.
 
 For more information about what slots are available,
 refer to https://docs.amplify.aws/cli/graphql/custom-business-logic/#override-amplify-generated-resolvers.
+
+---
+
+##### `modelIntrospectionSchemaProvider`<sup>Optional</sup> <a name="modelIntrospectionSchemaProvider" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.modelIntrospectionSchemaProvider"></a>
+
+```typescript
+public readonly modelIntrospectionSchemaProvider: ModelIntrospectionSchemaProvider;
+```
+
+- *Type:* <a href="#@aws-amplify/graphql-api-construct.ModelIntrospectionSchemaProvider">ModelIntrospectionSchemaProvider</a>
+
+Utility class to inject schema transformation steps into the construct definition, in order to attach model introspection into the cloudformation metadata.
 
 ---
 
@@ -2668,6 +2681,50 @@ Produce a schema definition from a string input.
 the graphql input as a string.
 
 ---
+
+
+
+### ModelIntrospectionSchemaProvider <a name="ModelIntrospectionSchemaProvider" id="@aws-amplify/graphql-api-construct.ModelIntrospectionSchemaProvider"></a>
+
+Class to transform a model schema into a model introspection schema.
+
+#### Initializers <a name="Initializers" id="@aws-amplify/graphql-api-construct.ModelIntrospectionSchemaProvider.Initializer"></a>
+
+```typescript
+import { ModelIntrospectionSchemaProvider } from '@aws-amplify/graphql-api-construct'
+
+new ModelIntrospectionSchemaProvider()
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@aws-amplify/graphql-api-construct.ModelIntrospectionSchemaProvider.transformModelSchemaIntoModelIntrospectionSchema">transformModelSchemaIntoModelIntrospectionSchema</a></code> | Given a model-annotated graphql schema as a string, produce the model introspection schema as a string. |
+
+---
+
+##### `transformModelSchemaIntoModelIntrospectionSchema` <a name="transformModelSchemaIntoModelIntrospectionSchema" id="@aws-amplify/graphql-api-construct.ModelIntrospectionSchemaProvider.transformModelSchemaIntoModelIntrospectionSchema"></a>
+
+```typescript
+public transformModelSchemaIntoModelIntrospectionSchema(modelSchema: string): string
+```
+
+Given a model-annotated graphql schema as a string, produce the model introspection schema as a string.
+
+###### `modelSchema`<sup>Required</sup> <a name="modelSchema" id="@aws-amplify/graphql-api-construct.ModelIntrospectionSchemaProvider.transformModelSchemaIntoModelIntrospectionSchema.parameter.modelSchema"></a>
+
+- *Type:* string
+
+the grpahql model schema to transform.
+
+---
+
 
 
 

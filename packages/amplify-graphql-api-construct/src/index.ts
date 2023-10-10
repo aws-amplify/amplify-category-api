@@ -27,6 +27,7 @@ export type {
   IBackendOutputStorageStrategy,
   IBackendOutputEntry,
   AddFunctionProps,
+  ModelIntrospectionSchemaProvider,
 } from './types';
 export { AmplifyGraphqlApi } from './amplify-graphql-api';
 export { AmplifyGraphqlDefinition } from './amplify-graphql-definition';
