@@ -35,7 +35,11 @@ export class CodegenAssets extends Construct {
     new BucketDeployment(this, `${id}Deployment`, {
       destinationBucket: bucket,
       sources: [Source.data(MODEL_SCHEMA_KEY, props.modelSchema)],
-      memoryLimit: 512,
+      // Bucket deployment uses a Lambda that runs AWS S3 CLI to transfer assets to destination bucket.
+      // That Lambda requires higher memory setting to run fast even when processing small assets (less than 1kB).
+      // This setting has been established experimentally. Benchmark can be found in pull request description that established it.
+      // The value has been chosen to prefer the lowest cost (run time * memory demand) while providing reasonable performance.
+      memoryLimit: 1536,
     });
 
     this.modelSchemaS3Uri = getS3UriForBucketAndKey(bucket, MODEL_SCHEMA_KEY);
