@@ -32,10 +32,8 @@ export class RDSAuthVTLGenerator implements AuthVTLGenerator {
     fields: ReadonlyArray<FieldDefinitionNode>,
   ): string => generateAuthExpressionForUpdate(providers, roles, fields);
 
-  generateAuthRequestExpression = (
-    ctx: TransformerContextProvider,
-    def: ObjectTypeDefinitionNode,
-  ): string => generateAuthRequestExpression(ctx, def);
+  generateAuthRequestExpression = (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode): string =>
+    generateAuthRequestExpression(ctx, def);
 
   generateAuthExpressionForDelete = (
     providers: ConfiguredAuthProviders,

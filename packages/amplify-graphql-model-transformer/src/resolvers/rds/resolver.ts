@@ -468,8 +468,5 @@ export const constructFieldMappingInput = (): Expression => {
   ]);
 };
 
-export const constructAuthFilterStatement = (keyName: string): Expression => 
-  iff(
-    not(methodCall(ref('util.isNullOrEmpty'), ref('ctx.stash.authFilter'))),
-    set(ref(keyName), ref('ctx.stash.authFilter')),
-  );
+export const constructAuthFilterStatement = (keyName: string): Expression =>
+  iff(not(methodCall(ref('util.isNullOrEmpty'), ref('ctx.stash.authFilter'))), set(ref(keyName), ref('ctx.stash.authFilter')));

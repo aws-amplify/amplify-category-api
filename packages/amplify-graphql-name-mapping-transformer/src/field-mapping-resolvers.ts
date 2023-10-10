@@ -54,12 +54,7 @@ export const attachFieldMappingSlot = ({ resolver, resolverTypeName, resolverFie
   resolver.addToSlot(
     'preAuth',
     MappingTemplate.s3MappingTemplateFromString(
-      print(
-        compoundExpression([
-          createFieldMapExpression(fieldMap),
-          toJson(raw('{}')),
-        ]),
-      ),
+      print(compoundExpression([createFieldMapExpression(fieldMap), toJson(raw('{}'))])),
       `${resolverTypeName}.${resolverFieldName}.{slotName}.{slotIndex}.req.vtl`,
     ),
   );

@@ -151,7 +151,7 @@ describe('RDS Model Directive', () => {
   };
 });
 
-const constructContactHelper = (): (appSyncClient) => GQLQueryHelper => {
+const constructContactHelper = (): ((appSyncClient) => GQLQueryHelper) => {
   const name = 'Contact';
   const defaultSelectionSet = /* GraphQL */ `
         id
@@ -177,22 +177,23 @@ const constructContactHelper = (): (appSyncClient) => GQLQueryHelper => {
       }
     }
   `;
-  const helper = (appSyncClient): GQLQueryHelper => new GQLQueryHelper(appSyncClient, name, {
-    mutation: {
-      create: createSelectionSet,
-      update: updateSelectionSet,
-      delete: deleteSelectionSet,
-    },
-    query: {
-      get: getSelectionSet,
-      list: listSelectionSet,
-    },
-  });
+  const helper = (appSyncClient): GQLQueryHelper =>
+    new GQLQueryHelper(appSyncClient, name, {
+      mutation: {
+        create: createSelectionSet,
+        update: updateSelectionSet,
+        delete: deleteSelectionSet,
+      },
+      query: {
+        get: getSelectionSet,
+        list: listSelectionSet,
+      },
+    });
 
   return helper;
 };
 
-const constructPersonHelper = (): (appSyncClient) => GQLQueryHelper => {
+const constructPersonHelper = (): ((appSyncClient) => GQLQueryHelper) => {
   const name = 'Person';
   const defaultSelectionSet = /* GraphQL */ `
         personId
@@ -218,17 +219,18 @@ const constructPersonHelper = (): (appSyncClient) => GQLQueryHelper => {
       }
     }
   `;
-  const helper = (appSyncClient): GQLQueryHelper => new GQLQueryHelper(appSyncClient, name, {
-    mutation: {
-      create: createSelectionSet,
-      update: updateSelectionSet,
-      delete: deleteSelectionSet,
-    },
-    query: {
-      get: getSelectionSet,
-      list: listSelectionSet,
-    },
-  });
+  const helper = (appSyncClient): GQLQueryHelper =>
+    new GQLQueryHelper(appSyncClient, name, {
+      mutation: {
+        create: createSelectionSet,
+        update: updateSelectionSet,
+        delete: deleteSelectionSet,
+      },
+      query: {
+        get: getSelectionSet,
+        list: listSelectionSet,
+      },
+    });
 
   return helper;
 };

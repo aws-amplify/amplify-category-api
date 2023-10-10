@@ -853,7 +853,11 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         fieldName,
       );
       const subsEnabled = hasModelDirective ? this.modelDirectiveConfig.get(typeName)!.subscriptions?.level === 'on' : false;
-      const fieldResponse = this.getVtlGenerator(ctx, def.name.value, fieldNode).generateFieldAuthResponse('Mutation', fieldName, subsEnabled);
+      const fieldResponse = this.getVtlGenerator(ctx, def.name.value, fieldNode).generateFieldAuthResponse(
+        'Mutation',
+        fieldName,
+        subsEnabled,
+      );
       const existingResolver = ctx.resolvers.hasResolver(typeName, fieldName);
       if (existingResolver) {
         const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;

@@ -40,28 +40,14 @@ const generateMutationExpression = (
   expressions.push(
     set(
       ref('authResult'),
-      includeExistingRecord 
-        ? methodCall(
-          ref('util.authRules.mutationAuth'),
-          ref('authRules'),
-          str(operation),
-          ref('ctx.args.input'),
-          ref('ctx.source'),
-        )
-        : methodCall(
-          ref('util.authRules.mutationAuth'),
-          ref('authRules'),
-          str(operation),
-          ref('ctx.args.input'),
-        ),
+      includeExistingRecord
+        ? methodCall(ref('util.authRules.mutationAuth'), ref('authRules'), str(operation), ref('ctx.args.input'), ref('ctx.source'))
+        : methodCall(ref('util.authRules.mutationAuth'), ref('authRules'), str(operation), ref('ctx.args.input')),
     ),
   );
-  expressions.push(
-    validateAuthResult(),
-    constructAuthorizedInputStatement('ctx.args.input'),
-  );
+  expressions.push(validateAuthResult(), constructAuthorizedInputStatement('ctx.args.input'));
   return printBlock('Authorization rules')(compoundExpression(expressions));
-}
+};
 
 export const generateAuthRequestExpression = (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode): string => {
   const mappedTableName = ctx.resourceHelper.getModelNameMapping(def.name.value);
@@ -77,11 +63,10 @@ export const generateAuthRequestExpression = (ctx: TransformerContextProvider, d
       set(ref('lambdaInput.args.metadata'), obj({})),
       set(ref('lambdaInput.args.metadata.keys'), list([])),
       qref(
-        methodCall(ref('lambdaInput.args.metadata.keys.addAll'),
-        methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
+        methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
       ),
       set(
-        ref('lambdaInput.args.input'), 
+        ref('lambdaInput.args.input'),
         methodCall(ref('util.map.copyAndRetainAllKeys'), ref('context.arguments.input'), ref('ctx.stash.keys')),
       ),
       obj({

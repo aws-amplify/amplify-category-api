@@ -33,10 +33,8 @@ export class DDBAuthVTLGenerator implements AuthVTLGenerator {
     fields: ReadonlyArray<FieldDefinitionNode>,
   ): string => generateAuthExpressionForUpdate(providers, roles, fields);
 
-  generateAuthRequestExpression = (
-    ctx: TransformerContextProvider,
-    def: ObjectTypeDefinitionNode,
-  ): string => generateAuthRequestExpression();
+  generateAuthRequestExpression = (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode): string =>
+    generateAuthRequestExpression();
 
   generateAuthExpressionForDelete = (
     providers: ConfiguredAuthProviders,

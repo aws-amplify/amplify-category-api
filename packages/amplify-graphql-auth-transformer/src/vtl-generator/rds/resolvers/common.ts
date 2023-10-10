@@ -1,4 +1,28 @@
-import { Expression, and, bool, compoundExpression, equals, forEach, ifElse, iff, list, methodCall, not, notEquals, nul, obj, or, parens, printBlock, qref, raw, ref, set, str, toJson } from 'graphql-mapping-template';
+import {
+  Expression,
+  and,
+  bool,
+  compoundExpression,
+  equals,
+  forEach,
+  ifElse,
+  iff,
+  list,
+  methodCall,
+  not,
+  notEquals,
+  nul,
+  obj,
+  or,
+  parens,
+  printBlock,
+  qref,
+  raw,
+  ref,
+  set,
+  str,
+  toJson,
+} from 'graphql-mapping-template';
 import { FieldDefinitionNode } from 'graphql';
 import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
 import { API_KEY_AUTH_TYPE, IDENTITY_CLAIM_DELIMITER, RoleDefinition } from '../../../utils';
@@ -17,10 +41,7 @@ export const generateAuthRulesFromRoles = (
   hideAllowedFields = false,
 ): Expression[] => {
   const expressions = [];
-  expressions.push(
-    qref(methodCall(ref('ctx.stash.put'), str('hasAuth'), bool(true))),
-    set(ref('authRules'), list([])),
-  );
+  expressions.push(qref(methodCall(ref('ctx.stash.put'), str('hasAuth'), bool(true))), set(ref('authRules'), list([])));
   const fieldNames = fields.map((field) => field.name.value);
   roles.forEach((role) => {
     expressions.push(convertAuthRoleToVtl(role, fieldNames, hideAllowedFields));
@@ -39,9 +60,9 @@ const convertAuthRoleToVtl = (role: RoleDefinition, fields: string[], hideAllowe
         obj({
           type: str('public'),
           provider: str('apiKey'),
-          ...showAllowedFields && { allowedFields: list(allowedFields) },
-        })
-      )
+          ...(showAllowedFields && { allowedFields: list(allowedFields) }),
+        }),
+      ),
     );
   }
 
@@ -53,9 +74,9 @@ const convertAuthRoleToVtl = (role: RoleDefinition, fields: string[], hideAllowe
         obj({
           type: str('custom'),
           provider: str('function'),
-          ...showAllowedFields && { allowedFields: list(allowedFields) },
-        })
-      )
+          ...(showAllowedFields && { allowedFields: list(allowedFields) }),
+        }),
+      ),
     );
   }
 
@@ -69,9 +90,9 @@ const convertAuthRoleToVtl = (role: RoleDefinition, fields: string[], hideAllowe
           provider: str('iam'),
           roleArn: role.strategy === 'public' ? ref('ctx.stash.unauthRole') : ref('ctx.stash.authRole'),
           cognitoIdentityPoolId: ref('ctx.identity.cognitoIdentityPoolId'),
-          ...showAllowedFields && { allowedFields: list(allowedFields) },
-        })
-      )
+          ...(showAllowedFields && { allowedFields: list(allowedFields) }),
+        }),
+      ),
     );
   }
 
@@ -84,12 +105,11 @@ const convertAuthRoleToVtl = (role: RoleDefinition, fields: string[], hideAllowe
           obj({
             type: str(role.strategy),
             provider: str('userPools'),
-            ...showAllowedFields && { allowedFields: list(allowedFields) },
-          })
-        )
+            ...(showAllowedFields && { allowedFields: list(allowedFields) }),
+          }),
+        ),
       );
-    }
-    else if (role.strategy === 'groups' && role.static) {
+    } else if (role.strategy === 'groups' && role.static) {
       return qref(
         methodCall(
           ref('authRules.add'),
@@ -97,13 +117,12 @@ const convertAuthRoleToVtl = (role: RoleDefinition, fields: string[], hideAllowe
             type: str(role.strategy),
             provider: str('userPools'),
             allowedGroups: list([str(role.entity)]),
-            identityClaim: str(role.claim), 
-            ...showAllowedFields && { allowedFields: list(allowedFields) },
-          })
-        )
+            identityClaim: str(role.claim),
+            ...(showAllowedFields && { allowedFields: list(allowedFields) }),
+          }),
+        ),
       );
-    }
-    else if (role.strategy === 'owner') {
+    } else if (role.strategy === 'owner') {
       return qref(
         methodCall(
           ref('authRules.add'),
@@ -112,13 +131,12 @@ const convertAuthRoleToVtl = (role: RoleDefinition, fields: string[], hideAllowe
             provider: str('userPools'),
             ownerFieldName: str(role.entity),
             ownerFieldType: str(role.isEntityList ? 'string[]' : 'string'),
-            identityClaim: str(role.claim), 
-            ...showAllowedFields && { allowedFields: list(allowedFields) },
-          })
-        )
+            identityClaim: str(role.claim),
+            ...(showAllowedFields && { allowedFields: list(allowedFields) }),
+          }),
+        ),
       );
-    }
-    else if (role.strategy === 'groups' && !role.static) {
+    } else if (role.strategy === 'groups' && !role.static) {
       return qref(
         methodCall(
           ref('authRules.add'),
@@ -127,14 +145,14 @@ const convertAuthRoleToVtl = (role: RoleDefinition, fields: string[], hideAllowe
             provider: str('userPools'),
             groupsFieldName: str(role.entity),
             groupsFieldType: str(role.isEntityList ? 'string[]' : 'string'),
-            groupClaim: str(role.claim), 
-            ...showAllowedFields && { allowedFields: list(allowedFields) },
-          })
-        )
+            groupClaim: str(role.claim),
+            ...(showAllowedFields && { allowedFields: list(allowedFields) }),
+          }),
+        ),
       );
     }
   }
-  throw new Error(`Invalid Auth Rule: Unable to process ${JSON.stringify(role)}`);  
+  throw new Error(`Invalid Auth Rule: Unable to process ${JSON.stringify(role)}`);
 };
 
 const getAllowedFields = (role: RoleDefinition, fields: string[]): string[] => {
@@ -146,39 +164,22 @@ const getAllowedFields = (role: RoleDefinition, fields: string[]): string[] => {
 
 export const validateAuthResult = (): Expression => {
   return compoundExpression([
-    iff(
-      or ([
-        not(ref('authResult')),
-        parens(
-          and([
-            ref('authResult'),
-            not(ref('authResult.authorized')),
-          ]),
-        ),
-      ]),
-      ref('util.unauthorized'),
-    ),
+    iff(or([not(ref('authResult')), parens(and([ref('authResult'), not(ref('authResult.authorized'))]))]), ref('util.unauthorized')),
   ]);
 };
 
 export const constructAuthFilter = (): Expression => {
   return iff(
-    and([
-      ref('authResult'),
-      not(methodCall(ref('util.isNullOrEmpty'), ref('authResult.authFilter'))),
-    ]),
+    and([ref('authResult'), not(methodCall(ref('util.isNullOrEmpty'), ref('authResult.authFilter')))]),
     set(ref('ctx.stash.authFilter'), ref('authResult.authFilter')),
   );
 };
 
-export const constructAuthorizedInputStatement = (keyName: string): Expression => 
-iff(
-  and([
-    ref('authResult'),
-    not(methodCall(ref('util.isNullOrEmpty'), ref('authResult.authorizedInput'))),
-  ]),
-  set(ref(keyName), ref('authResult.authorizedInput')),
-);
+export const constructAuthorizedInputStatement = (keyName: string): Expression =>
+  iff(
+    and([ref('authResult'), not(methodCall(ref('util.isNullOrEmpty'), ref('authResult.authorizedInput')))]),
+    set(ref(keyName), ref('authResult.authorizedInput')),
+  );
 
 /**
  * Generates sandbox expression for field

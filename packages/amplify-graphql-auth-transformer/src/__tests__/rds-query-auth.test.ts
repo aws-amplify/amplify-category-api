@@ -6,7 +6,6 @@ import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-inter
 import { AuthTransformer } from '../graphql-auth-transformer';
 
 describe('Verify RDS Model level Auth rules on queries:', () => {
-
   it('should successfully transform apiKey auth rule', async () => {
     const validSchema = `
       type Post @model
@@ -108,7 +107,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
       modelToDatasourceMap.set(model, {
         dbType: 'MySQL',
         provisionDB: false,
-      })
+      });
     });
 
     const out = testTransform({
@@ -232,7 +231,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
       modelToDatasourceMap.set(model, {
         dbType: 'MySQL',
         provisionDB: false,
-      })
+      });
     });
 
     const out = testTransform({
@@ -298,8 +297,8 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
       defaultAuthentication: {
         authenticationType: 'AWS_LAMBDA',
         lambdaAuthorizerConfig: {
-          lambdaFunction: 'TEST_LAMBDA_AUTH_FUNCTION', 
-        }
+          lambdaFunction: 'TEST_LAMBDA_AUTH_FUNCTION',
+        },
       },
       additionalAuthenticationProviders: [],
     };
@@ -362,7 +361,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
       modelToDatasourceMap.set(model, {
         dbType: 'MySQL',
         provisionDB: false,
-      })
+      });
     });
 
     const out = testTransform({
@@ -394,5 +393,4 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
       expect(out.resolvers[resolver]).toMatchSnapshot();
     });
   });
-
 });

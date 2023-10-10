@@ -6,7 +6,6 @@ import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-inter
 import { AuthTransformer } from '../graphql-auth-transformer';
 
 describe('Verify RDS Model level Auth rules on subscriptions:', () => {
-
   it('should successfully transform apiKey auth rule', async () => {
     const validSchema = `
       type Post @model
@@ -43,12 +42,10 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
     expect(out.resolvers['Subscription.onUpdatePost.postAuth.1.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Subscription.onUpdatePost.res.vtl']).toMatchSnapshot();
 
-
     // Verify Delete subscription authorization rule
     expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Subscription.onDeletePost.postAuth.1.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Subscription.onDeletePost.res.vtl']).toMatchSnapshot();
-
   });
 
   it('should successfully transform cognito auth rules', async () => {
@@ -117,7 +114,7 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
       modelToDatasourceMap.set(model, {
         dbType: 'MySQL',
         provisionDB: false,
-      })
+      });
     });
 
     const out = testTransform({
@@ -271,7 +268,7 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
       modelToDatasourceMap.set(model, {
         dbType: 'MySQL',
         provisionDB: false,
-      })
+      });
     });
 
     const out = testTransform({
@@ -367,8 +364,8 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
       defaultAuthentication: {
         authenticationType: 'AWS_LAMBDA',
         lambdaAuthorizerConfig: {
-          lambdaFunction: 'TEST_LAMBDA_AUTH_FUNCTION', 
-        }
+          lambdaFunction: 'TEST_LAMBDA_AUTH_FUNCTION',
+        },
       },
       additionalAuthenticationProviders: [],
     };
@@ -400,7 +397,6 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
     expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Subscription.onUpdatePost.postAuth.1.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Subscription.onUpdatePost.res.vtl']).toMatchSnapshot();
-
 
     // Verify Delete subscription authorization rule
     expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toMatchSnapshot();
@@ -439,7 +435,7 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
       modelToDatasourceMap.set(model, {
         dbType: 'MySQL',
         provisionDB: false,
-      })
+      });
     });
 
     const out = testTransform({
@@ -481,5 +477,4 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
       expect(out.resolvers[resolver]).toMatchSnapshot();
     });
   });
-
 });

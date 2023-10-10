@@ -7,7 +7,21 @@ import {
 } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from 'aws-cdk-lib';
-import { obj, str, ref, printBlock, compoundExpression, Expression, set, methodCall, ifElse, toJson, iff, notEquals, not } from 'graphql-mapping-template';
+import {
+  obj,
+  str,
+  ref,
+  printBlock,
+  compoundExpression,
+  Expression,
+  set,
+  methodCall,
+  ifElse,
+  toJson,
+  iff,
+  notEquals,
+  not,
+} from 'graphql-mapping-template';
 import { ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { DirectiveNode, ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
 
