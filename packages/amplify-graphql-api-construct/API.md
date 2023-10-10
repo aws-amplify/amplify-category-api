@@ -100,6 +100,7 @@ export interface AmplifyGraphqlApiProps {
     readonly definition: IAmplifyGraphqlDefinition;
     readonly functionNameMap?: Record<string, IFunction>;
     readonly functionSlots?: FunctionSlot[];
+    readonly modelIntrospectionSchemaProvider?: ModelIntrospectionSchemaProvider;
     readonly outputStorageStrategy?: IBackendOutputStorageStrategy;
     readonly predictionsBucket?: IBucket;
     readonly stackMappings?: Record<string, string>;
@@ -212,6 +213,11 @@ export interface IBackendOutputStorageStrategy {
 export interface LambdaAuthorizationConfig {
     readonly function: IFunction;
     readonly ttl: Duration;
+}
+
+// @public
+export abstract class ModelIntrospectionSchemaProvider {
+    abstract transformModelSchemaIntoModelIntrospectionSchema(modelSchema: string): string;
 }
 
 // @public

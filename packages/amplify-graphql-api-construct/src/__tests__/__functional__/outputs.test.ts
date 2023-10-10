@@ -91,6 +91,8 @@ describe('storeOutput', () => {
     });
 
     test('adds the model introspection schema uri when a transformer is provided', () => {
+      let wasTransformModelSchemaIntoModelIntrospectionSchemaInvoked = false;
+      const mockIntrospectionSchema = '{"mock":"schema"}';
       const stack = new cdk.Stack();
       new AmplifyGraphqlApi(stack, 'TestApi', {
         definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
@@ -100,7 +102,10 @@ describe('storeOutput', () => {
         `),
         authorizationModes: { apiKeyConfig: { expires: cdk.Duration.days(7) } },
         modelIntrospectionSchemaProvider: {
-          transformModelSchemaIntoModelIntrospectionSchema: () => '{"mock":"schema"}',
+          transformModelSchemaIntoModelIntrospectionSchema: () => {
+            wasTransformModelSchemaIntoModelIntrospectionSchemaInvoked = true;
+            return mockIntrospectionSchema;
+          },
         },
       });
       const template = Template.fromStack(stack);
@@ -132,6 +137,7 @@ describe('storeOutput', () => {
           },
         }),
       );
+      expect(wasTransformModelSchemaIntoModelIntrospectionSchemaInvoked).toEqual(true);
     });
   });
 
