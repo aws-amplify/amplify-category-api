@@ -5,40 +5,42 @@ import {
   deleteDBInstance,
   deleteProject,
   deleteProjectDir,
+  addAuthWithPreTokenGenerationTrigger,
   importRDSDatabase,
   initJSProjectWithProfile,
   setupRDSInstanceAndData,
   sleep,
   updateAuthAddUserGroups,
+  amplifyPushWithoutCodegen,
 } from 'amplify-category-api-e2e-core';
-import { existsSync, writeFileSync, removeSync } from 'fs-extra';
+import { existsSync, writeFileSync, removeSync, readdirSync } from 'fs-extra';
 import generator from 'generate-password';
 import path from 'path';
 import { schema, sqlCreateStatements } from './auth-test-schemas/userpool-provider';
 import { createModelOperationHelpers, configureAppSyncClients, checkOperationResult, checkListItemExistence } from '../rds-v2-test-utils';
-import { setupUser, getUserPoolId, signInUser, configureAmplify } from '../schema-api-directives';
+import { setupUser, getUserPoolId, signInUser, getUserPoolIssUrl, getAppClientIDWeb, configureAmplify } from '../schema-api-directives';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 
-describe('RDS Cognito userpool provider Auth tests', () => {
+describe('RDS userpool provider with custom Auth claims tests', () => {
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
 
   // Generate settings for RDS instance
   const username = db_user;
   const password = db_password;
-  const region = 'us-east-1';
+  let region = 'us-east-1';
   let port = 3306;
   const database = 'default_db';
   let host = 'localhost';
   const identifier = `integtest${db_identifier}`;
-  const projName = 'rdsuserpoolauth';
+  const projName = 'rdscustomclaim';
   const userName1 = 'user1';
   const userName2 = 'user2';
   const adminGroupName = 'Admin';
   const devGroupName = 'Dev';
   const userPassword = 'user@Password';
-  const userPoolProvider = 'userPools';
+  const userpoolsProvider = 'userPools';
 
   let projRoot;
   let appSyncClients = {};
@@ -77,12 +79,44 @@ describe('RDS Cognito userpool provider Auth tests', () => {
     await deleteDBInstance(identifier, region);
   };
 
+  const updateTriggerHandler = () => {
+    const backendFunctionDirPath = path.join(projRoot, 'amplify', 'backend', 'function');
+    const functionName = readdirSync(backendFunctionDirPath)[0];
+    const triggerHandlerFilePath = path.join(backendFunctionDirPath, functionName, 'src', 'alter-claims.js');
+    const func = `
+              exports.handler = async event => {
+                  const userGroups = [];
+                  if (event.userName === '${userName1}') {
+                      userGroups.push('${adminGroupName}');
+                  } 
+                  else if (event.userName === '${userName2}') {
+                      userGroups.push('${devGroupName}');
+                  }
+                  event.response = {
+                      claimsOverrideDetails: {
+                          claimsToAddOrOverride: {
+                              user_id: event.userName,
+                          },
+                          groupOverrideDetails: {
+                              groupsToOverride: userGroups,
+                          },
+                      }
+                  };
+                  return event;
+              };
+          `;
+    writeFileSync(triggerHandlerFilePath, func);
+  };
+
   const setupAmplifyProject = async (): Promise<void> => {
     const apiName = projName;
     await initJSProjectWithProfile(projRoot, {
       disableAmplifyAppCreation: false,
       name: projName,
     });
+    await addAuthWithPreTokenGenerationTrigger(projRoot);
+    updateTriggerHandler();
+    await amplifyPushWithoutCodegen(projRoot);
 
     await addApi(projRoot, { transformerVersion: 2, 'Amazon Cognito User Pool': {} });
     const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
@@ -99,10 +133,11 @@ describe('RDS Cognito userpool provider Auth tests', () => {
       useVpc: false,
       apiExists: true,
     });
-    writeFileSync(rdsSchemaFilePath, schema, 'utf8');
+    writeFileSync(ddbSchemaFilePath, schema, 'utf8');
+    removeSync(rdsSchemaFilePath);
 
     await updateAuthAddUserGroups(projRoot, [adminGroupName, devGroupName]);
-    await amplifyPush(projRoot, true);
+    await amplifyPush(projRoot);
     await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.
 
     const userPoolId = getUserPoolId(projRoot);
@@ -114,47 +149,12 @@ describe('RDS Cognito userpool provider Auth tests', () => {
     userMap[userName1] = user1;
     const user2 = await signInUser(userName2, userPassword);
     userMap[userName2] = user2;
-    appSyncClients = await configureAppSyncClients(projRoot, apiName, [userPoolProvider], userMap);
+    appSyncClients = await configureAppSyncClients(projRoot, apiName, [userpoolsProvider], userMap);
   };
-
-  test('logged in user can perform CRUD operations', async () => {
-    const modelName = 'TodoPrivate';
-    const modelOperationHelpers = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
-    const todoHelper = modelOperationHelpers[modelName];
-
-    const todo = {
-      content: 'Todo',
-    };
-    const resultSetName = `create${modelName}`;
-    const createResult = await todoHelper.create(`create${modelName}`, todo);
-    expect(createResult.data[resultSetName].id).toBeDefined();
-    todo['id'] = createResult.data[resultSetName].id;
-    checkOperationResult(createResult, todo, `create${modelName}`);
-
-    const todoUpdated = {
-      id: todo['id'],
-      content: 'Todo updated',
-    };
-    const updateResult = await todoHelper.update(`update${modelName}`, todoUpdated);
-    checkOperationResult(updateResult, todoUpdated, `update${modelName}`);
-
-    const getResult = await todoHelper.get({
-      id: todo['id'],
-    });
-    checkOperationResult(getResult, todoUpdated, `get${modelName}`);
-
-    const listTodosResult = await todoHelper.list();
-    checkOperationResult(listTodosResult, [{ ...todoUpdated }], `list${modelName}s`, true);
-
-    const deleteResult = await todoHelper.delete(`delete${modelName}`, {
-      id: todo['id'],
-    });
-    checkOperationResult(deleteResult, todoUpdated, `delete${modelName}`);
-  });
 
   test('owner of a record can perform CRUD operations using default owner field', async () => {
     const modelName = 'TodoOwner';
-    const modelOperationHelpers = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
+    const modelOperationHelpers = createModelOperationHelpers(appSyncClients[userpoolsProvider][userName1], schema);
     const todoHelper = modelOperationHelpers[modelName];
 
     const todo = {
@@ -169,7 +169,7 @@ describe('RDS Cognito userpool provider Auth tests', () => {
 
     const todoWithOwner = {
       ...todo,
-      owner: createResult.data[resultSetName]?.owner,
+      owner: createResult.data[resultSetName].owner,
     };
 
     const todoUpdated = {
@@ -196,8 +196,8 @@ describe('RDS Cognito userpool provider Auth tests', () => {
 
   test('non-owner of a record cannot access it using default owner field', async () => {
     const modelName = 'TodoOwner';
-    const modelOperationHelpersOwner = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
-    const modelOperationHelpersNonOwner = createModelOperationHelpers(appSyncClients[userPoolProvider][userName2], schema);
+    const modelOperationHelpersOwner = createModelOperationHelpers(appSyncClients[userpoolsProvider][userName1], schema);
+    const modelOperationHelpersNonOwner = createModelOperationHelpers(appSyncClients[userpoolsProvider][userName2], schema);
     const todoHelperOwner = modelOperationHelpersOwner[modelName];
     const todoHelperNonOwner = modelOperationHelpersNonOwner[modelName];
 
@@ -237,7 +237,7 @@ describe('RDS Cognito userpool provider Auth tests', () => {
 
   test('custom owner field used to store owner information', async () => {
     const modelName = 'TodoOwnerFieldString';
-    const modelOperationHelpers = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
+    const modelOperationHelpers = createModelOperationHelpers(appSyncClients[userpoolsProvider][userName1], schema);
     const todoHelper = modelOperationHelpers[modelName];
 
     const todo = {
@@ -255,18 +255,18 @@ describe('RDS Cognito userpool provider Auth tests', () => {
       author: userName1,
     };
 
-    const todoUpdated = {
+    const todo1Updated = {
       id: todo['id'],
       content: 'Todo updated',
       author: todoWithOwner.author,
     };
-    const updateResult = await todoHelper.update(`update${modelName}`, todoUpdated);
-    checkOperationResult(updateResult, todoUpdated, `update${modelName}`);
+    const updateResult = await todoHelper.update(`update${modelName}`, todo1Updated);
+    checkOperationResult(updateResult, todo1Updated, `update${modelName}`);
 
     const getResult = await todoHelper.get({
       id: todo['id'],
     });
-    checkOperationResult(getResult, todoUpdated, `get${modelName}`);
+    checkOperationResult(getResult, todo1Updated, `get${modelName}`);
 
     const listTodosResult = await todoHelper.list();
     checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id'], true);
@@ -274,13 +274,13 @@ describe('RDS Cognito userpool provider Auth tests', () => {
     const deleteResult = await todoHelper.delete(`delete${modelName}`, {
       id: todo['id'],
     });
-    checkOperationResult(deleteResult, todoUpdated, `delete${modelName}`);
+    checkOperationResult(deleteResult, todo1Updated, `delete${modelName}`);
   });
 
   test('non-owner of a record cannot pretend to be an owner and gain access', async () => {
     const modelName = 'TodoOwnerFieldString';
-    const modelOperationHelpersOwner = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
-    const modelOperationHelpersNonOwner = createModelOperationHelpers(appSyncClients[userPoolProvider][userName2], schema);
+    const modelOperationHelpersOwner = createModelOperationHelpers(appSyncClients[userpoolsProvider][userName1], schema);
+    const modelOperationHelpersNonOwner = createModelOperationHelpers(appSyncClients[userpoolsProvider][userName2], schema);
     const todoHelperOwner = modelOperationHelpersOwner[modelName];
     const todoHelperNonOwner = modelOperationHelpersNonOwner[modelName];
 
@@ -320,7 +320,7 @@ describe('RDS Cognito userpool provider Auth tests', () => {
 
   test('list of owners used to store owner information', async () => {
     const modelName = 'TodoOwnerFieldList';
-    const modelOperationHelpers = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
+    const modelOperationHelpers = createModelOperationHelpers(appSyncClients[userpoolsProvider][userName1], schema);
     const todoHelper = modelOperationHelpers[modelName];
 
     const todo = {
@@ -358,8 +358,8 @@ describe('RDS Cognito userpool provider Auth tests', () => {
 
   test('non-owner of a record cannot add themself to owner list', async () => {
     const modelName = 'TodoOwnerFieldList';
-    const modelOperationHelpersOwner = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
-    const modelOperationHelpersNonOwner = createModelOperationHelpers(appSyncClients[userPoolProvider][userName2], schema);
+    const modelOperationHelpersOwner = createModelOperationHelpers(appSyncClients[userpoolsProvider][userName1], schema);
+    const modelOperationHelpersNonOwner = createModelOperationHelpers(appSyncClients[userpoolsProvider][userName2], schema);
     const todoHelperOwner = modelOperationHelpersOwner[modelName];
     const todoHelperNonOwner = modelOperationHelpersNonOwner[modelName];
 
@@ -400,8 +400,8 @@ describe('RDS Cognito userpool provider Auth tests', () => {
 
   test('owner can add another user to the owner list', async () => {
     const modelName = 'TodoOwnerFieldList';
-    const modelOperationHelpersOwner = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
-    const modelOperationHelpersNonOwner = createModelOperationHelpers(appSyncClients[userPoolProvider][userName2], schema);
+    const modelOperationHelpersOwner = createModelOperationHelpers(appSyncClients[userpoolsProvider][userName1], schema);
+    const modelOperationHelpersNonOwner = createModelOperationHelpers(appSyncClients[userpoolsProvider][userName2], schema);
     const todoHelperOwner = modelOperationHelpersOwner[modelName];
     const todoHelperAnotherOwner = modelOperationHelpersNonOwner[modelName];
 
@@ -438,7 +438,7 @@ describe('RDS Cognito userpool provider Auth tests', () => {
 
   test('users in static group can perform CRUD operations', async () => {
     const modelName = 'TodoStaticGroup';
-    const modelOperationHelpers = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
+    const modelOperationHelpers = createModelOperationHelpers(appSyncClients[userpoolsProvider][userName1], schema);
     const todoHelper = modelOperationHelpers[modelName];
 
     const todo = {
@@ -473,8 +473,8 @@ describe('RDS Cognito userpool provider Auth tests', () => {
 
   test('users not in static group cannot perform CRUD operations', async () => {
     const modelName = 'TodoStaticGroup';
-    const modelOperationHelpersAdmin = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
-    const modelOperationHelpersNonAdmin = createModelOperationHelpers(appSyncClients[userPoolProvider][userName2], schema);
+    const modelOperationHelpersAdmin = createModelOperationHelpers(appSyncClients[userpoolsProvider][userName1], schema);
+    const modelOperationHelpersNonAdmin = createModelOperationHelpers(appSyncClients[userpoolsProvider][userName2], schema);
     const todoHelperAdmin = modelOperationHelpersAdmin[modelName];
     const todoHelperNonAdmin = modelOperationHelpersNonAdmin[modelName];
 
@@ -518,7 +518,7 @@ describe('RDS Cognito userpool provider Auth tests', () => {
 
   test('users in group stored as string can perform CRUD operations', async () => {
     const modelName = 'TodoGroupFieldString';
-    const modelOperationHelpers = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
+    const modelOperationHelpers = createModelOperationHelpers(appSyncClients[userpoolsProvider][userName1], schema);
     const todoHelper = modelOperationHelpers[modelName];
 
     const todo = {
@@ -532,18 +532,18 @@ describe('RDS Cognito userpool provider Auth tests', () => {
     expect(createResult.data[resultSetName].content).toEqual(todo.content);
     expect(createResult.data[resultSetName].groupField).toEqual(adminGroupName);
 
-    const todo1Updated = {
+    const todoUpdated = {
       id: todo['id'],
       content: 'Todo updated',
       groupField: adminGroupName,
     };
-    const updateResult = await todoHelper.update(`update${modelName}`, todo1Updated);
-    checkOperationResult(updateResult, todo1Updated, `update${modelName}`);
+    const updateResult = await todoHelper.update(`update${modelName}`, todoUpdated);
+    checkOperationResult(updateResult, todoUpdated, `update${modelName}`);
 
     const getResult = await todoHelper.get({
       id: todo['id'],
     });
-    checkOperationResult(getResult, todo1Updated, `get${modelName}`);
+    checkOperationResult(getResult, todoUpdated, `get${modelName}`);
 
     const listTodosResult = await todoHelper.list();
     checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id'], true);
@@ -551,13 +551,13 @@ describe('RDS Cognito userpool provider Auth tests', () => {
     const deleteResult = await todoHelper.delete(`delete${modelName}`, {
       id: todo['id'],
     });
-    checkOperationResult(deleteResult, todo1Updated, `delete${modelName}`);
+    checkOperationResult(deleteResult, todoUpdated, `delete${modelName}`);
   });
 
   test('users cannot spoof their group membership and gain access', async () => {
     const modelName = 'TodoGroupFieldString';
-    const modelOperationHelpersAdmin = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
-    const modelOperationHelpersNonAdmin = createModelOperationHelpers(appSyncClients[userPoolProvider][userName2], schema);
+    const modelOperationHelpersAdmin = createModelOperationHelpers(appSyncClients[userpoolsProvider][userName1], schema);
+    const modelOperationHelpersNonAdmin = createModelOperationHelpers(appSyncClients[userpoolsProvider][userName2], schema);
     const todoHelperAdmin = modelOperationHelpersAdmin[modelName];
     const todoHelperNonAdmin = modelOperationHelpersNonAdmin[modelName];
 
@@ -602,7 +602,7 @@ describe('RDS Cognito userpool provider Auth tests', () => {
 
   test('users in groups stored as list can perform CRUD operations', async () => {
     const modelName = 'TodoGroupFieldList';
-    const modelOperationHelpers = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
+    const modelOperationHelpers = createModelOperationHelpers(appSyncClients[userpoolsProvider][userName1], schema);
     const todoHelper = modelOperationHelpers[modelName];
 
     const todo = {
@@ -616,18 +616,18 @@ describe('RDS Cognito userpool provider Auth tests', () => {
     expect(createResult.data[resultSetName].content).toEqual(todo.content);
     expect(createResult.data[resultSetName].groupsField).toEqual([adminGroupName]);
 
-    const todoUpdated = {
+    const todo1Updated = {
       id: todo['id'],
       content: 'Todo updated',
       groupsField: [adminGroupName],
     };
-    const updateResult = await todoHelper.update(`update${modelName}`, todoUpdated);
-    checkOperationResult(updateResult, todoUpdated, `update${modelName}`);
+    const updateResult = await todoHelper.update(`update${modelName}`, todo1Updated);
+    checkOperationResult(updateResult, todo1Updated, `update${modelName}`);
 
     const getResult = await todoHelper.get({
       id: todo['id'],
     });
-    checkOperationResult(getResult, todoUpdated, `get${modelName}`);
+    checkOperationResult(getResult, todo1Updated, `get${modelName}`);
 
     const listTodosResult = await todoHelper.list();
     checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id'], true);
@@ -635,13 +635,13 @@ describe('RDS Cognito userpool provider Auth tests', () => {
     const deleteResult = await todoHelper.delete(`delete${modelName}`, {
       id: todo['id'],
     });
-    checkOperationResult(deleteResult, todoUpdated, `delete${modelName}`);
+    checkOperationResult(deleteResult, todo1Updated, `delete${modelName}`);
   });
 
   test('users not part of allowed groups cannot access the records or modify allowed groups', async () => {
     const modelName = 'TodoGroupFieldList';
-    const modelOperationHelpersAdmin = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
-    const modelOperationHelpersNonAdmin = createModelOperationHelpers(appSyncClients[userPoolProvider][userName2], schema);
+    const modelOperationHelpersAdmin = createModelOperationHelpers(appSyncClients[userpoolsProvider][userName1], schema);
+    const modelOperationHelpersNonAdmin = createModelOperationHelpers(appSyncClients[userpoolsProvider][userName2], schema);
     const todoHelperAdmin = modelOperationHelpersAdmin[modelName];
     const todoHelperNonAdmin = modelOperationHelpersNonAdmin[modelName];
 
@@ -682,8 +682,8 @@ describe('RDS Cognito userpool provider Auth tests', () => {
 
   test('Admin user can give access to another group of users', async () => {
     const modelName = 'TodoGroupFieldList';
-    const modelOperationHelpersAdmin = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
-    const modelOperationHelpersNonAdmin = createModelOperationHelpers(appSyncClients[userPoolProvider][userName2], schema);
+    const modelOperationHelpersAdmin = createModelOperationHelpers(appSyncClients[userpoolsProvider][userName1], schema);
+    const modelOperationHelpersNonAdmin = createModelOperationHelpers(appSyncClients[userpoolsProvider][userName2], schema);
     const todoHelperAdmin = modelOperationHelpersAdmin[modelName];
     const todoHelperNonAdmin = modelOperationHelpersNonAdmin[modelName];
 

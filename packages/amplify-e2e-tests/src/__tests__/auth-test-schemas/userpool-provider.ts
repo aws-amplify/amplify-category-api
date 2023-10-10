@@ -29,16 +29,16 @@ export const schema = `
     content: String
   }
 
-  type TodoGroupFieldString @model @auth(rules: [{ allow: groups, groupsField: "group" }]) {
+  type TodoGroupFieldString @model @auth(rules: [{ allow: groups, groupsField: "groupField" }]) {
     id: ID!
     content: String
-    group: String
+    groupField: String
   }
 
-  type TodoGroupFieldList @model @auth(rules: [{ allow: groups, groupsField: "groups" }]) {
+  type TodoGroupFieldList @model @auth(rules: [{ allow: groups, groupsField: "groupsField" }]) {
     id: ID!
     content: String
-    groups: [String]
+    groupsField: [String]
   }
 `;
 

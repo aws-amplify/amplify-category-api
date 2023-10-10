@@ -136,45 +136,55 @@ batch:
           CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
-    - identifier: api_3_rds_import_vpc_rds_model_v2_rds_refers_to_fields
+    - identifier: api_3_rds_import_vpc_rds_model_v2_rds_oidc_auth
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_3.test.ts|src/__tests__/rds-import-vpc.test.ts|src/__tests__/rds-model-v2.test.ts|src/__tests__/rds-refers-to-fields.test.ts
+            src/__tests__/api_3.test.ts|src/__tests__/rds-import-vpc.test.ts|src/__tests__/rds-model-v2.test.ts|src/__tests__/rds-oidc-auth.test.ts
           CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        rds_refers_to_rds_relational_directives_rds_userpool_auth_rds_v2_generate_schema
+        rds_refers_to_fields_rds_refers_to_rds_relational_directives_rds_userpool_auth
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/rds-refers-to.test.ts|src/__tests__/rds-relational-directives.test.ts|src/__tests__/rds-userpool-auth.test.ts|src/__tests__/rds-v2-generate-schema.test.ts
+            src/__tests__/rds-refers-to-fields.test.ts|src/__tests__/rds-refers-to.test.ts|src/__tests__/rds-relational-directives.test.ts|src/__tests__/rds-userpool-auth.test.ts
           CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
-    - identifier: api_1_resolvers_sync_query_datastore_api_6
+    - identifier: >-
+        rds_userpool_custom_claims_rds_v2_generate_schema_rds_v2_test_utils_api_1
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts|src/__tests__/graphql-v2/sync_query_datastore.test.ts|src/__tests__/api_6.test.ts
+            src/__tests__/rds-userpool-custom-claims.test.ts|src/__tests__/rds-v2-generate-schema.test.ts|src/__tests__/rds-v2-test-utils.test.ts|src/__tests__/api_1.test.ts
           CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
-    - identifier: api_lambda_auth_api_9
+    - identifier: resolvers_sync_query_datastore_api_6_api_lambda_auth
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/graphql-v2/api_lambda_auth.test.ts|src/__tests__/api_9.test.ts
-          CLI_REGION: eu-central-1
+            src/__tests__/resolvers.test.ts|src/__tests__/graphql-v2/sync_query_datastore.test.ts|src/__tests__/api_6.test.ts|src/__tests__/graphql-v2/api_lambda_auth.test.ts
+          CLI_REGION: us-east-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: api_9
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: src/__tests__/api_9.test.ts
+          CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
     - identifier: function_migration
@@ -448,7 +458,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-auth-5.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
     - identifier: searchable_datastore
@@ -457,7 +467,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/graphql-v2/searchable-datastore.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: us-west-2
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
@@ -467,7 +477,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-iterative-update-4.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: schema_searchable
@@ -476,7 +486,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-searchable.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: eu-central-1
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
@@ -524,7 +534,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/api_2.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: searchable_migration
@@ -533,7 +543,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/transformer-migrations/searchable-migration.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: eu-west-2
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry

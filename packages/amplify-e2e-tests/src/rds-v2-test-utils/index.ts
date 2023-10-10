@@ -3,9 +3,16 @@ import _ from 'lodash';
 import * as fs from 'fs-extra';
 import { parse, ObjectTypeDefinitionNode, Kind, visit, FieldDefinitionNode } from 'graphql';
 import axios from 'axios';
-import { getProjectMeta, RDSTestDataProvider, createRDSInstance, addRDSPortInboundRule } from 'amplify-category-api-e2e-core';
+import {
+  getProjectMeta,
+  RDSTestDataProvider,
+  createRDSInstance,
+  addRDSPortInboundRule,
+  getAppSyncApi,
+} from 'amplify-category-api-e2e-core';
 import { getBaseType, isArrayOrObject } from 'graphql-transformer-common';
 import { GQLQueryHelper } from '../query-utils/gql-helper';
+import { getConfiguredAppsyncClientCognitoAuth, getConfiguredAppsyncClientOIDCAuth } from '../schema-api-directives';
 
 export const verifyAmplifyMeta = (projectRoot: string, apiName: string, database: string) => {
   // Database info is updated in meta file
@@ -195,4 +202,68 @@ export const createModelOperationHelpers = (appSyncClient: any, schema: string) 
   };
   visit(document, schemaVisitor);
   return modelOperationHelpers;
+};
+
+export type AuthProvider = 'apiKey' | 'iam' | 'oidc' | 'userPools' | 'function';
+
+export const configureAppSyncClients = async (
+  projRoot: string,
+  apiName: string,
+  authProviders: [AuthProvider],
+  userMap?: { [key: string]: any },
+): Promise<any> => {
+  const meta = getProjectMeta(projRoot);
+  const appRegion = meta.providers.awscloudformation.Region;
+  const { output } = meta.api[apiName];
+  const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput } = output;
+  const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, appRegion);
+
+  expect(GraphQLAPIIdOutput).toBeDefined();
+  expect(GraphQLAPIEndpointOutput).toBeDefined();
+
+  expect(graphqlApi).toBeDefined();
+  expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
+
+  const apiEndPoint = GraphQLAPIEndpointOutput as string;
+
+  const appSyncClients: { [key: string]: any } = {};
+
+  if (authProviders?.includes('userPools') && userMap) {
+    appSyncClients['userPools'] = {};
+    Object.keys(userMap)?.map((userName: string) => {
+      const userAppSyncClient = getConfiguredAppsyncClientCognitoAuth(apiEndPoint, appRegion, userMap[userName]);
+      appSyncClients['userPools'][userName] = userAppSyncClient;
+    });
+  }
+
+  if (authProviders?.includes('oidc') && userMap) {
+    appSyncClients['oidc'] = {};
+    Object.keys(userMap)?.map((userName: string) => {
+      const userAppSyncClient = getConfiguredAppsyncClientOIDCAuth(apiEndPoint, appRegion, userMap[userName]);
+      appSyncClients['oidc'][userName] = userAppSyncClient;
+    });
+  }
+  return appSyncClients;
+};
+
+export const checkOperationResult = (result: any, expected: any, resultSetName: string, isList: boolean = false): void => {
+  expect(result).toBeDefined();
+  expect(result.data).toBeDefined();
+  expect(result.data[resultSetName]).toBeDefined();
+  delete result.data[resultSetName]['__typename'];
+  if (!isList) {
+    expect(result.data[resultSetName]).toEqual(expected);
+    return;
+  }
+  expect(result.data[resultSetName].items).toHaveLength(expected?.length);
+  result.data[resultSetName]?.items?.forEach((item: any, index: number) => {
+    delete item['__typename'];
+    expect(item).toEqual(expected[index]);
+  });
+};
+
+export const checkListItemExistence = (result: any, resultSetName: string, id: string, shouldExist: boolean = false) => {
+  expect(result.data[`${resultSetName}`]).toBeDefined();
+  expect(result.data[`${resultSetName}`].items).toBeDefined();
+  expect(result.data[`${resultSetName}`].items?.filter((item: any) => item?.id === id)?.length).toEqual(shouldExist ? 1 : 0);
 };
