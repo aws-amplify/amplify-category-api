@@ -50,7 +50,16 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
     const ddbManagerPolicy = new aws_iam.Policy(scope, 'CreateUpdateDeleteTablesPolicy');
     ddbManagerPolicy.addStatements(
       new aws_iam.PolicyStatement({
-        actions: ['dynamodb:CreateTable', 'dynamodb:UpdateTable', 'dynamodb:DeleteTable', 'dynamodb:DescribeTable'],
+        actions: [
+          'dynamodb:CreateTable',
+          'dynamodb:UpdateTable',
+          'dynamodb:DeleteTable',
+          'dynamodb:DescribeTable',
+          'dynamodb:DescribeContinuousBackups',
+          'dynamodb:DescribeTimeToLive',
+          'dynamodb:UpdateContinuousBackups',
+          'dynamodb:UpdateTimeToLive',
+        ],
         // TODO: have more restricted scope
         resources: ['*'],
       }),

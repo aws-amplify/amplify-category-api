@@ -393,15 +393,26 @@ export function appendSecondaryIndex(config: IndexDirectiveConfiguration, ctx: T
         WriteCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
       }),
     };
+    overrideIndexAtCfnLevel(ctx, table, newIndex);
+  }
+}
 
-    if (!ctx.transformParameters.useAmplifyManagedTableResources) {
-      const cfnTable = table.table as CfnTable;
-      cfnTable.globalSecondaryIndexes = appendIndex(cfnTable.globalSecondaryIndexes, newIndex);
-    } else {
-      const cfnTable = table.node.defaultChild.node.defaultChild as cdk.CfnCustomResource;
-      const idx = table.globalSecondaryIndexes.length - 1;
-      cfnTable.addOverride(`Properties.globalSecondaryIndexes.${idx}`, newIndex);
-    }
+/**
+ * Util function to override the index properties in L1 level.
+ * The structure for CDK L2 table is `Table -> CfnTable`, in which `table` is a property refering the CfnTable
+ * For amplify dynamodb table, the structure is `AmplifyDynamoDBTable -> CustomResource -> CfnCustomResource`
+ * @param ctx transformer context
+ * @param table input table
+ * @param indexInfo global secondary index properties
+ */
+export function overrideIndexAtCfnLevel(ctx: TransformerContextProvider, table: any, indexInfo: any): void {
+  if (!ctx.transformParameters.useAmplifyManagedTableResources) {
+    const cfnTable = table.table as CfnTable;
+    cfnTable.globalSecondaryIndexes = appendIndex(cfnTable.globalSecondaryIndexes, indexInfo);
+  } else {
+    const cfnTable = table.table.node.defaultChild as cdk.CfnCustomResource;
+    const idx = table.globalSecondaryIndexes.length - 1;
+    cfnTable.addOverride(`Properties.globalSecondaryIndexes.${idx}`, indexInfo);
   }
 }
 

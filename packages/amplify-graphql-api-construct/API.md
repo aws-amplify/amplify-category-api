@@ -89,7 +89,7 @@ export interface AmplifyGraphqlApiCfnResources {
     readonly cfnGraphqlSchema: CfnGraphQLSchema;
     readonly cfnResolvers: Record<string, CfnResolver>;
     readonly cfnRoles: Record<string, CfnRole>;
-    readonly cfnTables: Record<string, CfnTable>;
+    readonly cfnTables: Record<string, CfnTable | CfnResource>;
 }
 
 // @public

@@ -32,7 +32,7 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
   const cfnFunctionConfigurations: Record<string, CfnFunctionConfiguration> = {};
   const cfnDataSources: Record<string, CfnDataSource> = {};
   const tables: Record<string, Table> = {};
-  const cfnTables: Record<string, CfnTable> = {};
+  const cfnTables: Record<string, CfnTable | CfnResource> = {};
   const roles: Record<string, Role> = {};
   const cfnRoles: Record<string, CfnRole> = {};
   const functions: Record<string, LambdaFunction> = {};
@@ -73,7 +73,10 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
       tables[resourceName] = currentScope;
       return;
     }
-    if (currentScope instanceof CfnTable) {
+    if (
+      currentScope instanceof CfnTable ||
+      (currentScope instanceof CfnResource && currentScope.cfnResourceType === 'Custom::AmplifyDynamoDBTable')
+    ) {
       cfnTables[resourceName] = currentScope;
       return;
     }

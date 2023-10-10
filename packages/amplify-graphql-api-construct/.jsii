@@ -4473,7 +4473,16 @@
           "type": {
             "collection": {
               "elementtype": {
-                "fqn": "aws-cdk-lib.aws_dynamodb.CfnTable"
+                "union": {
+                  "types": [
+                    {
+                      "fqn": "aws-cdk-lib.CfnResource"
+                    },
+                    {
+                      "fqn": "aws-cdk-lib.aws_dynamodb.CfnTable"
+                    }
+                  ]
+                }
               },
               "kind": "map"
             }
@@ -6598,5 +6607,5 @@
     }
   },
   "version": "1.1.0",
-  "fingerprint": "TNnrj9LedZbN69hWQ01I45EQfZWawIiiR9IuP2LcBU8="
+  "fingerprint": "wwXvoDzRYcMpErIwxKkBqUC0mGu5s8HMJ5OM9TrNHKU="
 }

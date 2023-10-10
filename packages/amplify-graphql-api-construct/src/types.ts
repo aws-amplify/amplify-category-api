@@ -653,7 +653,7 @@ export interface AmplifyGraphqlApiCfnResources {
   /**
    * The Generated DynamoDB Table L1 Resources, keyed by logicalId.
    */
-  readonly cfnTables: Record<string, CfnTable>;
+  readonly cfnTables: Record<string, CfnTable | CfnResource>;
 
   /**
    * The Generated IAM Role L1 Resources, keyed by logicalId.
