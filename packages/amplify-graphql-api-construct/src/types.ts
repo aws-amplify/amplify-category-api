@@ -17,6 +17,7 @@ import { IRole, CfnRole } from 'aws-cdk-lib/aws-iam';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { IFunction, CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
+import { IVpc } from 'aws-cdk-lib/aws-ec2';
 
 /**
  * Configuration for IAM Authorization on the Graphql Api.
@@ -748,4 +749,151 @@ export interface AddFunctionProps {
    * @default - no code is used
    */
   readonly code?: Code;
+}
+
+/** Supported RDBMS engine types. */
+export type GraphqlApiDefinitionSupportedDbEngines = 'mysql' | 'postgres';
+
+/**
+ * Configuration of the VPC in which to install the Lambda data source.
+ */
+export interface GraphqlApiDefinitionDbVpcConfig {
+  /** The VPC to install the Lambda data source in. */
+  readonly vpc: IVpc;
+
+  /** The security groups to install the Lambda data source in. */
+  readonly securityGroupIds: string[];
+
+  /** The subnets to install the Lambda data source in. */
+  readonly subnetIds: string[];
+}
+
+/**
+ * The parameters the Lambda data source will use to connect to the database.
+ *
+ * These parameters are retrieved from Secure Systems Manager in the same region as the Lambda.
+ */
+export interface GraphqlApiDefinitionDbConnectionConfig {
+  /** The Secure Systems Manager parameter containing the hostname of the database proxy, cluster, or instance. */
+  readonly hostnameSsmPath: string;
+
+  /** The Secure Systems Manager parameter containing the port number of the database proxy, cluster, or instance. */
+  readonly portSsmPath: string;
+
+  /** The Secure Systems Manager parameter containing the username to use when connecting to the database. */
+  readonly usernameSsmPath: string;
+
+  /** The Secure Systems Manager parameter containing the password to use when connecting to the database. */
+  readonly passwordSsmPath: string;
+
+  /** The Secure Systems Manager parameter containing the database name. */
+  readonly databaseNameSsmPath: string;
+}
+
+/**
+ * An AmplifyGraphqlDefinition bound to a single SQL database.
+ *
+ * A SQL-bound definition will instruct Amplify to associate all `@model`s in the schema to that database.
+ *
+ * **The `@sql` directive**
+ *
+ * A `@sql` directive contained in the GraphQL schema may either be defined inline:
+ *
+ * **schema.graphql**
+ * ```graphql
+ * type Query {
+ *   myCustomField: [Int] @sql(statement: "SELECT * FROM table")
+ * }
+ * ```
+ *
+ * Or may `reference` a key passed into the `fromSqlSchemaFiles` options:
+ *
+ * **schema.graphql**
+ * ```graphql
+ * type Query {
+ *   myCustomField: [Int] @sql(references: "myCustomQuery")
+ * }
+ * ```
+ *
+ * **myCdkFile.ts**
+ * ```typescript
+ * const def = AmplifyGraphqlDefinition.fromSqlSchemaFiles({
+ *   customSqlFiles: {
+ *     "myCustomQuery": "path/to/some-query-file.sql"
+ *   }...
+ * }, 'path/to/schema.graphql')
+ * ```
+ *
+ * Or if created directly, inline the value of the custom SQL statement in `customSqlStatements`:
+ *
+ * **myCdkFile.ts**
+ * ```typescript
+ * const def = new AmplifySqlBoundGraphqlApiDefinition({
+ *   schema: `
+ *   type Query {
+ *     myCustomField: [Int] @sql(references: "myCustomQuery")
+ *   }
+ *   `,
+ *   customSqlStatements: {
+ *     "myCustomQuery": "SELECT * FROM table"
+ *   },
+ *   ...
+ * }
+ */
+export interface IAmplifySqlBoundGraphqlApiDefinition extends IAmplifyGraphqlDefinition {
+  /**
+   * Custom SQL statements. The key is the value of the `references` attribute of the `@sql` directive in the `schema`; the value is the SQL
+   * to be executed.
+   */
+  readonly customSqlStatements?: Record<string, string>;
+
+  /** Configuration for the VPC in which to install the Lambda data source. */
+  readonly vpcConfig: GraphqlApiDefinitionDbVpcConfig;
+
+  /** The RDBMS engine type. */
+  readonly engineType: GraphqlApiDefinitionSupportedDbEngines;
+
+  /** The parameters the Lambda data source will use to connect to the database. */
+  readonly dbConnectionConfig: GraphqlApiDefinitionDbConnectionConfig;
+}
+
+/** Input type properties when defining a new SQL-bound GraphQL API definition.  */
+export interface AmplifySqlBoundGraphqlApiDefinitionProps {
+  /** The GraphQL schema to be bound to the specified SQL database. */
+  readonly schema: string;
+
+  /**
+   * Custom SQL statements. The key is the value of the `references` attribute of the `@sql` directive in the `schema`; the value is the SQL
+   * to be executed.
+   */
+  readonly customSqlStatements?: Record<string, string>;
+
+  /** Configuration for the VPC in which to install the Lambda data source. */
+  readonly vpcConfig: GraphqlApiDefinitionDbVpcConfig;
+
+  /** The RDBMS engine type. */
+  readonly engineType: GraphqlApiDefinitionSupportedDbEngines;
+
+  /** The parameters the Lambda data source will use to connect to the database. */
+  readonly dbConnectionConfig: GraphqlApiDefinitionDbConnectionConfig;
+}
+
+/**
+ * Input type for configuring a SqlBoundGraphqlApiDefinition from GraphQL files.
+ */
+export interface FromSqlSchemaFilesProps {
+  /**
+   * Custom SQL queries. The key is the value of the `references` attribute of the `@sql` directive; the value is the path to a file
+   * containing the SQL to be executed for that query.
+   */
+  readonly customSqlFiles?: Record<string, string>;
+
+  /** Configuration for the VPC in which to install the Lambda data source. */
+  readonly vpcConfig: GraphqlApiDefinitionDbVpcConfig;
+
+  /** The RDBMS engine type. */
+  readonly engineType: GraphqlApiDefinitionSupportedDbEngines;
+
+  /** The parameters the Lambda data source will use to connect to the database. */
+  readonly dbConnectionConfig: GraphqlApiDefinitionDbConnectionConfig;
 }
