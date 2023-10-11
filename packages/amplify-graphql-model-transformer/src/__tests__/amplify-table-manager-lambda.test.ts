@@ -1,6 +1,11 @@
 import {
   getNextGSIUpdate,
   toCreateTableInput,
+  getStreamUpdate,
+  getTtlUpdate,
+  getSseUpdate,
+  getPointInTimeRecoveryUpdate,
+  getDeletionProtectionUpdate,
 } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
 import * as CustomDDB from '../resources/amplify-dynamodb-table/amplify-table-types';
 import { DynamoDB } from 'aws-sdk';
@@ -525,6 +530,442 @@ describe('Custom Resource Lambda Tests', () => {
       expect(tableDef).toMatchSnapshot();
       const createTableInput = toCreateTableInput(tableDef);
       expect(createTableInput).toMatchSnapshot();
+    });
+  });
+  describe('Non GSI update', () => {
+    let currentState: DynamoDB.TableDescription;
+    let endState: CustomDDB.Input;
+    let nextUpdate: DynamoDB.UpdateTableInput | undefined;
+
+    const currentStateBase: DynamoDB.TableDescription = {
+      AttributeDefinitions: [
+        {
+          AttributeName: 'pk',
+          AttributeType: 'S',
+        },
+        {
+          AttributeName: 'sk',
+          AttributeType: 'S',
+        },
+      ],
+      TableName: 'test-table',
+      KeySchema: [
+        {
+          AttributeName: 'pk',
+          KeyType: 'HASH',
+        },
+      ],
+      BillingModeSummary: {
+        BillingMode: 'PAY_PER_REQUEST',
+      },
+    };
+    const baseTableDef: CustomDDB.Input = {
+      tableName: 'test-table',
+      attributeDefinitions: [
+        {
+          attributeName: 'pk',
+          attributeType: 'S',
+        },
+        {
+          attributeName: 'sk',
+          attributeType: 'S',
+        },
+      ],
+      keySchema: [
+        {
+          attributeName: 'pk',
+          keyType: 'HASH',
+        },
+      ],
+      billingMode: 'PAY_PER_REQUEST',
+    };
+    describe('Get stream update', () => {
+      it('should compute the difference correctly when stream is disabled', async () => {
+        currentState = {
+          ...currentStateBase,
+          StreamSpecification: {
+            StreamEnabled: true,
+            StreamViewType: 'NEW_AND_OLD_IMAGES',
+          },
+        };
+        endState = baseTableDef;
+        nextUpdate = await getStreamUpdate(currentState, endState);
+        expect(nextUpdate).toMatchSnapshot();
+      });
+      it('should compute the difference correctly when stream is enabled', async () => {
+        currentState = {
+          ...currentStateBase,
+        };
+        endState = {
+          ...baseTableDef,
+          streamSpecification: {
+            streamViewType: 'NEW_AND_OLD_IMAGES',
+          },
+        };
+        nextUpdate = await getStreamUpdate(currentState, endState);
+        expect(nextUpdate).toMatchSnapshot();
+
+        currentState = {
+          ...currentStateBase,
+          StreamSpecification: {
+            StreamEnabled: false,
+            StreamViewType: 'NEW_AND_OLD_IMAGES',
+          },
+        };
+        nextUpdate = await getStreamUpdate(currentState, endState);
+        expect(nextUpdate).toMatchSnapshot();
+      });
+    });
+    describe('Get time to live update', () => {
+      let nextTTLUpdate: DynamoDB.UpdateTimeToLiveInput | undefined;
+      let currentTTL: DynamoDB.TimeToLiveDescription | undefined;
+      const currentTTLBase: DynamoDB.TimeToLiveDescription = {
+        TimeToLiveStatus: 'DISABLED',
+      };
+      it('should compute the difference correctly when ttl is enabled', () => {
+        currentTTL = { ...currentTTLBase };
+        endState = {
+          ...baseTableDef,
+          timeToLiveSpecification: {
+            enabled: true,
+            attributeName: '_ttl',
+          },
+        };
+        nextTTLUpdate = getTtlUpdate(currentTTL, endState);
+        expect(nextTTLUpdate).toMatchSnapshot();
+      });
+      it('should compute the difference correctly when ttl is disabled', () => {
+        currentTTL = {
+          ...currentTTLBase,
+          TimeToLiveStatus: 'ENABLED',
+          AttributeName: '_ttl',
+        };
+        endState = {
+          ...baseTableDef,
+        };
+        nextTTLUpdate = getTtlUpdate(currentTTL, endState);
+        expect(nextTTLUpdate).toMatchSnapshot();
+
+        endState = {
+          ...baseTableDef,
+          timeToLiveSpecification: {
+            enabled: false,
+            attributeName: '_ttl',
+          },
+        };
+        nextTTLUpdate = getTtlUpdate(currentTTL, endState);
+        expect(nextTTLUpdate).toMatchSnapshot();
+      });
+      it('should compute the difference correctly when attribute is renamed', () => {
+        currentTTL = {
+          ...currentTTLBase,
+          TimeToLiveStatus: 'ENABLED',
+          AttributeName: '_ttl',
+        };
+        endState = {
+          ...baseTableDef,
+          timeToLiveSpecification: {
+            enabled: true,
+            attributeName: '_ttl1',
+          },
+        };
+        nextTTLUpdate = getTtlUpdate(currentTTL, endState);
+        expect(nextTTLUpdate).toMatchSnapshot();
+      });
+    });
+    describe('Get server side encrytion update', () => {
+      it('should compute the difference correctly when SSE is enabled', () => {
+        currentState = {
+          ...currentStateBase,
+        };
+        endState = {
+          ...baseTableDef,
+          sseSpecification: {
+            sseEnabled: true,
+          },
+        };
+        nextUpdate = getSseUpdate(currentState, endState);
+        expect(nextUpdate).toMatchSnapshot();
+      });
+      it('should compute the difference correctly when SSE is disabled', () => {
+        currentState = {
+          ...currentStateBase,
+          SSEDescription: {
+            Status: 'ENABLED',
+          },
+        };
+        endState = {
+          ...baseTableDef,
+          sseSpecification: {
+            sseEnabled: false,
+          },
+        };
+        nextUpdate = getSseUpdate(currentState, endState);
+        expect(nextUpdate).toMatchSnapshot();
+
+        endState = {
+          ...baseTableDef,
+        };
+        nextUpdate = getSseUpdate(currentState, endState);
+        expect(nextUpdate).toMatchSnapshot();
+      });
+      it('should compute the difference correctly when SSE type is changed', () => {
+        currentState = {
+          ...currentStateBase,
+          SSEDescription: {
+            Status: 'ENABLED',
+            SSEType: 'AES256',
+          },
+        };
+        endState = {
+          ...baseTableDef,
+          sseSpecification: {
+            sseEnabled: true,
+            sseType: 'KMS',
+            kmsMasterKeyId: 'alias/aws/dynamodb/custom',
+          },
+        };
+        nextUpdate = getSseUpdate(currentState, endState);
+        expect(nextUpdate).toMatchSnapshot();
+      });
+    });
+    describe('Get point in time recovery update', () => {
+      let nextPITRUpdate: DynamoDB.UpdateContinuousBackupsInput | undefined;
+      let currentPITR: DynamoDB.ContinuousBackupsDescription | undefined;
+      const currentPITRBase: DynamoDB.ContinuousBackupsDescription = {
+        ContinuousBackupsStatus: 'ENABLED',
+      };
+      it('should compute the difference correctly when PITR is enabled', () => {
+        currentPITR = {
+          ...currentPITRBase,
+          PointInTimeRecoveryDescription: {
+            PointInTimeRecoveryStatus: 'DISABLED',
+          },
+        };
+        endState = {
+          ...baseTableDef,
+          pointInTimeRecoverySpecification: {
+            pointInTimeRecoveryEnabled: true,
+          },
+        };
+        nextPITRUpdate = getPointInTimeRecoveryUpdate(currentPITR, endState);
+        expect(nextPITRUpdate).toMatchSnapshot();
+      });
+      it('should compute the difference correctly when PITR is disabled', () => {
+        currentPITR = {
+          ...currentPITRBase,
+          PointInTimeRecoveryDescription: {
+            PointInTimeRecoveryStatus: 'ENABLED',
+          },
+        };
+        endState = {
+          ...baseTableDef,
+          pointInTimeRecoverySpecification: {
+            pointInTimeRecoveryEnabled: false,
+          },
+        };
+        nextPITRUpdate = getPointInTimeRecoveryUpdate(currentPITR, endState);
+        expect(nextPITRUpdate).toMatchSnapshot();
+
+        endState = {
+          ...baseTableDef,
+        };
+        nextPITRUpdate = getPointInTimeRecoveryUpdate(currentPITR, endState);
+        expect(nextPITRUpdate).toMatchSnapshot();
+      });
+    });
+    describe('Get deletion protection update', () => {
+      it('should compute the difference correctly when deletion protection is enabled', () => {
+        currentState = {
+          ...currentStateBase,
+        };
+        endState = {
+          ...baseTableDef,
+          deletionProtectionEnabled: true,
+        };
+        nextUpdate = getDeletionProtectionUpdate(currentState, endState);
+        expect(nextUpdate).toMatchSnapshot();
+      });
+      it('should compute the difference correctly when deletion protection is disabled', () => {
+        currentState = {
+          ...currentStateBase,
+          DeletionProtectionEnabled: true,
+        };
+        endState = {
+          ...baseTableDef,
+          deletionProtectionEnabled: false,
+        };
+        nextUpdate = getDeletionProtectionUpdate(currentState, endState);
+        expect(nextUpdate).toMatchSnapshot();
+
+        endState = {
+          ...baseTableDef,
+        };
+        nextUpdate = getDeletionProtectionUpdate(currentState, endState);
+        expect(nextUpdate).toMatchSnapshot();
+      });
+    });
+    describe('Get billing mode update', () => {
+      it('should compute the difference correctly when billingMode is changed to "PROVISIONED"', () => {
+        currentState = {
+          ...currentStateBase,
+          BillingModeSummary: {
+            BillingMode: 'PAY_PER_REQUEST',
+          },
+        };
+        endState = {
+          ...baseTableDef,
+          billingMode: 'PROVISIONED',
+          provisionedThroughput: {
+            readCapacityUnits: 5,
+            writeCapacityUnits: 5,
+          },
+        };
+        nextUpdate = getNextGSIUpdate(currentState, endState);
+        expect(nextUpdate).toMatchSnapshot();
+      });
+      it('should compute the difference correctly when billingMode is changed to "PROVISIONED" and GSIs exist in current table', () => {
+        currentState = {
+          ...currentStateBase,
+          AttributeDefinitions: [
+            {
+              AttributeName: 'pk',
+              AttributeType: 'S',
+            },
+            {
+              AttributeName: 'sk',
+              AttributeType: 'S',
+            },
+            {
+              AttributeName: 'name',
+              AttributeType: 'S',
+            },
+          ],
+          BillingModeSummary: {
+            BillingMode: 'PAY_PER_REQUEST',
+          },
+          GlobalSecondaryIndexes: [
+            {
+              IndexName: 'gsi1',
+              KeySchema: [
+                {
+                  AttributeName: 'name',
+                  KeyType: 'HASH',
+                },
+              ],
+              Projection: {
+                ProjectionType: 'ALL',
+              },
+            },
+          ],
+        };
+        endState = {
+          ...baseTableDef,
+          billingMode: 'PROVISIONED',
+          provisionedThroughput: {
+            readCapacityUnits: 5,
+            writeCapacityUnits: 5,
+          },
+          attributeDefinitions: [
+            {
+              attributeName: 'pk',
+              attributeType: 'S',
+            },
+            {
+              attributeName: 'sk',
+              attributeType: 'S',
+            },
+            {
+              attributeName: 'name',
+              attributeType: 'S',
+            },
+          ],
+          globalSecondaryIndexes: [
+            {
+              indexName: 'gsi1',
+              keySchema: [
+                {
+                  attributeName: 'name',
+                  keyType: 'HASH',
+                },
+              ],
+              projection: {
+                projectionType: 'ALL',
+              },
+              provisionedThroughput: {
+                readCapacityUnits: 4,
+                writeCapacityUnits: 4,
+              },
+            },
+          ],
+        };
+        nextUpdate = getNextGSIUpdate(currentState, endState);
+        expect(nextUpdate).toMatchSnapshot();
+
+        // Second Update
+        currentState = {
+          ...currentStateBase,
+          AttributeDefinitions: [
+            {
+              AttributeName: 'pk',
+              AttributeType: 'S',
+            },
+            {
+              AttributeName: 'sk',
+              AttributeType: 'S',
+            },
+            {
+              AttributeName: 'name',
+              AttributeType: 'S',
+            },
+          ],
+          BillingModeSummary: {
+            BillingMode: 'PROVISIONED',
+          },
+          ProvisionedThroughput: {
+            ReadCapacityUnits: 5,
+            WriteCapacityUnits: 5,
+          },
+          GlobalSecondaryIndexes: [
+            {
+              IndexName: 'gsi1',
+              KeySchema: [
+                {
+                  AttributeName: 'name',
+                  KeyType: 'HASH',
+                },
+              ],
+              Projection: {
+                ProjectionType: 'ALL',
+              },
+              ProvisionedThroughput: {
+                ReadCapacityUnits: 5,
+                WriteCapacityUnits: 5,
+              },
+            },
+          ],
+        };
+        nextUpdate = getNextGSIUpdate(currentState, endState);
+        expect(nextUpdate).toMatchSnapshot();
+      });
+      it('should compute the difference correctly when billingMode is changed to "PAY_PER_REQUEST"', () => {
+        currentState = {
+          ...currentStateBase,
+          BillingModeSummary: {
+            BillingMode: 'PROVISIONED',
+          },
+          ProvisionedThroughput: {
+            ReadCapacityUnits: 5,
+            WriteCapacityUnits: 5,
+          },
+        };
+        endState = {
+          ...baseTableDef,
+          billingMode: 'PAY_PER_REQUEST',
+        };
+        nextUpdate = getNextGSIUpdate(currentState, endState);
+        expect(nextUpdate).toMatchSnapshot();
+      });
     });
   });
 });

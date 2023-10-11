@@ -289,7 +289,7 @@ export const isComplete = async (
 };
 
 /**
- * Compares the currentState with the endState to determine a next update step that will get the table closer to the end state
+ * Compares the currentState with the endState to determine a next GSI related update step that will get the table closer to the end state
  * @param currentState table description result from DynamoDB SDK call
  * @param endState The input table state from user
  * @returns UpdateTableInput object including the next GSI update only. Undefined if no next steps
@@ -328,6 +328,9 @@ export const getNextGSIUpdate = (currentState: TableDescription, endState: Custo
             }
           : undefined,
     };
+    // When the table's billing is changed to 'PROVISIONED', the current indexes of the table
+    // should be updated with the provisionedThroughput at the same time. Otherwise it will fail the parameter validation.
+    // The table's throughput will be applied by default.
     if (isTableBillingModeModified && endState.billingMode === 'PROVISIONED') {
       const indexToBeUpdated = currentStateGSIs.map((gsiToUpdate) => {
         return {
@@ -342,26 +345,9 @@ export const getNextGSIUpdate = (currentState: TableDescription, endState: Custo
       });
       updateInput = {
         ...updateInput,
-        GlobalSecondaryIndexUpdates: indexToBeUpdated,
+        GlobalSecondaryIndexUpdates: indexToBeUpdated.length > 0 ? indexToBeUpdated : undefined,
       };
     }
-    // else if (isTableBillingModeModified && endState.billingMode === 'PAY_PER_REQUEST') {
-    //   const indexToBeUpdated = currentStateGSIs.map(gsiToUpdate => {
-    //     return {
-    //       Update: {
-    //         IndexName: gsiToUpdate.IndexName,
-    //         ProvisionedThroughput: {
-    //           ReadCapacityUnits: 0,
-    //           WriteCapacityUnits: 0,
-    //         }
-    //       }
-    //     };
-    //   });
-    //   updateInput = {
-    //     ...updateInput,
-    //     GlobalSecondaryIndexUpdates: indexToBeUpdated,
-    //   }
-    // }
     return parsePropertiesToDynamoDBInput(updateInput) as UpdateTableInput;
   }
 
@@ -418,6 +404,7 @@ export const getNextGSIUpdate = (currentState: TableDescription, endState: Custo
     };
   }
 
+  // The major update is the index provisioned throughput
   const gsiRequiresUpdatePredicate = (endStateGSI: CustomDDB.GlobalSecondaryIndexProperty): boolean => {
     if (
       endState.provisionedThroughput &&
@@ -459,9 +446,19 @@ export const getNextGSIUpdate = (currentState: TableDescription, endState: Custo
   return undefined;
 };
 
+/**
+ * Compares the currentState with the endState to determine if the stream specification is updated
+ * When the streamViewType is changed, the stream will be disabled first before changing the type
+ * @param currentState table description result from DynamoDB SDK call
+ * @param endState The input table state from user
+ * @returns UpdateTableInput object including the stream update only. Undefined if no changes
+ */
 export const getStreamUpdate = async (currentState: TableDescription, endState: CustomDDB.Input): Promise<UpdateTableInput | undefined> => {
   let streamUpdate;
-  if (endState.streamSpecification?.streamViewType !== undefined && currentState.StreamSpecification === undefined) {
+  if (
+    endState.streamSpecification?.streamViewType !== undefined &&
+    (currentState.StreamSpecification === undefined || currentState.StreamSpecification.StreamEnabled === false)
+  ) {
     streamUpdate = { StreamEnabled: true, StreamViewType: endState.streamSpecification.streamViewType };
   } else if (endState.streamSpecification?.streamViewType === undefined && currentState.StreamSpecification?.StreamEnabled === true) {
     streamUpdate = { StreamEnabled: false };
@@ -493,9 +490,15 @@ export const getStreamUpdate = async (currentState: TableDescription, endState: 
   return undefined;
 };
 
+/**
+ * Compares the currentState with the endState to determine if the server side encryption (SSE) is updated
+ * @param currentState table description result from DynamoDB SDK call
+ * @param endState The input table state from user
+ * @returns UpdateTableInput object including the SSE update only. Undefined if no changes
+ */
 export const getSseUpdate = (currentState: TableDescription, endState: CustomDDB.Input): UpdateTableInput | undefined => {
-  // Compute sever side encryption update
   let sseUpdate;
+  // When current table has SSE
   if (currentState.SSEDescription) {
     if (!endState.sseSpecification?.sseEnabled) {
       sseUpdate = {
@@ -512,7 +515,9 @@ export const getSseUpdate = (currentState: TableDescription, endState: CustomDDB
         KMSMasterKeyId: endState.sseSpecification.kmsMasterKeyId,
       };
     }
-  } else {
+  }
+  // When current table does not have SSE
+  else {
     if (endState.sseSpecification?.sseEnabled) {
       sseUpdate = {
         Enabled: true,
@@ -530,13 +535,21 @@ export const getSseUpdate = (currentState: TableDescription, endState: CustomDDB
   return undefined;
 };
 
+/**
+ * Compares the currentState with the endState to determine if the deletion protection is updated
+ * @param currentState table description result from DynamoDB SDK call
+ * @param endState The input table state from user
+ * @returns UpdateTableInput object including the deletion protection update only. Undefined if no changes
+ */
 export const getDeletionProtectionUpdate = (currentState: TableDescription, endState: CustomDDB.Input): UpdateTableInput | undefined => {
   if (endState.deletionProtectionEnabled !== undefined && currentState.DeletionProtectionEnabled !== endState.deletionProtectionEnabled) {
     return {
       TableName: currentState.TableName!,
       DeletionProtectionEnabled: endState.deletionProtectionEnabled,
     } as UpdateTableInput;
-  } else if (endState.deletionProtectionEnabled === undefined && currentState.DeletionProtectionEnabled === true) {
+  }
+  // When the deletion protection is undefined in input table, it will be considered as false
+  else if (endState.deletionProtectionEnabled === undefined && currentState.DeletionProtectionEnabled === true) {
     return {
       TableName: currentState.TableName!,
       DeletionProtectionEnabled: false,
@@ -545,12 +558,19 @@ export const getDeletionProtectionUpdate = (currentState: TableDescription, endS
   return undefined;
 };
 
+/**
+ * Compares the current time to live (TTL) config with the endState to determine if the TTL is updated
+ * @param currentTTL Time to live description result from DynamoDB SDK call
+ * @param endState The input table state from user
+ * @returns UpdateTimeToLiveInput object. Undefined if no changes
+ */
 export const getTtlUpdate = (
   currentTTL: DynamoDB.TimeToLiveDescription | undefined,
   endState: CustomDDB.Input,
 ): UpdateTimeToLiveInput | undefined => {
   const endTTL = endState.timeToLiveSpecification;
   if (currentTTL && currentTTL.TimeToLiveStatus) {
+    // When TTL is enabled for current table
     if (currentTTL.TimeToLiveStatus === 'ENABLED' && currentTTL.AttributeName) {
       if (!endTTL || !endTTL.enabled) {
         // Disable the ttl
@@ -558,6 +578,7 @@ export const getTtlUpdate = (
           TableName: endState.tableName!,
           TimeToLiveSpecification: {
             Enabled: false,
+            // When disabling TTL, the attribute name should stay the same with current. Otherwise it will fail parameter validation
             AttributeName: currentTTL.AttributeName,
           },
         };
@@ -585,6 +606,12 @@ export const getTtlUpdate = (
   return undefined;
 };
 
+/**
+ * Compares the current point in time recovery config with the endState to determine if it is updated
+ * @param currentPointInTime Point in time recovery description result from DynamoDB SDK call
+ * @param endState The input table state from user
+ * @returns UpdateContinousBackupsInput object. Undefined if no changes
+ */
 export const getPointInTimeRecoveryUpdate = (
   currentPointInTime: DynamoDB.ContinuousBackupsDescription | undefined,
   endState: CustomDDB.Input,
