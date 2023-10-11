@@ -134,4 +134,41 @@ describe('supports different props configurations', () => {
       });
     });
   });
+
+  it('supports a definition with a SQLModelDataSourceBinding', () => {
+    verifySynth((stack) => {
+      new AmplifyGraphqlApi(stack, 'TestApi', {
+        definition: AmplifyGraphqlDefinition.fromString(
+          /* GraphQL */ `
+            type Todo @model @auth(rules: [{ allow: public }]) {
+              description: String!
+            }
+          `,
+          {
+            bindingType: 'MySQL',
+            dbConnectionConfig: {
+              hostnameSsmPath: '/path/to/hostname',
+              usernameSsmPath: '/path/to/username',
+              passwordSsmPath: '/path/to/password',
+              portSsmPath: '/path/to/port',
+              databaseNameSsmPath: '/path/to/databaseName',
+            },
+            vpcConfiguration: {
+              vpcId: 'vpc-123',
+              securityGroupIds: ['sg-123'],
+              subnetAvailabilityZones: [
+                {
+                  subnetId: 'subnet-123',
+                  availabilityZone: 'us-east-1a',
+                },
+              ],
+            },
+          },
+        ),
+        authorizationModes: {
+          apiKeyConfig: { expires: cdk.Duration.days(7) },
+        },
+      });
+    });
+  });
 });

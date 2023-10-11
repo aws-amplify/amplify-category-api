@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { Template } from 'cloudform-types';
 import _ from 'lodash';
-import { parse, Kind, ObjectTypeDefinitionNode, print, DefinitionNode, InputObjectTypeDefinitionNode } from 'graphql';
+import { parse, Kind, ObjectTypeDefinitionNode, print, InputObjectTypeDefinitionNode } from 'graphql';
 import { ApiCategorySchemaNotFoundError } from '../errors';
 import { throwIfNotJSONExt } from './fileUtils';
 import { ProjectOptions } from './amplifyUtils';
@@ -383,8 +383,15 @@ async function readSchemaDocuments(schemaDirectoryPath: string): Promise<string[
   return schemaDocuments;
 }
 
+/**
+ * Supported transformable database types.
+ */
 export type DBType = 'MySQL' | 'DDB';
 
+/**
+ * Configuration for a datasource. Defines the underlying database engine, and instructs the tranformer whether to provision the database
+ * storage or whether it already exists.
+ */
 export interface DatasourceType {
   dbType: DBType;
   provisionDB: boolean;
@@ -397,7 +404,14 @@ function constructDataSourceType(dbType: DBType, provisionDB: boolean = true): D
   };
 }
 
-function constructDataSourceMap(schema: string, datasourceType: DatasourceType): Map<string, DatasourceType> {
+/**
+ * Constructs a map of model names to datasource types for the specified schema. Used by the transformer to auto-generate a model mapping if
+ * the customer has not provided an explicit one.
+ * @param schema the annotated GraphQL schema
+ * @param datasourceType the datasource type for each model to be associated with
+ * @returns a map of model names to datasource types
+ */
+export const constructDataSourceMap = (schema: string, datasourceType: DatasourceType): Map<string, DatasourceType> => {
   const parsedSchema = parse(schema);
   const result = new Map<string, DatasourceType>();
   parsedSchema.definitions
@@ -406,4 +420,14 @@ function constructDataSourceMap(schema: string, datasourceType: DatasourceType):
       result.set((type as ObjectTypeDefinitionNode).name.value, datasourceType);
     });
   return result;
-}
+};
+
+/**
+ * Returns true if the specified DBType is a SQL database type.
+ *
+ * @param dbType the DBType to inspect
+ * @returns true if the specified DBType is a SQL database type
+ */
+export const isSqlDbType = (dbType: DBType): boolean => {
+  return dbType === 'MySQL';
+};

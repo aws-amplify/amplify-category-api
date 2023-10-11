@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { executeTransform } from '@aws-amplify/graphql-transformer';
+import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
 import { NestedStack, Stack } from 'aws-cdk-lib';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { AssetProps } from '@aws-amplify/graphql-transformer-interfaces';
@@ -28,6 +28,7 @@ import { IEventBus } from 'aws-cdk-lib/aws-events';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { IServerlessCluster } from 'aws-cdk-lib/aws-rds';
 import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
+import { constructDataSourceMap } from 'graphql-transformer-core';
 import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
 import type {
   AmplifyGraphqlApiResources,
@@ -36,6 +37,7 @@ import type {
   IBackendOutputStorageStrategy,
   AddFunctionProps,
   ConflictResolution,
+  SqlModelDataSourceBinding,
 } from './types';
 import {
   convertAuthorizationModesToTransformerAuthConfig,
@@ -48,6 +50,7 @@ import {
   addAmplifyMetadataToStackDescription,
   getAdditionalAuthenticationTypes,
 } from './internal';
+import { isSqlModelDataSourceBinding } from './sql-model-datasource-binding';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
@@ -138,7 +141,6 @@ export class AmplifyGraphqlApi extends Construct {
       functionNameMap,
       outputStorageStrategy,
     } = props;
-
     addAmplifyMetadataToStackDescription(scope);
 
     const { authConfig, identityPoolId, adminRoles, authSynthParameters } =
@@ -157,7 +159,7 @@ export class AmplifyGraphqlApi extends Construct {
 
     const assetManager = new AssetManager();
 
-    executeTransform({
+    const executeTransformConfig: ExecuteTransformConfig = {
       scope: this,
       nestedStackProvider: {
         provide: (nestedStackScope: Construct, name: string) => new NestedStack(nestedStackScope, name),
@@ -188,7 +190,13 @@ export class AmplifyGraphqlApi extends Construct {
         ...defaultTranslationBehavior,
         ...(translationBehavior ?? {}),
       },
-    });
+    };
+
+    if (isSqlModelDataSourceBinding(definition.modelDataSourceBinding)) {
+      this.extendTransformConfig(executeTransformConfig, definition.modelDataSourceBinding);
+    }
+
+    executeTransform(executeTransformConfig);
 
     this.codegenAssets = new CodegenAssets(this, 'AmplifyCodegenAssets', { modelSchema: definition.schema });
 
@@ -200,6 +208,60 @@ export class AmplifyGraphqlApi extends Construct {
     this.graphqlUrl = this.resources.cfnResources.cfnGraphqlApi.attrGraphQlUrl;
     this.realtimeUrl = this.resources.cfnResources.cfnGraphqlApi.attrRealtimeUrl;
     this.apiKey = this.resources.cfnResources.cfnApiKey?.attrApiKey;
+  }
+
+  /**
+   * Extends executeTransformConfig with fields for provisioning a SQL Lambda
+   * @param executeTransformConfig the executeTransformConfig to extend
+   * @param modelDataSourceBinding the modelDataSourceBinding containing the values to add to the transform config
+   */
+  private extendTransformConfig(
+    executeTransformConfig: ExecuteTransformConfig,
+    modelDataSourceBinding: SqlModelDataSourceBinding,
+  ): ExecuteTransformConfig {
+    if (modelDataSourceBinding.customSqlStatements) {
+      executeTransformConfig.customQueries = new Map(Object.entries(modelDataSourceBinding.customSqlStatements));
+    }
+
+    const dbSecrets = new Map();
+    let dbSecretDbTypeKey: string;
+    switch (modelDataSourceBinding.bindingType) {
+      case 'MySQL':
+        dbSecretDbTypeKey = 'MySQL';
+        break;
+      default:
+        throw new Error('Unsupported binding type');
+    }
+    dbSecrets.set(dbSecretDbTypeKey, {
+      username: modelDataSourceBinding.dbConnectionConfig.usernameSsmPath,
+      password: modelDataSourceBinding.dbConnectionConfig.passwordSsmPath,
+      host: modelDataSourceBinding.dbConnectionConfig.hostnameSsmPath,
+      port: modelDataSourceBinding.dbConnectionConfig.portSsmPath,
+      database: modelDataSourceBinding.dbConnectionConfig.databaseNameSsmPath,
+    });
+
+    const subnetAvailabilityZoneConfig = modelDataSourceBinding.vpcConfiguration.subnetAvailabilityZones.map(
+      (saz): { SubnetId: string; AvailabilityZone: string } => ({
+        SubnetId: saz.subnetId,
+        AvailabilityZone: saz.availabilityZone,
+      }),
+    );
+
+    if (!executeTransformConfig.modelToDatasourceMap || executeTransformConfig.modelToDatasourceMap.size === 0) {
+      const defaultDatasourceType = {
+        dbType: modelDataSourceBinding.bindingType,
+        provisionDB: false,
+      };
+      executeTransformConfig.modelToDatasourceMap = constructDataSourceMap(executeTransformConfig.schema, defaultDatasourceType);
+    }
+
+    executeTransformConfig.sqlLambdaVpcConfig = {
+      vpcId: modelDataSourceBinding.vpcConfiguration.vpcId,
+      securityGroupIds: modelDataSourceBinding.vpcConfiguration.securityGroupIds,
+      subnetAvailabilityZoneConfig,
+    };
+
+    return executeTransformConfig;
   }
 
   /**

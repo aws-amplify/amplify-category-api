@@ -119,8 +119,9 @@ export interface AmplifyGraphqlApiResources {
 
 // @public
 export class AmplifyGraphqlDefinition {
+    static fromBindingAndFiles(modelDataSourceBinding: ModelDataSourceBinding, ...filePaths: string[]): IAmplifyGraphqlDefinition;
     static fromFiles(...filePaths: string[]): IAmplifyGraphqlDefinition;
-    static fromString(schema: string): IAmplifyGraphqlDefinition;
+    static fromString(schema: string, modelDataSourceBinding?: ModelDataSourceBinding): IAmplifyGraphqlDefinition;
 }
 
 // @public
@@ -169,6 +170,11 @@ export interface CustomConflictResolutionStrategy extends ConflictResolutionStra
 }
 
 // @public
+export interface DynamoModelDataSourceBinding {
+    readonly bindingType: 'DynamoDB';
+}
+
+// @public
 export type FunctionSlot = MutationFunctionSlot | QueryFunctionSlot | SubscriptionFunctionSlot;
 
 // @public
@@ -194,6 +200,7 @@ export interface IAMAuthorizationConfig {
 // @public
 export interface IAmplifyGraphqlDefinition {
     readonly functionSlots: FunctionSlot[];
+    readonly modelDataSourceBinding: ModelDataSourceBinding;
     readonly schema: string;
 }
 
@@ -213,6 +220,9 @@ export interface LambdaAuthorizationConfig {
     readonly function: IFunction;
     readonly ttl: Duration;
 }
+
+// @public
+export type ModelDataSourceBinding = DynamoModelDataSourceBinding | SqlModelDataSourceBinding;
 
 // @public
 export interface MutationFunctionSlot extends FunctionSlotBase {
@@ -253,6 +263,36 @@ export interface PartialTranslationBehavior {
 export interface QueryFunctionSlot extends FunctionSlotBase {
     readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preDataLoad' | 'postDataLoad' | 'finish';
     readonly typeName: 'Query';
+}
+
+// @public
+export interface SqlModelDataSourceBinding {
+    readonly bindingType: 'MySQL';
+    readonly customSqlStatements?: Record<string, string>;
+    readonly dbConnectionConfig: SqlModelDataSourceBindingDbConnectionConfig;
+    readonly vpcConfiguration: SqlModelDataSourceBindingVpcConfig;
+}
+
+// @public
+export interface SqlModelDataSourceBindingDbConnectionConfig {
+    readonly databaseNameSsmPath: string;
+    readonly hostnameSsmPath: string;
+    readonly passwordSsmPath: string;
+    readonly portSsmPath: string;
+    readonly usernameSsmPath: string;
+}
+
+// @public
+export interface SqlModelDataSourceBindingVpcConfig {
+    readonly securityGroupIds: string[];
+    readonly subnetAvailabilityZones: SubnetAvailabilityZone[];
+    readonly vpcId: string;
+}
+
+// @public
+export interface SubnetAvailabilityZone {
+    readonly availabilityZone: string;
+    readonly subnetId: string;
 }
 
 // @public

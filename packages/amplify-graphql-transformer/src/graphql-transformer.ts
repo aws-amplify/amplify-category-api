@@ -183,7 +183,6 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
     parameterProvider,
     transformersFactoryArgs,
   } = config;
-
   const mergedSynthParameters = {
     ...synthParameters,
     ...(transformersFactoryArgs.adminRoles ? { adminRoles: transformersFactoryArgs.adminRoles } : {}),
@@ -192,7 +191,6 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
   const transform = constructTransform(config);
-
   try {
     transform.transform({
       scope,

@@ -25,19 +25,17 @@ import { getHostVpc } from '@aws-amplify/graphql-schema-generator';
 import fetch from 'node-fetch';
 import {
   getConnectionSecrets,
-  testDatabaseConnection,
   getExistingConnectionSecretNames,
   getSecretsKey,
 } from '../provider-utils/awscloudformation/utils/rds-resources/database-resources';
 import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
+import { checkForUnsupportedDirectives } from '../provider-utils/awscloudformation/utils/rds-resources/utils';
 import { isAuthModeUpdated } from './auth-mode-compare';
 import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
 import { generateTransformerOptions } from './transformer-options-v2';
 import { TransformerProjectOptions } from './transformer-options-types';
 import { DeploymentResources } from './cdk-compat/deployment-resources';
 import { TransformManager } from './cdk-compat/transform-manager';
-import { checkForUnsupportedDirectives } from '../provider-utils/awscloudformation/utils/rds-resources/utils';
-import { getAvaliabilityZoneOfSubnets } from '../provider-utils/vpc-utils';
 
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';

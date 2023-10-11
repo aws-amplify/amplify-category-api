@@ -112,6 +112,9 @@ export const enum ConflictHandlerType {
 }
 
 // @public (undocumented)
+export const constructDataSourceMap: (schema: string, datasourceType: DatasourceType) => Map<string, DatasourceType>;
+
+// @public (undocumented)
 export interface DatasourceType {
     // (undocumented)
     dbType: DBType;
@@ -222,6 +225,9 @@ export class InvalidTransformerError extends Error {
 
 // @public (undocumented)
 export const isDataStoreEnabled: (projectDir: string) => Promise<boolean>;
+
+// @public (undocumented)
+export const isSqlDbType: (dbType: DBType) => boolean;
 
 // @public (undocumented)
 export interface ITransformer {
