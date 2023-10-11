@@ -14,7 +14,7 @@ import {
   RDSLayerMapping,
   SubnetAvailabilityZone,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import fs from 'fs-extra';
+import * as fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { sanityCheckProject } from 'graphql-transformer-core';
 import _ from 'lodash';
@@ -71,7 +71,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
     .filter((r) => !resources.includes(r))
     .filter((r) => {
       const buildDir = path.normalize(path.join(backEndDir, AmplifyCategories.API, r.resourceName, 'build'));
-      return !fs.existsSync(buildDir);
+      return !fs.pathExistsSync(buildDir);
     });
   resources = resources.concat(resourceNeedCompile);
 
@@ -108,7 +108,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
 
   const parametersFilePath = path.join(resourceDir, PARAMETERS_FILENAME);
 
-  if (!parameters && fs.existsSync(parametersFilePath)) {
+  if (!parameters && fs.pathExistsSync(parametersFilePath)) {
     try {
       parameters = JSONUtilities.readJson(parametersFilePath);
 

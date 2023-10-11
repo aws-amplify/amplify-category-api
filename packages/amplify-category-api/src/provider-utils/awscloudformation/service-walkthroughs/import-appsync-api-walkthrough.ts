@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import { prompter, printer, integer } from '@aws-amplify/amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import {
   ImportAppSyncAPIInputs,
   ImportedDataSourceType,
@@ -9,18 +9,23 @@ import {
   ImportedDataSourceConfig,
   RDS_SCHEMA_FILE_NAME,
 } from '@aws-amplify/graphql-transformer-core';
-import { storeConnectionSecrets, getSecretsKey, getExistingConnectionSecrets } from '../utils/rds-resources/database-resources';
-import { parseDatabaseUrl } from '../utils/database-url';
+import { storeConnectionSecrets, getSecretsKey } from '../utils/rds-resources/database-resources';
 import { constructDefaultGlobalAmplifyInput } from '../utils/rds-input-utils';
 import { getAPIResourceDir, getAppSyncAPINames } from '../utils/amplify-meta-utils';
 import { writeSchemaFile } from '../utils/graphql-schema-utils';
-import { serviceApiInputWalkthrough } from './appSync-walkthrough';
 import { serviceMetadataFor } from '../utils/dynamic-imports';
 import { serviceWalkthroughResultToAddApiRequest } from '../utils/service-walkthrough-result-to-add-api-request';
 import { getCfnApiArtifactHandler } from '../cfn-api-artifact-handler';
+import { serviceApiInputWalkthrough } from './appSync-walkthrough';
+import { databaseConfigurationInputWalkthrough } from './appSync-rds-db-config';
 
 const service = 'AppSync';
 
+/**
+ * Walkthrough for importing an AppSync API from an existing SQL database
+ * @param context the Amplify CLI context
+ * @returns inputs to create an AppSync API
+ */
 export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<ImportAppSyncAPIInputs> => {
   let apiName: string;
   const existingAPIs = getAppSyncAPINames();
@@ -38,8 +43,8 @@ export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<
   const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
   const secretsKey = await getSecretsKey();
 
-  if (fs.existsSync(pathToSchemaFile)) {
-    printer.error(`Imported Database schema already exists. Use "amplify api generate-schema" to fetch the latest updates to schema.`);
+  if (fs.pathExistsSync(pathToSchemaFile)) {
+    printer.error('Imported Database schema already exists. Use "amplify api generate-schema" to fetch the latest updates to schema.');
     return {
       apiName: apiName,
     };
@@ -56,6 +61,12 @@ export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<
   };
 };
 
+/**
+ * Writes a default GraphQL schema from the global input template for the specified database engine
+ * @param context the Amplify CLI context
+ * @param pathToSchemaFile the output path for the default schema file
+ * @param databaseConfig the database configuration
+ */
 export const writeDefaultGraphQLSchema = async (
   context: $TSContext,
   pathToSchemaFile: string,
@@ -70,49 +81,11 @@ export const writeDefaultGraphQLSchema = async (
   }
 };
 
-export const databaseConfigurationInputWalkthrough = async (engine: ImportedDataSourceType): Promise<ImportedDataSourceConfig> => {
-  printer.info('Please provide the following database connection information:');
-  const url = await prompter.input('Enter the database url or host name:');
-
-  let isValidUrl = true;
-  const parsedDatabaseUrl = parseDatabaseUrl(url);
-  let { host, port, database, username, password } = parsedDatabaseUrl;
-
-  if (!host) {
-    isValidUrl = false;
-    host = url;
-  }
-  if (!isValidUrl || !port) {
-    port = await prompter.input<'one', number>('Enter the port number:', {
-      transform: (input) => Number.parseInt(input, 10),
-      validate: integer(),
-      initial: 3306,
-    });
-  }
-
-  // Get the database user credentials
-  if (!isValidUrl || !username) {
-    username = await prompter.input('Enter the username:');
-  }
-
-  if (!isValidUrl || !password) {
-    password = await prompter.input('Enter the password:', { hidden: true });
-  }
-
-  if (!isValidUrl || !database) {
-    database = await prompter.input('Enter the database name:');
-  }
-
-  return {
-    engine,
-    database,
-    host,
-    port,
-    username,
-    password,
-  };
-};
-
+/**
+ * Returns a human-friendly string for the specified database engine
+ * @param engine the database engine
+ * @returns a human-friendly string for the specified database engine
+ */
 export const formatEngineName = (engine: ImportedDataSourceType): string => {
   switch (engine) {
     case ImportedRDSType.MYSQL:
