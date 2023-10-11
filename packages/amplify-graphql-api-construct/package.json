@@ -107,7 +107,7 @@
     "pluralize": "^8.0.0",
     "ts-dedent": "^2.0.0",
     "universalify": "^2.0.0",
-    "zod": "^3.21.4"
+    "zod": "^3.22.3"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
