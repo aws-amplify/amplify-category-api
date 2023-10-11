@@ -9,7 +9,7 @@ import { parseDatabaseUrl } from '../utils/database-url';
  */
 export const databaseConfigurationInputWalkthrough = async (engine: ImportedDataSourceType): Promise<ImportedDataSourceConfig> => {
   printer.info('Please provide the following database connection information:');
-  const url = await prompter.input('Enter the database url or host nameZZZZZZZZS:', {
+  const url = await prompter.input('Enter the database url or host name:', {
     validate: minLength(1),
   });
 
