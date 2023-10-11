@@ -23,7 +23,7 @@ const isConnectionSecrets = (obj: any): obj is RDSConnectionSecrets => {
   }
 
   return secretNames.every((secretName) => secretName in obj);
-}
+};
 
 /**
  * Derive name of schema inspector lambda
@@ -158,7 +158,7 @@ export const storeConnectionSecrets = async (
   context: $TSContext,
   secrets: RDSConnectionSecrets,
   apiName: string,
-  secretsKey: string
+  secretsKey: string,
 ): Promise<void> => {
   const environmentName = stateManager.getCurrentEnvName();
   const appId = stateManager.getAppID();
@@ -181,7 +181,7 @@ export const deleteConnectionSecrets = async (
   context: $TSContext,
   secretsKey: string,
   apiName: string,
-  envName?: string
+  envName?: string,
 ): Promise<void> => {
   const environmentName = stateManager.getCurrentEnvName();
   const meta = stateManager.getMeta();
@@ -299,7 +299,7 @@ export const getConnectionSecrets = async (
   context: $TSContext,
   secretsKey: string,
   engine: ImportedRDSType,
-): Promise<{ secrets: RDSConnectionSecrets & {engine: ImportedRDSType}; storeSecrets: boolean }> => {
+): Promise<{ secrets: RDSConnectionSecrets & { engine: ImportedRDSType }; storeSecrets: boolean }> => {
   const apiName = getAppSyncAPIName();
   const existingSecrets = await getExistingConnectionSecrets(context, secretsKey, apiName);
   if (existingSecrets) {

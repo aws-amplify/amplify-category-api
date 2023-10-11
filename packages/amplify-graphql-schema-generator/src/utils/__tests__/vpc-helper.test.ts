@@ -58,9 +58,7 @@ describe('detect VPC settings', () => {
   it('should detect VPC settings for an RDS proxy', async () => {
     // TS complains about resolving values in the spy.
     // Cast it through never to overcome the compile error.
-    sendSpy
-      .mockResolvedValueOnce(proxyResponse as never)
-      .mockRejectedValue('Should not make any other calls' as never);
+    sendSpy.mockResolvedValueOnce(proxyResponse as never).mockRejectedValue('Should not make any other calls' as never);
 
     const result = await getHostVpc('mock-rds-cluster.proxy-abc123.us-west-2.rds.amazonaws.com', 'us-west-2');
 
@@ -85,7 +83,6 @@ describe('detect VPC settings', () => {
 
     expect(result).toBeUndefined();
   });
-
 });
 
 const instanceResponse: DescribeDBInstancesCommandOutput = {

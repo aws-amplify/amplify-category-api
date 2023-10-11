@@ -1,8 +1,5 @@
-import { prompter, printer, integer } from '@aws-amplify/amplify-prompts';
-import {
-  ImportedDataSourceType,
-  ImportedDataSourceConfig,
-} from '@aws-amplify/graphql-transformer-core';
+import { prompter, printer, minLength, integer } from '@aws-amplify/amplify-prompts';
+import { ImportedDataSourceType, ImportedDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
 import { parseDatabaseUrl } from '../utils/database-url';
 
 /**
@@ -12,7 +9,9 @@ import { parseDatabaseUrl } from '../utils/database-url';
  */
 export const databaseConfigurationInputWalkthrough = async (engine: ImportedDataSourceType): Promise<ImportedDataSourceConfig> => {
   printer.info('Please provide the following database connection information:');
-  const url = await prompter.input('Enter the database url or host name:');
+  const url = await prompter.input('Enter the database url or host nameZZZZZZZZS:', {
+    validate: minLength(1),
+  });
 
   let isValidUrl = true;
   const parsedDatabaseUrl = parseDatabaseUrl(url);
@@ -32,15 +31,19 @@ export const databaseConfigurationInputWalkthrough = async (engine: ImportedData
 
   // Get the database user credentials
   if (!isValidUrl || !username) {
-    username = await prompter.input('Enter the username:');
+    username = await prompter.input('Enter the username:', {
+      validate: minLength(1),
+    });
   }
 
   if (!isValidUrl || !password) {
-    password = await prompter.input('Enter the password:', { hidden: true });
+    password = await prompter.input('Enter the password:', { hidden: true, validate: minLength(1) });
   }
 
   if (!isValidUrl || !database) {
-    database = await prompter.input('Enter the database name:');
+    database = await prompter.input('Enter the database name:', {
+      validate: minLength(1),
+    });
   }
 
   return {

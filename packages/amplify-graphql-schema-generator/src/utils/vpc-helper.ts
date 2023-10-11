@@ -82,7 +82,7 @@ const checkHostInDBProxies = async (hostname: string, region: string): Promise<V
   return {
     vpcId: proxy.VpcId,
     subnetIds: proxy.VpcSubnetIds,
-    securityGroupIds: proxy.VpcSecurityGroupIds
+    securityGroupIds: proxy.VpcSecurityGroupIds,
   };
 };
 
@@ -181,9 +181,11 @@ export const getHostVpc = async (hostname: string, region: string): Promise<VpcC
 
   // TODO: Confirm warning messaging
   const warning = (clusterOrInstance: string): string => {
-    return `The host you provided is for an RDS ${clusterOrInstance}. Consider using an RDS Proxy as your data source instead.\n` +
-    'See the documentation for a discussion of how an RDS proxy can help you scale your application more effectively.';
-  }
+    return (
+      `The host you provided is for an RDS ${clusterOrInstance}. Consider using an RDS Proxy as your data source instead.\n` +
+      'See the documentation for a discussion of how an RDS proxy can help you scale your application more effectively.'
+    );
+  };
 
   const clusterResult = await checkHostInDBClusters(hostname, region);
   if (clusterResult) {
@@ -196,7 +198,7 @@ export const getHostVpc = async (hostname: string, region: string): Promise<VpcC
     printer.warn(warning('instance'));
     return instanceResult;
   }
-  
+
   return undefined;
 };
 

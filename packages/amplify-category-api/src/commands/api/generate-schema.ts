@@ -4,7 +4,6 @@ import { printer } from '@aws-amplify/amplify-prompts';
 import fs from 'fs-extra';
 import _ from 'lodash';
 import { ImportedRDSType, RDS_SCHEMA_FILE_NAME, ImportedDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
-import { databaseConfigurationInputWalkthrough } from '../../provider-utils/awscloudformation/service-walkthroughs/import-appsync-api-walkthrough';
 import { getAppSyncAPIName, getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import {
   storeConnectionSecrets,
@@ -37,7 +36,7 @@ export const run = async (context: $TSContext) => {
   const database = await getDatabaseName(context, apiName, secretsKey);
   if (!database) {
     printer.error(
-      `Cannot fetch the imported database name to generate the schema. Use "amplify api update-secrets" to update the database information.`,
+      'Cannot fetch the imported database name to generate the schema. Use "amplify api update-secrets" to update the database information.',
     );
     return;
   }

@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import { prompter, printer, integer } from '@aws-amplify/amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import {
   ImportAppSyncAPIInputs,
   ImportedDataSourceType,
@@ -10,7 +10,6 @@ import {
   RDS_SCHEMA_FILE_NAME,
 } from '@aws-amplify/graphql-transformer-core';
 import { storeConnectionSecrets, getSecretsKey } from '../utils/rds-resources/database-resources';
-import { parseDatabaseUrl } from '../utils/database-url';
 import { constructDefaultGlobalAmplifyInput } from '../utils/rds-input-utils';
 import { getAPIResourceDir, getAppSyncAPINames } from '../utils/amplify-meta-utils';
 import { writeSchemaFile } from '../utils/graphql-schema-utils';
@@ -18,6 +17,7 @@ import { serviceMetadataFor } from '../utils/dynamic-imports';
 import { serviceWalkthroughResultToAddApiRequest } from '../utils/service-walkthrough-result-to-add-api-request';
 import { getCfnApiArtifactHandler } from '../cfn-api-artifact-handler';
 import { serviceApiInputWalkthrough } from './appSync-walkthrough';
+import { databaseConfigurationInputWalkthrough } from './appSync-rds-db-config';
 
 const service = 'AppSync';
 
@@ -79,54 +79,6 @@ export const writeDefaultGraphQLSchema = async (
   } else {
     throw new Error(`Data source type ${dataSourceType} is not supported.`);
   }
-};
-
-/**
- * Gathers database configuration information
- * @param engine the database engine
- * @returns a promise resolving to the database configuration to be used as an AppSync Data Source
- */
-export const databaseConfigurationInputWalkthrough = async (engine: ImportedDataSourceType): Promise<ImportedDataSourceConfig> => {
-  printer.info('Please provide the following database connection information:');
-  const url = await prompter.input('Enter the database url or host name:');
-
-  let isValidUrl = true;
-  const parsedDatabaseUrl = parseDatabaseUrl(url);
-  let { host, port, database, username, password } = parsedDatabaseUrl;
-
-  if (!host) {
-    isValidUrl = false;
-    host = url;
-  }
-  if (!isValidUrl || !port) {
-    port = await prompter.input<'one', number>('Enter the port number:', {
-      transform: (input) => Number.parseInt(input, 10),
-      validate: integer(),
-      initial: 3306,
-    });
-  }
-
-  // Get the database user credentials
-  if (!isValidUrl || !username) {
-    username = await prompter.input('Enter the username:');
-  }
-
-  if (!isValidUrl || !password) {
-    password = await prompter.input('Enter the password:', { hidden: true });
-  }
-
-  if (!isValidUrl || !database) {
-    database = await prompter.input('Enter the database name:');
-  }
-
-  return {
-    engine,
-    database,
-    host,
-    port,
-    username,
-    password,
-  };
 };
 
 /**
