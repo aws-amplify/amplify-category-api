@@ -117,6 +117,18 @@ export function getConfiguredAppsyncClientIAMAuth(url: string, region: string): 
   });
 }
 
+export const getConfiguredAppsyncClientLambdaAuth = (url: string, region: string, token: string): any => {
+  return new AWSAppSyncClient({
+    url,
+    region,
+    disableOffline: true,
+    auth: {
+      type: AUTH_TYPE.AWS_LAMBDA,
+      token,
+    },
+  });
+};
+
 export async function signInUser(username: string, password: string) {
   const user = await Auth.signIn(username, password);
   return user;

@@ -1,4 +1,4 @@
-import { compoundExpression, list, methodCall, obj, printBlock, qref, ref, set, str } from 'graphql-mapping-template';
+import { compoundExpression, list, methodCall, nul, obj, printBlock, qref, ref, set, str } from 'graphql-mapping-template';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { ConfiguredAuthProviders, RoleDefinition } from '../../../utils';
@@ -42,8 +42,8 @@ const generateMutationExpression = (
     set(
       ref('authResult'),
       includeExistingRecord
-        ? methodCall(ref('util.authRules.mutationAuth'), ref('authRules'), str(operation), ref('ctx.args.input'), ref('ctx.source'))
-        : methodCall(ref('util.authRules.mutationAuth'), ref('authRules'), str(operation), ref('ctx.args.input')),
+        ? methodCall(ref('util.authRules.mutationAuth'), ref('authRules'), str(operation), ref('ctx.args.input'), ref('ctx.result'))
+        : methodCall(ref('util.authRules.mutationAuth'), ref('authRules'), str(operation), ref('ctx.args.input'), nul()),
     ),
   );
   expressions.push(validateAuthResult(), constructAuthorizedInputStatement('ctx.args.input'), emptyPayload);
