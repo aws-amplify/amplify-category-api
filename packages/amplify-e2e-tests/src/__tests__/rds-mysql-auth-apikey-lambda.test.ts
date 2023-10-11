@@ -54,9 +54,6 @@ describe('RDS Relational Directives', () => {
     expect(GraphQLAPIEndpointOutput).toBeDefined();
     expect(GraphQLAPIKeyOutput).toBeDefined();
 
-    console.log(`Url: ${GraphQLAPIEndpointOutput}`);
-    console.log(`API Key: ${GraphQLAPIKeyOutput}`);
-
     expect(graphqlApi).toBeDefined();
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
 
@@ -98,7 +95,6 @@ describe('RDS Relational Directives', () => {
       region,
     };
 
-    console.log(JSON.stringify(dbConfig, null, 4));
     const queries = [
       'CREATE TABLE Blog (id VARCHAR(40) PRIMARY KEY, content VARCHAR(255))',
       'CREATE TABLE Post (id VARCHAR(40) PRIMARY KEY, content VARCHAR(255), blogId VARCHAR(40))',
