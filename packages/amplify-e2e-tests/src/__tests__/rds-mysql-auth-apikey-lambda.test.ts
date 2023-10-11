@@ -23,7 +23,7 @@ import { getConfiguredAppsyncClientAPIKeyAuth, getConfiguredAppsyncClientLambdaA
 
 describe('RDS Relational Directives', () => {
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
-  
+
   // Generate settings for RDS instance
   const username = db_user;
   const password = db_password;
@@ -145,31 +145,23 @@ describe('RDS Relational Directives', () => {
         engine: String = "mysql"
         globalAuthRule: AuthRule = { allow: public }
       }
-      type Blog @model
-        @auth(rules: [{ allow: public }, { allow: custom }])
-      {
+      type Blog @model @auth(rules: [{ allow: public }, { allow: custom }]) {
         id: String! @primaryKey
         content: String
         posts: [Post] @hasMany(references: ["blogId"])
       }
-      type Post @model
-        @auth(rules: [{ allow: public }])
-      {
+      type Post @model @auth(rules: [{ allow: public }]) {
         id: String! @primaryKey
         content: String
         blogId: String!
         blog: Blog @belongsTo(references: ["blogId"])
       }
-      type User @model
-        @auth(rules: [{ allow: custom }])
-      {
+      type User @model @auth(rules: [{ allow: custom }]) {
         id: String! @primaryKey
         name: String
         profile: Profile @hasOne(references: ["userId"])
       }
-      type Profile @model
-        @auth(rules: [{ allow: custom }])
-      {
+      type Profile @model @auth(rules: [{ allow: custom }]) {
         id: String! @primaryKey
         details: String
         userId: String!
@@ -221,9 +213,11 @@ describe('RDS Relational Directives', () => {
       id: 'B-2',
       content: 'Blog 2 updated',
     });
-    await expect(blogLambdaClient.get({
-      id: 'B-2',
-    })).rejects.toThrow('GraphQL error: Not Authorized to access posts on type Blog');
+    await expect(
+      blogLambdaClient.get({
+        id: 'B-2',
+      }),
+    ).rejects.toThrow('GraphQL error: Not Authorized to access posts on type Blog');
     await expect(blogLambdaClient.list()).rejects.toThrow('GraphQL error: Not Authorized to access posts on type Blog');
     await blogLambdaClient.delete('deleteBlog', {
       id: 'B-2',
@@ -237,12 +231,8 @@ describe('RDS Relational Directives', () => {
     await expect(postLambdaClient.update('updatePost', { id: 'P-1', content: 'Post 1 updated' })).rejects.toThrow(
       'GraphQL error: Not Authorized to access updatePost on type Mutation',
     );
-    await expect(postLambdaClient.get({ id: 'P-1' })).rejects.toThrow(
-      'GraphQL error: Not Authorized to access getPost on type Query',
-    );
-    await expect(postLambdaClient.list()).rejects.toThrow(
-      'GraphQL error: Not Authorized to access listPosts on type Query',
-    );
+    await expect(postLambdaClient.get({ id: 'P-1' })).rejects.toThrow('GraphQL error: Not Authorized to access getPost on type Query');
+    await expect(postLambdaClient.list()).rejects.toThrow('GraphQL error: Not Authorized to access listPosts on type Query');
     await expect(postLambdaClient.delete('deletePost', { id: 'P-1' })).rejects.toThrow(
       'GraphQL error: Not Authorized to access deletePost on type Mutation',
     );
@@ -255,12 +245,8 @@ describe('RDS Relational Directives', () => {
     await expect(userApiKeyClient.update('updateUser', { id: 'U-1', name: 'User 1 updated' })).rejects.toThrow(
       'GraphQL error: Not Authorized to access updateUser on type Mutation',
     );
-    await expect(userApiKeyClient.get({ id: 'U-1' })).rejects.toThrow(
-      'GraphQL error: Not Authorized to access getUser on type Query',
-    );
-    await expect(userApiKeyClient.list()).rejects.toThrow(
-      'GraphQL error: Not Authorized to access listUsers on type Query',
-    );
+    await expect(userApiKeyClient.get({ id: 'U-1' })).rejects.toThrow('GraphQL error: Not Authorized to access getUser on type Query');
+    await expect(userApiKeyClient.list()).rejects.toThrow('GraphQL error: Not Authorized to access listUsers on type Query');
     await expect(userApiKeyClient.delete('deleteUser', { id: 'U-1' })).rejects.toThrow(
       'GraphQL error: Not Authorized to access deleteUser on type Mutation',
     );

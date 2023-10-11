@@ -17,7 +17,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
 
     const out = testTransform({
       schema: validSchema,
-      transformers: [new ModelTransformer(), new AuthTransformer({identityPoolId: 'TEST_IDENTITY_POOL_ID'})],
+      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId: 'TEST_IDENTITY_POOL_ID' })],
       modelToDatasourceMap: new Map(
         Object.entries({
           Post: {
@@ -115,7 +115,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
 
     const out = testTransform({
       schema: validSchema,
-      transformers: [new ModelTransformer(), new AuthTransformer({identityPoolId: 'TEST_IDENTITY_POOL_ID'})],
+      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId: 'TEST_IDENTITY_POOL_ID' })],
       authConfig,
       modelToDatasourceMap,
     });
@@ -239,7 +239,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
 
     const out = testTransform({
       schema: validSchema,
-      transformers: [new ModelTransformer(), new AuthTransformer({identityPoolId: 'TEST_IDENTITY_POOL_ID'})],
+      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId: 'TEST_IDENTITY_POOL_ID' })],
       authConfig,
       modelToDatasourceMap,
     });
@@ -308,7 +308,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
 
     const out = testTransform({
       schema: validSchema,
-      transformers: [new ModelTransformer(), new AuthTransformer({identityPoolId: 'TEST_IDENTITY_POOL_ID'})],
+      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId: 'TEST_IDENTITY_POOL_ID' })],
       authConfig,
       modelToDatasourceMap: new Map(
         Object.entries({
@@ -369,7 +369,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
 
     const out = testTransform({
       schema: validSchema,
-      transformers: [new ModelTransformer(), new AuthTransformer({identityPoolId: 'TEST_IDENTITY_POOL_ID'})],
+      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId: 'TEST_IDENTITY_POOL_ID' })],
       authConfig,
       modelToDatasourceMap,
     });

@@ -165,7 +165,10 @@ const getAllowedFields = (role: RoleDefinition, fields: string[]): string[] => {
 
 export const validateAuthResult = (): Expression => {
   return compoundExpression([
-    iff(or([not(ref('authResult')), parens(and([ref('authResult'), not(ref('authResult.authorized'))]))]), methodCall(ref('util.unauthorized'))),
+    iff(
+      or([not(ref('authResult')), parens(and([ref('authResult'), not(ref('authResult.authorized'))]))]),
+      methodCall(ref('util.unauthorized')),
+    ),
   ]);
 };
 

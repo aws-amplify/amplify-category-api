@@ -9,7 +9,7 @@ $util.qr($authRules.add({
   \\"provider\\": \\"apiKey\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -57,7 +57,7 @@ $util.qr($authRules.add({
   \\"provider\\": \\"apiKey\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -105,7 +105,7 @@ $util.qr($authRules.add({
   \\"provider\\": \\"apiKey\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -134,7 +134,7 @@ $util.qr($authRules.add({
   \\"provider\\": \\"userPools\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -182,7 +182,7 @@ $util.qr($authRules.add({
   \\"provider\\": \\"userPools\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -230,7 +230,7 @@ $util.qr($authRules.add({
   \\"provider\\": \\"userPools\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -262,7 +262,7 @@ $util.qr($authRules.add({
   \\"identityClaim\\": \\"sub::username\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -313,7 +313,7 @@ $util.qr($authRules.add({
   \\"identityClaim\\": \\"sub::username\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -364,7 +364,7 @@ $util.qr($authRules.add({
   \\"identityClaim\\": \\"sub::username\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -396,7 +396,7 @@ $util.qr($authRules.add({
   \\"identityClaim\\": \\"sub::username\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"owners\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -447,7 +447,7 @@ $util.qr($authRules.add({
   \\"identityClaim\\": \\"sub::username\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"owners\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -498,7 +498,7 @@ $util.qr($authRules.add({
   \\"identityClaim\\": \\"sub::username\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"owners\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -536,7 +536,7 @@ $util.qr($authRules.add({
   \\"identityClaim\\": \\"cognito:groups\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -593,7 +593,7 @@ $util.qr($authRules.add({
   \\"identityClaim\\": \\"cognito:groups\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -650,7 +650,7 @@ $util.qr($authRules.add({
   \\"identityClaim\\": \\"cognito:groups\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -682,7 +682,7 @@ $util.qr($authRules.add({
   \\"groupClaim\\": \\"cognito:groups\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"group\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -733,7 +733,7 @@ $util.qr($authRules.add({
   \\"groupClaim\\": \\"cognito:groups\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"group\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -784,7 +784,7 @@ $util.qr($authRules.add({
   \\"groupClaim\\": \\"cognito:groups\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"group\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -816,7 +816,7 @@ $util.qr($authRules.add({
   \\"groupClaim\\": \\"cognito:groups\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"groups\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -867,7 +867,7 @@ $util.qr($authRules.add({
   \\"groupClaim\\": \\"cognito:groups\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"groups\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -918,7 +918,7 @@ $util.qr($authRules.add({
   \\"groupClaim\\": \\"cognito:groups\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"groups\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -947,7 +947,7 @@ $util.qr($authRules.add({
   \\"provider\\": \\"function\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -995,7 +995,7 @@ $util.qr($authRules.add({
   \\"provider\\": \\"function\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -1043,7 +1043,7 @@ $util.qr($authRules.add({
   \\"provider\\": \\"function\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -1074,7 +1074,7 @@ $util.qr($authRules.add({
   \\"cognitoIdentityPoolId\\": \\"TEST_IDENTITY_POOL_ID\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -1124,7 +1124,7 @@ $util.qr($authRules.add({
   \\"cognitoIdentityPoolId\\": \\"TEST_IDENTITY_POOL_ID\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -1174,7 +1174,7 @@ $util.qr($authRules.add({
   \\"cognitoIdentityPoolId\\": \\"TEST_IDENTITY_POOL_ID\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -1205,7 +1205,7 @@ $util.qr($authRules.add({
   \\"cognitoIdentityPoolId\\": \\"TEST_IDENTITY_POOL_ID\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -1255,7 +1255,7 @@ $util.qr($authRules.add({
   \\"cognitoIdentityPoolId\\": \\"TEST_IDENTITY_POOL_ID\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -1305,7 +1305,7 @@ $util.qr($authRules.add({
   \\"cognitoIdentityPoolId\\": \\"TEST_IDENTITY_POOL_ID\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -1334,7 +1334,7 @@ $util.qr($authRules.add({
   \\"provider\\": \\"userPools\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -1382,7 +1382,7 @@ $util.qr($authRules.add({
   \\"provider\\": \\"userPools\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -1430,7 +1430,7 @@ $util.qr($authRules.add({
   \\"provider\\": \\"userPools\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -1462,7 +1462,7 @@ $util.qr($authRules.add({
   \\"identityClaim\\": \\"sub::username\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -1513,7 +1513,7 @@ $util.qr($authRules.add({
   \\"identityClaim\\": \\"sub::username\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -1564,7 +1564,7 @@ $util.qr($authRules.add({
   \\"identityClaim\\": \\"sub::username\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -1596,7 +1596,7 @@ $util.qr($authRules.add({
   \\"identityClaim\\": \\"sub::username\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"owners\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -1647,7 +1647,7 @@ $util.qr($authRules.add({
   \\"identityClaim\\": \\"sub::username\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"owners\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -1698,7 +1698,7 @@ $util.qr($authRules.add({
   \\"identityClaim\\": \\"sub::username\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"owners\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -1736,7 +1736,7 @@ $util.qr($authRules.add({
   \\"identityClaim\\": \\"cognito:groups\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -1793,7 +1793,7 @@ $util.qr($authRules.add({
   \\"identityClaim\\": \\"cognito:groups\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -1850,7 +1850,7 @@ $util.qr($authRules.add({
   \\"identityClaim\\": \\"cognito:groups\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -1882,7 +1882,7 @@ $util.qr($authRules.add({
   \\"groupClaim\\": \\"cognito:groups\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"group\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -1933,7 +1933,7 @@ $util.qr($authRules.add({
   \\"groupClaim\\": \\"cognito:groups\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"group\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -1984,7 +1984,7 @@ $util.qr($authRules.add({
   \\"groupClaim\\": \\"cognito:groups\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"group\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -2016,7 +2016,7 @@ $util.qr($authRules.add({
   \\"groupClaim\\": \\"cognito:groups\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"groups\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -2067,7 +2067,7 @@ $util.qr($authRules.add({
   \\"groupClaim\\": \\"cognito:groups\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"groups\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
@@ -2118,7 +2118,7 @@ $util.qr($authRules.add({
   \\"groupClaim\\": \\"cognito:groups\\",
   \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"groups\\"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.source) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
