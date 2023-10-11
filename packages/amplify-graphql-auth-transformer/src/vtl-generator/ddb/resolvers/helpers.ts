@@ -53,15 +53,15 @@ export const getIdentityClaimExp = (value: Expression, defaultValueExp: Expressi
 /**
  * Creates iam check helper
  */
-export const iamCheck = (claim: string, exp: Expression, identityPoolId?: string): Expression => {
+export const iamCheck = (claim: string, exp: Expression, hasIdentityPoolId: boolean): Expression => {
   let iamExp: Expression = equals(ref('ctx.identity.userArn'), ref(`ctx.stash.${claim}`));
   // only include the additional check if we have a private rule and a provided identityPoolId
-  if (identityPoolId && claim === 'authRole') {
+  if (hasIdentityPoolId && claim === 'authRole') {
     iamExp = or([
       parens(iamExp),
       parens(
         and([
-          equals(ref('ctx.identity.cognitoIdentityPoolId'), str(identityPoolId)),
+          equals(ref('ctx.identity.cognitoIdentityPoolId'), ref('ctx.stash.identityPoolId')),
           equals(ref('ctx.identity.cognitoIdentityAuthType'), str('authenticated')),
         ]),
       ),
@@ -151,18 +151,19 @@ export const lambdaExpression = (roles: Array<RoleDefinition>): Expression =>
 export const iamExpression = (
   roles: Array<RoleDefinition>,
   adminRolesEnabled: boolean,
-  adminRoles: Array<string> = [],
-  identityPoolId: string = undefined,
+  hasIdentityPoolId: boolean,
   fieldName: string = undefined,
 ): Expression => {
   const expression = new Array<Expression>();
   // allow if using an admin role
   if (adminRolesEnabled) {
-    expression.push(iamAdminRoleCheckExpression(adminRoles, fieldName));
+    expression.push(iamAdminRoleCheckExpression(fieldName));
   }
   if (roles.length > 0) {
     roles.forEach((role) => {
-      expression.push(iff(not(ref(IS_AUTHORIZED_FLAG)), iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)), identityPoolId)));
+      expression.push(
+        iff(not(ref(IS_AUTHORIZED_FLAG)), iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)), hasIdentityPoolId)),
+      );
     });
   } else {
     expression.push(ref('util.unauthorized()'));
@@ -173,16 +174,11 @@ export const iamExpression = (
 /**
  * Creates iam admin role check helper
  */
-export const iamAdminRoleCheckExpression = (
-  adminRoles: Array<string>,
-  fieldName?: string,
-  adminCheckExpression?: Expression,
-): Expression => {
+export const iamAdminRoleCheckExpression = (fieldName?: string, adminCheckExpression?: Expression): Expression => {
   const returnStatement = fieldName ? raw(`#return($context.source.${fieldName})`) : raw('#return($util.toJson({}))');
   const fullReturnExpression = adminCheckExpression ? compoundExpression([adminCheckExpression, returnStatement]) : returnStatement;
   return compoundExpression([
-    set(ref('adminRoles'), raw(JSON.stringify(adminRoles))),
-    forEach(/* for */ ref('adminRole'), /* in */ ref('adminRoles'), [
+    forEach(/* for */ ref('adminRole'), /* in */ ref('ctx.stash.adminRoles'), [
       iff(
         and([
           methodCall(ref('ctx.identity.userArn.contains'), ref('adminRole')),

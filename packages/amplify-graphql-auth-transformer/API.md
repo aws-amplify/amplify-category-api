@@ -174,8 +174,6 @@ export const COGNITO_AUTH_TYPE = "User Pool Authorization";
 // @public (undocumented)
 export interface ConfiguredAuthProviders {
     // (undocumented)
-    adminRoles: Array<string>;
-    // (undocumented)
     default: AuthProvider;
     // (undocumented)
     hasAdminRolesEnabled: boolean;
@@ -184,13 +182,13 @@ export interface ConfiguredAuthProviders {
     // (undocumented)
     hasIAM: boolean;
     // (undocumented)
+    hasIdentityPoolId: boolean;
+    // (undocumented)
     hasLambda: boolean;
     // (undocumented)
     hasOIDC: boolean;
     // (undocumented)
     hasUserPools: boolean;
-    // (undocumented)
-    identityPoolId?: string;
     // (undocumented)
     onlyDefaultAuthProviderConfigured: boolean;
 }

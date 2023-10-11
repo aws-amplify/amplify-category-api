@@ -19,7 +19,6 @@ import {
   set,
   ifElse,
   nul,
-  notEquals,
   parens,
   or,
 } from 'graphql-mapping-template';
@@ -556,7 +555,7 @@ export const generateAuthExpressionForQueries = (
     totalAuthExpressions.push(lambdaExpression(lambdaRoles));
   }
   if (providers.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.adminRoles, providers.identityPoolId));
+    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.hasIdentityPoolId));
   }
   if (providers.hasUserPools) {
     totalAuthExpressions.push(
@@ -644,7 +643,7 @@ export const generateAuthExpressionForRelationQuery = (
     totalAuthExpressions.push(lambdaExpression(lambdaRoles));
   }
   if (providers.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.adminRoles, providers.identityPoolId));
+    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.hasIdentityPoolId));
   }
   if (providers.hasUserPools) {
     totalAuthExpressions.push(

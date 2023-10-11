@@ -78,12 +78,7 @@ const lambdaExpression = (roles: Array<RoleDefinition>): Expression => {
   return iff(equals(ref('util.authType()'), str(LAMBDA_AUTH_TYPE)), compoundExpression(expression));
 };
 
-const iamExpression = (
-  roles: Array<RoleDefinition>,
-  hasAdminRolesEnabled = false,
-  adminRoles: Array<string> = [],
-  identityPoolId?: string,
-): Expression => {
+const iamExpression = (roles: Array<RoleDefinition>, hasAdminRolesEnabled = false, hasIdentityPoolId: boolean): Expression => {
   const expression = new Array<Expression>();
   // allow if using an admin role
   if (hasAdminRolesEnabled) {
@@ -91,7 +86,7 @@ const iamExpression = (
       set(ref(allowedAggFieldsList), ref(totalFields)),
       qref(methodCall(ref('ctx.stash.put'), str(allowedAggFieldsList), ref(allowedAggFieldsList))),
     ]);
-    expression.push(iamAdminRoleCheckExpression(adminRoles, undefined, adminCheckExpression));
+    expression.push(iamAdminRoleCheckExpression(undefined, adminCheckExpression));
   }
   if (roles.length === 0) {
     expression.push(ref('util.unauthorized()'));
@@ -103,7 +98,7 @@ const iamExpression = (
       } else {
         exp.push(set(ref(allowedAggFieldsList), ref(totalFields)));
       }
-      expression.push(iff(not(ref(IS_AUTHORIZED_FLAG)), iamCheck(role.claim!, compoundExpression(exp), identityPoolId)));
+      expression.push(iff(not(ref(IS_AUTHORIZED_FLAG)), iamCheck(role.claim!, compoundExpression(exp), hasIdentityPoolId)));
     });
   }
   return iff(equals(ref('util.authType()'), str(IAM_AUTH_TYPE)), compoundExpression(expression));
@@ -285,7 +280,7 @@ export const generateAuthExpressionForSearchQueries = (
     totalAuthExpressions.push(lambdaExpression(lambdaRoles));
   }
   if (providers.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.adminRoles, providers.identityPoolId));
+    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.hasIdentityPoolId));
   }
   if (providers.hasUserPools) {
     totalAuthExpressions.push(

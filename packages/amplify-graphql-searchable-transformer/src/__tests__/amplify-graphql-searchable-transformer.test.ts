@@ -305,7 +305,7 @@ test('it generates expected resources', () => {
           {
             'Fn::GetAtt': ['OpenSearchDomain', 'DomainEndpoint'],
           },
-          '"))\n$util.toJson({})',
+          '"))\n$util.qr($ctx.stash.put("adminRoles", []))\n$util.toJson({})',
         ],
       ],
     },

@@ -143,6 +143,7 @@ export type TestTransformParameters = {
     customQueries?: Map<string, string>;
     overrideConfig?: OverrideConfig;
     sqlLambdaVpcConfig?: VpcSubnetConfig;
+    synthParameters?: Partial<SynthParameters>;
 };
 
 // @public (undocumented)

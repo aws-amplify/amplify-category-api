@@ -4,4 +4,6 @@ export type SynthParameters = {
   authenticatedUserRoleName?: string;
   unauthenticatedUserRoleName?: string;
   userPoolId?: string;
+  identityPoolId?: string;
+  adminRoles?: string[];
 };
