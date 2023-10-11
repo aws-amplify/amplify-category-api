@@ -14,7 +14,7 @@ export const generateAuthExpressionForQueries = (
   indexName: string | undefined,
 ): string => {
   const expressions = [];
-  expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, fields, true)));
+  expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, fields, true, providers.identityPoolId)));
   expressions.push(set(ref('authResult'), methodCall(ref('util.authRules.queryAuth'), ref('authRules'))));
   expressions.push(validateAuthResult(), constructAuthFilter(), emptyPayload);
   return printBlock('Authorization rules')(compoundExpression(expressions));
@@ -27,7 +27,7 @@ export const generateAuthExpressionForField = (
   fieldName: string = undefined,
 ): string => {
   const expressions = [];
-  expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, fields, true)));
+  expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, fields, true, providers.identityPoolId)));
   expressions.push(set(ref('authResult'), methodCall(ref('util.authRules.queryAuth'), ref('authRules'))));
   expressions.push(validateAuthResult(), emptyPayload);
   return printBlock('Authorization rules')(compoundExpression(expressions));
@@ -61,7 +61,7 @@ export const generateAuthExpressionForRelationQuery = (
   fields: ReadonlyArray<FieldDefinitionNode>,
 ): string => {
   const expressions = [];
-  expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, fields, true)));
+  expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, fields, true, providers.identityPoolId)));
   expressions.push(set(ref('authResult'), methodCall(ref('util.authRules.queryAuth'), ref('authRules'))));
   expressions.push(validateAuthResult(), constructAuthFilter(), emptyPayload);
   return printBlock('Authorization rules')(compoundExpression(expressions));

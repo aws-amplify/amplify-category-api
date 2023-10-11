@@ -4,7 +4,7 @@ import { emptyPayload, generateAuthRulesFromRoles, validateAuthResult } from './
 
 export const generateAuthExpressionForSubscriptions = (providers: ConfiguredAuthProviders, roles: Array<RoleDefinition>): string => {
   const expressions = [];
-  expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, [], true)));
+  expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, [], true, providers.identityPoolId)));
   expressions.push(set(ref('authResult'), methodCall(ref('util.authRules.subscriptionAuth'), ref('authRules'))));
   expressions.push(validateAuthResult());
 

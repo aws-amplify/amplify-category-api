@@ -1100,7 +1100,7 @@ $util.qr($authRules.add({
   \\"type\\": \\"private\\",
   \\"provider\\": \\"iam\\",
   \\"roleArn\\": $ctx.stash.authRole,
-  \\"cognitoIdentityPoolId\\": $ctx.identity.cognitoIdentityPoolId
+  \\"cognitoIdentityPoolId\\": \\"TEST_IDENTITY_POOL_ID\\"
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
@@ -1145,7 +1145,7 @@ $util.qr($authRules.add({
   \\"type\\": \\"private\\",
   \\"provider\\": \\"iam\\",
   \\"roleArn\\": $ctx.stash.authRole,
-  \\"cognitoIdentityPoolId\\": $ctx.identity.cognitoIdentityPoolId
+  \\"cognitoIdentityPoolId\\": \\"TEST_IDENTITY_POOL_ID\\"
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
@@ -1190,7 +1190,7 @@ $util.qr($authRules.add({
   \\"type\\": \\"private\\",
   \\"provider\\": \\"iam\\",
   \\"roleArn\\": $ctx.stash.authRole,
-  \\"cognitoIdentityPoolId\\": $ctx.identity.cognitoIdentityPoolId
+  \\"cognitoIdentityPoolId\\": \\"TEST_IDENTITY_POOL_ID\\"
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
@@ -1235,7 +1235,7 @@ $util.qr($authRules.add({
   \\"type\\": \\"public\\",
   \\"provider\\": \\"iam\\",
   \\"roleArn\\": $ctx.stash.unauthRole,
-  \\"cognitoIdentityPoolId\\": $ctx.identity.cognitoIdentityPoolId
+  \\"cognitoIdentityPoolId\\": \\"TEST_IDENTITY_POOL_ID\\"
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
@@ -1280,7 +1280,7 @@ $util.qr($authRules.add({
   \\"type\\": \\"public\\",
   \\"provider\\": \\"iam\\",
   \\"roleArn\\": $ctx.stash.unauthRole,
-  \\"cognitoIdentityPoolId\\": $ctx.identity.cognitoIdentityPoolId
+  \\"cognitoIdentityPoolId\\": \\"TEST_IDENTITY_POOL_ID\\"
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
@@ -1325,7 +1325,7 @@ $util.qr($authRules.add({
   \\"type\\": \\"public\\",
   \\"provider\\": \\"iam\\",
   \\"roleArn\\": $ctx.stash.unauthRole,
-  \\"cognitoIdentityPoolId\\": $ctx.identity.cognitoIdentityPoolId
+  \\"cognitoIdentityPoolId\\": \\"TEST_IDENTITY_POOL_ID\\"
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
