@@ -25,7 +25,8 @@ export class AmplifySqlBoundGraphqlApiDefinition implements IAmplifySqlBoundGrap
     this.dbConnectionConfig = props.dbConnectionConfig;
     this.schema = props.schema;
 
-    // TODO: Create RDSLambda for this schema definition
+    // NOTE: The Lambda resolver for models in this schema will not be mapped to functionSlots. It is created by the SQL transformer, and
+    // applies to all models in the schema rather than a single field.
     this.functionSlots = [];
   }
 }
