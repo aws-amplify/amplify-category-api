@@ -11,13 +11,14 @@ import { DynamoModelResourceGenerator } from '../dynamo-model-resource-generator
 import * as path from 'path';
 import { AmplifyDynamoDBTable } from './amplify-dynamodb-table-construct';
 
-export const ITERATIVE_TABLE_STACK_NAME = 'AmplifyTableManager';
 /**
  * AmplifyDynamoModelResourceGenerator is a subclass of DynamoModelResourceGenerator,
  * provisioning the DynamoDB tables with the custom resource instead of pre-defined DynamoDB table CFN template
  */
 export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGenerator {
   private customResourceServiceToken: string = '';
+  private amplifyTableArns: string[] = [];
+  private ddbManagerPolicy?: aws_iam.Policy;
 
   generateResources(ctx: TransformerContextProvider): void {
     if (!this.isEnabled()) {
@@ -29,8 +30,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
       const rootStack = cdk.Stack.of(ctx.stackManager.scope);
       this.createDynamoDBParameters(rootStack, false);
 
-      const tableManagerStack = ctx.stackManager.getScopeFor('AmplifyTableCustomProvider', ITERATIVE_TABLE_STACK_NAME);
-      this.createCustomProviderResource(tableManagerStack, ctx);
+      this.createCustomProviderResource(rootStack, ctx);
     }
 
     this.models.forEach((model) => {
@@ -42,19 +42,30 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
       this.createModelTable(scope, model, ctx);
     });
 
+    if (this.ddbManagerPolicy) {
+      this.ddbManagerPolicy?.addStatements(
+        new aws_iam.PolicyStatement({
+          actions: [
+            'dynamodb:CreateTable',
+            'dynamodb:UpdateTable',
+            'dynamodb:DeleteTable',
+            'dynamodb:DescribeTable',
+            'dynamodb:DescribeContinuousBackups',
+            'dynamodb:DescribeTimeToLive',
+            'dynamodb:UpdateContinuousBackups',
+            'dynamodb:UpdateTimeToLive',
+          ],
+          resources: this.amplifyTableArns,
+        }),
+      );
+    }
+
     this.generateResolvers(ctx);
   }
 
   protected createCustomProviderResource(scope: Construct, context: TransformerContextProvider): void {
     // Policy that grants access to Create/Update/Delete DynamoDB tables
-    const ddbManagerPolicy = new aws_iam.Policy(scope, 'CreateUpdateDeleteTablesPolicy');
-    ddbManagerPolicy.addStatements(
-      new aws_iam.PolicyStatement({
-        actions: ['dynamodb:CreateTable', 'dynamodb:UpdateTable', 'dynamodb:DeleteTable', 'dynamodb:DescribeTable'],
-        // TODO: have more restricted scope
-        resources: ['*'],
-      }),
-    );
+    this.ddbManagerPolicy = new aws_iam.Policy(scope, 'CreateUpdateDeleteTablesPolicy');
 
     const lambdaCode = aws_lambda.Code.fromAsset(
       path.join(__dirname, '..', '..', '..', 'lib', 'resources', 'amplify-dynamodb-table', 'amplify-table-manager-lambda'),
@@ -76,8 +87,8 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
       timeout: Duration.minutes(14),
     });
 
-    ddbManagerPolicy.attachToRole(gsiOnEventHandler.role!);
-    ddbManagerPolicy.attachToRole(gsiIsCompleteHandler.role!);
+    this.ddbManagerPolicy.attachToRole(gsiOnEventHandler.role!);
+    this.ddbManagerPolicy.attachToRole(gsiIsCompleteHandler.role!);
     const gsiCustomProvider = new custom_resources.Provider(scope, ResourceConstants.RESOURCES.TableManagerCustomProviderLogicalID, {
       onEventHandler: gsiOnEventHandler,
       isCompleteHandler: gsiIsCompleteHandler,
@@ -129,6 +140,13 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
 
     // construct a wrapper around the custom table to allow normal CDK operations on top of it
     const tableRepresentative = table.tableFromAttr;
+
+    this.amplifyTableArns.push(
+      // eslint-disable-next-line no-template-curly-in-string
+      cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
+        tablename: tableName,
+      }),
+    );
 
     const cfnTable = table.node.defaultChild?.node.defaultChild as cdk.CfnCustomResource;
     setResourceName(cfnTable, { name: modelName, setOnDefaultChild: false });

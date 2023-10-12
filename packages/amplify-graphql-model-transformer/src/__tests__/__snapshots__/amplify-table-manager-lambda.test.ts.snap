@@ -252,3 +252,215 @@ Object {
   "TableName": "test-table",
 }
 `;
+
+exports[`Custom Resource Lambda Tests Non GSI update Get billing mode update should compute the difference correctly when billingMode is changed to "PAY_PER_REQUEST" 1`] = `
+Object {
+  "BillingMode": "PAY_PER_REQUEST",
+  "TableName": "test-table",
+}
+`;
+
+exports[`Custom Resource Lambda Tests Non GSI update Get billing mode update should compute the difference correctly when billingMode is changed to "PROVISIONED" 1`] = `
+Object {
+  "BillingMode": "PROVISIONED",
+  "ProvisionedThroughput": Object {
+    "ReadCapacityUnits": 5,
+    "WriteCapacityUnits": 5,
+  },
+  "TableName": "test-table",
+}
+`;
+
+exports[`Custom Resource Lambda Tests Non GSI update Get billing mode update should compute the difference correctly when billingMode is changed to "PROVISIONED" and GSIs exist in current table 1`] = `
+Object {
+  "BillingMode": "PROVISIONED",
+  "GlobalSecondaryIndexUpdates": Array [
+    Object {
+      "Update": Object {
+        "IndexName": "gsi1",
+        "ProvisionedThroughput": Object {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5,
+        },
+      },
+    },
+  ],
+  "ProvisionedThroughput": Object {
+    "ReadCapacityUnits": 5,
+    "WriteCapacityUnits": 5,
+  },
+  "TableName": "test-table",
+}
+`;
+
+exports[`Custom Resource Lambda Tests Non GSI update Get billing mode update should compute the difference correctly when billingMode is changed to "PROVISIONED" and GSIs exist in current table 2`] = `
+Object {
+  "GlobalSecondaryIndexUpdates": Array [
+    Object {
+      "Update": Object {
+        "IndexName": "gsi1",
+        "ProvisionedThroughput": Object {
+          "ReadCapacityUnits": 4,
+          "WriteCapacityUnits": 4,
+        },
+      },
+    },
+  ],
+  "TableName": "test-table",
+}
+`;
+
+exports[`Custom Resource Lambda Tests Non GSI update Get deletion protection update should compute the difference correctly when deletion protection is disabled 1`] = `
+Object {
+  "DeletionProtectionEnabled": false,
+  "TableName": "test-table",
+}
+`;
+
+exports[`Custom Resource Lambda Tests Non GSI update Get deletion protection update should compute the difference correctly when deletion protection is disabled 2`] = `
+Object {
+  "DeletionProtectionEnabled": false,
+  "TableName": "test-table",
+}
+`;
+
+exports[`Custom Resource Lambda Tests Non GSI update Get deletion protection update should compute the difference correctly when deletion protection is enabled 1`] = `
+Object {
+  "DeletionProtectionEnabled": true,
+  "TableName": "test-table",
+}
+`;
+
+exports[`Custom Resource Lambda Tests Non GSI update Get point in time recovery update should compute the difference correctly when PITR is disabled 1`] = `
+Object {
+  "PointInTimeRecoverySpecification": Object {
+    "PointInTimeRecoveryEnabled": false,
+  },
+  "TableName": "test-table",
+}
+`;
+
+exports[`Custom Resource Lambda Tests Non GSI update Get point in time recovery update should compute the difference correctly when PITR is disabled 2`] = `
+Object {
+  "PointInTimeRecoverySpecification": Object {
+    "PointInTimeRecoveryEnabled": false,
+  },
+  "TableName": "test-table",
+}
+`;
+
+exports[`Custom Resource Lambda Tests Non GSI update Get point in time recovery update should compute the difference correctly when PITR is enabled 1`] = `
+Object {
+  "PointInTimeRecoverySpecification": Object {
+    "PointInTimeRecoveryEnabled": true,
+  },
+  "TableName": "test-table",
+}
+`;
+
+exports[`Custom Resource Lambda Tests Non GSI update Get server side encrytion update should compute the difference correctly when SSE is disabled 1`] = `
+Object {
+  "SSESpecification": Object {
+    "Enabled": false,
+  },
+  "TableName": "test-table",
+}
+`;
+
+exports[`Custom Resource Lambda Tests Non GSI update Get server side encrytion update should compute the difference correctly when SSE is disabled 2`] = `
+Object {
+  "SSESpecification": Object {
+    "Enabled": false,
+  },
+  "TableName": "test-table",
+}
+`;
+
+exports[`Custom Resource Lambda Tests Non GSI update Get server side encrytion update should compute the difference correctly when SSE is enabled 1`] = `
+Object {
+  "SSESpecification": Object {
+    "Enabled": true,
+  },
+  "TableName": "test-table",
+}
+`;
+
+exports[`Custom Resource Lambda Tests Non GSI update Get server side encrytion update should compute the difference correctly when SSE type is changed 1`] = `
+Object {
+  "SSESpecification": Object {
+    "Enabled": true,
+    "KMSMasterKeyId": "alias/aws/dynamodb/custom",
+    "SSEType": "KMS",
+  },
+  "TableName": "test-table",
+}
+`;
+
+exports[`Custom Resource Lambda Tests Non GSI update Get stream update should compute the difference correctly when stream is disabled 1`] = `
+Object {
+  "StreamSpecification": Object {
+    "StreamEnabled": false,
+  },
+  "TableName": "test-table",
+}
+`;
+
+exports[`Custom Resource Lambda Tests Non GSI update Get stream update should compute the difference correctly when stream is enabled 1`] = `
+Object {
+  "StreamSpecification": Object {
+    "StreamEnabled": true,
+    "StreamViewType": "NEW_AND_OLD_IMAGES",
+  },
+  "TableName": "test-table",
+}
+`;
+
+exports[`Custom Resource Lambda Tests Non GSI update Get stream update should compute the difference correctly when stream is enabled 2`] = `
+Object {
+  "StreamSpecification": Object {
+    "StreamEnabled": true,
+    "StreamViewType": "NEW_AND_OLD_IMAGES",
+  },
+  "TableName": "test-table",
+}
+`;
+
+exports[`Custom Resource Lambda Tests Non GSI update Get time to live update should compute the difference correctly when attribute is renamed 1`] = `
+Object {
+  "TableName": "test-table",
+  "TimeToLiveSpecification": Object {
+    "AttributeName": "_ttl1",
+    "Enabled": true,
+  },
+}
+`;
+
+exports[`Custom Resource Lambda Tests Non GSI update Get time to live update should compute the difference correctly when ttl is disabled 1`] = `
+Object {
+  "TableName": "test-table",
+  "TimeToLiveSpecification": Object {
+    "AttributeName": "_ttl",
+    "Enabled": false,
+  },
+}
+`;
+
+exports[`Custom Resource Lambda Tests Non GSI update Get time to live update should compute the difference correctly when ttl is disabled 2`] = `
+Object {
+  "TableName": "test-table",
+  "TimeToLiveSpecification": Object {
+    "AttributeName": "_ttl",
+    "Enabled": false,
+  },
+}
+`;
+
+exports[`Custom Resource Lambda Tests Non GSI update Get time to live update should compute the difference correctly when ttl is enabled 1`] = `
+Object {
+  "TableName": "test-table",
+  "TimeToLiveSpecification": Object {
+    "AttributeName": "_ttl",
+    "Enabled": true,
+  },
+}
+`;

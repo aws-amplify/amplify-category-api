@@ -1,5 +1,13 @@
 import { DynamoDB } from 'aws-sdk'; // TODO: use v3 SDK once CLI bumps the version
-import type { CreateTableInput, KeySchema, Projection, TableDescription, UpdateTableInput } from 'aws-sdk/clients/dynamodb';
+import type {
+  CreateTableInput,
+  KeySchema,
+  Projection,
+  TableDescription,
+  UpdateTableInput,
+  UpdateTimeToLiveInput,
+  UpdateContinuousBackupsInput,
+} from 'aws-sdk/clients/dynamodb';
 
 const ddbClient = new DynamoDB();
 
@@ -58,6 +66,8 @@ export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
       if (!describeTableResult.Table) {
         throw new Error(`Could not find ${event.PhysicalResourceId} to update`);
       }
+      log('Current table state: ', describeTableResult);
+
       // determine if table needs replacement
       if (isKeySchemaModified(describeTableResult.Table.KeySchema!, tableDef.keySchema)) {
         console.log('Update requires replacement');
@@ -78,15 +88,78 @@ export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
             TableArn: response.tableArn,
             TableStreamArn: response.streamArn,
             TableName: response.tableName,
+            IsTableReplaced: true, // This value will be consumed by isComplete handler
           },
         };
         log('Returning result', result);
         return result;
       }
-      // When normal updates happen
-      const nextGsiUpdate = getNextGSIUpdate(describeTableResult.Table, tableDef);
-      log('Computed next update', nextGsiUpdate);
-      if (!nextGsiUpdate) {
+
+      // determine if point in time recovery is changed -> describeContinuousBackups & updateContinuousBackups
+      const describePointInTimeRecoveryResult = await ddbClient
+        .describeContinuousBackups({ TableName: event.PhysicalResourceId })
+        .promise();
+      console.log('Current point in time recovery: ', describePointInTimeRecoveryResult);
+      const pointInTimeUpdate = getPointInTimeRecoveryUpdate(describePointInTimeRecoveryResult.ContinuousBackupsDescription, tableDef);
+      if (pointInTimeUpdate) {
+        log('Computed point in time recovery update', pointInTimeUpdate);
+        await ddbClient.updateContinuousBackups(pointInTimeUpdate).promise();
+        await retry(
+          async () => await isTableReady(event.PhysicalResourceId!),
+          (res) => res === true,
+        );
+        console.log(`Table '${event.PhysicalResourceId}' is ready after the update of PointInTimeRecovery.`);
+      }
+
+      // determine if deletion protection is changed
+      // DeletionProtection modification must be the only operation in the request
+      const deletionProtectionUpdate = getDeletionProtectionUpdate(describeTableResult.Table, tableDef);
+      if (deletionProtectionUpdate) {
+        log('Computed deletion protection update', deletionProtectionUpdate);
+        await ddbClient.updateTable(deletionProtectionUpdate).promise();
+        await retry(
+          async () => await isTableReady(event.PhysicalResourceId!),
+          (res) => res === true,
+        );
+        console.log(`Table '${event.PhysicalResourceId}' is ready after the update of deletion protection.`);
+      }
+
+      // determine if server side encryption is changed
+      // Server-Side Encryption modification must be the only operation in the update request
+      const sseUpdate = getSseUpdate(describeTableResult.Table, tableDef);
+      if (sseUpdate) {
+        log('Computed server side encryption update', sseUpdate);
+        await ddbClient.updateTable(sseUpdate).promise();
+        await retry(
+          async () => await isTableReady(event.PhysicalResourceId!),
+          (res) => res === true,
+        );
+        console.log(`Table '${event.PhysicalResourceId}' is ready after the update of sever side encryption.`);
+      }
+
+      // determine if stream specification is changed
+      // Stream change cannot be merged with GSI update
+      const streamUpdate = await getStreamUpdate(describeTableResult.Table, tableDef);
+      if (streamUpdate) {
+        log('Computed stream specification update', streamUpdate);
+        await ddbClient.updateTable(streamUpdate).promise();
+        await retry(
+          async () => await isTableReady(event.PhysicalResourceId!),
+          (res) => res === true,
+        );
+        console.log(`Table '${event.PhysicalResourceId}' is ready after the update of stream specificaion.`);
+      }
+
+      // determine if ttl is changed -> describeTimeToLive & updateTimeToLive
+      const describeTimeToLiveResult = await ddbClient.describeTimeToLive({ TableName: event.PhysicalResourceId }).promise();
+      console.log('Current TTL: ', describeTimeToLiveResult);
+      const ttlUpdate = getTtlUpdate(describeTimeToLiveResult.TimeToLiveDescription, tableDef);
+      if (ttlUpdate) {
+        log('Computed time to live update', ttlUpdate);
+        console.log('Initiating TTL update');
+        await ddbClient.updateTimeToLive(ttlUpdate).promise();
+        // TTL update could take more than 15 mins which exceeds lambda timeout
+        // Return the result instead of waiting here
         result = {
           PhysicalResourceId: event.PhysicalResourceId,
           Data: {
@@ -95,16 +168,16 @@ export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
             TableName: describeTableResult.Table.TableName,
           },
         };
-        return result; // nothing to update
+        return result;
       }
 
-      // TODO: merge gsi update with other table updates
-
-      const updateTableInput: UpdateTableInput = nextGsiUpdate;
-      log('Merged gsi update with other table updates', updateTableInput);
-
-      console.log('Initiating table update');
-      await ddbClient.updateTable(updateTableInput).promise();
+      // determine GSI updates
+      const nextGsiUpdate = getNextGSIUpdate(describeTableResult.Table, tableDef);
+      if (nextGsiUpdate) {
+        log('Computed next update', nextGsiUpdate);
+        console.log('Initiating table GSI update');
+        await ddbClient.updateTable(nextGsiUpdate).promise();
+      }
       result = {
         PhysicalResourceId: event.PhysicalResourceId,
         Data: {
@@ -115,18 +188,27 @@ export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
       };
       return result;
     case 'Delete':
-      console.log('Initiating table deletion');
       if (!event.PhysicalResourceId) {
         throw new Error(`Could not find the physical ID for the resource`);
       }
+      result = {
+        PhysicalResourceId: event.PhysicalResourceId,
+      };
+      console.log('Fetching current table state');
+      const describeTableResultBeforeDeletion = await ddbClient.describeTable({ TableName: event.PhysicalResourceId }).promise();
+      if (describeTableResultBeforeDeletion.Table?.DeletionProtectionEnabled) {
+        // Skip the deletion when protection is enabled
+        return result;
+      }
       try {
+        console.log('Initiating table deletion');
         await ddbClient.deleteTable({ TableName: event.PhysicalResourceId }).promise();
-        result = {
-          PhysicalResourceId: event.PhysicalResourceId,
-        };
         return result;
       } catch (err) {
-        // TODO only swallow NotExist errors
+        if (err.code === 'ResourceNotFoundException') {
+          return result;
+        }
+        throw err;
       }
     default:
       throw new Error(`Event type ${event.RequestType} is not supported`);
@@ -167,14 +249,31 @@ export const isComplete = async (
     return notFinished;
   }
 
-  if (event.RequestType === 'Create') {
+  const endState = extractTableInputFromEvent(event);
+
+  if (event.RequestType === 'Create' || event.Data?.IsTableReplaced === true) {
+    // Need additional call if pointInTimeRecovery is enabled
+    const describePointInTimeRecoveryResult = await ddbClient.describeContinuousBackups({ TableName: event.PhysicalResourceId }).promise();
+    const pointInTimeUpdate = getPointInTimeRecoveryUpdate(describePointInTimeRecoveryResult.ContinuousBackupsDescription, endState);
+    if (pointInTimeUpdate) {
+      console.log('Updating table with point in time recovery enabled');
+      await ddbClient.updateContinuousBackups(pointInTimeUpdate).promise();
+      return notFinished;
+    }
+    // Need additional call if ttl is defined
+    const describeTimeToLiveResult = await ddbClient.describeTimeToLive({ TableName: event.PhysicalResourceId }).promise();
+    const ttlUpdate = getTtlUpdate(describeTimeToLiveResult.TimeToLiveDescription, endState);
+    if (ttlUpdate) {
+      console.log('Updating table with TTL enabled');
+      await ddbClient.updateTimeToLive(ttlUpdate).promise();
+      return notFinished;
+    }
     // no additional updates required on create
     console.log('Create is finished');
     return finished;
   }
 
   // need to check if any more GSI updates are necessary
-  const endState = extractTableInputFromEvent(event);
   const nextUpdate = getNextGSIUpdate(describeTableResult.Table, endState);
   log('Computed next update', nextUpdate);
   if (!nextUpdate) {
@@ -190,7 +289,7 @@ export const isComplete = async (
 };
 
 /**
- * Compares the currentState with the endState to determine a next update step that will get the table closer to the end state
+ * Compares the currentState with the endState to determine a next GSI related update step that will get the table closer to the end state
  * @param currentState table description result from DynamoDB SDK call
  * @param endState The input table state from user
  * @returns UpdateTableInput object including the next GSI update only. Undefined if no next steps
@@ -201,6 +300,56 @@ export const getNextGSIUpdate = (currentState: TableDescription, endState: Custo
 
   const currentStateGSIs = currentState.GlobalSecondaryIndexes || [];
   const currentStateGSINames = currentStateGSIs.map((gsi) => gsi.IndexName);
+
+  /**
+   * You can only perform one of the following operations at once:
+    - Modify the provisioned throughput settings of the table.
+    - Remove a global secondary index from the table.
+    - Create a new global secondary index on the table. After the index begins backfilling, you can use UpdateTable to perform other operations.
+    @link https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#updateTable-property
+  */
+  const isTableBillingModeModified =
+    (currentState.BillingModeSummary?.BillingMode !== undefined && currentState.BillingModeSummary?.BillingMode !== endState.billingMode) ||
+    (currentState.BillingModeSummary?.BillingMode == undefined && endState.billingMode === 'PAY_PER_REQUEST');
+  const isTableProvisionThroughputModified =
+    (endState.provisionedThroughput?.readCapacityUnits !== undefined &&
+      currentState.ProvisionedThroughput?.ReadCapacityUnits !== endState.provisionedThroughput?.readCapacityUnits) ||
+    (endState.provisionedThroughput?.writeCapacityUnits !== undefined &&
+      currentState.ProvisionedThroughput?.WriteCapacityUnits !== endState.provisionedThroughput?.writeCapacityUnits);
+  if (isTableBillingModeModified || isTableProvisionThroughputModified) {
+    let updateInput: any = {
+      TableName: currentState.TableName!,
+      BillingMode: isTableBillingModeModified ? endState.billingMode : undefined,
+      ProvisionedThroughput:
+        isTableProvisionThroughputModified && endState.billingMode === 'PROVISIONED'
+          ? {
+              ReadCapacityUnits: endState.provisionedThroughput?.readCapacityUnits,
+              WriteCapacityUnits: endState.provisionedThroughput?.writeCapacityUnits,
+            }
+          : undefined,
+    };
+    // When the table's billing is changed to 'PROVISIONED', the current indexes of the table
+    // should be updated with the provisionedThroughput at the same time. Otherwise it will fail the parameter validation.
+    // The table's throughput will be applied by default.
+    if (isTableBillingModeModified && endState.billingMode === 'PROVISIONED') {
+      const indexToBeUpdated = currentStateGSIs.map((gsiToUpdate) => {
+        return {
+          Update: {
+            IndexName: gsiToUpdate.IndexName,
+            ProvisionedThroughput: {
+              ReadCapacityUnits: endState.provisionedThroughput?.readCapacityUnits,
+              WriteCapacityUnits: endState.provisionedThroughput?.writeCapacityUnits,
+            },
+          },
+        };
+      });
+      updateInput = {
+        ...updateInput,
+        GlobalSecondaryIndexUpdates: indexToBeUpdated.length > 0 ? indexToBeUpdated : undefined,
+      };
+    }
+    return parsePropertiesToDynamoDBInput(updateInput) as UpdateTableInput;
+  }
 
   // function to identify any GSIs that need to be removed
   const gsiRequiresReplacementPredicate = (currentGSI: DynamoDB.GlobalSecondaryIndexDescription): boolean => {
@@ -255,7 +404,242 @@ export const getNextGSIUpdate = (currentState: TableDescription, endState: Custo
     };
   }
 
+  // The major update is the index provisioned throughput
+  const gsiRequiresUpdatePredicate = (endStateGSI: CustomDDB.GlobalSecondaryIndexProperty): boolean => {
+    if (
+      endState.provisionedThroughput &&
+      endState.provisionedThroughput.readCapacityUnits &&
+      endState.provisionedThroughput.writeCapacityUnits &&
+      currentStateGSINames.includes(endStateGSI.indexName)
+    ) {
+      const currentStateGSI = currentStateGSIs.find((gsi) => gsi.IndexName === endStateGSI.indexName);
+      if (currentStateGSI) {
+        if (
+          currentStateGSI.ProvisionedThroughput?.ReadCapacityUnits !== endStateGSI.provisionedThroughput?.readCapacityUnits ||
+          currentStateGSI.ProvisionedThroughput?.WriteCapacityUnits !== endStateGSI.provisionedThroughput?.writeCapacityUnits
+        ) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+  const gsiToUpdate = endStateGSIs.find(gsiRequiresUpdatePredicate);
+  if (gsiToUpdate) {
+    return {
+      TableName: currentState.TableName!,
+      GlobalSecondaryIndexUpdates: [
+        {
+          Update: {
+            IndexName: gsiToUpdate.indexName,
+            ProvisionedThroughput: {
+              ReadCapacityUnits: gsiToUpdate.provisionedThroughput?.readCapacityUnits!,
+              WriteCapacityUnits: gsiToUpdate.provisionedThroughput?.writeCapacityUnits!,
+            },
+          },
+        },
+      ],
+    };
+  }
+
   // no more updates necessary
+  return undefined;
+};
+
+/**
+ * Compares the currentState with the endState to determine if the stream specification is updated
+ * When the streamViewType is changed, the stream will be disabled first before changing the type
+ * @param currentState table description result from DynamoDB SDK call
+ * @param endState The input table state from user
+ * @returns UpdateTableInput object including the stream update only. Undefined if no changes
+ */
+export const getStreamUpdate = async (currentState: TableDescription, endState: CustomDDB.Input): Promise<UpdateTableInput | undefined> => {
+  let streamUpdate;
+  if (
+    endState.streamSpecification?.streamViewType !== undefined &&
+    (currentState.StreamSpecification === undefined || currentState.StreamSpecification.StreamEnabled === false)
+  ) {
+    streamUpdate = { StreamEnabled: true, StreamViewType: endState.streamSpecification.streamViewType };
+  } else if (endState.streamSpecification?.streamViewType === undefined && currentState.StreamSpecification?.StreamEnabled === true) {
+    streamUpdate = { StreamEnabled: false };
+  } else if (
+    currentState.StreamSpecification?.StreamEnabled === true &&
+    endState.streamSpecification?.streamViewType !== undefined &&
+    currentState.StreamSpecification.StreamViewType !== endState.streamSpecification?.streamViewType
+  ) {
+    // Stream view type is changed. Need to disable stream before changing the type
+    console.log('Detect stream view type is changed. Disabling stream before the type change.');
+    await ddbClient
+      .updateTable({
+        TableName: currentState.TableName!,
+        StreamSpecification: { StreamEnabled: false },
+      })
+      .promise();
+    await retry(
+      async () => await isTableReady(currentState.TableName!),
+      (res) => res === true,
+    );
+    streamUpdate = { StreamEnabled: true, StreamViewType: endState.streamSpecification.streamViewType };
+  }
+  if (streamUpdate) {
+    return {
+      TableName: currentState.TableName!,
+      StreamSpecification: streamUpdate,
+    } as UpdateTableInput;
+  }
+  return undefined;
+};
+
+/**
+ * Compares the currentState with the endState to determine if the server side encryption (SSE) is updated
+ * @param currentState table description result from DynamoDB SDK call
+ * @param endState The input table state from user
+ * @returns UpdateTableInput object including the SSE update only. Undefined if no changes
+ */
+export const getSseUpdate = (currentState: TableDescription, endState: CustomDDB.Input): UpdateTableInput | undefined => {
+  let sseUpdate;
+  // When current table has SSE
+  if (currentState.SSEDescription) {
+    if (!endState.sseSpecification?.sseEnabled) {
+      sseUpdate = {
+        Enabled: false,
+      };
+    } else if (
+      endState.sseSpecification?.sseEnabled === true &&
+      endState.sseSpecification.sseType !== undefined &&
+      endState.sseSpecification.sseType !== currentState.SSEDescription.SSEType
+    ) {
+      sseUpdate = {
+        Enabled: true,
+        SSEType: endState.sseSpecification.sseType,
+        KMSMasterKeyId: endState.sseSpecification.kmsMasterKeyId,
+      };
+    }
+  }
+  // When current table does not have SSE
+  else {
+    if (endState.sseSpecification?.sseEnabled) {
+      sseUpdate = {
+        Enabled: true,
+        SSEType: endState.sseSpecification.sseType,
+        KMSMasterKeyId: endState.sseSpecification.kmsMasterKeyId,
+      };
+    }
+  }
+  if (sseUpdate) {
+    return parsePropertiesToDynamoDBInput({
+      TableName: currentState.TableName!,
+      SSESpecification: sseUpdate,
+    }) as UpdateTableInput;
+  }
+  return undefined;
+};
+
+/**
+ * Compares the currentState with the endState to determine if the deletion protection is updated
+ * @param currentState table description result from DynamoDB SDK call
+ * @param endState The input table state from user
+ * @returns UpdateTableInput object including the deletion protection update only. Undefined if no changes
+ */
+export const getDeletionProtectionUpdate = (currentState: TableDescription, endState: CustomDDB.Input): UpdateTableInput | undefined => {
+  if (endState.deletionProtectionEnabled !== undefined && currentState.DeletionProtectionEnabled !== endState.deletionProtectionEnabled) {
+    return {
+      TableName: currentState.TableName!,
+      DeletionProtectionEnabled: endState.deletionProtectionEnabled,
+    } as UpdateTableInput;
+  }
+  // When the deletion protection is undefined in input table, it will be considered as false
+  else if (endState.deletionProtectionEnabled === undefined && currentState.DeletionProtectionEnabled === true) {
+    return {
+      TableName: currentState.TableName!,
+      DeletionProtectionEnabled: false,
+    } as UpdateTableInput;
+  }
+  return undefined;
+};
+
+/**
+ * Compares the current time to live (TTL) config with the endState to determine if the TTL is updated
+ * @param currentTTL Time to live description result from DynamoDB SDK call
+ * @param endState The input table state from user
+ * @returns UpdateTimeToLiveInput object. Undefined if no changes
+ */
+export const getTtlUpdate = (
+  currentTTL: DynamoDB.TimeToLiveDescription | undefined,
+  endState: CustomDDB.Input,
+): UpdateTimeToLiveInput | undefined => {
+  const endTTL = endState.timeToLiveSpecification;
+  if (currentTTL && currentTTL.TimeToLiveStatus) {
+    // When TTL is enabled for current table
+    if (currentTTL.TimeToLiveStatus === 'ENABLED' && currentTTL.AttributeName) {
+      if (!endTTL || !endTTL.enabled) {
+        // Disable the ttl
+        return {
+          TableName: endState.tableName!,
+          TimeToLiveSpecification: {
+            Enabled: false,
+            // When disabling TTL, the attribute name should stay the same with current. Otherwise it will fail parameter validation
+            AttributeName: currentTTL.AttributeName,
+          },
+        };
+      } else if (currentTTL.AttributeName !== endTTL.attributeName) {
+        // TTL field renaming
+        return {
+          TableName: endState.tableName!,
+          TimeToLiveSpecification: {
+            Enabled: true,
+            AttributeName: endTTL.attributeName,
+          },
+        };
+      }
+    } else if (currentTTL.TimeToLiveStatus === 'DISABLED' && endTTL && endTTL.enabled) {
+      // Enable the ttl
+      return {
+        TableName: endState.tableName!,
+        TimeToLiveSpecification: {
+          Enabled: true,
+          AttributeName: endTTL.attributeName,
+        },
+      };
+    }
+  }
+  return undefined;
+};
+
+/**
+ * Compares the current point in time recovery config with the endState to determine if it is updated
+ * @param currentPointInTime Point in time recovery description result from DynamoDB SDK call
+ * @param endState The input table state from user
+ * @returns UpdateContinousBackupsInput object. Undefined if no changes
+ */
+export const getPointInTimeRecoveryUpdate = (
+  currentPointInTime: DynamoDB.ContinuousBackupsDescription | undefined,
+  endState: CustomDDB.Input,
+): UpdateContinuousBackupsInput | undefined => {
+  if (!currentPointInTime) {
+    return undefined;
+  }
+  const currentStatus = currentPointInTime.PointInTimeRecoveryDescription?.PointInTimeRecoveryStatus;
+  const endStatus = endState.pointInTimeRecoverySpecification?.pointInTimeRecoveryEnabled;
+  if (endStatus === undefined || endStatus === false) {
+    if (currentStatus === 'ENABLED') {
+      return {
+        TableName: endState.tableName!,
+        PointInTimeRecoverySpecification: {
+          PointInTimeRecoveryEnabled: false,
+        },
+      };
+    }
+  } else {
+    if (currentStatus === 'DISABLED') {
+      return {
+        TableName: endState.tableName!,
+        PointInTimeRecoverySpecification: {
+          PointInTimeRecoveryEnabled: true,
+        },
+      };
+    }
+  }
   return undefined;
 };
 
@@ -418,6 +802,25 @@ const doesTableExist = async (tableName: string): Promise<boolean> => {
     }
     throw error; // Handle other errors
   }
+};
+
+/**
+ * Util function to check if the provided table is ready
+ * @param tableName table name
+ * @returns boolean to indicate readiness
+ */
+const isTableReady = async (tableName: string): Promise<boolean> => {
+  const result = await ddbClient.describeTable({ TableName: tableName }).promise();
+  if (result.Table?.TableStatus !== 'ACTIVE') {
+    console.log('Table not active yet');
+    return false;
+  }
+  // table is active, need to check GSI status
+  if (result.Table.GlobalSecondaryIndexes?.some((gsi) => gsi.IndexStatus !== 'ACTIVE' || gsi.Backfilling)) {
+    console.log('Some GSI is not active yet');
+    return false;
+  }
+  return true;
 };
 
 /**

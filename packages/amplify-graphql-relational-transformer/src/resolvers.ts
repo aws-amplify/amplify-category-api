@@ -1,4 +1,4 @@
-import { attributeTypeFromType } from '@aws-amplify/graphql-index-transformer';
+import { attributeTypeFromType, overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
 import { getKeySchema, getTable, MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from 'aws-cdk-lib';
@@ -421,23 +421,7 @@ export function updateTableForConnection(config: HasManyDirectiveConfiguration, 
     }),
   };
 
-  if (!ctx.transformParameters.useAmplifyManagedTableResources) {
-    const cfnTable = table.table;
-    cfnTable.globalSecondaryIndexes = appendIndex(cfnTable.globalSecondaryIndexes, newIndex);
-  } else {
-    const cfnTable = table.node.defaultChild.node.defaultChild as cdk.CfnCustomResource;
-    const idx = table.globalSecondaryIndexes.length - 1;
-    cfnTable.addOverride(`Properties.globalSecondaryIndexes.${idx}`, newIndex);
-  }
-}
-
-function appendIndex(list: any, newIndex: any): any[] {
-  if (Array.isArray(list)) {
-    list.push(newIndex);
-    return list;
-  }
-
-  return [newIndex];
+  overrideIndexAtCfnLevel(ctx, table, newIndex);
 }
 
 type SortKeyAttributeDefinitions = {
