@@ -811,7 +811,16 @@ const doesTableExist = async (tableName: string): Promise<boolean> => {
  */
 const isTableReady = async (tableName: string): Promise<boolean> => {
   const result = await ddbClient.describeTable({ TableName: tableName }).promise();
-  return result.Table?.TableStatus === 'ACTIVE';
+  if (result.Table?.TableStatus !== 'ACTIVE') {
+    console.log('Table not active yet');
+    return false;
+  }
+  // table is active, need to check GSI status
+  if (result.Table.GlobalSecondaryIndexes?.some((gsi) => gsi.IndexStatus !== 'ACTIVE' || gsi.Backfilling)) {
+    console.log('Some GSI is not active yet');
+    return false;
+  }
+  return true;
 };
 
 /**

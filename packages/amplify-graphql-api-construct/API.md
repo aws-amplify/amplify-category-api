@@ -81,6 +81,7 @@ export class AmplifyGraphqlApi extends Construct {
 // @public
 export interface AmplifyGraphqlApiCfnResources {
     readonly additionalCfnResources: Record<string, CfnResource>;
+    readonly cfnAmplifyTables: Record<string, CfnResource>;
     readonly cfnApiKey?: CfnApiKey;
     readonly cfnDataSources: Record<string, CfnDataSource>;
     readonly cfnFunctionConfigurations: Record<string, CfnFunctionConfiguration>;
@@ -89,7 +90,7 @@ export interface AmplifyGraphqlApiCfnResources {
     readonly cfnGraphqlSchema: CfnGraphQLSchema;
     readonly cfnResolvers: Record<string, CfnResolver>;
     readonly cfnRoles: Record<string, CfnRole>;
-    readonly cfnTables: Record<string, CfnTable | CfnResource>;
+    readonly cfnTables: Record<string, CfnTable>;
 }
 
 // @public

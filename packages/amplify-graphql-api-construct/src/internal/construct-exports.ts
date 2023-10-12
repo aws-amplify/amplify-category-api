@@ -32,7 +32,8 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
   const cfnFunctionConfigurations: Record<string, CfnFunctionConfiguration> = {};
   const cfnDataSources: Record<string, CfnDataSource> = {};
   const tables: Record<string, Table> = {};
-  const cfnTables: Record<string, CfnTable | CfnResource> = {};
+  const cfnTables: Record<string, CfnTable> = {};
+  const cfnAmplifyTables: Record<string, CfnResource> = {};
   const roles: Record<string, Role> = {};
   const cfnRoles: Record<string, CfnRole> = {};
   const functions: Record<string, LambdaFunction> = {};
@@ -73,11 +74,12 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
       tables[resourceName] = currentScope;
       return;
     }
-    if (
-      currentScope instanceof CfnTable ||
-      (currentScope instanceof CfnResource && currentScope.cfnResourceType === 'Custom::AmplifyDynamoDBTable')
-    ) {
+    if (currentScope instanceof CfnTable) {
       cfnTables[resourceName] = currentScope;
+      return;
+    }
+    if (currentScope instanceof CfnResource && currentScope.cfnResourceType === 'Custom::AmplifyDynamoDBTable') {
+      cfnAmplifyTables[resourceName] = currentScope;
       return;
     }
     if (currentScope instanceof Role) {
@@ -135,6 +137,7 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
       cfnFunctionConfigurations,
       cfnDataSources,
       cfnTables,
+      cfnAmplifyTables,
       cfnRoles,
       cfnFunctions,
       additionalCfnResources,
