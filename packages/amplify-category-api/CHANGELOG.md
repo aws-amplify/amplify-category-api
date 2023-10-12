@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.7.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.7.3...@aws-amplify/amplify-category-api@5.7.4) (2023-10-05)
+
+### Bug Fixes
+
+- iam auth values can be passed as cdk tokens ([#1919](https://github.com/aws-amplify/amplify-category-api/issues/1919)) ([9297fa5](https://github.com/aws-amplify/amplify-category-api/commit/9297fa5cda87697645ad0c78b84c3004b32ac319))
+
+## [5.7.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.7.2...@aws-amplify/amplify-category-api@5.7.3) (2023-10-03)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
 ## [5.7.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.7.1...@aws-amplify/amplify-category-api@5.7.2) (2023-10-02)
 
 ### Bug Fixes

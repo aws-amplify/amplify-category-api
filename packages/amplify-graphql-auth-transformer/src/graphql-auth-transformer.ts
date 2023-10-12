@@ -1278,7 +1278,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         }
       } else {
         const authRole = ctx.synthParameters.authenticatedUserRoleName;
-        const authPolicyDocuments = createPolicyDocumentForManagedPolicy(this.authPolicyResources);
+        const authPolicyDocuments = createPolicyDocumentForManagedPolicy(ctx, this.authPolicyResources);
         const { scope } = ctx.stackManager;
         // we need to add the arn path as this is something cdk is looking for when using imported roles in policies
         const iamAuthRoleArn = iam.Role.fromRoleArn(
@@ -1302,7 +1302,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         throw new TransformerContractError('UnauthRole policies should be generated, but no resources were added');
       }
       const unauthRole = ctx.synthParameters.unauthenticatedUserRoleName;
-      const unauthPolicyDocuments = createPolicyDocumentForManagedPolicy(this.unauthPolicyResources);
+      const unauthPolicyDocuments = createPolicyDocumentForManagedPolicy(ctx, this.unauthPolicyResources);
       const { scope } = ctx.stackManager;
       const iamUnauthRoleArn = iam.Role.fromRoleArn(
         scope,

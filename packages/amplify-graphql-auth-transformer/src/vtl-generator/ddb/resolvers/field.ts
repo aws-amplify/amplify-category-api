@@ -141,9 +141,7 @@ export const generateAuthExpressionForField = (
     totalAuthExpressions.push(lambdaExpression(lambdaRoles));
   }
   if (providers.hasIAM) {
-    totalAuthExpressions.push(
-      iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.adminRoles, providers.identityPoolId, fieldName),
-    );
+    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.hasIdentityPoolId, fieldName));
   }
   if (providers.hasUserPools) {
     totalAuthExpressions.push(

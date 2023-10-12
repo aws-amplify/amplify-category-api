@@ -576,7 +576,7 @@ export abstract class ContainersStack extends cdk.Stack {
 function jsonPolicyToCdkPolicyStatement(policy: Record<string, any>): iam.PolicyStatement {
   return new iam.PolicyStatement({
     effect: policy.Effect,
-    actions: policy.Action,
+    actions: Array.isArray(policy.Action) ? policy.Action : [policy.Action],
     resources: Array.isArray(policy.Resource) ? policy.Resource.map((r) => cdk.Token.asString(r)) : [cdk.Token.asString(policy.Resource)],
   });
 }
