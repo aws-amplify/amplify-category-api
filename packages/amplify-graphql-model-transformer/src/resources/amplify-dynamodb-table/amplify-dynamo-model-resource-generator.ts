@@ -15,10 +15,13 @@ import { AmplifyDynamoDBTable } from './amplify-dynamodb-table-construct';
  * AmplifyDynamoModelResourceGenerator is a subclass of DynamoModelResourceGenerator,
  * provisioning the DynamoDB tables with the custom resource instead of pre-defined DynamoDB table CFN template
  */
+
+export const ITERATIVE_TABLE_STACK_NAME = 'AmplifyTableManager';
 export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGenerator {
   private customResourceServiceToken: string = '';
   private amplifyTableArns: string[] = [];
   private ddbManagerPolicy?: aws_iam.Policy;
+  private customResourceProvider?: custom_resources.Provider;
 
   generateResources(ctx: TransformerContextProvider): void {
     if (!this.isEnabled()) {
@@ -30,7 +33,8 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
       const rootStack = cdk.Stack.of(ctx.stackManager.scope);
       this.createDynamoDBParameters(rootStack, false);
 
-      this.createCustomProviderResource(rootStack, ctx);
+      const tableManagerStack = ctx.stackManager.getScopeFor('AmplifyTableCustomProvider', ITERATIVE_TABLE_STACK_NAME);
+      this.createCustomProviderResource(tableManagerStack, ctx);
     }
 
     this.models.forEach((model) => {
@@ -89,14 +93,14 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
 
     this.ddbManagerPolicy.attachToRole(gsiOnEventHandler.role!);
     this.ddbManagerPolicy.attachToRole(gsiIsCompleteHandler.role!);
-    const gsiCustomProvider = new custom_resources.Provider(scope, ResourceConstants.RESOURCES.TableManagerCustomProviderLogicalID, {
+    this.customResourceProvider = new custom_resources.Provider(scope, ResourceConstants.RESOURCES.TableManagerCustomProviderLogicalID, {
       onEventHandler: gsiOnEventHandler,
       isCompleteHandler: gsiIsCompleteHandler,
       logRetention: aws_logs.RetentionDays.ONE_MONTH,
       queryInterval: Duration.seconds(30),
       totalTimeout: Duration.hours(2),
     });
-    this.customResourceServiceToken = gsiCustomProvider.serviceToken;
+    this.customResourceServiceToken = this.customResourceProvider.serviceToken;
   }
 
   protected createModelTable(scope: Construct, def: ObjectTypeDefinitionNode, context: TransformerContextProvider): void {
