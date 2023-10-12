@@ -28,14 +28,11 @@ Object {
                       Array [
                         "Post-",
                         Object {
-                          "Fn::GetAtt": Array [
-                            "GraphQLAPI",
-                            "ApiId",
-                          ],
+                          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
                         },
                         "-",
                         Object {
-                          "Ref": "env",
+                          "Ref": "referencetotransformerrootstackenv10C5A902Ref",
                         },
                       ],
                     ],
@@ -53,14 +50,11 @@ Object {
                       Array [
                         "Comment-",
                         Object {
-                          "Fn::GetAtt": Array [
-                            "GraphQLAPI",
-                            "ApiId",
-                          ],
+                          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
                         },
                         "-",
                         Object {
-                          "Ref": "env",
+                          "Ref": "referencetotransformerrootstackenv10C5A902Ref",
                         },
                       ],
                     ],
