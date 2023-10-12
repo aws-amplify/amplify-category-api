@@ -112,8 +112,7 @@ export interface ConfiguredAuthProviders {
   hasIAM: boolean;
   hasLambda: boolean;
   hasAdminRolesEnabled: boolean;
-  adminRoles: Array<string>;
-  identityPoolId?: string;
+  hasIdentityPoolId: boolean;
 }
 
 export const authDirectiveDefinition = `

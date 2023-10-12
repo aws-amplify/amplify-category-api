@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.17.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.17.2...amplify-category-api-e2e-tests@3.17.3) (2023-10-12)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.17.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.17.1...amplify-category-api-e2e-tests@3.17.2) (2023-10-05)
+
+### Bug Fixes
+
+- iam auth values can be passed as cdk tokens ([#1919](https://github.com/aws-amplify/amplify-category-api/issues/1919)) ([9297fa5](https://github.com/aws-amplify/amplify-category-api/commit/9297fa5cda87697645ad0c78b84c3004b32ac319))
+
+## [3.17.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.17.0...amplify-category-api-e2e-tests@3.17.1) (2023-10-02)
+
+### Bug Fixes
+
+- change the ttl to integer ([#1901](https://github.com/aws-amplify/amplify-category-api/issues/1901)) ([9cfaa02](https://github.com/aws-amplify/amplify-category-api/commit/9cfaa02b429f3933d44c5dd117105a816d24ef6c))
+
 # [3.17.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.16.0...amplify-category-api-e2e-tests@3.17.0) (2023-09-28)
 
 ### Features

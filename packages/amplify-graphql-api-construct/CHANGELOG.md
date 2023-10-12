@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.1.3...@aws-amplify/graphql-api-construct@1.1.4) (2023-10-12)
+
+### Bug Fixes
+
+- optimize codegen asset upload ([9e906d9](https://github.com/aws-amplify/amplify-category-api/commit/9e906d925a415cda52b08dc5725d26f7794e8343))
+- speed up codegen asset deployment ([#1933](https://github.com/aws-amplify/amplify-category-api/issues/1933)) ([67cfa6a](https://github.com/aws-amplify/amplify-category-api/commit/67cfa6a95c111e5b53fddcb13b3fbbecad264fcb))
+- update readme and docs so they don't get overwritten ([40bc411](https://github.com/aws-amplify/amplify-category-api/commit/40bc41152176541fd885213386463425bc45e28a))
+
+## [1.1.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.1.2...@aws-amplify/graphql-api-construct@1.1.3) (2023-10-05)
+
+**Note:** Version bump only for package @aws-amplify/graphql-api-construct
+
+## [1.1.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.1.1...@aws-amplify/graphql-api-construct@1.1.2) (2023-10-03)
+
+### Bug Fixes
+
+- reference api id via context, not hard-coded logical id name ([#1911](https://github.com/aws-amplify/amplify-category-api/issues/1911)) ([538ddc3](https://github.com/aws-amplify/amplify-category-api/commit/538ddc3511c3b667c175e97acd268a85022e4d71))
+
+## [1.1.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.1.0...@aws-amplify/graphql-api-construct@1.1.1) (2023-10-02)
+
+**Note:** Version bump only for package @aws-amplify/graphql-api-construct
+
 # 1.1.0 (2023-09-28)
 
 ### Bug Fixes

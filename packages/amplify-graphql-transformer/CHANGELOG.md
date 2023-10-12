@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.2.3...@aws-amplify/graphql-transformer@1.2.4) (2023-10-12)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer
+
+## [1.2.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.2.2...@aws-amplify/graphql-transformer@1.2.3) (2023-10-05)
+
+### Bug Fixes
+
+- iam auth values can be passed as cdk tokens ([#1919](https://github.com/aws-amplify/amplify-category-api/issues/1919)) ([9297fa5](https://github.com/aws-amplify/amplify-category-api/commit/9297fa5cda87697645ad0c78b84c3004b32ac319))
+
+## [1.2.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.2.1...@aws-amplify/graphql-transformer@1.2.2) (2023-10-03)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer
+
+## [1.2.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.2.0...@aws-amplify/graphql-transformer@1.2.1) (2023-10-02)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer
+
 # [1.2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.1.4...@aws-amplify/graphql-transformer@1.2.0) (2023-09-20)
 
 ### Features

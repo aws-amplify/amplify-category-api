@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.3.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.3.3...amplify-category-api-util-mock@6.3.4) (2023-10-12)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.3.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.3.2...amplify-category-api-util-mock@6.3.3) (2023-10-05)
+
+### Bug Fixes
+
+- iam auth values can be passed as cdk tokens ([#1919](https://github.com/aws-amplify/amplify-category-api/issues/1919)) ([9297fa5](https://github.com/aws-amplify/amplify-category-api/commit/9297fa5cda87697645ad0c78b84c3004b32ac319))
+
+## [6.3.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.3.1...amplify-category-api-util-mock@6.3.2) (2023-10-03)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.3.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.3.0...amplify-category-api-util-mock@6.3.1) (2023-10-02)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
 # [6.3.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.2.4...amplify-category-api-util-mock@6.3.0) (2023-09-20)
 
 ### Features

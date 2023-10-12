@@ -120,6 +120,27 @@ describe('Sync query V2 resolver tests', () => {
     verifySyncQueryResult(syncResult, testSong, 'syncSongs');
   });
 
+  it('Sync query with filter on GSI and lastSync within delta ttl', async () => {
+    const testSong = {
+      id: '',
+      name: 'song123',
+      genre: 'custom',
+      lastChangedAt: 0,
+    };
+
+    const createResult = await createSong(testSong.name, testSong.genre);
+    verifyCreateSongResult(createResult, testSong, 'createSong');
+    testSong.id = createResult.data.createSong.id;
+    testSong.lastChangedAt = createResult.data.createSong._lastChangedAt;
+
+    // This will do scan on the delta table
+    const lastSync = Date.now();
+    const syncResult = await syncSongs(lastSync, {
+      and: [{ genre: { eq: testSong.genre } }],
+    });
+    verifySyncQueryResult(syncResult, testSong, 'syncSongs');
+  });
+
   it('Sync query with filter on primary key part of GSI for model with sort key works', async () => {
     const testSong = {
       id: '',
