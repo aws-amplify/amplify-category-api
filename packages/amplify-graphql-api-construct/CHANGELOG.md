@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0-amplify-table-preview.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.1.4...@aws-amplify/graphql-api-construct@1.2.0-amplify-table-preview.0) (2023-10-12)
+
+### Features
+
+- amplify table construct & key schema related transformer changes ([#1903](https://github.com/aws-amplify/amplify-category-api/issues/1903)) ([16cbc64](https://github.com/aws-amplify/amplify-category-api/commit/16cbc64fdfe2bf6e5b725d3c9eafebaeaa613fdc))
+- **amplify-table:** add non-GSI update in handler ([#1940](https://github.com/aws-amplify/amplify-category-api/issues/1940)) ([26c4c2d](https://github.com/aws-amplify/amplify-category-api/commit/26c4c2d952b193b20a9abffabe0686385dacfb62))
+- bootstrap for adding amplify managed table ([#1849](https://github.com/aws-amplify/amplify-category-api/issues/1849)) ([d7d6740](https://github.com/aws-amplify/amplify-category-api/commit/d7d6740e7bc5291bc42eaefe208c0a5886b8a718))
+
 ## [1.1.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.1.3...@aws-amplify/graphql-api-construct@1.1.4) (2023-10-12)
 
 ### Bug Fixes

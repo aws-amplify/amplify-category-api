@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.26.0-amplify-table-preview.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.25.1...graphql-transformer-common@4.26.0-amplify-table-preview.0) (2023-10-12)
+
+### Features
+
+- bootstrap for adding amplify managed table ([#1849](https://github.com/aws-amplify/amplify-category-api/issues/1849)) ([d7d6740](https://github.com/aws-amplify/amplify-category-api/commit/d7d6740e7bc5291bc42eaefe208c0a5886b8a718))
+
 ## [4.25.1](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.25.0...graphql-transformer-common@4.25.1) (2023-08-30)
 
 **Note:** Version bump only for package graphql-transformer-common

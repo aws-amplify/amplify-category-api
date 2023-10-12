@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.37-amplify-table-preview.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-migration-tests@5.0.36...amplify-category-api-migration-tests@5.0.37-amplify-table-preview.0) (2023-10-12)
+
+**Note:** Version bump only for package amplify-category-api-migration-tests
+
 ## [5.0.36](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-migration-tests@5.0.35...amplify-category-api-migration-tests@5.0.36) (2023-09-13)
 
 **Note:** Version bump only for package amplify-category-api-migration-tests

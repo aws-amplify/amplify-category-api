@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.1-amplify-table-preview.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.3.0...amplify-category-api-e2e-core@4.3.1-amplify-table-preview.0) (2023-10-12)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
 # [4.3.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.2.4...amplify-category-api-e2e-core@4.3.0) (2023-09-13)
 
 ### Features

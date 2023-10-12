@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.66-amplify-table-preview.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-predictions-transformer@3.2.65...graphql-predictions-transformer@3.2.66-amplify-table-preview.0) (2023-10-12)
+
+**Note:** Version bump only for package graphql-predictions-transformer
+
 ## [3.2.65](https://github.com/aws-amplify/amplify-category-api/compare/graphql-predictions-transformer@3.2.64...graphql-predictions-transformer@3.2.65) (2023-08-30)
 
 **Note:** Version bump only for package graphql-predictions-transformer

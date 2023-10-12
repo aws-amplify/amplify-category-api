@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0-amplify-table-preview.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.1.7...@aws-amplify/graphql-index-transformer@2.2.0-amplify-table-preview.0) (2023-10-12)
+
+### Features
+
+- amplify table construct & key schema related transformer changes ([#1903](https://github.com/aws-amplify/amplify-category-api/issues/1903)) ([16cbc64](https://github.com/aws-amplify/amplify-category-api/commit/16cbc64fdfe2bf6e5b725d3c9eafebaeaa613fdc))
+- **amplify-table:** add non-GSI update in handler ([#1940](https://github.com/aws-amplify/amplify-category-api/issues/1940)) ([26c4c2d](https://github.com/aws-amplify/amplify-category-api/commit/26c4c2d952b193b20a9abffabe0686385dacfb62))
+
 ## [2.1.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.1.6...@aws-amplify/graphql-index-transformer@2.1.7) (2023-10-12)
 
 **Note:** Version bump only for package @aws-amplify/graphql-index-transformer

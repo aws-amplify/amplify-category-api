@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.4.0-amplify-table-preview.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.3.4...amplify-category-api-util-mock@6.4.0-amplify-table-preview.0) (2023-10-12)
+
+### Features
+
+- bootstrap for adding amplify managed table ([#1849](https://github.com/aws-amplify/amplify-category-api/issues/1849)) ([d7d6740](https://github.com/aws-amplify/amplify-category-api/commit/d7d6740e7bc5291bc42eaefe208c0a5886b8a718))
+
 ## [6.3.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.3.3...amplify-category-api-util-mock@6.3.4) (2023-10-12)
 
 **Note:** Version bump only for package amplify-category-api-util-mock
