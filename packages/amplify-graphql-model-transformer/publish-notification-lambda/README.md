@@ -37,3 +37,10 @@ Lambda code resides in a zip file `packages/amplify-graphql-model-transformer/li
   ]
 }
 ```
+
+### Updating the layer
+
+After we publish a new layer and the integration tests have passed:
+* Update the `rds-layer-mapping.json` file in the `amplify-rds-layer-resources` S3 bucket
+* Update the e2e test with the new layer version: `packages/amplify-e2e-tests/src/__tests__/rds-v2.test.ts`
+* Notify customers by invoking the Lambda with an empty (`{}`) test payload
