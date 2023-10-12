@@ -302,7 +302,7 @@ export class TransformerResolver implements TransformerResolverProvider {
                   return SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL.toString();
                 },
               });
-              dataSource += `\n$util.qr($ctx.stash.put("deltaSyncTableTtl", "${deltaSyncTableTtl}"))`;
+              dataSource += `\n$util.qr($ctx.stash.put("deltaSyncTableTtl", ${deltaSyncTableTtl}))`;
             }
           }
 
@@ -373,20 +373,29 @@ export class TransformerResolver implements TransformerResolverProvider {
       $util.qr($ctx.stash.put("connectionAttributes", {}))
       ${dataSource}
     `;
-    const hasIamAuth = [context.authConfig.defaultAuthentication, ...(context.authConfig.additionalAuthenticationProviders || [])].some(
-      (mode) => mode?.authenticationType === AuthorizationType.IAM,
-    );
-    if (hasIamAuth) {
-      const authRole = context.synthParameters.authenticatedUserRoleName;
-      const unauthRole = context.synthParameters.unauthenticatedUserRoleName;
-      const account = Stack.of(context.stackManager.scope).account;
-      /* eslint-disable indent */
+    const account = Stack.of(context.stackManager.scope).account;
+    const authRole = context.synthParameters.authenticatedUserRoleName;
+    if (authRole) {
       initResolver += dedent`\n
       $util.qr($ctx.stash.put("authRole", "arn:aws:sts::${account}:assumed-role/${authRole}/CognitoIdentityCredentials"))
+      `;
+    }
+    const unauthRole = context.synthParameters.unauthenticatedUserRoleName;
+    if (unauthRole) {
+      initResolver += dedent`\n
       $util.qr($ctx.stash.put("unauthRole", "arn:aws:sts::${account}:assumed-role/${unauthRole}/CognitoIdentityCredentials"))
       `;
-      /* eslint-enable indent */
     }
+    const identityPoolId = context.synthParameters.identityPoolId;
+    if (identityPoolId) {
+      initResolver += dedent`\n
+        $util.qr($ctx.stash.put("identityPoolId", "${identityPoolId}"))
+      `;
+    }
+    const adminRoles = context.synthParameters.adminRoles ?? [];
+    initResolver += dedent`\n
+      $util.qr($ctx.stash.put("adminRoles", ${JSON.stringify(adminRoles)}))
+    `;
     initResolver += '\n$util.toJson({})';
     api.host.addResolver(
       this.typeName,

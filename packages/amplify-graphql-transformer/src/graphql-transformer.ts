@@ -66,7 +66,7 @@ export type TransformConfig = {
 export const constructTransformerChain = (options?: TransformerFactoryArgs): TransformerPluginProvider[] => {
   const modelTransformer = new ModelTransformer();
   const authTransformer = new AuthTransformer({
-    adminRoles: options?.adminRoles ?? [],
+    adminRoles: options?.adminRoles,
     identityPoolId: options?.identityPoolId,
   });
   const indexTransformer = new IndexTransformer();
@@ -176,7 +176,14 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
     assetProvider,
     synthParameters,
     parameterProvider,
+    transformersFactoryArgs,
   } = config;
+
+  const mergedSynthParameters = {
+    ...synthParameters,
+    ...(transformersFactoryArgs.adminRoles ? { adminRoles: transformersFactoryArgs.adminRoles } : {}),
+    ...(transformersFactoryArgs.identityPoolId ? { identityPoolId: transformersFactoryArgs.identityPoolId } : {}),
+  };
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
   const transform = constructTransform(config);
@@ -187,7 +194,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
       nestedStackProvider,
       parameterProvider,
       assetProvider,
-      synthParameters,
+      synthParameters: mergedSynthParameters,
       schema,
       datasourceConfig: {
         modelToDatasourceMap,

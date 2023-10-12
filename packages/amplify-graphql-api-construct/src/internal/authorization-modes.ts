@@ -7,6 +7,8 @@ import {
   OIDCAuthorizationConfig,
   UserPoolAuthorizationConfig,
 } from '../types';
+import { CfnGraphQLApi } from 'aws-cdk-lib/aws-appsync';
+import { isArray } from 'lodash';
 
 type AuthorizationConfigMode =
   | (IAMAuthorizationConfig & { type: 'AWS_IAM' })
@@ -127,6 +129,22 @@ interface AuthConfig {
    */
   authSynthParameters: AuthSynthParameters;
 }
+
+/**
+ * Transforms additionalAuthenticationTypes for storage in CFN output
+ */
+export const getAdditionalAuthenticationTypes = (cfnGraphqlApi: CfnGraphQLApi): string | undefined => {
+  if (!isArray(cfnGraphqlApi.additionalAuthenticationProviders)) {
+    return;
+  }
+
+  return (cfnGraphqlApi.additionalAuthenticationProviders as CfnGraphQLApi.AdditionalAuthenticationProviderProperty[])
+    .map(
+      (additionalAuthenticationProvider: CfnGraphQLApi.AdditionalAuthenticationProviderProperty) =>
+        additionalAuthenticationProvider.authenticationType,
+    )
+    .join(',');
+};
 
 /**
  * Convert the list of auth modes into the necessary flags and params (effectively a reducer on the rule list)
