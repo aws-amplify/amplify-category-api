@@ -505,6 +505,13 @@
     handlebars "4.7.7"
     yargs "^15.1.0"
 
+"@aws-amplify/graphql-transformer-interfaces@^3.1.0":
+  version "3.2.1"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-transformer-interfaces/-/graphql-transformer-interfaces-3.2.1.tgz#6a375c368cf926789b9b2bf0d021b8c03feedcc7"
+  integrity sha512-TZS546r0H8S5HRbBDWcZI87ijYcD3fMMvKsZEv9r417YhfjXepweLADZap293OMu6H+LyU23XS3aVEjA99AWng==
+  dependencies:
+    graphql "^15.5.0"
+
 "@aws-amplify/graphql-types-generator@3.0.3":
   version "3.0.3"
   resolved "https://registry.npmjs.org/@aws-amplify/graphql-types-generator/-/graphql-types-generator-3.0.3.tgz#56563355bb0a03feeb47c3ef8c0c764509993d29"
@@ -12849,6 +12856,29 @@ graphql-tag@^2.10.1, graphql-tag@^2.11.0:
   integrity sha512-FdSNcu2QQcWnM2VNvSCCDCVS5PpPqpzgFT8+GXzqJuoDd0CBncxCY278u4mhRO7tMgo2JjgJA5aZ+nWSQ/Z+xg==
   dependencies:
     tslib "^2.1.0"
+
+graphql-transformer-common@4.25.1:
+  version "4.25.1"
+  resolved "https://registry.npmjs.org/graphql-transformer-common/-/graphql-transformer-common-4.25.1.tgz#239ee0792e104d54c66469febad291b827232c3a"
+  integrity sha512-qeh0qlwf+gxcwLqC7xrjvwchG6q+LsHcFPIcOk5U9OhBIiTL5AooqNxYcUqZCu+CyOZQJ6zaLpuqC7P/CmSJeg==
+  dependencies:
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.12"
+    md5 "^2.2.1"
+    pluralize "8.0.0"
+
+graphql-transformer-core@^8.1.10, graphql-transformer-core@^8.1.9:
+  version "8.1.12"
+  resolved "https://registry.npmjs.org/graphql-transformer-core/-/graphql-transformer-core-8.1.12.tgz#a329ff1c3d4882814a6792a49e8d26c86a51f21f"
+  integrity sha512-TaluLoRIWN5Nrnjg0Ym/Oh4IRXdBCOx3RcJU5J91mTC9TLNu482PrCPFZjuy8K9fFEOZpc7gPnNup/dF5H6P+g==
+  dependencies:
+    cloudform-types "^4.2.0"
+    deep-diff "^1.0.2"
+    fs-extra "^8.1.0"
+    glob "^7.2.0"
+    graphql "^15.5.0"
+    graphql-transformer-common "4.25.1"
+    lodash "^4.17.21"
 
 graphql@15.8.0, graphql@^15.5.0:
   version "15.8.0"
