@@ -41,10 +41,7 @@ import { IFunction } from 'aws-cdk-lib/aws-lambda';
  * Used to determine how to create a new GraphQLTransform
  */
 export type TransformerFactoryArgs = {
-  authConfig?: any;
   storageConfig?: any;
-  adminRoles?: Array<string>;
-  identityPoolId?: string;
   customTransformers?: TransformerPluginProvider[];
   functionNameMap?: Record<string, IFunction>;
 };
@@ -65,10 +62,7 @@ export type TransformConfig = {
 
 export const constructTransformerChain = (options?: TransformerFactoryArgs): TransformerPluginProvider[] => {
   const modelTransformer = new ModelTransformer();
-  const authTransformer = new AuthTransformer({
-    adminRoles: options?.adminRoles,
-    identityPoolId: options?.identityPoolId,
-  });
+  const authTransformer = new AuthTransformer();
   const indexTransformer = new IndexTransformer();
   const hasOneTransformer = new HasOneTransformer();
 
@@ -176,14 +170,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
     assetProvider,
     synthParameters,
     parameterProvider,
-    transformersFactoryArgs,
   } = config;
-
-  const mergedSynthParameters = {
-    ...synthParameters,
-    ...(transformersFactoryArgs.adminRoles ? { adminRoles: transformersFactoryArgs.adminRoles } : {}),
-    ...(transformersFactoryArgs.identityPoolId ? { identityPoolId: transformersFactoryArgs.identityPoolId } : {}),
-  };
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
   const transform = constructTransform(config);
@@ -194,7 +181,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
       nestedStackProvider,
       parameterProvider,
       assetProvider,
-      synthParameters: mergedSynthParameters,
+      synthParameters,
       schema,
       datasourceConfig: {
         modelToDatasourceMap,

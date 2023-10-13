@@ -141,8 +141,7 @@ export class AmplifyGraphqlApi extends Construct {
 
     addAmplifyMetadataToStackDescription(scope);
 
-    const { authConfig, identityPoolId, adminRoles, authSynthParameters } =
-      convertAuthorizationModesToTransformerAuthConfig(authorizationModes);
+    const { authConfig, authSynthParameters } = convertAuthorizationModesToTransformerAuthConfig(authorizationModes);
 
     validateFunctionSlots(functionSlots ?? []);
     const separatedFunctionSlots = separateSlots([...(functionSlots ?? []), ...definition.functionSlots]);
@@ -174,9 +173,6 @@ export class AmplifyGraphqlApi extends Construct {
       schema: definition.schema,
       userDefinedSlots: parseUserDefinedSlots(separatedFunctionSlots),
       transformersFactoryArgs: {
-        authConfig,
-        identityPoolId,
-        adminRoles,
         customTransformers: transformerPlugins ?? [],
         ...(predictionsBucket ? { storageConfig: { bucketName: predictionsBucket.bucketName } } : {}),
         functionNameMap,

@@ -1,12 +1,15 @@
 import { DirectiveWrapper, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
-import { AppSyncAuthMode, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  AppSyncAuthMode,
+  TransformerBeforeStepContextProvider,
+  TransformerContextProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { Construct } from 'constructs';
 import { MODEL_OPERATIONS, READ_MODEL_OPERATIONS } from './constants';
 import {
   AuthProvider,
   AuthRule,
-  AuthTransformerConfig,
   ConfiguredAuthProviders,
   GetAuthRulesOptions,
   ModelOperation,
@@ -139,10 +142,12 @@ export const getScopeForField = (
 /**
  * Returns auth provider passed on config
  */
-export const getConfiguredAuthProviders = (config: AuthTransformerConfig): ConfiguredAuthProviders => {
+export const getConfiguredAuthProviders = (context: TransformerBeforeStepContextProvider): ConfiguredAuthProviders => {
+  const { authConfig, synthParameters } = context;
+  const { adminRoles, identityPoolId } = synthParameters;
   const providers = [
-    config.authConfig.defaultAuthentication.authenticationType,
-    ...config.authConfig.additionalAuthenticationProviders.map((p) => p.authenticationType),
+    authConfig.defaultAuthentication.authenticationType,
+    ...authConfig.additionalAuthenticationProviders.map((p) => p.authenticationType),
   ];
   const getAuthProvider = (authType: AppSyncAuthMode): AuthProvider => {
     switch (authType) {
@@ -161,16 +166,25 @@ export const getConfiguredAuthProviders = (config: AuthTransformerConfig): Confi
     }
   };
   const hasIAM = providers.some((p) => p === 'AWS_IAM');
+  const hasAdminRolesEnabled = hasIAM && adminRoles?.length > 0;
+  /**
+   * When AdminUI is enabled, all the types and operations get IAM auth. If the default auth mode is
+   * not IAM all the fields will need to have the default auth mode directive to ensure both IAM and default
+   * auth modes are allowed to access
+   * default auth provider needs to be added if AdminUI is enabled and default auth type is not IAM
+   */
+  const shouldAddDefaultServiceDirective = hasAdminRolesEnabled && authConfig.defaultAuthentication.authenticationType !== 'AWS_IAM';
   const configuredProviders: ConfiguredAuthProviders = {
-    default: getAuthProvider(config.authConfig.defaultAuthentication.authenticationType),
-    onlyDefaultAuthProviderConfigured: config.authConfig.additionalAuthenticationProviders.length === 0,
-    hasAdminRolesEnabled: hasIAM && config.adminRoles?.length > 0,
-    hasIdentityPoolId: config.identityPoolId !== null && config.identityPoolId !== undefined,
+    default: getAuthProvider(authConfig.defaultAuthentication.authenticationType),
+    onlyDefaultAuthProviderConfigured: authConfig.additionalAuthenticationProviders.length === 0,
+    hasAdminRolesEnabled,
+    hasIdentityPoolId: identityPoolId !== null && identityPoolId !== undefined,
     hasApiKey: providers.some((p) => p === 'API_KEY'),
     hasUserPools: providers.some((p) => p === 'AMAZON_COGNITO_USER_POOLS'),
     hasOIDC: providers.some((p) => p === 'OPENID_CONNECT'),
     hasLambda: providers.some((p) => p === 'AWS_LAMBDA'),
     hasIAM,
+    shouldAddDefaultServiceDirective,
   };
   return configuredProviders;
 };

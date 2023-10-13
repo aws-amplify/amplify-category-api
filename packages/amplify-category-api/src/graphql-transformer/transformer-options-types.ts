@@ -14,6 +14,7 @@ import { OverrideConfig } from './cdk-compat/transform-manager';
  * Transformer Options used to create a GraphQL Transform and compile a GQL API
  */
 export type TransformerProjectOptions = {
+  resourceName: string;
   buildParameters: {
     S3DeploymentBucket: string;
     S3DeploymentRootKey: string;
