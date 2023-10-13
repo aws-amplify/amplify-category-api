@@ -110,7 +110,7 @@ export const shouldBeAppliedToDDBModels = (
   ctx: TransformerContextProvider,
 ) => {
   const modelName = definition.name.value;
-  const dbInfo = ctx.modelToDatasourceMap.get(modelName);
+  const dbInfo = ctx.modelToDatasourceMap[modelName];
   if (!(dbInfo?.dbType === DDB_DB_TYPE)) {
     throw new Error(`${directiveName} is only supported on DynamoDB models. ${modelName} is not a DDB model.`);
   }

@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { executeTransform } from '@aws-amplify/graphql-transformer';
+import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
 import { NestedStack, Stack } from 'aws-cdk-lib';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { AssetProps } from '@aws-amplify/graphql-transformer-interfaces';
@@ -157,7 +157,7 @@ export class AmplifyGraphqlApi extends Construct {
 
     const assetManager = new AssetManager();
 
-    executeTransform({
+    const executeTransformConfig: ExecuteTransformConfig = {
       scope: this,
       nestedStackProvider: {
         provide: (nestedStackScope: Construct, name: string) => new NestedStack(nestedStackScope, name),
@@ -188,7 +188,9 @@ export class AmplifyGraphqlApi extends Construct {
         ...defaultTranslationBehavior,
         ...(translationBehavior ?? {}),
       },
-    });
+    };
+
+    executeTransform(executeTransformConfig);
 
     this.codegenAssets = new CodegenAssets(this, 'AmplifyCodegenAssets', { modelSchema: definition.schema });
 

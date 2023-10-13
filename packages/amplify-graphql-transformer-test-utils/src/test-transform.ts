@@ -18,9 +18,9 @@ export type TestTransformParameters = {
   authConfig?: AppSyncAuthConfiguration;
   userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   stackMapping?: Record<string, string>;
-  modelToDatasourceMap?: Map<string, DatasourceType>;
-  datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
-  customQueries?: Map<string, string>;
+  modelToDatasourceMap?: Record<string, DatasourceType>;
+  datasourceSecretParameterLocations?: Record<string, RDSConnectionSecrets>;
+  customQueries?: Record<string, string>;
   overrideConfig?: OverrideConfig;
   sqlLambdaVpcConfig?: VpcSubnetConfig;
   synthParameters?: Partial<SynthParameters>;

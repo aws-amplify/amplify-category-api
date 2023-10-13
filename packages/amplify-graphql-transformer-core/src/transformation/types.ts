@@ -16,8 +16,8 @@ export type UserDefinedResolver = {
 };
 
 export type DatasourceTransformationConfig = {
-  modelToDatasourceMap?: Map<string, DatasourceType>;
-  datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
+  modelToDatasourceMap?: Record<string, DatasourceType>;
+  datasourceSecretParameterLocations?: Record<string, RDSConnectionSecrets>;
   rdsLayerMapping?: RDSLayerMapping;
-  customQueries?: Map<string, string>;
+  customQueries?: Record<string, string>;
 };

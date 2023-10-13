@@ -852,7 +852,7 @@ export const generateAuthExpressionForSandboxMode = (enabled: boolean): string =
 };
 
 export function getDBInfo(ctx: TransformerContextProvider, modelName: string) {
-  const dbInfo = ctx.modelToDatasourceMap.get(modelName);
+  const dbInfo = ctx.modelToDatasourceMap[modelName];
   const result = dbInfo ?? { dbType: 'DDB', provisionDB: true };
   return result;
 }

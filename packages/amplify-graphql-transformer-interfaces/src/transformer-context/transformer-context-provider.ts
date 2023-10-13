@@ -24,8 +24,8 @@ export interface TransformerContextProvider {
   providerRegistry: TransformerProviderRegistry;
 
   inputDocument: DocumentNode;
-  modelToDatasourceMap: Map<string, DatasourceType>;
-  datasourceSecretParameterLocations: Map<string, TransformerSecrets>;
+  modelToDatasourceMap: Record<string, DatasourceType>;
+  datasourceSecretParameterLocations: Record<string, TransformerSecrets>;
   output: TransformerContextOutputProvider;
   stackManager: StackManagerProvider;
   api: GraphQLAPIProvider;
@@ -33,7 +33,7 @@ export interface TransformerContextProvider {
   authConfig: AppSyncAuthConfiguration;
   transformParameters: TransformParameters;
   synthParameters: SynthParameters;
-  customQueries: Map<string, string>;
+  customQueries: Record<string, string>;
 
   isProjectUsingDataStore(): boolean;
   getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;

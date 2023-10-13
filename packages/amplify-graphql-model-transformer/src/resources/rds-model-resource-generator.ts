@@ -3,6 +3,7 @@ import { QueryFieldType, TransformerContextProvider } from '@aws-amplify/graphql
 import { Topic, SubscriptionFilter } from 'aws-cdk-lib/aws-sns';
 import { LambdaSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
 import { ResourceConstants } from 'graphql-transformer-common';
+import { Fn } from 'aws-cdk-lib';
 import { ModelVTLGenerator, RDSModelVTLGenerator } from '../resolvers';
 import {
   createRdsLambda,
@@ -12,7 +13,6 @@ import {
   setRDSLayerMappings,
 } from '../resolvers/rds';
 import { ModelResourceGenerator } from './model-resource-generator';
-import { Fn } from 'aws-cdk-lib';
 
 export const RDS_STACK_NAME = 'RdsApiStack';
 // Beta SNS topic - 'arn:aws:sns:us-east-1:956468067974:AmplifyRDSLayerNotification'
@@ -27,7 +27,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
 
   generateResources(context: TransformerContextProvider): void {
     if (this.isEnabled()) {
-      const secretEntry = context.datasourceSecretParameterLocations.get(MYSQL_DB_TYPE);
+      const secretEntry = context.datasourceSecretParameterLocations[MYSQL_DB_TYPE];
       const {
         RDSLambdaIAMRoleLogicalID,
         RDSPatchingLambdaIAMRoleLogicalID,

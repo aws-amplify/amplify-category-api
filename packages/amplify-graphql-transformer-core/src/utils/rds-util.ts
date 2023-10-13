@@ -38,7 +38,7 @@ export const getParameterStoreSecretPath = (
  * @returns datasource type
  */
 export const getModelDatasourceType = (ctx: TransformerContextProvider, typename: string): ModelDatasourceType => {
-  const config = ctx.modelToDatasourceMap.get(typename);
+  const config = ctx.modelToDatasourceMap[typename];
   return config?.dbType || DDB_DB_TYPE;
 };
 

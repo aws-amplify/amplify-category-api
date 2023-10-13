@@ -2,14 +2,14 @@ import { parse, FieldDefinitionNode, ObjectTypeDefinitionNode, visit } from 'gra
 import _ from 'lodash';
 import { DatasourceType, MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 
-export const checkForUnsupportedDirectives = (schema: string, modelToDatasourceMap: Map<string, DatasourceType>): void => {
+export const checkForUnsupportedDirectives = (schema: string, modelToDatasourceMap: Record<string, DatasourceType>): void => {
   const unsupportedRDSDirectives = ['searchable', 'predictions', 'function', 'manyToMany', 'http', 'mapsTo'];
   if (_.isEmpty(schema) || _.isEmpty(modelToDatasourceMap)) {
     return;
   }
 
   // get all the models in the modelToDatasourceMap that are backed by RDS whose value is present in the db_type property inside the map
-  const rdsModels = Array.from(modelToDatasourceMap?.entries())
+  const rdsModels = Object.entries(modelToDatasourceMap)
     .filter(([key, value]) => value?.dbType === MYSQL_DB_TYPE)
     .map(([key, value]) => key);
 

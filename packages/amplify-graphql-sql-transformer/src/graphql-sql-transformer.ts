@@ -145,8 +145,8 @@ const generateAuthExpressionForSandboxMode = (enabled: boolean): string => {
   );
 };
 
-const getStatement = (config: SqlDirectiveConfiguration, customQueries: Map<string, string>): string => {
-  if (config.reference && !customQueries.has(config.reference)) {
+const getStatement = (config: SqlDirectiveConfiguration, customQueries: Record<string, string>): string => {
+  if (config.reference && !customQueries[config.reference]) {
     throw new InvalidDirectiveError(
       `@sql directive 'reference' argument must be a valid custom query name. Check type "${config.resolverTypeName}" and field "${config.resolverFieldName}". The custom query "${config.reference}" does not exist in "sql-statements" directory.`,
     );
@@ -164,7 +164,7 @@ const getStatement = (config: SqlDirectiveConfiguration, customQueries: Map<stri
     );
   }
 
-  const statement = config.statement ?? customQueries.get(config.reference!);
+  const statement = config.statement ?? customQueries[config.reference!];
   return statement!;
 };
 

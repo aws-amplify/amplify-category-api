@@ -102,7 +102,7 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
 
   generateResolvers = (ctx: TransformerContextProvider): void => {
     for (const config of this.directiveList) {
-      const dbInfo = ctx.modelToDatasourceMap.get(config.object.name.value);
+      const dbInfo = ctx.modelToDatasourceMap[config.object.name.value];
       const vtlGenerator = getVTLGenerator(dbInfo);
       vtlGenerator.generatePrimaryKeyVTL(config, ctx, this.resolverMap);
     }
@@ -191,7 +191,7 @@ export function updateListField(config: PrimaryKeyDirectiveConfiguration, ctx: T
   if (listField) {
     const args = [createHashField(config)];
 
-    const dbInfo = ctx.modelToDatasourceMap.get(config.object.name.value);
+    const dbInfo = ctx.modelToDatasourceMap[config.object.name.value];
     if (dbInfo?.dbType !== 'MySQL') {
       const sortField = tryAndCreateSortField(config, ctx);
       if (sortField) {

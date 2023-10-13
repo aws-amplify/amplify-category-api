@@ -23,14 +23,12 @@ beforeAll(async () => {
         ...defaultTransformParams.transformParameters,
         useSubUsernameForDefaultIdentityClaim: false,
       },
-      modelToDatasourceMap: new Map(
-        Object.entries({
-          Todo: {
-            dbType: 'DDB',
-            provisionDB: true,
-          },
-        }),
-      ),
+      modelToDatasourceMap: {
+        Todo: {
+          dbType: 'DDB',
+          provisionDB: true,
+        },
+      },
     });
 
     let ddbClient;

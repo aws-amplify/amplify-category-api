@@ -90,7 +90,7 @@ const validate = (ctx: TransformerSchemaVisitStepContextProvider, config: Defaul
 };
 
 const isDynamoDBDatasource = (ctx: TransformerSchemaVisitStepContextProvider, modelName: string): boolean => {
-  const isDynamoDB = (ctx.modelToDatasourceMap.get(modelName)?.dbType ?? DDB_DB_TYPE) === DDB_DB_TYPE;
+  const isDynamoDB = (ctx.modelToDatasourceMap[modelName]?.dbType ?? DDB_DB_TYPE) === DDB_DB_TYPE;
   return isDynamoDB;
 };
 

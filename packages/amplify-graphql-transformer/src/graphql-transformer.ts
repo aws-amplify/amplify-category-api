@@ -127,9 +127,9 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
 
 export type ExecuteTransformConfig = TransformConfig & {
   schema: string;
-  modelToDatasourceMap?: Map<string, DatasourceType>;
-  customQueries?: Map<string, string>;
-  datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
+  modelToDatasourceMap?: Record<string, DatasourceType>;
+  customQueries?: Record<string, string>;
+  datasourceSecretParameterLocations?: Record<string, RDSConnectionSecrets>;
   printTransformerLog?: (log: TransformerLog) => void;
   sqlLambdaVpcConfig?: VpcSubnetConfig;
   rdsLayerMapping?: RDSLayerMapping;
@@ -138,6 +138,17 @@ export type ExecuteTransformConfig = TransformConfig & {
   parameterProvider?: TransformParameterProvider;
   assetProvider: AssetProvider;
   synthParameters: SynthParameters;
+
+  /**
+   * If provided, the default datasource type for all models that aren't explicitly specified in `modelToDatasourceMap`. Defaults to
+   * ```json
+   * {
+   *   dbType: 'DDB',
+   *   provisionDB: true
+   * }
+   * ```
+   */
+  defaultDatasourceType?: DatasourceType;
 };
 
 /**

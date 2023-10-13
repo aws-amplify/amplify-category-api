@@ -72,15 +72,15 @@ export class TransformerContext implements TransformerContextProvider {
 
   private resolverConfig: ResolverConfig | undefined;
 
-  public readonly modelToDatasourceMap: Map<string, DatasourceType>;
+  public readonly modelToDatasourceMap: Record<string, DatasourceType>;
 
-  public readonly datasourceSecretParameterLocations: Map<string, RDSConnectionSecrets>;
+  public readonly datasourceSecretParameterLocations: Record<string, RDSConnectionSecrets>;
 
   public readonly sqlLambdaVpcConfig?: VpcSubnetConfig;
 
   public readonly rdsLayerMapping?: RDSLayerMapping;
 
-  public readonly customQueries: Map<string, string>;
+  public readonly customQueries: Record<string, string>;
 
   public metadata: TransformerContextMetadata;
 
@@ -91,13 +91,13 @@ export class TransformerContext implements TransformerContextProvider {
     assetProvider: AssetProvider,
     public readonly synthParameters: SynthParameters,
     public readonly inputDocument: DocumentNode,
-    modelToDatasourceMap: Map<string, DatasourceType>,
-    customQueries: Map<string, string>,
+    modelToDatasourceMap: Record<string, DatasourceType>,
+    customQueries: Record<string, string>,
     stackMapping: Record<string, string>,
     authConfig: AppSyncAuthConfiguration,
     transformParameters: TransformParameters,
     resolverConfig?: ResolverConfig,
-    datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>,
+    datasourceSecretParameterLocations?: Record<string, RDSConnectionSecrets>,
     sqlLambdaVpcConfig?: VpcSubnetConfig,
     rdsLayerMapping?: RDSLayerMapping,
   ) {
@@ -113,7 +113,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.resolverConfig = resolverConfig;
     this.metadata = new TransformerContextMetadata();
     this.modelToDatasourceMap = modelToDatasourceMap;
-    this.datasourceSecretParameterLocations = datasourceSecretParameterLocations ?? new Map<string, RDSConnectionSecrets>();
+    this.datasourceSecretParameterLocations = datasourceSecretParameterLocations ?? {};
     this.sqlLambdaVpcConfig = sqlLambdaVpcConfig;
     this.rdsLayerMapping = rdsLayerMapping;
     this.customQueries = customQueries;

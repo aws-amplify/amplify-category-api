@@ -208,7 +208,7 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
 
   const { modelToDatasourceMap } = opts.projectConfig;
   const datasourceSecretMap = await getDatasourceSecretMap(context);
-  const datasourceMapValues: Array<DatasourceType> = modelToDatasourceMap ? Array.from(modelToDatasourceMap.values()) : [];
+  const datasourceMapValues: Array<DatasourceType> = modelToDatasourceMap ? Object.values(modelToDatasourceMap) : [];
   let sqlLambdaVpcConfig: VpcSubnetConfig | undefined;
   if (datasourceMapValues.some((value) => value.dbType === MYSQL_DB_TYPE && !value.provisionDB)) {
     sqlLambdaVpcConfig = await isSqlLambdaVpcConfigRequired(context);
@@ -291,13 +291,13 @@ const isSqlLambdaVpcConfigRequired = async (context: $TSContext): Promise<VpcSub
   return vpcSubnetConfig;
 };
 
-const getDatasourceSecretMap = async (context: $TSContext): Promise<Map<string, RDSConnectionSecrets>> => {
-  const outputMap = new Map<string, RDSConnectionSecrets>();
+const getDatasourceSecretMap = async (context: $TSContext): Promise<Record<string, RDSConnectionSecrets>> => {
+  const outputMap = {};
   const apiName = getAppSyncAPIName();
   const secretsKey = await getSecretsKey();
   const rdsSecretPaths = await getExistingConnectionSecretNames(context, apiName, secretsKey);
   if (rdsSecretPaths) {
-    outputMap.set(MYSQL_DB_TYPE, rdsSecretPaths);
+    outputMap[MYSQL_DB_TYPE] = rdsSecretPaths;
   }
   return outputMap;
 };
