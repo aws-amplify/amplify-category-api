@@ -5,12 +5,13 @@ import { ConfiguredAuthProviders, RoleDefinition } from '../../../utils';
 import { constructAuthorizedInputStatement, emptyPayload, generateAuthRulesFromRoles, validateAuthResult } from './common';
 
 export const generateAuthExpressionForCreate = (
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ctx: TransformerContextProvider,
   providers: ConfiguredAuthProviders,
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
 ): string => {
-  return generateMutationExpression(roles, fields, 'create', false, providers.identityPoolId);
+  return generateMutationExpression(roles, fields, 'create', false, providers.hasIdentityPoolId);
 };
 
 export const generateAuthExpressionForUpdate = (
@@ -18,7 +19,7 @@ export const generateAuthExpressionForUpdate = (
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
 ): string => {
-  return generateMutationExpression(roles, fields, 'update', true, providers.identityPoolId);
+  return generateMutationExpression(roles, fields, 'update', true, providers.hasIdentityPoolId);
 };
 
 export const generateAuthExpressionForDelete = (
@@ -26,7 +27,7 @@ export const generateAuthExpressionForDelete = (
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
 ): string => {
-  return generateMutationExpression(roles, fields, 'delete', true, providers.identityPoolId);
+  return generateMutationExpression(roles, fields, 'delete', true, providers.hasIdentityPoolId);
 };
 
 const generateMutationExpression = (
@@ -34,10 +35,10 @@ const generateMutationExpression = (
   fields: ReadonlyArray<FieldDefinitionNode>,
   operation: 'create' | 'update' | 'delete',
   includeExistingRecord = false,
-  identityPoolId?: string,
+  hasIdentityPoolId: boolean,
 ): string => {
   const expressions = [];
-  expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, fields, false, identityPoolId)));
+  expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, fields, false, hasIdentityPoolId)));
   expressions.push(
     set(
       ref('authResult'),
