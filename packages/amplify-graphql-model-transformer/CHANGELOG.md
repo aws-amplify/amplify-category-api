@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0-amplify-table-preview.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.3.0-amplify-table-preview.0...@aws-amplify/graphql-model-transformer@2.3.0-amplify-table-preview.1) (2023-10-13)
+
+### Bug Fixes
+
+- use amplify table manager nested stack to avoid dependency issue ([cbc2ff9](https://github.com/aws-amplify/amplify-category-api/commit/cbc2ff9ec2f248f0cae182a020674a03a803f2a3))
+
 # [2.3.0-amplify-table-preview.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.2.3...@aws-amplify/graphql-model-transformer@2.3.0-amplify-table-preview.0) (2023-10-12)
 
 ### Features

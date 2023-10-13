@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0-amplify-table-preview.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.2.0-amplify-table-preview.0...@aws-amplify/graphql-api-construct@1.2.0-amplify-table-preview.1) (2023-10-13)
+
+### Bug Fixes
+
+- jsii file ([2b98d69](https://github.com/aws-amplify/amplify-category-api/commit/2b98d69d6ed5b99099653f4efcf25bb64e55c943))
+
 # [1.2.0-amplify-table-preview.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.1.4...@aws-amplify/graphql-api-construct@1.2.0-amplify-table-preview.0) (2023-10-12)
 
 ### Features

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-maps-to-transformer",
-  "version": "3.2.5-amplify-table-preview.0",
+  "version": "3.2.5-amplify-table-preview.1",
   "description": "Amplify GraphQL @mapsTo transformer",
   "repository": {
     "type": "git",
@@ -40,10 +40,10 @@
     "constructs": "^10.0.5"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-index-transformer": "2.2.0-amplify-table-preview.0",
-    "@aws-amplify/graphql-model-transformer": "2.3.0-amplify-table-preview.0",
-    "@aws-amplify/graphql-relational-transformer": "2.2.0-amplify-table-preview.0",
-    "@aws-amplify/graphql-searchable-transformer": "2.2.4-amplify-table-preview.0",
+    "@aws-amplify/graphql-index-transformer": "2.2.0-amplify-table-preview.1",
+    "@aws-amplify/graphql-model-transformer": "2.3.0-amplify-table-preview.1",
+    "@aws-amplify/graphql-relational-transformer": "2.2.0-amplify-table-preview.1",
+    "@aws-amplify/graphql-searchable-transformer": "2.2.4-amplify-table-preview.1",
     "@aws-amplify/graphql-transformer-test-utils": "0.2.7-amplify-table-preview.0",
     "graphql": "^15.5.0"
   },
