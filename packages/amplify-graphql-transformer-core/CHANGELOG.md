@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.2.2...@aws-amplify/graphql-transformer-core@2.2.3) (2023-10-12)
+
+### Bug Fixes
+
+- iterate over each document definition once ([#1863](https://github.com/aws-amplify/amplify-category-api/issues/1863)) ([a9477d3](https://github.com/aws-amplify/amplify-category-api/commit/a9477d37f6ed66c0f2a329a0322c25c56c960c13))
+
 ## [2.2.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.2.1...@aws-amplify/graphql-transformer-core@2.2.2) (2023-10-05)
 
 ### Bug Fixes

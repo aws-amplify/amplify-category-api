@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-model-transformer",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "Amplify graphql @model transformer",
   "repository": {
     "type": "git",
@@ -32,7 +32,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "2.2.2",
+    "@aws-amplify/graphql-transformer-core": "2.2.3",
     "@aws-amplify/graphql-transformer-interfaces": "3.2.1",
     "graphql": "^15.5.0",
     "graphql-mapping-template": "4.20.12",
@@ -43,7 +43,7 @@
     "constructs": "^10.0.5"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "0.2.5",
+    "@aws-amplify/graphql-transformer-test-utils": "0.2.6",
     "@types/node": "^12.12.6"
   },
   "jest": {
