@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.7.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.7.4...@aws-amplify/amplify-category-api@5.7.5) (2023-10-12)
+
+### Bug Fixes
+
+- convert single action to list of actions ([#1937](https://github.com/aws-amplify/amplify-category-api/issues/1937)) ([22c3115](https://github.com/aws-amplify/amplify-category-api/commit/22c3115b93264d1fb637c13ba7c9f20915f99904))
+
 ## [5.7.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.7.3...@aws-amplify/amplify-category-api@5.7.4) (2023-10-05)
 
 ### Bug Fixes

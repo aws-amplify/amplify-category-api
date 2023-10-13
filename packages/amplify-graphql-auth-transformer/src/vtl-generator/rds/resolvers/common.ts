@@ -38,19 +38,24 @@ export const generateDefaultRDSExpression = (): string => {
 export const generateAuthRulesFromRoles = (
   roles: Array<RoleDefinition>,
   fields: Readonly<FieldDefinitionNode[]>,
+  hasIdentityPoolId: boolean,
   hideAllowedFields = false,
-  identityPoolId?: string,
 ): Expression[] => {
   const expressions = [];
   expressions.push(qref(methodCall(ref('ctx.stash.put'), str('hasAuth'), bool(true))), set(ref('authRules'), list([])));
   const fieldNames = fields.map((field) => field.name.value);
   roles.forEach((role) => {
-    expressions.push(convertAuthRoleToVtl(role, fieldNames, hideAllowedFields, identityPoolId));
+    expressions.push(convertAuthRoleToVtl(role, fieldNames, hasIdentityPoolId, hideAllowedFields));
   });
   return expressions;
 };
 
-const convertAuthRoleToVtl = (role: RoleDefinition, fields: string[], hideAllowedFields = false, identityPoolId?: string): Expression => {
+const convertAuthRoleToVtl = (
+  role: RoleDefinition,
+  fields: string[],
+  hasIdentityPoolId: boolean,
+  hideAllowedFields = false,
+): Expression => {
   const allowedFields = getAllowedFields(role, fields).map((field) => str(field));
   const showAllowedFields = allowedFields && !hideAllowedFields && allowedFields.length > 0;
   // Api Key
@@ -90,7 +95,7 @@ const convertAuthRoleToVtl = (role: RoleDefinition, fields: string[], hideAllowe
           type: str(role.strategy),
           provider: str('iam'),
           roleArn: role.strategy === 'public' ? ref('ctx.stash.unauthRole') : ref('ctx.stash.authRole'),
-          cognitoIdentityPoolId: identityPoolId ? str(identityPoolId) : nul(),
+          cognitoIdentityPoolId: hasIdentityPoolId ? ref('ctx.stash.identityPoolId') : nul(),
           ...(showAllowedFields && { allowedFields: list(allowedFields) }),
         }),
       ),
