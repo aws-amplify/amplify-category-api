@@ -38,14 +38,14 @@ export const generateDefaultRDSExpression = (): string => {
 export const generateAuthRulesFromRoles = (
   roles: Array<RoleDefinition>,
   fields: Readonly<FieldDefinitionNode[]>,
-  hideAllowedFields = false,
   hasIdentityPoolId: boolean,
+  hideAllowedFields = false,
 ): Expression[] => {
   const expressions = [];
   expressions.push(qref(methodCall(ref('ctx.stash.put'), str('hasAuth'), bool(true))), set(ref('authRules'), list([])));
   const fieldNames = fields.map((field) => field.name.value);
   roles.forEach((role) => {
-    expressions.push(convertAuthRoleToVtl(role, fieldNames, hideAllowedFields, hasIdentityPoolId));
+    expressions.push(convertAuthRoleToVtl(role, fieldNames, hasIdentityPoolId, hideAllowedFields));
   });
   return expressions;
 };
@@ -53,8 +53,8 @@ export const generateAuthRulesFromRoles = (
 const convertAuthRoleToVtl = (
   role: RoleDefinition,
   fields: string[],
-  hideAllowedFields = false,
   hasIdentityPoolId: boolean,
+  hideAllowedFields = false,
 ): Expression => {
   const allowedFields = getAllowedFields(role, fields).map((field) => str(field));
   const showAllowedFields = allowedFields && !hideAllowedFields && allowedFields.length > 0;

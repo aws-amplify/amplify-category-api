@@ -11,7 +11,7 @@ export const generateAuthExpressionForCreate = (
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
 ): string => {
-  return generateMutationExpression(roles, fields, 'create', false, providers.hasIdentityPoolId);
+  return generateMutationExpression(roles, fields, 'create', providers.hasIdentityPoolId, false);
 };
 
 export const generateAuthExpressionForUpdate = (
@@ -19,7 +19,7 @@ export const generateAuthExpressionForUpdate = (
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
 ): string => {
-  return generateMutationExpression(roles, fields, 'update', true, providers.hasIdentityPoolId);
+  return generateMutationExpression(roles, fields, 'update', providers.hasIdentityPoolId, true);
 };
 
 export const generateAuthExpressionForDelete = (
@@ -27,18 +27,18 @@ export const generateAuthExpressionForDelete = (
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
 ): string => {
-  return generateMutationExpression(roles, fields, 'delete', true, providers.hasIdentityPoolId);
+  return generateMutationExpression(roles, fields, 'delete', providers.hasIdentityPoolId, true);
 };
 
 const generateMutationExpression = (
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
   operation: 'create' | 'update' | 'delete',
-  includeExistingRecord = false,
   hasIdentityPoolId: boolean,
+  includeExistingRecord = false,
 ): string => {
   const expressions = [];
-  expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, fields, false, hasIdentityPoolId)));
+  expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, fields, hasIdentityPoolId, false)));
   expressions.push(
     set(
       ref('authResult'),
