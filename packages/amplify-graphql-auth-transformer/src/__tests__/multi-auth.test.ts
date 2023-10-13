@@ -3,7 +3,7 @@ import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transfo
 import { AppSyncAuthConfiguration, AppSyncAuthConfigurationOIDCEntry, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse, InputValueDefinitionNode } from 'graphql';
 import { AuthTransformer } from '../graphql-auth-transformer';
-import { expectStashValueLike, expectNoStashValueLike } from './test-helpers';
+import { expectStashValueLike } from './test-helpers';
 
 const userPoolsDefaultConfig: AppSyncAuthConfiguration = {
   defaultAuthentication: {
@@ -597,7 +597,7 @@ describe('iam checks', () => {
       schema,
       authConfig: iamDefaultConfig,
       synthParameters: { identityPoolId },
-      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId })],
+      transformers: [new ModelTransformer(), new AuthTransformer()],
     });
     expect(out).toBeDefined();
     const createResolver = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
@@ -617,7 +617,7 @@ describe('iam checks', () => {
       schema,
       authConfig: iamDefaultConfig,
       synthParameters: { identityPoolId },
-      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId })],
+      transformers: [new ModelTransformer(), new AuthTransformer()],
     });
     expect(out).toBeDefined();
     const createResolver = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
@@ -634,7 +634,7 @@ describe('iam checks', () => {
       schema,
       authConfig: iamDefaultConfig,
       synthParameters: { adminRoles },
-      transformers: [new ModelTransformer(), new AuthTransformer({ adminRoles })],
+      transformers: [new ModelTransformer(), new AuthTransformer()],
     });
     expect(out).toBeDefined();
     const createResolver = out.resolvers['Mutation.createPost.auth.1.req.vtl'];

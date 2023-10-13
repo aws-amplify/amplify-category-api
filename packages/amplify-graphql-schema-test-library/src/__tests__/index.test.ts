@@ -92,10 +92,7 @@ const getV2DefaultTransformerList = (): TransformerPluginProvider[] => {
   const modelTransformer = new ModelTransformer();
   const indexTransformer = new IndexTransformer();
   const hasOneTransformer = new HasOneTransformer();
-  const authTransformer = new AuthTransformer({
-    adminRoles: ['testAdminRoleName'],
-    identityPoolId: 'identityPoolId',
-  });
+  const authTransformer = new AuthTransformer();
 
   return [
     modelTransformer,
