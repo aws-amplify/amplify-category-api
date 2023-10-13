@@ -54,7 +54,7 @@ const convertAuthRoleToVtl = (
   role: RoleDefinition,
   fields: string[],
   hideAllowedFields = false,
-  hasIdentityPoolId: boolean
+  hasIdentityPoolId: boolean,
 ): Expression => {
   const allowedFields = getAllowedFields(role, fields).map((field) => str(field));
   const showAllowedFields = allowedFields && !hideAllowedFields && allowedFields.length > 0;
