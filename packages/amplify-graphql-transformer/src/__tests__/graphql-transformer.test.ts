@@ -34,11 +34,7 @@ describe('constructTransformerChain', () => {
   });
 
   it('succeeds on admin roles', () => {
-    expect(
-      constructTransformerChain({
-        adminRoles: ['testRole'],
-      }).length,
-    ).toEqual(14);
+    expect(constructTransformerChain().length).toEqual(14);
   });
 });
 
@@ -147,7 +143,6 @@ describe('executeTransform', () => {
           content: String!
         }
       `,
-      transformersFactoryArgs: { authConfig: userPoolAuthConfig },
       authConfig: userPoolAuthConfig,
       printTransformerLog: (): void => {
         didLog = true;
