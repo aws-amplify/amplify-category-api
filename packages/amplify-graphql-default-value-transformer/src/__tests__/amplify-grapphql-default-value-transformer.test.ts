@@ -3,6 +3,7 @@ import { DatasourceType, validateModelSchema } from '@aws-amplify/graphql-transf
 import { parse } from 'graphql';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { DefaultValueTransformer } from '..';
+import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 
 describe('DefaultValueModelTransformer:', () => {
   it('throws if @default is used in a non-@model type', () => {
@@ -315,7 +316,7 @@ describe('DefaultValueModelTransformer:', () => {
   it('default value type should not be validated for rds datasource', async () => {
     const validSchema = `
       type Note @model {
-          id: ID!
+          id: ID! @primaryKey
           content: String!
           createdAt: AWSDateTime @default(value: "CURRENT_TIMESTAMP")
       }
@@ -328,7 +329,7 @@ describe('DefaultValueModelTransformer:', () => {
     });
     const out = testTransform({
       schema: validSchema,
-      transformers: [new ModelTransformer(), new DefaultValueTransformer()],
+      transformers: [new ModelTransformer(), new DefaultValueTransformer(), new PrimaryKeyTransformer()],
       modelToDatasourceMap,
     });
     expect(out).toBeDefined();

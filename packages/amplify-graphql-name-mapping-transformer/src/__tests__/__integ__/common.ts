@@ -40,11 +40,11 @@ export const expectedResolversForModelWithRefersTo = (modelName: string) => [
 ];
 
 export const expectedResolversForFieldWithRefersTo = (modelName: string) => [
-  `Mutation.create${modelName}.preAuth.1.req.vtl`,
-  `Mutation.update${modelName}.preAuth.1.req.vtl`,
-  `Mutation.delete${modelName}.preAuth.1.req.vtl`,
-  `Query.get${modelName}.preAuth.1.req.vtl`,
-  `Query.list${modelName}s.preAuth.1.req.vtl`,
+  `Mutation.create${modelName}.preAuth.2.req.vtl`,
+  `Mutation.update${modelName}.preAuth.2.req.vtl`,
+  `Mutation.delete${modelName}.preAuth.2.req.vtl`,
+  `Query.get${modelName}.preAuth.2.req.vtl`,
+  `Query.list${modelName}s.preAuth.2.req.vtl`,
 ];
 
 export const testTableNameMapping = (modelName: string, tableName: string, out: DeploymentResources) => {

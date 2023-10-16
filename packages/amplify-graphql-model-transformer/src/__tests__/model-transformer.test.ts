@@ -17,6 +17,7 @@ import {
 } from './test-utils/helpers';
 import { VpcSubnetConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { InventoryFormat } from 'aws-cdk-lib/aws-s3';
 
 describe('ModelTransformer:', () => {
   it('should successfully transform simple valid schema', async () => {
@@ -1623,5 +1624,27 @@ describe('ModelTransformer:', () => {
     expect(sqlLambda.Properties?.VpcConfig?.SubnetIds).toEqual(expect.arrayContaining(['sub-123', 'sub-456']));
     expect(sqlLambda.Properties?.VpcConfig?.SecurityGroupIds).toBeDefined();
     expect(sqlLambda.Properties?.VpcConfig?.SecurityGroupIds).toEqual(expect.arrayContaining(['sg-123']));
+  });
+
+  it('should fail if RDS model has no primary key defined', async () => {
+    const invalidSchema = `
+      type Note @model {
+          id: ID!
+          content: String!
+      }
+    `;
+
+    const modelToDatasourceMap = new Map<string, DatasourceType>();
+    modelToDatasourceMap.set('Note', {
+      dbType: 'MySQL',
+      provisionDB: false,
+    });
+    expect(() =>
+      testTransform({
+        schema: invalidSchema,
+        transformers: [new ModelTransformer()],
+        modelToDatasourceMap: modelToDatasourceMap,
+      }),
+    ).toThrowError('RDS model "Note" must contain a primary key field');
   });
 });
