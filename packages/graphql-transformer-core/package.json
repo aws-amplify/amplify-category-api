@@ -33,7 +33,7 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@aws-amplify/amplify-cli-core": "4.2.4-aug-transformer-mv-bump.0",
+    "@aws-amplify/amplify-cli-core": "^4.2.10",
     "@types/fs-extra": "^8.0.1",
     "@types/node": "^12.12.6"
   },

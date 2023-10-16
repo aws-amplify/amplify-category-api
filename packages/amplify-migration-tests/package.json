@@ -24,7 +24,7 @@
     "setup-profile": "ts-node ./src/configure_tests.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.2.4-aug-transformer-mv-bump.0",
+    "@aws-amplify/amplify-cli-core": "^4.2.10",
     "@aws-cdk/cloudformation-diff": "~2.80.0",
     "amplify-category-api-e2e-core": "4.3.0",
     "aws-cdk-lib": "~2.80.0",
