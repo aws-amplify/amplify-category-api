@@ -8,6 +8,7 @@ import {
 import { EC2Client, AuthorizeSecurityGroupIngressCommand, RevokeSecurityGroupIngressCommand } from '@aws-sdk/client-ec2';
 import { knex } from 'knex';
 import axios from 'axios';
+import { sleep } from './sleep';
 
 const DEFAULT_DB_INSTANCE_TYPE = 'db.m5.large';
 const DEFAULT_DB_STORAGE = 8;
@@ -105,6 +106,8 @@ export const setupRDSInstanceAndData = async (
         }),
       ),
     );
+
+    await sleep(1 * 60 * 1000); // Delay for the security rules to take effect
 
     const dbAdapter = new RDSTestDataProvider({
       host: dbConfig.endpoint,
