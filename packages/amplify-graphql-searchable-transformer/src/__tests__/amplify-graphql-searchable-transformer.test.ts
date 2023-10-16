@@ -5,6 +5,7 @@ import { parse } from 'graphql';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { SearchableModelTransformer } from '..';
 import { ALLOWABLE_SEARCHABLE_INSTANCE_TYPES } from '../constants';
+import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 
 test('SearchableModelTransformer validation happy case', () => {
   const validSchema = `
@@ -27,7 +28,7 @@ test('SearchableModelTransformer validation happy case', () => {
 test('Throws error for Searchable RDS Models', () => {
   const validSchema = `
     type Post @model @searchable {
-        id: ID!
+        id: ID! @primaryKey
         title: String!
         createdAt: String
         updatedAt: String
@@ -36,7 +37,7 @@ test('Throws error for Searchable RDS Models', () => {
   expect(() =>
     testTransform({
       schema: validSchema,
-      transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new SearchableModelTransformer()],
       modelToDatasourceMap: new Map(
         Object.entries({
           Post: {
