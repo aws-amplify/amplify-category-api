@@ -111,6 +111,9 @@ export const enum ConflictHandlerType {
 }
 
 // @public (undocumented)
+export const constructDataSourceMap: (schema: string, datasourceType: DatasourceType) => Map<string, DatasourceType>;
+
+// @public (undocumented)
 function createSyncLambdaIAMPolicy(context: TransformerContextProvider, scope: Construct, name: string, region?: string): iam.Policy;
 
 // Warning: (ae-forgotten-export) The symbol "TransformerContext" needs to be exported by the entry point index.d.ts

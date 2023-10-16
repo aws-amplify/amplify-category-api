@@ -27,8 +27,15 @@ export interface TransformerDataSourceManagerProvider {
 
 export interface DataSourceProvider extends BackedDataSource {}
 
+/**
+ * Supported transformable database types.
+ */
 export type DBType = 'MySQL' | 'DDB';
 
+/**
+ * Configuration for a datasource. Defines the underlying database engine, and instructs the tranformer whether to provision the database
+ * storage or whether it already exists.
+ */
 export interface DatasourceType {
   dbType: DBType;
   provisionDB: boolean;

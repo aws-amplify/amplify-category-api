@@ -1,8 +1,10 @@
 import path from 'path';
 import _ from 'lodash';
+import { parse, Kind, ObjectTypeDefinitionNode } from 'graphql';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DDB_DB_TYPE, MYSQL_DB_TYPE, ModelDatasourceType } from '../types';
-import { APICategory } from '.';
+import { DatasourceType } from '../config';
+import { APICategory } from './api-category';
 
 const getParameterNameForDBSecret = (secret: string, secretsKey: string): string => {
   return `${secretsKey}_${secret}`;
@@ -60,4 +62,22 @@ export const isDynamoDBModel = (ctx: TransformerContextProvider, typename: strin
  */
 export const isRDSModel = (ctx: TransformerContextProvider, typename: string): boolean => {
   return getModelDatasourceType(ctx, typename) === MYSQL_DB_TYPE;
+};
+
+/**
+ * Constructs a map of model names to datasource types for the specified schema. Used by the transformer to auto-generate a model mapping if
+ * the customer has not provided an explicit one.
+ * @param schema the annotated GraphQL schema
+ * @param datasourceType the datasource type for each model to be associated with
+ * @returns a map of model names to datasource types
+ */
+export const constructDataSourceMap = (schema: string, datasourceType: DatasourceType): Map<string, DatasourceType> => {
+  const parsedSchema = parse(schema);
+  const result = new Map<string, DatasourceType>();
+  parsedSchema.definitions
+    .filter((obj) => obj.kind === Kind.OBJECT_TYPE_DEFINITION && obj.directives?.some((dir) => dir.name.value === 'model'))
+    .forEach((type) => {
+      result.set((type as ObjectTypeDefinitionNode).name.value, datasourceType);
+    });
+  return result;
 };
