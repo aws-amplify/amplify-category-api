@@ -266,8 +266,7 @@ $util.qr($authRules.add({
   \\"type\\": \\"owner\\",
   \\"provider\\": \\"userPools\\",
   \\"ownerFieldName\\": \\"owner\\",
-  \\"ownerFieldType\\": \\"string\\",
-  \\"identityClaim\\": \\"sub::username\\"
+  \\"ownerFieldType\\": \\"string\\"
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
@@ -312,8 +311,7 @@ $util.qr($authRules.add({
   \\"type\\": \\"owner\\",
   \\"provider\\": \\"userPools\\",
   \\"ownerFieldName\\": \\"owner\\",
-  \\"ownerFieldType\\": \\"string\\",
-  \\"identityClaim\\": \\"sub::username\\"
+  \\"ownerFieldType\\": \\"string\\"
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
@@ -358,8 +356,7 @@ $util.qr($authRules.add({
   \\"type\\": \\"owner\\",
   \\"provider\\": \\"userPools\\",
   \\"ownerFieldName\\": \\"owner\\",
-  \\"ownerFieldType\\": \\"string\\",
-  \\"identityClaim\\": \\"sub::username\\"
+  \\"ownerFieldType\\": \\"string\\"
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
@@ -404,8 +401,7 @@ $util.qr($authRules.add({
   \\"type\\": \\"owner\\",
   \\"provider\\": \\"userPools\\",
   \\"ownerFieldName\\": \\"owners\\",
-  \\"ownerFieldType\\": \\"string[]\\",
-  \\"identityClaim\\": \\"sub::username\\"
+  \\"ownerFieldType\\": \\"string[]\\"
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
@@ -450,8 +446,7 @@ $util.qr($authRules.add({
   \\"type\\": \\"owner\\",
   \\"provider\\": \\"userPools\\",
   \\"ownerFieldName\\": \\"owners\\",
-  \\"ownerFieldType\\": \\"string[]\\",
-  \\"identityClaim\\": \\"sub::username\\"
+  \\"ownerFieldType\\": \\"string[]\\"
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
@@ -496,8 +491,7 @@ $util.qr($authRules.add({
   \\"type\\": \\"owner\\",
   \\"provider\\": \\"userPools\\",
   \\"ownerFieldName\\": \\"owners\\",
-  \\"ownerFieldType\\": \\"string[]\\",
-  \\"identityClaim\\": \\"sub::username\\"
+  \\"ownerFieldType\\": \\"string[]\\"
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
@@ -542,13 +536,13 @@ $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
   \\"provider\\": \\"userPools\\",
   \\"allowedGroups\\":   [\\"Admin\\"],
-  \\"identityClaim\\": \\"cognito:groups\\"
+  \\"groupClaim\\": \\"cognito:groups\\"
 }))
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
   \\"provider\\": \\"userPools\\",
   \\"allowedGroups\\":   [\\"Moderator\\"],
-  \\"identityClaim\\": \\"cognito:groups\\"
+  \\"groupClaim\\": \\"cognito:groups\\"
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
@@ -593,13 +587,13 @@ $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
   \\"provider\\": \\"userPools\\",
   \\"allowedGroups\\":   [\\"Admin\\"],
-  \\"identityClaim\\": \\"cognito:groups\\"
+  \\"groupClaim\\": \\"cognito:groups\\"
 }))
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
   \\"provider\\": \\"userPools\\",
   \\"allowedGroups\\":   [\\"Moderator\\"],
-  \\"identityClaim\\": \\"cognito:groups\\"
+  \\"groupClaim\\": \\"cognito:groups\\"
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
@@ -644,13 +638,13 @@ $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
   \\"provider\\": \\"userPools\\",
   \\"allowedGroups\\":   [\\"Admin\\"],
-  \\"identityClaim\\": \\"cognito:groups\\"
+  \\"groupClaim\\": \\"cognito:groups\\"
 }))
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
   \\"provider\\": \\"userPools\\",
   \\"allowedGroups\\":   [\\"Moderator\\"],
-  \\"identityClaim\\": \\"cognito:groups\\"
+  \\"groupClaim\\": \\"cognito:groups\\"
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
@@ -1368,7 +1362,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
 $util.qr($authRules.add({
   \\"type\\": \\"private\\",
-  \\"provider\\": \\"userPools\\"
+  \\"provider\\": \\"oidc\\"
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
@@ -1411,7 +1405,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
 $util.qr($authRules.add({
   \\"type\\": \\"private\\",
-  \\"provider\\": \\"userPools\\"
+  \\"provider\\": \\"oidc\\"
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
@@ -1454,7 +1448,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
 $util.qr($authRules.add({
   \\"type\\": \\"private\\",
-  \\"provider\\": \\"userPools\\"
+  \\"provider\\": \\"oidc\\"
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
@@ -1497,7 +1491,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
 $util.qr($authRules.add({
   \\"type\\": \\"owner\\",
-  \\"provider\\": \\"userPools\\",
+  \\"provider\\": \\"oidc\\",
   \\"ownerFieldName\\": \\"owner\\",
   \\"ownerFieldType\\": \\"string\\",
   \\"identityClaim\\": \\"sub::username\\"
@@ -1543,7 +1537,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
 $util.qr($authRules.add({
   \\"type\\": \\"owner\\",
-  \\"provider\\": \\"userPools\\",
+  \\"provider\\": \\"oidc\\",
   \\"ownerFieldName\\": \\"owner\\",
   \\"ownerFieldType\\": \\"string\\",
   \\"identityClaim\\": \\"sub::username\\"
@@ -1589,7 +1583,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
 $util.qr($authRules.add({
   \\"type\\": \\"owner\\",
-  \\"provider\\": \\"userPools\\",
+  \\"provider\\": \\"oidc\\",
   \\"ownerFieldName\\": \\"owner\\",
   \\"ownerFieldType\\": \\"string\\",
   \\"identityClaim\\": \\"sub::username\\"
@@ -1635,7 +1629,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
 $util.qr($authRules.add({
   \\"type\\": \\"owner\\",
-  \\"provider\\": \\"userPools\\",
+  \\"provider\\": \\"oidc\\",
   \\"ownerFieldName\\": \\"owners\\",
   \\"ownerFieldType\\": \\"string[]\\",
   \\"identityClaim\\": \\"sub::username\\"
@@ -1681,7 +1675,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
 $util.qr($authRules.add({
   \\"type\\": \\"owner\\",
-  \\"provider\\": \\"userPools\\",
+  \\"provider\\": \\"oidc\\",
   \\"ownerFieldName\\": \\"owners\\",
   \\"ownerFieldType\\": \\"string[]\\",
   \\"identityClaim\\": \\"sub::username\\"
@@ -1727,7 +1721,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
 $util.qr($authRules.add({
   \\"type\\": \\"owner\\",
-  \\"provider\\": \\"userPools\\",
+  \\"provider\\": \\"oidc\\",
   \\"ownerFieldName\\": \\"owners\\",
   \\"ownerFieldType\\": \\"string[]\\",
   \\"identityClaim\\": \\"sub::username\\"
@@ -1773,15 +1767,15 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
-  \\"provider\\": \\"userPools\\",
+  \\"provider\\": \\"oidc\\",
   \\"allowedGroups\\":   [\\"Admin\\"],
-  \\"identityClaim\\": \\"cognito:groups\\"
+  \\"groupClaim\\": \\"cognito:groups\\"
 }))
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
-  \\"provider\\": \\"userPools\\",
+  \\"provider\\": \\"oidc\\",
   \\"allowedGroups\\":   [\\"Moderator\\"],
-  \\"identityClaim\\": \\"cognito:groups\\"
+  \\"groupClaim\\": \\"cognito:groups\\"
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
@@ -1824,15 +1818,15 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
-  \\"provider\\": \\"userPools\\",
+  \\"provider\\": \\"oidc\\",
   \\"allowedGroups\\":   [\\"Admin\\"],
-  \\"identityClaim\\": \\"cognito:groups\\"
+  \\"groupClaim\\": \\"cognito:groups\\"
 }))
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
-  \\"provider\\": \\"userPools\\",
+  \\"provider\\": \\"oidc\\",
   \\"allowedGroups\\":   [\\"Moderator\\"],
-  \\"identityClaim\\": \\"cognito:groups\\"
+  \\"groupClaim\\": \\"cognito:groups\\"
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
@@ -1875,15 +1869,15 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
-  \\"provider\\": \\"userPools\\",
+  \\"provider\\": \\"oidc\\",
   \\"allowedGroups\\":   [\\"Admin\\"],
-  \\"identityClaim\\": \\"cognito:groups\\"
+  \\"groupClaim\\": \\"cognito:groups\\"
 }))
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
-  \\"provider\\": \\"userPools\\",
+  \\"provider\\": \\"oidc\\",
   \\"allowedGroups\\":   [\\"Moderator\\"],
-  \\"identityClaim\\": \\"cognito:groups\\"
+  \\"groupClaim\\": \\"cognito:groups\\"
 }))
 #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
@@ -1926,7 +1920,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
-  \\"provider\\": \\"userPools\\",
+  \\"provider\\": \\"oidc\\",
   \\"groupsFieldName\\": \\"group\\",
   \\"groupsFieldType\\": \\"string\\",
   \\"groupClaim\\": \\"cognito:groups\\"
@@ -1972,7 +1966,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
-  \\"provider\\": \\"userPools\\",
+  \\"provider\\": \\"oidc\\",
   \\"groupsFieldName\\": \\"group\\",
   \\"groupsFieldType\\": \\"string\\",
   \\"groupClaim\\": \\"cognito:groups\\"
@@ -2018,7 +2012,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
-  \\"provider\\": \\"userPools\\",
+  \\"provider\\": \\"oidc\\",
   \\"groupsFieldName\\": \\"group\\",
   \\"groupsFieldType\\": \\"string\\",
   \\"groupClaim\\": \\"cognito:groups\\"
@@ -2064,7 +2058,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
-  \\"provider\\": \\"userPools\\",
+  \\"provider\\": \\"oidc\\",
   \\"groupsFieldName\\": \\"groups\\",
   \\"groupsFieldType\\": \\"string[]\\",
   \\"groupClaim\\": \\"cognito:groups\\"
@@ -2110,7 +2104,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
-  \\"provider\\": \\"userPools\\",
+  \\"provider\\": \\"oidc\\",
   \\"groupsFieldName\\": \\"groups\\",
   \\"groupsFieldType\\": \\"string[]\\",
   \\"groupClaim\\": \\"cognito:groups\\"
@@ -2156,7 +2150,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
-  \\"provider\\": \\"userPools\\",
+  \\"provider\\": \\"oidc\\",
   \\"groupsFieldName\\": \\"groups\\",
   \\"groupsFieldType\\": \\"string[]\\",
   \\"groupClaim\\": \\"cognito:groups\\"

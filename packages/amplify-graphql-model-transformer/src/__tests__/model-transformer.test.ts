@@ -16,6 +16,7 @@ import {
   verifyMatchingTypes,
 } from './test-utils/helpers';
 import { VpcSubnetConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 
 describe('ModelTransformer:', () => {
   it('should successfully transform simple valid schema', async () => {
@@ -1515,14 +1516,14 @@ describe('ModelTransformer:', () => {
   it('should successfully transform simple rds valid schema', async () => {
     const validSchema = `
       type Post @model {
-          id: ID!
+          id: ID! @primaryKey
           title: String!
       }
     `;
 
     const out = testTransform({
       schema: validSchema,
-      transformers: [new ModelTransformer()],
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
       modelToDatasourceMap: new Map(
         Object.entries({
           Post: {
@@ -1541,7 +1542,7 @@ describe('ModelTransformer:', () => {
   it('should successfully transform rds schema with array and object fields', async () => {
     const validSchema = `
       type Note @model {
-          id: ID!
+          id: ID! @primaryKey
           content: String!
           tags: [String!]
           attachments: Attachment
@@ -1560,7 +1561,7 @@ describe('ModelTransformer:', () => {
     });
     const out = testTransform({
       schema: validSchema,
-      transformers: [new ModelTransformer()],
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
       modelToDatasourceMap,
     });
     expect(out).toBeDefined();
@@ -1574,7 +1575,7 @@ describe('ModelTransformer:', () => {
   it('sql lambda with vpc config should generate correct stack', async () => {
     const validSchema = `
       type Note @model {
-          id: ID!
+          id: ID! @primaryKey
           content: String!
       }
     `;
@@ -1603,7 +1604,7 @@ describe('ModelTransformer:', () => {
     };
     const out = testTransform({
       schema: validSchema,
-      transformers: [new ModelTransformer()],
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
       modelToDatasourceMap,
       sqlLambdaVpcConfig,
     });
