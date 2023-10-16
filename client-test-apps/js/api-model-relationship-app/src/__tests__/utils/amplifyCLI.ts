@@ -301,7 +301,7 @@ export class AmplifyCLI {
     }
 
     chain
-      .wait('Help improve Amplify CLI by sharing non-sensitive project configurations on failures')
+      .wait('Help improve Amplify CLI')
       .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/);
 
