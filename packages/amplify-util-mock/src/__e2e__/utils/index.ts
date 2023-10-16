@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
 import * as dynamoEmulator from 'amplify-category-api-dynamodb-simulator';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import { v4 } from 'uuid';
 import { DynamoDB } from 'aws-sdk';
@@ -20,7 +21,16 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
   pathManager: {
     getAmplifyPackageLibDirPath: jest.fn().mockReturnValue('../amplify-dynamodb-simulator'),
   },
+  stateManager: {
+    getCurrentEnvName: jest.fn().mockReturnValue('testenv'),
+    getProjectConfig: jest.fn().mockReturnValue({ projectName: 'testProjectName' }),
+    getMeta: jest.fn().mockReturnValue({ api: { testApi: { service: 'AppSync' } } }),
+  },
 }));
+
+jest.spyOn(stateManager, 'getCurrentEnvName').mockImplementation(() => 'testenv');
+jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
+jest.spyOn(stateManager, 'getMeta').mockReturnValue({ api: { testApi: { service: 'AppSync' } } });
 
 const getAuthenticationTypesForAuthConfig = (authConfig?: AppSyncAuthConfiguration): (string | undefined)[] =>
   [authConfig?.defaultAuthentication, ...(authConfig?.additionalAuthenticationProviders ?? [])].map(

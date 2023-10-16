@@ -1,10 +1,6 @@
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
-import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { deploy, launchDDBLocal, logDebug, GraphQLClient, terminateDDB, defaultTransformParams, transformAndSynth } from '../__e2e__/utils';
 
-jest.spyOn(stateManager, 'getCurrentEnvName').mockReturnValue('testenv');
-jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
-jest.spyOn(stateManager, 'getMeta').mockReturnValue({ api: { testApi: { service: 'AppSync' } } });
 jest.setTimeout(2000000);
 
 let GRAPHQL_ENDPOINT: string;
