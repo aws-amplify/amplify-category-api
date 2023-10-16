@@ -10,7 +10,7 @@ import {
   AppSyncAuthConfiguration,
   TransformerLog,
   TransformerLogLevel,
-  VpcSubnetConfig,
+  VpcConfig,
   RDSLayerMapping,
   SubnetAvailabilityZone,
 } from '@aws-amplify/graphql-transformer-interfaces';
@@ -209,7 +209,7 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
   const { modelToDatasourceMap } = opts.projectConfig;
   const datasourceSecretMap = await getDatasourceSecretMap(context);
   const datasourceMapValues: Array<DatasourceType> = modelToDatasourceMap ? Array.from(modelToDatasourceMap.values()) : [];
-  let sqlLambdaVpcConfig: VpcSubnetConfig | undefined;
+  let sqlLambdaVpcConfig: VpcConfig | undefined;
   if (datasourceMapValues.some((value) => value.dbType === MYSQL_DB_TYPE && !value.provisionDB)) {
     sqlLambdaVpcConfig = await isSqlLambdaVpcConfigRequired(context);
   }
@@ -278,15 +278,11 @@ const getRDSLayerMapping = async (): Promise<RDSLayerMapping> => {
   return {};
 };
 
-const isSqlLambdaVpcConfigRequired = async (context: $TSContext): Promise<VpcSubnetConfig | undefined> => {
+const isSqlLambdaVpcConfigRequired = async (context: $TSContext): Promise<VpcConfig | undefined> => {
   // If the database is in VPC, we will use the same VPC configuration for the SQL lambda.
   // Customers are required to add inbound rule for port 443 from the private subnet in the Security Group.
   // https://docs.aws.amazon.com/systems-manager/latest/userguide/setup-create-vpc.html#vpc-requirements-and-limitations
   const vpcSubnetConfig = await getSQLLambdaVpcConfig(context);
-
-  if (!vpcSubnetConfig.vpcConfig) {
-    return undefined;
-  }
 
   return vpcSubnetConfig;
 };
@@ -302,19 +298,12 @@ const getDatasourceSecretMap = async (context: $TSContext): Promise<Map<string, 
   return outputMap;
 };
 
-const getSQLLambdaVpcConfig = async (context: $TSContext): Promise<VpcSubnetConfig> => {
+const getSQLLambdaVpcConfig = async (context: $TSContext): Promise<VpcConfig> => {
   const [secretsKey, engine] = [getSecretsKey(), ImportedRDSType.MYSQL];
   const { secrets } = await getConnectionSecrets(context, secretsKey, engine);
   const region = context.amplify.getProjectMeta().providers.awscloudformation.Region;
   const vpcConfig = await getHostVpc(secrets.host, region);
-  let subnetAvailabilityZoneConfig = [] as SubnetAvailabilityZone[];
-  if (vpcConfig && vpcConfig.subnetIds) {
-    subnetAvailabilityZoneConfig = await getAvaliabilityZoneOfSubnets(vpcConfig.subnetIds, region);
-  }
-  return {
-    vpcConfig,
-    subnetAvailabilityZoneConfig,
-  };
+  return vpcConfig;
 };
 
 const printTransformerLog = (log: TransformerLog): void => {

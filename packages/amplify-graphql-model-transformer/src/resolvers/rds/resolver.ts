@@ -22,13 +22,12 @@ import {
   RDSLayerMapping,
   SubnetAvailabilityZone,
   TransformerContextProvider,
-  VpcSubnetConfig,
+  VpcConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import path from 'path';
-import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces/src';
 import { EnumTypeDefinitionNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
 import { CfnVPCEndpoint } from 'aws-cdk-lib/aws-ec2';
 
@@ -144,12 +143,12 @@ export const createRdsLambda = (
   apiGraphql: GraphQLAPIProvider,
   lambdaRole: IRole,
   environment?: { [key: string]: string },
-  sqlLambdaVpcConfig?: VpcSubnetConfig,
+  sqlLambdaVpcConfig?: VpcConfig,
 ): IFunction => {
   const { RDSLambdaLogicalID } = ResourceConstants.RESOURCES;
 
   let ssmEndpoint = Fn.join('', ['ssm.', Fn.ref('AWS::Region'), '.amazonaws.com']); // Default SSM endpoint
-  if (sqlLambdaVpcConfig && sqlLambdaVpcConfig.vpcConfig) {
+  if (sqlLambdaVpcConfig) {
     const endpoints = addVpcEndpointForSecretsManager(scope, sqlLambdaVpcConfig);
     const ssmEndpointEntries = endpoints.find((endpoint) => endpoint.service === 'ssm')?.endpoint.attrDnsEntries;
     if (ssmEndpointEntries) {
@@ -177,25 +176,25 @@ export const createRdsLambda = (
     },
     Duration.seconds(30),
     scope,
-    sqlLambdaVpcConfig?.vpcConfig,
+    sqlLambdaVpcConfig,
   );
 };
 
-const addVpcEndpoint = (scope: Construct, sqlLambdaVpcConfig: VpcSubnetConfig, serviceSuffix: string): CfnVPCEndpoint => {
+const addVpcEndpoint = (scope: Construct, sqlLambdaVpcConfig: VpcConfig, serviceSuffix: string): CfnVPCEndpoint => {
   const serviceEndpointPrefix = 'com.amazonaws';
   return new CfnVPCEndpoint(scope, `RDSVpcEndpoint${serviceSuffix}`, {
     serviceName: Fn.join('', [serviceEndpointPrefix, '.', Fn.ref('AWS::Region'), '.', serviceSuffix]), // Sample: com.amazonaws.us-east-1.ssmmessages
     vpcEndpointType: 'Interface',
-    vpcId: sqlLambdaVpcConfig.vpcConfig.vpcId,
+    vpcId: sqlLambdaVpcConfig.vpcId,
     subnetIds: extractSubnetForVpcEndpoint(sqlLambdaVpcConfig.subnetAvailabilityZoneConfig),
-    securityGroupIds: sqlLambdaVpcConfig.vpcConfig.securityGroupIds,
+    securityGroupIds: sqlLambdaVpcConfig.securityGroupIds,
     privateDnsEnabled: false,
   });
 };
 
 const addVpcEndpointForSecretsManager = (
   scope: Construct,
-  sqlLambdaVpcConfig: VpcSubnetConfig,
+  sqlLambdaVpcConfig: VpcConfig,
 ): { service: string; endpoint: CfnVPCEndpoint }[] => {
   const services = ['ssm', 'ssmmessages', 'ec2', 'ec2messages', 'kms'];
   return services.map((service) => {

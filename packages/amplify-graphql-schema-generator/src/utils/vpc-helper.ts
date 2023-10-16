@@ -1,18 +1,5 @@
 /* eslint-disable no-use-before-define */
 import {
-  RDSClient,
-  DescribeDBClustersCommand,
-  DescribeDBClustersCommandOutput,
-  DescribeDBClustersCommandInput,
-  DescribeDBInstancesCommand,
-  DescribeDBInstancesCommandOutput,
-  DescribeDBInstancesCommandInput,
-  DescribeDBProxiesCommand,
-  DescribeDBProxiesCommandOutput,
-  DescribeDBProxiesCommandInput,
-  DescribeDBSubnetGroupsCommand,
-} from '@aws-sdk/client-rds';
-import {
   IAMClient,
   CreateRoleCommand,
   GetRoleCommand,
@@ -43,133 +30,16 @@ import {
 import * as fs from 'fs-extra';
 import ora from 'ora';
 import { printer } from '@aws-amplify/amplify-prompts';
-
-// Filters to use with DescribeDBInstances and DescribeDBClusters SDK calls
-const DB_ENGINES = ['aurora-mysql', 'mysql', 'postgres', 'aurora-postgresql'];
+import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { checkHostInDBClusters } from './vpc-helper-cluster';
+import { checkHostInDBProxies } from './vpc-helper-proxy';
+import { checkHostInDBInstances } from './vpc-helper-instance';
 
 const spinner = ora('');
 
 /**
- * Type for VPC configuration required to deploy a lambda function.
- */
-export type VpcConfig = {
-  vpcId: string;
-  subnetIds: string[];
-  securityGroupIds: string[];
-};
-
-const checkHostInDBProxies = async (hostname: string, region: string): Promise<VpcConfig | undefined> => {
-  const client = new RDSClient({ region });
-  const params: DescribeDBProxiesCommandInput = {
-    Filters: [
-      {
-        Name: 'engine',
-        Values: DB_ENGINES,
-      },
-    ],
-  };
-
-  const command = new DescribeDBProxiesCommand(params);
-  const response: DescribeDBProxiesCommandOutput = await client.send(command);
-
-  if (!response.DBProxies) {
-    throw new Error('Error in fetching DB Proxies');
-  }
-
-  const proxy = response.DBProxies.find((p) => p?.Endpoint === hostname);
-  if (!proxy) {
-    return undefined;
-  }
-
-  return {
-    vpcId: proxy.VpcId,
-    subnetIds: proxy.VpcSubnetIds,
-    securityGroupIds: proxy.VpcSecurityGroupIds,
-  };
-};
-
-const checkHostInDBInstances = async (hostname: string, region: string): Promise<VpcConfig | undefined> => {
-  const client = new RDSClient({ region });
-  const params: DescribeDBInstancesCommandInput = {
-    Filters: [
-      {
-        Name: 'engine',
-        Values: DB_ENGINES,
-      },
-    ],
-  };
-
-  const command = new DescribeDBInstancesCommand(params);
-  const response: DescribeDBInstancesCommandOutput = await client.send(command);
-
-  if (!response.DBInstances) {
-    throw new Error('Error in fetching DB Instances');
-  }
-
-  const instance = response.DBInstances.find((dbInstance) => dbInstance?.Endpoint?.Address === hostname);
-  if (!instance) {
-    return undefined;
-  }
-
-  return {
-    vpcId: instance.DBSubnetGroup.VpcId,
-    subnetIds: instance.DBSubnetGroup.Subnets.map((subnet) => subnet.SubnetIdentifier),
-    securityGroupIds: instance.VpcSecurityGroups.map((securityGroup) => securityGroup.VpcSecurityGroupId),
-  };
-};
-
-const checkHostInDBClusters = async (hostname: string, region: string): Promise<VpcConfig | undefined> => {
-  const client = new RDSClient({ region });
-  const params: DescribeDBClustersCommandInput = {
-    Filters: [
-      {
-        Name: 'engine',
-        Values: DB_ENGINES,
-      },
-    ],
-  };
-
-  const command = new DescribeDBClustersCommand(params);
-  const response: DescribeDBClustersCommandOutput = await client.send(command);
-
-  if (!response.DBClusters) {
-    throw new Error('Error in fetching DB Clusters');
-  }
-
-  const cluster = response.DBClusters.find((dbCluster) => dbCluster?.Endpoint === hostname);
-  if (!cluster) {
-    return undefined;
-  }
-
-  const { subnetIds, vpcId } = await getSubnetIds(cluster.DBSubnetGroup, region);
-  return {
-    vpcId,
-    subnetIds,
-    securityGroupIds: cluster.VpcSecurityGroups.map((securityGroup) => securityGroup.VpcSecurityGroupId),
-  };
-};
-
-const getSubnetIds = async (
-  subnetGroupName: string,
-  region: string,
-): Promise<{
-  subnetIds: string[];
-  vpcId: string;
-}> => {
-  const client = new RDSClient({ region });
-  const command = new DescribeDBSubnetGroupsCommand({
-    DBSubnetGroupName: subnetGroupName,
-  });
-  const response = await client.send(command);
-  const subnetGroup = response.DBSubnetGroups?.find((sg) => sg?.DBSubnetGroupName === subnetGroupName);
-  return {
-    subnetIds: subnetGroup.Subnets?.map((subnet) => subnet.SubnetIdentifier) ?? [],
-    vpcId: subnetGroup.VpcId,
-  };
-};
-
-/**
- * Searches for the host in DB Proxies, then DB Clusters, and finally DB Instances. Returns the VPC configuration if found.
+ * Searches for the host in DB Proxies, then DB Clusters, and finally DB Instances. Returns the VPC configuration if found. Note that some
+ * inspections may require additional API calls to derive subnet and availability zone configurations.
  *
  * @param hostname Hostname of the database.
  * @param region AWS region.
@@ -218,9 +88,10 @@ export const provisionSchemaInspectorLambda = async (lambdaName: string, vpc: Vp
   spinner.start('Provisioning a function to introspect the database schema...');
   try {
     if (existingLambda) {
+      const subnetIds = vpc.subnetAvailabilityZoneConfig.map((sn) => sn.SubnetId);
       const vpcConfigMismatch =
         existingLambda.VpcConfig?.SecurityGroupIds?.sort().join() !== vpc.securityGroupIds.sort().join() ||
-        existingLambda.VpcConfig?.SubnetIds?.sort().join() !== vpc.subnetIds.sort().join();
+        existingLambda.VpcConfig?.SubnetIds?.sort().join() !== subnetIds.sort().join();
       if (vpcConfigMismatch) {
         await deleteSchemaInspectorLambdaRole(lambdaName, region);
         createLambda = true;
@@ -269,6 +140,7 @@ const deleteSchemaInspectorLambdaRole = async (lambdaName: string, region: strin
 
 const createSchemaInspectorLambda = async (lambdaName: string, iamRole: Role, vpc: VpcConfig, region: string): Promise<void> => {
   const lambdaClient = new LambdaClient({ region });
+  const subnetIds = vpc.subnetAvailabilityZoneConfig.map((sn) => sn.SubnetId);
 
   const params: CreateFunctionCommandInput = {
     Code: {
@@ -281,13 +153,13 @@ const createSchemaInspectorLambda = async (lambdaName: string, iamRole: Role, vp
     Runtime: 'nodejs18.x',
     VpcConfig: {
       SecurityGroupIds: vpc.securityGroupIds,
-      SubnetIds: vpc.subnetIds,
+      SubnetIds: subnetIds,
     },
     Timeout: 30,
   };
 
   const response = await lambdaClient.send(new CreateFunctionCommand(params));
-  await waitUntilFunctionActive({ client: lambdaClient, maxWaitTime: 600 }, { FunctionName: lambdaName });
+  await waitUntilFunctionActive({ client: lambdaClient, maxWaitTime: 600 }, { FunctionName: response.FunctionName! });
 };
 
 const updateSchemaInspectorLambda = async (lambdaName: string, region: string): Promise<void> => {

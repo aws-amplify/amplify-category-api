@@ -28,7 +28,6 @@ export {
   AppSyncAuthMode,
   UserPoolConfig,
   VpcConfig,
-  VpcSubnetConfig,
   SubnetAvailabilityZone,
   SearchableDataSourceOptions,
   RDSLayerMapping,

@@ -439,7 +439,7 @@ export interface TransformerContextProvider {
     // (undocumented)
     resourceHelper: TransformerResourceHelperProvider;
     // (undocumented)
-    readonly sqlLambdaVpcConfig?: VpcSubnetConfig;
+    readonly sqlLambdaVpcConfig?: VpcConfig;
     // (undocumented)
     stackManager: StackManagerProvider;
     // (undocumented)

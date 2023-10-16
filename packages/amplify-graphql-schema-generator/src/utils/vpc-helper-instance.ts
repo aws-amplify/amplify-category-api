@@ -1,0 +1,50 @@
+import {
+  RDSClient,
+  DescribeDBInstancesCommand,
+  DescribeDBInstancesCommandOutput,
+  DescribeDBInstancesCommandInput,
+} from '@aws-sdk/client-rds';
+import { SubnetAvailabilityZone, VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { DB_ENGINES } from './supported-db-engines';
+import { filterSubnetAvailabilityZones } from './filter-subnet-availability-zones';
+
+export const checkHostInDBInstances = async (hostname: string, region: string): Promise<VpcConfig | undefined> => {
+  const client = new RDSClient({ region });
+  const params: DescribeDBInstancesCommandInput = {
+    Filters: [
+      {
+        Name: 'engine',
+        Values: DB_ENGINES,
+      },
+    ],
+  };
+
+  const command = new DescribeDBInstancesCommand(params);
+  const response: DescribeDBInstancesCommandOutput = await client.send(command);
+
+  if (!response.DBInstances) {
+    throw new Error('Error in fetching DB Instances');
+  }
+
+  const instance = response.DBInstances.find((dbInstance) => dbInstance?.Endpoint?.Address === hostname);
+  if (!instance) {
+    return undefined;
+  }
+
+  const subnetAvailabilityZones = instance?.DBSubnetGroup.Subnets.map((subnet): SubnetAvailabilityZone => {
+    return {
+      SubnetId: subnet.SubnetIdentifier,
+      AvailabilityZone: subnet.SubnetAvailabilityZone?.Name,
+    };
+  });
+
+  const subnetAvailabilityZoneConfig = filterSubnetAvailabilityZones(subnetAvailabilityZones);
+
+  const vpcId = instance.DBSubnetGroup.VpcId;
+  const securityGroupIds = instance.VpcSecurityGroups.map((securityGroup) => securityGroup.VpcSecurityGroupId);
+  return {
+    vpcId,
+    subnetAvailabilityZoneConfig,
+    securityGroupIds,
+  };
+};
