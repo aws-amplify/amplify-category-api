@@ -96,14 +96,14 @@ describe('RDS Relational Directives', () => {
   const createAppSyncClients = async (appRegion, apiKey): Promise<void> => {
     configureAmplify(projRoot);
     const unAuthCredentials = await Auth.currentCredentials();
-    const [cognito_username, cognito_password] = ['test@test.com', 'Password123!']
+    const [cognito_username, cognito_password] = ['test@test.com', 'Password123!'];
     const userPoolId = getUserPoolId(projRoot);
     await setupUser(userPoolId, cognito_username, cognito_password);
 
     await sleep(30 * 1000); // Wait for 30 seconds for the user to be available in Cognito.
     await signInUser(cognito_username, cognito_password);
     const authCredentials = await Auth.currentCredentials();
-    
+
     const unauthAppSyncClient = getConfiguredAppsyncClientIAMAuth(apiEndPoint, appRegion, unAuthCredentials);
     const authAppSyncClient = getConfiguredAppsyncClientIAMAuth(apiEndPoint, appRegion, authCredentials);
     const apiKeyClient = getConfiguredAppsyncClientAPIKeyAuth(apiEndPoint, appRegion, apiKey);
@@ -228,33 +228,36 @@ describe('RDS Relational Directives', () => {
       `,
       authMode: GRAPHQL_AUTH_MODE.AWS_IAM,
     }) as unknown as Observable<any>;
-    
+
     let subscription: ZenObservable.Subscription;
     const subscriptionPromise = new Promise((resolve, _) => {
-      subscription = observer.subscribe((event: any) => {
-        const blog = event.value.data.onCreateBlog;
-        subscription.unsubscribe();
-        expect(blog).toBeDefined();
-        expect(blog).toEqual(
-          expect.objectContaining({
-            id: 'B-1',
-            content: 'Blog 1',
-          }),
-        );
-        resolve(undefined);
-      }, (err) => {
-        console.log(JSON.stringify(err.error.errors, null, 4));
-        throw new Error('IAM client should be able to subscribe on blog');
-      });
+      subscription = observer.subscribe(
+        (event: any) => {
+          const blog = event.value.data.onCreateBlog;
+          subscription.unsubscribe();
+          expect(blog).toBeDefined();
+          expect(blog).toEqual(
+            expect.objectContaining({
+              id: 'B-1',
+              content: 'Blog 1',
+            }),
+          );
+          resolve(undefined);
+        },
+        (err) => {
+          console.log(JSON.stringify(err.error.errors, null, 4));
+          throw new Error('IAM client should be able to subscribe on blog');
+        },
+      );
     });
-  
+
     await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
-  
+
     await blogIAMAuthClient.create('createBlog', {
       id: 'B-1',
       content: 'Blog 1',
     });
-  
+
     return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateBlog Subscription timed out', () => {
       subscription?.unsubscribe();
     });
@@ -282,28 +285,31 @@ describe('RDS Relational Directives', () => {
       },
       authMode: GRAPHQL_AUTH_MODE.AWS_IAM,
     }) as unknown as Observable<any>;
-    
+
     let subscription: ZenObservable.Subscription;
     const subscriptionPromise = new Promise((resolve, _) => {
-      subscription = observer.subscribe((event: any) => {
-        const blog = event.value.data.onCreateBlog;
-        subscription.unsubscribe();
-        expect(blog).toBeDefined();
-        expect(blog).toEqual(
-          expect.objectContaining({
-            id: 'B-3',
-            content: 'Blog 3',
-          }),
-        );
-        resolve(undefined);
-      }, (err) => {
-        console.log(JSON.stringify(err.error.errors, null, 4));
-        throw new Error('IAM client should be able to subscribe on blog');
-      });
+      subscription = observer.subscribe(
+        (event: any) => {
+          const blog = event.value.data.onCreateBlog;
+          subscription.unsubscribe();
+          expect(blog).toBeDefined();
+          expect(blog).toEqual(
+            expect.objectContaining({
+              id: 'B-3',
+              content: 'Blog 3',
+            }),
+          );
+          resolve(undefined);
+        },
+        (err) => {
+          console.log(JSON.stringify(err.error.errors, null, 4));
+          throw new Error('IAM client should be able to subscribe on blog');
+        },
+      );
     });
-  
+
     await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
-  
+
     await blogIAMAuthClient.create('createBlog', {
       id: 'B-2',
       content: 'Blog 2',
@@ -313,7 +319,7 @@ describe('RDS Relational Directives', () => {
       id: 'B-3',
       content: 'Blog 3',
     });
-  
+
     return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateBlog Subscription timed out', () => {
       subscription?.unsubscribe();
     });
@@ -334,33 +340,36 @@ describe('RDS Relational Directives', () => {
       `,
       authMode: GRAPHQL_AUTH_MODE.AWS_IAM,
     }) as unknown as Observable<any>;
-    
+
     let subscription: ZenObservable.Subscription;
     const subscriptionPromise = new Promise((resolve, _) => {
-      subscription = observer.subscribe((event: any) => {
-        const blog = event.value.data.onUpdateBlog;
-        subscription.unsubscribe();
-        expect(blog).toBeDefined();
-        expect(blog).toEqual(
-          expect.objectContaining({
-            id: 'B-1',
-            content: 'Blog 1 - Updated',
-          }),
-        );
-        resolve(undefined);
-      }, (err) => {
-        console.log(JSON.stringify(err.error.errors, null, 4));
-        throw new Error('IAM client should be able to subscribe on blog');
-      });
+      subscription = observer.subscribe(
+        (event: any) => {
+          const blog = event.value.data.onUpdateBlog;
+          subscription.unsubscribe();
+          expect(blog).toBeDefined();
+          expect(blog).toEqual(
+            expect.objectContaining({
+              id: 'B-1',
+              content: 'Blog 1 - Updated',
+            }),
+          );
+          resolve(undefined);
+        },
+        (err) => {
+          console.log(JSON.stringify(err.error.errors, null, 4));
+          throw new Error('IAM client should be able to subscribe on blog');
+        },
+      );
     });
-  
+
     await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
-  
+
     await blogIAMAuthClient.update('updateBlog', {
       id: 'B-1',
       content: 'Blog 1 - Updated',
     });
-  
+
     return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnUpdateBlog Subscription timed out', () => {
       subscription?.unsubscribe();
     });
@@ -381,32 +390,35 @@ describe('RDS Relational Directives', () => {
       `,
       authMode: GRAPHQL_AUTH_MODE.AWS_IAM,
     }) as unknown as Observable<any>;
-    
+
     let subscription: ZenObservable.Subscription;
     const subscriptionPromise = new Promise((resolve, _) => {
-      subscription = observer.subscribe((event: any) => {
-        const blog = event.value.data.onDeleteBlog;
-        subscription.unsubscribe();
-        expect(blog).toBeDefined();
-        expect(blog).toEqual(
-          expect.objectContaining({
-            id: 'B-1',
-            content: 'Blog 1 - Updated',
-          }),
-        );
-        resolve(undefined);
-      }, (err) => {
-        console.log(JSON.stringify(err.error.errors, null, 4));
-        throw new Error('IAM client should be able to subscribe on blog');
-      });
+      subscription = observer.subscribe(
+        (event: any) => {
+          const blog = event.value.data.onDeleteBlog;
+          subscription.unsubscribe();
+          expect(blog).toBeDefined();
+          expect(blog).toEqual(
+            expect.objectContaining({
+              id: 'B-1',
+              content: 'Blog 1 - Updated',
+            }),
+          );
+          resolve(undefined);
+        },
+        (err) => {
+          console.log(JSON.stringify(err.error.errors, null, 4));
+          throw new Error('IAM client should be able to subscribe on blog');
+        },
+      );
     });
-  
+
     await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
-  
+
     await blogIAMAuthClient.delete('deleteBlog', {
       id: 'B-1',
     });
-  
+
     return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnDeleteBlog Subscription timed out', () => {
       subscription?.unsubscribe();
     });
@@ -426,17 +438,22 @@ describe('RDS Relational Directives', () => {
     }) as unknown as Observable<any>;
     let subscription: ZenObservable.Subscription;
     const subscriptionPromise = new Promise((resolve, _) => {
-      subscription = observer.subscribe((event: any) => {
-        throw new Error('Should not have received any event');
-        resolve(undefined);
-      }, (err) => {
-        expect(err.error.errors[0].message).toEqual(expect.stringContaining('Not Authorized to access onCreateBlog on type Subscription'));
-        resolve(undefined);
-      });
+      subscription = observer.subscribe(
+        (event: any) => {
+          throw new Error('Should not have received any event');
+          resolve(undefined);
+        },
+        (err) => {
+          expect(err.error.errors[0].message).toEqual(
+            expect.stringContaining('Not Authorized to access onCreateBlog on type Subscription'),
+          );
+          resolve(undefined);
+        },
+      );
     });
-  
+
     await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
-  
+
     return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateBlog Subscription timed out', () => {
       subscription?.unsubscribe();
     });
@@ -458,33 +475,36 @@ describe('RDS Relational Directives', () => {
       authMode: GRAPHQL_AUTH_MODE.AWS_LAMBDA,
       authToken: 'custom-authorized',
     }) as unknown as Observable<any>;
-    
+
     let subscription: ZenObservable.Subscription;
     const subscriptionPromise = new Promise((resolve, _) => {
-      subscription = observer.subscribe((event: any) => {
-        const user = event.value.data.onCreateUser;
-        subscription.unsubscribe();
-        expect(user).toBeDefined();
-        expect(user).toEqual(
-          expect.objectContaining({
-            id: 'U-1',
-            name: 'User 1',
-          }),
-        );
-        resolve(undefined);
-      }, (err) => {
-        console.log(JSON.stringify(err.error.errors, null, 4));
-        throw new Error('Lambda client should be able to subscribe on user');
-      });
+      subscription = observer.subscribe(
+        (event: any) => {
+          const user = event.value.data.onCreateUser;
+          subscription.unsubscribe();
+          expect(user).toBeDefined();
+          expect(user).toEqual(
+            expect.objectContaining({
+              id: 'U-1',
+              name: 'User 1',
+            }),
+          );
+          resolve(undefined);
+        },
+        (err) => {
+          console.log(JSON.stringify(err.error.errors, null, 4));
+          throw new Error('Lambda client should be able to subscribe on user');
+        },
+      );
     });
-  
+
     await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
-  
+
     await userLambdaClient.create('createUser', {
       id: 'U-1',
       name: 'User 1',
     });
-  
+
     return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateUser Subscription timed out', () => {
       subscription?.unsubscribe();
     });
@@ -513,28 +533,31 @@ describe('RDS Relational Directives', () => {
       authMode: GRAPHQL_AUTH_MODE.AWS_LAMBDA,
       authToken: 'custom-authorized',
     }) as unknown as Observable<any>;
-    
+
     let subscription: ZenObservable.Subscription;
     const subscriptionPromise = new Promise((resolve, _) => {
-      subscription = observer.subscribe((event: any) => {
-        const user = event.value.data.onCreateUser;
-        subscription.unsubscribe();
-        expect(user).toBeDefined();
-        expect(user).toEqual(
-          expect.objectContaining({
-            id: 'U-3',
-            name: 'User 3',
-          }),
-        );
-        resolve(undefined);
-      }, (err) => {
-        console.log(JSON.stringify(err.error.errors, null, 4));
-        throw new Error('Lambda client should be able to subscribe on user');
-      });
+      subscription = observer.subscribe(
+        (event: any) => {
+          const user = event.value.data.onCreateUser;
+          subscription.unsubscribe();
+          expect(user).toBeDefined();
+          expect(user).toEqual(
+            expect.objectContaining({
+              id: 'U-3',
+              name: 'User 3',
+            }),
+          );
+          resolve(undefined);
+        },
+        (err) => {
+          console.log(JSON.stringify(err.error.errors, null, 4));
+          throw new Error('Lambda client should be able to subscribe on user');
+        },
+      );
     });
-  
+
     await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
-  
+
     await userLambdaClient.create('createUser', {
       id: 'U-2',
       name: 'User 2',
@@ -544,7 +567,7 @@ describe('RDS Relational Directives', () => {
       id: 'U-3',
       name: 'User 3',
     });
-  
+
     return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateUser Subscription timed out', () => {
       subscription?.unsubscribe();
     });
@@ -573,28 +596,31 @@ describe('RDS Relational Directives', () => {
       authMode: GRAPHQL_AUTH_MODE.AWS_LAMBDA,
       authToken: 'custom-authorized',
     }) as unknown as Observable<any>;
-    
+
     let subscription: ZenObservable.Subscription;
     const subscriptionPromise = new Promise((resolve, _) => {
-      subscription = observer.subscribe((event: any) => {
-        const user = event.value.data.onUpdateUser;
-        subscription.unsubscribe();
-        expect(user).toBeDefined();
-        expect(user).toEqual(
-          expect.objectContaining({
-            id: 'U-3',
-            name: 'User 3 - Updated',
-          }),
-        );
-        resolve(undefined);
-      }, (err) => {
-        console.log(JSON.stringify(err.error.errors, null, 4));
-        throw new Error('Lambda client should be able to subscribe on user');
-      });
+      subscription = observer.subscribe(
+        (event: any) => {
+          const user = event.value.data.onUpdateUser;
+          subscription.unsubscribe();
+          expect(user).toBeDefined();
+          expect(user).toEqual(
+            expect.objectContaining({
+              id: 'U-3',
+              name: 'User 3 - Updated',
+            }),
+          );
+          resolve(undefined);
+        },
+        (err) => {
+          console.log(JSON.stringify(err.error.errors, null, 4));
+          throw new Error('Lambda client should be able to subscribe on user');
+        },
+      );
     });
-  
+
     await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
-  
+
     await userLambdaClient.update('updateUser', {
       id: 'U-2',
       name: 'User 2 - Updated',
@@ -604,7 +630,7 @@ describe('RDS Relational Directives', () => {
       id: 'U-3',
       name: 'User 3 - Updated',
     });
-  
+
     return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnUpdateUser Subscription timed out', () => {
       subscription?.unsubscribe();
     });
@@ -633,28 +659,31 @@ describe('RDS Relational Directives', () => {
       authMode: GRAPHQL_AUTH_MODE.AWS_LAMBDA,
       authToken: 'custom-authorized',
     }) as unknown as Observable<any>;
-    
+
     let subscription: ZenObservable.Subscription;
     const subscriptionPromise = new Promise((resolve, _) => {
-      subscription = observer.subscribe((event: any) => {
-        const user = event.value.data.onDeleteUser;
-        subscription.unsubscribe();
-        expect(user).toBeDefined();
-        expect(user).toEqual(
-          expect.objectContaining({
-            id: 'U-3',
-            name: 'User 3 - Updated',
-          }),
-        );
-        resolve(undefined);
-      }, (err) => {
-        console.log(JSON.stringify(err.error.errors, null, 4));
-        throw new Error('Lambda client should be able to subscribe on user');
-      });
+      subscription = observer.subscribe(
+        (event: any) => {
+          const user = event.value.data.onDeleteUser;
+          subscription.unsubscribe();
+          expect(user).toBeDefined();
+          expect(user).toEqual(
+            expect.objectContaining({
+              id: 'U-3',
+              name: 'User 3 - Updated',
+            }),
+          );
+          resolve(undefined);
+        },
+        (err) => {
+          console.log(JSON.stringify(err.error.errors, null, 4));
+          throw new Error('Lambda client should be able to subscribe on user');
+        },
+      );
     });
-  
+
     await new Promise((res) => setTimeout(res, SUBSCRIPTION_DELAY));
-  
+
     await userLambdaClient.delete('deleteUser', {
       id: 'U-2',
     });
@@ -662,7 +691,7 @@ describe('RDS Relational Directives', () => {
     await userLambdaClient.delete('deleteUser', {
       id: 'U-3',
     });
-  
+
     return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnDeleteUser Subscription timed out', () => {
       subscription?.unsubscribe();
     });

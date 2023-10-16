@@ -24,9 +24,13 @@ export function getSchemaPath(schemaName: string): string {
   return path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'schemas', schemaName);
 }
 
-export const apiGqlCompile = (cwd: string, testingWithLatestCodebase = false, settings?: {
-  forceCompile?: boolean;
-}): Promise<void> => {
+export const apiGqlCompile = (
+  cwd: string,
+  testingWithLatestCodebase = false,
+  settings?: {
+    forceCompile?: boolean;
+  },
+): Promise<void> => {
   const params = ['api', 'gql-compile'];
   if (settings?.forceCompile) {
     params.push('--force');
@@ -42,7 +46,7 @@ export const apiGqlCompile = (cwd: string, testingWithLatestCodebase = false, se
         }
       });
   });
-}
+};
 
 export interface AddApiOptions {
   apiName: string;

@@ -101,11 +101,15 @@ export function getConfiguredAppsyncClientAPIKeyAuth(url: string, region: string
   });
 }
 
-export const getConfiguredAppsyncClientIAMAuth = (url: string, region: string, credentials?: {
-  accessKeyId: string,
-  secretAccessKey: string,
-  sessionToken: string,
-}): any => {
+export const getConfiguredAppsyncClientIAMAuth = (
+  url: string,
+  region: string,
+  credentials?: {
+    accessKeyId: string;
+    secretAccessKey: string;
+    sessionToken: string;
+  },
+): any => {
   return new AWSAppSyncClient({
     url,
     region,

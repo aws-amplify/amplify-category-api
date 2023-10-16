@@ -83,12 +83,12 @@ describe('RDS Relational Directives', () => {
   const createAppSyncClients = async (apiEndPoint, appRegion, apiKey): Promise<void> => {
     configureAmplify(projRoot);
     const unAuthCredentials = await Auth.currentCredentials();
-    const [cognito_username, cognito_password] = ['test@test.com', 'Password123!']
+    const [cognito_username, cognito_password] = ['test@test.com', 'Password123!'];
     const userPoolId = getUserPoolId(projRoot);
     await setupUser(userPoolId, cognito_username, cognito_password);
     await signInUser(cognito_username, cognito_password);
     const authCredentials = await Auth.currentCredentials();
-    
+
     const unauthAppSyncClient = getConfiguredAppsyncClientIAMAuth(apiEndPoint, appRegion, unAuthCredentials);
     const authAppSyncClient = getConfiguredAppsyncClientIAMAuth(apiEndPoint, appRegion, authCredentials);
     const apiKeyClient = getConfiguredAppsyncClientAPIKeyAuth(apiEndPoint, appRegion, apiKey);

@@ -1770,7 +1770,7 @@ export const enableUserPoolUnauthenticatedAccess = async (cwd: string, settings:
     .sendCarriageReturn()
     .wait('Do you want to override the default password policy for this User Pool')
     .sendCarriageReturn()
-    .wait('Specify the app\'s refresh token expiration period (in days)')
+    .wait("Specify the app's refresh token expiration period (in days)")
     .sendCarriageReturn()
     .wait('Do you want to specify the user attributes this app can read and write')
     .sendCarriageReturn()

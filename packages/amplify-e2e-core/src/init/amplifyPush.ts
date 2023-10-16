@@ -32,9 +32,13 @@ export type LayerPushSettings = {
 /**
  * Function to test amplify push with verbose status
  */
-export function amplifyPush(cwd: string, testingWithLatestCodebase = false, settings?: {
-  skipCodegen?: boolean;
-}): Promise<void> {
+export function amplifyPush(
+  cwd: string,
+  testingWithLatestCodebase = false,
+  settings?: {
+    skipCodegen?: boolean;
+  },
+): Promise<void> {
   return new Promise((resolve, reject) => {
     // Test detailed status
     spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
@@ -50,20 +54,20 @@ export function amplifyPush(cwd: string, testingWithLatestCodebase = false, sett
       .sendConfirmYes();
 
     if (!settings?.skipCodegen) {
-      pushCommands.wait('Do you want to generate code for your newly created GraphQL API')
+      pushCommands
+        .wait('Do you want to generate code for your newly created GraphQL API')
         .sendConfirmNo()
         .wait('Do you want to generate code for your newly created GraphQL API')
         .sendConfirmNo();
     }
 
-    pushCommands.wait(/.*/)
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+    pushCommands.wait(/.*/).run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 
