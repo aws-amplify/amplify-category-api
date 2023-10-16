@@ -1,5 +1,5 @@
 import {
-  addApi,
+  addApiWithCognitoUserPoolAuthTypeWhenAuthExists,
   amplifyPush,
   createNewProjectDir,
   deleteDBInstance,
@@ -11,14 +11,19 @@ import {
   setupRDSInstanceAndData,
   sleep,
   updateAuthAddUserGroups,
-  amplifyPushWithoutCodegen,
 } from 'amplify-category-api-e2e-core';
-import { existsSync, writeFileSync, removeSync, readdirSync } from 'fs-extra';
+import { existsSync, writeFileSync, removeSync } from 'fs-extra';
 import generator from 'generate-password';
 import path from 'path';
-import { schema, sqlCreateStatements } from './auth-test-schemas/userpool-provider';
-import { createModelOperationHelpers, configureAppSyncClients, checkOperationResult, checkListItemExistence } from '../rds-v2-test-utils';
-import { setupUser, getUserPoolId, signInUser, getUserPoolIssUrl, getAppClientIDWeb, configureAmplify } from '../schema-api-directives';
+import { schema, sqlCreateStatements } from './auth-test-schemas/custom-claims-userpool';
+import {
+  createModelOperationHelpers,
+  configureAppSyncClients,
+  checkOperationResult,
+  checkListItemExistence,
+  updatePreAuthTrigger,
+} from '../rds-v2-test-utils';
+import { setupUser, getUserPoolId, signInUser, configureAmplify } from '../schema-api-directives';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -29,7 +34,7 @@ describe('RDS userpool provider with custom Auth claims tests', () => {
   // Generate settings for RDS instance
   const username = db_user;
   const password = db_password;
-  let region = 'us-east-1';
+  const region = 'ap-northeast-2';
   let port = 3306;
   const database = 'default_db';
   let host = 'localhost';
@@ -44,6 +49,7 @@ describe('RDS userpool provider with custom Auth claims tests', () => {
 
   let projRoot;
   let appSyncClients = {};
+  const userMap = {};
 
   beforeAll(async () => {
     console.log(sqlCreateStatements);
@@ -79,35 +85,6 @@ describe('RDS userpool provider with custom Auth claims tests', () => {
     await deleteDBInstance(identifier, region);
   };
 
-  const updateTriggerHandler = () => {
-    const backendFunctionDirPath = path.join(projRoot, 'amplify', 'backend', 'function');
-    const functionName = readdirSync(backendFunctionDirPath)[0];
-    const triggerHandlerFilePath = path.join(backendFunctionDirPath, functionName, 'src', 'alter-claims.js');
-    const func = `
-              exports.handler = async event => {
-                  const userGroups = [];
-                  if (event.userName === '${userName1}') {
-                      userGroups.push('${adminGroupName}');
-                  } 
-                  else if (event.userName === '${userName2}') {
-                      userGroups.push('${devGroupName}');
-                  }
-                  event.response = {
-                      claimsOverrideDetails: {
-                          claimsToAddOrOverride: {
-                              user_id: event.userName,
-                          },
-                          groupOverrideDetails: {
-                              groupsToOverride: userGroups,
-                          },
-                      }
-                  };
-                  return event;
-              };
-          `;
-    writeFileSync(triggerHandlerFilePath, func);
-  };
-
   const setupAmplifyProject = async (): Promise<void> => {
     const apiName = projName;
     await initJSProjectWithProfile(projRoot, {
@@ -115,10 +92,9 @@ describe('RDS userpool provider with custom Auth claims tests', () => {
       name: projName,
     });
     await addAuthWithPreTokenGenerationTrigger(projRoot);
-    updateTriggerHandler();
-    await amplifyPushWithoutCodegen(projRoot);
+    updatePreAuthTrigger(projRoot, 'user_id');
 
-    await addApi(projRoot, { transformerVersion: 2, 'Amazon Cognito User Pool': {} });
+    await addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projRoot, { transformerVersion: 2 });
     const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
     const ddbSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.graphql');
     removeSync(ddbSchemaFilePath);
@@ -130,11 +106,10 @@ describe('RDS userpool provider with custom Auth claims tests', () => {
       port,
       username,
       password,
-      useVpc: false,
+      useVpc: true,
       apiExists: true,
     });
-    writeFileSync(ddbSchemaFilePath, schema, 'utf8');
-    removeSync(rdsSchemaFilePath);
+    writeFileSync(rdsSchemaFilePath, schema, 'utf8');
 
     await updateAuthAddUserGroups(projRoot, [adminGroupName, devGroupName]);
     await amplifyPush(projRoot);
@@ -144,7 +119,6 @@ describe('RDS userpool provider with custom Auth claims tests', () => {
     configureAmplify(projRoot);
     await setupUser(userPoolId, userName1, userPassword, adminGroupName);
     await setupUser(userPoolId, userName2, userPassword, devGroupName);
-    const userMap = {};
     const user1 = await signInUser(userName1, userPassword);
     userMap[userName1] = user1;
     const user2 = await signInUser(userName2, userPassword);
@@ -218,12 +192,10 @@ describe('RDS userpool provider with custom Auth claims tests', () => {
       await todoHelperNonOwner.update(`update${modelName}`, todoUpdated);
     }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access updateTodoOwner on type Mutation"`);
 
-    expect(
-      async () =>
-        await todoHelperNonOwner.get({
-          id: todo['id'],
-        }),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoOwner on type Query"`);
+    const getResult = await todoHelperNonOwner.get({
+      id: todo['id'],
+    });
+    expect(getResult.data[`get${modelName}`]).toBeNull();
 
     const listTodosResult = await todoHelperNonOwner.list();
     checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
@@ -301,12 +273,10 @@ describe('RDS userpool provider with custom Auth claims tests', () => {
       await todoHelperNonOwner.update(`update${modelName}`, todoUpdated);
     }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access updateTodoOwnerFieldString on type Mutation"`);
 
-    expect(
-      async () =>
-        await todoHelperNonOwner.get({
-          id: todo['id'],
-        }),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoOwnerFieldString on type Query"`);
+    const getResult = await todoHelperNonOwner.get({
+      id: todo['id'],
+    });
+    expect(getResult.data[`get${modelName}`]).toBeNull();
 
     const listTodosResult = await todoHelperNonOwner.list();
     checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
@@ -318,7 +288,7 @@ describe('RDS userpool provider with custom Auth claims tests', () => {
     }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access deleteTodoOwnerFieldString on type Mutation"`);
   });
 
-  test('list of owners used to store owner information', async () => {
+  test('member in list of owners can perform CRUD operations', async () => {
     const modelName = 'TodoOwnerFieldList';
     const modelOperationHelpers = createModelOperationHelpers(appSyncClients[userpoolsProvider][userName1], schema);
     const todoHelper = modelOperationHelpers[modelName];
@@ -381,12 +351,10 @@ describe('RDS userpool provider with custom Auth claims tests', () => {
       await todoHelperNonOwner.update(`update${modelName}`, todoUpdated);
     }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access updateTodoOwnerFieldList on type Mutation"`);
 
-    expect(
-      async () =>
-        await todoHelperNonOwner.get({
-          id: todo['id'],
-        }),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoOwnerFieldList on type Query"`);
+    const getResult = await todoHelperNonOwner.get({
+      id: todo['id'],
+    });
+    expect(getResult.data[`get${modelName}`]).toBeNull();
 
     const listTodosResult = await todoHelperNonOwner.list();
     checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
@@ -428,7 +396,7 @@ describe('RDS userpool provider with custom Auth claims tests', () => {
     checkOperationResult(getResult, todoUpdated, `get${modelName}`);
 
     const listTodosResult = await todoHelperAnotherOwner.list();
-    checkOperationResult(listTodosResult, [{ ...todoUpdated }], `list${modelName}s`, true);
+    checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id'], true);
 
     const deleteResult = await todoHelperAnotherOwner.delete(`delete${modelName}`, {
       id: todo['id'],
@@ -583,12 +551,10 @@ describe('RDS userpool provider with custom Auth claims tests', () => {
       await todoHelperNonAdmin.update(`update${modelName}`, todoUpdated);
     }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access updateTodoGroupFieldString on type Mutation"`);
 
-    expect(
-      async () =>
-        await todoHelperNonAdmin.get({
-          id: todo['id'],
-        }),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoGroupFieldString on type Query"`);
+    const getResult = await todoHelperNonAdmin.get({
+      id: todo['id'],
+    });
+    expect(getResult.data[`get${modelName}`]).toBeNull();
 
     const listTodosResult = await todoHelperNonAdmin.list();
     checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
@@ -663,12 +629,10 @@ describe('RDS userpool provider with custom Auth claims tests', () => {
       await todoHelperNonAdmin.update(`update${modelName}`, todoUpdated);
     }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access updateTodoGroupFieldList on type Mutation"`);
 
-    expect(
-      async () =>
-        await todoHelperNonAdmin.get({
-          id: todo['id'],
-        }),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoGroupFieldList on type Query"`);
+    const getResult = await todoHelperNonAdmin.get({
+      id: todo['id'],
+    });
+    expect(getResult.data[`get${modelName}`]).toBeNull();
 
     const listTodosResult = await todoHelperNonAdmin.list();
     checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
@@ -710,7 +674,7 @@ describe('RDS userpool provider with custom Auth claims tests', () => {
     checkOperationResult(getResult, todoUpdated, `get${modelName}`);
 
     const listTodosResult = await todoHelperNonAdmin.list();
-    checkOperationResult(listTodosResult, [{ ...todoUpdated }], `list${modelName}s`, true);
+    checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id'], true);
 
     const deleteResult = await todoHelperNonAdmin.delete(`delete${modelName}`, {
       id: todo['id'],

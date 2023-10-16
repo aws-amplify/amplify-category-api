@@ -4,6 +4,7 @@ import { gql } from 'graphql-transformer-core';
 type SelectionSet = {
   mutation: MutationSelectionSet;
   query: QueryCompleteSelectionSet;
+  subscription?: SubscriptionCompleteSelectionSet;
 };
 
 type QueryCompleteSelectionSet = {
@@ -15,6 +16,12 @@ type MutationSelectionSet = {
   create: string;
   update: string;
   delete: string;
+};
+
+type SubscriptionCompleteSelectionSet = {
+  onCreate: string;
+  onUpdate: string;
+  onDelete: string;
 };
 
 export class GQLQueryHelper {
@@ -125,6 +132,42 @@ export class GQLQueryHelper {
     });
 
     return listResult;
+  };
+
+  subscribe = async (operation: string, mutationsToSubscribe: (() => Promise<any>)[], input?: any, selectionSet?: string): Promise<any> => {
+    const finalSelectionSet = selectionSet ?? this.selectionSet.subscription[operation];
+    const subscriptionOperation = /* GraphQL */ `
+      ${finalSelectionSet}
+    `;
+    const subscriptionInput = {
+      ...input,
+    };
+    const subscriptionResult = [];
+
+    const observer = this.client.subscribe({
+      query: gql`
+        ${subscriptionOperation}
+      `,
+      variables: subscriptionInput,
+    });
+    const subscription = observer.subscribe({
+      next: (result: any) => {
+        subscriptionResult.push(result);
+      },
+      error: (errorValue: any) => {
+        throw new Error(errorValue);
+      },
+    });
+
+    await new Promise<void>((res) => setTimeout(() => res(), 4000));
+    for (const mutation of mutationsToSubscribe) {
+      await mutation();
+      await new Promise<void>((res) => setTimeout(() => res(), 4000)); // ensure correct order in received data
+    }
+
+    await new Promise<void>((res) => setTimeout(() => res(), 4000));
+    subscription.unsubscribe();
+    return subscriptionResult;
   };
 }
 

@@ -176,6 +176,16 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         `'${definition.name.value}' is a reserved type name and currently in use within the default schema element.`,
       );
     }
+
+    if (!isDynamoDB) {
+      const containsPrimaryKey = definition.fields?.some((field) => {
+        return field?.directives?.some((directive) => directive.name.value === 'primaryKey');
+      });
+      if (!containsPrimaryKey) {
+        throw new InvalidDirectiveError(`RDS model "${definition.name.value}" must contain a primary key field`);
+      }
+    }
+
     // todo: get model configuration with default values and store it in the map
     const typeName = definition.name.value;
 

@@ -25,7 +25,7 @@ import {
 } from 'graphql-mapping-template';
 import { FieldDefinitionNode } from 'graphql';
 import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
-import { API_KEY_AUTH_TYPE, IDENTITY_CLAIM_DELIMITER, RoleDefinition } from '../../../utils';
+import { API_KEY_AUTH_TYPE, DEFAULT_UNIQUE_IDENTITY_CLAIM, IDENTITY_CLAIM_DELIMITER, RoleDefinition } from '../../../utils';
 
 /**
  * Generates default RDS expression
@@ -110,7 +110,7 @@ const convertAuthRoleToVtl = (
           ref('authRules.add'),
           obj({
             type: str(role.strategy),
-            provider: str('userPools'),
+            provider: str(role.provider),
             ...(showAllowedFields && { allowedFields: list(allowedFields) }),
           }),
         ),
@@ -121,23 +121,24 @@ const convertAuthRoleToVtl = (
           ref('authRules.add'),
           obj({
             type: str(role.strategy),
-            provider: str('userPools'),
+            provider: str(role.provider),
             allowedGroups: list([str(role.entity)]),
-            identityClaim: str(role.claim),
+            groupClaim: str(role.claim),
             ...(showAllowedFields && { allowedFields: list(allowedFields) }),
           }),
         ),
       );
     } else if (role.strategy === 'owner') {
+      const usingCognitoDefaultClaim = role.claim === DEFAULT_UNIQUE_IDENTITY_CLAIM && role.provider === 'userPools';
       return qref(
         methodCall(
           ref('authRules.add'),
           obj({
             type: str(role.strategy),
-            provider: str('userPools'),
+            provider: str(role.provider),
             ownerFieldName: str(role.entity),
             ownerFieldType: str(role.isEntityList ? 'string[]' : 'string'),
-            identityClaim: str(role.claim),
+            ...(!usingCognitoDefaultClaim && { identityClaim: str(role.claim) }),
             ...(showAllowedFields && { allowedFields: list(allowedFields) }),
           }),
         ),
@@ -148,7 +149,7 @@ const convertAuthRoleToVtl = (
           ref('authRules.add'),
           obj({
             type: str(role.strategy),
-            provider: str('userPools'),
+            provider: str(role.provider),
             groupsFieldName: str(role.entity),
             groupsFieldType: str(role.isEntityList ? 'string[]' : 'string'),
             groupClaim: str(role.claim),

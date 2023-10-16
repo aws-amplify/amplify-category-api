@@ -1,7 +1,7 @@
 import { join } from 'path';
 import _ from 'lodash';
 import * as fs from 'fs-extra';
-import { parse, ObjectTypeDefinitionNode, Kind, visit, FieldDefinitionNode } from 'graphql';
+import { parse, ObjectTypeDefinitionNode, Kind, visit, FieldDefinitionNode, StringValueNode } from 'graphql';
 import axios from 'axios';
 import {
   getProjectMeta,
@@ -10,9 +10,10 @@ import {
   addRDSPortInboundRule,
   getAppSyncApi,
 } from 'amplify-category-api-e2e-core';
-import { getBaseType, isArrayOrObject } from 'graphql-transformer-common';
+import { getBaseType, isArrayOrObject, toPascalCase } from 'graphql-transformer-common';
 import { GQLQueryHelper } from '../query-utils/gql-helper';
 import { getConfiguredAppsyncClientCognitoAuth, getConfiguredAppsyncClientOIDCAuth } from '../schema-api-directives';
+import path from 'path';
 
 export const verifyAmplifyMeta = (projectRoot: string, apiName: string, database: string) => {
   // Database info is updated in meta file
@@ -114,7 +115,10 @@ export const generateDDL = (schema: string): string[] => {
   const schemaVisitor = {
     ObjectTypeDefinition: {
       leave: (node: ObjectTypeDefinitionNode, key, parent, path, ancestors) => {
-        const tableName = node.name.value;
+        if (!node?.directives?.some((d) => d?.name?.value === 'model')) {
+          return;
+        }
+        const tableName = getMappedName(node);
         const fieldStatements = [];
         node.fields.forEach((field, index) => {
           fieldStatements.push(getFieldStatement(field, index === 0));
@@ -128,8 +132,21 @@ export const generateDDL = (schema: string): string[] => {
   return sqlStatements;
 };
 
+const getMappedName = (definition: ObjectTypeDefinitionNode | FieldDefinitionNode): string => {
+  const name = definition?.name?.value;
+  const refersToDirective = definition?.directives?.find((d) => d?.name?.value === 'refersTo');
+  if (!refersToDirective) {
+    return name;
+  }
+  const mappedName = (refersToDirective?.arguments?.find((a) => a?.name?.value === 'name')?.value as StringValueNode)?.value;
+  if (!mappedName) {
+    return name;
+  }
+  return mappedName;
+};
+
 const getFieldStatement = (field: FieldDefinitionNode, isPrimaryKey: boolean) => {
-  const fieldName = field.name.value;
+  const fieldName = getMappedName(field);
   const fieldType = field.type;
   const isNonNull = fieldType.kind === Kind.NON_NULL_TYPE;
   const baseType = getBaseType(fieldType);
@@ -184,6 +201,15 @@ export const createModelOperationHelpers = (appSyncClient: any, schema: string) 
             }
           }
         `;
+        const subscriptionSelectionSet = (operation: string): string => {
+          return /* GraphQL */ `
+            subscription On${toPascalCase([operation])}${modelName} {
+              on${toPascalCase([operation])}${modelName} {
+                ${selectionSetFields.join('\n')}
+              }
+            }
+          `;
+        };
         const helper = new GQLQueryHelper(appSyncClient, modelName, {
           mutation: {
             create: selectionSet,
@@ -193,6 +219,11 @@ export const createModelOperationHelpers = (appSyncClient: any, schema: string) 
           query: {
             get: getSelectionSet,
             list: listSelectionSet,
+          },
+          subscription: {
+            onCreate: subscriptionSelectionSet('create'),
+            onUpdate: subscriptionSelectionSet('update'),
+            onDelete: subscriptionSelectionSet('delete'),
           },
         });
 
@@ -246,6 +277,14 @@ export const configureAppSyncClients = async (
   return appSyncClients;
 };
 
+export const getAppSyncEndpoint = (projRoot: string, apiName: string): string => {
+  const meta = getProjectMeta(projRoot);
+  const { output } = meta.api[apiName];
+  const { GraphQLAPIEndpointOutput } = output;
+  expect(GraphQLAPIEndpointOutput).toBeDefined();
+  return GraphQLAPIEndpointOutput as string;
+};
+
 export const checkOperationResult = (result: any, expected: any, resultSetName: string, isList: boolean = false): void => {
   expect(result).toBeDefined();
   expect(result.data).toBeDefined();
@@ -266,4 +305,41 @@ export const checkListItemExistence = (result: any, resultSetName: string, id: s
   expect(result.data[`${resultSetName}`]).toBeDefined();
   expect(result.data[`${resultSetName}`].items).toBeDefined();
   expect(result.data[`${resultSetName}`].items?.filter((item: any) => item?.id === id)?.length).toEqual(shouldExist ? 1 : 0);
+};
+
+export const appendAmplifyInput = (schema: string, engine: string): string => {
+  const amplifyInput = (engine: string) => {
+    return `
+      input AMPLIFY {
+        engine: String = "${engine}",
+        globalAuthRule: AuthRule = {allow: public}
+      }
+    `;
+  };
+  switch (engine) {
+    case 'mysql':
+      return amplifyInput(engine) + '\n' + schema;
+    default:
+      return schema;
+  }
+};
+
+export const updatePreAuthTrigger = (projRoot: string, usernameClaim: string) => {
+  const backendFunctionDirPath = path.join(projRoot, 'amplify', 'backend', 'function');
+  const functionName = fs.readdirSync(backendFunctionDirPath)[0];
+  const triggerHandlerFilePath = path.join(backendFunctionDirPath, functionName, 'src', 'alter-claims.js');
+  const func = `
+            exports.handler = async event => {
+                const userGroups = [];
+                event.response = {
+                    claimsOverrideDetails: {
+                        claimsToAddOrOverride: {
+                            ${usernameClaim}: event.userName,
+                        }
+                    }
+                };
+                return event;
+            };
+        `;
+  fs.writeFileSync(triggerHandlerFilePath, func);
 };

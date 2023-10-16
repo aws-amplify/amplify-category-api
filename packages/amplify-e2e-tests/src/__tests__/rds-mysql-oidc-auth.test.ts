@@ -13,12 +13,28 @@ import {
   updateAuthAddUserGroups,
   amplifyPushWithoutCodegen,
 } from 'amplify-category-api-e2e-core';
-import { existsSync, writeFileSync, removeSync, readdirSync } from 'fs-extra';
+import { existsSync, writeFileSync, removeSync } from 'fs-extra';
 import generator from 'generate-password';
 import path from 'path';
-import { schema, sqlCreateStatements } from './auth-test-schemas/userpool-provider';
-import { createModelOperationHelpers, configureAppSyncClients, checkOperationResult, checkListItemExistence } from '../rds-v2-test-utils';
-import { setupUser, getUserPoolId, signInUser, getUserPoolIssUrl, getAppClientIDWeb, configureAmplify } from '../schema-api-directives';
+import { schema, sqlCreateStatements } from './auth-test-schemas/oidc-provider';
+import {
+  createModelOperationHelpers,
+  configureAppSyncClients,
+  checkOperationResult,
+  checkListItemExistence,
+  appendAmplifyInput,
+  getAppSyncEndpoint,
+  updatePreAuthTrigger,
+} from '../rds-v2-test-utils';
+import {
+  setupUser,
+  getUserPoolId,
+  signInUser,
+  getUserPoolIssUrl,
+  getAppClientIDWeb,
+  configureAmplify,
+  getConfiguredAppsyncClientOIDCAuth,
+} from '../schema-api-directives';
 import { gql } from 'graphql-tag';
 
 // to deal with bug in cognito-identity-js
@@ -30,7 +46,7 @@ describe('RDS OIDC provider Auth tests', () => {
   // Generate settings for RDS instance
   const username = db_user;
   const password = db_password;
-  let region = 'us-east-1';
+  const region = 'ap-northeast-2';
   let port = 3306;
   const database = 'default_db';
   let host = 'localhost';
@@ -42,9 +58,11 @@ describe('RDS OIDC provider Auth tests', () => {
   const devGroupName = 'Dev';
   const userPassword = 'user@Password';
   const oidcProvider = 'oidc';
+  let graphQlEndpoint = 'localhost';
 
   let projRoot;
   let appSyncClients = {};
+  const userMap = {};
 
   beforeAll(async () => {
     console.log(sqlCreateStatements);
@@ -80,33 +98,16 @@ describe('RDS OIDC provider Auth tests', () => {
     await deleteDBInstance(identifier, region);
   };
 
-  const updateTriggerHandler = () => {
-    const backendFunctionDirPath = path.join(projRoot, 'amplify', 'backend', 'function');
-    const functionName = readdirSync(backendFunctionDirPath)[0];
-    const triggerHandlerFilePath = path.join(backendFunctionDirPath, functionName, 'src', 'alter-claims.js');
-    const func = `
-            exports.handler = async event => {
-                const userGroups = [];
-                if (event.userName === '${userName1}') {
-                    userGroups.push('${adminGroupName}');
-                } 
-                else if (event.userName === '${userName2}') {
-                    userGroups.push('${devGroupName}');
-                }
-                event.response = {
-                    claimsOverrideDetails: {
-                        claimsToAddOrOverride: {
-                            user_id: event.userName,
-                        },
-                        groupOverrideDetails: {
-                            groupsToOverride: userGroups,
-                        },
-                    }
-                };
-                return event;
-            };
-        `;
-    writeFileSync(triggerHandlerFilePath, func);
+  const subscriptionWithOwner = (name: string, ownerField: string = 'owner'): string => {
+    return /* GraphQL */ `
+      subscription On${name}($${ownerField}: String) {
+        on${name}(${ownerField}: $${ownerField}) {
+          id
+          content
+          ${ownerField}
+        }
+      }
+    `;
   };
 
   const setupAmplifyProject = async (): Promise<void> => {
@@ -116,7 +117,7 @@ describe('RDS OIDC provider Auth tests', () => {
       name: projName,
     });
     await addAuthWithPreTokenGenerationTrigger(projRoot);
-    updateTriggerHandler();
+    updatePreAuthTrigger(projRoot, 'user_id');
     await amplifyPushWithoutCodegen(projRoot);
 
     await addApi(projRoot, {
@@ -127,6 +128,7 @@ describe('RDS OIDC provider Auth tests', () => {
         ttlaIssueInMillisecond: '3600000',
         ttlaAuthInMillisecond: '3600000',
       },
+      'API key': {},
       transformerVersion: 2,
     });
 
@@ -141,11 +143,10 @@ describe('RDS OIDC provider Auth tests', () => {
       port,
       username,
       password,
-      useVpc: false,
+      useVpc: true,
       apiExists: true,
     });
-    writeFileSync(ddbSchemaFilePath, schema, 'utf8');
-    removeSync(rdsSchemaFilePath);
+    writeFileSync(rdsSchemaFilePath, appendAmplifyInput(schema, 'mysql'), 'utf8');
 
     await updateAuthAddUserGroups(projRoot, [adminGroupName, devGroupName]);
     await amplifyPush(projRoot);
@@ -155,7 +156,7 @@ describe('RDS OIDC provider Auth tests', () => {
     configureAmplify(projRoot);
     await setupUser(userPoolId, userName1, userPassword, adminGroupName);
     await setupUser(userPoolId, userName2, userPassword, devGroupName);
-    const userMap = {};
+    graphQlEndpoint = getAppSyncEndpoint(projRoot, apiName);
     const user1 = await signInUser(userName1, userPassword);
     userMap[userName1] = user1;
     const user2 = await signInUser(userName2, userPassword);
@@ -163,7 +164,7 @@ describe('RDS OIDC provider Auth tests', () => {
     appSyncClients = await configureAppSyncClients(projRoot, apiName, [oidcProvider], userMap);
   };
 
-  test('logged in user can perform CRUD operations', async () => {
+  test('logged in user can perform CRUD and subscription operations', async () => {
     const modelName = 'TodoPrivate';
     const modelOperationHelpers = createModelOperationHelpers(appSyncClients[oidcProvider][userName1], schema);
     const todoHelper = modelOperationHelpers[modelName];
@@ -190,15 +191,48 @@ describe('RDS OIDC provider Auth tests', () => {
     checkOperationResult(getResult, todoUpdated, `get${modelName}`);
 
     const listTodosResult = await todoHelper.list();
-    checkOperationResult(listTodosResult, [{ ...todoUpdated }], `list${modelName}s`, true);
+    checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id'], true);
 
     const deleteResult = await todoHelper.delete(`delete${modelName}`, {
       id: todo['id'],
     });
     checkOperationResult(deleteResult, todoUpdated, `delete${modelName}`);
+
+    const todoRandom = {
+      id: Date.now().toString(),
+      content: 'Todo',
+    };
+    const todoRandomUpdated = {
+      ...todoRandom,
+      content: 'Todo updated',
+    };
+    const actorClient = getConfiguredAppsyncClientOIDCAuth(graphQlEndpoint, region, userMap[userName1]);
+    const subTodoHelper = createModelOperationHelpers(actorClient, schema)[modelName];
+
+    const onCreateSubscriptionResult = await subTodoHelper.subscribe('onCreate', [
+      async () => {
+        await subTodoHelper.create(`create${modelName}`, todoRandom);
+      },
+    ]);
+    expect(onCreateSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onCreateSubscriptionResult[0], todoRandom, `onCreate${modelName}`);
+    const onUpdateSubscriptionResult = await subTodoHelper.subscribe('onUpdate', [
+      async () => {
+        await subTodoHelper.update(`update${modelName}`, todoRandomUpdated);
+      },
+    ]);
+    expect(onUpdateSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onUpdateSubscriptionResult[0], todoRandomUpdated, `onUpdate${modelName}`);
+    const onDeleteSubscriptionResult = await subTodoHelper.subscribe('onDelete', [
+      async () => {
+        await subTodoHelper.delete(`delete${modelName}`, { id: todoRandom.id });
+      },
+    ]);
+    expect(onDeleteSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onDeleteSubscriptionResult[0], todoRandomUpdated, `onDelete${modelName}`);
   });
 
-  test('owner of a record can perform CRUD operations using default owner field', async () => {
+  test('owner of a record can perform CRUD and subscription operations using default owner field', async () => {
     const modelName = 'TodoOwner';
     const modelOperationHelpers = createModelOperationHelpers(appSyncClients[oidcProvider][userName1], schema);
     const todoHelper = modelOperationHelpers[modelName];
@@ -238,9 +272,43 @@ describe('RDS OIDC provider Auth tests', () => {
       id: todo['id'],
     });
     checkOperationResult(deleteResult, todoUpdated, `delete${modelName}`);
+
+    const todoRandom = {
+      id: Date.now().toString(),
+      content: 'Todo',
+      owner: userName1,
+    };
+    const todoRandomUpdated = {
+      ...todoRandom,
+      content: 'Todo updated',
+    };
+    const actorClient = getConfiguredAppsyncClientOIDCAuth(graphQlEndpoint, region, userMap[userName1]);
+    const subTodoHelper = createModelOperationHelpers(actorClient, schema)[modelName];
+
+    const onCreateSubscriptionResult = await subTodoHelper.subscribe('onCreate', [
+      async () => {
+        await subTodoHelper.create(`create${modelName}`, todoRandom);
+      },
+    ]);
+    expect(onCreateSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onCreateSubscriptionResult[0], todoRandom, `onCreate${modelName}`);
+    const onUpdateSubscriptionResult = await subTodoHelper.subscribe('onUpdate', [
+      async () => {
+        await subTodoHelper.update(`update${modelName}`, todoRandomUpdated);
+      },
+    ]);
+    expect(onUpdateSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onUpdateSubscriptionResult[0], todoRandomUpdated, `onUpdate${modelName}`);
+    const onDeleteSubscriptionResult = await subTodoHelper.subscribe('onDelete', [
+      async () => {
+        await subTodoHelper.delete(`delete${modelName}`, { id: todoRandom.id });
+      },
+    ]);
+    expect(onDeleteSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onDeleteSubscriptionResult[0], todoRandomUpdated, `onDelete${modelName}`);
   });
 
-  test('non-owner of a record cannot access it using default owner field', async () => {
+  test('non-owner of a record cannot access or subscribe to it using default owner field', async () => {
     const modelName = 'TodoOwner';
     const modelOperationHelpersOwner = createModelOperationHelpers(appSyncClients[oidcProvider][userName1], schema);
     const modelOperationHelpersNonOwner = createModelOperationHelpers(appSyncClients[oidcProvider][userName2], schema);
@@ -264,12 +332,10 @@ describe('RDS OIDC provider Auth tests', () => {
       await todoHelperNonOwner.update(`update${modelName}`, todoUpdated);
     }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access updateTodoOwner on type Mutation"`);
 
-    expect(
-      async () =>
-        await todoHelperNonOwner.get({
-          id: todo['id'],
-        }),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoOwner on type Query"`);
+    const getResult = await todoHelperNonOwner.get({
+      id: todo['id'],
+    });
+    expect(getResult.data[`get${modelName}`]).toBeNull();
 
     const listTodosResult = await todoHelperNonOwner.list();
     checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
@@ -279,6 +345,39 @@ describe('RDS OIDC provider Auth tests', () => {
         id: todo['id'],
       });
     }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access deleteTodoOwner on type Mutation"`);
+
+    const todoRandom = {
+      id: Date.now().toString(),
+      content: 'Todo',
+      owner: userName1,
+    };
+    const todoRandomUpdated = {
+      ...todoRandom,
+      content: 'Todo updated',
+    };
+    const actorClient = getConfiguredAppsyncClientOIDCAuth(graphQlEndpoint, region, userMap[userName1]);
+    const observerClient = getConfiguredAppsyncClientOIDCAuth(graphQlEndpoint, region, userMap[userName2]);
+    const actorTodoHelper = createModelOperationHelpers(actorClient, schema)[modelName];
+    const observerTodoHelper = createModelOperationHelpers(observerClient, schema)[modelName];
+
+    const onCreateSubscriptionResult = await observerTodoHelper.subscribe('onCreate', [
+      async () => {
+        await actorTodoHelper.create(`create${modelName}`, todoRandom);
+      },
+    ]);
+    expect(onCreateSubscriptionResult).toHaveLength(0);
+    const onUpdateSubscriptionResult = await observerTodoHelper.subscribe('onUpdate', [
+      async () => {
+        await actorTodoHelper.update(`update${modelName}`, todoRandomUpdated);
+      },
+    ]);
+    expect(onUpdateSubscriptionResult).toHaveLength(0);
+    const onDeleteSubscriptionResult = await observerTodoHelper.subscribe('onDelete', [
+      async () => {
+        await actorTodoHelper.delete(`delete${modelName}`, { id: todoRandom.id });
+      },
+    ]);
+    expect(onDeleteSubscriptionResult).toHaveLength(0);
   });
 
   test('custom owner field used to store owner information', async () => {
@@ -321,6 +420,45 @@ describe('RDS OIDC provider Auth tests', () => {
       id: todo['id'],
     });
     checkOperationResult(deleteResult, todo1Updated, `delete${modelName}`);
+
+    const todoRandom = {
+      id: Date.now().toString(),
+      content: 'Todo',
+      author: userName1,
+    };
+    const todoRandomUpdated = {
+      ...todoRandom,
+      content: 'Todo updated',
+    };
+    const actorClient = getConfiguredAppsyncClientOIDCAuth(graphQlEndpoint, region, userMap[userName1]);
+    const subTodoHelper = createModelOperationHelpers(actorClient, schema)[modelName];
+
+    const onCreateSubscriptionResult = await subTodoHelper.subscribe(
+      'onCreate',
+      [
+        async () => {
+          await subTodoHelper.create(`create${modelName}`, todoRandom);
+        },
+      ],
+      { author: userName1 },
+      subscriptionWithOwner(`Create${modelName}`, 'author'),
+    );
+    expect(onCreateSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onCreateSubscriptionResult[0], todoRandom, `onCreate${modelName}`);
+    const onUpdateSubscriptionResult = await subTodoHelper.subscribe('onUpdate', [
+      async () => {
+        await subTodoHelper.update(`update${modelName}`, todoRandomUpdated);
+      },
+    ]);
+    expect(onUpdateSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onUpdateSubscriptionResult[0], todoRandomUpdated, `onUpdate${modelName}`);
+    const onDeleteSubscriptionResult = await subTodoHelper.subscribe('onDelete', [
+      async () => {
+        await subTodoHelper.delete(`delete${modelName}`, { id: todoRandom.id });
+      },
+    ]);
+    expect(onDeleteSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onDeleteSubscriptionResult[0], todoRandomUpdated, `onDelete${modelName}`);
   });
 
   test('non-owner of a record cannot pretend to be an owner and gain access', async () => {
@@ -347,12 +485,10 @@ describe('RDS OIDC provider Auth tests', () => {
       await todoHelperNonOwner.update(`update${modelName}`, todoUpdated);
     }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access updateTodoOwnerFieldString on type Mutation"`);
 
-    expect(
-      async () =>
-        await todoHelperNonOwner.get({
-          id: todo['id'],
-        }),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoOwnerFieldString on type Query"`);
+    const getResult = await todoHelperNonOwner.get({
+      id: todo['id'],
+    });
+    expect(getResult.data[`get${modelName}`]).toBeNull();
 
     const listTodosResult = await todoHelperNonOwner.list();
     checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
@@ -362,9 +498,48 @@ describe('RDS OIDC provider Auth tests', () => {
         id: todo['id'],
       });
     }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access deleteTodoOwnerFieldString on type Mutation"`);
+
+    const todoRandom = {
+      id: Date.now().toString(),
+      content: 'Todo',
+      author: userName1,
+    };
+    const todoRandomUpdated = {
+      ...todoRandom,
+      content: 'Todo updated',
+    };
+
+    const actorClient = getConfiguredAppsyncClientOIDCAuth(graphQlEndpoint, region, userMap[userName1]);
+    const observerClient = getConfiguredAppsyncClientOIDCAuth(graphQlEndpoint, region, userMap[userName2]);
+    const actorTodoHelper = createModelOperationHelpers(actorClient, schema)[modelName];
+    const observerTodoHelper = createModelOperationHelpers(observerClient, schema)[modelName];
+
+    const onCreateSubscriptionResult = await observerTodoHelper.subscribe(
+      'onCreate',
+      [
+        async () => {
+          await actorTodoHelper.create(`create${modelName}`, todoRandom);
+        },
+      ],
+      { author: userName1 },
+      subscriptionWithOwner(`Create${modelName}`, 'author'),
+    );
+    expect(onCreateSubscriptionResult).toHaveLength(0);
+    const onUpdateSubscriptionResult = await observerTodoHelper.subscribe('onUpdate', [
+      async () => {
+        await actorTodoHelper.update(`update${modelName}`, todoRandomUpdated);
+      },
+    ]);
+    expect(onUpdateSubscriptionResult).toHaveLength(0);
+    const onDeleteSubscriptionResult = await observerTodoHelper.subscribe('onDelete', [
+      async () => {
+        await actorTodoHelper.delete(`delete${modelName}`, { id: todoRandom.id });
+      },
+    ]);
+    expect(onDeleteSubscriptionResult).toHaveLength(0);
   });
 
-  test('list of owners used to store owner information', async () => {
+  test('member in list of owners can perform CRUD and subscription operations', async () => {
     const modelName = 'TodoOwnerFieldList';
     const modelOperationHelpers = createModelOperationHelpers(appSyncClients[oidcProvider][userName1], schema);
     const todoHelper = modelOperationHelpers[modelName];
@@ -400,6 +575,40 @@ describe('RDS OIDC provider Auth tests', () => {
       id: todo['id'],
     });
     checkOperationResult(deleteResult, todoUpdated, `delete${modelName}`);
+
+    const todoRandom = {
+      id: Date.now().toString(),
+      content: 'Todo',
+      authors: [userName1],
+    };
+    const todoRandomUpdated = {
+      ...todoRandom,
+      content: 'Todo updated',
+    };
+    const actorClient = getConfiguredAppsyncClientOIDCAuth(graphQlEndpoint, region, userMap[userName1]);
+    const subTodoHelper = createModelOperationHelpers(actorClient, schema)[modelName];
+
+    const onCreateSubscriptionResult = await subTodoHelper.subscribe('onCreate', [
+      async () => {
+        await subTodoHelper.create(`create${modelName}`, todoRandom);
+      },
+    ]);
+    expect(onCreateSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onCreateSubscriptionResult[0], todoRandom, `onCreate${modelName}`);
+    const onUpdateSubscriptionResult = await subTodoHelper.subscribe('onUpdate', [
+      async () => {
+        await subTodoHelper.update(`update${modelName}`, todoRandomUpdated);
+      },
+    ]);
+    expect(onUpdateSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onUpdateSubscriptionResult[0], todoRandomUpdated, `onUpdate${modelName}`);
+    const onDeleteSubscriptionResult = await subTodoHelper.subscribe('onDelete', [
+      async () => {
+        await subTodoHelper.delete(`delete${modelName}`, { id: todoRandom.id });
+      },
+    ]);
+    expect(onDeleteSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onDeleteSubscriptionResult[0], todoRandomUpdated, `onDelete${modelName}`);
   });
 
   test('non-owner of a record cannot add themself to owner list', async () => {
@@ -427,12 +636,10 @@ describe('RDS OIDC provider Auth tests', () => {
       await todoHelperNonOwner.update(`update${modelName}`, todoUpdated);
     }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access updateTodoOwnerFieldList on type Mutation"`);
 
-    expect(
-      async () =>
-        await todoHelperNonOwner.get({
-          id: todo['id'],
-        }),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoOwnerFieldList on type Query"`);
+    const getResult = await todoHelperNonOwner.get({
+      id: todo['id'],
+    });
+    expect(getResult.data[`get${modelName}`]).toBeNull();
 
     const listTodosResult = await todoHelperNonOwner.list();
     checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
@@ -442,6 +649,39 @@ describe('RDS OIDC provider Auth tests', () => {
         id: todo['id'],
       });
     }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access deleteTodoOwnerFieldList on type Mutation"`);
+
+    const todoRandom = {
+      id: Date.now().toString(),
+      content: 'Todo',
+      authors: [userName1],
+    };
+    const todoRandomUpdated = {
+      ...todoRandom,
+      content: 'Todo updated',
+    };
+    const actorClient = getConfiguredAppsyncClientOIDCAuth(graphQlEndpoint, region, userMap[userName1]);
+    const observerClient = getConfiguredAppsyncClientOIDCAuth(graphQlEndpoint, region, userMap[userName2]);
+    const actorTodoHelper = createModelOperationHelpers(actorClient, schema)[modelName];
+    const observerTodoHelper = createModelOperationHelpers(observerClient, schema)[modelName];
+
+    const onCreateSubscriptionResult = await observerTodoHelper.subscribe('onCreate', [
+      async () => {
+        await actorTodoHelper.create(`create${modelName}`, todoRandom);
+      },
+    ]);
+    expect(onCreateSubscriptionResult).toHaveLength(0);
+    const onUpdateSubscriptionResult = await observerTodoHelper.subscribe('onUpdate', [
+      async () => {
+        await actorTodoHelper.update(`update${modelName}`, todoRandomUpdated);
+      },
+    ]);
+    expect(onUpdateSubscriptionResult).toHaveLength(0);
+    const onDeleteSubscriptionResult = await observerTodoHelper.subscribe('onDelete', [
+      async () => {
+        await actorTodoHelper.delete(`delete${modelName}`, { id: todoRandom.id });
+      },
+    ]);
+    expect(onDeleteSubscriptionResult).toHaveLength(0);
   });
 
   test('owner can add another user to the owner list', async () => {
@@ -474,15 +714,51 @@ describe('RDS OIDC provider Auth tests', () => {
     checkOperationResult(getResult, todoUpdated, `get${modelName}`);
 
     const listTodosResult = await todoHelperAnotherOwner.list();
-    checkOperationResult(listTodosResult, [{ ...todoUpdated }], `list${modelName}s`, true);
+    checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id'], true);
 
     const deleteResult = await todoHelperAnotherOwner.delete(`delete${modelName}`, {
       id: todo['id'],
     });
     checkOperationResult(deleteResult, todoUpdated, `delete${modelName}`);
+
+    const todoRandom = {
+      id: Date.now().toString(),
+      content: 'Todo',
+      authors: [userName1, userName2],
+    };
+    const todoRandomUpdated = {
+      ...todoRandom,
+      content: 'Todo updated',
+    };
+    const actorClient = getConfiguredAppsyncClientOIDCAuth(graphQlEndpoint, region, userMap[userName1]);
+    const observerClient = getConfiguredAppsyncClientOIDCAuth(graphQlEndpoint, region, userMap[userName2]);
+    const actorTodoHelper = createModelOperationHelpers(actorClient, schema)[modelName];
+    const observerTodoHelper = createModelOperationHelpers(observerClient, schema)[modelName];
+
+    const onCreateSubscriptionResult = await observerTodoHelper.subscribe('onCreate', [
+      async () => {
+        await actorTodoHelper.create(`create${modelName}`, todoRandom);
+      },
+    ]);
+    expect(onCreateSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onCreateSubscriptionResult[0], todoRandom, `onCreate${modelName}`);
+    const onUpdateSubscriptionResult = await observerTodoHelper.subscribe('onUpdate', [
+      async () => {
+        await actorTodoHelper.update(`update${modelName}`, todoRandomUpdated);
+      },
+    ]);
+    expect(onUpdateSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onUpdateSubscriptionResult[0], todoRandomUpdated, `onUpdate${modelName}`);
+    const onDeleteSubscriptionResult = await observerTodoHelper.subscribe('onDelete', [
+      async () => {
+        await actorTodoHelper.delete(`delete${modelName}`, { id: todoRandom.id });
+      },
+    ]);
+    expect(onDeleteSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onDeleteSubscriptionResult[0], todoRandomUpdated, `onDelete${modelName}`);
   });
 
-  test('users in static group can perform CRUD operations', async () => {
+  test('users in static group can perform CRUD and subscription operations', async () => {
     const modelName = 'TodoStaticGroup';
     const modelOperationHelpers = createModelOperationHelpers(appSyncClients[oidcProvider][userName1], schema);
     const todoHelper = modelOperationHelpers[modelName];
@@ -515,6 +791,39 @@ describe('RDS OIDC provider Auth tests', () => {
       id: todo['id'],
     });
     checkOperationResult(deleteResult, todoUpdated, `delete${modelName}`);
+
+    const todoRandom = {
+      id: Date.now().toString(),
+      content: 'Todo',
+    };
+    const todoRandomUpdated = {
+      ...todoRandom,
+      content: 'Todo updated',
+    };
+    const actorClient = getConfiguredAppsyncClientOIDCAuth(graphQlEndpoint, region, userMap[userName1]);
+    const subTodoHelper = createModelOperationHelpers(actorClient, schema)[modelName];
+
+    const onCreateSubscriptionResult = await subTodoHelper.subscribe('onCreate', [
+      async () => {
+        await subTodoHelper.create(`create${modelName}`, todoRandom);
+      },
+    ]);
+    expect(onCreateSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onCreateSubscriptionResult[0], todoRandom, `onCreate${modelName}`);
+    const onUpdateSubscriptionResult = await subTodoHelper.subscribe('onUpdate', [
+      async () => {
+        await subTodoHelper.update(`update${modelName}`, todoRandomUpdated);
+      },
+    ]);
+    expect(onUpdateSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onUpdateSubscriptionResult[0], todoRandomUpdated, `onUpdate${modelName}`);
+    const onDeleteSubscriptionResult = await subTodoHelper.subscribe('onDelete', [
+      async () => {
+        await subTodoHelper.delete(`delete${modelName}`, { id: todoRandom.id });
+      },
+    ]);
+    expect(onDeleteSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onDeleteSubscriptionResult[0], todoRandomUpdated, `onDelete${modelName}`);
   });
 
   test('users not in static group cannot perform CRUD operations', async () => {
@@ -562,7 +871,7 @@ describe('RDS OIDC provider Auth tests', () => {
     }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access deleteTodoStaticGroup on type Mutation"`);
   });
 
-  test('users in group stored as string can perform CRUD operations', async () => {
+  test('users in group stored as string can perform CRUD and subscription operations', async () => {
     const modelName = 'TodoGroupFieldString';
     const modelOperationHelpers = createModelOperationHelpers(appSyncClients[oidcProvider][userName1], schema);
     const todoHelper = modelOperationHelpers[modelName];
@@ -598,6 +907,40 @@ describe('RDS OIDC provider Auth tests', () => {
       id: todo['id'],
     });
     checkOperationResult(deleteResult, todoUpdated, `delete${modelName}`);
+
+    const todoRandom = {
+      id: Date.now().toString(),
+      content: 'Todo',
+      groupField: adminGroupName,
+    };
+    const todoRandomUpdated = {
+      ...todoRandom,
+      content: 'Todo updated',
+    };
+    const actorClient = getConfiguredAppsyncClientOIDCAuth(graphQlEndpoint, region, userMap[userName1]);
+    const subTodoHelper = createModelOperationHelpers(actorClient, schema)[modelName];
+
+    const onCreateSubscriptionResult = await subTodoHelper.subscribe('onCreate', [
+      async () => {
+        await subTodoHelper.create(`create${modelName}`, todoRandom);
+      },
+    ]);
+    expect(onCreateSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onCreateSubscriptionResult[0], todoRandom, `onCreate${modelName}`);
+    const onUpdateSubscriptionResult = await subTodoHelper.subscribe('onUpdate', [
+      async () => {
+        await subTodoHelper.update(`update${modelName}`, todoRandomUpdated);
+      },
+    ]);
+    expect(onUpdateSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onUpdateSubscriptionResult[0], todoRandomUpdated, `onUpdate${modelName}`);
+    const onDeleteSubscriptionResult = await subTodoHelper.subscribe('onDelete', [
+      async () => {
+        await subTodoHelper.delete(`delete${modelName}`, { id: todoRandom.id });
+      },
+    ]);
+    expect(onDeleteSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onDeleteSubscriptionResult[0], todoRandomUpdated, `onDelete${modelName}`);
   });
 
   test('users cannot spoof their group membership and gain access', async () => {
@@ -629,12 +972,10 @@ describe('RDS OIDC provider Auth tests', () => {
       await todoHelperNonAdmin.update(`update${modelName}`, todoUpdated);
     }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access updateTodoGroupFieldString on type Mutation"`);
 
-    expect(
-      async () =>
-        await todoHelperNonAdmin.get({
-          id: todo['id'],
-        }),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoGroupFieldString on type Query"`);
+    const getResult = await todoHelperNonAdmin.get({
+      id: todo['id'],
+    });
+    expect(getResult.data[`get${modelName}`]).toBeNull();
 
     const listTodosResult = await todoHelperNonAdmin.list();
     checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
@@ -646,7 +987,7 @@ describe('RDS OIDC provider Auth tests', () => {
     }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access deleteTodoGroupFieldString on type Mutation"`);
   });
 
-  test('users in groups stored as list can perform CRUD operations', async () => {
+  test('users in groups stored as list can perform CRUD and subscription operations', async () => {
     const modelName = 'TodoGroupFieldList';
     const modelOperationHelpers = createModelOperationHelpers(appSyncClients[oidcProvider][userName1], schema);
     const todoHelper = modelOperationHelpers[modelName];
@@ -682,6 +1023,40 @@ describe('RDS OIDC provider Auth tests', () => {
       id: todo['id'],
     });
     checkOperationResult(deleteResult, todo1Updated, `delete${modelName}`);
+
+    const todoRandom = {
+      id: Date.now().toString(),
+      content: 'Todo',
+      groupsField: [adminGroupName],
+    };
+    const todoRandomUpdated = {
+      ...todoRandom,
+      content: 'Todo updated',
+    };
+    const actorClient = getConfiguredAppsyncClientOIDCAuth(graphQlEndpoint, region, userMap[userName1]);
+    const subTodoHelper = createModelOperationHelpers(actorClient, schema)[modelName];
+
+    const onCreateSubscriptionResult = await subTodoHelper.subscribe('onCreate', [
+      async () => {
+        await subTodoHelper.create(`create${modelName}`, todoRandom);
+      },
+    ]);
+    expect(onCreateSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onCreateSubscriptionResult[0], todoRandom, `onCreate${modelName}`);
+    const onUpdateSubscriptionResult = await subTodoHelper.subscribe('onUpdate', [
+      async () => {
+        await subTodoHelper.update(`update${modelName}`, todoRandomUpdated);
+      },
+    ]);
+    expect(onUpdateSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onUpdateSubscriptionResult[0], todoRandomUpdated, `onUpdate${modelName}`);
+    const onDeleteSubscriptionResult = await subTodoHelper.subscribe('onDelete', [
+      async () => {
+        await subTodoHelper.delete(`delete${modelName}`, { id: todoRandom.id });
+      },
+    ]);
+    expect(onDeleteSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onDeleteSubscriptionResult[0], todoRandomUpdated, `onDelete${modelName}`);
   });
 
   test('users not part of allowed groups cannot access the records or modify allowed groups', async () => {
@@ -709,12 +1084,10 @@ describe('RDS OIDC provider Auth tests', () => {
       await todoHelperNonAdmin.update(`update${modelName}`, todoUpdated);
     }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access updateTodoGroupFieldList on type Mutation"`);
 
-    expect(
-      async () =>
-        await todoHelperNonAdmin.get({
-          id: todo['id'],
-        }),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoGroupFieldList on type Query"`);
+    const getResult = await todoHelperNonAdmin.get({
+      id: todo['id'],
+    });
+    expect(getResult.data[`get${modelName}`]).toBeNull();
 
     const listTodosResult = await todoHelperNonAdmin.list();
     checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
@@ -724,6 +1097,39 @@ describe('RDS OIDC provider Auth tests', () => {
         id: todo['id'],
       });
     }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access deleteTodoGroupFieldList on type Mutation"`);
+
+    const todoRandom = {
+      id: Date.now().toString(),
+      content: 'Todo',
+      groupsField: [adminGroupName],
+    };
+    const todoRandomUpdated = {
+      ...todoRandom,
+      content: 'Todo updated',
+    };
+    const actorClient = getConfiguredAppsyncClientOIDCAuth(graphQlEndpoint, region, userMap[userName1]);
+    const observerClient = getConfiguredAppsyncClientOIDCAuth(graphQlEndpoint, region, userMap[userName2]);
+    const actorTodoHelper = createModelOperationHelpers(actorClient, schema)[modelName];
+    const observerTodoHelper = createModelOperationHelpers(observerClient, schema)[modelName];
+
+    const onCreateSubscriptionResult = await observerTodoHelper.subscribe('onCreate', [
+      async () => {
+        await actorTodoHelper.create(`create${modelName}`, todoRandom);
+      },
+    ]);
+    expect(onCreateSubscriptionResult).toHaveLength(0);
+    const onUpdateSubscriptionResult = await observerTodoHelper.subscribe('onUpdate', [
+      async () => {
+        await actorTodoHelper.update(`update${modelName}`, todoRandomUpdated);
+      },
+    ]);
+    expect(onUpdateSubscriptionResult).toHaveLength(0);
+    const onDeleteSubscriptionResult = await observerTodoHelper.subscribe('onDelete', [
+      async () => {
+        await actorTodoHelper.delete(`delete${modelName}`, { id: todoRandom.id });
+      },
+    ]);
+    expect(onDeleteSubscriptionResult).toHaveLength(0);
   });
 
   test('Admin user can give access to another group of users', async () => {
@@ -756,33 +1162,70 @@ describe('RDS OIDC provider Auth tests', () => {
     checkOperationResult(getResult, todoUpdated, `get${modelName}`);
 
     const listTodosResult = await todoHelperNonAdmin.list();
-    checkOperationResult(listTodosResult, [{ ...todoUpdated }], `list${modelName}s`, true);
+    checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id'], true);
 
     const deleteResult = await todoHelperNonAdmin.delete(`delete${modelName}`, {
       id: todo['id'],
     });
     checkOperationResult(deleteResult, todoUpdated, `delete${modelName}`);
+
+    const todoRandom = {
+      id: Date.now().toString(),
+      content: 'Todo',
+      groupsField: [adminGroupName, devGroupName],
+    };
+    const todoRandomUpdated = {
+      ...todoRandom,
+      content: 'Todo updated',
+    };
+    const actorClient = getConfiguredAppsyncClientOIDCAuth(graphQlEndpoint, region, userMap[userName1]);
+    const observerClient = getConfiguredAppsyncClientOIDCAuth(graphQlEndpoint, region, userMap[userName2]);
+    const actorTodoHelper = createModelOperationHelpers(actorClient, schema)[modelName];
+    const observerTodoHelper = createModelOperationHelpers(observerClient, schema)[modelName];
+
+    const onCreateSubscriptionResult = await observerTodoHelper.subscribe('onCreate', [
+      async () => {
+        await actorTodoHelper.create(`create${modelName}`, todoRandom);
+      },
+    ]);
+    expect(onCreateSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onCreateSubscriptionResult[0], todoRandom, `onCreate${modelName}`);
+    const onUpdateSubscriptionResult = await observerTodoHelper.subscribe('onUpdate', [
+      async () => {
+        await actorTodoHelper.update(`update${modelName}`, todoRandomUpdated);
+      },
+    ]);
+    expect(onUpdateSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onUpdateSubscriptionResult[0], todoRandomUpdated, `onUpdate${modelName}`);
+    const onDeleteSubscriptionResult = await observerTodoHelper.subscribe('onDelete', [
+      async () => {
+        await actorTodoHelper.delete(`delete${modelName}`, { id: todoRandom.id });
+      },
+    ]);
+    expect(onDeleteSubscriptionResult).toHaveLength(1);
+    checkOperationResult(onDeleteSubscriptionResult[0], todoRandomUpdated, `onDelete${modelName}`);
   });
 
   test('logged in user can perform custom operations', async () => {
     const appSyncClient = appSyncClients[oidcProvider][userName2];
     const todo = {
-      id: 'todocustom1',
+      id: Date.now().toString(),
       content: 'Todo',
     };
     const createTodoCustom = /* GraphQL */ `
-      mutation CreateTodoCustom($input: TodoPrivate!) {
-        addTodoPrivate(input: $input) {}
+      mutation CreateTodoCustom($id: ID!, $content: String) {
+        addTodoPrivate(id: $id, content: $content) {
+          id
+          content
+        }
       }
     `;
     const createResult = await appSyncClient.mutate({
       mutation: gql(createTodoCustom),
       fetchPolicy: 'no-cache',
-      variables: {
-        input: todo,
-      },
+      variables: todo,
     });
-    expect(createResult.data.addTodoPrivate).toEqual(null);
+    expect(createResult.data.addTodoPrivate).toBeDefined();
 
     const getTodoCustom = /* GraphQL */ `
       query GetTodoCustom($id: ID!) {
@@ -799,28 +1242,31 @@ describe('RDS OIDC provider Auth tests', () => {
         id: todo.id,
       },
     });
-    checkListItemExistence(getResult, 'customGetTodoPrivate', todo.id, true);
+    expect(getResult.data.customGetTodoPrivate).toHaveLength(1);
+    expect(getResult.data.customGetTodoPrivate[0].id).toEqual(todo.id);
+    expect(getResult.data.customGetTodoPrivate[0].content).toEqual(todo.content);
   });
 
   test('users in static group can perform custom operations', async () => {
     const appSyncClient = appSyncClients[oidcProvider][userName1];
     const todo = {
-      id: 'todocustom2',
+      id: Date.now().toString(),
       content: 'Todo',
     };
     const createTodoCustom = /* GraphQL */ `
-      mutation CreateTodoCustom($input: TodoStaticGroup!) {
-        addTodoStaticGroup(input: $input) {}
+      mutation CreateTodoCustom($id: ID!, $content: String) {
+        addTodoStaticGroup(id: $id, content: $content) {
+          id
+          content
+        }
       }
     `;
     const createResult = await appSyncClient.mutate({
       mutation: gql(createTodoCustom),
       fetchPolicy: 'no-cache',
-      variables: {
-        input: todo,
-      },
+      variables: todo,
     });
-    expect(createResult.data.addTodoStaticGroup).toEqual(null);
+    expect(createResult.data.addTodoStaticGroup).toBeDefined();
 
     const getTodoCustom = /* GraphQL */ `
       query GetTodoCustom($id: ID!) {
@@ -837,27 +1283,30 @@ describe('RDS OIDC provider Auth tests', () => {
         id: todo.id,
       },
     });
-    checkListItemExistence(getResult, 'customGetTodoStaticGroup', todo.id, true);
+    expect(getResult.data.customGetTodoStaticGroup).toHaveLength(1);
+    expect(getResult.data.customGetTodoStaticGroup[0].id).toEqual(todo.id);
+    expect(getResult.data.customGetTodoStaticGroup[0].content).toEqual(todo.content);
   });
 
   test('users not in static group cannot perform custom operations', async () => {
     const appSyncClient = appSyncClients[oidcProvider][userName2];
     const todo = {
-      id: 'todocustom3',
+      id: Date.now().toString(),
       content: 'Todo',
     };
     const createTodoCustom = /* GraphQL */ `
-      mutation CreateTodoCustom($input: TodoStaticGroup!) {
-        addTodoStaticGroup(input: $input) {}
+      mutation CreateTodoCustom($id: ID!, $content: String) {
+        addTodoStaticGroup(id: $id, content: $content) {
+          id
+          content
+        }
       }
     `;
     await expect(async () => {
       await appSyncClient.mutate({
         mutation: gql(createTodoCustom),
         fetchPolicy: 'no-cache',
-        variables: {
-          input: todo,
-        },
+        variables: todo,
       });
     }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access addTodoStaticGroup on type Mutation"`);
 
