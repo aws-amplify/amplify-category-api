@@ -10,6 +10,7 @@ import {
 } from './common';
 import { DDB_DB_TYPE, MYSQL_DB_TYPE, DBType } from '@aws-amplify/graphql-transformer-core';
 import { RefersToTransformer } from '../../graphql-refers-to-transformer';
+import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 
 const mappedHasMany = /* GraphQL */ `
   type Employee @model @mapsTo(name: "Person") {
@@ -25,12 +26,12 @@ const mappedHasMany = /* GraphQL */ `
 
 const refersToHasMany = /* GraphQL */ `
   type Employee @model @refersTo(name: "Person") {
-    id: ID!
+    id: ID! @primaryKey
     tasks: [Task] @hasMany(references: ["employeeId"])
   }
 
   type Task @model @refersTo(name: "Todo") {
-    id: ID!
+    id: ID! @primaryKey
     title: String
     employeeId: String!
     employee: Employee @belongsTo(references: ["employeeId"])
@@ -44,6 +45,7 @@ const transformSchema = (schema: string, dbType: DBType) => {
       new ModelTransformer(),
       new HasManyTransformer(),
       new BelongsToTransformer(),
+      new PrimaryKeyTransformer(),
       new MapsToTransformer(),
       new RefersToTransformer(),
     ],

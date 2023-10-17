@@ -4,20 +4,21 @@ import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { parse } from 'graphql';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthTransformer } from '../graphql-auth-transformer';
+import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 
 describe('Verify RDS Model level Auth rules on queries:', () => {
   it('should successfully transform apiKey auth rule', async () => {
     const validSchema = `
       type Post @model
         @auth(rules: [{allow: public}]) {
-          id: ID!
+          id: ID! @primaryKey
           title: String!
       }
     `;
 
     const out = testTransform({
       schema: validSchema,
-      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId: 'TEST_IDENTITY_POOL_ID' })],
+      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId: 'TEST_IDENTITY_POOL_ID' }), new PrimaryKeyTransformer()],
       modelToDatasourceMap: new Map(
         Object.entries({
           Post: {
@@ -47,7 +48,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
         @auth(rules: [
           {allow: private}
         ]) {
-          id: ID!
+          id: ID! @primaryKey
           title: String!
       }
 
@@ -55,7 +56,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
         @auth(rules: [
           {allow: owner}
         ]) {
-          id: ID!
+          id: ID! @primaryKey
           title: String!
       }
 
@@ -63,7 +64,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
         @auth(rules: [
           {allow: owner, ownerField: "owners"}
         ]) {
-          id: ID!
+          id: ID! @primaryKey
           title: String!
           owners: [String]
       }
@@ -72,7 +73,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
         @auth(rules: [
           {allow: groups, groups: ["Admin", "Moderator"]}
         ]) {
-          id: ID!
+          id: ID! @primaryKey
           title: String!
       }
 
@@ -80,7 +81,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
         @auth(rules: [
           {allow: groups, groupsField: "groups"}
         ]) {
-          id: ID!
+          id: ID! @primaryKey
           title: String!
           groups: [String]
       }
@@ -89,7 +90,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
         @auth(rules: [
           {allow: groups, groupsField: "group"}
         ]) {
-          id: ID!
+          id: ID! @primaryKey
           title: String!
           group: String
       }
@@ -115,7 +116,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
 
     const out = testTransform({
       schema: validSchema,
-      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId: 'TEST_IDENTITY_POOL_ID' })],
+      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId: 'TEST_IDENTITY_POOL_ID' }), new PrimaryKeyTransformer()],
       authConfig,
       modelToDatasourceMap,
     });
@@ -169,7 +170,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
         @auth(rules: [
           {allow: private, provider: oidc}
         ]) {
-          id: ID!
+          id: ID! @primaryKey
           title: String!
       }
 
@@ -177,7 +178,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
         @auth(rules: [
           {allow: owner, provider: oidc}
         ]) {
-          id: ID!
+          id: ID! @primaryKey
           title: String!
       }
 
@@ -185,7 +186,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
         @auth(rules: [
           {allow: owner, ownerField: "owners", provider: oidc}
         ]) {
-          id: ID!
+          id: ID! @primaryKey
           title: String!
           owners: [String]
       }
@@ -194,7 +195,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
         @auth(rules: [
           {allow: groups, groups: ["Admin", "Moderator"], provider: oidc}
         ]) {
-          id: ID!
+          id: ID! @primaryKey
           title: String!
       }
 
@@ -202,7 +203,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
         @auth(rules: [
           {allow: groups, groupsField: "groups", provider: oidc}
         ]) {
-          id: ID!
+          id: ID! @primaryKey
           title: String!
           groups: [String]
       }
@@ -211,7 +212,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
         @auth(rules: [
           {allow: groups, groupsField: "group", provider: oidc}
         ]) {
-          id: ID!
+          id: ID! @primaryKey
           title: String!
           group: String
       }
@@ -239,7 +240,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
 
     const out = testTransform({
       schema: validSchema,
-      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId: 'TEST_IDENTITY_POOL_ID' })],
+      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId: 'TEST_IDENTITY_POOL_ID' }), new PrimaryKeyTransformer()],
       authConfig,
       modelToDatasourceMap,
     });
@@ -291,7 +292,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
     const validSchema = `
       type Post @model
         @auth(rules: [{allow: custom}]) {
-          id: ID!
+          id: ID! @primaryKey
           title: String!
       }
     `;
@@ -308,7 +309,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
 
     const out = testTransform({
       schema: validSchema,
-      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId: 'TEST_IDENTITY_POOL_ID' })],
+      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId: 'TEST_IDENTITY_POOL_ID' }), new PrimaryKeyTransformer()],
       authConfig,
       modelToDatasourceMap: new Map(
         Object.entries({
@@ -339,7 +340,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
         @auth(rules: [
           {allow: private, provider: iam}
         ]) {
-          id: ID!
+          id: ID! @primaryKey
           title: String!
       }
 
@@ -347,7 +348,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
         @auth(rules: [
           {allow: public, provider: iam}
         ]) {
-          id: ID!
+          id: ID! @primaryKey
           title: String!
       }
     `;
@@ -369,7 +370,7 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
 
     const out = testTransform({
       schema: validSchema,
-      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId: 'TEST_IDENTITY_POOL_ID' })],
+      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId: 'TEST_IDENTITY_POOL_ID' }), new PrimaryKeyTransformer()],
       authConfig,
       modelToDatasourceMap,
     });

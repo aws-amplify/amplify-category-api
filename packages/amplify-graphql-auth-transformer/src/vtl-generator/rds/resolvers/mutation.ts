@@ -1,4 +1,4 @@
-import { compoundExpression, list, methodCall, nul, obj, printBlock, qref, ref, set, str } from 'graphql-mapping-template';
+import { compoundExpression, list, methodCall, nul, obj, printBlock, qref, ref, set, str, Expression } from 'graphql-mapping-template';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { ConfiguredAuthProviders, RoleDefinition } from '../../../utils';
@@ -64,6 +64,7 @@ export const generateAuthRequestExpression = (ctx: TransformerContextProvider, d
       set(ref('lambdaInput.operationName'), str(operationName)),
       set(ref('lambdaInput.args.metadata'), obj({})),
       set(ref('lambdaInput.args.metadata.keys'), list([])),
+      constructFieldMappingInput(),
       qref(
         methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
       ),
@@ -78,4 +79,16 @@ export const generateAuthRequestExpression = (ctx: TransformerContextProvider, d
       }),
     ]),
   );
+};
+
+const constructFieldMappingInput = (): Expression => {
+  return compoundExpression([
+    set(ref('lambdaInput.args.metadata.fieldMap'), obj({})),
+    qref(
+      methodCall(
+        ref('lambdaInput.args.metadata.fieldMap.putAll'),
+        methodCall(ref('util.defaultIfNull'), ref('context.stash.fieldMap'), obj({})),
+      ),
+    ),
+  ]);
 };

@@ -4521,7 +4521,7 @@ input ModelNoteFilterInput {
 
 type Query {
   getNote(id: ID!): Note
-  listNotes(filter: ModelNoteFilterInput, limit: Int, nextToken: String): ModelNoteConnection
+  listNotes(id: ID, filter: ModelNoteFilterInput, limit: Int, nextToken: String, sortDirection: ModelSortDirection): ModelNoteConnection
 }
 
 input ModelNoteConditionInput {
@@ -4589,6 +4589,12 @@ $util.toJson({
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Mutation.createNote.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
+#set( $keys = [] )
+$util.qr($keys.add(\\"id\\"))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
+## [End] Set the primary key information in metadata. **
+{}",
   "Mutation.createNote.req.vtl": "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.table = \\"Note\\" )
@@ -4625,6 +4631,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Mutation.deleteNote.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
+#set( $keys = [] )
+$util.qr($keys.add(\\"id\\"))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
+## [End] Set the primary key information in metadata. **
+{}",
   "Mutation.deleteNote.req.vtl": "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.table = \\"Note\\" )
@@ -4665,6 +4677,12 @@ $util.toJson({
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Mutation.updateNote.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
+#set( $keys = [] )
+$util.qr($keys.add(\\"id\\"))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
+## [End] Set the primary key information in metadata. **
+{}",
   "Mutation.updateNote.req.vtl": "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.table = \\"Note\\" )
@@ -4702,6 +4720,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Query.getNote.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
+#set( $keys = [] )
+$util.qr($keys.add(\\"id\\"))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
+## [End] Set the primary key information in metadata. **
+{}",
   "Query.getNote.req.vtl": "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
@@ -4738,6 +4762,17 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, 
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Query.listNotes.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
+#set( $keys = [] )
+$util.qr($keys.add(\\"id\\"))
+$util.qr($ctx.stash.put(\\"keys\\", $keys))
+## [End] Set the primary key information in metadata. **
+## [Start] Validate the sort direction input. **
+#if( !$util.isNull($ctx.args.sortDirection) )
+  $util.error(\\"sortDirection is not supported for List operations without a Sort key defined.\\", \\"InvalidArgumentsError\\")
+#end
+## [End] Validate the sort direction input. **
+{}",
   "Query.listNotes.req.vtl": "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
