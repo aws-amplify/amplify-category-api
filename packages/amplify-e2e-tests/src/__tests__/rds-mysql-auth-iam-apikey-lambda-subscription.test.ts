@@ -12,6 +12,7 @@ import {
   setupRDSInstanceAndData,
   sleep,
   enableUserPoolUnauthenticatedAccess,
+  apiGqlCompile,
 } from 'amplify-category-api-e2e-core';
 import { existsSync, writeFileSync } from 'fs-extra';
 import generator from 'generate-password';
