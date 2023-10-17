@@ -45,6 +45,7 @@ export type ExecuteTransformConfig = TransformConfig & {
     parameterProvider?: TransformParameterProvider;
     assetProvider: AssetProvider;
     synthParameters: SynthParameters;
+    dbEngineType?: 'DynamoDB' | 'MySQL' | 'Postgres';
 };
 
 // @public (undocumented)
