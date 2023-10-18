@@ -465,4 +465,90 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
       expect(out.resolvers[resolver]).toMatchSnapshot();
     });
   });
+
+  it('should throw error if auth is defined on a field', async () => {
+    const invalidSchema = `
+      type Post @model
+        @auth(rules: [
+          {allow: private, provider: iam}
+          {allow: public, provider: iam}
+        ]) {
+          id: ID! @primaryKey
+          title: String!
+            @auth(rules: [
+              {allow: private, provider: iam}
+            ])
+      }
+    `;
+
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AWS_IAM',
+      },
+      additionalAuthenticationProviders: [],
+    };
+
+    const modelToDatasourceMap = new Map();
+    ['Post'].forEach((model) => {
+      modelToDatasourceMap.set(model, {
+        dbType: 'MySQL',
+        provisionDB: false,
+      });
+    });
+
+    expect(() =>
+      testTransform({
+        schema: invalidSchema,
+        transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
+        authConfig,
+        modelToDatasourceMap,
+      }),
+    ).toThrow(
+      '@auth rules are not supported on fields on relational database models. Check field "title" on type "Post". Please use @auth on the type instead.',
+    );
+  });
+
+  it('should allow field auth on mutation type', async () => {
+    const validSchema = `
+      type Post @model
+        @auth(rules: [
+          {allow: private, provider: iam}
+          {allow: public, provider: iam}
+        ]) {
+          id: ID! @primaryKey
+          title: String!
+      }
+
+      type Mutation {
+        createCustomModel: Post @auth(rules: [{allow: private, provider: iam}])
+      }
+    `;
+
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AWS_IAM',
+      },
+      additionalAuthenticationProviders: [],
+    };
+
+    const modelToDatasourceMap = new Map();
+    ['Post'].forEach((model) => {
+      modelToDatasourceMap.set(model, {
+        dbType: 'MySQL',
+        provisionDB: false,
+      });
+    });
+
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
+      authConfig,
+      modelToDatasourceMap,
+    });
+
+    expect(out).toBeDefined();
+
+    validateModelSchema(parse(out.schema));
+    parse(out.schema);
+  });
 });
