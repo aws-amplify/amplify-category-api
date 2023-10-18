@@ -90,7 +90,7 @@ export const applyFieldOverrides = (field: FieldDefinitionNode, existingField: F
 };
 
 export const applyModelOverrides = (obj: ObjectTypeDefinitionNode, existingObj: ObjectTypeDefinitionNode): ObjectTypeDefinitionNode => {
-  let updatedModel = obj;
+  let updatedModel = { ...obj };
   updatedModel = applyModelNameOverrides(obj, existingObj);
   updatedModel = applyModelAuthOverrides(updatedModel, existingObj);
   return updatedModel;

@@ -702,7 +702,7 @@ describe('finds matching field', () => {
   });
 });
 
-describe.only('model auth rules overrides', () => {
+describe('model auth rules overrides', () => {
   it('should retain added auth rules for models with no name mapping', () => {
     const document = parse(`
             type Post @model
