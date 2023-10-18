@@ -6,7 +6,7 @@ import {
   DescribeDBSubnetGroupsCommandOutput,
 } from '@aws-sdk/client-rds';
 
-import { getHostVpc } from '../vpc-helper';
+import { getHostVpc } from '../utils/vpc-helper';
 
 const sendSpy = jest.spyOn(RDSClient.prototype, 'send');
 

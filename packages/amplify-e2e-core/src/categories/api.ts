@@ -24,9 +24,19 @@ export function getSchemaPath(schemaName: string): string {
   return path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'schemas', schemaName);
 }
 
-export function apiGqlCompile(cwd: string, testingWithLatestCodebase: boolean = false) {
+export const apiGqlCompile = (
+  cwd: string,
+  testingWithLatestCodebase = false,
+  settings?: {
+    forceCompile?: boolean;
+  },
+): Promise<void> => {
+  const params = ['api', 'gql-compile'];
+  if (settings?.forceCompile) {
+    params.push('--force');
+  }
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['api', 'gql-compile'], { cwd, stripColors: true })
+    spawn(getCLIPath(testingWithLatestCodebase), params, { cwd, stripColors: true })
       .wait('GraphQL schema compiled successfully.')
       .run((err: Error) => {
         if (!err) {
@@ -36,7 +46,7 @@ export function apiGqlCompile(cwd: string, testingWithLatestCodebase: boolean = 
         }
       });
   });
-}
+};
 
 export interface AddApiOptions {
   apiName: string;

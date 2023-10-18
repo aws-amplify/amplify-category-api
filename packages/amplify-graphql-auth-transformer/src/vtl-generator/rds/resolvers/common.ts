@@ -95,7 +95,7 @@ const convertAuthRoleToVtl = (
           type: str(role.strategy),
           provider: str('iam'),
           roleArn: role.strategy === 'public' ? ref('ctx.stash.unauthRole') : ref('ctx.stash.authRole'),
-          cognitoIdentityPoolId: hasIdentityPoolId ? ref('ctx.stash.identityPoolId') : nul(),
+          ...(role.strategy === 'private' && { cognitoIdentityPoolId: hasIdentityPoolId ? ref('ctx.stash.identityPoolId') : nul() }),
           ...(showAllowedFields && { allowedFields: list(allowedFields) }),
         }),
       ),

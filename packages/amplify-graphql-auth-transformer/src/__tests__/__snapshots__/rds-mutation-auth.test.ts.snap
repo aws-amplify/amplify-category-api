@@ -1232,7 +1232,6 @@ $util.qr($authRules.add({
   \\"type\\": \\"public\\",
   \\"provider\\": \\"iam\\",
   \\"roleArn\\": $ctx.stash.unauthRole,
-  \\"cognitoIdentityPoolId\\": $ctx.stash.identityPoolId,
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
@@ -1284,7 +1283,6 @@ $util.qr($authRules.add({
   \\"type\\": \\"public\\",
   \\"provider\\": \\"iam\\",
   \\"roleArn\\": $ctx.stash.unauthRole,
-  \\"cognitoIdentityPoolId\\": $ctx.stash.identityPoolId,
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
@@ -1336,7 +1334,6 @@ $util.qr($authRules.add({
   \\"type\\": \\"public\\",
   \\"provider\\": \\"iam\\",
   \\"roleArn\\": $ctx.stash.unauthRole,
-  \\"cognitoIdentityPoolId\\": $ctx.stash.identityPoolId,
   \\"allowedFields\\":   [\\"id\\", \\"title\\"]
 }))
 #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )

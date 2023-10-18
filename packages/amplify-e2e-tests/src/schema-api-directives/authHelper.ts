@@ -101,7 +101,15 @@ export function getConfiguredAppsyncClientAPIKeyAuth(url: string, region: string
   });
 }
 
-export function getConfiguredAppsyncClientIAMAuth(url: string, region: string): any {
+export const getConfiguredAppsyncClientIAMAuth = (
+  url: string,
+  region: string,
+  credentials?: {
+    accessKeyId: string;
+    secretAccessKey: string;
+    sessionToken: string;
+  },
+): any => {
   return new AWSAppSyncClient({
     url,
     region,
@@ -109,13 +117,13 @@ export function getConfiguredAppsyncClientIAMAuth(url: string, region: string): 
     auth: {
       type: AUTH_TYPE.AWS_IAM,
       credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-        sessionToken: process.env.AWS_SESSION_TOKEN,
+        accessKeyId: credentials?.accessKeyId ?? process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: credentials?.secretAccessKey ?? process.env.AWS_SECRET_ACCESS_KEY,
+        sessionToken: credentials?.sessionToken ?? process.env.AWS_SESSION_TOKEN,
       },
     },
   });
-}
+};
 
 export const getConfiguredAppsyncClientLambdaAuth = (url: string, region: string, token: string): any => {
   return new AWSAppSyncClient({
