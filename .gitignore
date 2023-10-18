@@ -15,8 +15,6 @@ UNIFIED_CHANGELOG.md
 package-lock.json
 packages/amplify-cli/amplify/.config/
 packages/amplify-appsync-simulator/public
-packages/amplify-dynamodb-simulator/emulator
-packages/amplify-dynamodb-simulator/__test__/dynamodb-data
 .vscode/*
 !.vscode/settings.json
 !.vscode/extensions.json

@@ -110,7 +110,7 @@ function _verifyCDKVersion {
 function _mockE2ETests {
   echo "Mock E2E Tests"
   loadCacheFromBuildJob
-  cd packages/amplify-util-mock/
+  cd packages/amplify-mock-tests/
   yarn e2e
 }
 function _lint {

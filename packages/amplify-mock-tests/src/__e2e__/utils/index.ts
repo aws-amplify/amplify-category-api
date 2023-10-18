@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
-import * as dynamoEmulator from 'amplify-category-api-dynamodb-simulator';
+import * as dynamoEmulator from 'amplify-dynamodb-simulator';
 import * as fs from 'fs-extra';
 import { v4 } from 'uuid';
 import { DynamoDB } from 'aws-sdk';
@@ -8,19 +8,14 @@ import { functionRuntimeContributorFactory } from 'amplify-nodejs-function-runti
 import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
 import { DeploymentResources, TransformManager } from '@aws-amplify/graphql-transformer-test-utils';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { processTransformerStacks } from '../../CFNParser/appsync-resource-processor';
-import { configureDDBDataSource, createAndUpdateTable } from '../../utils/dynamo-db';
 import { getFunctionDetails } from './lambda-helper';
+// Note: this is brittle, but should allow us to only run e2e tests on the mock w/o requiring additional exports.
+import { processTransformerStacks } from '../../../node_modules/@aws-amplify/amplify-util-mock/lib/CFNParser/appsync-resource-processor';
+import { configureDDBDataSource, createAndUpdateTable } from '../../../node_modules/@aws-amplify/amplify-util-mock/lib/utils/dynamo-db';
 
 const invoke = functionRuntimeContributorFactory({}).invoke;
 
 export * from './graphql-client';
-
-jest.mock('@aws-amplify/amplify-cli-core', () => ({
-  pathManager: {
-    getAmplifyPackageLibDirPath: jest.fn().mockReturnValue('../amplify-dynamodb-simulator'),
-  },
-}));
 
 const getAuthenticationTypesForAuthConfig = (authConfig?: AppSyncAuthConfiguration): (string | undefined)[] =>
   [authConfig?.defaultAuthentication, ...(authConfig?.additionalAuthenticationProviders ?? [])].map(

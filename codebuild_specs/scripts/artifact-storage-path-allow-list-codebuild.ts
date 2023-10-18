@@ -27,7 +27,7 @@
  * will automatically normalize these paths for Windows if it detects it.
  */
 export const ARTIFACT_STORAGE_PATH_ALLOW_LIST_CODEBUILD = [
-  '$CODEBUILD_SRC_DIR/packages/amplify-util-mock/',
+  '$CODEBUILD_SRC_DIR/packages/amplify-mock-tests/',
   '$CODEBUILD_SRC_DIR/packages/graphql-transformers-e2e-tests/',
   '$CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/',
   '$CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/amplify-e2e-reports',

@@ -130,7 +130,9 @@
       "@aws-amplify/graphql-api-construct/jsonfile",
       "@aws-amplify/graphql-api-construct/libphonenumber-js",
       "@aws-amplify/graphql-api-construct/pluralize",
-      "@aws-amplify/graphql-api-construct/universalify"
+      "@aws-amplify/graphql-api-construct/universalify",
+      "amplify-mock-tests/*",
+      "amplify-mock-tests/@aws-amplify/*"
     ]
   },
   "devDependencies": {
