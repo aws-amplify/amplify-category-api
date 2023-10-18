@@ -110,6 +110,7 @@ function _verifyCDKVersion {
 function _mockE2ETests {
   echo "Mock E2E Tests"
   loadCacheFromBuildJob
+  npm install -g @aws-amplify/cli-internal
   cd packages/amplify-mock-tests/
   yarn e2e
 }
