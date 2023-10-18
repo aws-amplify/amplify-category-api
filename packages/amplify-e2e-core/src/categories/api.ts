@@ -60,6 +60,7 @@ export interface ImportApiOptions {
   port: number;
   username: string;
   password: string;
+  engine?: string;
   useVpc?: boolean;
 }
 
@@ -1078,6 +1079,12 @@ export const importRDSDatabase = (cwd: string, opts: ImportApiOptions & { apiExi
         .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
         .sendCarriageReturn();
     }
+
+    importCommands.wait('Select the database type:');
+    if (options.engine === 'postgres') {
+      importCommands.sendKeyDown(1);
+    }
+    importCommands.sendCarriageReturn();
 
     promptDBInformation(importCommands, options);
 

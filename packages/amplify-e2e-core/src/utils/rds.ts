@@ -19,7 +19,7 @@ const AWSCHECKIP_URL = 'https://checkip.amazonaws.com/';
 
 type RDSConfig = {
   identifier: string;
-  engine: 'mysql';
+  engine: 'mysql' | 'postgres';
   dbname: string;
   username: string;
   password: string;
@@ -110,6 +110,7 @@ export const setupRDSInstanceAndData = async (
     await sleep(1 * 60 * 1000); // Delay for the security rules to take effect
 
     const dbAdapter = new RDSTestDataProvider({
+      engine: config.engine,
       host: dbConfig.endpoint,
       port: dbConfig.port,
       username: config.username,
@@ -265,6 +266,7 @@ export class RDSTestDataProvider {
 
   constructor(
     private config: {
+      engine?: string;
       host: string;
       port: number;
       username: string;
@@ -275,7 +277,7 @@ export class RDSTestDataProvider {
     this.establishDatabaseConnection();
   }
 
-  private establishDatabaseConnection() {
+  private establishDatabaseConnection(): void {
     const databaseConfig = {
       host: this.config.host,
       database: this.config.database,
@@ -286,11 +288,11 @@ export class RDSTestDataProvider {
     };
     try {
       this.dbBuilder = knex({
-        client: 'mysql2',
+        client: this.config.engine === 'postgres' ? 'pg' : 'mysql2',
         connection: databaseConfig,
         pool: {
-          min: 5,
-          max: 30,
+          min: 0,
+          max: 1,
           createTimeoutMillis: 30000,
           acquireTimeoutMillis: 30000,
           idleTimeoutMillis: 30000,

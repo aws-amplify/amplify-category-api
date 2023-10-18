@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import { printer } from '@aws-amplify/amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import {
   ImportAppSyncAPIInputs,
   ImportedDataSourceType,
@@ -38,7 +38,6 @@ export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<
     apiName = await getCfnApiArtifactHandler(context).createArtifacts(importAPIRequest);
   }
 
-  const engine = ImportedRDSType.MYSQL;
   const apiResourceDir = getAPIResourceDir(apiName);
   const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
   const secretsKey = await getSecretsKey();
@@ -50,6 +49,7 @@ export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<
     };
   }
 
+  const engine = await promptDatabaseEngine();
   const databaseConfig: ImportedDataSourceConfig = await databaseConfigurationInputWalkthrough(engine);
 
   await writeDefaultGraphQLSchema(context, pathToSchemaFile, databaseConfig);
@@ -59,6 +59,21 @@ export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<
     apiName,
     dataSourceConfig: databaseConfig,
   };
+};
+
+const promptDatabaseEngine = async (): Promise<ImportedRDSType> => {
+  const engine = await prompter.pick<'one', string>('Select the database type:', [
+    {
+      name: 'MySQL',
+      value: ImportedRDSType.MYSQL as string,
+    },
+    {
+      name: 'PostgreSQL',
+      value: ImportedRDSType.POSTGRESQL as string,
+    },
+  ]);
+
+  return engine as ImportedRDSType;
 };
 
 /**

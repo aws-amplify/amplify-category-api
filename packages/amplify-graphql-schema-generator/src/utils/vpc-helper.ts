@@ -44,7 +44,9 @@ import * as fs from 'fs-extra';
 import ora from 'ora';
 import { printer } from '@aws-amplify/amplify-prompts';
 
-const DB_ENGINES = ['aurora-mysql', 'mysql'];
+// Filters to use with DescribeDBInstances and DescribeDBClusters SDK calls
+const DB_ENGINES = ['aurora-mysql', 'mysql', 'postgres', 'aurora-postgresql'];
+
 const spinner = ora('');
 
 /**
@@ -329,6 +331,11 @@ const createPolicy = async (policyName: string, region: string): Promise<Policy 
           Resource: '*',
           Action: ['ec2:CreateNetworkInterface', 'ec2:DescribeNetworkInterfaces', 'ec2:DeleteNetworkInterface'],
         },
+        {
+          Effect: 'Allow',
+          Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
+          Resource: ['arn:aws:logs:*:*:*'],
+        },
       ],
     }),
   });
@@ -355,6 +362,7 @@ const createRole = async (roleName: string, region: string): Promise<Role | unde
     }),
     RoleName: roleName,
   });
+
   const result: CreateRoleCommandOutput = await client.send(command);
 
   const attachPolicyCommand = new AttachRolePolicyCommand({
