@@ -12,8 +12,16 @@ import {
 } from 'amplify-category-api-e2e-core';
 import { getBaseType, isArrayOrObject, toPascalCase } from 'graphql-transformer-common';
 import { GQLQueryHelper } from '../query-utils/gql-helper';
-import { getConfiguredAppsyncClientCognitoAuth, getConfiguredAppsyncClientOIDCAuth } from '../schema-api-directives';
+import {
+  getConfiguredAppsyncClientAPIKeyAuth,
+  getConfiguredAppsyncClientCognitoAuth,
+  getConfiguredAppsyncClientOIDCAuth,
+} from '../schema-api-directives';
 import path from 'path';
+
+const HAS_MANY_DIRECTIVE = 'hasMany';
+const HAS_ONE_DIRECTIVE = 'hasOne';
+const BELONGS_TO_DIRECTIVE = 'belongsTo';
 
 export const verifyAmplifyMeta = (projectRoot: string, apiName: string, database: string) => {
   // Database info is updated in meta file
@@ -120,7 +128,8 @@ export const generateDDL = (schema: string): string[] => {
         }
         const tableName = getMappedName(node);
         const fieldStatements = [];
-        node.fields.forEach((field, index) => {
+        const fieldsToAdd = node.fields.filter((field) => !isRelationalField(field));
+        fieldsToAdd.forEach((field, index) => {
           fieldStatements.push(getFieldStatement(field, index === 0));
         });
         const sql = `CREATE TABLE ${tableName} (${fieldStatements.join(', ')});`;
@@ -130,6 +139,10 @@ export const generateDDL = (schema: string): string[] => {
   };
   visit(document, schemaVisitor);
   return sqlStatements;
+};
+
+const isRelationalField = (field: FieldDefinitionNode): boolean => {
+  return field?.directives?.some((d) => [HAS_MANY_DIRECTIVE, HAS_ONE_DIRECTIVE, BELONGS_TO_DIRECTIVE].includes(d?.name?.value));
 };
 
 const getMappedName = (definition: ObjectTypeDefinitionNode | FieldDefinitionNode): string => {
@@ -240,13 +253,13 @@ export type AuthProvider = 'apiKey' | 'iam' | 'oidc' | 'userPools' | 'function';
 export const configureAppSyncClients = async (
   projRoot: string,
   apiName: string,
-  authProviders: [AuthProvider],
+  authProviders: AuthProvider[],
   userMap?: { [key: string]: any },
 ): Promise<any> => {
   const meta = getProjectMeta(projRoot);
   const appRegion = meta.providers.awscloudformation.Region;
   const { output } = meta.api[apiName];
-  const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput } = output;
+  const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
   const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, appRegion);
 
   expect(GraphQLAPIIdOutput).toBeDefined();
@@ -274,6 +287,12 @@ export const configureAppSyncClients = async (
       appSyncClients['oidc'][userName] = userAppSyncClient;
     });
   }
+
+  if (authProviders?.includes('apiKey')) {
+    expect(GraphQLAPIKeyOutput).toBeDefined();
+    appSyncClients['apiKey'] = getConfiguredAppsyncClientAPIKeyAuth(apiEndPoint, appRegion, GraphQLAPIKeyOutput as string);
+  }
+
   return appSyncClients;
 };
 

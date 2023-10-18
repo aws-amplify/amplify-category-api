@@ -6,6 +6,7 @@ import { FieldWrapper, ObjectDefinitionWrapper } from '@aws-amplify/graphql-tran
 const MODEL_DIRECTIVE_NAME = 'model';
 const REFERS_TO_DIRECTIVE_NAME = 'refersTo';
 const RELATIONAL_DIRECTIVES = ['hasOne', 'hasMany', 'belongsTo'];
+const AUTH_DIRECTIVE_NAME = 'auth';
 
 export const applySchemaOverrides = (document: DocumentNode, existingDocument?: DocumentNode | undefined): DocumentNode => {
   if (!existingDocument) {
@@ -89,10 +90,10 @@ export const applyFieldOverrides = (field: FieldDefinitionNode, existingField: F
 };
 
 export const applyModelOverrides = (obj: ObjectTypeDefinitionNode, existingObj: ObjectTypeDefinitionNode): ObjectTypeDefinitionNode => {
-  return {
-    ...obj,
-    ...applyModelNameOverrides(obj, existingObj),
-  };
+  let updatedModel = { ...obj };
+  updatedModel = applyModelNameOverrides(obj, existingObj);
+  updatedModel = applyModelAuthOverrides(updatedModel, existingObj);
+  return updatedModel;
 };
 
 export const applyJSONFieldTypeOverrides = (
@@ -143,6 +144,22 @@ export const applyModelNameOverrides = (obj: ObjectTypeDefinitionNode, existingO
       directives: [
         ...existingObj?.directives?.filter((dir) => dir.name.value === REFERS_TO_DIRECTIVE_NAME),
         ...obj?.directives?.filter((dir) => dir.name.value !== REFERS_TO_DIRECTIVE_NAME),
+      ],
+    },
+  };
+};
+
+export const applyModelAuthOverrides = (obj: ObjectTypeDefinitionNode, existingObj: ObjectTypeDefinitionNode): ObjectTypeDefinitionNode => {
+  const authDirectiveExists = existingObj?.directives?.find((dir) => dir?.name?.value === AUTH_DIRECTIVE_NAME);
+  if (!authDirectiveExists) {
+    return obj;
+  }
+  return {
+    ...obj,
+    ...{
+      directives: [
+        ...obj?.directives?.filter((dir) => dir.name.value !== AUTH_DIRECTIVE_NAME),
+        ...existingObj?.directives?.filter((dir) => dir.name.value === AUTH_DIRECTIVE_NAME),
       ],
     },
   };
