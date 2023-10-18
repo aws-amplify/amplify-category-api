@@ -15,7 +15,7 @@ import {
 } from 'amplify-category-api-e2e-core';
 import { existsSync, readFileSync } from 'fs-extra';
 import generator from 'generate-password';
-import { ObjectTypeDefinitionNode, parse } from 'graphql';
+import { ObjectTypeDefinitionNode, parse, ListTypeDefinitionNode } from 'graphql';
 import path from 'path';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
