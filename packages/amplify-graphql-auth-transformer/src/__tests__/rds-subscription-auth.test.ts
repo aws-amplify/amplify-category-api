@@ -481,4 +481,48 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
       expect(out.resolvers[resolver]).toMatchSnapshot();
     });
   });
+
+  it('should allow field auth on subscription type', async () => {
+    const validSchema = `
+      type Post @model
+        @auth(rules: [
+          {allow: private, provider: iam}
+          {allow: public, provider: iam}
+        ]) {
+          id: ID! @primaryKey
+          title: String!
+      }
+
+      type Subscription {
+        onCustomCreateModel: Post @auth(rules: [{allow: private, provider: iam}])
+      }
+    `;
+
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AWS_IAM',
+      },
+      additionalAuthenticationProviders: [],
+    };
+
+    const modelToDatasourceMap = new Map();
+    ['Post'].forEach((model) => {
+      modelToDatasourceMap.set(model, {
+        dbType: 'MySQL',
+        provisionDB: false,
+      });
+    });
+
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
+      authConfig,
+      modelToDatasourceMap,
+    });
+
+    expect(out).toBeDefined();
+
+    validateModelSchema(parse(out.schema));
+    parse(out.schema);
+  });
 });

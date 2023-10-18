@@ -278,6 +278,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       modelDirective !== undefined,
       field.name.value,
       context.transformParameters,
+      parent,
+      context,
     );
     validateRules(rules, this.configuredAuthProviders, field.name.value);
 
