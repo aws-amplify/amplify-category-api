@@ -47,12 +47,12 @@ describe('RDS Model Directive', () => {
   beforeAll(async () => {
     projRoot = await createNewProjectDir('rdsmodelapi');
     await initProjectAndImportSchema();
-    
+
     // TODO: Enable once we have the adapter layer on the SQL lambda
     // await amplifyPush(projRoot);
     // await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.
     // await verifyApiEndpointAndCreateClient();
-    
+
     await apiGqlCompile(projRoot);
     verifySQLLambdaIsInVpc();
   });
@@ -146,7 +146,6 @@ describe('RDS Model Directive', () => {
   };
 
   const initProjectAndImportSchema = async (): Promise<void> => {
-    
     await initJSProjectWithProfile(projRoot, {
       disableAmplifyAppCreation: false,
       name: projName,
@@ -210,5 +209,4 @@ describe('RDS Model Directive', () => {
     // PrimaryKey directive must be defined on Id field.
     expect(contactsIdFieldType.directives.find((d) => d.name.value === 'primaryKey')).toBeDefined();
   });
-
 });

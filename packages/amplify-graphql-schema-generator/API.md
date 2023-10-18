@@ -77,7 +77,7 @@ export abstract class DataSourceAdapter {
 }
 
 // @public (undocumented)
-export type DBEngineType = 'MySQL' | 'DynamoDB';
+export type DBEngineType = 'MySQL' | 'Postgres' | 'DynamoDB';
 
 // @public (undocumented)
 export interface DefaultType {
@@ -235,6 +235,41 @@ export interface NonNullType {
     readonly kind: 'NonNull';
     // (undocumented)
     readonly type: DefaultType | CustomType | ListType | EnumType;
+}
+
+// @public (undocumented)
+export class PostgresDataSourceAdapter extends DataSourceAdapter {
+    constructor(config: PostgresDataSourceConfig);
+    // (undocumented)
+    cleanup(): void;
+    // (undocumented)
+    getFields(tableName: string): Promise<Field[]>;
+    // (undocumented)
+    getIndexes(tableName: string): Promise<Index[]>;
+    // (undocumented)
+    getPrimaryKey(tableName: string): Promise<Index | null>;
+    // (undocumented)
+    getTablesList(): Promise<string[]>;
+    // (undocumented)
+    initialize(): Promise<void>;
+    // (undocumented)
+    mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columntype: string): FieldType;
+    // (undocumented)
+    test(): Promise<boolean>;
+}
+
+// @public (undocumented)
+export interface PostgresDataSourceConfig {
+    // (undocumented)
+    database: string;
+    // (undocumented)
+    host: string;
+    // (undocumented)
+    password: string;
+    // (undocumented)
+    port: number;
+    // (undocumented)
+    username: string;
 }
 
 // @public (undocumented)

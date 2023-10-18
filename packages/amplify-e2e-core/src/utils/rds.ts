@@ -263,7 +263,7 @@ export class RDSTestDataProvider {
 
   constructor(
     private config: {
-      engine?: string,
+      engine?: string;
       host: string;
       port: number;
       username: string;

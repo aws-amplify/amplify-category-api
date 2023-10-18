@@ -25,13 +25,13 @@ describe('testDataSourceAdapter', () => {
         name: 'Boolean',
       });
     });
-    ['bigint','int8','bigserial','bit','int','int4','int2','smallint','smallserial','serial','serial4'].forEach((type) => {
+    ['bigint', 'int8', 'bigserial', 'bit', 'int', 'int4', 'int2', 'smallint', 'smallserial', 'serial', 'serial4'].forEach((type) => {
       expect(adapter.mapDataType(type, true, 'table', 'field', type)).toEqual({
         kind: 'Scalar',
         name: 'Int',
       });
     });
-    ['float8','money','numeric','decimal','real','float4'].forEach((type) => {
+    ['float8', 'money', 'numeric', 'decimal', 'real', 'float4'].forEach((type) => {
       expect(adapter.mapDataType(type, true, 'table', 'field', type)).toEqual({
         kind: 'Scalar',
         name: 'Float',
@@ -49,7 +49,7 @@ describe('testDataSourceAdapter', () => {
       kind: 'Scalar',
       name: 'AWSTime',
     });
-    ['box','circle','json','jsonb','line','lseg','path','point','polygon'].forEach((type) => {
+    ['box', 'circle', 'json', 'jsonb', 'line', 'lseg', 'path', 'point', 'polygon'].forEach((type) => {
       expect(adapter.mapDataType(type, true, 'table', 'field', type)).toEqual({
         kind: 'Scalar',
         name: 'AWSJSON',
@@ -61,7 +61,7 @@ describe('testDataSourceAdapter', () => {
         name: 'AWSDateTime',
       });
     });
-    ['cidr','inet'].forEach((type) => {
+    ['cidr', 'inet'].forEach((type) => {
       expect(adapter.mapDataType(type, true, 'table', 'field', type)).toEqual({
         kind: 'Scalar',
         name: 'AWSIPAddress',

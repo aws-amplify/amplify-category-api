@@ -33,8 +33,11 @@ export const run = async (context: $TSContext) => {
   }
 
   const definitions = parse(fs.readFileSync(pathToSchemaFile, 'utf8')).definitions;
-  const amplifyInputType = definitions.find((d: any) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'AMPLIFY') as InputObjectTypeDefinitionNode;
-  let engine = (amplifyInputType?.fields.find((f: any) => f.name.value === 'engine').defaultValue as StringValueNode).value as ImportedRDSType;
+  const amplifyInputType = definitions.find(
+    (d: any) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'AMPLIFY',
+  ) as InputObjectTypeDefinitionNode;
+  let engine = (amplifyInputType?.fields.find((f: any) => f.name.value === 'engine').defaultValue as StringValueNode)
+    .value as ImportedRDSType;
 
   if (!engine) {
     engine = ImportedRDSType.MYSQL;

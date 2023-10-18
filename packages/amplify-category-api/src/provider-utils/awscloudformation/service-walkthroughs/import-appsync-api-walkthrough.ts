@@ -48,7 +48,7 @@ export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<
       apiName: apiName,
     };
   }
-  
+
   const engine = await promptDatabaseEngine();
   const databaseConfig: ImportedDataSourceConfig = await databaseConfigurationInputWalkthrough(engine);
 

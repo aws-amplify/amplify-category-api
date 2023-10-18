@@ -173,7 +173,7 @@ export class PostgresDataSourceAdapter extends DataSourceAdapter {
 
   private async loadAllIndexes(): Promise<void> {
     // Query pg_indexes table and load indexes of all the tables from the database
-    const LOAD_INDEXES_QUERY = 'SELECT * FROM pg_indexes WHERE schemaname = \'public\'';
+    const LOAD_INDEXES_QUERY = "SELECT * FROM pg_indexes WHERE schemaname = 'public'";
     this.indexes = [];
     const indexResult =
       this.useVPC && this.vpcSchemaInspectorLambda
@@ -193,14 +193,13 @@ export class PostgresDataSourceAdapter extends DataSourceAdapter {
   private getFieldsFromDDL(ddl: string): string[] {
     const fieldsString = ddl.match(/\((.*?)\)/);
     if (fieldsString) {
-        return fieldsString[1].split(',');
+      return fieldsString[1].split(',');
     }
-    throw new Error('Could not parse fields from DDL'); 
+    throw new Error('Could not parse fields from DDL');
   }
 
   public async getPrimaryKey(tableName: string): Promise<Index | null> {
-    const key = this.indexes
-      .find((index) => index.tableName === tableName && index.indexName === `${tableName}_pkey`);
+    const key = this.indexes.find((index) => index.tableName === tableName && index.indexName === `${tableName}_pkey`);
 
     if (!key || key.columns.length == 0) {
       return null;
@@ -214,14 +213,11 @@ export class PostgresDataSourceAdapter extends DataSourceAdapter {
 
   public async getIndexes(tableName: string): Promise<Index[]> {
     const indexNames: string[] = [
-      ...new Set(
-        this.indexes.filter((i) => i.tableName === tableName && i.indexName !== `${tableName}_pkey`).map((i) => i.indexName),
-      ),
+      ...new Set(this.indexes.filter((i) => i.tableName === tableName && i.indexName !== `${tableName}_pkey`).map((i) => i.indexName)),
     ];
 
     const tableIndexes = indexNames.map((indexName: string) => {
-      const key = this.indexes
-        .find((index) => index.tableName == tableName && index.indexName === indexName);
+      const key = this.indexes.find((index) => index.tableName == tableName && index.indexName === indexName);
       const index: Index = new Index(indexName);
       index.setFields(key.columns);
       return index;
