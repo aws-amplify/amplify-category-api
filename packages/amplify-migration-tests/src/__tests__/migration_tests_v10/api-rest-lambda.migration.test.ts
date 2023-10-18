@@ -68,7 +68,7 @@ describe('api lambda migration tests', () => {
 
     // make sure current project meta is valid
     const meta = getProjectMeta(projRoot);
-    validateRestApiMeta(projRoot, meta);
+    await validateRestApiMeta(projRoot, meta);
 
     // pull down with vlatest
     const appId = getAppId(projRoot);
@@ -85,7 +85,7 @@ describe('api lambda migration tests', () => {
 
       // validate metadata for pulled down project
       const meta2 = getProjectMeta(projRoot2);
-      validateRestApiMeta(projRoot2, meta2);
+      await validateRestApiMeta(projRoot2, meta2);
 
       // validate role policies
       const cfnMeta = meta2.providers.awscloudformation;
