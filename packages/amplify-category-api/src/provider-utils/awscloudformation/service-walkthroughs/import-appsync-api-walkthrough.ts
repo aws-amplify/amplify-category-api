@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import { printer } from '@aws-amplify/amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import {
   ImportAppSyncAPIInputs,
   ImportedDataSourceType,
@@ -94,57 +94,6 @@ export const writeDefaultGraphQLSchema = async (
   } else {
     throw new Error(`Data source type ${dataSourceType} is not supported.`);
   }
-};
-
-/**
- * CLI walkthrough for database configuration
- * @param engine Database type
- * @returns Return the database configuration customer has selected
- */
-export const databaseConfigurationInputWalkthrough = async (engine: ImportedDataSourceType): Promise<ImportedDataSourceConfig> => {
-  printer.info('Please provide the following database connection information:');
-  const url = await prompter.input('Enter the database url or host name:');
-  const defaultPorts = {
-    [ImportedRDSType.MYSQL]: 3306,
-    [ImportedRDSType.POSTGRESQL]: 5432,
-  };
-  let isValidUrl = true;
-  const parsedDatabaseUrl = parseDatabaseUrl(url);
-  let { host, port, database, username, password } = parsedDatabaseUrl;
-
-  if (!host) {
-    isValidUrl = false;
-    host = url;
-  }
-  if (!isValidUrl || !port) {
-    port = await prompter.input<'one', number>('Enter the port number:', {
-      transform: (input) => Number.parseInt(input, 10),
-      validate: integer(),
-      initial: defaultPorts[engine] ?? 3306,
-    });
-  }
-
-  // Get the database user credentials
-  if (!isValidUrl || !username) {
-    username = await prompter.input('Enter the username:');
-  }
-
-  if (!isValidUrl || !password) {
-    password = await prompter.input('Enter the password:', { hidden: true });
-  }
-
-  if (!isValidUrl || !database) {
-    database = await prompter.input('Enter the database name:');
-  }
-
-  return {
-    engine,
-    database,
-    host,
-    port,
-    username,
-    password,
-  };
 };
 
 /**
