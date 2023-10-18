@@ -702,6 +702,104 @@ describe('finds matching field', () => {
   });
 });
 
+describe.only('model auth rules overrides', () => {
+  it('should retain added auth rules for models with no name mapping', () => {
+    const document = parse(`
+            type Post @model
+            {
+                id: ID!
+                name: String
+            }
+        `);
+    const editedSchema = `
+            type Post @model
+            @auth(rules: [
+                { allow: groups, groups: ["Admin"] },
+                { allow: public, operations: [get] },
+                { allow: groups, groups: ["Dev"], operations: [read] },
+                { allow: groups, groupsField: "groupField", operations: [update, delete] }
+            ])
+            {
+                id: ID!
+                name: String
+            }
+        `;
+    const editedDocument = parse(editedSchema);
+    const updatedDocument = applySchemaOverrides(document, editedDocument);
+    stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
+  });
+
+  it('should retain added auth rules for models with name mapping', () => {
+    const document = parse(`
+            type Post @refersTo(name: "posts") @model
+            {
+                id: ID!
+                name: String
+            }
+        `);
+    const editedSchema = `
+            type Post @refersTo(name: "posts") @model
+            @auth(rules: [
+                { allow: groups, groups: ["Admin"] },
+                { allow: public, operations: [get] },
+                { allow: groups, groups: ["Dev"], operations: [read] },
+                { allow: groups, groupsField: "groupField", operations: [update, delete] }
+            ])
+            {
+                id: ID!
+                name: String
+            }
+        `;
+    const editedDocument = parse(editedSchema);
+    const updatedDocument = applySchemaOverrides(document, editedDocument);
+    stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
+  });
+
+  it('should retain added auth rules for models with name mapping and relational fields', () => {
+    const document = parse(`
+            type Profile @refersTo(name: "profiles") @model {
+                id: String! @primaryKey
+                details: String
+                userId: String
+            }
+        
+            type User @model @refersTo(name: "users") {
+                id: String! @primaryKey
+                name: String
+            }
+        `);
+    const editedSchema = `
+            type profiles @model
+            @auth(rules: [
+                { allow: groups, groups: ["Admin"] },
+                { allow: public, operations: [get] }
+            ])
+            {
+                id: String! @primaryKey
+                details: String
+                userId: String
+                user: User @belongsTo(references: "userId")
+            }
+        
+            type MyUser
+            @refersTo(name: "users")
+            @model
+            @auth(rules: [
+                { allow: groups, groups: ["Admin"] },
+                { allow: public, operations: [get] }
+            ])
+            {
+                id: String! @primaryKey
+                name: String
+                profile: Profile @hasOne(references: "userId")
+            }
+        `;
+    const editedDocument = parse(editedSchema);
+    const updatedDocument = applySchemaOverrides(document, editedDocument);
+    stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
+  });
+});
+
 const stringsMatchWithoutWhitespace = (actual: string, expected: string) => {
   expect(actual.replace(/\s/g, '')).toEqual(expected.replace(/\s/g, ''));
 };

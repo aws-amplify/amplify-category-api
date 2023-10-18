@@ -966,8 +966,15 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     acm: AccessControlMatrix,
   ): void => {
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
+    const fields = acm.getResources();
     // only roles with full delete on every field can delete
-    const deleteRoles = acm.getRolesPerOperation('delete', true).map((role) => this.roleMap.get(role)!);
+    const deleteRoleNames = acm.getRolesPerOperation('delete', true);
+    const deleteRoles = deleteRoleNames.map((role) => {
+      const allowedFields = fields.filter((resource) => acm.isAllowed(role, resource, 'delete'));
+      const roleDefinition = this.roleMap.get(role)!;
+      roleDefinition.allowedFields = allowedFields;
+      return roleDefinition;
+    });
     const { RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
     const dataSource = (
       isRDSModel(ctx, def.name.value)
@@ -1482,9 +1489,11 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
           (directive.name.value === 'belongsTo' &&
             relatedType.fields.some((f) => getBaseType(f.type) === def.name.value && f.directives?.some((d) => d.name.value === 'hasOne')))
         ) {
-          allowedFields.add(
-            getConnectionAttributeName(ctx.transformParameters, def.name.value, field, getObjectPrimaryKey(relatedType).name.value),
-          );
+          if (!isRDSModel(ctx, def.name.value)) {
+            allowedFields.add(
+              getConnectionAttributeName(ctx.transformParameters, def.name.value, field, getObjectPrimaryKey(relatedType).name.value),
+            );
+          }
           getSortKeyFieldNames(def).forEach((sortKeyFieldName) => {
             allowedFields.add(getSortKeyConnectionAttributeName(def.name.value, field, sortKeyFieldName));
           });
