@@ -232,40 +232,6 @@ function _runGqlE2ETests {
     _loadTestAccountCredentials
     retry runGraphQLE2eTest
 }
-function _runMigrationV5Test {
-    echo RUN Migration V5 Test
-    loadCacheFromBuildJob
-    yarn setup-dev
-    source codebuild_specs/scripts/local_publish_helpers.sh
-    changeNpmGlobalPath
-    cd packages/amplify-migration-tests
-    _loadTestAccountCredentials
-    retry yarn run migration_v5.2.0 --no-cache --detectOpenHandles --forceExit $TEST_SUITE
-}
-function _runMigrationV6Test {
-    echo RUN Migration V6 Test
-    loadCacheFromBuildJob
-    yarn setup-dev
-    source codebuild_specs/scripts/local_publish_helpers.sh
-    changeNpmGlobalPath
-    cd packages/amplify-migration-tests
-    _loadTestAccountCredentials
-    retry yarn run migration_v6.1.0 --no-cache --detectOpenHandles --forceExit $TEST_SUITE
-}
-function _runMigrationV10Test {
-    echo RUN Migration V10 Test
-    loadCacheFromBuildJob
-    yarn setup-dev
-    source codebuild_specs/scripts/local_publish_helpers.sh
-    changeNpmGlobalPath
-    cd packages/amplify-migration-tests
-    unset IS_AMPLIFY_CI
-    echo $IS_AMPLIFY_CI
-    _loadTestAccountCredentials
-    npm i -g @aws-amplify/cli@10.5.1
-    /root/.amplify/bin/amplify -v
-    retry yarn run migration_v10.5.1 --no-cache --detectOpenHandles --forceExit $TEST_SUITE
-}
 function _runCanaryTest {
     echo RUN Canary Test
     loadCacheFromBuildJob
