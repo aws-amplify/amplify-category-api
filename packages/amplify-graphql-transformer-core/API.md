@@ -274,7 +274,7 @@ export enum ImportedRDSType {
     // (undocumented)
     MYSQL = "mysql",
     // (undocumented)
-    POSTGRESQL = "postgresql"
+    POSTGRESQL = "postgres"
 }
 
 // @public (undocumented)
