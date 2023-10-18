@@ -19,6 +19,9 @@ export const applyFieldOverrides: (field: FieldDefinitionNode, existingField: Fi
 export const applyJSONFieldTypeOverrides: (field: FieldDefinitionNode, existingField: FieldDefinitionNode) => Partial<FieldDefinitionNode>;
 
 // @public (undocumented)
+export const applyModelAuthOverrides: (obj: ObjectTypeDefinitionNode, existingObj: ObjectTypeDefinitionNode) => ObjectTypeDefinitionNode;
+
+// @public (undocumented)
 export const applyModelNameOverrides: (obj: ObjectTypeDefinitionNode, existingObj: ObjectTypeDefinitionNode) => ObjectTypeDefinitionNode;
 
 // @public (undocumented)
