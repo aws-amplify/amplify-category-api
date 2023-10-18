@@ -15,7 +15,7 @@ import {
 } from 'amplify-category-api-e2e-core';
 import { existsSync, readFileSync } from 'fs-extra';
 import generator from 'generate-password';
-import { ObjectTypeDefinitionNode, parse, ListTypeDefinitionNode } from 'graphql';
+import { ObjectTypeDefinitionNode, parse, ListTypeNode, NamedTypeNode } from 'graphql';
 import path from 'path';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
@@ -190,8 +190,8 @@ describe('RDS Model Directive', () => {
     const contactsIdFieldType = contactObjectType.fields.find((f) => f.name.value === 'id');
     const contactsFirstNameFieldType = contactObjectType.fields.find((f) => f.name.value === 'firstname');
     const contactsLastNameFieldType = contactObjectType.fields.find((f) => f.name.value === 'lastname');
-    const contactsStrArrayFieldType = contactObjectType.fields.find((f) => f.name.value === 'strarray') as ListTypeDefinitionNode;
-    const contactsIntArrayFieldType = contactObjectType.fields.find((f) => f.name.value === 'intarray') as ListTypeDefinitionNode;
+    const contactsStrArrayFieldType = contactObjectType.fields.find((f) => f.name.value === 'strarray') as unknown as ListTypeNode;
+    const contactsIntArrayFieldType = contactObjectType.fields.find((f) => f.name.value === 'intarray') as unknown as ListTypeNode;
 
     expect(contactsIdFieldType).toBeDefined();
     expect(contactsFirstNameFieldType).toBeDefined();
@@ -200,12 +200,12 @@ describe('RDS Model Directive', () => {
     // Verify the array type fields in the generated schema on type 'Contact'
     expect(contactsStrArrayFieldType).toBeDefined();
     expect(contactsIntArrayFieldType).toBeDefined();
-    expect(contactsStrArrayFieldType.type.kind).toEqual('ListType');
-    expect(contactsIntArrayFieldType.type.kind).toEqual('ListType');
-    expect(contactsStrArrayFieldType.type.type.kind).toEqual('NamedType');
-    expect(contactsIntArrayFieldType.type.type.kind).toEqual('NamedType');
-    expect(contactsStrArrayFieldType.type.type.name.value).toEqual('String');
-    expect(contactsIntArrayFieldType.type.type.name.value).toEqual('Int');
+    expect(contactsStrArrayFieldType.kind).toEqual('ListType');
+    expect(contactsIntArrayFieldType.kind).toEqual('ListType');
+    expect(contactsStrArrayFieldType.type.kind).toEqual('NamedType');
+    expect(contactsIntArrayFieldType.type.kind).toEqual('NamedType');
+    expect((contactsStrArrayFieldType.type as NamedTypeNode).name.value).toEqual('String');
+    expect((contactsIntArrayFieldType.type as NamedTypeNode).name.value).toEqual('Int');
 
     // PrimaryKey directive must be defined on Id field.
     expect(contactsIdFieldType.directives.find((d) => d.name.value === 'primaryKey')).toBeDefined();
