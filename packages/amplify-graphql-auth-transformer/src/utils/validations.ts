@@ -1,5 +1,9 @@
 import { DirectiveWrapper, InvalidDirectiveError, generateGetArgumentsInput, isRDSModel } from '@aws-amplify/graphql-transformer-core';
-import type { TransformParameters, TransformerSchemaVisitStepContextProvider, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import type {
+  TransformParameters,
+  TransformerSchemaVisitStepContextProvider,
+  TransformerContextProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode } from 'graphql';
 import { AuthRule, ConfiguredAuthProviders } from './definitions';
 
