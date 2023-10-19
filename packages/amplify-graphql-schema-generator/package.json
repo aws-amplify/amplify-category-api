@@ -40,7 +40,7 @@
     "ora": "^4.0.3"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-prompts": "^2.8.1-aug-transformer-mv-bump.0"
+    "@aws-amplify/amplify-prompts": "^2.8.4"
   },
   "devDependencies": {
     "@types/node": "^12.12.6"

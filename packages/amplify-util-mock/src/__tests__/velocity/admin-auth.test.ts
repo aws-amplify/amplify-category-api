@@ -40,12 +40,7 @@ describe('admin roles query checks', () => {
           schema,
           authConfig,
           synthParameters: { adminRoles: [ADMIN_UI_ROLE] },
-          transformers: [
-            new ModelTransformer(),
-            new AuthTransformer({
-              adminRoles: [ADMIN_UI_ROLE],
-            }),
-          ],
+          transformers: [new ModelTransformer(), new AuthTransformer()],
         }),
     };
 
@@ -129,12 +124,7 @@ describe('identity claim feature flag disabled', () => {
             schema,
             authConfig,
             synthParameters: { adminRoles: [ADMIN_UI_ROLE] },
-            transformers: [
-              new ModelTransformer(),
-              new AuthTransformer({
-                adminRoles: [ADMIN_UI_ROLE],
-              }),
-            ],
+            transformers: [new ModelTransformer(), new AuthTransformer()],
           }),
       };
 

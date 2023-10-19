@@ -60,6 +60,6 @@
     "graphql-versioned-transformer": "5.2.65"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-prompts": "^2.8.1-aug-transformer-mv-bump.0"
+    "@aws-amplify/amplify-prompts": "^2.8.4"
   }
 }
