@@ -73,7 +73,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
 
     // lambda that will handle DDB CFN events
     const gsiOnEventHandler = new aws_lambda.Function(scope, ResourceConstants.RESOURCES.TableManagerOnEventHandlerLogicalID, {
-      runtime: aws_lambda.Runtime.NODEJS_16_X,
+      runtime: aws_lambda.Runtime.NODEJS_18_X,
       code: lambdaCode,
       handler: 'amplify-table-manager-handler.onEvent',
       timeout: Duration.minutes(14),
@@ -81,7 +81,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
 
     // lambda that will poll for provisioning to complete
     const gsiIsCompleteHandler = new aws_lambda.Function(scope, ResourceConstants.RESOURCES.TableManagerIsCompleteHandlerLogicalID, {
-      runtime: aws_lambda.Runtime.NODEJS_16_X,
+      runtime: aws_lambda.Runtime.NODEJS_18_X,
       code: lambdaCode,
       handler: 'amplify-table-manager-handler.isComplete',
       timeout: Duration.minutes(14),
