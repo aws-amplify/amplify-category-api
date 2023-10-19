@@ -390,7 +390,7 @@ export const getNextGSIUpdate = (currentState: TableDescription, endState: Custo
     const attributeNamesToInclude = gsiToAdd.keySchema.map((schema) => schema.attributeName);
     const gsiToAddAction = {
       IndexName: gsiToAdd.indexName,
-      KeySchemaElement: gsiToAdd.keySchema,
+      KeySchema: gsiToAdd.keySchema,
       Projection: gsiToAdd.projection,
       ProvisionedThroughput: gsiToAdd.provisionedThroughput,
     };

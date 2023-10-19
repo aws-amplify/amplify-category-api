@@ -8,7 +8,14 @@ import {
   getDeletionProtectionUpdate,
 } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
 import * as CustomDDB from '../resources/amplify-dynamodb-table/amplify-table-types';
-import { DynamoDB } from 'aws-sdk';
+import {
+  TableDescription,
+  UpdateTableCommandInput,
+  UpdateTimeToLiveCommandInput,
+  TimeToLiveDescription,
+  UpdateContinuousBackupsCommandInput,
+  ContinuousBackupsDescription,
+} from '@aws-sdk/client-dynamodb';
 import { extractTableInputFromEvent } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
 import { RequestType } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda-types';
 
@@ -65,7 +72,7 @@ describe('Custom Resource Lambda Tests', () => {
       ],
     };
     it('should compute deletion correctly', () => {
-      const currentState: DynamoDB.TableDescription = {
+      const currentState: TableDescription = {
         AttributeDefinitions: [
           {
             AttributeName: 'pk',
@@ -106,7 +113,7 @@ describe('Custom Resource Lambda Tests', () => {
       expect(nextUpdate).toMatchSnapshot();
     });
     it('should compute addition correctly', () => {
-      const currentState: DynamoDB.TableDescription = {
+      const currentState: TableDescription = {
         AttributeDefinitions: [
           {
             AttributeName: 'pk',
@@ -133,7 +140,7 @@ describe('Custom Resource Lambda Tests', () => {
       expect(nextUpdate).toMatchSnapshot();
     });
     it('should compute next addition correctly', () => {
-      const currentState: DynamoDB.TableDescription = {
+      const currentState: TableDescription = {
         AttributeDefinitions: [
           {
             AttributeName: 'pk',
@@ -174,7 +181,7 @@ describe('Custom Resource Lambda Tests', () => {
       expect(nextUpdate).toMatchSnapshot();
     });
     it('should compute end state correctly in which no additional update step is defined', () => {
-      const currentState: DynamoDB.TableDescription = {
+      const currentState: TableDescription = {
         AttributeDefinitions: [
           {
             AttributeName: 'pk',
@@ -233,7 +240,7 @@ describe('Custom Resource Lambda Tests', () => {
     });
   });
   describe('Compute GSI deletion', () => {
-    const currentState: DynamoDB.TableDescription = {
+    const currentState: TableDescription = {
       AttributeDefinitions: [
         {
           AttributeName: 'pk',
@@ -407,7 +414,7 @@ describe('Custom Resource Lambda Tests', () => {
       expect(nextUpdate).toMatchSnapshot();
     });
     it('when non key attributes are modified', () => {
-      const modifiedCurrentState: DynamoDB.TableDescription = {
+      const modifiedCurrentState: TableDescription = {
         ...currentState,
         GlobalSecondaryIndexes: [
           {
@@ -533,11 +540,11 @@ describe('Custom Resource Lambda Tests', () => {
     });
   });
   describe('Non GSI update', () => {
-    let currentState: DynamoDB.TableDescription;
+    let currentState: TableDescription;
     let endState: CustomDDB.Input;
-    let nextUpdate: DynamoDB.UpdateTableInput | undefined;
+    let nextUpdate: UpdateTableCommandInput | undefined;
 
-    const currentStateBase: DynamoDB.TableDescription = {
+    const currentStateBase: TableDescription = {
       AttributeDefinitions: [
         {
           AttributeName: 'pk',
@@ -617,9 +624,9 @@ describe('Custom Resource Lambda Tests', () => {
       });
     });
     describe('Get time to live update', () => {
-      let nextTTLUpdate: DynamoDB.UpdateTimeToLiveInput | undefined;
-      let currentTTL: DynamoDB.TimeToLiveDescription | undefined;
-      const currentTTLBase: DynamoDB.TimeToLiveDescription = {
+      let nextTTLUpdate: UpdateTimeToLiveCommandInput | undefined;
+      let currentTTL: TimeToLiveDescription | undefined;
+      const currentTTLBase: TimeToLiveDescription = {
         TimeToLiveStatus: 'DISABLED',
       };
       it('should compute the difference correctly when ttl is enabled', () => {
@@ -730,9 +737,9 @@ describe('Custom Resource Lambda Tests', () => {
       });
     });
     describe('Get point in time recovery update', () => {
-      let nextPITRUpdate: DynamoDB.UpdateContinuousBackupsInput | undefined;
-      let currentPITR: DynamoDB.ContinuousBackupsDescription | undefined;
-      const currentPITRBase: DynamoDB.ContinuousBackupsDescription = {
+      let nextPITRUpdate: UpdateContinuousBackupsCommandInput | undefined;
+      let currentPITR: ContinuousBackupsDescription | undefined;
+      const currentPITRBase: ContinuousBackupsDescription = {
         ContinuousBackupsStatus: 'ENABLED',
       };
       it('should compute the difference correctly when PITR is enabled', () => {
