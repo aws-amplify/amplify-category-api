@@ -298,7 +298,7 @@ beforeAll(async () => {
       new PrimaryKeyTransformer(),
       new HasOneTransformer(),
       new HasManyTransformer(),
-      new AuthTransformer({ identityPoolId: IDENTITY_POOL_ID }),
+      new AuthTransformer(),
     ],
     transformParameters: {
       useSubUsernameForDefaultIdentityClaim: false,

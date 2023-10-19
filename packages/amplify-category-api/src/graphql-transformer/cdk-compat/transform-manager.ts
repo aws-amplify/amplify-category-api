@@ -32,12 +32,18 @@ export class TransformManager {
   private synthParameters: SynthParameters;
   private paramMap: Map<string, CfnParameter>;
 
-  constructor(private readonly overrideConfig: OverrideConfig | undefined, hasIamAuth: boolean, hasUserPoolAuth: boolean) {
+  constructor(
+    private readonly overrideConfig: OverrideConfig | undefined,
+    hasIamAuth: boolean,
+    hasUserPoolAuth: boolean,
+    adminRoles: string[],
+    identityPoolId: string,
+  ) {
     this.rootStack = new TransformerRootStack(this.app, 'transformer-root-stack', {
       synthesizer: this.stackSynthesizer,
     });
 
-    this.generateParameters(hasIamAuth, hasUserPoolAuth);
+    this.generateParameters(hasIamAuth, hasUserPoolAuth, adminRoles, identityPoolId);
   }
 
   getTransformScope(): Construct {
@@ -66,7 +72,7 @@ export class TransformManager {
     };
   }
 
-  private generateParameters(hasIamAuth: boolean, hasUserPoolAuth: boolean): void {
+  private generateParameters(hasIamAuth: boolean, hasUserPoolAuth: boolean, adminRoles: string[], identityPoolId: string): void {
     this.paramMap = new Map();
     const envParameter = new CfnParameter(this.rootStack, 'env', {
       default: 'NONE',
@@ -81,6 +87,8 @@ export class TransformManager {
     this.synthParameters = {
       amplifyEnvironmentName: envParameter.valueAsString,
       apiName: apiNameParameter.valueAsString,
+      adminRoles,
+      identityPoolId,
     };
     if (hasIamAuth) {
       const authenticatedUserRoleNameParameter = new CfnParameter(this.rootStack, 'authRoleName', { type: 'String' });
