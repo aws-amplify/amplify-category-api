@@ -155,6 +155,18 @@ export interface DataSourceProvider extends BackedDataSource {
 }
 
 // @public (undocumented)
+export type DatasourceProvisionConfig = {
+    project?: DatasourceProvisionStrategy;
+    models?: Record<string, DatasourceProvisionStrategy>;
+};
+
+// Warning: (ae-forgotten-export) The symbol "DynamoDBProvisionStrategy" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "RDSProvisionStrategy" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type DatasourceProvisionStrategy = DynamoDBProvisionStrategy | RDSProvisionStrategy;
+
+// @public (undocumented)
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {
     // (undocumented)
     readonly serviceRole: IRole;
@@ -336,7 +348,7 @@ export type SynthParameters = {
 export type TransformerAuthProvider = TransformerPluginProvider;
 
 // @public (undocumented)
-export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager' | 'synthParameters'>;
+export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager' | 'synthParameters' | 'datasourceProvisionConfig'>;
 
 // @public (undocumented)
 export interface TransformerContextOutputProvider {
@@ -402,6 +414,8 @@ export interface TransformerContextProvider {
     api: GraphQLAPIProvider;
     // (undocumented)
     authConfig: AppSyncAuthConfiguration;
+    // (undocumented)
+    readonly datasourceProvisionConfig?: DatasourceProvisionConfig;
     // (undocumented)
     dataSources: TransformerDataSourceManagerProvider;
     // (undocumented)

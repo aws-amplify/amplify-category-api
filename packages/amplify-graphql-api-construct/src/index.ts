@@ -27,6 +27,11 @@ export type {
   IBackendOutputStorageStrategy,
   IBackendOutputEntry,
   AddFunctionProps,
+  DataSourceProvisoinConfig,
+  DataSourceProvisoinStrategy,
+  DefaultDynamoDBTableStrategy,
+  AmplifyDynamoDBTableStrategy,
+  RDSBrownFieldStrategy,
 } from './types';
 export { AmplifyGraphqlApi } from './amplify-graphql-api';
 export { AmplifyGraphqlDefinition } from './amplify-graphql-definition';

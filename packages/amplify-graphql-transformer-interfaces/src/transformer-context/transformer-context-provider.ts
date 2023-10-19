@@ -8,6 +8,7 @@ import { TransformerResourceHelperProvider } from './resource-resource-provider'
 import { TransformParameters } from './transform-parameters';
 import { TransformerResolversManagerProvider } from './transformer-resolver-provider';
 import { SynthParameters } from './synth-parameters';
+import { DatasourceProvisionConfig } from './datasource-provision-config';
 
 export interface TransformerContextMetadataProvider {
   set<T>(key: string, value: T): void;
@@ -38,6 +39,7 @@ export interface TransformerContextProvider {
   getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
   readonly sqlLambdaVpcConfig?: VpcConfig;
   readonly rdsLayerMapping?: RDSLayerMapping;
+  readonly datasourceProvisionConfig?: DatasourceProvisionConfig;
 }
 
 export type TransformerBeforeStepContextProvider = Pick<
@@ -50,6 +52,7 @@ export type TransformerBeforeStepContextProvider = Pick<
   | 'authConfig'
   | 'stackManager'
   | 'synthParameters'
+  | 'datasourceProvisionConfig'
 >;
 
 export type TransformerSchemaVisitStepContextProvider = Pick<

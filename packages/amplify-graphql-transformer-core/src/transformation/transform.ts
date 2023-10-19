@@ -217,6 +217,7 @@ export class GraphQLTransform {
       datasourceConfig?.datasourceSecretParameterLocations,
       this.sqlLambdaVpcConfig,
       this.rdsLayerMapping,
+      datasourceConfig?.datasourceProvisionConfig,
     );
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),

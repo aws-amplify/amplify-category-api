@@ -31,7 +31,7 @@ export class IndexTransformer extends TransformerPluginBase {
 }
 
 // @public (undocumented)
-export function overrideIndexAtCfnLevel(ctx: TransformerContextProvider, table: any, indexInfo: any): void;
+export function overrideIndexAtCfnLevel(ctx: TransformerContextProvider, typeName: string, table: any, indexInfo: any): void;
 
 // @public (undocumented)
 export class PrimaryKeyTransformer extends TransformerPluginBase {

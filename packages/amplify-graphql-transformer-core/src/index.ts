@@ -29,6 +29,7 @@ export {
   APICategory,
   setResourceName,
   getResourceName,
+  getDatasourceProvisionStratety,
 } from './utils';
 export type { SetResourceNameProps } from './utils';
 export * from './utils/operation-names';
@@ -42,6 +43,7 @@ export {
 export { TransformerResolver, StackManager } from './transformer-context';
 export {
   DDB_DB_TYPE,
+  CUSTOM_DDB_DB_TYPE,
   ImportAppSyncAPIInputs,
   ImportedDataSourceType,
   ImportedRDSType,

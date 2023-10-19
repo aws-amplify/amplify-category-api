@@ -24,6 +24,7 @@ import {
   AssetProvider,
   SynthParameters,
   TransformParameterProvider,
+  DatasourceProvisionConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
 import {
@@ -128,6 +129,7 @@ export type ExecuteTransformConfig = TransformConfig & {
   parameterProvider?: TransformParameterProvider;
   assetProvider: AssetProvider;
   synthParameters: SynthParameters;
+  datasourceProvisionConfig?: DatasourceProvisionConfig;
 };
 
 /**
@@ -170,6 +172,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
     assetProvider,
     synthParameters,
     parameterProvider,
+    datasourceProvisionConfig,
   } = config;
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
@@ -187,6 +190,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
         modelToDatasourceMap,
         datasourceSecretParameterLocations,
         rdsLayerMapping,
+        datasourceProvisionConfig,
       },
     });
   } finally {

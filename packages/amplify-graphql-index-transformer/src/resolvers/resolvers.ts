@@ -1,5 +1,12 @@
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
-import { MappingTemplate, DatasourceType, MYSQL_DB_TYPE, DDB_DB_TYPE, DBType } from '@aws-amplify/graphql-transformer-core';
+import {
+  MappingTemplate,
+  DatasourceType,
+  MYSQL_DB_TYPE,
+  DDB_DB_TYPE,
+  DBType,
+  getDatasourceProvisionStratety,
+} from '@aws-amplify/graphql-transformer-core';
 import { DataSourceProvider, TransformerContextProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
@@ -44,6 +51,7 @@ import _ from 'lodash';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../types';
 import { lookupResolverName } from '../utils';
 import { RDSIndexVTLGenerator, DynamoDBIndexVTLGenerator } from './generators';
+import { DynamoDBProvisionStrategyType } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/datasource-provision-config';
 
 const API_KEY = 'API Key Authorization';
 
@@ -51,9 +59,13 @@ const API_KEY = 'API Key Authorization';
  * replaceDdbPrimaryKey
  */
 export function replaceDdbPrimaryKey(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
-  const useAmplifyManagedTableResources: boolean = ctx.transformParameters.useAmplifyManagedTableResources;
+  // const useAmplifyManagedTableResources: boolean = ctx.transformParameters.useAmplifyManagedTableResources;
   // Replace the table's primary key with the value from @primaryKey
   const { field, object } = config;
+  const tableProvisionStrategy = getDatasourceProvisionStratety(ctx, object.name.value);
+  const useAmplifyManagedTableResources: boolean = tableProvisionStrategy
+    ? tableProvisionStrategy.provisionStrategy === DynamoDBProvisionStrategyType.AMPLIFY_TABLE
+    : false;
   const table = getTable(ctx, object) as any;
   const cfnTable = useAmplifyManagedTableResources ? table.node.defaultChild.node.defaultChild : table.table;
   const tableAttrDefs = table.attributeDefinitions;
@@ -393,7 +405,7 @@ export function appendSecondaryIndex(config: IndexDirectiveConfiguration, ctx: T
         WriteCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
       }),
     };
-    overrideIndexAtCfnLevel(ctx, table, newIndex);
+    overrideIndexAtCfnLevel(ctx, object.name.value, table, newIndex);
   }
 }
 
@@ -405,8 +417,13 @@ export function appendSecondaryIndex(config: IndexDirectiveConfiguration, ctx: T
  * @param table input table
  * @param indexInfo global secondary index properties
  */
-export function overrideIndexAtCfnLevel(ctx: TransformerContextProvider, table: any, indexInfo: any): void {
-  if (!ctx.transformParameters.useAmplifyManagedTableResources) {
+export function overrideIndexAtCfnLevel(ctx: TransformerContextProvider, typeName: string, table: any, indexInfo: any): void {
+  const tableProvisionStrategy = getDatasourceProvisionStratety(ctx, typeName);
+  const useAmplifyManagedTableResources: boolean = tableProvisionStrategy
+    ? tableProvisionStrategy.provisionStrategy === DynamoDBProvisionStrategyType.AMPLIFY_TABLE
+    : false;
+
+  if (!useAmplifyManagedTableResources) {
     const cfnTable = table.table;
     cfnTable.globalSecondaryIndexes = appendIndex(cfnTable.globalSecondaryIndexes, indexInfo);
   } else {

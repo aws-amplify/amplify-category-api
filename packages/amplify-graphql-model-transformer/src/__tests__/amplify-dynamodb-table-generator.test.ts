@@ -4,6 +4,7 @@ import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
 import { CUSTOM_DDB_CFN_TYPE } from '../resources/amplify-dynamodb-table/amplify-dynamodb-table-construct';
 import { ITERATIVE_TABLE_STACK_NAME } from '../resources/amplify-dynamodb-table/amplify-dynamo-model-resource-generator';
+import { DynamoDBProvisionStrategyType } from '@aws-amplify/graphql-transformer-interfaces/lib/transformer-context/datasource-provision-config';
 
 describe('ModelTransformer:', () => {
   it('should successfully transform simple valid schema', async () => {
@@ -21,8 +22,11 @@ describe('ModelTransformer:', () => {
     const out = testTransform({
       schema: validSchema,
       transformers: [new ModelTransformer()],
-      transformParameters: {
-        useAmplifyManagedTableResources: true,
+      datasourceProvisionConfig: {
+        project: {
+          dbType: 'DDB',
+          provisionStrategy: DynamoDBProvisionStrategyType.AMPLIFY_TABLE,
+        },
       },
     });
     expect(out).toBeDefined();

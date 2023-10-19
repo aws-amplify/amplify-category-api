@@ -19,6 +19,8 @@ import { CfnResource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { DatasourceProvisionConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { DatasourceProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveDefinitionNode } from 'graphql';
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql/language';
@@ -59,6 +61,7 @@ import { StringValueNode } from 'graphql';
 import { SubscriptionFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerAuthProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerBeforeStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
 import { TransformerContextOutputProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -117,6 +120,9 @@ function createSyncLambdaIAMPolicy(context: TransformerContextProvider, scope: C
 //
 // @public (undocumented)
 function createSyncTable(context: TransformerContext): void;
+
+// @public (undocumented)
+export const CUSTOM_DDB_DB_TYPE = "AmplifyDDB";
 
 // @public (undocumented)
 export interface DatasourceType {
@@ -185,6 +191,9 @@ export const getAppSyncServiceExtraDirectives: () => string;
 export type GetArgumentsOptions = {
     deepMergeArguments?: boolean;
 };
+
+// @public (undocumented)
+export function getDatasourceProvisionStratety(ctx: TransformerBeforeStepContextProvider, typeName: string): DatasourceProvisionStrategy | undefined;
 
 // Warning: (ae-forgotten-export) The symbol "Operation" needs to be exported by the entry point index.d.ts
 //

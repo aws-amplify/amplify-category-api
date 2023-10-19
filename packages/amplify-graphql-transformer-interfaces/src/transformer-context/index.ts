@@ -22,3 +22,4 @@ export { TransformerPreProcessContextProvider } from './transformer-preprocess-c
 export { StackManagerProvider } from './stack-manager-provider';
 export { SynthParameters } from './synth-parameters';
 export { TransformParameterProvider } from './transform-parameter-provider';
+export { DatasourceProvisionConfig, DatasourceProvisionStrategy } from './datasource-provision-config';

@@ -58,6 +58,14 @@ export interface AddFunctionProps {
 }
 
 // @public
+export interface AmplifyDynamoDBTableStrategy {
+    // (undocumented)
+    readonly dbType: 'DDB';
+    // (undocumented)
+    readonly provisionStrategy: 'AMPLIFY_TABLE';
+}
+
+// @public
 export class AmplifyGraphqlApi extends Construct {
     constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps);
     addDynamoDbDataSource(id: string, table: ITable, options?: DataSourceOptions): DynamoDbDataSource;
@@ -98,6 +106,8 @@ export interface AmplifyGraphqlApiProps {
     readonly apiName?: string;
     readonly authorizationModes: AuthorizationModes;
     readonly conflictResolution?: ConflictResolution;
+    // (undocumented)
+    readonly dataSourceProvisionStrategy?: DataSourceProvisoinConfig;
     readonly definition: IAmplifyGraphqlDefinition;
     readonly functionNameMap?: Record<string, IFunction>;
     readonly functionSlots?: FunctionSlot[];
@@ -167,6 +177,23 @@ export interface ConflictResolutionStrategyBase {
 export interface CustomConflictResolutionStrategy extends ConflictResolutionStrategyBase {
     readonly conflictHandler: IFunction;
     readonly handlerType: 'LAMBDA';
+}
+
+// @public
+export interface DataSourceProvisoinConfig {
+    readonly models?: Record<string, DataSourceProvisoinStrategy>;
+    readonly project?: DataSourceProvisoinStrategy;
+}
+
+// @public
+export type DataSourceProvisoinStrategy = DefaultDynamoDBTableStrategy | AmplifyDynamoDBTableStrategy | RDSBrownFieldStrategy;
+
+// @public
+export interface DefaultDynamoDBTableStrategy {
+    // (undocumented)
+    readonly dbType: 'DDB';
+    // (undocumented)
+    readonly provisionStrategy: 'DEFAULT';
 }
 
 // @public
@@ -255,6 +282,14 @@ export interface PartialTranslationBehavior {
 export interface QueryFunctionSlot extends FunctionSlotBase {
     readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preDataLoad' | 'postDataLoad' | 'finish';
     readonly typeName: 'Query';
+}
+
+// @public
+export interface RDSBrownFieldStrategy {
+    // (undocumented)
+    readonly dbType: 'MySQL';
+    // (undocumented)
+    readonly provisionStrategy: 'BROWN_FIELD';
 }
 
 // @public

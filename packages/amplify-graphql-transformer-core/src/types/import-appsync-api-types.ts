@@ -29,3 +29,4 @@ export type RDSConnectionSecrets = TransformerSecrets & {
 
 export const MYSQL_DB_TYPE = 'MySQL';
 export const DDB_DB_TYPE = 'DDB';
+export const CUSTOM_DDB_DB_TYPE = 'AmplifyDDB';

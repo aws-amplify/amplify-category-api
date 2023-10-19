@@ -541,6 +541,50 @@ export interface IBackendOutputStorageStrategy {
 }
 
 /**
+ * Enable optimistic concurrency on the project.
+ */
+export interface DefaultDynamoDBTableStrategy {
+  readonly dbType: 'DDB';
+  readonly provisionStrategy: 'DEFAULT';
+}
+
+/**
+ * Enable automerge on the project.
+ */
+export interface AmplifyDynamoDBTableStrategy {
+  readonly dbType: 'DDB';
+  readonly provisionStrategy: 'AMPLIFY_TABLE';
+}
+
+/**
+ * Enable custom sync on the project, powered by a lambda.
+ */
+export interface RDSBrownFieldStrategy {
+  readonly dbType: 'MySQL';
+  readonly provisionStrategy: 'BROWN_FIELD';
+}
+
+/**
+ * DataSource Provision Strategy to apply to the project or a particular model.
+ */
+export type DataSourceProvisoinStrategy = DefaultDynamoDBTableStrategy | AmplifyDynamoDBTableStrategy | RDSBrownFieldStrategy;
+
+/**
+ * Project level configuration for datasource provision strategy.
+ */
+export interface DataSourceProvisoinConfig {
+  /**
+   * Project-wide config for datasource provision. Applies to all non-overridden models.
+   */
+  readonly project?: DataSourceProvisoinStrategy;
+
+  /**
+   * Model-specific datasource provision overrides.
+   */
+  readonly models?: Record<string, DataSourceProvisoinStrategy>;
+}
+
+/**
  * Input props for the AmplifyGraphqlApi construct. Specifies what the input to transform into an Api, and configurations for
  * the transformation process.
  */
@@ -614,6 +658,8 @@ export interface AmplifyGraphqlApiProps {
    * Strategy to store construct outputs. If no outputStorageStrategey is provided a default strategy will be used.
    */
   readonly outputStorageStrategy?: IBackendOutputStorageStrategy;
+
+  readonly dataSourceProvisionStrategy?: DataSourceProvisoinConfig;
 }
 
 /**

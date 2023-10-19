@@ -12,6 +12,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type {
   AssetProvider,
+  DatasourceProvisionConfig,
   NestedStackProvider,
   TransformParameterProvider,
   TransformParameters,
@@ -29,6 +30,7 @@ import { ResolverManager } from './resolver';
 import { TransformerResourceHelper } from './resource-helper';
 import { StackManager } from './stack-manager';
 import { assetManager } from './asset-manager';
+import { DynamoDBProvisionStrategyType } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/datasource-provision-config';
 
 export { TransformerResolver } from './resolver';
 export { StackManager } from './stack-manager';
@@ -77,6 +79,7 @@ export class TransformerContext implements TransformerContextProvider {
   public readonly datasourceSecretParameterLocations: Map<string, RDSConnectionSecrets>;
   public readonly sqlLambdaVpcConfig?: VpcConfig;
   public readonly rdsLayerMapping?: RDSLayerMapping;
+  public readonly datasourceProvisionConfig?: DatasourceProvisionConfig;
 
   public metadata: TransformerContextMetadata;
 
@@ -95,6 +98,7 @@ export class TransformerContext implements TransformerContextProvider {
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>,
     sqlLambdaVpcConfig?: VpcConfig,
     rdsLayerMapping?: RDSLayerMapping,
+    datasourceProvisionConfig?: DatasourceProvisionConfig,
   ) {
     assetManager.setAssetProvider(assetProvider);
     this.output = new TransformerOutput(inputDocument);
@@ -111,6 +115,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.datasourceSecretParameterLocations = datasourceSecretParameterLocations ?? new Map<string, RDSConnectionSecrets>();
     this.sqlLambdaVpcConfig = sqlLambdaVpcConfig;
     this.rdsLayerMapping = rdsLayerMapping;
+    this.datasourceProvisionConfig = datasourceProvisionConfig;
   }
 
   /**
@@ -134,5 +139,9 @@ export class TransformerContext implements TransformerContextProvider {
 
   public isProjectUsingDataStore(): boolean {
     return !!this.resolverConfig?.project || !!this.resolverConfig?.models;
+  }
+
+  public isProjectUsingAmplifyDynamoDBTable(): boolean {
+    return this.datasourceProvisionConfig?.project?.provisionStrategy === DynamoDBProvisionStrategyType.AMPLIFY_TABLE;
   }
 }

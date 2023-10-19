@@ -48,6 +48,7 @@ import {
   addAmplifyMetadataToStackDescription,
   getAdditionalAuthenticationTypes,
 } from './internal';
+import { parseDataSourceConfig } from './internal/data-source-config';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
@@ -137,6 +138,7 @@ export class AmplifyGraphqlApi extends Construct {
       translationBehavior,
       functionNameMap,
       outputStorageStrategy,
+      dataSourceProvisionStrategy,
     } = props;
 
     addAmplifyMetadataToStackDescription(scope);
@@ -184,6 +186,7 @@ export class AmplifyGraphqlApi extends Construct {
         ...defaultTranslationBehavior,
         ...(translationBehavior ?? {}),
       },
+      ...parseDataSourceConfig(dataSourceProvisionStrategy),
     });
 
     this.codegenAssets = new CodegenAssets(this, 'AmplifyCodegenAssets', { modelSchema: definition.schema });

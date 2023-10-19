@@ -1,5 +1,5 @@
 import { AppSyncAuthConfiguration, TransformerPluginProvider, TransformerLogLevel } from '@aws-amplify/graphql-transformer-interfaces';
-import type { SynthParameters, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import type { DatasourceProvisionConfig, SynthParameters, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   DatasourceType,
   GraphQLTransform,
@@ -22,6 +22,7 @@ export type TestTransformParameters = {
   datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
   overrideConfig?: OverrideConfig;
   synthParameters?: Partial<SynthParameters>;
+  datasourceProvisionConfig?: DatasourceProvisionConfig;
 };
 
 /**
@@ -41,6 +42,7 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     stackMapping,
     transformParameters,
     synthParameters: overrideSynthParameters,
+    datasourceProvisionConfig,
   } = params;
 
   const transform = new GraphQLTransform({
@@ -73,6 +75,7 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     datasourceConfig: {
       modelToDatasourceMap,
       datasourceSecretParameterLocations,
+      datasourceProvisionConfig,
     },
   });
 
