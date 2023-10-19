@@ -1,0 +1,20 @@
+#!/usr/bin/env node
+
+import 'source-map-support/register';
+import * as cdk from 'aws-cdk-lib';
+// @ts-ignore
+import * as graphql from '@aws-amplify/graphql-api-construct';
+import * as path from 'path';
+
+const packageJson = require('../package.json');
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, packageJson.name.replace(/_/g, '-'), {
+  env: { region: process.env.CLI_REGION || 'us-west-2' },
+});
+
+new graphql.AmplifyGraphqlApi(stack, 'MultiGsiApi', {
+  definition: graphql.AmplifyGraphqlDefinition.fromFiles(path.join(__dirname, 'schema.graphql')),
+  authorizationModes: { apiKeyConfig: { expires: cdk.Duration.days(7) } },
+  translationBehavior: { useAmplifyManagedTableResources: true },
+});
