@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.8.0-rds-4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.7.5...@aws-amplify/amplify-category-api@5.8.0-rds-4.0) (2023-10-19)
+
+### Bug Fixes
+
+- **api:** make id optional if not a string type ([48ecac0](https://github.com/aws-amplify/amplify-category-api/commit/48ecac0989097106a531ebb898abbda7a0f1745c))
+
+### Features
+
+- **api:** add vpc endpoints for ssm ([5a4ffc4](https://github.com/aws-amplify/amplify-category-api/commit/5a4ffc4c1889536c8e1fdd1f31fe28ca4326100f))
+- **api:** custom queries support using sql directive ([5214037](https://github.com/aws-amplify/amplify-category-api/commit/52140374ca974956c5d5eac09fec91a51cfc9027))
+- **api:** postgres import workflow ([a87203f](https://github.com/aws-amplify/amplify-category-api/commit/a87203f5e7b0a279f6c916069b648f973089e074))
+- **api:** prompt changes to add postgres support ([9e4c41c](https://github.com/aws-amplify/amplify-category-api/commit/9e4c41c28b286e15a574eff9867f1f910a6f9ed3))
+- **api:** refactor auth transformer to use vtl generator factory pattern ([e965d24](https://github.com/aws-amplify/amplify-category-api/commit/e965d24731fc1e2300ef0e16b61af6b39afb0cad))
+- Support RDS Proxy schema imports ([#1917](https://github.com/aws-amplify/amplify-category-api/issues/1917)) ([55bb698](https://github.com/aws-amplify/amplify-category-api/commit/55bb698f319d3abb63ad0a8260f731e57c0d0fa9))
+
 ## [5.7.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.7.4...@aws-amplify/amplify-category-api@5.7.5) (2023-10-12)
 
 ### Bug Fixes

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0-rds-4.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.3.0...amplify-category-api-e2e-core@4.4.0-rds-4.0) (2023-10-19)
+
+### Features
+
+- **api:** prompt changes to add postgres support ([9e4c41c](https://github.com/aws-amplify/amplify-category-api/commit/9e4c41c28b286e15a574eff9867f1f910a6f9ed3))
+
 # [4.3.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.2.4...amplify-category-api-e2e-core@4.3.0) (2023-09-13)
 
 ### Features

@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphql-api-construct-tests",
-  "version": "1.0.3",
+  "version": "1.0.4-rds-4.0",
   "description": "E2e test suite",
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
     "build-tests": "tsc --build tsconfig.tests.json"
   },
   "dependencies": {
-    "amplify-category-api-e2e-core": "4.3.0",
+    "amplify-category-api-e2e-core": "4.4.0-rds-4.0",
     "node-fetch": "^2.6.7"
   },
   "peerDependencies": {

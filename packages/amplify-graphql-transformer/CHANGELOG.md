@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0-rds-4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.2.4...@aws-amplify/graphql-transformer@1.3.0-rds-4.0) (2023-10-19)
+
+### Bug Fixes
+
+- handle field names starting with number ([2e9de1b](https://github.com/aws-amplify/amplify-category-api/commit/2e9de1b061ac212fad23b133ada44bfaadb1a2ff))
+
+### Features
+
+- add refersTo directive transformer for model renaming ([#1830](https://github.com/aws-amplify/amplify-category-api/issues/1830)) ([afbd6f2](https://github.com/aws-amplify/amplify-category-api/commit/afbd6f282bc411313ce098a53a87bb8c6481aa48))
+- **api:** add vpc endpoints for ssm ([5a4ffc4](https://github.com/aws-amplify/amplify-category-api/commit/5a4ffc4c1889536c8e1fdd1f31fe28ca4326100f))
+- **api:** custom queries support using sql directive ([5214037](https://github.com/aws-amplify/amplify-category-api/commit/52140374ca974956c5d5eac09fec91a51cfc9027))
+
 ## [1.2.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.2.3...@aws-amplify/graphql-transformer@1.2.4) (2023-10-12)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer
