@@ -17,52 +17,28 @@ Object {
             "dynamodb:UpdateTimeToLive",
           ],
           "Effect": "Allow",
-          "Resource": Array [
-            Object {
-              "Fn::Sub": Array [
-                "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}",
-                Object {
-                  "tablename": Object {
-                    "Fn::Join": Array [
-                      "",
-                      Array [
-                        "Post-",
-                        Object {
-                          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-                        },
-                        "-",
-                        Object {
-                          "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                        },
-                      ],
+          "Resource": Object {
+            "Fn::Sub": Array [
+              "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}",
+              Object {
+                "tablename": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "Post-",
+                      Object {
+                        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+                      },
+                      "-",
+                      Object {
+                        "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                      },
                     ],
-                  },
+                  ],
                 },
-              ],
-            },
-            Object {
-              "Fn::Sub": Array [
-                "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}",
-                Object {
-                  "tablename": Object {
-                    "Fn::Join": Array [
-                      "",
-                      Array [
-                        "Comment-",
-                        Object {
-                          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-                        },
-                        "-",
-                        Object {
-                          "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                        },
-                      ],
-                    ],
-                  },
-                },
-              ],
-            },
-          ],
+              },
+            ],
+          },
         },
       ],
       "Version": "2012-10-17",

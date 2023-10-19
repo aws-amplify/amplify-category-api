@@ -27,6 +27,12 @@ describe('ModelTransformer:', () => {
           dbType: 'DDB',
           provisionStrategy: DynamoDBProvisionStrategyType.AMPLIFY_TABLE,
         },
+        models: {
+          Comment: {
+            dbType: 'DDB',
+            provisionStrategy: DynamoDBProvisionStrategyType.DEFAULT,
+          },
+        },
       },
     });
     expect(out).toBeDefined();
@@ -43,6 +49,12 @@ describe('ModelTransformer:', () => {
     const postTable = postStack.Resources?.PostTable;
     expect(postTable).toBeDefined();
     expect(postTable.Type).toBe(CUSTOM_DDB_CFN_TYPE);
+    // Comment table resource should be generated within the default CFN DynamoDB table
+    const commentStack = out.stacks['Comment'];
+    expect(commentStack).toBeDefined();
+    const commentTable = commentStack.Resources?.CommentTable;
+    expect(commentTable).toBeDefined();
+    expect(commentTable.Type).toBe('AWS::DynamoDB::Table');
     validateModelSchema(parse(out.schema));
   });
 });
