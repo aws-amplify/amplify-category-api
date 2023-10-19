@@ -30,7 +30,6 @@ import { ResolverManager } from './resolver';
 import { TransformerResourceHelper } from './resource-helper';
 import { StackManager } from './stack-manager';
 import { assetManager } from './asset-manager';
-import { DynamoDBProvisionStrategyType } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/datasource-provision-config';
 
 export { TransformerResolver } from './resolver';
 export { StackManager } from './stack-manager';
@@ -139,9 +138,5 @@ export class TransformerContext implements TransformerContextProvider {
 
   public isProjectUsingDataStore(): boolean {
     return !!this.resolverConfig?.project || !!this.resolverConfig?.models;
-  }
-
-  public isProjectUsingAmplifyDynamoDBTable(): boolean {
-    return this.datasourceProvisionConfig?.project?.provisionStrategy === DynamoDBProvisionStrategyType.AMPLIFY_TABLE;
   }
 }

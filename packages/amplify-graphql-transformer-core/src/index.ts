@@ -43,7 +43,6 @@ export {
 export { TransformerResolver, StackManager } from './transformer-context';
 export {
   DDB_DB_TYPE,
-  CUSTOM_DDB_DB_TYPE,
   ImportAppSyncAPIInputs,
   ImportedDataSourceType,
   ImportedRDSType,

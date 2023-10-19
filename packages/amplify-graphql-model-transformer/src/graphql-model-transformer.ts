@@ -27,6 +27,7 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
   TransformerValidationStepContextProvider,
+  DynamoDBProvisionStrategyType,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -73,11 +74,6 @@ import { DynamoModelResourceGenerator } from './resources/dynamo-model-resource-
 import { RdsModelResourceGenerator } from './resources/rds-model-resource-generator';
 import { ModelTransformerOptions } from './types';
 import { AmplifyDynamoModelResourceGenerator } from './resources/amplify-dynamodb-table/amplify-dynamo-model-resource-generator';
-import {} from '@aws-amplify/graphql-transformer-core/src/types/import-appsync-api-types';
-import {
-  DynamoDBProvisionStrategyType,
-  RDSProvisionStrategyType,
-} from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/datasource-provision-config';
 
 /**
  * Nullable
@@ -874,12 +870,20 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     ...options,
   });
 
+  /**
+   * Apply the user-defined provision strategies to the model to datasource provision type map
+   * @param ctx Transformer before step context
+   */
   private applyDatasourceProvisionConfig = (ctx: TransformerBeforeStepContextProvider): void => {
     if (!ctx.datasourceProvisionConfig) {
       return;
     }
     const projectProvisionStrategy = ctx.datasourceProvisionConfig?.project?.provisionStrategy as any;
+    // Change the project level strategy only when amplify table is in used
+    // The default strategy is using default CFN dynamodb table
+    // TODO: add support for RDS strategy in project level
     if (projectProvisionStrategy === DynamoDBProvisionStrategyType.AMPLIFY_TABLE) {
+      // Amplify table only supports green field for now
       this.projectProvisionStrategy = { dbType: CUSTOM_DDB_DB_TYPE, provisionDB: true };
     }
     const perModelProvisionStrategyMap = ctx.datasourceProvisionConfig?.models;
@@ -890,13 +894,17 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           this.modelToDatasourceProvisionTypeMap.set(typeName, { dbType: CUSTOM_DDB_DB_TYPE, provisionDB: true });
         } else if (modelProvisionStrategy === DynamoDBProvisionStrategyType.DEFAULT) {
           this.modelToDatasourceProvisionTypeMap.set(typeName, { dbType: DDB_DB_TYPE, provisionDB: true });
-        } else if (modelProvisionStrategy === RDSProvisionStrategyType.BROWN_FIELD) {
-          this.modelToDatasourceProvisionTypeMap.set(typeName, { dbType: MYSQL_DB_TYPE, provisionDB: false });
         }
       });
     }
   };
 
+  /**
+   * Get the resource generator based on the type name definition of model directive
+   * The project level strategy will be returned if type name is not found in the map
+   * @param typeName type name definition of model directive
+   * @returns datasource provision type from map.
+   */
   private getResourceGenerator = (typeName: string): ModelResourceGenerator | undefined => {
     const datasourceProvisionType = this.modelToDatasourceProvisionTypeMap.get(typeName) ?? this.projectProvisionStrategy;
     return this.resourceGeneratorMap.get(datasourceProvisionType.dbType);

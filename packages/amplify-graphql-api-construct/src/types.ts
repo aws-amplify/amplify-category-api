@@ -392,15 +392,6 @@ export interface TranslationBehavior {
    */
   readonly respectPrimaryKeyAttributesOnConnectionField: boolean;
 
-  /**
-   * Used for AmplifyGrapqhlApi construct ONLY
-   * If enabled, the table resources will be generated under custom resource provider,
-   * which enables the multiple GSI updates within one deployment phase
-   * @default false
-   * @experimental
-   */
-  readonly useAmplifyManagedTableResources: boolean;
-
   readonly enableSearchNodeToNodeEncryption: boolean;
 
   /**
@@ -486,13 +477,6 @@ export interface PartialTranslationBehavior {
    * @default false
    */
   readonly enableTransformerCfnOutputs?: boolean;
-
-  /**
-   * When enabled, amplify DynamoDB table will be generated instead of CFN pre-defined DynamoDB table
-   * @default false
-   * @experimental
-   */
-  readonly useAmplifyManagedTableResources?: boolean;
 }
 
 /**
@@ -541,7 +525,7 @@ export interface IBackendOutputStorageStrategy {
 }
 
 /**
- * Enable optimistic concurrency on the project.
+ * Use default CloudFormation type 'AWS::DynamoDB::Table' to provision table.
  */
 export interface DefaultDynamoDBTableStrategy {
   readonly dbType: 'DDB';
@@ -549,7 +533,7 @@ export interface DefaultDynamoDBTableStrategy {
 }
 
 /**
- * Enable automerge on the project.
+ * Use custom resource type 'Custom::AmplifyDynamoDBTable' to provision table.
  */
 export interface AmplifyDynamoDBTableStrategy {
   readonly dbType: 'DDB';
@@ -557,17 +541,9 @@ export interface AmplifyDynamoDBTableStrategy {
 }
 
 /**
- * Enable custom sync on the project, powered by a lambda.
- */
-export interface RDSBrownFieldStrategy {
-  readonly dbType: 'MySQL';
-  readonly provisionStrategy: 'BROWN_FIELD';
-}
-
-/**
  * DataSource Provision Strategy to apply to the project or a particular model.
  */
-export type DataSourceProvisoinStrategy = DefaultDynamoDBTableStrategy | AmplifyDynamoDBTableStrategy | RDSBrownFieldStrategy;
+export type DataSourceProvisoinStrategy = DefaultDynamoDBTableStrategy | AmplifyDynamoDBTableStrategy;
 
 /**
  * Project level configuration for datasource provision strategy.

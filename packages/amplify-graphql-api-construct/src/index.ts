@@ -31,7 +31,6 @@ export type {
   DataSourceProvisoinStrategy,
   DefaultDynamoDBTableStrategy,
   AmplifyDynamoDBTableStrategy,
-  RDSBrownFieldStrategy,
 } from './types';
 export { AmplifyGraphqlApi } from './amplify-graphql-api';
 export { AmplifyGraphqlDefinition } from './amplify-graphql-definition';

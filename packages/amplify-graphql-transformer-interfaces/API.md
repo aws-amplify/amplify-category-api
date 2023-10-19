@@ -160,16 +160,29 @@ export type DatasourceProvisionConfig = {
     models?: Record<string, DatasourceProvisionStrategy>;
 };
 
-// Warning: (ae-forgotten-export) The symbol "DynamoDBProvisionStrategy" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "RDSProvisionStrategy" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
-export type DatasourceProvisionStrategy = DynamoDBProvisionStrategy | RDSProvisionStrategy;
+export type DatasourceProvisionStrategy = DynamoDBProvisionStrategy;
 
 // @public (undocumented)
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {
     // (undocumented)
     readonly serviceRole: IRole;
+}
+
+// Warning: (ae-forgotten-export) The symbol "DatasourceProvisionStrategyBase" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type DynamoDBProvisionStrategy = DatasourceProvisionStrategyBase & {
+    dbType: 'DDB';
+    provisionStrategy: DynamoDBProvisionStrategyType;
+};
+
+// @public (undocumented)
+export const enum DynamoDBProvisionStrategyType {
+    // (undocumented)
+    AMPLIFY_TABLE = "AMPLIFY_TABLE",
+    // (undocumented)
+    DEFAULT = "DEFAULT"
 }
 
 // @public (undocumented)
@@ -752,7 +765,6 @@ export type TransformParameters = {
     shouldDeepMergeDirectiveConfigDefaults: boolean;
     disableResolverDeduping: boolean;
     sandboxModeEnabled: boolean;
-    useAmplifyManagedTableResources: boolean;
     useSubUsernameForDefaultIdentityClaim: boolean;
     populateOwnerFieldForStaticGroupAuth: boolean;
     suppressApiKeyGeneration: boolean;

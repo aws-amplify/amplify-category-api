@@ -7,7 +7,12 @@ import {
   DBType,
   getDatasourceProvisionStratety,
 } from '@aws-amplify/graphql-transformer-core';
-import { DataSourceProvider, TransformerContextProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  DataSourceProvider,
+  TransformerContextProvider,
+  TransformerResolverProvider,
+  DynamoDBProvisionStrategyType,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import * as cdk from 'aws-cdk-lib';
@@ -51,7 +56,6 @@ import _ from 'lodash';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../types';
 import { lookupResolverName } from '../utils';
 import { RDSIndexVTLGenerator, DynamoDBIndexVTLGenerator } from './generators';
-import { DynamoDBProvisionStrategyType } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/datasource-provision-config';
 
 const API_KEY = 'API Key Authorization';
 
@@ -59,7 +63,6 @@ const API_KEY = 'API Key Authorization';
  * replaceDdbPrimaryKey
  */
 export function replaceDdbPrimaryKey(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
-  // const useAmplifyManagedTableResources: boolean = ctx.transformParameters.useAmplifyManagedTableResources;
   // Replace the table's primary key with the value from @primaryKey
   const { field, object } = config;
   const tableProvisionStrategy = getDatasourceProvisionStratety(ctx, object.name.value);
@@ -414,6 +417,7 @@ export function appendSecondaryIndex(config: IndexDirectiveConfiguration, ctx: T
  * The structure for CDK L2 table is `Table -> CfnTable`, in which `table` is a property refering the CfnTable
  * For amplify dynamodb table, the structure is `AmplifyDynamoDBTable -> CustomResource -> CfnCustomResource`
  * @param ctx transformer context
+ * @param typeName type name of model directive
  * @param table input table
  * @param indexInfo global secondary index properties
  */

@@ -186,7 +186,7 @@ export interface DataSourceProvisoinConfig {
 }
 
 // @public
-export type DataSourceProvisoinStrategy = DefaultDynamoDBTableStrategy | AmplifyDynamoDBTableStrategy | RDSBrownFieldStrategy;
+export type DataSourceProvisoinStrategy = DefaultDynamoDBTableStrategy | AmplifyDynamoDBTableStrategy;
 
 // @public
 export interface DefaultDynamoDBTableStrategy {
@@ -274,7 +274,6 @@ export interface PartialTranslationBehavior {
     readonly secondaryKeyAsGSI?: boolean;
     readonly shouldDeepMergeDirectiveConfigDefaults?: boolean;
     readonly suppressApiKeyGeneration?: boolean;
-    readonly useAmplifyManagedTableResources?: boolean;
     readonly useSubUsernameForDefaultIdentityClaim?: boolean;
 }
 
@@ -282,14 +281,6 @@ export interface PartialTranslationBehavior {
 export interface QueryFunctionSlot extends FunctionSlotBase {
     readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preDataLoad' | 'postDataLoad' | 'finish';
     readonly typeName: 'Query';
-}
-
-// @public
-export interface RDSBrownFieldStrategy {
-    // (undocumented)
-    readonly dbType: 'MySQL';
-    // (undocumented)
-    readonly provisionStrategy: 'BROWN_FIELD';
 }
 
 // @public
@@ -311,7 +302,6 @@ export interface TranslationBehavior {
     readonly secondaryKeyAsGSI: boolean;
     readonly shouldDeepMergeDirectiveConfigDefaults: boolean;
     readonly suppressApiKeyGeneration: boolean;
-    readonly useAmplifyManagedTableResources: boolean;
     readonly useSubUsernameForDefaultIdentityClaim: boolean;
 }
 

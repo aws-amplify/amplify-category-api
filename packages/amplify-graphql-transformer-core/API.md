@@ -122,9 +122,6 @@ function createSyncLambdaIAMPolicy(context: TransformerContextProvider, scope: C
 function createSyncTable(context: TransformerContext): void;
 
 // @public (undocumented)
-export const CUSTOM_DDB_DB_TYPE = "AmplifyDDB";
-
-// @public (undocumented)
 export interface DatasourceType {
     // (undocumented)
     dbType: DBType;
@@ -193,7 +190,7 @@ export type GetArgumentsOptions = {
 };
 
 // @public (undocumented)
-export function getDatasourceProvisionStratety(ctx: TransformerBeforeStepContextProvider, typeName: string): DatasourceProvisionStrategy | undefined;
+export function getDatasourceProvisionStratety(ctx: TransformerBeforeStepContextProvider, typeName?: string): DatasourceProvisionStrategy | undefined;
 
 // Warning: (ae-forgotten-export) The symbol "Operation" needs to be exported by the entry point index.d.ts
 //

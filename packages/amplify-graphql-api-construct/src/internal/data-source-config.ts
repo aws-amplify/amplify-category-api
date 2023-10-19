@@ -1,10 +1,10 @@
-import { DatasourceProvisionConfig } from '@aws-amplify/graphql-transformer-interfaces';
-import { DataSourceProvisoinConfig, DataSourceProvisoinStrategy } from '../types';
-import { DatasourceProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces/src';
 import {
+  DatasourceProvisionConfig,
+  DatasourceProvisionStrategy,
   DynamoDBProvisionStrategyType,
-  RDSProvisionStrategyType,
-} from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/datasource-provision-config';
+} from '@aws-amplify/graphql-transformer-interfaces';
+import { DataSourceProvisoinConfig, DataSourceProvisoinStrategy } from '../types';
+import {} from '@aws-amplify/graphql-transformer-interfaces/src';
 
 type DataSourceConfig = {
   datasourceProvisionConfig: DatasourceProvisionConfig;
@@ -20,11 +20,6 @@ const convertToProvisionStrategy = (provisionStrategy: DataSourceProvisoinStrate
       return {
         dbType: 'DDB',
         provisionStrategy: DynamoDBProvisionStrategyType.AMPLIFY_TABLE,
-      };
-    case 'BROWN_FIELD':
-      return {
-        dbType: 'MySQL',
-        provisionStrategy: RDSProvisionStrategyType.BROWN_FIELD,
       };
     default:
       throw new Error(`Encountered unexpected provision strategy: ${(provisionStrategy as any).provisionStrategy}`);

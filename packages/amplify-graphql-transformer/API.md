@@ -62,10 +62,7 @@ export type TransformConfig = {
 
 // @public (undocumented)
 export type TransformerFactoryArgs = {
-    authConfig?: any;
     storageConfig?: any;
-    adminRoles?: Array<string>;
-    identityPoolId?: string;
     customTransformers?: TransformerPluginProvider[];
     functionNameMap?: Record<string, IFunction>;
 };
