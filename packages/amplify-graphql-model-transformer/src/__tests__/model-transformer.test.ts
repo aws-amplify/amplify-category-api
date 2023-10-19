@@ -1,9 +1,11 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { ConflictHandlerType, DatasourceType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType, DatasourceType, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, NamedTypeNode, parse } from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
 import { Template } from 'aws-cdk-lib/assertions';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   doNotExpectFields,
   expectFields,
@@ -15,9 +17,6 @@ import {
   verifyInputCount,
   verifyMatchingTypes,
 } from './test-utils/helpers';
-import { VpcSubnetConfig } from '@aws-amplify/graphql-transformer-interfaces';
-import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { InventoryFormat } from 'aws-cdk-lib/aws-s3';
 
 describe('ModelTransformer:', () => {
   it('should successfully transform simple valid schema', async () => {
@@ -1586,12 +1585,9 @@ describe('ModelTransformer:', () => {
       dbType: 'MySQL',
       provisionDB: false,
     });
-    const sqlLambdaVpcConfig: VpcSubnetConfig = {
-      vpcConfig: {
-        vpcId: 'vpc-123',
-        subnetIds: ['sub-123', 'sub-456'],
-        securityGroupIds: ['sg-123'],
-      },
+    const sqlLambdaVpcConfig: VpcConfig = {
+      vpcId: 'vpc-123',
+      securityGroupIds: ['sg-123'],
       subnetAvailabilityZoneConfig: [
         {
           SubnetId: 'sub-123',

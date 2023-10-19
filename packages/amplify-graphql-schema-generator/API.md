@@ -8,6 +8,7 @@ import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql';
 import { FieldDefinitionNode } from 'graphql';
 import { ObjectTypeDefinitionNode } from 'graphql';
+import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
 export const applyFieldNameOverrides: (field: FieldDefinitionNode, existingField: FieldDefinitionNode) => Partial<FieldDefinitionNode>;
@@ -296,13 +297,6 @@ export class Schema {
 
 // @public (undocumented)
 export const sleep: (milliseconds: number) => Promise<void>;
-
-// @public (undocumented)
-export type VpcConfig = {
-    vpcId: string;
-    subnetIds: string[];
-    securityGroupIds: string[];
-};
 
 // (No @packageDocumentation comment for this package)
 

@@ -439,7 +439,7 @@ export interface TransformerContextProvider {
     // (undocumented)
     resourceHelper: TransformerResourceHelperProvider;
     // (undocumented)
-    readonly sqlLambdaVpcConfig?: VpcSubnetConfig;
+    readonly sqlLambdaVpcConfig?: VpcConfig;
     // (undocumented)
     stackManager: StackManagerProvider;
     // (undocumented)
@@ -764,14 +764,8 @@ export interface UserPoolConfig {
 // @public (undocumented)
 export type VpcConfig = {
     vpcId: string;
-    subnetIds: string[];
-    securityGroupIds: string[];
-};
-
-// @public (undocumented)
-export type VpcSubnetConfig = {
-    vpcConfig: VpcConfig;
     subnetAvailabilityZoneConfig: SubnetAvailabilityZone[];
+    securityGroupIds: string[];
 };
 
 // Warnings were encountered during analysis:

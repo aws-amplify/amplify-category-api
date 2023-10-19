@@ -31,7 +31,7 @@ import type { SynthParameters } from '@aws-amplify/graphql-transformer-interface
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
-import type { VpcSubnetConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import type { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
 export interface AmplifyApiGraphQlResourceStackTemplate {
@@ -142,7 +142,7 @@ export type TestTransformParameters = {
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
     customQueries?: Map<string, string>;
     overrideConfig?: OverrideConfig;
-    sqlLambdaVpcConfig?: VpcSubnetConfig;
+    sqlLambdaVpcConfig?: VpcConfig;
     synthParameters?: Partial<SynthParameters>;
 };
 

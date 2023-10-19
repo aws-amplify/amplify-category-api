@@ -19,7 +19,7 @@ import {
   TransformerPluginProvider,
   TransformerLog,
   TransformerLogLevel,
-  VpcSubnetConfig,
+  VpcConfig,
   RDSLayerMapping,
   NestedStackProvider,
   AssetProvider,
@@ -60,7 +60,7 @@ export type TransformConfig = {
   userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   stackMapping?: Record<string, string>;
   transformParameters: TransformParameters;
-  sqlLambdaVpcConfig?: VpcSubnetConfig;
+  sqlLambdaVpcConfig?: VpcConfig;
   rdsLayerMapping?: RDSLayerMapping;
 };
 
@@ -131,7 +131,7 @@ export type ExecuteTransformConfig = TransformConfig & {
   customQueries?: Map<string, string>;
   datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
   printTransformerLog?: (log: TransformerLog) => void;
-  sqlLambdaVpcConfig?: VpcSubnetConfig;
+  sqlLambdaVpcConfig?: VpcConfig;
   rdsLayerMapping?: RDSLayerMapping;
   scope: Construct;
   nestedStackProvider: NestedStackProvider;

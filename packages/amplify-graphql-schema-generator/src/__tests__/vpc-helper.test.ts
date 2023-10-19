@@ -1,3 +1,4 @@
+import { DescribeSubnetsCommandOutput, EC2Client } from '@aws-sdk/client-ec2';
 import {
   RDSClient,
   DescribeDBClustersCommandOutput,
@@ -6,19 +7,33 @@ import {
   DescribeDBSubnetGroupsCommandOutput,
 } from '@aws-sdk/client-rds';
 
+import { SubnetAvailabilityZone } from '@aws-amplify/graphql-transformer-interfaces';
 import { getHostVpc } from '../utils/vpc-helper';
 
-const sendSpy = jest.spyOn(RDSClient.prototype, 'send');
+const rdsClientSendSpy = jest.spyOn(RDSClient.prototype, 'send');
+const ec2ClientSendSpy = jest.spyOn(EC2Client.prototype, 'send');
 
 const vpcId = 'vpc-aaaaaaaaaaaaaaaaa';
-const subnetIds = ['subnet-1111111111', 'subnet-2222222222'];
+
+// Note that this configuration includes two subnet definitions for us-west-2a. In our tests,
+// we will assert that only one of the subnets is actually used.
+const subnetAvailabilityZones: SubnetAvailabilityZone[] = [
+  { SubnetId: 'subnet-1111111111', AvailabilityZone: 'us-west-2a' },
+  { SubnetId: 'subnet-2222222222', AvailabilityZone: 'us-west-2b' },
+  { SubnetId: 'subnet-3333333333', AvailabilityZone: 'us-west-2a' },
+];
+
+const expectedSubnetIds = [subnetAvailabilityZones[0].SubnetId, subnetAvailabilityZones[1].SubnetId];
+
 const securityGroupIds = ['sg-abc123'];
 
 describe('detect VPC settings', () => {
   it('should detect VPC settings for an RDS instance after checking proxy and cluster', async () => {
     // TS complains about resolving values in the spy.
     // Cast it through never to overcome the compile error.
-    sendSpy
+
+    // The instance response includes subnet and AZ information; it will not make a DescribeSubnets call
+    rdsClientSendSpy
       .mockResolvedValueOnce(emptyProxyResponse as never)
       .mockResolvedValueOnce(clusterResponse as never)
       .mockResolvedValueOnce(instanceResponse as never)
@@ -26,10 +41,12 @@ describe('detect VPC settings', () => {
 
     const result = await getHostVpc('mock-rds-cluster-instance-1.aaaaaaaaaaaa.us-west-2.rds.amazonaws.com', 'us-west-2');
 
+    const resultSubnetIds = result?.subnetAvailabilityZoneConfig.map((sn) => sn.SubnetId);
+
     expect(result).toBeDefined();
     expect(result?.vpcId).toEqual(vpcId);
-    expect(result?.subnetIds).toEqual(expect.arrayContaining(subnetIds));
-    expect(result?.subnetIds.length).toEqual(subnetIds.length);
+    expect(resultSubnetIds).toEqual(expect.arrayContaining(expectedSubnetIds));
+    expect(resultSubnetIds?.length).toEqual(expectedSubnetIds.length);
     expect(result?.securityGroupIds).toEqual(expect.arrayContaining(securityGroupIds));
     expect(result?.securityGroupIds.length).toEqual(securityGroupIds.length);
   });
@@ -39,18 +56,23 @@ describe('detect VPC settings', () => {
     // so it requires an additional call.
     // TS complains about resolving values in the spy.
     // Cast it through never to overcome the compile error.
-    sendSpy
+
+    // The cluster response includes a SubnetGroup member. This flow invokes "rds::DescribeDBSubnetGroups" to get Subnet IDs and AZ
+    // information.
+    rdsClientSendSpy
       .mockResolvedValueOnce(emptyProxyResponse as never)
       .mockResolvedValueOnce(clusterResponse as never)
-      .mockResolvedValueOnce(subnetResponse as never)
+      .mockResolvedValueOnce(describeDbSubnetGroupsResponse as never)
       .mockRejectedValue('Should not make any other calls' as never);
 
     const result = await getHostVpc('mock-rds-cluster.cluster-abc123.us-west-2.rds.amazonaws.com', 'us-west-2');
 
+    const resultSubnetIds = result?.subnetAvailabilityZoneConfig.map((sn) => sn.SubnetId);
+
     expect(result).toBeDefined();
     expect(result?.vpcId).toEqual(vpcId);
-    expect(result?.subnetIds).toEqual(expect.arrayContaining(subnetIds));
-    expect(result?.subnetIds.length).toEqual(subnetIds.length);
+    expect(resultSubnetIds).toEqual(expect.arrayContaining(expectedSubnetIds));
+    expect(resultSubnetIds?.length).toEqual(expectedSubnetIds.length);
     expect(result?.securityGroupIds).toEqual(expect.arrayContaining(securityGroupIds));
     expect(result?.securityGroupIds.length).toEqual(securityGroupIds.length);
   });
@@ -58,14 +80,21 @@ describe('detect VPC settings', () => {
   it('should detect VPC settings for an RDS proxy', async () => {
     // TS complains about resolving values in the spy.
     // Cast it through never to overcome the compile error.
-    sendSpy.mockResolvedValueOnce(proxyResponse as never).mockRejectedValue('Should not make any other calls' as never);
+
+    // The proxy response includes subnet IDs. This flow invokes "ec2::DescribeSubnets" to get availability zone information
+    rdsClientSendSpy.mockResolvedValueOnce(proxyResponse as never).mockRejectedValue('RDS Client should not make any other calls' as never);
+    ec2ClientSendSpy
+      .mockResolvedValueOnce(describeSubnetsResponse as never)
+      .mockRejectedValue('EC2 Client should not make any other calls' as never);
 
     const result = await getHostVpc('mock-rds-cluster.proxy-abc123.us-west-2.rds.amazonaws.com', 'us-west-2');
 
+    const resultSubnetIds = result?.subnetAvailabilityZoneConfig.map((sn) => sn.SubnetId);
+
     expect(result).toBeDefined();
     expect(result?.vpcId).toEqual(vpcId);
-    expect(result?.subnetIds).toEqual(expect.arrayContaining(subnetIds));
-    expect(result?.subnetIds.length).toEqual(subnetIds.length);
+    expect(resultSubnetIds).toEqual(expect.arrayContaining(expectedSubnetIds));
+    expect(resultSubnetIds?.length).toEqual(expectedSubnetIds.length);
     expect(result?.securityGroupIds).toEqual(expect.arrayContaining(securityGroupIds));
     expect(result?.securityGroupIds.length).toEqual(securityGroupIds.length);
   });
@@ -73,7 +102,7 @@ describe('detect VPC settings', () => {
   it('should return undefined for non-matching hosts', async () => {
     // TS complains about resolving values in the spy.
     // Cast it through never to overcome the compile error.
-    sendSpy
+    rdsClientSendSpy
       .mockResolvedValueOnce(emptyProxyResponse as never)
       .mockResolvedValueOnce(clusterResponse as never)
       .mockResolvedValueOnce(instanceResponse as never)
@@ -116,7 +145,7 @@ const instanceResponse: DescribeDBInstancesCommandOutput = {
           ParameterApplyStatus: 'in-sync',
         },
       ],
-      AvailabilityZone: 'us-west-2b',
+      AvailabilityZone: subnetAvailabilityZones[0].AvailabilityZone,
       DBSubnetGroup: {
         DBSubnetGroupName: 'default-vpc-abc123',
         DBSubnetGroupDescription: 'Created from the RDS Management Console',
@@ -124,17 +153,25 @@ const instanceResponse: DescribeDBInstancesCommandOutput = {
         SubnetGroupStatus: 'Complete',
         Subnets: [
           {
-            SubnetIdentifier: subnetIds[0],
+            SubnetIdentifier: subnetAvailabilityZones[0].SubnetId,
             SubnetAvailabilityZone: {
-              Name: 'us-west-2b',
+              Name: subnetAvailabilityZones[0].AvailabilityZone,
             },
             SubnetOutpost: {},
             SubnetStatus: 'Active',
           },
           {
-            SubnetIdentifier: subnetIds[1],
+            SubnetIdentifier: subnetAvailabilityZones[1].SubnetId,
             SubnetAvailabilityZone: {
-              Name: 'us-west-2b',
+              Name: subnetAvailabilityZones[1].AvailabilityZone,
+            },
+            SubnetOutpost: {},
+            SubnetStatus: 'Active',
+          },
+          {
+            SubnetIdentifier: subnetAvailabilityZones[2].SubnetId,
+            SubnetAvailabilityZone: {
+              Name: subnetAvailabilityZones[2].AvailabilityZone,
             },
             SubnetOutpost: {},
             SubnetStatus: 'Active',
@@ -188,7 +225,7 @@ const clusterResponse: DescribeDBClustersCommandOutput = {
   DBClusters: [
     {
       AllocatedStorage: 1,
-      AvailabilityZones: ['us-west-2c', 'us-west-2b', 'us-west-2a'],
+      AvailabilityZones: subnetAvailabilityZones.map((saz) => saz.AvailabilityZone),
       BackupRetentionPeriod: 1,
       DBClusterIdentifier: 'mock-rds-cluster',
       DBClusterParameterGroup: 'default.aurora-mysql8.0',
@@ -246,6 +283,46 @@ const clusterResponse: DescribeDBClustersCommandOutput = {
   ],
 };
 
+const describeDbSubnetGroupsResponse: DescribeDBSubnetGroupsCommandOutput = {
+  $metadata: {},
+  DBSubnetGroups: [
+    {
+      DBSubnetGroupName: 'default-vpc-abc123',
+      DBSubnetGroupDescription: 'Created from the RDS Management Console',
+      VpcId: vpcId,
+      SubnetGroupStatus: 'Complete',
+      Subnets: [
+        {
+          SubnetIdentifier: subnetAvailabilityZones[0].SubnetId,
+          SubnetAvailabilityZone: {
+            Name: subnetAvailabilityZones[0].AvailabilityZone,
+          },
+          SubnetOutpost: {},
+          SubnetStatus: 'Active',
+        },
+        {
+          SubnetIdentifier: subnetAvailabilityZones[1].SubnetId,
+          SubnetAvailabilityZone: {
+            Name: subnetAvailabilityZones[1].AvailabilityZone,
+          },
+          SubnetOutpost: {},
+          SubnetStatus: 'Active',
+        },
+        {
+          SubnetIdentifier: subnetAvailabilityZones[2].SubnetId,
+          SubnetAvailabilityZone: {
+            Name: subnetAvailabilityZones[2].AvailabilityZone,
+          },
+          SubnetOutpost: {},
+          SubnetStatus: 'Active',
+        },
+      ],
+      DBSubnetGroupArn: 'arn:aws:rds:us-west-2:123456789012:subgrp:default-vpc-abc123',
+      SupportedNetworkTypes: ['IPV4'],
+    },
+  ],
+};
+
 const emptyProxyResponse: DescribeDBProxiesCommandOutput = { $metadata: {}, DBProxies: [] };
 
 const proxyResponse: DescribeDBProxiesCommandOutput = {
@@ -258,7 +335,7 @@ const proxyResponse: DescribeDBProxiesCommandOutput = {
       EngineFamily: 'MYSQL',
       VpcId: vpcId,
       VpcSecurityGroupIds: securityGroupIds,
-      VpcSubnetIds: subnetIds,
+      VpcSubnetIds: subnetAvailabilityZones.map((saz) => saz.SubnetId),
       Auth: [
         {
           AuthScheme: 'SECRETS',
@@ -277,34 +354,80 @@ const proxyResponse: DescribeDBProxiesCommandOutput = {
   ],
 };
 
-const subnetResponse: DescribeDBSubnetGroupsCommandOutput = {
+const describeSubnetsResponse: DescribeSubnetsCommandOutput = {
   $metadata: {},
-  DBSubnetGroups: [
+  Subnets: [
     {
-      DBSubnetGroupName: 'default-vpc-abc123',
-      DBSubnetGroupDescription: 'Created from the RDS Management Console',
+      AvailabilityZone: subnetAvailabilityZones[0].AvailabilityZone,
+      AvailabilityZoneId: `${subnetAvailabilityZones[0].AvailabilityZone}-id`,
+      AvailableIpAddressCount: 16379,
+      CidrBlock: '10.0.192.0/18',
+      DefaultForAz: false,
+      MapPublicIpOnLaunch: false,
+      MapCustomerOwnedIpOnLaunch: false,
+      State: 'available',
+      SubnetId: subnetAvailabilityZones[0].SubnetId,
       VpcId: vpcId,
-      SubnetGroupStatus: 'Complete',
-      Subnets: [
-        {
-          SubnetIdentifier: subnetIds[0],
-          SubnetAvailabilityZone: {
-            Name: 'us-west-2b',
-          },
-          SubnetOutpost: {},
-          SubnetStatus: 'Active',
-        },
-        {
-          SubnetIdentifier: subnetIds[1],
-          SubnetAvailabilityZone: {
-            Name: 'us-west-2b',
-          },
-          SubnetOutpost: {},
-          SubnetStatus: 'Active',
-        },
-      ],
-      DBSubnetGroupArn: 'arn:aws:rds:us-west-2:123456789012:subgrp:default-vpc-abc123',
-      SupportedNetworkTypes: ['IPV4'],
+      OwnerId: '123456789012',
+      AssignIpv6AddressOnCreation: false,
+      Ipv6CidrBlockAssociationSet: [],
+      Tags: [],
+      SubnetArn: `arn:aws:ec2:us-west-2:123456789012:subnet/${subnetAvailabilityZones[0].SubnetId}`,
+      EnableDns64: false,
+      Ipv6Native: false,
+      PrivateDnsNameOptionsOnLaunch: {
+        HostnameType: 'ip-name',
+        EnableResourceNameDnsARecord: false,
+        EnableResourceNameDnsAAAARecord: false,
+      },
+    },
+    {
+      AvailabilityZone: subnetAvailabilityZones[1].AvailabilityZone,
+      AvailabilityZoneId: `${subnetAvailabilityZones[1].AvailabilityZone}-id`,
+      AvailableIpAddressCount: 16379,
+      CidrBlock: '10.0.128.0/18',
+      DefaultForAz: false,
+      MapPublicIpOnLaunch: false,
+      MapCustomerOwnedIpOnLaunch: false,
+      State: 'available',
+      SubnetId: subnetAvailabilityZones[1].SubnetId,
+      VpcId: vpcId,
+      OwnerId: '123456789012',
+      AssignIpv6AddressOnCreation: false,
+      Ipv6CidrBlockAssociationSet: [],
+      Tags: [],
+      SubnetArn: `arn:aws:ec2:us-west-2:123456789012:subnet/${subnetAvailabilityZones[1].SubnetId}`,
+      EnableDns64: false,
+      Ipv6Native: false,
+      PrivateDnsNameOptionsOnLaunch: {
+        HostnameType: 'ip-name',
+        EnableResourceNameDnsARecord: false,
+        EnableResourceNameDnsAAAARecord: false,
+      },
+    },
+    {
+      AvailabilityZone: subnetAvailabilityZones[2].AvailabilityZone,
+      AvailabilityZoneId: `${subnetAvailabilityZones[2].AvailabilityZone}-id`,
+      AvailableIpAddressCount: 16379,
+      CidrBlock: '10.0.1.0/18',
+      DefaultForAz: false,
+      MapPublicIpOnLaunch: false,
+      MapCustomerOwnedIpOnLaunch: false,
+      State: 'available',
+      SubnetId: subnetAvailabilityZones[2].SubnetId,
+      VpcId: vpcId,
+      OwnerId: '123456789012',
+      AssignIpv6AddressOnCreation: false,
+      Ipv6CidrBlockAssociationSet: [],
+      Tags: [],
+      SubnetArn: `arn:aws:ec2:us-west-2:123456789012:subnet/${subnetAvailabilityZones[2].SubnetId}`,
+      EnableDns64: false,
+      Ipv6Native: false,
+      PrivateDnsNameOptionsOnLaunch: {
+        HostnameType: 'ip-name',
+        EnableResourceNameDnsARecord: false,
+        EnableResourceNameDnsAAAARecord: false,
+      },
     },
   ],
 };
