@@ -421,13 +421,3 @@ export const constructDataSourceMap = (schema: string, datasourceType: Datasourc
     });
   return result;
 };
-
-/**
- * Returns true if the specified DBType is a SQL database type.
- *
- * @param dbType the DBType to inspect
- * @returns true if the specified DBType is a SQL database type
- */
-export const isSqlDbType = (dbType: DBType): boolean => {
-  return dbType === 'MySQL';
-};

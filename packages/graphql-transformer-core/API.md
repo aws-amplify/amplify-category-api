@@ -227,9 +227,6 @@ export class InvalidTransformerError extends Error {
 export const isDataStoreEnabled: (projectDir: string) => Promise<boolean>;
 
 // @public (undocumented)
-export const isSqlDbType: (dbType: DBType) => boolean;
-
-// @public (undocumented)
 export interface ITransformer {
     // (undocumented)
     after?: (acc: TransformerContext) => void;

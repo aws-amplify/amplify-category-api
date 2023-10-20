@@ -28,7 +28,7 @@ import { IEventBus } from 'aws-cdk-lib/aws-events';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { IServerlessCluster } from 'aws-cdk-lib/aws-rds';
 import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
-import { constructDataSourceMap } from 'graphql-transformer-core';
+import { constructDataSourceMap } from '@aws-amplify/graphql-transformer-core';
 import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
 import type {
   AmplifyGraphqlApiResources,

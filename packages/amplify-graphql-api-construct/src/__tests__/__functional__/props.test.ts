@@ -141,6 +141,7 @@ describe('supports different props configurations', () => {
         definition: AmplifyGraphqlDefinition.fromString(
           /* GraphQL */ `
             type Todo @model @auth(rules: [{ allow: public }]) {
+              id: ID! @primaryKey
               description: String!
             }
           `,
