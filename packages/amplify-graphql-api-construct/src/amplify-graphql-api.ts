@@ -28,7 +28,7 @@ import { IEventBus } from 'aws-cdk-lib/aws-events';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { IServerlessCluster } from 'aws-cdk-lib/aws-rds';
 import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
-import { constructDataSourceMap } from '@aws-amplify/graphql-transformer-core';
+import { RDSConnectionSecrets, constructDataSourceMap } from '@aws-amplify/graphql-transformer-core';
 import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
 import type {
   AmplifyGraphqlApiResources,
@@ -223,7 +223,7 @@ export class AmplifyGraphqlApi extends Construct {
       executeTransformConfig.customQueries = new Map(Object.entries(modelDataSourceBinding.customSqlStatements));
     }
 
-    const dbSecrets = new Map();
+    const dbSecrets: Map<string, RDSConnectionSecrets> = new Map();
     let dbSecretDbTypeKey: string;
     switch (modelDataSourceBinding.bindingType) {
       case 'MySQL':
@@ -236,9 +236,12 @@ export class AmplifyGraphqlApi extends Construct {
       username: modelDataSourceBinding.dbConnectionConfig.usernameSsmPath,
       password: modelDataSourceBinding.dbConnectionConfig.passwordSsmPath,
       host: modelDataSourceBinding.dbConnectionConfig.hostnameSsmPath,
-      port: modelDataSourceBinding.dbConnectionConfig.portSsmPath,
+      // Cast through `any` to allow the SSM Path string to be used on a type expecting a number. This flow expects the incoming value to be
+      // a string containing the SSM path.
+      port: modelDataSourceBinding.dbConnectionConfig.portSsmPath as any,
       database: modelDataSourceBinding.dbConnectionConfig.databaseNameSsmPath,
     });
+    executeTransformConfig.datasourceSecretParameterLocations = dbSecrets;
 
     const subnetAvailabilityZoneConfig = modelDataSourceBinding.vpcConfiguration.subnetAvailabilityZones.map(
       (saz): { SubnetId: string; AvailabilityZone: string } => ({

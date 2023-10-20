@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
+import { Template } from 'aws-cdk-lib/assertions';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 
@@ -55,6 +56,11 @@ describe('sql-bound API generated resource access', () => {
         const lambdaDataSource = Object.values(cfnDataSources).find((dataSource) => dataSource.type === 'AWS_LAMBDA');
         expect(lambdaDataSource).toBeDefined();
         expect(lambdaDataSource?.lambdaConfig).toBeDefined();
+
+        const template = Template.fromStack(stack);
+        template.hasResourceProperties('AWS::Lambda::Function', {
+          Handler: 'handler',
+        });
       });
 
       // it('provides the generated api key as an L1 if defined', () => {

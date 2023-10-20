@@ -114,8 +114,8 @@
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
     "@types/node": "^12.12.6",
-    "aws-cdk-lib": "^2.80.0",
-    "constructs": "^10.0.5",
+    "aws-cdk-lib": "2.80.0",
+    "constructs": "10.0.5",
     "jsii": "^5.1.5",
     "jsii-docgen": "9.1.2",
     "jsii-pacmak": "^1.84.0",
