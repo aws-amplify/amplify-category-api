@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { createNewProjectDir, deleteProjectDir, initCDKProject, cdkDeploy, cdkDestroy } from 'amplify-category-api-e2e-core';
+import { faker } from '@faker-js/faker';
 import { ValidateGraphqlOptions } from '../../graphql-request';
 
 jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
@@ -72,4 +73,35 @@ export const testManagedTableDeployment = <SetupState>({
       await cdkDestroy(projRoot, '--all');
     });
   });
+};
+
+/**
+ * Generate n fake uuids for testing
+ * @param count the number of ids to return
+ * @returns the list of fake ids
+ */
+export const generateFakeUUIDs = (count: number): string[] => Array.apply(0, new Array(count)).map((_) => faker.string.uuid());
+
+/**
+ * Given a list of object, and a chunk size, break into a list of lists, all of which has,
+ * at most, the number of elements provided by chunkSize.
+ * @param inputArray the input elements to partition
+ * @param chunkSize the max size of any given partition for the resulting arrays.
+ * @returns the input array partitioned by chunksize.
+ */
+export const splitArray = <T>(inputArray: T[], chunkSize: number): T[][] => {
+  if (chunkSize < 1) {
+    throw new Error('Chunk size must be greater than 0');
+  }
+  return inputArray.reduce((resultArray, item, index) => {
+    const chunkIndex = Math.floor(index / chunkSize);
+
+    if (!resultArray[chunkIndex]) {
+      resultArray[chunkIndex] = []; // start a new chunk
+    }
+
+    resultArray[chunkIndex].push(item);
+
+    return resultArray;
+  }, [] as T[][]);
 };
