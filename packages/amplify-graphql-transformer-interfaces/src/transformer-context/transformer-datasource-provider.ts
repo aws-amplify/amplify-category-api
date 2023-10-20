@@ -30,7 +30,7 @@ export interface DataSourceProvider extends BackedDataSource {}
 /**
  * Supported transformable database types.
  */
-export type DBType = 'MySQL' | 'DDB';
+export type DBType = 'DDB' | 'MySQL' | 'Postgres';
 
 /**
  * Configuration for a datasource. Defines the underlying database engine, and instructs the tranformer whether to provision the database

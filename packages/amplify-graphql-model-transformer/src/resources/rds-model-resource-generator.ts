@@ -36,6 +36,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
         RDSLambdaDataSourceLogicalID,
         RDSPatchingSubscriptionLogicalID,
       } = ResourceConstants.RESOURCES;
+      const engine = this.getDBEngine();
       const lambdaRoleScope = context.stackManager.getScopeFor(RDSLambdaIAMRoleLogicalID, RDS_STACK_NAME);
       const lambdaScope = context.stackManager.getScopeFor(RDSLambdaLogicalID, RDS_STACK_NAME);
       setRDSLayerMappings(lambdaScope, context.rdsLayerMapping);
@@ -50,6 +51,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
         context.api,
         role,
         {
+          engine: engine,
           username: secretEntry?.username ?? '',
           password: secretEntry?.password ?? '',
           host: secretEntry?.host ?? '',
@@ -120,5 +122,15 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
         modelFieldMap.addResolverReference({ typeName: mutation.typeName, fieldName: mutation.fieldName, isList: false });
       });
     });
+  }
+
+  /*
+    Checks the modelToDatasource Map for the RDS models
+    and returns the engine type. 
+    Throws error if multiple engines are encountered.
+  */
+  getDBEngine(): string {
+    // const allMySQLModels = this.models.filter((model) => {
+    return 'TODO';
   }
 }
