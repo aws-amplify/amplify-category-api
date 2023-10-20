@@ -68,12 +68,12 @@
     "uuid": "^8.3.2"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-cli-core": "4.2.4-aug-transformer-mv-bump.0",
-    "@aws-amplify/amplify-environment-parameters": "^1.7.4-aug-transformer-mv-bump.0",
-    "@aws-amplify/amplify-prompts": "^2.8.1-aug-transformer-mv-bump.0",
-    "@aws-amplify/amplify-provider-awscloudformation": "^8.4.0-aug-transformer-mv-bump.0",
-    "amplify-headless-interface": "^1.17.3",
-    "amplify-util-headless-input": "^1.9.14-aug-transformer-mv-bump.0",
+    "@aws-amplify/amplify-cli-core": "^4.2.10",
+    "@aws-amplify/amplify-environment-parameters": "^1.9.1",
+    "@aws-amplify/amplify-prompts": "^2.8.4",
+    "@aws-amplify/amplify-provider-awscloudformation": "^8.8.0",
+    "amplify-headless-interface": "^1.17.4",
+    "amplify-util-headless-input": "^1.9.15",
     "aws-cdk-lib": "^2.80.0",
     "constructs": "^10.0.5"
   },
@@ -81,7 +81,7 @@
     "@aws-amplify/graphql-transformer-test-utils": "0.2.6",
     "@types/js-yaml": "^4.0.0",
     "@types/node": "^12.12.6",
-    "amplify-util-headless-input": "^1.9.14-aug-transformer-mv-bump.0",
+    "amplify-util-headless-input": "^1.9.15",
     "ts-jest": "26.4.4"
   },
   "jest": {

@@ -85,7 +85,6 @@ import {
   authDirectiveDefinition,
   ConfiguredAuthProviders,
   getConfiguredAuthProviders,
-  AuthTransformerConfig,
   collectFieldNames,
   ModelOperation,
   getModelConfig,
@@ -158,8 +157,6 @@ const getReadRolesForField = (acm: AccessControlMatrix, readRoles: Array<string>
  * The class for running the @auth transformer
  */
 export class AuthTransformer extends TransformerAuthBase implements TransformerAuthProvider {
-  private config: AuthTransformerConfig;
-
   private configuredAuthProviders: ConfiguredAuthProviders;
 
   private rules: AuthRule[];
@@ -189,9 +186,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   /**
    * constructor for creating AuthTransformer
    */
-  constructor(config: AuthTransformerConfig = {}) {
+  constructor() {
     super('amplify-auth-transformer', authDirectiveDefinition);
-    this.config = config;
     this.modelDirectiveConfig = new Map();
     this.seenNonModelTypes = new Map();
     this.authModelConfig = new Map();
@@ -204,8 +200,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
 
   before = (context: TransformerBeforeStepContextProvider): void => {
     // if there was no auth config in the props we add the authConfig from the context
-    this.config.authConfig = this.config.authConfig ?? context.authConfig;
-    this.configuredAuthProviders = getConfiguredAuthProviders(this.config);
+    this.configuredAuthProviders = getConfiguredAuthProviders(context);
   };
 
   object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider): void => {
@@ -352,7 +347,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       this.addFieldsToObject(context, modelName, getOwnerFields(acm));
       // Get the directives we need to add to the GraphQL nodes
       const providers = this.getAuthProviders(acm.getRoles());
-      const directives = this.getServiceDirectives(providers, providers.length === 0 ? this.shouldAddDefaultServiceDirective() : false);
+      const addDefaultIfNeeded = providers.length === 0 ? this.configuredAuthProviders.shouldAddDefaultServiceDirective : false;
+      const directives = this.getServiceDirectives(providers, addDefaultIfNeeded);
       if (modelHasSearchable) {
         providers.forEach((p) => searchableAggregateServiceDirectives.add(p));
       }
@@ -1088,7 +1084,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const rolesHasDefaultProvider = (roles: Array<string>): boolean =>
       roles.some((r) => this.roleMap.get(r)!.provider! === this.configuredAuthProviders.default);
     const roles = acm.getRolesPerOperation(operation, operation === 'delete');
-    return rolesHasDefaultProvider(roles) || (roles.length === 0 && this.shouldAddDefaultServiceDirective());
+    return rolesHasDefaultProvider(roles) || (roles.length === 0 && this.configuredAuthProviders.shouldAddDefaultServiceDirective);
   }
 
   private getAuthProviders(roles: Array<string>): Array<AuthProvider> {
@@ -1216,18 +1212,6 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       directives.push(makeDirective(AUTH_PROVIDER_DIRECTIVE_MAP.get(this.configuredAuthProviders.default) as string, []));
     }
     return directives;
-  }
-
-  /**
-   * When AdminUI is enabled, all the types and operations get IAM auth. If the default auth mode is
-   * not IAM all the fields will need to have the default auth mode directive to ensure both IAM and default
-   * auth modes are allowed to access
-   * default auth provider needs to be added if AdminUI is enabled and default auth type is not IAM
-   */
-  private shouldAddDefaultServiceDirective(): boolean {
-    return (
-      this.configuredAuthProviders.hasAdminRolesEnabled && this.config.authConfig.defaultAuthentication.authenticationType !== 'AWS_IAM'
-    );
   }
 
   /*
