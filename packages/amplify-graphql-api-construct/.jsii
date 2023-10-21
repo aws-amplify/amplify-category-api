@@ -8,7 +8,7 @@
   "bundled": {
     "@aws-amplify/backend-output-schemas": "^0.2.0-alpha.6",
     "@aws-amplify/backend-output-storage": "^0.1.1-alpha.2",
-    "@aws-amplify/graphql-auth-transformer": "3.1.8",
+    "@aws-amplify/graphql-auth-transformer": "3.1.9",
     "@aws-amplify/graphql-default-value-transformer": "2.1.7",
     "@aws-amplify/graphql-function-transformer": "2.1.6",
     "@aws-amplify/graphql-http-transformer": "2.1.6",
@@ -18,7 +18,7 @@
     "@aws-amplify/graphql-predictions-transformer": "2.1.6",
     "@aws-amplify/graphql-relational-transformer": "2.1.7",
     "@aws-amplify/graphql-searchable-transformer": "2.2.3",
-    "@aws-amplify/graphql-transformer": "1.2.4",
+    "@aws-amplify/graphql-transformer": "1.2.5",
     "@aws-amplify/graphql-transformer-core": "2.2.3",
     "@aws-amplify/graphql-transformer-interfaces": "3.2.1",
     "charenc": "^0.0.2",
@@ -3725,7 +3725,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 249
+            "line": 248
           },
           "name": "addDynamoDbDataSource",
           "parameters": [
@@ -3774,7 +3774,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 261
+            "line": 260
           },
           "name": "addElasticsearchDataSource",
           "parameters": [
@@ -3821,7 +3821,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 271
+            "line": 270
           },
           "name": "addEventBridgeDataSource",
           "parameters": [
@@ -3868,7 +3868,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 353
+            "line": 352
           },
           "name": "addFunction",
           "parameters": [
@@ -3903,7 +3903,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 282
+            "line": 281
           },
           "name": "addHttpDataSource",
           "parameters": [
@@ -3951,7 +3951,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 293
+            "line": 292
           },
           "name": "addLambdaDataSource",
           "parameters": [
@@ -3999,7 +3999,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 304
+            "line": 303
           },
           "name": "addNoneDataSource",
           "parameters": [
@@ -4038,7 +4038,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 315
+            "line": 314
           },
           "name": "addOpenSearchDataSource",
           "parameters": [
@@ -4086,7 +4086,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 328
+            "line": 327
           },
           "name": "addRdsDataSource",
           "parameters": [
@@ -4153,7 +4153,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 344
+            "line": 343
           },
           "name": "addResolver",
           "parameters": [
@@ -6566,6 +6566,6 @@
       "symbolId": "src/types:UserPoolAuthorizationConfig"
     }
   },
-  "version": "1.1.4",
-  "fingerprint": "ZQ6lZXrptZwQa9svqIrDAQMEDXmK8sK56f3hBxkzsq8="
+  "version": "1.1.5",
+  "fingerprint": "BfB7fdyUFhebBKnpRNzyId2Ash+x40lfxy1no/aiNyw="
 }
