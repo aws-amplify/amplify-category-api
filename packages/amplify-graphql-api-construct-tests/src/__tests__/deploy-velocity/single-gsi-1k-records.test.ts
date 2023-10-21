@@ -5,7 +5,7 @@ const RECORD_COUNT = 1000;
 
 testManagedTableDeployment({
   name: 'Single GSI updated - 1k Records',
-  testDurationLimitMs: 30 * 60 * 1000, // 30 Minutes
+  maxDeployDurationMs: 20 * 60 * 1000, // 20 Minutes
   initialSchema: /* GraphQL */ `
     type Todo @model @auth(rules: [{ allow: public }]) {
       field1: String!
@@ -17,20 +17,18 @@ testManagedTableDeployment({
     }
   `,
   dataSetup: async (endpointConfig: EndpointConfig): Promise<void> => {
-    // Generate records in parallel, 20 at a time.
-    for (const uuidBatch of splitArray(generateFakeUUIDs(RECORD_COUNT), 20)) {
+    // Generate Data in batches of 50 per request
+    const mutationBatches = splitArray(generateFakeUUIDs(RECORD_COUNT), 50).map((uuidBatch) =>
+      uuidBatch.map((uuid, i) => `mut${i}: createTodo(input: { field1: "${uuid}" }) { id }`).join('/n'),
+    );
+
+    // And execute up to 10 requests in parallel
+    for (const mutationBatch of splitArray(mutationBatches, 10)) {
       await Promise.all(
-        uuidBatch.map((uuid) =>
+        mutationBatch.map((mutations) =>
           validateGraphql({
             ...endpointConfig,
-            // TODO: Actually run batch inserts
-            query: /* GraphQL */ `
-          mutation CREATE_TODO {
-            createTodo(input: { field1: "${uuid}" }) {
-              id
-            }
-          }
-        `,
+            query: /* GraphQL */ `mutation CREATE_TODO { ${mutations} }`,
             expectedStatusCode: 200,
           }),
         ),
@@ -44,15 +42,13 @@ testManagedTableDeployment({
       const response = await validateGraphql({
         ...endpointConfig,
         query: /* GraphQL */ `
-        query LIST_TODOS {
-          listTodos({ nextToken: ${nextToken ? `"${nextToken}"` : 'null'}}) {
-            items {
-              id
+          query LIST_TODOS {
+            listTodos(nextToken: ${nextToken ? `"${nextToken}"` : 'null'}) {
+              items { id }
+              nextToken
             }
-            nextToken
           }
-        }
-      `,
+        `,
         expectedStatusCode: 200,
       });
       nextToken = response.body.data.listTodos.nextToken;

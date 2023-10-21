@@ -3,7 +3,7 @@ import { EndpointConfig, testManagedTableDeployment } from './deploy-velocity-te
 
 testManagedTableDeployment({
   name: 'Single GSI updated - Single Record',
-  testDurationLimitMs: 15 * 60 * 1000, // 15 Minutes
+  maxDeployDurationMs: 15 * 60 * 1000, // 15 Minutes
   initialSchema: /* GraphQL */ `
     type Todo @model @auth(rules: [{ allow: public }]) {
       field1: String!
@@ -32,12 +32,10 @@ testManagedTableDeployment({
     const response = await validateGraphql({
       ...endpointConfig,
       query: /* GraphQL */ `
-      query GET_TODO {
-        getTodo(id: "${state}") {
-          id
+        query GET_TODO {
+          getTodo(id: "${state}") { id }
         }
-      }
-    `,
+      `,
       expectedStatusCode: 200,
     });
     const retrievedTodo = response.body.data.getTodo;

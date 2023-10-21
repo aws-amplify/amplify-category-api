@@ -575,7 +575,11 @@ export function initCDKProject(cwd: string, templatePath: string, cdkVersion = '
     .then((packageJson) => JSON.parse(packageJson).name.replace(/_/g, '-'));
 }
 
-export function cdkDeploy(cwd: string, option: string): Promise<any> {
+export type CdkDeployProps = {
+  timeoutMs: number;
+};
+
+export function cdkDeploy(cwd: string, option: string, props?: CdkDeployProps): Promise<any> {
   return new Promise<void>((resolve, reject) => {
     spawn(getNpxPath(), ['cdk', 'deploy', '--outputs-file', 'outputs.json', '--require-approval', 'never', option], {
       cwd,
@@ -584,6 +588,7 @@ export function cdkDeploy(cwd: string, option: string): Promise<any> {
       env: {
         npm_config_registry: 'https://registry.npmjs.org/',
       },
+      noOutputTimeout: props?.timeoutMs,
     }).run((err: Error) => {
       if (!err) {
         resolve();

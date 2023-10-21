@@ -12,29 +12,38 @@ export type TestManagedTableDeploymentProps<SetupState> = {
   name: string;
   initialSchema: string;
   updatedSchema: string;
-  testDurationLimitMs: number;
-  dataSetup: (endpointConfig: EndpointConfig) => Promise<SetupState>;
-  dataValidate: (endpointConfig: EndpointConfig, state: SetupState) => Promise<void>;
+  maxDeployDurationMs: number;
+  dataSetup?: (endpointConfig: EndpointConfig) => Promise<SetupState>;
+  dataValidate?: (endpointConfig: EndpointConfig, state: SetupState) => Promise<void>;
 };
 
 export const testManagedTableDeployment = <SetupState>({
   name,
   initialSchema,
   updatedSchema,
-  testDurationLimitMs,
+  maxDeployDurationMs: testDurationLimitMs,
   dataSetup,
   dataValidate,
 }: TestManagedTableDeploymentProps<SetupState>): void => {
   describe(name, () => {
     let projRoot: string;
     let projFolderName: string;
+    let wasDestroyed: boolean;
 
     beforeEach(async () => {
+      wasDestroyed = false;
       projFolderName = 'managedtable';
       projRoot = await createNewProjectDir(projFolderName);
     });
 
     afterEach(async () => {
+      if (!wasDestroyed) {
+        try {
+          await cdkDestroy(projRoot, '--all');
+        } catch (_) {
+          // No-op
+        }
+      }
       deleteProjectDir(projRoot);
     });
 
@@ -50,27 +59,35 @@ export const testManagedTableDeployment = <SetupState>({
       const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[stackName];
       const endpointConfig: EndpointConfig = { apiEndpoint, apiKey };
 
+      let setupState = undefined;
       // Setup initial data
-      const setupState = await dataSetup(endpointConfig);
+      if (dataSetup) {
+        setupState = await dataSetup(endpointConfig);
+      }
 
       // Verify Data Correctness Pre-Deploy
-      await dataValidate(endpointConfig, setupState);
+      if (dataValidate) {
+        await dataValidate(endpointConfig, setupState);
+      }
 
       // Update Schema, and execute iterative deployment, timing the deploy
       fs.writeFileSync(schemaFilePath, updatedSchema);
       const deployStartTimestamp = Date.now();
-      await cdkDeploy(projRoot, '--all');
+      await cdkDeploy(projRoot, '--all', { timeoutMs: testDurationLimitMs });
       const deployDurationMs = Date.now() - deployStartTimestamp;
 
       // Verify Data Correctness Post-Deploy
-      await dataValidate(endpointConfig, setupState);
-
+      if (dataValidate) {
+        await dataValidate(endpointConfig, setupState);
+      }
       // Verify Deploy Speed
       console.log(`Iterative Deploy Duration was ${deployDurationMs}ms`);
       expect(deployDurationMs).toBeLessThanOrEqual(testDurationLimitMs);
 
-      // Cleanup after test complete
+      // Cleanup after test complete as part of test, if this hasn't run we'll run during `afterEach`.
+      // This has the side-effect of validating teardown in the test, but still attempting to cleanup if the test failed
       await cdkDestroy(projRoot, '--all');
+      wasDestroyed = true;
     });
   });
 };
