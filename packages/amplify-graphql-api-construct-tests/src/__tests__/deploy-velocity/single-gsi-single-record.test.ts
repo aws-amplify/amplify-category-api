@@ -1,19 +1,12 @@
 import { validateGraphql } from '../../graphql-request';
+import { DURATION_10_MINUTES, SCHEMA_ONE_FIELD_ALL_INDEXED, SCHEMA_ONE_FIELD_NO_INDEX } from './deploy-velocity-constants';
 import { EndpointConfig, testManagedTableDeployment } from './deploy-velocity-test-core';
 
 testManagedTableDeployment({
   name: 'Single GSI updated - Single Record',
-  maxDeployDurationMs: 10 * 60 * 1000, // 10 Minutes
-  initialSchema: /* GraphQL */ `
-    type Todo @model @auth(rules: [{ allow: public }]) {
-      field1: String!
-    }
-  `,
-  updatedSchema: /* GraphQL */ `
-    type Todo @model @auth(rules: [{ allow: public }]) {
-      field1: String! @index
-    }
-  `,
+  maxDeployDurationMs: DURATION_10_MINUTES,
+  initialSchema: SCHEMA_ONE_FIELD_NO_INDEX,
+  updatedSchema: SCHEMA_ONE_FIELD_ALL_INDEXED,
   dataSetup: async (endpointConfig: EndpointConfig): Promise<string> => {
     const result = await validateGraphql({
       ...endpointConfig,

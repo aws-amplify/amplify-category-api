@@ -580,13 +580,58 @@ batch:
           CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
+    - identifier: replace_2_gsis_100k_records
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/deploy-velocity/replace-2-gsis-100k-records.test.ts
+          CLI_REGION: ap-southeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: replace_2_gsis_10k_records
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/deploy-velocity/replace-2-gsis-10k-records.test.ts
+          CLI_REGION: us-east-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: replace_2_gsis_1k_records
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/deploy-velocity/replace-2-gsis-1k-records.test.ts
+          CLI_REGION: us-east-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: replace_2_gsis_empty_table
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/deploy-velocity/replace-2-gsis-empty-table.test.ts
+          CLI_REGION: us-west-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: replace_2_gsis_single_record
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/deploy-velocity/replace-2-gsis-single-record.test.ts
+          CLI_REGION: eu-west-2
+      depend-on:
+        - publish_to_local_registry
     - identifier: single_gsi_100k_records
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/deploy-velocity/single-gsi-100k-records.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: single_gsi_10k_records
@@ -595,7 +640,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/deploy-velocity/single-gsi-10k-records.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: single_gsi_1k_records
@@ -604,7 +649,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/deploy-velocity/single-gsi-1k-records.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: single_gsi_empty_table
@@ -613,7 +658,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/deploy-velocity/single-gsi-empty-table.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: single_gsi_single_record
@@ -622,7 +667,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/deploy-velocity/single-gsi-single-record.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-

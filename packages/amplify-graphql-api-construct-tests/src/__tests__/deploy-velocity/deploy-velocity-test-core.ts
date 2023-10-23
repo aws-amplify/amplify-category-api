@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { createNewProjectDir, deleteProjectDir, initCDKProject, cdkDeploy, cdkDestroy } from 'amplify-category-api-e2e-core';
 import { faker } from '@faker-js/faker';
-import { ValidateGraphqlOptions } from '../../graphql-request';
+import { ValidateGraphqlOptions, validateGraphql } from '../../graphql-request';
 
 jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
 
@@ -121,4 +121,53 @@ export const splitArray = <T>(inputArray: T[], chunkSize: number): T[][] => {
 
     return resultArray;
   }, [] as T[][]);
+};
+
+const getRecordCount = async (endpointConfig: EndpointConfig): Promise<number> => {
+  let nextToken = null;
+  let resultCount = 0;
+  do {
+    const response = await validateGraphql({
+      ...endpointConfig,
+      query: /* GraphQL */ `
+        query LIST_TODOS {
+          listTodos(nextToken: ${nextToken ? `"${nextToken}"` : 'null'}) {
+            items { id }
+            nextToken
+          }
+        }
+      `,
+      expectedStatusCode: 200,
+    });
+    nextToken = response.body.data.listTodos.nextToken;
+    resultCount += response.body.data.listTodos.items.length;
+  } while (nextToken);
+  return resultCount;
+};
+
+export const recordCountDataProvider = (recordCount: number, mutationBuilder: (uuid: string, i: number) => string) => {
+  return async (endpointConfig: EndpointConfig): Promise<void> => {
+    // Generate Data in batches of 50 per request
+    const mutationBatches = splitArray(generateFakeUUIDs(recordCount), 50).map((uuidBatch) => uuidBatch.map(mutationBuilder).join('/n'));
+
+    // And execute up to 10 requests in parallel
+    for (const mutationBatch of splitArray(mutationBatches, 10)) {
+      await Promise.all(
+        mutationBatch.map((mutations) =>
+          validateGraphql({
+            ...endpointConfig,
+            query: /* GraphQL */ `mutation CREATE_TODO { ${mutations} }`,
+            expectedStatusCode: 200,
+          }),
+        ),
+      );
+    }
+  };
+};
+
+export const recordCountDataValidator = (expectedRecordCount: number) => {
+  return async (endpointConfig: EndpointConfig): Promise<void> => {
+    const recordCount = await getRecordCount(endpointConfig);
+    expect(recordCount).toEqual(expectedRecordCount);
+  };
 };
