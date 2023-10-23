@@ -760,11 +760,13 @@ export interface AddFunctionProps {
  * created with one of these data sources can use the `@model` directive to provision storage (DynamoDB only), define fine-grained
  * authorization rules, re-map GraphQL field names, define model-to-model relationships, and more. See
  * https://docs.amplify.aws/cli/graphql/directives-reference/.
+ * @experimental
  */
 export type ModelDataSourceBinding = DynamoModelDataSourceBinding | SqlModelDataSourceBinding;
 
 /**
  * Binding type to specify a DyanamoDB data source.
+ * @experimental
  */
 export interface DynamoModelDataSourceBinding {
   /**
@@ -778,6 +780,7 @@ export interface DynamoModelDataSourceBinding {
  * Additional binding configurations used to connect an AmplifyGraphqlApi to a SQL-based data source using a Lambda.
  *
  * The `bindingType` of this data source must be one of the values defined by `SqlModelDataSourceBindingType`.
+ * @experimental
  */
 export interface SqlModelDataSourceBinding {
   /**
@@ -809,6 +812,7 @@ export interface SqlModelDataSourceBinding {
  * have at least one subnet. The construct will also create VPC service endpoints in the specified subnets, as well as inbound security
  * rules, to allow traffic on port 443 within each security group. This allows the Lambda to read database connection information from
  * Secure Systems Manager.
+ * @experimental
  */
 export interface SqlModelDataSourceBindingVpcConfig {
   /** The VPC to install the Lambda data source in. */
@@ -825,6 +829,7 @@ export interface SqlModelDataSourceBindingVpcConfig {
  * Subnet configuration for VPC endpoints used by a Lambda resolver for a SQL-based data source. Although it is possible to create multiple
  * subnets in a single availability zone, VPC service endpoints may only be deployed to a single subnet in a given availability zone. This
  * structure ensures that the Lambda function and VPC service endpoints are mutually consistent.
+ * @experimental
  */
 export interface SubnetAvailabilityZone {
   /** The subnet ID to install the Lambda data source in. */
@@ -838,6 +843,7 @@ export interface SubnetAvailabilityZone {
  * The Secure Systems Manager parameter paths the Lambda data source will use to connect to the database.
  *
  * These parameters are retrieved from Secure Systems Manager in the same region as the Lambda.
+ * @experimental
  */
 export interface SqlModelDataSourceBindingDbConnectionConfig {
   /** The Secure Systems Manager parameter containing the hostname of the database. For RDS-based SQL data sources, this can be the hostname

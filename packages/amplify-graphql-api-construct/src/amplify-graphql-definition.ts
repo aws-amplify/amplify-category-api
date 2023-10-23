@@ -13,7 +13,7 @@ export class AmplifyGraphqlDefinition {
   /**
    * Produce a schema definition from a string input.
    * @param schema the graphql input as a string
-   * @param modelDataSourceBinding the ModelDataSourceBinding to use for the schema
+   * @param modelDataSourceBinding the ModelDataSourceBinding to use for the schema. This parameter is @experimental
    * @returns a fully formed amplify graphql definition, whose models will be resolved by the data source specifed in the
    *   modelDataSourceBinding
    */
@@ -43,6 +43,7 @@ export class AmplifyGraphqlDefinition {
    * @param filePaths one or more paths to the graphql files to process
    * @returns a fully formed amplify graphql definition, whose models will be resolved by the data source specifed in the
    *   modelDataSourceBinding
+   * @experimental
    */
   static fromBindingAndFiles(modelDataSourceBinding: ModelDataSourceBinding, ...filePaths: string[]): IAmplifyGraphqlDefinition {
     const schema = filePaths.map((filePath) => new SchemaFile({ filePath }).definition).join(os.EOL);

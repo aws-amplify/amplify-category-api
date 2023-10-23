@@ -3726,7 +3726,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 315
+            "line": 317
           },
           "name": "addDynamoDbDataSource",
           "parameters": [
@@ -3775,7 +3775,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 327
+            "line": 329
           },
           "name": "addElasticsearchDataSource",
           "parameters": [
@@ -3822,7 +3822,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 337
+            "line": 339
           },
           "name": "addEventBridgeDataSource",
           "parameters": [
@@ -3869,7 +3869,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 419
+            "line": 421
           },
           "name": "addFunction",
           "parameters": [
@@ -3904,7 +3904,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 348
+            "line": 350
           },
           "name": "addHttpDataSource",
           "parameters": [
@@ -3952,7 +3952,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 359
+            "line": 361
           },
           "name": "addLambdaDataSource",
           "parameters": [
@@ -4000,7 +4000,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 370
+            "line": 372
           },
           "name": "addNoneDataSource",
           "parameters": [
@@ -4039,7 +4039,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 381
+            "line": 383
           },
           "name": "addOpenSearchDataSource",
           "parameters": [
@@ -4087,7 +4087,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 394
+            "line": 396
           },
           "name": "addRdsDataSource",
           "parameters": [
@@ -4154,7 +4154,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 410
+            "line": 412
           },
           "name": "addResolver",
           "parameters": [
@@ -4906,12 +4906,12 @@
         {
           "docs": {
             "returns": "a fully formed amplify graphql definition, whose models will be resolved by the data source specifed in the\nmodelDataSourceBinding",
-            "stability": "stable",
+            "stability": "experimental",
             "summary": "Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema, binding them with the specified ModelDataSourceBinding."
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-definition.ts",
-            "line": 47
+            "line": 48
           },
           "name": "fromBindingAndFiles",
           "parameters": [
@@ -4986,7 +4986,7 @@
         {
           "docs": {
             "returns": "a fully formed amplify graphql definition, whose models will be resolved by the data source specifed in the\nmodelDataSourceBinding",
-            "stability": "stable",
+            "stability": "experimental",
             "summary": "Produce a schema definition from a string input."
           },
           "locationInModule": {
@@ -5006,6 +5006,7 @@
             },
             {
               "docs": {
+                "remarks": "This parameter is",
                 "summary": "the ModelDataSourceBinding to use for the schema."
               },
               "name": "modelDataSourceBinding",
@@ -5446,14 +5447,14 @@
       "assembly": "@aws-amplify/graphql-api-construct",
       "datatype": true,
       "docs": {
-        "stability": "stable",
+        "stability": "experimental",
         "summary": "Binding type to specify a DyanamoDB data source."
       },
       "fqn": "@aws-amplify/graphql-api-construct.DynamoModelDataSourceBinding",
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 769
+        "line": 771
       },
       "name": "DynamoModelDataSourceBinding",
       "properties": [
@@ -5461,13 +5462,13 @@
           "abstract": true,
           "docs": {
             "default": "'DynamoDB'",
-            "stability": "stable",
+            "stability": "experimental",
             "summary": "The type of the data source used to process model operations for this definition."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 774
+            "line": 776
           },
           "name": "bindingType",
           "type": {
@@ -6393,14 +6394,14 @@
       "datatype": true,
       "docs": {
         "remarks": "The `bindingType` of this data source must be one of the values defined by `SqlModelDataSourceBindingType`.",
-        "stability": "stable",
+        "stability": "experimental",
         "summary": "Additional binding configurations used to connect an AmplifyGraphqlApi to a SQL-based data source using a Lambda."
       },
       "fqn": "@aws-amplify/graphql-api-construct.SqlModelDataSourceBinding",
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 782
+        "line": 785
       },
       "name": "SqlModelDataSourceBinding",
       "properties": [
@@ -6408,13 +6409,13 @@
           "abstract": true,
           "docs": {
             "remarks": "TODO: Convert this to a string union when we add\nsupport for more SQL engines (e.g., 'PostgreSQL').",
-            "stability": "stable",
+            "stability": "experimental",
             "summary": "The type of the SQL database used to process model operations for this definition."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 787
+            "line": 790
           },
           "name": "bindingType",
           "type": {
@@ -6424,13 +6425,13 @@
         {
           "abstract": true,
           "docs": {
-            "stability": "stable",
+            "stability": "experimental",
             "summary": "The parameters the Lambda data source will use to connect to the database."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 803
+            "line": 806
           },
           "name": "dbConnectionConfig",
           "type": {
@@ -6440,13 +6441,13 @@
         {
           "abstract": true,
           "docs": {
-            "stability": "stable",
+            "stability": "experimental",
             "summary": "The configuration of the VPC into which to install the Lambda."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 792
+            "line": 795
           },
           "name": "vpcConfiguration",
           "type": {
@@ -6457,13 +6458,13 @@
           "abstract": true,
           "docs": {
             "remarks": "The key is the value of the `references` attribute of the `@sql` directive in the `schema`; the value is the SQL\nto be executed.",
-            "stability": "stable",
+            "stability": "experimental",
             "summary": "Custom SQL statements."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 798
+            "line": 801
           },
           "name": "customSqlStatements",
           "optional": true,
@@ -6484,27 +6485,27 @@
       "datatype": true,
       "docs": {
         "remarks": "These parameters are retrieved from Secure Systems Manager in the same region as the Lambda.",
-        "stability": "stable",
+        "stability": "experimental",
         "summary": "The Secure Systems Manager parameter paths the Lambda data source will use to connect to the database."
       },
       "fqn": "@aws-amplify/graphql-api-construct.SqlModelDataSourceBindingDbConnectionConfig",
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 842
+        "line": 848
       },
       "name": "SqlModelDataSourceBindingDbConnectionConfig",
       "properties": [
         {
           "abstract": true,
           "docs": {
-            "stability": "stable",
+            "stability": "experimental",
             "summary": "The Secure Systems Manager parameter containing the database name."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 858
+            "line": 864
           },
           "name": "databaseNameSsmPath",
           "type": {
@@ -6515,13 +6516,13 @@
           "abstract": true,
           "docs": {
             "remarks": "For RDS-based SQL data sources, this can be the hostname\nof a database proxy, cluster, or instance.",
-            "stability": "stable",
+            "stability": "experimental",
             "summary": "The Secure Systems Manager parameter containing the hostname of the database."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 846
+            "line": 852
           },
           "name": "hostnameSsmPath",
           "type": {
@@ -6531,13 +6532,13 @@
         {
           "abstract": true,
           "docs": {
-            "stability": "stable",
+            "stability": "experimental",
             "summary": "The Secure Systems Manager parameter containing the password to use when connecting to the database."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 855
+            "line": 861
           },
           "name": "passwordSsmPath",
           "type": {
@@ -6547,13 +6548,13 @@
         {
           "abstract": true,
           "docs": {
-            "stability": "stable",
+            "stability": "experimental",
             "summary": "The Secure Systems Manager parameter containing the port number of the database proxy, cluster, or instance."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 849
+            "line": 855
           },
           "name": "portSsmPath",
           "type": {
@@ -6563,13 +6564,13 @@
         {
           "abstract": true,
           "docs": {
-            "stability": "stable",
+            "stability": "experimental",
             "summary": "The Secure Systems Manager parameter containing the username to use when connecting to the database."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 852
+            "line": 858
           },
           "name": "usernameSsmPath",
           "type": {
@@ -6584,27 +6585,27 @@
       "datatype": true,
       "docs": {
         "remarks": "The SQL Lambda will be deployed\ninto the specified VPC, subnets, and security groups. The specified subnets and security groups must be in the same VPC. The VPC must\nhave at least one subnet. The construct will also create VPC service endpoints in the specified subnets, as well as inbound security\nrules, to allow traffic on port 443 within each security group. This allows the Lambda to read database connection information from\nSecure Systems Manager.",
-        "stability": "stable",
+        "stability": "experimental",
         "summary": "Configuration of the VPC in which to install a Lambda to resolve queries against a SQL-based data source."
       },
       "fqn": "@aws-amplify/graphql-api-construct.SqlModelDataSourceBindingVpcConfig",
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 813
+        "line": 817
       },
       "name": "SqlModelDataSourceBindingVpcConfig",
       "properties": [
         {
           "abstract": true,
           "docs": {
-            "stability": "stable",
+            "stability": "experimental",
             "summary": "The security groups to install the Lambda data source in."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 818
+            "line": 822
           },
           "name": "securityGroupIds",
           "type": {
@@ -6619,13 +6620,13 @@
         {
           "abstract": true,
           "docs": {
-            "stability": "stable",
+            "stability": "experimental",
             "summary": "The subnets to install the Lambda data source in, one per availability zone."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 821
+            "line": 825
           },
           "name": "subnetAvailabilityZones",
           "type": {
@@ -6640,13 +6641,13 @@
         {
           "abstract": true,
           "docs": {
-            "stability": "stable",
+            "stability": "experimental",
             "summary": "The VPC to install the Lambda data source in."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 815
+            "line": 819
           },
           "name": "vpcId",
           "type": {
@@ -6661,27 +6662,27 @@
       "datatype": true,
       "docs": {
         "remarks": "Although it is possible to create multiple\nsubnets in a single availability zone, VPC service endpoints may only be deployed to a single subnet in a given availability zone. This\nstructure ensures that the Lambda function and VPC service endpoints are mutually consistent.",
-        "stability": "stable",
+        "stability": "experimental",
         "summary": "Subnet configuration for VPC endpoints used by a Lambda resolver for a SQL-based data source."
       },
       "fqn": "@aws-amplify/graphql-api-construct.SubnetAvailabilityZone",
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 829
+        "line": 834
       },
       "name": "SubnetAvailabilityZone",
       "properties": [
         {
           "abstract": true,
           "docs": {
-            "stability": "stable",
+            "stability": "experimental",
             "summary": "The availability zone of the subnet."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 834
+            "line": 839
           },
           "name": "availabilityZone",
           "type": {
@@ -6691,13 +6692,13 @@
         {
           "abstract": true,
           "docs": {
-            "stability": "stable",
+            "stability": "experimental",
             "summary": "The subnet ID to install the Lambda data source in."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 831
+            "line": 836
           },
           "name": "subnetId",
           "type": {
@@ -7015,5 +7016,5 @@
     }
   },
   "version": "1.1.4",
-  "fingerprint": "gY0D86RA9porDHfkmpPnU+pxBRGLETVfq/w6gHYPoqA="
+  "fingerprint": "dATYnWmVPPi80ldnVgIcD7CuIxGBBwTM2im/xEQPQiI="
 }

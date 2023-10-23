@@ -9,7 +9,7 @@ export type SetResourceNameProps = {
 
 /**
  * Set a resource name on a provided construct.
- * @param scope the construct to set hte resource name on.
+ * @param scope the construct to set the resource name on.
  * @param props.name the name to set.
  * @param props.setOnDefaultChild whether to set in the defaultChild or not.
  */

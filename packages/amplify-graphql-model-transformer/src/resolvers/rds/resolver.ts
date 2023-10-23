@@ -182,7 +182,7 @@ export const createRdsLambda = (
 
 const addVpcEndpoint = (scope: Construct, sqlLambdaVpcConfig: VpcConfig, serviceSuffix: string): CfnVPCEndpoint => {
   const serviceEndpointPrefix = 'com.amazonaws';
-  return new CfnVPCEndpoint(scope, `RDSVpcEndpoint${serviceSuffix}`, {
+  const endpoint = new CfnVPCEndpoint(scope, `RDSVpcEndpoint${serviceSuffix}`, {
     serviceName: Fn.join('', [serviceEndpointPrefix, '.', Fn.ref('AWS::Region'), '.', serviceSuffix]), // Sample: com.amazonaws.us-east-1.ssmmessages
     vpcEndpointType: 'Interface',
     vpcId: sqlLambdaVpcConfig.vpcId,
@@ -190,6 +190,9 @@ const addVpcEndpoint = (scope: Construct, sqlLambdaVpcConfig: VpcConfig, service
     securityGroupIds: sqlLambdaVpcConfig.securityGroupIds,
     privateDnsEnabled: false,
   });
+  setResourceName(endpoint, { name: endpoint.logicalId, setOnDefaultChild: true });
+
+  return endpoint;
 };
 
 const addVpcEndpointForSecretsManager = (
