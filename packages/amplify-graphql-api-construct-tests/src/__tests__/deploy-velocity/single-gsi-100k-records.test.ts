@@ -5,7 +5,7 @@ const RECORD_COUNT = 100000;
 
 testManagedTableDeployment({
   name: 'Single GSI updated - 100k Records',
-  maxDeployDurationMs: 20 * 60 * 1000, // 20 Minutes
+  maxDeployDurationMs: 10 * 60 * 1000, // 10 Minutes
   initialSchema: /* GraphQL */ `
     type Todo @model @auth(rules: [{ allow: public }]) {
       field1: String!

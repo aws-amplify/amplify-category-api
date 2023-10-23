@@ -81,7 +81,7 @@ export const testManagedTableDeployment = <SetupState>({
         await dataValidate(endpointConfig, setupState);
       }
       // Verify Deploy Speed
-      console.log(`Iterative Deploy Duration was ${deployDurationMs}ms`);
+      console.log(`Iterative Deploy Duration was ${deployDurationMs}ms for ${name}`);
       expect(deployDurationMs).toBeLessThanOrEqual(testDurationLimitMs);
 
       // Cleanup after test complete as part of test, if this hasn't run we'll run during `afterEach`.

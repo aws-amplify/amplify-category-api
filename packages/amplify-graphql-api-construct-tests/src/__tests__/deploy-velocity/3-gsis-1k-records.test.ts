@@ -1,25 +1,31 @@
 import { validateGraphql } from '../../graphql-request';
 import { EndpointConfig, generateFakeUUIDs, splitArray, testManagedTableDeployment } from './deploy-velocity-test-core';
 
-const RECORD_COUNT = 10000;
+const RECORD_COUNT = 1000;
 
 testManagedTableDeployment({
-  name: 'Single GSI updated - 10k Records',
-  maxDeployDurationMs: 10 * 60 * 1000, // 10 Minutes
+  name: '3 GSIs updated - 1k Records',
+  maxDeployDurationMs: 30 * 60 * 1000, // 30 Minutes
   initialSchema: /* GraphQL */ `
     type Todo @model @auth(rules: [{ allow: public }]) {
       field1: String!
+      field2: String!
+      field3: String!
     }
   `,
   updatedSchema: /* GraphQL */ `
     type Todo @model @auth(rules: [{ allow: public }]) {
       field1: String! @index
+      field2: String! @index
+      field3: String! @index
     }
   `,
   dataSetup: async (endpointConfig: EndpointConfig): Promise<void> => {
     // Generate Data in batches of 50 per request
     const mutationBatches = splitArray(generateFakeUUIDs(RECORD_COUNT), 50).map((uuidBatch) =>
-      uuidBatch.map((uuid, i) => `mut${i}: createTodo(input: { field1: "${uuid}" }) { id }`).join('/n'),
+      uuidBatch
+        .map((uuid, i) => `mut${i}: createTodo(input: { field1: "${uuid}", field2: "${uuid}", field3: "${uuid}" }) { id }`)
+        .join('/n'),
     );
 
     // And execute up to 10 requests in parallel
