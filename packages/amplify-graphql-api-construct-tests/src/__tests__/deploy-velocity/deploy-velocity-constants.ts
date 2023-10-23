@@ -1,3 +1,5 @@
+import { AmplifyGraphqlApi } from '@aws-amplify/graphql-api-construct';
+
 const ONE_MINUTE = 60 * 1000;
 export const DURATION_10_MINUTES = 10 * ONE_MINUTE;
 export const DURATION_20_MINUTES = 20 * ONE_MINUTE;
@@ -60,3 +62,12 @@ export const MUTATION_THREE_FIELD_CREATE = (uuid: string, i: number): string =>
 
 export const MUTATION_FOUR_FIELD_CREATE = (uuid: string, i: number): string =>
   `mut${i}: createTodo(input: { field1: "${uuid}", field2: "${uuid}", field3: "${uuid}", field4: "${uuid}" }) { id }`;
+
+export const API_POST_PROCESSOR_SET_PROVISIONED_THROUGHPUT = (api: AmplifyGraphqlApi): void => {
+  api.resources.cfnResources.cfnAmplifyTables.Todo.addPropertyOverride('provisionedThroughput', {
+    ReadCapacityUnits: 10,
+    WriteCapacityUnits: 10,
+    readCapacityUnits: 10,
+    writeCapacityUnits: 10,
+  });
+};

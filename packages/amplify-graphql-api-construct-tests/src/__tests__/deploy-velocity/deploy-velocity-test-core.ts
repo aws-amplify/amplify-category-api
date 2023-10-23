@@ -1,12 +1,15 @@
 import * as path from 'path';
 import * as fs from 'fs';
-import { createNewProjectDir, deleteProjectDir, initCDKProject, cdkDeploy, cdkDestroy } from 'amplify-category-api-e2e-core';
 import { faker } from '@faker-js/faker';
+import { createNewProjectDir, deleteProjectDir, initCDKProject, cdkDeploy, cdkDestroy } from 'amplify-category-api-e2e-core';
+import { AmplifyGraphqlApi } from '@aws-amplify/graphql-api-construct';
 import { ValidateGraphqlOptions, validateGraphql } from '../../graphql-request';
 
 jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
 
 export type EndpointConfig = Pick<ValidateGraphqlOptions, 'apiEndpoint' | 'apiKey'>;
+
+type ApiPostProcessor = (api: AmplifyGraphqlApi) => void;
 
 export type TestManagedTableDeploymentProps<SetupState> = {
   name: string;
@@ -15,6 +18,8 @@ export type TestManagedTableDeploymentProps<SetupState> = {
   maxDeployDurationMs: number;
   dataSetup?: (endpointConfig: EndpointConfig) => Promise<SetupState>;
   dataValidate?: (endpointConfig: EndpointConfig, state: SetupState) => Promise<void>;
+  initialApiPostProcessor?: ApiPostProcessor;
+  updatedApiPostProcessor?: ApiPostProcessor;
 };
 
 export const testManagedTableDeployment = <SetupState>({
@@ -24,6 +29,7 @@ export const testManagedTableDeployment = <SetupState>({
   maxDeployDurationMs: testDurationLimitMs,
   dataSetup,
   dataValidate,
+  updatedApiPostProcessor,
 }: TestManagedTableDeploymentProps<SetupState>): void => {
   describe(name, () => {
     let projRoot: string;
@@ -52,6 +58,7 @@ export const testManagedTableDeployment = <SetupState>({
       const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'managed-table-testbench'));
       const stackName = await initCDKProject(projRoot, templatePath);
       const schemaFilePath = path.join(projRoot, 'bin', 'schema.graphql');
+      const apiPostProcessorFilePath = path.join(projRoot, 'bin', 'apiPostProcessor.js');
 
       // Deploy with initial schema, and generate config for data operations
       fs.writeFileSync(schemaFilePath, initialSchema);
@@ -70,8 +77,12 @@ export const testManagedTableDeployment = <SetupState>({
         await dataValidate(endpointConfig, setupState);
       }
 
-      // Update Schema, and execute iterative deployment, timing the deploy
+      // Update Schema and reset apiPostProcessor, execute iterative deployment, and time the deploy
       fs.writeFileSync(schemaFilePath, updatedSchema);
+      fs.unlinkSync(apiPostProcessorFilePath);
+      if (updatedApiPostProcessor) {
+        fs.writeFileSync(apiPostProcessorFilePath, generateApiPostProcessorFile(updatedApiPostProcessor));
+      }
       const deployStartTimestamp = Date.now();
       await cdkDeploy(projRoot, '--all', { timeoutMs: testDurationLimitMs });
       const deployDurationMs = Date.now() - deployStartTimestamp;
@@ -122,6 +133,8 @@ export const splitArray = <T>(inputArray: T[], chunkSize: number): T[][] => {
     return resultArray;
   }, [] as T[][]);
 };
+
+const generateApiPostProcessorFile = (postProcessor: ApiPostProcessor): string => `module.exports = ${postProcessor.toString()}`;
 
 const getRecordCount = async (endpointConfig: EndpointConfig): Promise<number> => {
   let nextToken = null;

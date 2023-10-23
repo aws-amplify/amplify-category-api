@@ -13,8 +13,15 @@ const stack = new cdk.Stack(app, packageJson.name.replace(/_/g, '-'), {
   env: { region: process.env.CLI_REGION || 'us-west-2' },
 });
 
-new graphql.AmplifyGraphqlApi(stack, 'ManagedTableTestbench', {
+const api = new graphql.AmplifyGraphqlApi(stack, 'ManagedTableTestbench', {
   definition: graphql.AmplifyGraphqlDefinition.fromFiles(path.join(__dirname, 'schema.graphql')),
   authorizationModes: { apiKeyConfig: { expires: cdk.Duration.days(7) } },
   translationBehavior: { useAmplifyManagedTableResources: true },
 });
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+try {
+  require('./apiPostProcessor')(api);
+} catch (_) {
+  /* No-op */
+}
