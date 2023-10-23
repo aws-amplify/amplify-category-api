@@ -176,7 +176,7 @@ function _installCLIFromLocalRegistry {
     # set longer timeout to avoid socket timeout error
     npm config set fetch-retry-mintimeout 20000
     npm config set fetch-retry-maxtimeout 120000
-    npm install -g @aws-amplify/cli-internal@12.2.4-aug-transformer-mv-bump.0
+    npm install -g @aws-amplify/cli-internal
     echo "using Amplify CLI version: "$(amplify --version)
     npm list -g --depth=1 | grep -e '@aws-amplify/amplify-category-api' -e 'amplify-codegen'
     unsetNpmRegistryUrl
@@ -231,40 +231,6 @@ function _runGqlE2ETests {
     loadCacheFromBuildJob
     _loadTestAccountCredentials
     retry runGraphQLE2eTest
-}
-function _runMigrationV5Test {
-    echo RUN Migration V5 Test
-    loadCacheFromBuildJob
-    yarn setup-dev
-    source codebuild_specs/scripts/local_publish_helpers.sh
-    changeNpmGlobalPath
-    cd packages/amplify-migration-tests
-    _loadTestAccountCredentials
-    retry yarn run migration_v5.2.0 --no-cache --detectOpenHandles --forceExit $TEST_SUITE
-}
-function _runMigrationV6Test {
-    echo RUN Migration V6 Test
-    loadCacheFromBuildJob
-    yarn setup-dev
-    source codebuild_specs/scripts/local_publish_helpers.sh
-    changeNpmGlobalPath
-    cd packages/amplify-migration-tests
-    _loadTestAccountCredentials
-    retry yarn run migration_v6.1.0 --no-cache --detectOpenHandles --forceExit $TEST_SUITE
-}
-function _runMigrationV10Test {
-    echo RUN Migration V10 Test
-    loadCacheFromBuildJob
-    yarn setup-dev
-    source codebuild_specs/scripts/local_publish_helpers.sh
-    changeNpmGlobalPath
-    cd packages/amplify-migration-tests
-    unset IS_AMPLIFY_CI
-    echo $IS_AMPLIFY_CI
-    _loadTestAccountCredentials
-    npm i -g @aws-amplify/cli@10.5.1
-    /root/.amplify/bin/amplify -v
-    retry yarn run migration_v10.5.1 --no-cache --detectOpenHandles --forceExit $TEST_SUITE
 }
 function _runCanaryTest {
     echo RUN Canary Test

@@ -1,4 +1,6 @@
 import { AppSyncAuthConfiguration, AppSyncAuthConfigurationEntry, SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import { CfnGraphQLApi } from 'aws-cdk-lib/aws-appsync';
+import { isArray } from 'lodash';
 import {
   AuthorizationModes,
   ApiKeyAuthorizationConfig,
@@ -7,8 +9,6 @@ import {
   OIDCAuthorizationConfig,
   UserPoolAuthorizationConfig,
 } from '../types';
-import { CfnGraphQLApi } from 'aws-cdk-lib/aws-appsync';
-import { isArray } from 'lodash';
 
 type AuthorizationConfigMode =
   | (IAMAuthorizationConfig & { type: 'AWS_IAM' })
@@ -106,23 +106,16 @@ const convertAuthConfigToAppSyncAuth = (authModes: AuthorizationModes): AppSyncA
   };
 };
 
-type AuthSynthParameters = Pick<SynthParameters, 'userPoolId' | 'authenticatedUserRoleName' | 'unauthenticatedUserRoleName'>;
+type AuthSynthParameters = Pick<
+  SynthParameters,
+  'userPoolId' | 'authenticatedUserRoleName' | 'unauthenticatedUserRoleName' | 'identityPoolId' | 'adminRoles'
+>;
 
 interface AuthConfig {
   /**
    * used mainly in the before step to pass the authConfig from the transformer core down to the directive
    */
   authConfig?: AppSyncAuthConfiguration;
-
-  /**
-   * using the iam provider the resolvers checks will lets the roles in this list pass through the acm
-   */
-  adminRoles?: Array<string>;
-
-  /**
-   * when authorizing private/public @auth can also check authenticated/unauthenticated status for a given identityPoolId
-   */
-  identityPoolId?: string;
 
   /**
    * Params to include the transformer.
@@ -135,7 +128,7 @@ interface AuthConfig {
  */
 export const getAdditionalAuthenticationTypes = (cfnGraphqlApi: CfnGraphQLApi): string | undefined => {
   if (!isArray(cfnGraphqlApi.additionalAuthenticationProviders)) {
-    return;
+    return undefined;
   }
 
   return (cfnGraphqlApi.additionalAuthenticationProviders as CfnGraphQLApi.AdditionalAuthenticationProviderProperty[])
@@ -153,8 +146,6 @@ export const getAdditionalAuthenticationTypes = (cfnGraphqlApi: CfnGraphQLApi): 
  */
 export const convertAuthorizationModesToTransformerAuthConfig = (authModes: AuthorizationModes): AuthConfig => ({
   authConfig: convertAuthConfigToAppSyncAuth(authModes),
-  adminRoles: authModes.adminRoles?.map((role) => role.roleName) ?? [],
-  identityPoolId: authModes.iamConfig?.identityPoolId,
   authSynthParameters: getSynthParameters(authModes),
 });
 
@@ -164,6 +155,8 @@ export const convertAuthorizationModesToTransformerAuthConfig = (authModes: Auth
  * @returns a record of params to be consumed by the transformer.
  */
 const getSynthParameters = (authModes: AuthorizationModes): AuthSynthParameters => ({
+  adminRoles: authModes.adminRoles?.map((role) => role.roleName) ?? [],
+  identityPoolId: authModes.iamConfig?.identityPoolId,
   ...(authModes.userPoolConfig ? { userPoolId: authModes.userPoolConfig.userPool.userPoolId } : {}),
   ...(authModes?.iamConfig
     ? {

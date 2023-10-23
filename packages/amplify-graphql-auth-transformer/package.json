@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-auth-transformer",
-  "version": "3.1.8",
+  "version": "3.1.9",
   "description": "Amplify GraphQL @auth transformer",
   "repository": {
     "type": "git",

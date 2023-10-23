@@ -31,7 +31,7 @@ import {
 } from '../provider-utils/awscloudformation/utils/rds-resources/database-resources';
 import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { isAuthModeUpdated } from './auth-mode-compare';
-import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
+import { getAdminRoles, getIdentityPoolId, mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
 import { generateTransformerOptions } from './transformer-options-v2';
 import { TransformerProjectOptions } from './transformer-options-types';
 import { DeploymentResources } from './cdk-compat/deployment-resources';
@@ -215,7 +215,13 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
   }
   const rdsLayerMapping = await getRDSLayerMapping();
 
-  const transformManager = new TransformManager(opts.overrideConfig, hasIamAuth(opts.authConfig), hasUserPoolAuth(opts.authConfig));
+  const transformManager = new TransformManager(
+    opts.overrideConfig,
+    hasIamAuth(opts.authConfig),
+    hasUserPoolAuth(opts.authConfig),
+    await getAdminRoles(context, opts.resourceName),
+    await getIdentityPoolId(context),
+  );
 
   executeTransform({
     ...opts,

@@ -33,12 +33,7 @@ test('simple model with public auth rule and amplify admin app is present', () =
     synthParameters: {
       adminRoles: ADMIN_UI_ROLES,
     },
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        adminRoles: ADMIN_UI_ROLES,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   expect(out).toBeDefined();
   expect(out.schema).toContain('Post @aws_api_key @aws_iam');
@@ -95,12 +90,7 @@ test('model with public auth rule without all operations and amplify admin app i
     synthParameters: {
       adminRoles: ADMIN_UI_ROLES,
     },
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        adminRoles: ADMIN_UI_ROLES,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   expect(out).toBeDefined();
 
@@ -140,12 +130,7 @@ test('simple model with private auth rule and amplify admin app is present', () 
     synthParameters: {
       adminRoles: ADMIN_UI_ROLES,
     },
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        adminRoles: ADMIN_UI_ROLES,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   expect(out).toBeDefined();
   expect(out.schema).toContain('type Post @aws_iam @aws_cognito_user_pools');
@@ -206,12 +191,7 @@ test('simple model with private auth rule, few operations, and amplify admin app
     synthParameters: {
       adminRoles: ADMIN_UI_ROLES,
     },
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        adminRoles: ADMIN_UI_ROLES,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   expect(out).toBeDefined();
   expect(out.schema).toContain('type Post @aws_iam @aws_cognito_user_pools');
@@ -257,12 +237,7 @@ test('simple model with private IAM auth rule, few operations, and amplify admin
     synthParameters: {
       identityPoolId,
     },
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        identityPoolId,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   expect(out).toBeDefined();
   expect(out.schema).toContain('Post @aws_iam');
@@ -307,12 +282,7 @@ test('simple model with AdminUI enabled should add IAM policy only for fields th
     synthParameters: {
       adminRoles: ADMIN_UI_ROLES,
     },
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        adminRoles: ADMIN_UI_ROLES,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   expect(out).toBeDefined();
   expect(out.schema).toContain('Post @aws_iam @aws_cognito_user_pool');
@@ -374,12 +344,7 @@ test('admin roles should be return the field name inside field resolvers', () =>
     synthParameters: {
       adminRoles: ADMIN_UI_ROLES,
     },
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        adminRoles: ADMIN_UI_ROLES,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   expect(out).toBeDefined();
 

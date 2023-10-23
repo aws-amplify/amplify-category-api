@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-schema-generator",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "description": "Amplify GraphQL schema generator",
   "repository": {
     "type": "git",
@@ -46,7 +46,7 @@
     "@types/pluralize": "^0.0.29"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-prompts": "^2.8.1-aug-transformer-mv-bump.0"
+    "@aws-amplify/amplify-prompts": "^2.8.4"
   },
   "devDependencies": {
     "@types/node": "^12.12.6"
