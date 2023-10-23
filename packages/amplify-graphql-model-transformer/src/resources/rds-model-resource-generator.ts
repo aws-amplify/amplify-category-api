@@ -1,4 +1,4 @@
-import { MYSQL_DB_TYPE, RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
+import { MYSQL_DB_TYPE, RDSConnectionSecrets, POSTGRES_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 import { QueryFieldType, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Topic, SubscriptionFilter } from 'aws-cdk-lib/aws-sns';
 import { LambdaSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
@@ -36,7 +36,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
         RDSLambdaDataSourceLogicalID,
         RDSPatchingSubscriptionLogicalID,
       } = ResourceConstants.RESOURCES;
-      const engine = this.getDBEngine();
+      const engine = this.getDBEngine(context);
       const lambdaRoleScope = context.stackManager.getScopeFor(RDSLambdaIAMRoleLogicalID, RDS_STACK_NAME);
       const lambdaScope = context.stackManager.getScopeFor(RDSLambdaLogicalID, RDS_STACK_NAME);
       setRDSLayerMappings(lambdaScope, context.rdsLayerMapping);
@@ -126,11 +126,27 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
 
   /*
     Checks the modelToDatasource Map for the RDS models
-    and returns the engine type. 
+    and returns the engine type.
     Throws error if multiple engines are encountered.
   */
-  getDBEngine(): string {
-    // const allMySQLModels = this.models.filter((model) => {
-    return 'TODO';
+  getDBEngine(context: TransformerContextProvider): string {
+    const engineSet = new Set<string>();
+    this.models.map((model) => {
+      const modelDatasourceType = context?.modelToDatasourceMap?.get(model.name.value)?.dbType;
+      switch (modelDatasourceType) {
+        case MYSQL_DB_TYPE:
+          engineSet.add('mysql');
+          break;
+        case POSTGRES_DB_TYPE:
+          engineSet.add('postgres');
+          break;
+        default:
+          throw new Error(`Unsupported RDS datasource type: ${modelDatasourceType}`);
+      }
+    });
+    if (engineSet.size > 1) {
+      throw new Error(`Multiple RDS datasource types ${Array.from(engineSet)} are detected. Only one type is supported.`);
+    }
+    return engineSet.values().next().value;
   }
 }

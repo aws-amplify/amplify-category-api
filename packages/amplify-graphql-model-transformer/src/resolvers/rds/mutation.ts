@@ -14,7 +14,7 @@ import {
 } from 'graphql-mapping-template';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelDirectiveConfiguration } from '../../directive';
-import { constructFieldMappingInput, constructNonScalarFieldsStatement } from './resolver';
+import { constructArrayFieldsStatement, constructFieldMappingInput, constructNonScalarFieldsStatement } from './resolver';
 
 /**
  * Generate mapping template that sets default values for create mutation
@@ -67,6 +67,7 @@ export const generateLambdaCreateRequestTemplate = (tableName: string, operation
       set(ref('lambdaInput.args.metadata'), obj({})),
       set(ref('lambdaInput.args.metadata.keys'), list([])),
       constructNonScalarFieldsStatement(tableName, ctx),
+      constructArrayFieldsStatement(tableName, ctx),
       constructFieldMappingInput(),
       qref(
         methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
@@ -138,6 +139,7 @@ export const generateLambdaUpdateRequestTemplate = (
       set(ref('lambdaInput.args.metadata'), obj({})),
       set(ref('lambdaInput.args.metadata.keys'), list([])),
       constructNonScalarFieldsStatement(tableName, ctx),
+      constructArrayFieldsStatement(tableName, ctx),
       constructFieldMappingInput(),
       qref(
         methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
@@ -178,6 +180,7 @@ export const generateLambdaDeleteRequestTemplate = (
       set(ref('lambdaInput.args.metadata'), obj({})),
       set(ref('lambdaInput.args.metadata.keys'), list([])),
       constructNonScalarFieldsStatement(tableName, ctx),
+      constructArrayFieldsStatement(tableName, ctx),
       constructFieldMappingInput(),
       qref(
         methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),

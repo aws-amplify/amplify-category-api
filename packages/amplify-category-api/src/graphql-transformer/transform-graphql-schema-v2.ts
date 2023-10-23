@@ -5,6 +5,7 @@ import {
   ImportedRDSType,
   DatasourceType,
   UserDefinedSlot,
+  isImportedRDSType,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncAuthConfiguration,
@@ -208,7 +209,7 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
   const datasourceSecretMap = await getDatasourceSecretMap(context);
   const datasourceMapValues: Array<DatasourceType> = modelToDatasourceMap ? Array.from(modelToDatasourceMap.values()) : [];
   let sqlLambdaVpcConfig: VpcConfig | undefined;
-  if (datasourceMapValues.some((value) => value.dbType === MYSQL_DB_TYPE && !value.provisionDB)) {
+  if (datasourceMapValues.some((value) => isImportedRDSType(value))) {
     sqlLambdaVpcConfig = await isSqlLambdaVpcConfigRequired(context);
   }
   const rdsLayerMapping = await getRDSLayerMapping();

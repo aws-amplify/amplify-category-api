@@ -2,9 +2,10 @@ import path from 'path';
 import _ from 'lodash';
 import { parse, Kind, ObjectTypeDefinitionNode } from 'graphql';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { DDB_DB_TYPE, MYSQL_DB_TYPE, ModelDatasourceType } from '../types';
-import { DatasourceType } from '../config';
+import { DDB_DB_TYPE, MYSQL_DB_TYPE, ModelDatasourceType, POSTGRES_DB_TYPE } from '../types';
+import { DatasourceType, DBType } from '../config';
 import { APICategory } from './api-category';
+
 
 const getParameterNameForDBSecret = (secret: string, secretsKey: string): string => {
   return `${secretsKey}_${secret}`;
@@ -61,7 +62,21 @@ export const isDynamoDBModel = (ctx: TransformerContextProvider, typename: strin
  * @returns boolean
  */
 export const isRDSModel = (ctx: TransformerContextProvider, typename: string): boolean => {
-  return getModelDatasourceType(ctx, typename) === MYSQL_DB_TYPE;
+  const modelDatasourceType = getModelDatasourceType(ctx, typename);
+  return [MYSQL_DB_TYPE, POSTGRES_DB_TYPE].includes(modelDatasourceType);
+};
+
+/**
+ * Checks if the given Datasource is imported RDS datasource
+ * @param dbInfo Datasource information
+ * @returns boolean
+ */
+export const isImportedRDSType = (dbInfo: DatasourceType): boolean => {
+  return isRDSDBType(dbInfo?.dbType) && !dbInfo?.provisionDB;
+};
+
+export const isRDSDBType = (dbType: DBType): boolean => {
+  return [MYSQL_DB_TYPE, POSTGRES_DB_TYPE].includes(dbType);
 };
 
 /**

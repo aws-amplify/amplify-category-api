@@ -3,7 +3,7 @@ import {
   generateGetArgumentsInput,
   InvalidDirectiveError,
   TransformerPluginBase,
-  DatasourceType,
+  isRDSModel,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
@@ -191,8 +191,7 @@ export function updateListField(config: PrimaryKeyDirectiveConfiguration, ctx: T
   if (listField) {
     const args = [createHashField(config)];
 
-    const dbInfo = ctx.modelToDatasourceMap.get(config.object.name.value);
-    if (dbInfo?.dbType !== 'MySQL') {
+    if (!isRDSModel(ctx, config.object.name.value)) {
       const sortField = tryAndCreateSortField(config, ctx);
       if (sortField) {
         args.push(sortField);

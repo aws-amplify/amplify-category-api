@@ -33,6 +33,8 @@ export {
   getResourceName,
   isRDSModel,
   constructDataSourceMap,
+  isImportedRDSType,
+  isRDSDBType,
 } from './utils';
 export type { SetResourceNameProps } from './utils';
 export * from './utils/operation-names';
@@ -50,6 +52,7 @@ export {
   ImportedDataSourceType,
   ImportedRDSType,
   MYSQL_DB_TYPE,
+  POSTGRES_DB_TYPE,
   RDS_SCHEMA_FILE_NAME,
   RDSConnectionSecrets,
   ImportedDataSourceConfig,
