@@ -86,7 +86,7 @@ describe('AmplifyGraphqlDefinition', () => {
     it('extracts the definition from a single schema file', () => {
       const schemaFilePath = path.join(tmpDir, 'schema.graphql');
       fs.writeFileSync(schemaFilePath, TEST_SCHEMA);
-      const definition = AmplifyGraphqlDefinition.fromBindingAndFiles(defaultBinding, schemaFilePath);
+      const definition = AmplifyGraphqlDefinition.fromFilesAndBinding([schemaFilePath], defaultBinding);
       expect(definition.schema).toEqual(TEST_SCHEMA);
       expect(definition.functionSlots.length).toEqual(0);
     });
@@ -107,7 +107,7 @@ describe('AmplifyGraphqlDefinition', () => {
       const rdsSchemaFilePath = path.join(tmpDir, 'schema.rds.graphql');
       fs.writeFileSync(schemaFilePath, TEST_SCHEMA);
       fs.writeFileSync(rdsSchemaFilePath, rdsTestSchema);
-      const definition = AmplifyGraphqlDefinition.fromBindingAndFiles(defaultBinding, schemaFilePath, rdsSchemaFilePath);
+      const definition = AmplifyGraphqlDefinition.fromFilesAndBinding([schemaFilePath, rdsSchemaFilePath], defaultBinding);
       expect(definition.schema).toEqual(`${TEST_SCHEMA}${os.EOL}${rdsTestSchema}`);
       expect(definition.functionSlots.length).toEqual(0);
     });
@@ -115,7 +115,7 @@ describe('AmplifyGraphqlDefinition', () => {
     it('binds to a dynamo data source', () => {
       const schemaFilePath = path.join(tmpDir, 'schema.graphql');
       fs.writeFileSync(schemaFilePath, TEST_SCHEMA);
-      const definition = AmplifyGraphqlDefinition.fromBindingAndFiles(defaultBinding, schemaFilePath);
+      const definition = AmplifyGraphqlDefinition.fromFilesAndBinding([schemaFilePath], defaultBinding);
       expect(definition.modelDataSourceBinding).toEqual(defaultBinding);
     });
 
@@ -137,7 +137,7 @@ describe('AmplifyGraphqlDefinition', () => {
         },
       };
       fs.writeFileSync(schemaFilePath, TEST_SCHEMA);
-      const definition = AmplifyGraphqlDefinition.fromBindingAndFiles(binding, schemaFilePath);
+      const definition = AmplifyGraphqlDefinition.fromFilesAndBinding([schemaFilePath], binding);
       expect(definition.modelDataSourceBinding).toEqual(binding);
     });
   });

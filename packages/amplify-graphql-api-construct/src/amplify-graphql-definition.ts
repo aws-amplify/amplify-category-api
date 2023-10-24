@@ -34,18 +34,18 @@ export class AmplifyGraphqlDefinition {
    * @returns a fully formed amplify graphql definition, whose models will be resolved by DynamoDB tables created during deployment.
    */
   static fromFiles(...filePaths: string[]): IAmplifyGraphqlDefinition {
-    return AmplifyGraphqlDefinition.fromBindingAndFiles(DEFAULT_DATA_SOURCE_BINDING, ...filePaths);
+    return AmplifyGraphqlDefinition.fromFilesAndBinding(filePaths, DEFAULT_DATA_SOURCE_BINDING);
   }
 
   /**
    * Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema, binding them with the specified ModelDataSourceBinding.
-   * @param modelDataSourceBinding the ModelDataSourceBinding to use for the schema.
    * @param filePaths one or more paths to the graphql files to process
+   * @param modelDataSourceBinding the ModelDataSourceBinding to use for the schema.
    * @returns a fully formed amplify graphql definition, whose models will be resolved by the data source specifed in the
    *   modelDataSourceBinding
    * @experimental
    */
-  static fromBindingAndFiles(modelDataSourceBinding: ModelDataSourceBinding, ...filePaths: string[]): IAmplifyGraphqlDefinition {
+  static fromFilesAndBinding(filePaths: string[], modelDataSourceBinding: ModelDataSourceBinding): IAmplifyGraphqlDefinition {
     const schema = filePaths.map((filePath) => new SchemaFile({ filePath }).definition).join(os.EOL);
     return AmplifyGraphqlDefinition.fromString(schema, modelDataSourceBinding);
   }
