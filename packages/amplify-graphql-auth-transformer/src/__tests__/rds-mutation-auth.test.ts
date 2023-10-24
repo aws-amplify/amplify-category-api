@@ -8,7 +8,6 @@ import { AuthTransformer } from '../graphql-auth-transformer';
 import { expectStashValueLike } from './test-helpers';
 
 describe('Verify RDS Model level Auth rules on mutations:', () => {
-
   const ADMIN_UI_ROLES = ['us-fake-1_uuid_Full-access/CognitoIdentityCredentials', 'us-fake-1_uuid_Manage-only/CognitoIdentityCredentials'];
   const ADMIN_UI_ADMIN_ROLES =
     '$util.qr($ctx.stash.put(\\"adminRoles\\", [\\"us-fake-1_uuid_Full-access/CognitoIdentityCredentials\\",\\"us-fake-1_uuid_Manage-only/CognitoIdentityCredentials\\"])';

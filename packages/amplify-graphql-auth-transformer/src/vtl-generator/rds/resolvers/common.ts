@@ -53,10 +53,7 @@ export const generateAuthRulesFromRoles = (
 
 const getIamAdminRoleExpression = (): Expression =>
   iff(
-    and([
-      ref('ctx.stash.adminRoles'),
-      ref('ctx.stash.adminRoles.size() > 0'),
-    ]),
+    and([ref('ctx.stash.adminRoles'), ref('ctx.stash.adminRoles.size() > 0')]),
     qref(
       methodCall(
         ref('authRules.add'),
