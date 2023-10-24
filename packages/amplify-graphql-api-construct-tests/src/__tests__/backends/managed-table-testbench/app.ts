@@ -13,7 +13,7 @@ const stack = new cdk.Stack(app, packageJson.name.replace(/_/g, '-'), {
   env: { region: process.env.CLI_REGION || 'us-west-2' },
 });
 
-const api = new graphql.AmplifyGraphqlApi(stack, 'ManagedTableTestbench', {
+const api = new graphql.AmplifyGraphqlApi(stack, 'Harness', {
   definition: graphql.AmplifyGraphqlDefinition.fromFiles(path.join(__dirname, 'schema.graphql')),
   authorizationModes: { apiKeyConfig: { expires: cdk.Duration.days(7) } },
   translationBehavior: { useAmplifyManagedTableResources: true },
