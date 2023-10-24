@@ -2,7 +2,6 @@ import { join } from 'path';
 import * as glob from 'glob';
 import * as fs from 'fs-extra';
 import * as yaml from 'js-yaml';
-import { migrationFromV10Tests, migrationFromV5Tests, migrationFromV6Tests } from './split-e2e-test-filters';
 // Ensure to update packages/amplify-e2e-tests/src/cleanup-e2e-resources.ts is also updated this gets updated
 const AWS_REGIONS_TO_RUN_TESTS = [
   'us-east-1',
@@ -273,60 +272,8 @@ function main(): void {
     join(REPO_ROOT, 'packages', 'graphql-transformers-e2e-tests'),
     false,
   );
-  const splitMigrationV5Tests = splitTests(
-    {
-      identifier: 'migration_tests_v5',
-      buildspec: 'codebuild_specs/migration_tests_v5.yml',
-      env: {
-        'compute-type': 'BUILD_GENERAL1_SMALL',
-      },
-      'depend-on': ['publish_to_local_registry'],
-    },
-    join(REPO_ROOT, 'packages', 'amplify-migration-tests'),
-    true,
-    (tests: string[]) => {
-      return tests.filter((testName) => migrationFromV5Tests.find((t) => t === testName));
-    },
-  );
-  const splitMigrationV6Tests = splitTests(
-    {
-      identifier: 'migration_tests_v6',
-      buildspec: 'codebuild_specs/migration_tests_v6.yml',
-      env: {
-        'compute-type': 'BUILD_GENERAL1_SMALL',
-      },
-      'depend-on': ['publish_to_local_registry'],
-    },
-    join(REPO_ROOT, 'packages', 'amplify-migration-tests'),
-    true,
-    (tests: string[]) => {
-      return tests.filter((testName) => migrationFromV6Tests.find((t) => t === testName));
-    },
-  );
-  const splitMigrationV10Tests = splitTests(
-    {
-      identifier: 'migration_tests_v10',
-      buildspec: 'codebuild_specs/migration_tests_v10.yml',
-      env: {
-        'compute-type': 'BUILD_GENERAL1_SMALL',
-      },
-      'depend-on': ['publish_to_local_registry'],
-    },
-    join(REPO_ROOT, 'packages', 'amplify-migration-tests'),
-    true,
-    (tests: string[]) => {
-      return tests.filter((testName) => migrationFromV10Tests.find((t) => t === testName));
-    },
-  );
   let outputPath = CODEBUILD_GENERATE_CONFIG_PATH;
-  let allBuilds = [
-    ...splitE2ETests,
-    ...splitConstructTests,
-    ...splitGqlTests,
-    ...splitMigrationV5Tests,
-    ...splitMigrationV6Tests,
-    ...splitMigrationV10Tests,
-  ];
+  let allBuilds = [...splitE2ETests, ...splitConstructTests, ...splitGqlTests];
   if (filteredTests.length > 0) {
     allBuilds = allBuilds.filter((build) => filteredTests.includes(build.identifier));
     if (filteredTests.includes(DEBUG_FLAG)) {

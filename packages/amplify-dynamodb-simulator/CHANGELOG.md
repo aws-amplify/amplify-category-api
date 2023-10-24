@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.15](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-dynamodb-simulator@2.4.14...amplify-category-api-dynamodb-simulator@2.4.15) (2023-10-21)
+
+**Note:** Version bump only for package amplify-category-api-dynamodb-simulator
+
 ## [2.4.14](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-dynamodb-simulator@2.4.13...amplify-category-api-dynamodb-simulator@2.4.14) (2023-08-28)
 
 **Note:** Version bump only for package amplify-category-api-dynamodb-simulator
