@@ -32,6 +32,7 @@ export {
   setResourceName,
   getResourceName,
   isRDSModel,
+  constructDataSourceMap,
 } from './utils';
 export type { SetResourceNameProps } from './utils';
 export * from './utils/operation-names';

@@ -112,6 +112,9 @@ export const enum ConflictHandlerType {
 }
 
 // @public (undocumented)
+export const constructDataSourceMap: (schema: string, datasourceType: DatasourceType) => Map<string, DatasourceType>;
+
+// @public (undocumented)
 export interface DatasourceType {
     // (undocumented)
     dbType: DBType;

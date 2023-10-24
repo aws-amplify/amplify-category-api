@@ -179,7 +179,6 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
   const transform = constructTransform(config);
-
   try {
     transform.transform({
       scope,
