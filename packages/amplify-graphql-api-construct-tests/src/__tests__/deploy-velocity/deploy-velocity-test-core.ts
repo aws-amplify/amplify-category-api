@@ -79,7 +79,9 @@ export const testManagedTableDeployment = <SetupState>({
 
       // Update Schema and reset apiPostProcessor, execute iterative deployment, and time the deploy
       fs.writeFileSync(schemaFilePath, updatedSchema);
-      fs.unlinkSync(apiPostProcessorFilePath);
+      if (fs.existsSync(apiPostProcessorFilePath)) {
+        fs.unlinkSync(apiPostProcessorFilePath);
+      }
       if (updatedApiPostProcessor) {
         fs.writeFileSync(apiPostProcessorFilePath, generateApiPostProcessorFile(updatedApiPostProcessor));
       }
