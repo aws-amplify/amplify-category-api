@@ -18,7 +18,7 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
 
     const out = testTransform({
       schema: validSchema,
-      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId: 'TEST_IDENTITY_POOL_ID' }), new PrimaryKeyTransformer()],
+      transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
       modelToDatasourceMap: new Map(
         Object.entries({
           Post: {
@@ -27,6 +27,9 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
           },
         }),
       ),
+      synthParameters: {
+        identityPoolId: 'TEST_IDENTITY_POOL_ID',
+      },
     });
     expect(out).toBeDefined();
 
@@ -123,9 +126,12 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
 
     const out = testTransform({
       schema: validSchema,
-      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId: 'TEST_IDENTITY_POOL_ID' }), new PrimaryKeyTransformer()],
+      transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
       authConfig,
       modelToDatasourceMap,
+      synthParameters: {
+        identityPoolId: 'TEST_IDENTITY_POOL_ID',
+      },
     });
     expect(out).toBeDefined();
 
@@ -277,9 +283,12 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
 
     const out = testTransform({
       schema: validSchema,
-      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId: 'TEST_IDENTITY_POOL_ID' }), new PrimaryKeyTransformer()],
+      transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
       authConfig,
       modelToDatasourceMap,
+      synthParameters: {
+        identityPoolId: 'TEST_IDENTITY_POOL_ID',
+      },
     });
     expect(out).toBeDefined();
 
@@ -376,7 +385,7 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
 
     const out = testTransform({
       schema: validSchema,
-      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId: 'TEST_IDENTITY_POOL_ID' }), new PrimaryKeyTransformer()],
+      transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
       authConfig,
       modelToDatasourceMap: new Map(
         Object.entries({
@@ -386,6 +395,9 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
           },
         }),
       ),
+      synthParameters: {
+        identityPoolId: 'TEST_IDENTITY_POOL_ID',
+      },
     });
     expect(out).toBeDefined();
 
@@ -444,9 +456,12 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
 
     const out = testTransform({
       schema: validSchema,
-      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId: 'TEST_IDENTITY_POOL_ID' }), new PrimaryKeyTransformer()],
+      transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
       authConfig,
       modelToDatasourceMap,
+      synthParameters: {
+        identityPoolId: 'TEST_IDENTITY_POOL_ID',
+      },
     });
     expect(out).toBeDefined();
 
