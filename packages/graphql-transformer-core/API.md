@@ -123,7 +123,7 @@ export interface DatasourceType {
 }
 
 // @public (undocumented)
-export type DBType = 'MySQL' | 'DDB';
+export type DBType = 'MySQL' | 'DDB' | 'Postgres';
 
 // Warning: (ae-forgotten-export) The symbol "ResolversFunctionsAndSchema" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "NestedStacks" needs to be exported by the entry point index.d.ts

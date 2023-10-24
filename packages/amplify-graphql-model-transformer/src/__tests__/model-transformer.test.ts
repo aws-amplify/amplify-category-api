@@ -5,7 +5,7 @@ import { getBaseType } from 'graphql-transformer-common';
 import { Template } from 'aws-cdk-lib/assertions';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { VpcConfig, DBType } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   doNotExpectFields,
   expectFields,
@@ -17,8 +17,11 @@ import {
   verifyInputCount,
   verifyMatchingTypes,
 } from './test-utils/helpers';
+import { getArrayFields, constructArrayFieldsStatement } from '../resolvers/rds';
 
 describe('ModelTransformer:', () => {
+  const RDSDatasources: DBType[] = ['MySQL', 'Postgres'];
+
   it('should successfully transform simple valid schema', async () => {
     const validSchema = `
       type Post @model {
@@ -1513,134 +1516,201 @@ describe('ModelTransformer:', () => {
     expect(updateTodoIdField.type.kind).toBe('NonNullType');
   });
 
-  it('should successfully transform simple rds valid schema', async () => {
-    const validSchema = `
-      type Post @model {
+  RDSDatasources.forEach((dbType) => {
+    it('should successfully transform simple rds valid schema', async () => {
+      const validSchema = `
+        type Post @model {
           id: ID! @primaryKey
           title: String!
-      }
-    `;
+        }
+      `;
 
-    const out = testTransform({
-      schema: validSchema,
-      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-      modelToDatasourceMap: new Map(
-        Object.entries({
-          Post: {
-            dbType: 'MySQL',
-            provisionDB: false,
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        modelToDatasourceMap: new Map(
+          Object.entries({
+            Post: {
+              dbType: dbType,
+              provisionDB: false,
+            },
+          }),
+        ),
+      });
+      expect(out).toBeDefined();
+
+      validateModelSchema(parse(out.schema));
+      parse(out.schema);
+    });
+
+    it('should successfully transform rds schema with array and object fields', async () => {
+      const validSchema = `
+        type Note @model {
+            id: ID! @primaryKey
+            content: String!
+            tags: [String!]
+            attachments: Attachment
+        }
+  
+        type Attachment {
+          report: String!
+          image: String!
+        }
+      `;
+
+      const modelToDatasourceMap = new Map<string, DatasourceType>();
+      modelToDatasourceMap.set('Note', {
+        dbType: dbType,
+        provisionDB: false,
+      });
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        modelToDatasourceMap,
+      });
+      expect(out).toBeDefined();
+
+      validateModelSchema(parse(out.schema));
+      parse(out.schema);
+      expect(out.schema).toMatchSnapshot();
+      expect(out.resolvers).toMatchSnapshot();
+    });
+
+    it('sql lambda with vpc config should generate correct stack', async () => {
+      const validSchema = `
+        type Note @model {
+            id: ID! @primaryKey
+            content: String!
+        }
+      `;
+
+      const modelToDatasourceMap = new Map<string, DatasourceType>();
+      modelToDatasourceMap.set('Note', {
+        dbType: dbType,
+        provisionDB: false,
+      });
+      const sqlLambdaVpcConfig: VpcConfig = {
+        vpcId: 'vpc-123',
+        securityGroupIds: ['sg-123'],
+        subnetAvailabilityZoneConfig: [
+          {
+            SubnetId: 'sub-123',
+            AvailabilityZone: 'az-123',
           },
+          {
+            SubnetId: 'sub-456',
+            AvailabilityZone: 'az-456',
+          },
+        ],
+      };
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        modelToDatasourceMap,
+        sqlLambdaVpcConfig,
+      });
+      expect(out).toBeDefined();
+
+      validateModelSchema(parse(out.schema));
+      expect(out.stacks).toBeDefined();
+      expect(out.stacks.RdsApiStack).toBeDefined();
+      expect(out.stacks.RdsApiStack.Resources).toBeDefined();
+      const resourcesIds = Object.keys(out.stacks.RdsApiStack.Resources!) as string[];
+      const sqlLambda = out.stacks.RdsApiStack.Resources![resourcesIds.find((resource) => resource.startsWith('RDSLambdaLogicalID'))!];
+      expect(sqlLambda).toBeDefined();
+      expect(sqlLambda.Properties).toBeDefined();
+      expect(sqlLambda.Properties?.VpcConfig).toBeDefined();
+      expect(sqlLambda.Properties?.VpcConfig?.SubnetIds).toBeDefined();
+      expect(sqlLambda.Properties?.VpcConfig?.SubnetIds).toEqual(expect.arrayContaining(['sub-123', 'sub-456']));
+      expect(sqlLambda.Properties?.VpcConfig?.SecurityGroupIds).toBeDefined();
+      expect(sqlLambda.Properties?.VpcConfig?.SecurityGroupIds).toEqual(expect.arrayContaining(['sg-123']));
+    });
+
+    it('should fail if RDS model has no primary key defined', async () => {
+      const invalidSchema = `
+        type Note @model {
+            id: ID!
+            content: String!
+        }
+      `;
+
+      const modelToDatasourceMap = new Map<string, DatasourceType>();
+      modelToDatasourceMap.set('Note', {
+        dbType: dbType,
+        provisionDB: false,
+      });
+      expect(() =>
+        testTransform({
+          schema: invalidSchema,
+          transformers: [new ModelTransformer()],
+          modelToDatasourceMap: modelToDatasourceMap,
         }),
-      ),
+      ).toThrowError('RDS model "Note" must contain a primary key field');
     });
-    expect(out).toBeDefined();
 
-    validateModelSchema(parse(out.schema));
-    parse(out.schema);
-  });
-
-  it('should successfully transform rds schema with array and object fields', async () => {
-    const validSchema = `
-      type Note @model {
+    it('should compute and render the array fields correctly in the resolver', () => {
+      const validSchema = `
+        type Post @model {
           id: ID! @primaryKey
-          content: String!
+          info: Info
           tags: [String!]
-          attachments: Attachment
-      }
-
-      type Attachment {
-        report: String!
-        image: String!
-      }
-    `;
-
-    const modelToDatasourceMap = new Map<string, DatasourceType>();
-    modelToDatasourceMap.set('Note', {
-      dbType: 'MySQL',
-      provisionDB: false,
+        }
+        type Info {
+          name: String
+        }
+      `;
+      const modelToDatasourceMap = new Map<string, DatasourceType>();
+      modelToDatasourceMap.set('Post', {
+        dbType: dbType,
+        provisionDB: false,
+      });
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        modelToDatasourceMap: modelToDatasourceMap,
+      });
+      const expectedSnippets = [
+        '#set( $lambdaInput.args.metadata.nonScalarFields = ["info", "tags"] )',
+        '#set( $lambdaInput.args.metadata.arrayFields = ["tags"] )',
+      ];
+      expect(out).toBeDefined();
+      expectedSnippets.forEach((snippet) => {
+        expect(out.resolvers['Mutation.createPost.req.vtl']).toContain(snippet);
+        expect(out.resolvers['Mutation.updatePost.req.vtl']).toContain(snippet);
+        expect(out.resolvers['Mutation.deletePost.req.vtl']).toContain(snippet);
+        expect(out.resolvers['Query.getPost.req.vtl']).toContain(snippet);
+        expect(out.resolvers['Query.listPosts.req.vtl']).toContain(snippet);
+      });
     });
-    const out = testTransform({
-      schema: validSchema,
-      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-      modelToDatasourceMap,
-    });
-    expect(out).toBeDefined();
-
-    validateModelSchema(parse(out.schema));
-    parse(out.schema);
-    expect(out.schema).toMatchSnapshot();
-    expect(out.resolvers).toMatchSnapshot();
   });
 
-  it('sql lambda with vpc config should generate correct stack', async () => {
-    const validSchema = `
-      type Note @model {
-          id: ID! @primaryKey
-          content: String!
-      }
-    `;
-
-    const modelToDatasourceMap = new Map<string, DatasourceType>();
-    modelToDatasourceMap.set('Note', {
-      dbType: 'MySQL',
-      provisionDB: false,
-    });
-    const sqlLambdaVpcConfig: VpcConfig = {
-      vpcId: 'vpc-123',
-      securityGroupIds: ['sg-123'],
-      subnetAvailabilityZoneConfig: [
-        {
-          SubnetId: 'sub-123',
-          AvailabilityZone: 'az-123',
-        },
-        {
-          SubnetId: 'sub-456',
-          AvailabilityZone: 'az-456',
-        },
-      ],
-    };
-    const out = testTransform({
-      schema: validSchema,
-      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-      modelToDatasourceMap,
-      sqlLambdaVpcConfig,
-    });
-    expect(out).toBeDefined();
-
-    validateModelSchema(parse(out.schema));
-    expect(out.stacks).toBeDefined();
-    expect(out.stacks.RdsApiStack).toBeDefined();
-    expect(out.stacks.RdsApiStack.Resources).toBeDefined();
-    const resourcesIds = Object.keys(out.stacks.RdsApiStack.Resources!) as string[];
-    const sqlLambda = out.stacks.RdsApiStack.Resources![resourcesIds.find((resource) => resource.startsWith('RDSLambdaLogicalID'))!];
-    expect(sqlLambda).toBeDefined();
-    expect(sqlLambda.Properties).toBeDefined();
-    expect(sqlLambda.Properties?.VpcConfig).toBeDefined();
-    expect(sqlLambda.Properties?.VpcConfig?.SubnetIds).toBeDefined();
-    expect(sqlLambda.Properties?.VpcConfig?.SubnetIds).toEqual(expect.arrayContaining(['sub-123', 'sub-456']));
-    expect(sqlLambda.Properties?.VpcConfig?.SecurityGroupIds).toBeDefined();
-    expect(sqlLambda.Properties?.VpcConfig?.SecurityGroupIds).toEqual(expect.arrayContaining(['sg-123']));
-  });
-
-  it('should fail if RDS model has no primary key defined', async () => {
+  it('should fail if multiple RDS engine types are used', () => {
     const invalidSchema = `
       type Note @model {
-          id: ID!
+          id: ID! @primaryKey
           content: String!
       }
+      type Post @model {
+        id: ID! @primaryKey
+        content: String!
+    }
     `;
 
     const modelToDatasourceMap = new Map<string, DatasourceType>();
     modelToDatasourceMap.set('Note', {
-      dbType: 'MySQL',
+      dbType: RDSDatasources[0],
+      provisionDB: false,
+    });
+    modelToDatasourceMap.set('Post', {
+      dbType: RDSDatasources[1],
       provisionDB: false,
     });
     expect(() =>
       testTransform({
         schema: invalidSchema,
-        transformers: [new ModelTransformer()],
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
         modelToDatasourceMap: modelToDatasourceMap,
       }),
-    ).toThrowError('RDS model "Note" must contain a primary key field');
+    ).toThrowError();
   });
 });

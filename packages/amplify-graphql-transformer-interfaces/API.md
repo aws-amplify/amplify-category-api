@@ -155,6 +155,17 @@ export interface DataSourceProvider extends BackedDataSource {
 }
 
 // @public (undocumented)
+export interface DatasourceType {
+    // (undocumented)
+    dbType: DBType;
+    // (undocumented)
+    provisionDB: boolean;
+}
+
+// @public (undocumented)
+export type DBType = 'MySQL' | 'DDB' | 'Postgres';
+
+// @public (undocumented)
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {
     // (undocumented)
     readonly serviceRole: IRole;
@@ -424,8 +435,6 @@ export interface TransformerContextProvider {
     //
     // (undocumented)
     metadata: TransformerContextMetadataProvider;
-    // Warning: (ae-forgotten-export) The symbol "DatasourceType" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     modelToDatasourceMap: Map<string, DatasourceType>;
     // (undocumented)

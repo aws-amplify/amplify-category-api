@@ -19,6 +19,7 @@ import { CfnResource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { DBType as DBType_2 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveDefinitionNode } from 'graphql';
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql/language';
@@ -130,7 +131,7 @@ export interface DatasourceType {
 }
 
 // @public (undocumented)
-export type DBType = 'MySQL' | 'DDB';
+export type DBType = 'MySQL' | 'DDB' | 'Postgres';
 
 // @public (undocumented)
 export const DDB_DB_TYPE = "DDB";
@@ -348,7 +349,13 @@ export class InvalidTransformerError extends Error {
 }
 
 // @public (undocumented)
+export const isImportedRDSType: (dbInfo: DatasourceType) => boolean;
+
+// @public (undocumented)
 function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncConfigLambda;
+
+// @public (undocumented)
+export const isRDSDBType: (dbType: DBType_2) => boolean;
 
 // @public (undocumented)
 export const isRDSModel: (ctx: TransformerContextProvider, typename: string) => boolean;
@@ -390,6 +397,9 @@ export class ObjectDefinitionWrapper {
     // (undocumented)
     serialize: () => ObjectTypeDefinitionNode;
 }
+
+// @public (undocumented)
+export const POSTGRES_DB_TYPE = "Postgres";
 
 // @public (undocumented)
 export const RDS_SCHEMA_FILE_NAME = "schema.rds.graphql";
