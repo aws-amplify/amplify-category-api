@@ -44,7 +44,10 @@ import { NestedStack } from 'aws-cdk-lib';
 import { NoneDataSource } from 'aws-cdk-lib/aws-appsync';
 import { OpenSearchDataSource } from 'aws-cdk-lib/aws-appsync';
 import { RdsDataSource } from 'aws-cdk-lib/aws-appsync';
+import { RemovalPolicy } from 'aws-cdk-lib';
 import { Resolver } from 'aws-cdk-lib/aws-appsync';
+import { ResourceEnvironment } from 'aws-cdk-lib';
+import { Stack } from 'aws-cdk-lib';
 
 // @public
 export interface AddFunctionProps {
@@ -58,7 +61,7 @@ export interface AddFunctionProps {
 }
 
 // @public
-export class AmplifyGraphqlApi extends Construct {
+export class AmplifyGraphqlApi extends Construct implements IGraphqlApi {
     constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps);
     addDynamoDbDataSource(id: string, table: ITable, options?: DataSourceOptions): DynamoDbDataSource;
     // @deprecated
@@ -71,11 +74,18 @@ export class AmplifyGraphqlApi extends Construct {
     addOpenSearchDataSource(id: string, domain: IDomain_2, options?: DataSourceOptions): OpenSearchDataSource;
     addRdsDataSource(id: string, serverlessCluster: IServerlessCluster, secretStore: ISecret, databaseName?: string, options?: DataSourceOptions): RdsDataSource;
     addResolver(id: string, props: ExtendedResolverProps): Resolver;
+    addSchemaDependency(construct: CfnResource): boolean;
+    readonly apiId: string;
     readonly apiKey: string | undefined;
+    applyRemovalPolicy(policy: RemovalPolicy): void;
+    readonly arn: string;
+    createResolver(id: string, props: ExtendedResolverProps): Resolver;
+    readonly env: ResourceEnvironment;
     readonly generatedFunctionSlots: FunctionSlot[];
     readonly graphqlUrl: string;
     readonly realtimeUrl: string;
     readonly resources: AmplifyGraphqlApiResources;
+    readonly stack: Stack;
 }
 
 // @public
