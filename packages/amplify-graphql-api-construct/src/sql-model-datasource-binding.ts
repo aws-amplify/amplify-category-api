@@ -20,7 +20,7 @@ export class SqlModelDataSourceBindingFactory {
    * Creates a SqlModelDataSourceBinding where the binding's `customSqlStatements` are populated from `sqlFiles`. The key of the
    * `customSqlStatements` record is the file's base name (that is, the name of the file minus the directory and extension).
    * @param sqlFiles the list of files to load SQL statements from.
-   * @param options the remaining ISqlModelDataSourceBinding options.
+   * @param options the remaining SqlModelDataSourceBinding options.
    */
   static fromCustomSqlFiles(
     sqlFiles: string[],
