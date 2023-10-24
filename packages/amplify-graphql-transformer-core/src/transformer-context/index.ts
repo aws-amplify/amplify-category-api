@@ -29,7 +29,6 @@ import { ResolverManager } from './resolver';
 import { TransformerResourceHelper } from './resource-helper';
 import { StackManager } from './stack-manager';
 import { assetManager } from './asset-manager';
-import { DataSource } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 
 export { TransformerResolver } from './resolver';
 export { StackManager } from './stack-manager';
