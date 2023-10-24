@@ -13,7 +13,7 @@ export const isSqlModelDataSourceBinding = (obj: any): obj is SqlModelDataSource
 };
 
 /**
- * Class exposing utilities to produce ISqlModelDataSourceBinding objects given various inputs.
+ * Class exposing utilities to produce SqlModelDataSourceBinding objects given various inputs.
  */
 export class SqlModelDataSourceBindingFactory {
   /**
