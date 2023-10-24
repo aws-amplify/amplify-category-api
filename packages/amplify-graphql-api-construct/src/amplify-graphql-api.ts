@@ -159,7 +159,7 @@ export class AmplifyGraphqlApi extends Construct {
 
     const assetManager = new AssetManager();
 
-    const executeTransformConfig: ExecuteTransformConfig = {
+    let executeTransformConfig: ExecuteTransformConfig = {
       scope: this,
       nestedStackProvider: {
         provide: (nestedStackScope: Construct, name: string) => new NestedStack(nestedStackScope, name),
@@ -193,7 +193,7 @@ export class AmplifyGraphqlApi extends Construct {
     };
 
     if (isSqlModelDataSourceBinding(definition.modelDataSourceBinding)) {
-      this.extendTransformConfig(executeTransformConfig, definition.modelDataSourceBinding);
+      executeTransformConfig = this.extendTransformConfig(executeTransformConfig, definition.modelDataSourceBinding);
     }
 
     executeTransform(executeTransformConfig);
@@ -219,8 +219,9 @@ export class AmplifyGraphqlApi extends Construct {
     executeTransformConfig: ExecuteTransformConfig,
     modelDataSourceBinding: SqlModelDataSourceBinding,
   ): ExecuteTransformConfig {
+    const extendedConfig = {...executeTransformConfig};
     if (modelDataSourceBinding.customSqlStatements) {
-      executeTransformConfig.customQueries = new Map(Object.entries(modelDataSourceBinding.customSqlStatements));
+      extendedConfig.customQueries = new Map(Object.entries(modelDataSourceBinding.customSqlStatements));
     }
 
     const dbSecrets: Map<string, RDSConnectionSecrets> = new Map();
@@ -241,7 +242,7 @@ export class AmplifyGraphqlApi extends Construct {
       port: modelDataSourceBinding.dbConnectionConfig.portSsmPath as any,
       database: modelDataSourceBinding.dbConnectionConfig.databaseNameSsmPath,
     });
-    executeTransformConfig.datasourceSecretParameterLocations = dbSecrets;
+    extendedConfig.datasourceSecretParameterLocations = dbSecrets;
 
     const subnetAvailabilityZoneConfig = modelDataSourceBinding.vpcConfiguration.subnetAvailabilityZones.map(
       (saz): { SubnetId: string; AvailabilityZone: string } => ({
@@ -250,21 +251,21 @@ export class AmplifyGraphqlApi extends Construct {
       }),
     );
 
-    if (!executeTransformConfig.modelToDatasourceMap || executeTransformConfig.modelToDatasourceMap.size === 0) {
+    if (!extendedConfig.modelToDatasourceMap || extendedConfig.modelToDatasourceMap.size === 0) {
       const defaultDatasourceType = {
         dbType: modelDataSourceBinding.bindingType,
         provisionDB: false,
       };
-      executeTransformConfig.modelToDatasourceMap = constructDataSourceMap(executeTransformConfig.schema, defaultDatasourceType);
+      extendedConfig.modelToDatasourceMap = constructDataSourceMap(extendedConfig.schema, defaultDatasourceType);
     }
 
-    executeTransformConfig.sqlLambdaVpcConfig = {
+    extendedConfig.sqlLambdaVpcConfig = {
       vpcId: modelDataSourceBinding.vpcConfiguration.vpcId,
       securityGroupIds: modelDataSourceBinding.vpcConfiguration.securityGroupIds,
       subnetAvailabilityZoneConfig,
     };
 
-    return executeTransformConfig;
+    return extendedConfig;
   }
 
   /**
