@@ -219,7 +219,7 @@ export class AmplifyGraphqlApi extends Construct {
     executeTransformConfig: ExecuteTransformConfig,
     modelDataSourceBinding: SqlModelDataSourceBinding,
   ): ExecuteTransformConfig {
-    const extendedConfig = {...executeTransformConfig};
+    const extendedConfig = { ...executeTransformConfig };
     if (modelDataSourceBinding.customSqlStatements) {
       extendedConfig.customQueries = new Map(Object.entries(modelDataSourceBinding.customSqlStatements));
     }

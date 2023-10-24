@@ -3726,7 +3726,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 317
+            "line": 318
           },
           "name": "addDynamoDbDataSource",
           "parameters": [
@@ -3775,7 +3775,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 329
+            "line": 330
           },
           "name": "addElasticsearchDataSource",
           "parameters": [
@@ -3822,7 +3822,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 339
+            "line": 340
           },
           "name": "addEventBridgeDataSource",
           "parameters": [
@@ -3869,7 +3869,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 421
+            "line": 422
           },
           "name": "addFunction",
           "parameters": [
@@ -3904,7 +3904,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 350
+            "line": 351
           },
           "name": "addHttpDataSource",
           "parameters": [
@@ -3952,7 +3952,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 361
+            "line": 362
           },
           "name": "addLambdaDataSource",
           "parameters": [
@@ -4000,7 +4000,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 372
+            "line": 373
           },
           "name": "addNoneDataSource",
           "parameters": [
@@ -4039,7 +4039,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 383
+            "line": 384
           },
           "name": "addOpenSearchDataSource",
           "parameters": [
@@ -4087,7 +4087,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 396
+            "line": 397
           },
           "name": "addRdsDataSource",
           "parameters": [
@@ -4154,7 +4154,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 412
+            "line": 413
           },
           "name": "addResolver",
           "parameters": [
@@ -4905,55 +4905,6 @@
       "methods": [
         {
           "docs": {
-            "returns": "a fully formed amplify graphql definition, whose models will be resolved by the data source specifed in the\nmodelDataSourceBinding",
-            "stability": "experimental",
-            "summary": "Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema, binding them with the specified ModelDataSourceBinding."
-          },
-          "locationInModule": {
-            "filename": "src/amplify-graphql-definition.ts",
-            "line": 48
-          },
-          "name": "fromBindingAndFiles",
-          "parameters": [
-            {
-              "docs": {
-                "summary": "the ModelDataSourceBinding to use for the schema."
-              },
-              "name": "modelDataSourceBinding",
-              "type": {
-                "union": {
-                  "types": [
-                    {
-                      "fqn": "@aws-amplify/graphql-api-construct.DynamoModelDataSourceBinding"
-                    },
-                    {
-                      "fqn": "@aws-amplify/graphql-api-construct.SqlModelDataSourceBinding"
-                    }
-                  ]
-                }
-              }
-            },
-            {
-              "docs": {
-                "summary": "one or more paths to the graphql files to process."
-              },
-              "name": "filePaths",
-              "type": {
-                "primitive": "string"
-              },
-              "variadic": true
-            }
-          ],
-          "returns": {
-            "type": {
-              "fqn": "@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition"
-            }
-          },
-          "static": true,
-          "variadic": true
-        },
-        {
-          "docs": {
             "returns": "a fully formed amplify graphql definition, whose models will be resolved by DynamoDB tables created during deployment.",
             "stability": "stable",
             "summary": "Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema, binding them to a DynamoDB data source."
@@ -4982,6 +4933,58 @@
           },
           "static": true,
           "variadic": true
+        },
+        {
+          "docs": {
+            "returns": "a fully formed amplify graphql definition, whose models will be resolved by the data source specifed in the\nmodelDataSourceBinding",
+            "stability": "experimental",
+            "summary": "Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema, binding them with the specified ModelDataSourceBinding."
+          },
+          "locationInModule": {
+            "filename": "src/amplify-graphql-definition.ts",
+            "line": 48
+          },
+          "name": "fromFilesAndBinding",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "one or more paths to the graphql files to process."
+              },
+              "name": "filePaths",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "string"
+                  },
+                  "kind": "array"
+                }
+              }
+            },
+            {
+              "docs": {
+                "summary": "the ModelDataSourceBinding to use for the schema."
+              },
+              "name": "modelDataSourceBinding",
+              "type": {
+                "union": {
+                  "types": [
+                    {
+                      "fqn": "@aws-amplify/graphql-api-construct.DynamoModelDataSourceBinding"
+                    },
+                    {
+                      "fqn": "@aws-amplify/graphql-api-construct.SqlModelDataSourceBinding"
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition"
+            }
+          },
+          "static": true
         },
         {
           "docs": {
@@ -7016,5 +7019,5 @@
     }
   },
   "version": "1.1.4",
-  "fingerprint": "dATYnWmVPPi80ldnVgIcD7CuIxGBBwTM2im/xEQPQiI="
+  "fingerprint": "6paDpdfA8UnbBx82+hrTNbHrYTJcgOh2LiuLRTMS6PY="
 }

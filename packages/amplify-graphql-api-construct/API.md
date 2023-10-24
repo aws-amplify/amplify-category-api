@@ -119,8 +119,8 @@ export interface AmplifyGraphqlApiResources {
 
 // @public
 export class AmplifyGraphqlDefinition {
-    static fromBindingAndFiles(modelDataSourceBinding: ModelDataSourceBinding, ...filePaths: string[]): IAmplifyGraphqlDefinition;
     static fromFiles(...filePaths: string[]): IAmplifyGraphqlDefinition;
+    static fromFilesAndBinding(filePaths: string[], modelDataSourceBinding: ModelDataSourceBinding): IAmplifyGraphqlDefinition;
     static fromString(schema: string, modelDataSourceBinding?: ModelDataSourceBinding): IAmplifyGraphqlDefinition;
 }
 
