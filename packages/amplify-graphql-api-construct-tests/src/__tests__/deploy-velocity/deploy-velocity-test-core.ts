@@ -4,8 +4,9 @@ import { faker } from '@faker-js/faker';
 import { createNewProjectDir, deleteProjectDir, initCDKProject, cdkDeploy, cdkDestroy } from 'amplify-category-api-e2e-core';
 import { AmplifyGraphqlApi } from '@aws-amplify/graphql-api-construct';
 import { ValidateGraphqlOptions, validateGraphql } from '../../graphql-request';
+import { DURATION_1_HOUR } from './deploy-velocity-constants';
 
-jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
+jest.setTimeout(DURATION_1_HOUR);
 
 export type EndpointConfig = Pick<ValidateGraphqlOptions, 'apiEndpoint' | 'apiKey'>;
 
@@ -22,6 +23,28 @@ export type TestManagedTableDeploymentProps<SetupState> = {
   updatedApiPostProcessor?: ApiPostProcessor;
 };
 
+/**
+ * Core entry point for managed table deployment velocity and correctness tests.
+ * Tests using this entry point can simply mix and match their lifecycle stages from building-blocks,
+ * and tests will execute the following steps based on input props.
+ *
+ * 1. Set up a simple CDK app with GraphqlApi using managed tables and API Key auth.
+ * 2. Deploy an initial graphql schema via cdk deploy.
+ * 3. Run a data setup task, and store stated in a strongly-typed variable.
+ * 4. Run a data validation task, to ensure setup was successful, and data can be retrieved.
+ * 5. Deploy an updated graphql schema via cdk deploy, measuring the time it takes to deploy.
+ * 6. Run the data validation task again, ensuring that after deploy data continuity is achieved.
+ * 7. Validate the measured deploy time is within configured parameters.
+ * 8. Teardown the stack.
+ * @param param0 the input params
+ * @param param0.name the suite name, used to name the test, and in logging
+ * @param param0.initialSchema the initial graphql schema to deploy
+ * @param param0.updatedSchema the updated graphql schema to deploy
+ * @param param0.maxDeployDurationMs the amount of time to wait for response in CLI, and fail if we exceed.
+ * @param param0.dataSetup the optional data setup lifecycle step to seed fixture data
+ * @param param0.dataValidate the optional data validation lifecycle step to ensure data integrity after setup and after deploy
+ * @param param0.updatedApiPostProcessor the optional post processing step (to be run during synth) for override checks
+ */
 export const testManagedTableDeployment = <SetupState>({
   name,
   initialSchema,
@@ -136,8 +159,18 @@ export const splitArray = <T>(inputArray: T[], chunkSize: number): T[][] => {
   }, [] as T[][]);
 };
 
+/**
+ * Given an api post processor, generate the file contents which can be imported by the test harness.
+ * @param postProcessor the synth callback method.
+ * @returns the file contents to write to disk as a string.
+ */
 const generateApiPostProcessorFile = (postProcessor: ApiPostProcessor): string => `module.exports = ${postProcessor.toString()}`;
 
+/**
+ * Retrieve the record count from a given todo table for a provided endpoint config.
+ * @param endpointConfig api url and api key for making api-key requests.
+ * @returns the number of records retrieved.
+ */
 const getRecordCount = async (endpointConfig: EndpointConfig): Promise<number> => {
   let nextToken = null;
   let resultCount = 0;
@@ -160,6 +193,12 @@ const getRecordCount = async (endpointConfig: EndpointConfig): Promise<number> =
   return resultCount;
 };
 
+/**
+ * Data provider plugin which generates a particular number of records for the provided mutationbuilder.
+ * @param recordCount the number of records to match
+ * @param mutationBuilder the mutation builder, intended to support different mutation input shapes
+ * @returns the data provider, to plug into the test harness above
+ */
 export const recordCountDataProvider = (recordCount: number, mutationBuilder: (uuid: string, i: number) => string) => {
   return async (endpointConfig: EndpointConfig): Promise<void> => {
     // Generate Data in batches of 50 per request
@@ -180,6 +219,11 @@ export const recordCountDataProvider = (recordCount: number, mutationBuilder: (u
   };
 };
 
+/**
+ * Data validator ensuring a particular number of records were found in the provided table.
+ * @param expectedRecordCount the number of records to validate against.
+ * @returns the data validator, to plug into the test harness above
+ */
 export const recordCountDataValidator = (expectedRecordCount: number) => {
   return async (endpointConfig: EndpointConfig): Promise<void> => {
     const recordCount = await getRecordCount(endpointConfig);
@@ -187,6 +231,11 @@ export const recordCountDataValidator = (expectedRecordCount: number) => {
   };
 };
 
+/**
+ * Data provider plugin which generates a single records given a mutation shape, and returns it's id into the state.
+ * @param mutation the mutation to run, intended to support different mutation input shapes
+ * @returns the data provider, to plug into the test harness above
+ */
 export const recordProviderWithIdState = (mutation: string) => {
   return async (endpointConfig: EndpointConfig): Promise<string> => {
     const result = await validateGraphql({
@@ -198,6 +247,10 @@ export const recordProviderWithIdState = (mutation: string) => {
   };
 };
 
+/**
+ * Data validator ensuring a particular records was found by id in the provided table, where id stored in state.
+ * @returns the data validator, to plug into the test harness above
+ */
 export const recordByIdDataValidator = () => {
   return async (endpointConfig: EndpointConfig, id: string): Promise<void> => {
     const response = await validateGraphql({

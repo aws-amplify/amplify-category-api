@@ -4,6 +4,7 @@ const ONE_MINUTE = 60 * 1000;
 export const DURATION_10_MINUTES = 10 * ONE_MINUTE;
 export const DURATION_20_MINUTES = 20 * ONE_MINUTE;
 export const DURATION_30_MINUTES = 30 * ONE_MINUTE;
+export const DURATION_1_HOUR = 60 * ONE_MINUTE;
 
 export const COUNT_1_THOUSAND = 1000;
 export const COUNT_10_THOUSAND = 10000;
@@ -17,7 +18,7 @@ export const SCHEMA_ONE_FIELD_NO_INDEX = /* GraphQL */ `
 
 export const SCHEMA_ONE_FIELD_ALL_INDEXED = /* GraphQL */ `
   type Todo @model @auth(rules: [{ allow: public }]) {
-    field1: String!
+    field1: String! @index
   }
 `;
 
@@ -31,9 +32,9 @@ export const SCHEMA_THREE_FIELDS_NO_INDEX = /* GraphQL */ `
 
 export const SCHEMA_THREE_FIELDS_ALL_INDEXED = /* GraphQL */ `
   type Todo @model @auth(rules: [{ allow: public }]) {
-    field1: String!
-    field2: String!
-    field3: String!
+    field1: String! @index
+    field2: String! @index
+    field3: String! @index
   }
 `;
 
@@ -63,13 +64,14 @@ export const MUTATION_THREE_FIELD_CREATE = (uuid: string, i: number): string =>
 export const MUTATION_FOUR_FIELD_CREATE = (uuid: string, i: number): string =>
   `mut${i}: createTodo(input: { field1: "${uuid}", field2: "${uuid}", field3: "${uuid}", field4: "${uuid}" }) { id }`;
 
-export const API_POST_PROCESSOR_SET_PROVISIONED_THROUGHPUT = (api: AmplifyGraphqlApi): void => {
-  api.resources.cfnResources.cfnAmplifyTables.Todo.addPropertyOverride('provisionedThroughput', {
-    ReadCapacityUnits: 10,
-    WriteCapacityUnits: 10,
-    readCapacityUnits: 10,
-    writeCapacityUnits: 10,
-  });
+export const API_POST_PROCESSOR_SET_PROVISIONED_THROUGHPUT_TWO_GSIS = (api: AmplifyGraphqlApi): void => {
+  const billingMode = 'PROVISIONED';
+  const provisionedThroughput = { readCapacityUnits: 10, writeCapacityUnits: 10 };
+  const todoTable = api.resources.cfnResources.cfnAmplifyTables.Todo;
+  todoTable.addPropertyOverride('billingMode', billingMode);
+  todoTable.addPropertyOverride('provisionedThroughput', provisionedThroughput);
+  todoTable.addPropertyOverride('globalSecondaryIndexes.0.provisionedThroughput', provisionedThroughput);
+  todoTable.addPropertyOverride('globalSecondaryIndexes.1.provisionedThroughput', provisionedThroughput);
 };
 
 export const MUTATION_ONE_FIELD_CREATE_STATIC = 'createTodo(input: { field1: "field1Value" }) { id }';
