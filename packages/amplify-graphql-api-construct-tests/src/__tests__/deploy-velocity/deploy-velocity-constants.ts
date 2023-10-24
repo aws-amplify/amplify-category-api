@@ -71,3 +71,11 @@ export const API_POST_PROCESSOR_SET_PROVISIONED_THROUGHPUT = (api: AmplifyGraphq
     writeCapacityUnits: 10,
   });
 };
+
+export const MUTATION_ONE_FIELD_CREATE_STATIC = 'createTodo(input: { field1: "field1Value" }) { id }';
+
+export const MUTATION_THREE_FIELD_CREATE_STATIC =
+  'createTodo(input: { field1: "field1Value", field2: "field2Value", field3: "field3Value" }) { id }';
+
+export const MUTATION_FOUR_FIELD_CREATE_STATIC =
+  'createTodo(input: { field1: "field1Value", field2: "field2Value", field3: "field3Value", field4: "field4Value" }) { id }';

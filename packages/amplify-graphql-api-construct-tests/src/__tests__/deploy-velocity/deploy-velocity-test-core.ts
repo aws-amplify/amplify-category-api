@@ -169,7 +169,7 @@ export const recordCountDataProvider = (recordCount: number, mutationBuilder: (u
         mutationBatch.map((mutations) =>
           validateGraphql({
             ...endpointConfig,
-            query: /* GraphQL */ `mutation CREATE_TODO { ${mutations} }`,
+            query: /* GraphQL */ `mutation CREATE_TODOS { ${mutations} }`,
             expectedStatusCode: 200,
           }),
         ),
@@ -182,5 +182,33 @@ export const recordCountDataValidator = (expectedRecordCount: number) => {
   return async (endpointConfig: EndpointConfig): Promise<void> => {
     const recordCount = await getRecordCount(endpointConfig);
     expect(recordCount).toEqual(expectedRecordCount);
+  };
+};
+
+export const recordProviderWithIdState = (mutation: string) => {
+  return async (endpointConfig: EndpointConfig): Promise<string> => {
+    const result = await validateGraphql({
+      ...endpointConfig,
+      query: /* GraphQL */ `mutation CREATE_TODO { ${mutation} }`,
+      expectedStatusCode: 200,
+    });
+    return result.body.data.createTodo.id;
+  };
+};
+
+export const recordByIdDataValidator = () => {
+  return async (endpointConfig: EndpointConfig, id: string): Promise<void> => {
+    const response = await validateGraphql({
+      ...endpointConfig,
+      query: /* GraphQL */ `
+        query GET_TODO {
+          getTodo(id: "${id}") { id }
+        }
+      `,
+      expectedStatusCode: 200,
+    });
+    const retrievedTodo = response.body.data.getTodo;
+    expect(retrievedTodo).toBeDefined();
+    expect(retrievedTodo.id).toEqual(id);
   };
 };
