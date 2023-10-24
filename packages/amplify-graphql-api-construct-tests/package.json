@@ -21,8 +21,10 @@
     "build-tests": "tsc --build tsconfig.tests.json"
   },
   "dependencies": {
+    "@aws-amplify/graphql-api-construct": "1.1.5",
     "amplify-category-api-e2e-core": "4.3.1",
-    "node-fetch": "^2.6.7"
+    "node-fetch": "^2.6.7",
+    "@faker-js/faker": "^8.2.0"
   },
   "peerDependencies": {
     "@aws-amplify/amplify-cli-core": "^4.2.10"
