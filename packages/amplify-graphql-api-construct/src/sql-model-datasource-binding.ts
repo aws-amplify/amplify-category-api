@@ -17,7 +17,7 @@ export const isSqlModelDataSourceBinding = (obj: any): obj is SqlModelDataSource
  */
 export class SqlModelDataSourceBindingFactory {
   /**
-   * Creates an ISqlModelDataSourceBinding where the binding's `customSqlStatements` are populated from `sqlFiles`. The key of the
+   * Creates a SqlModelDataSourceBinding where the binding's `customSqlStatements` are populated from `sqlFiles`. The key of the
    * `customSqlStatements` record is the file's base name (that is, the name of the file minus the directory and extension).
    * @param sqlFiles the list of files to load SQL statements from.
    * @param options the remaining ISqlModelDataSourceBinding options.
