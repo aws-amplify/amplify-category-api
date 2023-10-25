@@ -113,6 +113,11 @@ export class AmplifyGraphqlApi extends Construct {
   public readonly apiKey: string | undefined;
 
   /**
+   * Generated Api Id. May be a CDK Token.
+   */
+  public readonly apiId: string;
+
+  /**
    * Conflict resolution setting
    */
   private readonly conflictResolution: ConflictResolution | undefined;
@@ -196,6 +201,7 @@ export class AmplifyGraphqlApi extends Construct {
     this.generatedFunctionSlots = getGeneratedFunctionSlots(assetManager.resolverAssets);
     this.storeOutput(outputStorageStrategy);
 
+    this.apiId = this.resources.cfnResources.cfnGraphqlApi.attrApiId;
     this.graphqlUrl = this.resources.cfnResources.cfnGraphqlApi.attrGraphQlUrl;
     this.realtimeUrl = this.resources.cfnResources.cfnGraphqlApi.attrRealtimeUrl;
     this.apiKey = this.resources.cfnResources.cfnApiKey?.attrApiKey;
