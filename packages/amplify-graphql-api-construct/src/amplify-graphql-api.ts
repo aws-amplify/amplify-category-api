@@ -48,6 +48,7 @@ import {
   addAmplifyMetadataToStackDescription,
   getAdditionalAuthenticationTypes,
 } from './internal';
+import { getStackForScope, walkAndProcessNodes } from './internal/construct-tree';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
@@ -125,6 +126,8 @@ export class AmplifyGraphqlApi extends Construct {
    */
   constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps) {
     super(scope, id);
+
+    validateNoOtherAmplifyGraphqlApiInStack(this);
 
     const {
       definition,
@@ -356,3 +359,23 @@ export class AmplifyGraphqlApi extends Construct {
     });
   }
 }
+
+/**
+ * Given the provided scope, walk the node tree, and throw an exception if any other AmplifyGraphqlApi constructs
+ * are found in the stack.
+ * @param scope the scope this construct is created in.
+ */
+const validateNoOtherAmplifyGraphqlApiInStack = (scope: Construct): void => {
+  const rootStack = getStackForScope(scope, true);
+
+  let wasOtherAmplifyGraphlApiFound = false;
+  walkAndProcessNodes(rootStack, (node: Construct) => {
+    if (node instanceof AmplifyGraphqlApi && scope !== node) {
+      wasOtherAmplifyGraphlApiFound = true;
+    }
+  });
+
+  if (wasOtherAmplifyGraphlApiFound) {
+    throw new Error('Only one AmplifyGraphqlApi is expected in a stack');
+  }
+};
