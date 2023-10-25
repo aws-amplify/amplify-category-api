@@ -19,7 +19,6 @@ import { CfnResource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { DBType as DBType_2 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveDefinitionNode } from 'graphql';
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql/language';
@@ -193,10 +192,16 @@ export type GetArgumentsOptions = {
 // @public (undocumented)
 export const getDatasourceType: (type: TypeNode, ctx: TransformerContextProvider) => DBType;
 
+// @public (undocumented)
+export const getEngineFromDBType: (dbType: DBType) => ImportedRDSType;
+
 // Warning: (ae-forgotten-export) The symbol "Operation" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export const getFieldNameFor: (op: Operation, typeName: string) => string;
+
+// @public (undocumented)
+export const getImportedRDSType: (modelToDatasourceMap: Map<string, DatasourceType>) => DBType;
 
 // @public (undocumented)
 export const getKeySchema: (table: any, indexName?: string) => any;
@@ -355,7 +360,7 @@ export const isImportedRDSType: (dbInfo: DatasourceType) => boolean;
 function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncConfigLambda;
 
 // @public (undocumented)
-export const isRDSDBType: (dbType: DBType_2) => boolean;
+export const isRDSDBType: (dbType: DBType) => boolean;
 
 // @public (undocumented)
 export const isRDSModel: (ctx: TransformerContextProvider, typename: string) => boolean;
@@ -437,6 +442,9 @@ export type SetResourceNameProps = {
     name: string;
     setOnDefaultChild?: boolean;
 };
+
+// @public (undocumented)
+export type SQLDBType = 'MySQL' | 'Postgres';
 
 // @public (undocumented)
 export class StackManager implements StackManagerProvider {

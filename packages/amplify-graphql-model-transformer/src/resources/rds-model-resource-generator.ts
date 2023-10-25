@@ -1,4 +1,4 @@
-import { MYSQL_DB_TYPE, RDSConnectionSecrets, POSTGRES_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
+import { MYSQL_DB_TYPE, RDSConnectionSecrets, getImportedRDSType, getEngineFromDBType } from '@aws-amplify/graphql-transformer-core';
 import { QueryFieldType, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Topic, SubscriptionFilter } from 'aws-cdk-lib/aws-sns';
 import { LambdaSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
@@ -27,7 +27,9 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
 
   generateResources(context: TransformerContextProvider): void {
     if (this.isEnabled()) {
-      const secretEntry = context.datasourceSecretParameterLocations.get(MYSQL_DB_TYPE);
+      const dbType = getImportedRDSType(context.modelToDatasourceMap);
+      const engine = getEngineFromDBType(dbType);
+      const secretEntry = context.datasourceSecretParameterLocations.get(dbType);
       const {
         RDSLambdaIAMRoleLogicalID,
         RDSPatchingLambdaIAMRoleLogicalID,
@@ -36,7 +38,6 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
         RDSLambdaDataSourceLogicalID,
         RDSPatchingSubscriptionLogicalID,
       } = ResourceConstants.RESOURCES;
-      const engine = this.getDBEngine(context);
       const lambdaRoleScope = context.stackManager.getScopeFor(RDSLambdaIAMRoleLogicalID, RDS_STACK_NAME);
       const lambdaScope = context.stackManager.getScopeFor(RDSLambdaLogicalID, RDS_STACK_NAME);
       setRDSLayerMappings(lambdaScope, context.rdsLayerMapping);
@@ -122,31 +123,5 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
         modelFieldMap.addResolverReference({ typeName: mutation.typeName, fieldName: mutation.fieldName, isList: false });
       });
     });
-  }
-
-  /*
-    Checks the modelToDatasource Map for the RDS models
-    and returns the engine type.
-    Throws error if multiple engines are encountered.
-  */
-  getDBEngine(context: TransformerContextProvider): string {
-    const engineSet = new Set<string>();
-    this.models.map((model) => {
-      const modelDatasourceType = context?.modelToDatasourceMap?.get(model.name.value)?.dbType;
-      switch (modelDatasourceType) {
-        case MYSQL_DB_TYPE:
-          engineSet.add('mysql');
-          break;
-        case POSTGRES_DB_TYPE:
-          engineSet.add('postgres');
-          break;
-        default:
-          throw new Error(`Unsupported RDS datasource type: ${modelDatasourceType}`);
-      }
-    });
-    if (engineSet.size > 1) {
-      throw new Error(`Multiple RDS datasource types ${Array.from(engineSet)} are detected. Only one type is supported.`);
-    }
-    return engineSet.values().next().value;
   }
 }

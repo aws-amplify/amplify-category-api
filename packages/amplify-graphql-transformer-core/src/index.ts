@@ -35,6 +35,8 @@ export {
   constructDataSourceMap,
   isImportedRDSType,
   isRDSDBType,
+  getEngineFromDBType,
+  getImportedRDSType,
 } from './utils';
 export type { SetResourceNameProps } from './utils';
 export * from './utils/operation-names';
@@ -57,6 +59,7 @@ export {
   RDSConnectionSecrets,
   ImportedDataSourceConfig,
   RDSDataSourceConfig,
+  SQLDBType,
 } from './types';
 /**
  * Returns the extra set of directives that are supported by AppSync service.

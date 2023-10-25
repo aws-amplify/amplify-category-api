@@ -5,7 +5,7 @@ import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-int
 import { DDB_DB_TYPE, MYSQL_DB_TYPE, ModelDatasourceType, POSTGRES_DB_TYPE } from '../types';
 import { DatasourceType, DBType } from '../config';
 import { APICategory } from './api-category';
-
+import { ImportedRDSType } from '../types';
 
 const getParameterNameForDBSecret = (secret: string, secretsKey: string): string => {
   return `${secretsKey}_${secret}`;
@@ -95,4 +95,35 @@ export const constructDataSourceMap = (schema: string, datasourceType: Datasourc
       result.set((type as ObjectTypeDefinitionNode).name.value, datasourceType);
     });
   return result;
+};
+
+/**
+ * Map the DBType that is set in the modelToDatasourceMap to the engine represented by ImportedRDSType
+ * @param dbType datasource type
+ * @returns
+ */
+export const getEngineFromDBType = (dbType: DBType): ImportedRDSType => {
+  switch (dbType) {
+    case MYSQL_DB_TYPE:
+      return ImportedRDSType.MYSQL;
+    case POSTGRES_DB_TYPE:
+      return ImportedRDSType.POSTGRESQL;
+    default:
+      throw new Error(`Unsupported RDS datasource type: ${dbType}`);
+  }
+};
+
+/**
+ * Returns the datasource type of the imported RDS models.
+ * Throws an error if more than one datasource type is detected.
+ * @param modelToDatasourceMap Array of datasource types
+ * @returns datasource type
+ */
+export const getImportedRDSType = (modelToDatasourceMap: Map<string, DatasourceType>): DBType => {
+  const datasourceMapValues = Array.from(modelToDatasourceMap?.values());
+  const dbTypes = new Set(datasourceMapValues?.filter((value) => isImportedRDSType(value))?.map((value) => value?.dbType));
+  if (dbTypes.size > 1) {
+    throw new Error(`Multiple imported SQL datasource types ${Array.from(dbTypes)} are detected. Only one type is supported.`);
+  }
+  return dbTypes.values().next().value;
 };

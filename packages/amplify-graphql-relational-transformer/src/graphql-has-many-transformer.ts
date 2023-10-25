@@ -53,7 +53,6 @@ import {
   validateRelatedModelDirective,
 } from './utils';
 import { getGenerator } from './resolver/generator-factory';
-import { is } from 'immer/dist/internal';
 
 const directiveName = 'hasMany';
 const defaultLimit = 100;

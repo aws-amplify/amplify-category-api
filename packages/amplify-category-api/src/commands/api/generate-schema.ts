@@ -3,7 +3,7 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import fs from 'fs-extra';
 import _ from 'lodash';
-import { ImportedRDSType, RDS_SCHEMA_FILE_NAME, ImportedDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
+import { RDS_SCHEMA_FILE_NAME, ImportedDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
 import { getAppSyncAPIName, getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import {
   storeConnectionSecrets,
@@ -13,7 +13,8 @@ import {
 } from '../../provider-utils/awscloudformation/utils/rds-resources/database-resources';
 import { writeSchemaFile, generateRDSSchema } from '../../provider-utils/awscloudformation/utils/graphql-schema-utils';
 import { PREVIEW_BANNER } from '../../category-constants';
-import { InputObjectTypeDefinitionNode, StringValueNode, parse } from 'graphql';
+import { parse } from 'graphql';
+import { getEngineInput } from '../../provider-utils/awscloudformation/utils/rds-input-utils';
 
 const subcommand = 'generate-schema';
 
@@ -32,16 +33,9 @@ export const run = async (context: $TSContext) => {
     return;
   }
 
-  const definitions = parse(fs.readFileSync(pathToSchemaFile, 'utf8')).definitions;
-  const amplifyInputType = definitions.find(
-    (d: any) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'AMPLIFY',
-  ) as InputObjectTypeDefinitionNode;
-  let engine = (amplifyInputType?.fields.find((f: any) => f.name.value === 'engine').defaultValue as StringValueNode)
-    .value as ImportedRDSType;
+  const importedSchema = parse(fs.readFileSync(pathToSchemaFile, 'utf8'));
+  const engine = await getEngineInput(importedSchema);
 
-  if (!engine) {
-    engine = ImportedRDSType.MYSQL;
-  }
   const secretsKey = getSecretsKey();
   const database = await getDatabaseName(context, apiName, secretsKey);
   if (!database) {

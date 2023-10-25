@@ -35,4 +35,5 @@ export const MYSQL_DB_TYPE = 'MySQL';
 export const DDB_DB_TYPE = 'DDB';
 export const POSTGRES_DB_TYPE = 'Postgres';
 
-export type ModelDatasourceType = 'MySQL' | 'DDB' | 'Postgres';
+export type ModelDatasourceType = 'DDB' | 'MySQL' | 'Postgres';
+export type SQLDBType = 'MySQL' | 'Postgres';

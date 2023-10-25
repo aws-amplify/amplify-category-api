@@ -1,5 +1,11 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { ConflictHandlerType, DatasourceType, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import {
+  ConflictHandlerType,
+  DatasourceType,
+  validateModelSchema,
+  MYSQL_DB_TYPE,
+  POSTGRES_DB_TYPE,
+} from '@aws-amplify/graphql-transformer-core';
 import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, NamedTypeNode, parse } from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
 import { Template } from 'aws-cdk-lib/assertions';
@@ -17,10 +23,9 @@ import {
   verifyInputCount,
   verifyMatchingTypes,
 } from './test-utils/helpers';
-import { getArrayFields, constructArrayFieldsStatement } from '../resolvers/rds';
 
 describe('ModelTransformer:', () => {
-  const RDSDatasources: DBType[] = ['MySQL', 'Postgres'];
+  const rdsDatasources: DBType[] = [MYSQL_DB_TYPE, POSTGRES_DB_TYPE];
 
   it('should successfully transform simple valid schema', async () => {
     const validSchema = `
@@ -1516,7 +1521,7 @@ describe('ModelTransformer:', () => {
     expect(updateTodoIdField.type.kind).toBe('NonNullType');
   });
 
-  RDSDatasources.forEach((dbType) => {
+  rdsDatasources.forEach((dbType) => {
     it('should successfully transform simple rds valid schema', async () => {
       const validSchema = `
         type Post @model {
@@ -1698,11 +1703,11 @@ describe('ModelTransformer:', () => {
 
     const modelToDatasourceMap = new Map<string, DatasourceType>();
     modelToDatasourceMap.set('Note', {
-      dbType: RDSDatasources[0],
+      dbType: rdsDatasources[0],
       provisionDB: false,
     });
     modelToDatasourceMap.set('Post', {
-      dbType: RDSDatasources[1],
+      dbType: rdsDatasources[1],
       provisionDB: false,
     });
     expect(() =>

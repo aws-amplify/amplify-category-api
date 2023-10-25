@@ -163,7 +163,7 @@ export interface DatasourceType {
 }
 
 // @public (undocumented)
-export type DBType = 'MySQL' | 'DDB' | 'Postgres';
+export type DBType = 'DDB' | 'MySQL' | 'Postgres';
 
 // @public (undocumented)
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {

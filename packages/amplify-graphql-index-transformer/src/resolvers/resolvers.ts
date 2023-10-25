@@ -853,19 +853,19 @@ export const generateAuthExpressionForSandboxMode = (enabled: boolean): string =
 
 export function getDBInfo(ctx: TransformerContextProvider, modelName: string) {
   const dbInfo = ctx.modelToDatasourceMap.get(modelName);
-  const result = dbInfo ?? { dbType: 'DDB', provisionDB: true };
+  const result = dbInfo ?? { dbType: DDB_DB_TYPE, provisionDB: true };
   return result;
 }
 
 export function getDBType(ctx: TransformerContextProvider, modelName: string) {
   const dbInfo = getDBInfo(ctx, modelName);
-  const dbType = dbInfo ? dbInfo.dbType : 'DDB';
+  const dbType = dbInfo ? dbInfo.dbType : DDB_DB_TYPE;
   return dbType;
 }
 
 export const getVTLGenerator = (dbInfo: DatasourceType | undefined): RDSIndexVTLGenerator | DynamoDBIndexVTLGenerator => {
-  const dbType = dbInfo ? dbInfo.dbType : 'DDB';
-  if (dbType === 'DDB') {
+  const dbType = dbInfo ? dbInfo.dbType : DDB_DB_TYPE;
+  if (dbType === DDB_DB_TYPE) {
     return new DynamoDBIndexVTLGenerator();
   }
   return new RDSIndexVTLGenerator();

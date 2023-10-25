@@ -12,6 +12,8 @@ export {
   isImportedRDSType,
   isRDSDBType,
   constructDataSourceMap,
+  getEngineFromDBType,
+  getImportedRDSType,
 } from './rds-util';
 export const APICategory = 'api';
 export { setResourceName, getResourceName } from './resource-name';

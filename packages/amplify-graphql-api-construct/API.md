@@ -45,6 +45,7 @@ import { NoneDataSource } from 'aws-cdk-lib/aws-appsync';
 import { OpenSearchDataSource } from 'aws-cdk-lib/aws-appsync';
 import { RdsDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Resolver } from 'aws-cdk-lib/aws-appsync';
+import { SQLDBType } from '@aws-amplify/graphql-transformer-core';
 
 // @public
 export interface AddFunctionProps {
@@ -267,7 +268,7 @@ export interface QueryFunctionSlot extends FunctionSlotBase {
 
 // @public
 export interface SqlModelDataSourceBinding {
-    readonly bindingType: 'MySQL';
+    readonly bindingType: SQLDBType;
     readonly customSqlStatements?: Record<string, string>;
     readonly dbConnectionConfig: SqlModelDataSourceBindingDbConnectionConfig;
     readonly vpcConfiguration: SqlModelDataSourceBindingVpcConfig;

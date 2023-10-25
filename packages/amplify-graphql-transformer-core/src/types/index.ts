@@ -10,4 +10,5 @@ export {
   ImportedDataSourceConfig,
   RDSDataSourceConfig,
   ModelDatasourceType,
+  SQLDBType,
 } from './import-appsync-api-types';
