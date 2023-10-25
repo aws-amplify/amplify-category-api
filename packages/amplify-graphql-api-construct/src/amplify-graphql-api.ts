@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { executeTransform } from '@aws-amplify/graphql-transformer';
-import { CfnResource, NestedStack, RemovalPolicy, ResourceEnvironment, Stack } from 'aws-cdk-lib';
+import { NestedStack, Stack } from 'aws-cdk-lib';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { AssetProps } from '@aws-amplify/graphql-transformer-interfaces';
 import { StackMetadataBackendOutputStorageStrategy } from '@aws-amplify/backend-output-storage';
@@ -15,7 +15,6 @@ import {
   ExtendedResolverProps,
   HttpDataSource,
   HttpDataSourceOptions,
-  IGraphqlApi,
   LambdaDataSource,
   NoneDataSource,
   OpenSearchDataSource,
@@ -81,7 +80,7 @@ import { getStackForScope, walkAndProcessNodes } from './internal/construct-tree
  * ```
  * `resources.<ResourceType>.<ResourceName>` - you can then perform any CDK action on these resulting resoureces.
  */
-export class AmplifyGraphqlApi extends Construct implements IGraphqlApi {
+export class AmplifyGraphqlApi extends Construct {
   /**
    * Generated L1 and L2 CDK resources.
    */
@@ -117,21 +116,6 @@ export class AmplifyGraphqlApi extends Construct implements IGraphqlApi {
    * Generated Api Id. May be a CDK Token.
    */
   public readonly apiId: string;
-
-  /**
-   * Generated Api ARN. May be a CDK Token.
-   */
-  public readonly arn: string;
-
-  /**
-   * Stack returned from L2 Graphql API. May be a CDK Token.
-   */
-  public readonly stack: Stack;
-
-  /**
-   * ResourceEnvironment returned from L2 Graphql Api. Maybe a CDK Token.
-   */
-  public readonly env: ResourceEnvironment;
 
   /**
    * Conflict resolution setting
@@ -218,37 +202,9 @@ export class AmplifyGraphqlApi extends Construct implements IGraphqlApi {
     this.storeOutput(outputStorageStrategy);
 
     this.apiId = this.resources.cfnResources.cfnGraphqlApi.attrApiId;
-    this.arn = this.resources.cfnResources.cfnGraphqlApi.attrArn;
     this.graphqlUrl = this.resources.cfnResources.cfnGraphqlApi.attrGraphQlUrl;
     this.realtimeUrl = this.resources.cfnResources.cfnGraphqlApi.attrRealtimeUrl;
     this.apiKey = this.resources.cfnResources.cfnApiKey?.attrApiKey;
-    this.stack = this.resources.graphqlApi.stack;
-    this.env = this.resources.graphqlApi.env;
-  }
-
-  /**
-   * Proxy call to Graphql API addSchemaDependency in order to implement IGraphqlApi interface.
-   * @param id id to proxy into `addResolver`.
-   * @param props props to proxy into `addResolver`.
-   */
-  createResolver(id: string, props: ExtendedResolverProps): Resolver {
-    return this.addResolver(id, props);
-  }
-
-  /**
-   * Proxy call to Graphql API addSchemaDependency in order to implement IGraphqlApi interface.
-   * @param construct construct to proxy into `addSchemaDependency`.
-   */
-  addSchemaDependency(construct: CfnResource): boolean {
-    return this.resources.graphqlApi.addSchemaDependency(construct);
-  }
-
-  /**
-   * Proxy call to Graphql API applyRemovalPolicy in order to implement IGraphqlApi interface.
-   * @param policy policy to proxy into `applyRemovalPolicy`.
-   */
-  applyRemovalPolicy(policy: RemovalPolicy): void {
-    this.resources.graphqlApi.applyRemovalPolicy(policy);
   }
 
   /**
