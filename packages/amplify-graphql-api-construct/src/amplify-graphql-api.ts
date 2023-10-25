@@ -156,7 +156,7 @@ export class AmplifyGraphqlApi extends Construct {
 
     const assetManager = new AssetManager();
 
-    let executeTransformConfig: ExecuteTransformConfig = {
+    const executeTransformConfig: ExecuteTransformConfig = {
       scope: this,
       nestedStackProvider: {
         provide: (nestedStackScope: Construct, name: string) => new NestedStack(nestedStackScope, name),
@@ -184,9 +184,8 @@ export class AmplifyGraphqlApi extends Construct {
         ...defaultTranslationBehavior,
         ...(translationBehavior ?? {}),
       },
+      modelDataSourceDefinitions: definition.modelDataSourceDefinitions
     };
-
-    executeTransformConfig = this.extendTransformConfig(executeTransformConfig, definition);
 
     executeTransform(executeTransformConfig);
 
@@ -200,64 +199,6 @@ export class AmplifyGraphqlApi extends Construct {
     this.graphqlUrl = this.resources.cfnResources.cfnGraphqlApi.attrGraphQlUrl;
     this.realtimeUrl = this.resources.cfnResources.cfnGraphqlApi.attrRealtimeUrl;
     this.apiKey = this.resources.cfnResources.cfnApiKey?.attrApiKey;
-  }
-
-  /**
-   * Extends executeTransformConfig with fields for provisioning a SQL Lambda
-   * @param executeTransformConfig the executeTransformConfig to extend
-   * @param modelDataSourceBinding the modelDataSourceBinding containing the values to add to the transform config
-   */
-  private extendTransformConfig(
-    executeTransformConfig: ExecuteTransformConfig,
-    modelDataSourceBinding: SqlModelDataSourceBinding,
-  ): ExecuteTransformConfig {
-    const extendedConfig = { ...executeTransformConfig };
-    if (modelDataSourceBinding.customSqlStatements) {
-      extendedConfig.customQueries = new Map(Object.entries(modelDataSourceBinding.customSqlStatements));
-    }
-
-    const dbSecrets: Map<string, RDSConnectionSecrets> = new Map();
-    let dbSecretDbTypeKey: string;
-    switch (modelDataSourceBinding.bindingType) {
-      case 'MySQL':
-        dbSecretDbTypeKey = 'MySQL';
-        break;
-      default:
-        throw new Error('Unsupported binding type');
-    }
-    dbSecrets.set(dbSecretDbTypeKey, {
-      username: modelDataSourceBinding.dbConnectionConfig.usernameSsmPath,
-      password: modelDataSourceBinding.dbConnectionConfig.passwordSsmPath,
-      host: modelDataSourceBinding.dbConnectionConfig.hostnameSsmPath,
-      // Cast through `any` to allow the SSM Path string to be used on a type expecting a number. This flow expects the incoming value to be
-      // a string containing the SSM path.
-      port: modelDataSourceBinding.dbConnectionConfig.portSsmPath as any,
-      database: modelDataSourceBinding.dbConnectionConfig.databaseNameSsmPath,
-    });
-    extendedConfig.datasourceSecretParameterLocations = dbSecrets;
-
-    const subnetAvailabilityZoneConfig = modelDataSourceBinding.vpcConfiguration.subnetAvailabilityZones.map(
-      (saz): { SubnetId: string; AvailabilityZone: string } => ({
-        SubnetId: saz.subnetId,
-        AvailabilityZone: saz.availabilityZone,
-      }),
-    );
-
-    if (!extendedConfig.modelToDatasourceMap || extendedConfig.modelToDatasourceMap.size === 0) {
-      const defaultDatasourceType = {
-        dbType: modelDataSourceBinding.bindingType,
-        provisionDB: false,
-      };
-      extendedConfig.modelToDatasourceMap = constructDataSourceMap(extendedConfig.schema, defaultDatasourceType);
-    }
-
-    extendedConfig.sqlLambdaVpcConfig = {
-      vpcId: modelDataSourceBinding.vpcConfiguration.vpcId,
-      securityGroupIds: modelDataSourceBinding.vpcConfiguration.securityGroupIds,
-      subnetAvailabilityZoneConfig,
-    };
-
-    return extendedConfig;
   }
 
   /**
