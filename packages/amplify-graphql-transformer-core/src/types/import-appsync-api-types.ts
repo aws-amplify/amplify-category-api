@@ -1,4 +1,4 @@
-import { TransformerSecrets } from '@aws-amplify/graphql-transformer-interfaces';
+import { ModelDataSourceDefinitionDbType, TransformerSecrets } from '@aws-amplify/graphql-transformer-interfaces';
 
 export enum ImportedRDSType {
   MYSQL = 'mysql',
@@ -31,7 +31,7 @@ export type RDSConnectionSecrets = TransformerSecrets & {
   port: number;
 };
 
-export const MYSQL_DB_TYPE = 'MySQL';
-export const DDB_DB_TYPE = 'DDB';
+export const MYSQL_DB_TYPE: ModelDataSourceDefinitionDbType = 'MYSQL';
+export const DDB_DB_TYPE: ModelDataSourceDefinitionDbType = 'DYNAMODB';
 
-export type ModelDatasourceType = 'MySQL' | 'DDB';
+export type ModelDatasourceType = 'MYSQL' | 'DYNAMODB';

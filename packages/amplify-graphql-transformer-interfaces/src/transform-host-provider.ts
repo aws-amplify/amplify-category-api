@@ -17,8 +17,8 @@ import {
   DataSourceOptions,
   SearchableDataSourceOptions,
   MappingTemplateProvider,
-  VpcConfig,
 } from './graphql-api-provider';
+import { VpcConfig } from './vpc-config';
 
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {
   /**
@@ -28,19 +28,23 @@ export interface DynamoDbDataSourceOptions extends DataSourceOptions {
 }
 
 export interface TransformHostProvider {
-  setAPI(api: GraphqlApiBase): void;
+  setAPI: (api: GraphqlApiBase) => void;
 
-  addHttpDataSource(name: string, endpoint: string, options?: DataSourceOptions, scope?: Construct): HttpDataSource;
-  addDynamoDbDataSource(name: string, table: ITable, options?: DynamoDbDataSourceOptions, scope?: Construct): DynamoDbDataSource;
-  addNoneDataSource(name: string, options?: DataSourceOptions, scope?: Construct): NoneDataSource;
-  addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: DataSourceOptions, scope?: Construct): LambdaDataSource;
-  addSearchableDataSource(
+  addHttpDataSource: (name: string, endpoint: string, options?: DataSourceOptions, scope?: Construct) => HttpDataSource;
+
+  addDynamoDbDataSource: (name: string, table: ITable, options?: DynamoDbDataSourceOptions, scope?: Construct) => DynamoDbDataSource;
+
+  addNoneDataSource: (name: string, options?: DataSourceOptions, scope?: Construct) => NoneDataSource;
+
+  addLambdaDataSource: (name: string, lambdaFunction: IFunction, options?: DataSourceOptions, scope?: Construct) => LambdaDataSource;
+
+  addSearchableDataSource: (
     name: string,
     endpoint: string,
     region: string,
     options?: SearchableDataSourceOptions,
     scope?: Construct,
-  ): BaseDataSource;
+  ) => BaseDataSource;
 
   addAppSyncFunction: (
     name: string,
@@ -76,8 +80,10 @@ export interface TransformHostProvider {
   ) => IFunction;
 
   getDataSource: (name: string) => BaseDataSource | void;
+
   hasDataSource: (name: string) => boolean;
 
   getResolver: (typeName: string, fieldName: string) => CfnResolver | void;
+
   hasResolver: (typeName: string, fieldName: string) => boolean;
 }

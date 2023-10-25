@@ -17,6 +17,7 @@ import { IRole, CfnRole } from 'aws-cdk-lib/aws-iam';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { IFunction, CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
+import { ModelDataSourceDefinition } from '@aws-amplify/graphql-transformer-interfaces';
 
 /**
  * Configuration for IAM Authorization on the Graphql Api.
@@ -503,9 +504,18 @@ export interface IAmplifyGraphqlDefinition {
   readonly functionSlots: FunctionSlot[];
 
   /**
-   * Return the DataSource binding information for models defined in `schema`.
+   * The ModelDataSourceDefinition for each model defined in `schema`. The record is keyed by the GraphQL model name.
+   *
+   * In a schema with `refersTo` or `mapsTo` directives, the base GraphQL name is used, not the name of the original field. E.g.:
+   * ```graphql
+   * type User @model @refersTo(name: "my-user") {
+   *   id: ID!
+   *   username: String!
+   * }
+   * ```
+   * The modelDataSourceDefinitions key will be `User`, not "my-user".
    */
-  readonly modelDataSourceBinding: ModelDataSourceBinding;
+  readonly modelDataSourceDefinitions: Record<string, ModelDataSourceDefinition>;
 }
 
 /**
@@ -753,113 +763,4 @@ export interface AddFunctionProps {
    * @default - no code is used
    */
   readonly code?: Code;
-}
-
-/**
- * Additional binding configurations used to resolve models in an AmplifyGraphqlDefinition with a data source. AmplifyGraphqlApiDefinitions
- * created with one of these data sources can use the `@model` directive to provision storage (DynamoDB only), define fine-grained
- * authorization rules, re-map GraphQL field names, define model-to-model relationships, and more. See
- * https://docs.amplify.aws/cli/graphql/directives-reference/.
- * @experimental
- */
-export type ModelDataSourceBinding = DynamoModelDataSourceBinding | SqlModelDataSourceBinding;
-
-/**
- * Binding type to specify a DyanamoDB data source.
- * @experimental
- */
-export interface DynamoModelDataSourceBinding {
-  /**
-   * The type of the data source used to process model operations for this definition.
-   * @default 'DynamoDB'
-   */
-  readonly bindingType: 'DynamoDB';
-}
-
-/**
- * Additional binding configurations used to connect an AmplifyGraphqlApi to a SQL-based data source using a Lambda.
- *
- * The `bindingType` of this data source must be one of the values defined by `SqlModelDataSourceBindingType`.
- * @experimental
- */
-export interface SqlModelDataSourceBinding {
-  /**
-   * The type of the SQL database used to process model operations for this definition. TODO: Convert this to a string union when we add
-   * support for more SQL engines (e.g., 'PostgreSQL').
-   */
-  readonly bindingType: 'MySQL';
-
-  /**
-   * The configuration of the VPC into which to install the Lambda.
-   */
-  readonly vpcConfiguration: SqlModelDataSourceBindingVpcConfig;
-
-  /**
-   * Custom SQL statements. The key is the value of the `references` attribute of the `@sql` directive in the `schema`; the value is the SQL
-   * to be executed.
-   */
-  readonly customSqlStatements?: Record<string, string>;
-
-  /**
-   * The parameters the Lambda data source will use to connect to the database.
-   */
-  readonly dbConnectionConfig: SqlModelDataSourceBindingDbConnectionConfig;
-}
-
-/**
- * Configuration of the VPC in which to install a Lambda to resolve queries against a SQL-based data source. The SQL Lambda will be deployed
- * into the specified VPC, subnets, and security groups. The specified subnets and security groups must be in the same VPC. The VPC must
- * have at least one subnet. The construct will also create VPC service endpoints in the specified subnets, as well as inbound security
- * rules, to allow traffic on port 443 within each security group. This allows the Lambda to read database connection information from
- * Secure Systems Manager.
- * @experimental
- */
-export interface SqlModelDataSourceBindingVpcConfig {
-  /** The VPC to install the Lambda data source in. */
-  readonly vpcId: string;
-
-  /** The security groups to install the Lambda data source in. */
-  readonly securityGroupIds: string[];
-
-  /** The subnets to install the Lambda data source in, one per availability zone. */
-  readonly subnetAvailabilityZones: SubnetAvailabilityZone[];
-}
-
-/**
- * Subnet configuration for VPC endpoints used by a Lambda resolver for a SQL-based data source. Although it is possible to create multiple
- * subnets in a single availability zone, VPC service endpoints may only be deployed to a single subnet in a given availability zone. This
- * structure ensures that the Lambda function and VPC service endpoints are mutually consistent.
- * @experimental
- */
-export interface SubnetAvailabilityZone {
-  /** The subnet ID to install the Lambda data source in. */
-  readonly subnetId: string;
-
-  /** The availability zone of the subnet. */
-  readonly availabilityZone: string;
-}
-
-/**
- * The Secure Systems Manager parameter paths the Lambda data source will use to connect to the database.
- *
- * These parameters are retrieved from Secure Systems Manager in the same region as the Lambda.
- * @experimental
- */
-export interface SqlModelDataSourceBindingDbConnectionConfig {
-  /** The Secure Systems Manager parameter containing the hostname of the database. For RDS-based SQL data sources, this can be the hostname
-   * of a database proxy, cluster, or instance.
-   */
-  readonly hostnameSsmPath: string;
-
-  /** The Secure Systems Manager parameter containing the port number of the database proxy, cluster, or instance. */
-  readonly portSsmPath: string;
-
-  /** The Secure Systems Manager parameter containing the username to use when connecting to the database. */
-  readonly usernameSsmPath: string;
-
-  /** The Secure Systems Manager parameter containing the password to use when connecting to the database. */
-  readonly passwordSsmPath: string;
-
-  /** The Secure Systems Manager parameter containing the database name. */
-  readonly databaseNameSsmPath: string;
 }

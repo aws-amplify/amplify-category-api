@@ -88,7 +88,7 @@ export const provisionSchemaInspectorLambda = async (lambdaName: string, vpc: Vp
   spinner.start('Provisioning a function to introspect the database schema...');
   try {
     if (existingLambda) {
-      const subnetIds = vpc.subnetAvailabilityZoneConfig.map((sn) => sn.SubnetId);
+      const subnetIds = vpc.subnetAvailabilityZoneConfig.map((sn) => sn.subnetId);
       const vpcConfigMismatch =
         existingLambda.VpcConfig?.SecurityGroupIds?.sort().join() !== vpc.securityGroupIds.sort().join() ||
         existingLambda.VpcConfig?.SubnetIds?.sort().join() !== subnetIds.sort().join();
@@ -140,7 +140,7 @@ const deleteSchemaInspectorLambdaRole = async (lambdaName: string, region: strin
 
 const createSchemaInspectorLambda = async (lambdaName: string, iamRole: Role, vpc: VpcConfig, region: string): Promise<void> => {
   const lambdaClient = new LambdaClient({ region });
-  const subnetIds = vpc.subnetAvailabilityZoneConfig.map((sn) => sn.SubnetId);
+  const subnetIds = vpc.subnetAvailabilityZoneConfig.map((sn) => sn.subnetId);
 
   const params: CreateFunctionCommandInput = {
     Code: {

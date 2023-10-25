@@ -60,35 +60,6 @@ export interface LambdaConfig {
   ttlSeconds?: number;
 }
 
-/**
- * VpcConfig required to deploy a Lambda function in a VPC. The SQL Lambda will be deployed into the specified VPC, subnets, and security
- * groups. The specified subnets and security groups must be in the same VPC. The VPC must have at least one subnet. The construct will also
- * create VPC endpoints in the specified subnets, as well as inbound security rules to allow traffic on port 443 within each security group,
- * to allow the Lambda to read database connection information from Secure Systems Manager. */
-export type VpcConfig = {
-  vpcId: string;
-  subnetAvailabilityZoneConfig: SubnetAvailabilityZone[];
-  securityGroupIds: string[];
-};
-
-/**
- * Although it is possible to create multiple subnets in a single availability zone, VPC Endpoints may only be deployed to a single subnet
- * in a given availability zone. We use this structure to ensure that the Lambda function and VPC endpoints are mutually consistent.
- */
-export type SubnetAvailabilityZone = {
-  SubnetId: string;
-  AvailabilityZone: string;
-};
-
-/**
- * Maps a given AWS region to the SQL Lambda layer version ARN for that region.
- */
-export type RDSLayerMapping = {
-  [key: string]: {
-    layerRegion: string;
-  };
-};
-
 export interface AppSyncFunctionConfigurationProvider extends IConstruct {
   readonly arn: string;
   readonly functionId: string;

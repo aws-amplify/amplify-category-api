@@ -13,8 +13,6 @@ export {
   SyncConfigServer,
   SyncConfigLambda,
   TransformConfig,
-  DatasourceType,
-  DBType,
 } from './config/index';
 export {
   GetArgumentsOptions,

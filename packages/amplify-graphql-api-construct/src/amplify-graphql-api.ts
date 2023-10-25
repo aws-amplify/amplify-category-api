@@ -37,7 +37,6 @@ import type {
   IBackendOutputStorageStrategy,
   AddFunctionProps,
   ConflictResolution,
-  SqlModelDataSourceBinding,
 } from './types';
 import {
   convertAuthorizationModesToTransformerAuthConfig,
@@ -50,7 +49,6 @@ import {
   addAmplifyMetadataToStackDescription,
   getAdditionalAuthenticationTypes,
 } from './internal';
-import { isSqlModelDataSourceBinding } from './sql-model-datasource-binding';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
@@ -188,9 +186,7 @@ export class AmplifyGraphqlApi extends Construct {
       },
     };
 
-    if (isSqlModelDataSourceBinding(definition.modelDataSourceBinding)) {
-      executeTransformConfig = this.extendTransformConfig(executeTransformConfig, definition.modelDataSourceBinding);
-    }
+    executeTransformConfig = this.extendTransformConfig(executeTransformConfig, definition);
 
     executeTransform(executeTransformConfig);
 

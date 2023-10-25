@@ -15,6 +15,7 @@ import {
   LambdaDataSource,
   NoneDataSource,
   CfnResolver,
+  GraphqlApiBase
 } from 'aws-cdk-lib/aws-appsync';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IRole } from 'aws-cdk-lib/aws-iam';
@@ -52,8 +53,8 @@ export class DefaultTransformHost implements TransformHostProvider {
     this.api = options.api;
   }
 
-  public setAPI(api: GraphQLApi): void {
-    this.api = api;
+  public setAPI(api: GraphqlApiBase): void {
+    this.api = api as GraphQLApi;
   }
 
   public hasDataSource(name: string): boolean {
@@ -269,7 +270,7 @@ export class DefaultTransformHost implements TransformHostProvider {
       s3Bucket: functionCode.s3BucketName,
     };
 
-    const subnetIds = vpc?.subnetAvailabilityZoneConfig.map((sn) => sn.SubnetId);
+    const subnetIds = vpc?.subnetAvailabilityZoneConfig.map((sn) => sn.subnetId);
 
     if (vpc?.vpcId) {
       cfnFn.vpcConfig = {

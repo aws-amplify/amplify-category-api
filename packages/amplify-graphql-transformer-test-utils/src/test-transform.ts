@@ -1,9 +1,7 @@
 import { AppSyncAuthConfiguration, TransformerPluginProvider, TransformerLogLevel } from '@aws-amplify/graphql-transformer-interfaces';
-import type { SynthParameters, TransformParameters, VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import type { ModelDataSourceDefinition, SynthParameters, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import {
-  DatasourceType,
   GraphQLTransform,
-  RDSConnectionSecrets,
   ResolverConfig,
   UserDefinedSlot,
 } from '@aws-amplify/graphql-transformer-core';
@@ -18,11 +16,8 @@ export type TestTransformParameters = {
   authConfig?: AppSyncAuthConfiguration;
   userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   stackMapping?: Record<string, string>;
-  modelToDatasourceMap?: Map<string, DatasourceType>;
-  datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
-  customQueries?: Map<string, string>;
+  modelDataSourceDefinitions: Record<string, ModelDataSourceDefinition>;
   overrideConfig?: OverrideConfig;
-  sqlLambdaVpcConfig?: VpcConfig;
   synthParameters?: Partial<SynthParameters>;
 };
 
@@ -33,9 +28,7 @@ export type TestTransformParameters = {
 export const testTransform = (params: TestTransformParameters): DeploymentResources & { logs: any[] } => {
   const {
     schema,
-    modelToDatasourceMap,
-    datasourceSecretParameterLocations,
-    customQueries,
+    modelDataSourceDefinitions,
     overrideConfig,
     transformers,
     authConfig,
@@ -43,7 +36,6 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     userDefinedSlots,
     stackMapping,
     transformParameters,
-    sqlLambdaVpcConfig,
     synthParameters: overrideSynthParameters,
   } = params;
 
@@ -53,8 +45,8 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     authConfig,
     transformParameters,
     userDefinedSlots,
+    modelDataSourceDefinitions,
     resolverConfig,
-    sqlLambdaVpcConfig,
   });
 
   const transformManager = new TransformManager(overrideConfig);
@@ -75,11 +67,7 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
       ...overrideSynthParameters,
     },
     schema,
-    datasourceConfig: {
-      modelToDatasourceMap,
-      datasourceSecretParameterLocations,
-      customQueries,
-    },
+    modelDataSourceDefinitions,
   });
 
   const logs: any[] = [];

@@ -27,12 +27,10 @@ export type {
   IBackendOutputStorageStrategy,
   IBackendOutputEntry,
   AddFunctionProps,
-  ModelDataSourceBinding,
-  DynamoModelDataSourceBinding,
-  SqlModelDataSourceBinding,
-  SqlModelDataSourceBindingVpcConfig,
+  ModelDataSourceDefinition,
+  SqlModelDataSourceDefinitionVpcConfig,
   SubnetAvailabilityZone,
-  SqlModelDataSourceBindingDbConnectionConfig,
+  SqlModelDataSourceDefinitionDbConnectionConfig,
 } from './types';
 export { AmplifyGraphqlApi } from './amplify-graphql-api';
 export { AmplifyGraphqlDefinition } from './amplify-graphql-definition';

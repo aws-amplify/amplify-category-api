@@ -1,3 +1,4 @@
+import path from 'path';
 import { CfnMapping, Duration, Fn } from 'aws-cdk-lib';
 import {
   Expression,
@@ -16,10 +17,11 @@ import {
   toJson,
 } from 'graphql-mapping-template';
 import { ResourceConstants, isArrayOrObject } from 'graphql-transformer-common';
-import { RDSConnectionSecrets, setResourceName } from '@aws-amplify/graphql-transformer-core';
+import { setResourceName } from '@aws-amplify/graphql-transformer-core';
 import {
   GraphQLAPIProvider,
-  RDSLayerMapping,
+  SQLLambdaLayerMapping,
+  SqlModelDataSourceDefinitionDbConnectionConfig,
   SubnetAvailabilityZone,
   TransformerContextProvider,
   VpcConfig,
@@ -27,7 +29,6 @@ import {
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
-import path from 'path';
 import { EnumTypeDefinitionNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
 import { CfnVPCEndpoint } from 'aws-cdk-lib/aws-ec2';
 
@@ -44,12 +45,12 @@ const RDSLayerMappingID = 'RDSLayerResourceMapping';
  * Define RDS Lambda Layer region mappings
  * @param scope Construct
  */
-export const setRDSLayerMappings = (scope: Construct, mapping?: RDSLayerMapping): CfnMapping =>
+export const setRDSLayerMappings = (scope: Construct, mapping?: SQLLambdaLayerMapping): CfnMapping =>
   new CfnMapping(scope, RDSLayerMappingID, {
     mapping: getLatestLayers(mapping),
   });
 
-const getLatestLayers = (latestLayers?: RDSLayerMapping): RDSLayerMapping => {
+const getLatestLayers = (latestLayers?: SQLLambdaLayerMapping): SQLLambdaLayerMapping => {
   if (latestLayers && Object.keys(latestLayers).length > 0) {
     return latestLayers;
   }
@@ -60,7 +61,7 @@ const getLatestLayers = (latestLayers?: RDSLayerMapping): RDSLayerMapping => {
 
 // For beta use account '956468067974', layer name 'AmplifyRDSLayerBeta' and layer version '12' as of 2023-06-20
 // For prod use account '582037449441', layer name 'AmplifyRDSLayer' and layer version '3' as of 2023-06-20
-const getDefaultLayerMapping = (): RDSLayerMapping => ({
+const getDefaultLayerMapping = (): SQLLambdaLayerMapping => ({
   'ap-northeast-1': {
     layerRegion: 'arn:aws:lambda:ap-northeast-1:582037449441:layer:AmplifyRDSLayer:20',
   },
@@ -216,12 +217,12 @@ const addVpcEndpointForSecretsManager = (
  * @returns string[]
  */
 const extractSubnetForVpcEndpoint = (avaliabilityZoneMappings: SubnetAvailabilityZone[]): string[] => {
-  const avaliabilityZones = [] as string[];
+  const availabilityZones = [] as string[];
   const result = [];
   for (const subnet of avaliabilityZoneMappings) {
-    if (!avaliabilityZones.includes(subnet.AvailabilityZone)) {
-      avaliabilityZones.push(subnet.AvailabilityZone);
-      result.push(subnet.SubnetId);
+    if (!availabilityZones.includes(subnet.availabilityZone)) {
+      availabilityZones.push(subnet.availabilityZone);
+      result.push(subnet.subnetId);
     }
   }
   return result;
@@ -260,9 +261,13 @@ export const createRdsPatchingLambda = (
  * Create RDS Lambda IAM role
  * @param roleName string
  * @param scope Construct
- * @param secretEntry RDSConnectionSecrets
+ * @param dbConfig RDSConnectionSecrets
  */
-export const createRdsLambdaRole = (roleName: string, scope: Construct, secretEntry: RDSConnectionSecrets): IRole => {
+export const createRdsLambdaRole = (
+  roleName: string, 
+  scope: Construct, 
+  dbConfig: SqlModelDataSourceDefinitionDbConnectionConfig
+): IRole => {
   const { RDSLambdaIAMRoleLogicalID, RDSLambdaLogAccessPolicy } = ResourceConstants.RESOURCES;
   const role = new Role(scope, RDSLambdaIAMRoleLogicalID, {
     assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
@@ -276,17 +281,17 @@ export const createRdsLambdaRole = (roleName: string, scope: Construct, secretEn
       resources: ['arn:aws:logs:*:*:*'],
     }),
   ];
-  if (secretEntry) {
+  if (dbConfig) {
     policyStatements.push(
       new PolicyStatement({
         actions: ['ssm:GetParameter', 'ssm:GetParameters'],
         effect: Effect.ALLOW,
         resources: [
-          `arn:aws:ssm:*:*:parameter${secretEntry.username}`,
-          `arn:aws:ssm:*:*:parameter${secretEntry.password}`,
-          `arn:aws:ssm:*:*:parameter${secretEntry.host}`,
-          `arn:aws:ssm:*:*:parameter${secretEntry.database}`,
-          `arn:aws:ssm:*:*:parameter${secretEntry.port}`,
+          `arn:aws:ssm:*:*:parameter${dbConfig.usernameSsmPath}`,
+          `arn:aws:ssm:*:*:parameter${dbConfig.passwordSsmPath}`,
+          `arn:aws:ssm:*:*:parameter${dbConfig.hostnameSsmPath}`,
+          `arn:aws:ssm:*:*:parameter${dbConfig.databaseNameSsmPath}`,
+          `arn:aws:ssm:*:*:parameter${dbConfig.portSsmPath}`,
         ],
       }),
     );

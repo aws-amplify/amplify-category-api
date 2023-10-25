@@ -20,23 +20,10 @@ export interface NoneDataSourceProvider {
 export type DataSourceInstance = ITable | CfnDomain | HttpDataSource | IFunction | NoneDataSourceProvider;
 
 export interface TransformerDataSourceManagerProvider {
-  add(type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, dataSourceInstance: DataSourceInstance): void;
-  get(type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode): DataSourceInstance;
-  has(name: string): boolean;
+  add: (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, dataSourceInstance: DataSourceInstance) => void;
+  get: (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode) => DataSourceInstance;
+  has: (name: string) => boolean;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface DataSourceProvider extends BackedDataSource {}
-
-/**
- * Supported transformable database types.
- */
-export type DBType = 'MySQL' | 'DDB';
-
-/**
- * Configuration for a datasource. Defines the underlying database engine, and instructs the tranformer whether to provision the database
- * storage or whether it already exists.
- */
-export interface DatasourceType {
-  dbType: DBType;
-  provisionDB: boolean;
-}

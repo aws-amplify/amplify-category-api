@@ -5,15 +5,14 @@ import {
   TransformHostProvider,
   TransformerLog,
   NestedStackProvider,
-  RDSLayerMapping,
   SynthParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type {
   AssetProvider,
+  ModelDataSourceDefinition,
   StackManagerProvider,
   TransformParameterProvider,
   TransformParameters,
-  VpcConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { Aws, CfnOutput, Fn, Stack } from 'aws-cdk-lib';
@@ -43,10 +42,9 @@ import { TransformerOutput } from '../transformer-context/output';
 import { adoptAuthModes } from '../utils/authType';
 import { MappingTemplate } from '../cdk-compat';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
-import { DatasourceType } from '../config/project-config';
 import { defaultTransformParameters } from '../transformer-context/transform-parameters';
 import * as SyncUtils from './sync-utils';
-import { UserDefinedSlot, DatasourceTransformationConfig } from './types';
+import { UserDefinedSlot } from './types';
 import {
   makeSeenTransformationKey,
   matchArgumentDirective,
@@ -86,8 +84,7 @@ export interface GraphQLTransformOptions {
   readonly host?: TransformHostProvider;
   readonly userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   readonly resolverConfig?: ResolverConfig;
-  readonly sqlLambdaVpcConfig?: VpcConfig;
-  readonly rdsLayerMapping?: RDSLayerMapping;
+  readonly modelDataSourceDefinitions: Record<string, ModelDataSourceDefinition>;
 }
 
 export type TransformOption = {
@@ -97,7 +94,7 @@ export type TransformOption = {
   assetProvider: AssetProvider;
   synthParameters: SynthParameters;
   schema: string;
-  datasourceConfig?: DatasourceTransformationConfig;
+  modelDataSourceDefinitions: Record<string, ModelDataSourceDefinition>;
 };
 
 export type StackMapping = { [resourceId: string]: string };
@@ -113,7 +110,8 @@ export class GraphQLTransform {
 
   private readonly userDefinedSlots: Record<string, UserDefinedSlot[]>;
 
-  private readonly sqlLambdaVpcConfig?: VpcConfig;
+  private readonly modelDataSourceDefinitions: Record<string, ModelDataSourceDefinition>;
+
   private readonly transformParameters: TransformParameters;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
@@ -146,7 +144,7 @@ export class GraphQLTransform {
     this.stackMappingOverrides = options.stackMapping || {};
     this.userDefinedSlots = options.userDefinedSlots || ({} as Record<string, UserDefinedSlot[]>);
     this.resolverConfig = options.resolverConfig || {};
-    this.sqlLambdaVpcConfig = options.sqlLambdaVpcConfig;
+    this.modelDataSourceDefinitions = options.modelDataSourceDefinitions;
     this.transformParameters = {
       ...defaultTransformParameters,
       ...(options.transformParameters ?? {}),
@@ -196,7 +194,6 @@ export class GraphQLTransform {
     assetProvider,
     synthParameters,
     schema,
-    datasourceConfig,
   }: TransformOption): void {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
@@ -207,15 +204,11 @@ export class GraphQLTransform {
       assetProvider,
       synthParameters,
       parsedDocument,
-      datasourceConfig?.modelToDatasourceMap ?? new Map<string, DatasourceType>(),
-      datasourceConfig?.customQueries ?? new Map<string, string>(),
       this.stackMappingOverrides,
       this.authConfig,
       this.transformParameters,
+      this.modelDataSourceDefinitions,
       this.resolverConfig,
-      datasourceConfig?.datasourceSecretParameterLocations,
-      this.sqlLambdaVpcConfig,
-      datasourceConfig?.rdsLayerMapping,
     );
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),

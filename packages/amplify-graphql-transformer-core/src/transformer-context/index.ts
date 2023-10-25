@@ -6,22 +6,19 @@ import {
   TransformerContextProvider,
   TransformerDataSourceManagerProvider,
   AppSyncAuthConfiguration,
-  RDSLayerMapping,
   SynthParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type {
   AssetProvider,
+  ModelDataSourceDefinition,
   NestedStackProvider,
   TransformParameterProvider,
   TransformParameters,
-  VpcConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
 import { DocumentNode } from 'graphql';
 import { Construct } from 'constructs';
-import { DatasourceType } from '../config/project-config';
 import { ResolverConfig } from '../config/transformer-config';
-import { RDSConnectionSecrets } from '../types';
 import { TransformerDataSourceManager } from './datasource';
 import { TransformerOutput } from './output';
 import { TransformerContextProviderRegistry } from './provider-registry';
@@ -72,15 +69,7 @@ export class TransformerContext implements TransformerContextProvider {
 
   private resolverConfig: ResolverConfig | undefined;
 
-  public readonly modelToDatasourceMap: Map<string, DatasourceType>;
-
-  public readonly datasourceSecretParameterLocations: Map<string, RDSConnectionSecrets>;
-
-  public readonly sqlLambdaVpcConfig?: VpcConfig;
-
-  public readonly rdsLayerMapping?: RDSLayerMapping;
-
-  public readonly customQueries: Map<string, string>;
+  public readonly modelDataSourceDefinitions: Record<string, ModelDataSourceDefinition>;
 
   public metadata: TransformerContextMetadata;
 
@@ -91,15 +80,11 @@ export class TransformerContext implements TransformerContextProvider {
     assetProvider: AssetProvider,
     public readonly synthParameters: SynthParameters,
     public readonly inputDocument: DocumentNode,
-    modelToDatasourceMap: Map<string, DatasourceType>,
-    customQueries: Map<string, string>,
     stackMapping: Record<string, string>,
     authConfig: AppSyncAuthConfiguration,
     transformParameters: TransformParameters,
+    modelDataSourceDefinitions: Record<string, ModelDataSourceDefinition>,
     resolverConfig?: ResolverConfig,
-    datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>,
-    sqlLambdaVpcConfig?: VpcConfig,
-    rdsLayerMapping?: RDSLayerMapping,
   ) {
     assetManager.setAssetProvider(assetProvider);
     this.output = new TransformerOutput(inputDocument);
@@ -112,11 +97,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.transformParameters = transformParameters;
     this.resolverConfig = resolverConfig;
     this.metadata = new TransformerContextMetadata();
-    this.modelToDatasourceMap = modelToDatasourceMap;
-    this.datasourceSecretParameterLocations = datasourceSecretParameterLocations ?? new Map<string, RDSConnectionSecrets>();
-    this.sqlLambdaVpcConfig = sqlLambdaVpcConfig;
-    this.rdsLayerMapping = rdsLayerMapping;
-    this.customQueries = customQueries;
+    this.modelDataSourceDefinitions = modelDataSourceDefinitions;
   }
 
   /**

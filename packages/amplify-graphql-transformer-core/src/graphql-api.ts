@@ -15,11 +15,12 @@ import {
 } from 'aws-cdk-lib/aws-appsync';
 import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
-import { ArnFormat, CfnResource, Duration, Stack } from 'aws-cdk-lib';
+import { CfnResource, Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { TransformerSchema } from './cdk-compat/schema-asset';
 import { DefaultTransformHost } from './transform-host';
 import { setResourceName } from './utils';
+import { IamResource } from './iam-resource';
 
 export interface GraphqlApiProps {
   /**
@@ -53,64 +54,6 @@ export interface GraphqlApiProps {
    * @default - false
    */
   readonly xrayEnabled?: boolean;
-}
-
-export class IamResource implements APIIAMResourceProvider {
-  /**
-   * Generate the resource names given custom arns
-   *
-   * @param arns The custom arns that need to be permissioned
-   *
-   * Example: custom('/types/Query/fields/getExample')
-   */
-  public static custom(...arns: string[]): IamResource {
-    if (arns.length === 0) {
-      throw new Error('At least 1 custom ARN must be provided.');
-    }
-    return new IamResource(arns);
-  }
-
-  /**
-   * Generate the resource names given a type and fields
-   *
-   * @param type The type that needs to be allowed
-   * @param fields The fields that need to be allowed, if empty grant permissions to ALL fields
-   *
-   * Example: ofType('Query', 'GetExample')
-   */
-  public static ofType(type: string, ...fields: string[]): IamResource {
-    const arns = fields.length ? fields.map((field) => `types/${type}/fields/${field}`) : [`types/${type}/*`];
-    return new IamResource(arns);
-  }
-
-  /**
-   * Generate the resource names that accepts all types: `*`
-   */
-  public static all(): IamResource {
-    return new IamResource(['*']);
-  }
-
-  private arns: string[];
-
-  private constructor(arns: string[]) {
-    this.arns = arns;
-  }
-
-  /**
-   * Return the Resource ARN
-   *
-   * @param api The GraphQL API to give permissions
-   */
-  public resourceArns(api: GraphQLAPIProvider): string[] {
-    return this.arns.map((arn) =>
-      Stack.of(api).formatArn({
-        service: 'appsync',
-        resource: `apis/${api.apiId}`,
-        arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
-        resourceName: `${arn}`,
-      }),
-    );
-  }
 }
 
 export type TransformerAPIProps = GraphqlApiProps & {
@@ -283,7 +226,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     return this.grant(grantee, IamResource.ofType('Subscription', ...fields), 'appsync:GraphQL');
   }
 
-  public createAPIKey(config?: ApiKeyConfig) {
+  public createAPIKey(config?: ApiKeyConfig): CfnApiKey {
     if (config?.expires?.isBefore(Duration.days(1)) || config?.expires?.isAfter(Duration.days(365))) {
       throw Error('API key expiration must be between 1 and 365 days.');
     }
@@ -299,11 +242,11 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     this.schema.addToSchema(content, '\n');
   }
 
-  public getDefaultAuthorization() {
+  public getDefaultAuthorization(): any {
     return this.authorizationConfig?.defaultAuthorization;
   }
 
-  private validateAuthorizationProps(modes: AuthorizationMode[]) {
+  private validateAuthorizationProps(modes: AuthorizationMode[]): void {
     modes.forEach((mode) => {
       if (mode.authorizationType === AuthorizationType.OIDC && !mode.openIdConnectConfig) {
         throw new Error('Missing default OIDC Configuration');
@@ -325,7 +268,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     return true;
   }
 
-  private setupLogConfig(config?: LogConfig) {
+  private setupLogConfig(config?: LogConfig): CfnGraphQLApi.LogConfigProperty | undefined {
     if (!config) {
       return undefined;
     }
@@ -342,7 +285,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     };
   }
 
-  private setupOpenIdConnectConfig(config?: OpenIdConnectConfig) {
+  private setupOpenIdConnectConfig(config?: OpenIdConnectConfig): CfnGraphQLApi.OpenIDConnectConfigProperty | undefined {
     if (!config) {
       return undefined;
     }
@@ -354,6 +297,8 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     };
   }
 
+  // TODO: defaultAction isn't a member of CfnGraphQLApi.CognitoUserPoolConfigProperty -- is it correct to use it here?
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   private setupUserPoolConfig(config?: UserPoolConfig) {
     if (!config) {
       return undefined;
@@ -366,7 +311,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     };
   }
 
-  private setupLambdaConfig(config?: any) {
+  private setupLambdaConfig(config?: any): CfnGraphQLApi.LambdaAuthorizerConfigProperty | undefined {
     if (!config) {
       return undefined;
     }
@@ -377,11 +322,11 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     };
   }
 
-  private lambdaArnKey(name: string) {
+  private lambdaArnKey(name: string): string {
     return `arn:${cdk.Aws.PARTITION}:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:function:${name}-${this.environmentName}`;
   }
 
-  private setupAdditionalAuthorizationModes(modes?: Array<any>) {
+  private setupAdditionalAuthorizationModes(modes?: Array<any>): CfnGraphQLApi.AdditionalAuthenticationProviderProperty[] | undefined {
     if (!modes || modes.length === 0) return undefined;
     return modes.reduce<CfnGraphQLApi.AdditionalAuthenticationProviderProperty[]>(
       (acc, mode) => [
