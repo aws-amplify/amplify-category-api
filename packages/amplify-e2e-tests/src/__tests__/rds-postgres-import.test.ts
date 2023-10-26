@@ -131,7 +131,7 @@ describe('RDS Model Directive', () => {
     };
 
     const queries = [
-      'CREATE TYPE contact_status AS ENUM (\'active\', \'inactive\')',
+      "CREATE TYPE contact_status AS ENUM ('active', 'inactive')",
       'CREATE TABLE Contact (id VARCHAR(40) PRIMARY KEY, firstName VARCHAR(20), lastName VARCHAR(50), strArray VARCHAR[], intArray INT[], status contact_status)',
       'CREATE TABLE Person (personId INT PRIMARY KEY, firstName VARCHAR(20), lastName VARCHAR(50))',
       'CREATE TABLE Employee (id INT PRIMARY KEY, firstName VARCHAR(20), lastName VARCHAR(50))',
@@ -217,7 +217,9 @@ describe('RDS Model Directive', () => {
     expect((contactStatusField.type as NamedTypeNode).name.value).toEqual('ContactStatus');
 
     // Verify the Enum type
-    const contactStatusEnumType = schema.definitions.find((d) => d.kind === 'EnumTypeDefinition' && d.name.value === 'ContactStatus') as EnumTypeDefinitionNode;
+    const contactStatusEnumType = schema.definitions.find(
+      (d) => d.kind === 'EnumTypeDefinition' && d.name.value === 'ContactStatus',
+    ) as EnumTypeDefinitionNode;
     expect(contactStatusEnumType).toBeDefined();
     expect(contactStatusEnumType.values.length).toEqual(2);
     expect(contactStatusEnumType.values.map((e) => e.name.value)).toEqual(expect.arrayContaining(['active', 'inactive']));
