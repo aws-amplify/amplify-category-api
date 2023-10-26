@@ -6,6 +6,7 @@
 
 import { AppsyncFunction } from 'aws-cdk-lib/aws-appsync';
 import { BaseDataSource } from 'aws-cdk-lib/aws-appsync';
+import { BillingMode } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
@@ -45,6 +46,7 @@ import { NoneDataSource } from 'aws-cdk-lib/aws-appsync';
 import { OpenSearchDataSource } from 'aws-cdk-lib/aws-appsync';
 import { RdsDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Resolver } from 'aws-cdk-lib/aws-appsync';
+import { TableClass } from 'aws-cdk-lib/aws-dynamodb';
 
 // @public
 export interface AddFunctionProps {
@@ -55,6 +57,18 @@ export interface AddFunctionProps {
     readonly requestMappingTemplate?: MappingTemplate;
     readonly responseMappingTemplate?: MappingTemplate;
     readonly runtime?: FunctionRuntime;
+}
+
+// @public
+export class AmplifyDynamoDbTableWrapper {
+    constructor(resource: CfnResource);
+    set billingMode(billingMode: BillingMode);
+    static isAmplifyDynamoDbTableResource(x: any): x is CfnResource;
+    set pointInTimeRecoveryEnabled(pointInTimeRecoveryEnabled: boolean);
+    // (undocumented)
+    set provisionedThroughput(provisionedThroughput: ProvisionedThroughput);
+    set tableClass(tableClass: TableClass);
+    set timeToLiveAttribute(timeToLiveSpecification: TimeToLiveSpecification);
 }
 
 // @public
@@ -81,7 +95,6 @@ export class AmplifyGraphqlApi extends Construct {
 // @public
 export interface AmplifyGraphqlApiCfnResources {
     readonly additionalCfnResources: Record<string, CfnResource>;
-    readonly cfnAmplifyTables: Record<string, CfnResource>;
     readonly cfnApiKey?: CfnApiKey;
     readonly cfnDataSources: Record<string, CfnDataSource>;
     readonly cfnFunctionConfigurations: Record<string, CfnFunctionConfiguration>;
@@ -110,6 +123,7 @@ export interface AmplifyGraphqlApiProps {
 
 // @public
 export interface AmplifyGraphqlApiResources {
+    readonly amplifyDynamoDbTables: Record<string, AmplifyDynamoDbTableWrapper>;
     readonly cfnResources: AmplifyGraphqlApiCfnResources;
     readonly functions: Record<string, IFunction>;
     readonly graphqlApi: IGraphqlApi;
@@ -252,6 +266,12 @@ export interface PartialTranslationBehavior {
 }
 
 // @public
+export interface ProvisionedThroughput {
+    readonly readCapacityUnits: number;
+    readonly writeCapacityUnits: number;
+}
+
+// @public
 export interface QueryFunctionSlot extends FunctionSlotBase {
     readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preDataLoad' | 'postDataLoad' | 'finish';
     readonly typeName: 'Query';
@@ -261,6 +281,12 @@ export interface QueryFunctionSlot extends FunctionSlotBase {
 export interface SubscriptionFunctionSlot extends FunctionSlotBase {
     readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preSubscribe';
     readonly typeName: 'Subscription';
+}
+
+// @public
+export interface TimeToLiveSpecification {
+    readonly attributeName?: string;
+    readonly enabled: boolean;
 }
 
 // @public

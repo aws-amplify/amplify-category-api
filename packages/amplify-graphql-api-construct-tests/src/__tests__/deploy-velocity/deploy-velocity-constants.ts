@@ -1,4 +1,5 @@
 import { AmplifyGraphqlApi } from '@aws-amplify/graphql-api-construct';
+import { BillingMode } from 'aws-cdk-lib/aws-dynamodb';
 
 const ONE_MINUTE = 60 * 1000;
 export const DURATION_10_MINUTES = 10 * ONE_MINUTE;
@@ -65,13 +66,9 @@ export const MUTATION_FOUR_FIELD_CREATE = (uuid: string, i: number): string =>
   `mut${i}: createTodo(input: { field1: "${uuid}", field2: "${uuid}", field3: "${uuid}", field4: "${uuid}" }) { id }`;
 
 export const API_POST_PROCESSOR_SET_PROVISIONED_THROUGHPUT_TWO_GSIS = (api: AmplifyGraphqlApi): void => {
-  const billingMode = 'PROVISIONED';
-  const provisionedThroughput = { readCapacityUnits: 10, writeCapacityUnits: 10 };
-  const todoTable = api.resources.cfnResources.cfnAmplifyTables.Todo;
-  todoTable.addPropertyOverride('billingMode', billingMode);
-  todoTable.addPropertyOverride('provisionedThroughput', provisionedThroughput);
-  todoTable.addPropertyOverride('globalSecondaryIndexes.0.provisionedThroughput', provisionedThroughput);
-  todoTable.addPropertyOverride('globalSecondaryIndexes.1.provisionedThroughput', provisionedThroughput);
+  const table = api.resources.amplifyDynamoDbTables.Todo;
+  table.billingMode = BillingMode.PROVISIONED; // This will require `BillingMode` be imported in the generated file.
+  table.provisionedThroughput = { readCapacityUnits: 10, writeCapacityUnits: 10 };
 };
 
 export const MUTATION_ONE_FIELD_CREATE_STATIC = 'createTodo(input: { field1: "field1Value" }) { id }';

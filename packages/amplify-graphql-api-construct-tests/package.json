@@ -30,7 +30,9 @@
     "@aws-amplify/amplify-cli-core": "^4.2.10"
   },
   "devDependencies": {
-    "ts-node": "^8.10.2"
+    "ts-node": "^8.10.2",
+    "constructs": "10.0.5",
+    "aws-cdk-lib": "2.80.0"
   },
   "jest": {
     "verbose": false,
