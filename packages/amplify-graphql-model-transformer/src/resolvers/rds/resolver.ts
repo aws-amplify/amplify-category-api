@@ -15,7 +15,7 @@ import {
   str,
   toJson,
 } from 'graphql-mapping-template';
-import { ResourceConstants, isArrayOrObject } from 'graphql-transformer-common';
+import { ResourceConstants, isArrayOrObject, isListType } from 'graphql-transformer-common';
 import { RDSConnectionSecrets, setResourceName } from '@aws-amplify/graphql-transformer-core';
 import {
   GraphQLAPIProvider,
@@ -383,6 +383,7 @@ export const generateLambdaRequestTemplate = (
       set(ref('lambdaInput.args.metadata.keys'), list([])),
       constructAuthFilterStatement('lambdaInput.args.metadata.authFilter'),
       constructNonScalarFieldsStatement(tableName, ctx),
+      constructArrayFieldsStatement(tableName, ctx),
       constructFieldMappingInput(),
       qref(
         methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
@@ -455,8 +456,18 @@ export const getNonScalarFields = (object: ObjectTypeDefinitionNode | undefined,
   return object.fields?.filter((f: FieldDefinitionNode) => isArrayOrObject(f.type, enums)).map((f) => f.name.value) || [];
 };
 
+export const getArrayFields = (object: ObjectTypeDefinitionNode | undefined, ctx: TransformerContextProvider): string[] => {
+  if (!object) {
+    return [];
+  }
+  return object.fields?.filter((f: FieldDefinitionNode) => isListType(f.type)).map((f) => f.name.value) || [];
+};
+
 export const constructNonScalarFieldsStatement = (tableName: string, ctx: TransformerContextProvider): Expression =>
   set(ref('lambdaInput.args.metadata.nonScalarFields'), list(getNonScalarFields(ctx.output.getObject(tableName), ctx).map(str)));
+
+export const constructArrayFieldsStatement = (tableName: string, ctx: TransformerContextProvider): Expression =>
+  set(ref('lambdaInput.args.metadata.arrayFields'), list(getArrayFields(ctx.output.getObject(tableName), ctx).map(str)));
 
 export const constructFieldMappingInput = (): Expression => {
   return compoundExpression([

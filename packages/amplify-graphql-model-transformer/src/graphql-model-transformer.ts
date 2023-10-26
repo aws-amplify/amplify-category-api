@@ -1,6 +1,7 @@
 import {
   DDB_DB_TYPE,
   MYSQL_DB_TYPE,
+  POSTGRES_DB_TYPE,
   DirectiveWrapper,
   FieldWrapper,
   generateGetArgumentsInput,
@@ -139,9 +140,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   constructor(options: ModelTransformerOptions = {}) {
     super('amplify-model-transformer', directiveDefinition);
     this.options = this.getOptions(options);
-    const rdsGenerator = new RdsModelResourceGenerator();
     this.resourceGeneratorMap.set(DDB_DB_TYPE, new DynamoModelResourceGenerator());
-    this.resourceGeneratorMap.set(MYSQL_DB_TYPE, rdsGenerator);
+    this.resourceGeneratorMap.set(MYSQL_DB_TYPE, new RdsModelResourceGenerator());
+    this.resourceGeneratorMap.set(POSTGRES_DB_TYPE, new RdsModelResourceGenerator());
   }
 
   before = (ctx: TransformerBeforeStepContextProvider): void => {
@@ -153,6 +154,10 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     if (datasourceMapValues.some((value) => value.dbType === MYSQL_DB_TYPE && !value.provisionDB)) {
       this.resourceGeneratorMap.get(MYSQL_DB_TYPE)?.enableGenerator();
       this.resourceGeneratorMap.get(MYSQL_DB_TYPE)?.enableUnprovisioned();
+    }
+    if (datasourceMapValues.some((value) => value.dbType === POSTGRES_DB_TYPE && !value.provisionDB)) {
+      this.resourceGeneratorMap.get(POSTGRES_DB_TYPE)?.enableGenerator();
+      this.resourceGeneratorMap.get(POSTGRES_DB_TYPE)?.enableUnprovisioned();
     }
     if (datasourceMapValues.length === 0) {
       // Just enable DynamoDB provisioned, legacy use

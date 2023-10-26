@@ -130,7 +130,7 @@ export interface DatasourceType {
 }
 
 // @public (undocumented)
-export type DBType = 'MySQL' | 'DDB';
+export type DBType = 'MySQL' | 'DDB' | 'Postgres';
 
 // @public (undocumented)
 export const DDB_DB_TYPE = "DDB";
@@ -192,10 +192,16 @@ export type GetArgumentsOptions = {
 // @public (undocumented)
 export const getDatasourceType: (type: TypeNode, ctx: TransformerContextProvider) => DBType;
 
+// @public (undocumented)
+export const getEngineFromDBType: (dbType: DBType) => ImportedRDSType;
+
 // Warning: (ae-forgotten-export) The symbol "Operation" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export const getFieldNameFor: (op: Operation, typeName: string) => string;
+
+// @public (undocumented)
+export const getImportedRDSType: (modelToDatasourceMap: Map<string, DatasourceType>) => DBType;
 
 // @public (undocumented)
 export const getKeySchema: (table: any, indexName?: string) => any;
@@ -348,7 +354,13 @@ export class InvalidTransformerError extends Error {
 }
 
 // @public (undocumented)
+export const isImportedRDSType: (dbInfo: DatasourceType) => boolean;
+
+// @public (undocumented)
 function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncConfigLambda;
+
+// @public (undocumented)
+export const isRDSDBType: (dbType: DBType) => boolean;
 
 // @public (undocumented)
 export const isRDSModel: (ctx: TransformerContextProvider, typename: string) => boolean;
@@ -392,6 +404,9 @@ export class ObjectDefinitionWrapper {
 }
 
 // @public (undocumented)
+export const POSTGRES_DB_TYPE = "Postgres";
+
+// @public (undocumented)
 export const RDS_SCHEMA_FILE_NAME = "schema.rds.graphql";
 
 // @public (undocumented)
@@ -427,6 +442,9 @@ export type SetResourceNameProps = {
     name: string;
     setOnDefaultChild?: boolean;
 };
+
+// @public (undocumented)
+export type SQLDBType = 'MySQL' | 'Postgres';
 
 // @public (undocumented)
 export class StackManager implements StackManagerProvider {

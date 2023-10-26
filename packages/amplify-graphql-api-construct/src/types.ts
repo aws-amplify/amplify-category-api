@@ -17,6 +17,7 @@ import { IRole, CfnRole } from 'aws-cdk-lib/aws-iam';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { IFunction, CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
+import { SQLDBType } from '@aws-amplify/graphql-transformer-core';
 
 /**
  * Configuration for IAM Authorization on the Graphql Api.
@@ -784,10 +785,9 @@ export interface DynamoModelDataSourceBinding {
  */
 export interface SqlModelDataSourceBinding {
   /**
-   * The type of the SQL database used to process model operations for this definition. TODO: Convert this to a string union when we add
-   * support for more SQL engines (e.g., 'PostgreSQL').
+   * The type of the SQL database used to process model operations for this definition.
    */
-  readonly bindingType: 'MySQL';
+  readonly bindingType: SQLDBType;
 
   /**
    * The configuration of the VPC into which to install the Lambda.

@@ -1,8 +1,8 @@
-import { parse, print, InputObjectTypeDefinitionNode, DocumentNode } from 'graphql';
+import { print, InputObjectTypeDefinitionNode, DocumentNode, StringValueNode } from 'graphql';
 import * as fs from 'fs-extra';
 import { $TSContext, ApiCategoryFacade, getGraphQLTransformerAuthDocLink } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
-import { ImportedRDSType, ImportedDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
+import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 
 type AmplifyInputEntry = {
   name: string;
@@ -98,4 +98,16 @@ export const constructRDSGlobalAmplifyInput = async (
     const engine = config['engine'] || ImportedRDSType.MYSQL;
     return constructDefaultGlobalAmplifyInput(context, engine, false);
   }
+};
+
+export const getEngineInput = async (schemaDocument: DocumentNode): Promise<ImportedRDSType> => {
+  const inputNode = await readRDSGlobalAmplifyInput(schemaDocument);
+  if (inputNode) {
+    const engine = (inputNode.fields.find((field) => field.name.value === 'engine')?.defaultValue as StringValueNode)?.value;
+    if (engine && !Object.values(ImportedRDSType).includes(engine as ImportedRDSType)) {
+      throw new Error(`engine input ${engine} is not supported.`);
+    }
+    return engine as ImportedRDSType;
+  }
+  return ImportedRDSType.MYSQL;
 };

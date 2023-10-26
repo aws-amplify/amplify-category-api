@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { Template } from 'cloudform-types';
 import _ from 'lodash';
-import { parse, Kind, ObjectTypeDefinitionNode, print, InputObjectTypeDefinitionNode } from 'graphql';
+import { parse, Kind, ObjectTypeDefinitionNode, print, InputObjectTypeDefinitionNode, StringValueNode } from 'graphql';
 import { ApiCategorySchemaNotFoundError } from '../errors';
 import { throwIfNotJSONExt } from './fileUtils';
 import { ProjectOptions } from './amplifyUtils';
@@ -301,9 +301,11 @@ export const readSchema = async (
     // Schema.rds.graphql contains the models for imported 'MySQL' datasource.
     // Intentionally using 'for ... of ...' instead of 'object.foreach' to process this in sequence.
     for (const file of existingSchemaFiles) {
-      const datasourceType = file.endsWith('.rds.graphql') ? constructDataSourceType('MySQL', false) : constructDataSourceType('DDB');
       const fileSchema = (await fs.readFile(file)).toString();
       const { amplifyType, schema: fileSchemaWithoutAmplifyInput } = removeAmplifyInput(fileSchema);
+      const datasourceType = file.endsWith('.rds.graphql')
+        ? constructDataSourceType(getRDSDBTypeFromInput(amplifyType), false)
+        : constructDataSourceType('DDB');
       modelToDatasourceMap = new Map([...modelToDatasourceMap.entries(), ...constructDataSourceMap(fileSchema, datasourceType).entries()]);
       if (amplifyType) {
         amplifyInputType = mergeTypeFields(amplifyInputType, amplifyType);
@@ -329,6 +331,22 @@ export const readSchema = async (
     schema,
     modelToDatasourceMap,
   };
+};
+
+const getRDSDBTypeFromInput = (amplifyType: InputObjectTypeDefinitionNode): DBType => {
+  const engineInput = amplifyType.fields.find((f) => f.name.value === 'engine');
+  if (!engineInput) {
+    throw new Error('engine is not defined in the RDS schema file');
+  }
+  const engine = (engineInput?.defaultValue as StringValueNode)?.value;
+  switch (engine) {
+    case 'mysql':
+      return 'MySQL';
+    case 'postgres':
+      return 'Postgres';
+    default:
+      throw new Error(`engine ${engine} specified in the RDS schema file is not supported`);
+  }
 };
 
 export const removeAmplifyInput = (schema: string): SchemaReaderConfig => {
@@ -386,7 +404,7 @@ async function readSchemaDocuments(schemaDirectoryPath: string): Promise<string[
 /**
  * Supported transformable database types.
  */
-export type DBType = 'MySQL' | 'DDB';
+export type DBType = 'DDB' | 'MySQL' | 'Postgres';
 
 /**
  * Configuration for a datasource. Defines the underlying database engine, and instructs the tranformer whether to provision the database

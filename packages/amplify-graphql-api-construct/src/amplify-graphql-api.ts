@@ -28,7 +28,7 @@ import { IEventBus } from 'aws-cdk-lib/aws-events';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { IServerlessCluster } from 'aws-cdk-lib/aws-rds';
 import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
-import { RDSConnectionSecrets, constructDataSourceMap } from '@aws-amplify/graphql-transformer-core';
+import { MYSQL_DB_TYPE, POSTGRES_DB_TYPE, RDSConnectionSecrets, constructDataSourceMap } from '@aws-amplify/graphql-transformer-core';
 import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
 import type {
   AmplifyGraphqlApiResources,
@@ -223,11 +223,14 @@ export class AmplifyGraphqlApi extends Construct {
     const dbSecrets: Map<string, RDSConnectionSecrets> = new Map();
     let dbSecretDbTypeKey: string;
     switch (modelDataSourceBinding.bindingType) {
-      case 'MySQL':
-        dbSecretDbTypeKey = 'MySQL';
+      case MYSQL_DB_TYPE:
+        dbSecretDbTypeKey = MYSQL_DB_TYPE;
+        break;
+      case POSTGRES_DB_TYPE:
+        dbSecretDbTypeKey = POSTGRES_DB_TYPE;
         break;
       default:
-        throw new Error('Unsupported binding type');
+        throw new Error(`Unsupported binding type ${modelDataSourceBinding.bindingType}`);
     }
     dbSecrets.set(dbSecretDbTypeKey, {
       username: modelDataSourceBinding.dbConnectionConfig.usernameSsmPath,

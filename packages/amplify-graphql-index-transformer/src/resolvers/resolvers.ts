@@ -1,5 +1,5 @@
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
-import { MappingTemplate, DatasourceType, MYSQL_DB_TYPE, DDB_DB_TYPE, DBType } from '@aws-amplify/graphql-transformer-core';
+import { MappingTemplate, DatasourceType, DDB_DB_TYPE, DBType } from '@aws-amplify/graphql-transformer-core';
 import { DataSourceProvider, TransformerContextProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
@@ -44,6 +44,7 @@ import _ from 'lodash';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../types';
 import { lookupResolverName } from '../utils';
 import { RDSIndexVTLGenerator, DynamoDBIndexVTLGenerator } from './generators';
+import { isRDSModel } from '@aws-amplify/graphql-transformer-core';
 
 const API_KEY = 'API Key Authorization';
 
@@ -330,8 +331,7 @@ export function validateSortDirectionInput(config: PrimaryKeyDirectiveConfigurat
  */
 export function appendSecondaryIndex(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void {
   const { name, object, primaryKeyField } = config;
-  const dbType = getDBType(ctx, object.name.value);
-  if (dbType === 'MySQL') {
+  if (isRDSModel(ctx, object.name.value)) {
     return;
   }
 
@@ -465,7 +465,7 @@ export function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Tran
   const modelName = object.name.value;
   const dbInfo = getDBInfo(ctx, modelName);
   let dataSourceName = `${object.name.value}Table`;
-  if (dbType === MYSQL_DB_TYPE) {
+  if (!isDynamoDB) {
     dataSourceName = RDSLambdaDataSourceLogicalID;
   }
   const dataSource = ctx.api.host.getDataSource(dataSourceName);
@@ -511,7 +511,7 @@ export function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Tran
 
   resolver.setScope(ctx.stackManager.getScopeFor(resolverResourceId, stackId));
   ctx.resolvers.addResolver(queryTypeName, queryField, resolver);
-  if (dbType === MYSQL_DB_TYPE) {
+  if (!isDynamoDB) {
     const modelFieldMap = ctx.resourceHelper.getModelFieldMap(object?.name?.value);
     if (!modelFieldMap.getMappedFields().length) {
       return;
@@ -853,20 +853,20 @@ export const generateAuthExpressionForSandboxMode = (enabled: boolean): string =
 
 export function getDBInfo(ctx: TransformerContextProvider, modelName: string) {
   const dbInfo = ctx.modelToDatasourceMap.get(modelName);
-  const result = dbInfo ?? { dbType: 'DDB', provisionDB: true };
+  const result = dbInfo ?? { dbType: DDB_DB_TYPE, provisionDB: true };
   return result;
 }
 
 export function getDBType(ctx: TransformerContextProvider, modelName: string) {
   const dbInfo = getDBInfo(ctx, modelName);
-  const dbType = dbInfo ? dbInfo.dbType : 'DDB';
+  const dbType = dbInfo ? dbInfo.dbType : DDB_DB_TYPE;
   return dbType;
 }
 
 export const getVTLGenerator = (dbInfo: DatasourceType | undefined): RDSIndexVTLGenerator | DynamoDBIndexVTLGenerator => {
-  const dbType = dbInfo ? dbInfo.dbType : 'DDB';
-  if (dbType === 'MySQL') {
-    return new RDSIndexVTLGenerator();
+  const dbType = dbInfo ? dbInfo.dbType : DDB_DB_TYPE;
+  if (dbType === DDB_DB_TYPE) {
+    return new DynamoDBIndexVTLGenerator();
   }
-  return new DynamoDBIndexVTLGenerator();
+  return new RDSIndexVTLGenerator();
 };

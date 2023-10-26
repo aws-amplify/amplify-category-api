@@ -69,7 +69,7 @@ const getDBConfig = async (): DBConfig => {
   }
 
   const config = {
-    engine: 'mysql',
+    engine: getDBEngine(),
     host: await getSSMValue(process.env.host),
     port: Number.parseInt(await getSSMValue(process.env.port)) || 3306,
     username: await getSSMValue(process.env.username),
@@ -82,4 +82,11 @@ const getDBConfig = async (): DBConfig => {
   }
 
   return config;
+};
+
+const getDBEngine = (): string => {
+  if (!process.env.engine) {
+    throw Error('Missing database engine configuration');
+  }
+  return process.env.engine;
 };

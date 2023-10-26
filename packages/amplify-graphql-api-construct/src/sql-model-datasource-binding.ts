@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { SqlModelDataSourceBinding } from './types';
+import { MYSQL_DB_TYPE, POSTGRES_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 
 /**
  * Type predicate that returns true if the object is a SqlModelDataSourceBinding. TODO: Update bindingType check when we add support for
@@ -9,7 +10,11 @@ import { SqlModelDataSourceBinding } from './types';
  * @returns true if the object is shaped like a SqlModelDataSourceBinding
  */
 export const isSqlModelDataSourceBinding = (obj: any): obj is SqlModelDataSourceBinding => {
-  return (typeof obj === 'object' || typeof obj === 'function') && typeof obj.bindingType === 'string' && obj.bindingType === 'MySQL';
+  return (
+    (typeof obj === 'object' || typeof obj === 'function') &&
+    typeof obj.bindingType === 'string' &&
+    [MYSQL_DB_TYPE, POSTGRES_DB_TYPE].includes(obj.bindingType)
+  );
 };
 
 /**
