@@ -89,7 +89,26 @@ export class AmplifyDynamoDbTableWrapper {
     this.resource.addPropertyOverride('pointInTimeRecoverySpecification', { pointInTimeRecoveryEnabled });
   }
 
+  /**
+   * Update the provisioned throughput for the base table.
+   */
   set provisionedThroughput(provisionedThroughput: ProvisionedThroughput) {
     this.resource.addPropertyOverride('provisionedThroughput', provisionedThroughput);
+  }
+
+  /**
+   * Set the provisionedThroughtput for a specified GSI by name.
+   * @param indexName the index to specify a provisionedThroughput config for
+   * @param provisionedThroughput the config to set
+   */
+  setGlobalSecondaryIndexProvisionedThroughput(indexName: string, provisionedThroughput: ProvisionedThroughput): void {
+    const gsis: Array<[string, { indexName: string }]> = Object.entries(
+      (this.resource as any).rawOverrides?.Properties?.globalSecondaryIndexes ?? {},
+    );
+    const foundGsis = gsis.filter(([_, gsiConfig]) => indexName === gsiConfig.indexName).map(([gsiIndex]) => gsiIndex);
+    if (foundGsis.length !== 1) {
+      throw new Error(`Index with name ${indexName} not found in table definition`);
+    }
+    this.resource.addPropertyOverride(`globalSecondaryIndexes.${foundGsis[0]}.provisionedThroughput`, provisionedThroughput);
   }
 }

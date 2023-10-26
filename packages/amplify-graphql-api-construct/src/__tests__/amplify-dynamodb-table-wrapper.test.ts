@@ -75,13 +75,15 @@ describe('AmplifyDynamoDbTable', () => {
 
   describe('wrapped operations', () => {
     let stack: Stack;
+    let testResource: CfnResource;
     let tableWrapper: AmplifyDynamoDbTableWrapper;
 
     const validateProps = (props: any): void => Template.fromStack(stack).hasResourceProperties('Custom::AmplifyDynamoDBTable', props);
 
     beforeEach(() => {
       stack = new Stack();
-      tableWrapper = new AmplifyDynamoDbTableWrapper(new CfnResource(stack, 'TestResources', { type: 'Custom::AmplifyDynamoDBTable' }));
+      testResource = new CfnResource(stack, 'TestResources', { type: 'Custom::AmplifyDynamoDBTable' });
+      tableWrapper = new AmplifyDynamoDbTableWrapper(testResource);
     });
 
     describe('billingMode', () => {
@@ -155,6 +157,60 @@ describe('AmplifyDynamoDbTable', () => {
         validateProps({
           pointInTimeRecoverySpecification: { pointInTimeRecoveryEnabled: false },
         });
+      });
+    });
+
+    describe('setGlobalSecondaryIndexProvisionedThroughput', () => {
+      it('overwrites the specified index', () => {
+        testResource.addPropertyOverride('globalSecondaryIndexes.0', {
+          indexName: 'firstIndex',
+          keySchema: [{ attributeName: 'id', keyType: 'HASH' }],
+          projection: { projectionType: 'ALL' },
+          provisionedThroughput: {
+            readCapacityUnits: 5,
+            writeCapacityUnits: 5,
+          },
+        });
+        testResource.addPropertyOverride('globalSecondaryIndexes.1', {
+          indexName: 'secondIndex',
+          keySchema: [{ attributeName: 'id', keyType: 'HASH' }],
+          projection: { projectionType: 'ALL' },
+          provisionedThroughput: {
+            readCapacityUnits: 5,
+            writeCapacityUnits: 5,
+          },
+        });
+        tableWrapper.setGlobalSecondaryIndexProvisionedThroughput('secondIndex', {
+          readCapacityUnits: 10,
+          writeCapacityUnits: 10,
+        });
+        validateProps({
+          globalSecondaryIndexes: {
+            '0': {
+              indexName: 'firstIndex',
+              provisionedThroughput: {
+                readCapacityUnits: 5,
+                writeCapacityUnits: 5,
+              },
+            },
+            '1': {
+              indexName: 'secondIndex',
+              provisionedThroughput: {
+                readCapacityUnits: 10,
+                writeCapacityUnits: 10,
+              },
+            },
+          },
+        });
+      });
+
+      it('throws on unexpected index name', () => {
+        expect(() =>
+          tableWrapper.setGlobalSecondaryIndexProvisionedThroughput('unknownIndex', {
+            readCapacityUnits: 10,
+            writeCapacityUnits: 10,
+          }),
+        ).toThrowErrorMatchingInlineSnapshot('"Index with name unknownIndex not found in table definition"');
       });
     });
   });

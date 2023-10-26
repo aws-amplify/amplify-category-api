@@ -65,8 +65,8 @@ export class AmplifyDynamoDbTableWrapper {
     set billingMode(billingMode: BillingMode);
     static isAmplifyDynamoDbTableResource(x: any): x is CfnResource;
     set pointInTimeRecoveryEnabled(pointInTimeRecoveryEnabled: boolean);
-    // (undocumented)
     set provisionedThroughput(provisionedThroughput: ProvisionedThroughput);
+    setGlobalSecondaryIndexProvisionedThroughput(indexName: string, provisionedThroughput: ProvisionedThroughput): void;
     set tableClass(tableClass: TableClass);
     set timeToLiveAttribute(timeToLiveSpecification: TimeToLiveSpecification);
 }

@@ -2761,6 +2761,37 @@ the Cfn resource.
 
 ---
 
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.setGlobalSecondaryIndexProvisionedThroughput">setGlobalSecondaryIndexProvisionedThroughput</a></code> | Set the provisionedThroughtput for a specified GSI by name. |
+
+---
+
+##### `setGlobalSecondaryIndexProvisionedThroughput` <a name="setGlobalSecondaryIndexProvisionedThroughput" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.setGlobalSecondaryIndexProvisionedThroughput"></a>
+
+```typescript
+public setGlobalSecondaryIndexProvisionedThroughput(indexName: string, provisionedThroughput: ProvisionedThroughput): void
+```
+
+Set the provisionedThroughtput for a specified GSI by name.
+
+###### `indexName`<sup>Required</sup> <a name="indexName" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.setGlobalSecondaryIndexProvisionedThroughput.parameter.indexName"></a>
+
+- *Type:* string
+
+the index to specify a provisionedThroughput config for.
+
+---
+
+###### `provisionedThroughput`<sup>Required</sup> <a name="provisionedThroughput" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.setGlobalSecondaryIndexProvisionedThroughput.parameter.provisionedThroughput"></a>
+
+- *Type:* <a href="#@aws-amplify/graphql-api-construct.ProvisionedThroughput">ProvisionedThroughput</a>
+
+the config to set.
+
+---
 
 #### Static Functions <a name="Static Functions" id="Static Functions"></a>
 
@@ -2794,7 +2825,7 @@ the object to check.
 | --- | --- | --- |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.billingMode">billingMode</a></code> | <code>aws-cdk-lib.aws_dynamodb.BillingMode</code> | Specify how you are charged for read and write throughput and how you manage capacity. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.pointInTimeRecoveryEnabled">pointInTimeRecoveryEnabled</a></code> | <code>boolean</code> | Whether point-in-time recovery is enabled. |
-| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.provisionedThroughput">provisionedThroughput</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.ProvisionedThroughput">ProvisionedThroughput</a></code> | *No description.* |
+| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.provisionedThroughput">provisionedThroughput</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.ProvisionedThroughput">ProvisionedThroughput</a></code> | Update the provisioned throughput for the base table. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.tableClass">tableClass</a></code> | <code>aws-cdk-lib.aws_dynamodb.TableClass</code> | Specify the table class. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.timeToLiveAttribute">timeToLiveAttribute</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.TimeToLiveSpecification">TimeToLiveSpecification</a></code> | The name of TTL attribute. |
 
@@ -2831,6 +2862,8 @@ public readonly provisionedThroughput: ProvisionedThroughput;
 ```
 
 - *Type:* <a href="#@aws-amplify/graphql-api-construct.ProvisionedThroughput">ProvisionedThroughput</a>
+
+Update the provisioned throughput for the base table.
 
 ---
 
