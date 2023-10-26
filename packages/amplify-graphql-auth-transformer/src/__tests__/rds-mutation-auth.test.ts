@@ -3,10 +3,15 @@ import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { parse } from 'graphql';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthTransformer } from '../graphql-auth-transformer';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { AuthTransformer } from '../graphql-auth-transformer';
+import { expectStashValueLike } from './test-helpers';
 
 describe('Verify RDS Model level Auth rules on mutations:', () => {
+  const ADMIN_UI_ROLES = ['us-fake-1_uuid_Full-access/CognitoIdentityCredentials', 'us-fake-1_uuid_Manage-only/CognitoIdentityCredentials'];
+  const ADMIN_UI_ADMIN_ROLES =
+    '$util.qr($ctx.stash.put(\\"adminRoles\\", [\\"us-fake-1_uuid_Full-access/CognitoIdentityCredentials\\",\\"us-fake-1_uuid_Manage-only/CognitoIdentityCredentials\\"])';
+
   it('should successfully transform apiKey auth rule', async () => {
     const validSchema = `
       type Post @model
@@ -565,5 +570,43 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
 
     validateModelSchema(parse(out.schema));
     parse(out.schema);
+  });
+
+  test('admin role should present in stash for rds model', () => {
+    const validSchema = `
+    type Post @model @auth(rules: [{allow: public}]) {
+      id: ID! @primaryKey
+      title: String!
+      createdAt: String
+      updatedAt: String
+    }`;
+    const modelToDatasourceMap = new Map();
+    ['Post'].forEach((model) => {
+      modelToDatasourceMap.set(model, {
+        dbType: 'MySQL',
+        provisionDB: false,
+      });
+    });
+    const out = testTransform({
+      schema: validSchema,
+      modelToDatasourceMap,
+      authConfig: {
+        defaultAuthentication: {
+          authenticationType: 'API_KEY',
+        },
+        additionalAuthenticationProviders: [
+          {
+            authenticationType: 'AWS_IAM',
+          },
+        ],
+      },
+      synthParameters: {
+        adminRoles: ADMIN_UI_ROLES,
+      },
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer()],
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).toContain('Post @aws_api_key @aws_iam');
+    expectStashValueLike(out, 'Post', ADMIN_UI_ADMIN_ROLES);
   });
 });

@@ -4,6 +4,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"public\\",
   \\"provider\\": \\"apiKey\\",
@@ -54,6 +62,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"public\\",
   \\"provider\\": \\"apiKey\\",
@@ -104,6 +120,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"public\\",
   \\"provider\\": \\"apiKey\\",
@@ -133,6 +157,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"private\\",
   \\"provider\\": \\"userPools\\",
@@ -183,6 +215,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"private\\",
   \\"provider\\": \\"userPools\\",
@@ -233,6 +273,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"private\\",
   \\"provider\\": \\"userPools\\",
@@ -262,6 +310,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"owner\\",
   \\"provider\\": \\"userPools\\",
@@ -314,6 +370,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"owner\\",
   \\"provider\\": \\"userPools\\",
@@ -366,6 +430,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"owner\\",
   \\"provider\\": \\"userPools\\",
@@ -397,6 +469,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"owner\\",
   \\"provider\\": \\"userPools\\",
@@ -449,6 +529,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"owner\\",
   \\"provider\\": \\"userPools\\",
@@ -501,6 +589,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"owner\\",
   \\"provider\\": \\"userPools\\",
@@ -532,6 +628,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
   \\"provider\\": \\"userPools\\",
@@ -591,6 +695,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
   \\"provider\\": \\"userPools\\",
@@ -650,6 +762,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
   \\"provider\\": \\"userPools\\",
@@ -688,6 +808,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
   \\"provider\\": \\"userPools\\",
@@ -741,6 +869,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
   \\"provider\\": \\"userPools\\",
@@ -794,6 +930,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
   \\"provider\\": \\"userPools\\",
@@ -826,6 +970,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
   \\"provider\\": \\"userPools\\",
@@ -879,6 +1031,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
   \\"provider\\": \\"userPools\\",
@@ -932,6 +1092,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
   \\"provider\\": \\"userPools\\",
@@ -964,6 +1132,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"custom\\",
   \\"provider\\": \\"function\\",
@@ -1014,6 +1190,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"custom\\",
   \\"provider\\": \\"function\\",
@@ -1064,6 +1248,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"custom\\",
   \\"provider\\": \\"function\\",
@@ -1093,6 +1285,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"private\\",
   \\"provider\\": \\"iam\\",
@@ -1145,6 +1345,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"private\\",
   \\"provider\\": \\"iam\\",
@@ -1197,6 +1405,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"private\\",
   \\"provider\\": \\"iam\\",
@@ -1228,6 +1444,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"public\\",
   \\"provider\\": \\"iam\\",
@@ -1279,6 +1503,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"public\\",
   \\"provider\\": \\"iam\\",
@@ -1330,6 +1562,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"public\\",
   \\"provider\\": \\"iam\\",
@@ -1360,6 +1600,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"private\\",
   \\"provider\\": \\"oidc\\",
@@ -1410,6 +1658,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"private\\",
   \\"provider\\": \\"oidc\\",
@@ -1460,6 +1716,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"private\\",
   \\"provider\\": \\"oidc\\",
@@ -1489,6 +1753,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"owner\\",
   \\"provider\\": \\"oidc\\",
@@ -1542,6 +1814,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"owner\\",
   \\"provider\\": \\"oidc\\",
@@ -1595,6 +1875,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"owner\\",
   \\"provider\\": \\"oidc\\",
@@ -1627,6 +1915,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"owner\\",
   \\"provider\\": \\"oidc\\",
@@ -1680,6 +1976,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"owner\\",
   \\"provider\\": \\"oidc\\",
@@ -1733,6 +2037,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"owner\\",
   \\"provider\\": \\"oidc\\",
@@ -1765,6 +2077,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
   \\"provider\\": \\"oidc\\",
@@ -1824,6 +2144,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
   \\"provider\\": \\"oidc\\",
@@ -1883,6 +2211,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
   \\"provider\\": \\"oidc\\",
@@ -1921,6 +2257,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
   \\"provider\\": \\"oidc\\",
@@ -1974,6 +2318,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
   \\"provider\\": \\"oidc\\",
@@ -2027,6 +2379,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
   \\"provider\\": \\"oidc\\",
@@ -2059,6 +2419,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
   \\"provider\\": \\"oidc\\",
@@ -2112,6 +2480,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
   \\"provider\\": \\"oidc\\",
@@ -2165,6 +2541,14 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
 $util.qr($authRules.add({
   \\"type\\": \\"groups\\",
   \\"provider\\": \\"oidc\\",

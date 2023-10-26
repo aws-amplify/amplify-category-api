@@ -44,11 +44,28 @@ export const generateAuthRulesFromRoles = (
   const expressions = [];
   expressions.push(qref(methodCall(ref('ctx.stash.put'), str('hasAuth'), bool(true))), set(ref('authRules'), list([])));
   const fieldNames = fields.map((field) => field.name.value);
+  expressions.push(getIamAdminRoleExpression());
   roles.forEach((role) => {
     expressions.push(convertAuthRoleToVtl(role, fieldNames, hasIdentityPoolId, hideAllowedFields));
   });
   return expressions;
 };
+
+const getIamAdminRoleExpression = (): Expression =>
+  iff(
+    and([ref('ctx.stash.adminRoles'), ref('ctx.stash.adminRoles.size() > 0')]),
+    qref(
+      methodCall(
+        ref('authRules.add'),
+        obj({
+          provider: str('iam'),
+          type: str('admin'),
+          strict: bool(false),
+          roles: ref('ctx.stash.adminRoles'),
+        }),
+      ),
+    ),
+  );
 
 const convertAuthRoleToVtl = (
   role: RoleDefinition,
