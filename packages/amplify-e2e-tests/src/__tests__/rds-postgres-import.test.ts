@@ -41,7 +41,7 @@ describe('RDS Model Directive', () => {
   const projName = 'rdsmodelapitest';
   const apiName = 'rdsapi';
 
-  let projRoot = '/private/var/folders/xg/pbsg0b5d38vfswr96p25h29c0000gs/T/amplify-e2e-tests/rdsmodelapi_adbbafcdb_7a37ab89';
+  let projRoot;
   let appSyncClient;
 
   beforeAll(async () => {
