@@ -25,3 +25,51 @@ type User @refersTo(name: \\"users\\") @model {
 }
 "
 `;
+
+exports[`enum imports generates enum imports 1`] = `
+"type User @refersTo(name: \\"users\\") @model {
+  id: String! @primaryKey
+  name: String
+  status: UserStatus
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+"
+`;
+
+exports[`enum imports generates nonnull enum types correctly 1`] = `
+"type User @refersTo(name: \\"users\\") @model {
+  id: String! @primaryKey
+  name: String
+  status: UserStatus!
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+"
+`;
+
+exports[`enum imports multiple enum fields of same name must generate one graphql enum type 1`] = `
+"type Profile @refersTo(name: \\"profile\\") @model {
+  id: String! @primaryKey
+  details: String
+  profilestatus: UserStatus
+}
+
+type User @refersTo(name: \\"users\\") @model {
+  id: String! @primaryKey
+  name: String
+  status: UserStatus
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+"
+`;

@@ -15,7 +15,7 @@ import {
 } from 'amplify-category-api-e2e-core';
 import { existsSync, readFileSync } from 'fs-extra';
 import generator from 'generate-password';
-import { ObjectTypeDefinitionNode, parse, ListTypeNode, NamedTypeNode } from 'graphql';
+import { ObjectTypeDefinitionNode, parse, ListTypeNode, NamedTypeNode, EnumTypeDefinitionNode } from 'graphql';
 import path from 'path';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
@@ -41,7 +41,7 @@ describe('RDS Model Directive', () => {
   const projName = 'rdsmodelapitest';
   const apiName = 'rdsapi';
 
-  let projRoot;
+  let projRoot = '/private/var/folders/xg/pbsg0b5d38vfswr96p25h29c0000gs/T/amplify-e2e-tests/rdsmodelapi_adbbafcdb_7a37ab89';
   let appSyncClient;
 
   beforeAll(async () => {
@@ -129,8 +129,10 @@ describe('RDS Model Directive', () => {
       password,
       region,
     };
+
     const queries = [
-      'CREATE TABLE Contact (id VARCHAR(40) PRIMARY KEY, firstName VARCHAR(20), lastName VARCHAR(50), strArray VARCHAR[], intArray INT[])',
+      'CREATE TYPE contact_status AS ENUM (\'active\', \'inactive\')',
+      'CREATE TABLE Contact (id VARCHAR(40) PRIMARY KEY, firstName VARCHAR(20), lastName VARCHAR(50), strArray VARCHAR[], intArray INT[], status contact_status)',
       'CREATE TABLE Person (personId INT PRIMARY KEY, firstName VARCHAR(20), lastName VARCHAR(50))',
       'CREATE TABLE Employee (id INT PRIMARY KEY, firstName VARCHAR(20), lastName VARCHAR(50))',
       'CREATE TABLE Student (studentId INT NOT NULL, classId CHAR(1) NOT NULL, firstName VARCHAR(20), lastName VARCHAR(50), PRIMARY KEY (studentId, classId))',
@@ -199,12 +201,26 @@ describe('RDS Model Directive', () => {
     // Verify the array type fields in the generated schema on type 'Contact'
     expect(contactsStrArrayFieldType).toBeDefined();
     expect(contactsIntArrayFieldType).toBeDefined();
-    expect(contactsStrArrayFieldType.kind).toEqual('ListType');
-    expect(contactsIntArrayFieldType.kind).toEqual('ListType');
-    expect(contactsStrArrayFieldType.type.kind).toEqual('NamedType');
-    expect(contactsIntArrayFieldType.type.kind).toEqual('NamedType');
-    expect((contactsStrArrayFieldType.type as NamedTypeNode).name.value).toEqual('String');
-    expect((contactsIntArrayFieldType.type as NamedTypeNode).name.value).toEqual('Int');
+    expect(contactsStrArrayFieldType.type.kind).toEqual('ListType');
+    expect(contactsIntArrayFieldType.type.kind).toEqual('ListType');
+    expect((contactsStrArrayFieldType.type as ListTypeNode).type.kind).toEqual('NamedType');
+    expect((contactsIntArrayFieldType.type as ListTypeNode).type.kind).toEqual('NamedType');
+    const contactsStrArrayFieldTypeName = (contactsStrArrayFieldType.type as ListTypeNode).type as NamedTypeNode;
+    const contactsIntArrayFieldTypeName = (contactsIntArrayFieldType.type as ListTypeNode).type as NamedTypeNode;
+    expect(contactsStrArrayFieldTypeName.name.value).toEqual('String');
+    expect(contactsIntArrayFieldTypeName.name.value).toEqual('Int');
+
+    // Verify Enum type is generated for the enum type in the database
+    const contactStatusField = contactObjectType.fields.find((f) => f.name.value === 'status');
+    expect(contactStatusField).toBeDefined();
+    expect(contactStatusField.type.kind).toEqual('NamedType');
+    expect((contactStatusField.type as NamedTypeNode).name.value).toEqual('ContactStatus');
+
+    // Verify the Enum type
+    const contactStatusEnumType = schema.definitions.find((d) => d.kind === 'EnumTypeDefinition' && d.name.value === 'ContactStatus') as EnumTypeDefinitionNode;
+    expect(contactStatusEnumType).toBeDefined();
+    expect(contactStatusEnumType.values.length).toEqual(2);
+    expect(contactStatusEnumType.values.map((e) => e.name.value)).toEqual(expect.arrayContaining(['active', 'inactive']));
 
     // PrimaryKey directive must be defined on Id field.
     expect(contactsIdFieldType.directives.find((d) => d.name.value === 'primaryKey')).toBeDefined();

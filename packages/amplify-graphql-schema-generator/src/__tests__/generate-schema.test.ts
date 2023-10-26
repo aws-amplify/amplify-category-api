@@ -51,6 +51,54 @@ describe('Type name conversions', () => {
   });
 });
 
+describe('enum imports', () => {
+  it('generates enum imports', () => {
+    const dbschema = new Schema(new Engine('Postgres'));
+    const model = new Model('users');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
+    model.addField(new Field('status', { kind: 'Enum', name: 'UserStatus', values: ['ACTIVE', 'INACTIVE'] }));
+    model.setPrimaryKey(['id']);
+    dbschema.addModel(model);
+
+    const graphqlSchema = generateGraphQLSchema(dbschema);
+    expect(graphqlSchema).toMatchSnapshot();
+  });
+
+  it('multiple enum fields of same name must generate one graphql enum type', () => {
+    const dbschema = new Schema(new Engine('Postgres'));
+    let model = new Model('users');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
+    model.addField(new Field('status', { kind: 'Enum', name: 'UserStatus', values: ['ACTIVE', 'INACTIVE'] }));
+    model.setPrimaryKey(['id']);
+    dbschema.addModel(model);
+
+    model = new Model('profile');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('details', { kind: 'Scalar', name: 'String' }));
+    model.addField(new Field('profilestatus', { kind: 'Enum', name: 'UserStatus', values: ['ACTIVE', 'INACTIVE'] }));
+    model.setPrimaryKey(['id']);
+    dbschema.addModel(model);
+
+    const graphqlSchema = generateGraphQLSchema(dbschema);
+    expect(graphqlSchema).toMatchSnapshot();
+  });
+
+  it('generates nonnull enum types correctly', () => {
+    const dbschema = new Schema(new Engine('Postgres'));
+    const model = new Model('users');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
+    model.addField(new Field('status', { kind: 'NonNull', type: { kind: 'Enum', name: 'UserStatus', values: ['ACTIVE', 'INACTIVE'] } }));
+    model.setPrimaryKey(['id']);
+    dbschema.addModel(model);
+
+    const graphqlSchema = generateGraphQLSchema(dbschema);
+    expect(graphqlSchema).toMatchSnapshot();
+  });
+});
+
 describe('Field name conversions', () => {
   it('GraphQL idiomatic field name conversions', () => {
     // leave as-is
