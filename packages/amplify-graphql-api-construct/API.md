@@ -46,7 +46,7 @@ import { NoneDataSource } from 'aws-cdk-lib/aws-appsync';
 import { OpenSearchDataSource } from 'aws-cdk-lib/aws-appsync';
 import { RdsDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Resolver } from 'aws-cdk-lib/aws-appsync';
-import { TableClass } from 'aws-cdk-lib/aws-dynamodb';
+import { StreamViewType } from 'aws-cdk-lib/aws-dynamodb';
 
 // @public
 export interface AddFunctionProps {
@@ -63,11 +63,13 @@ export interface AddFunctionProps {
 export class AmplifyDynamoDbTableWrapper {
     constructor(resource: CfnResource);
     set billingMode(billingMode: BillingMode);
+    set deletionProtectionEnabled(deletionProtectionEnabled: boolean);
     static isAmplifyDynamoDbTableResource(x: any): x is CfnResource;
     set pointInTimeRecoveryEnabled(pointInTimeRecoveryEnabled: boolean);
     set provisionedThroughput(provisionedThroughput: ProvisionedThroughput);
     setGlobalSecondaryIndexProvisionedThroughput(indexName: string, provisionedThroughput: ProvisionedThroughput): void;
-    set tableClass(tableClass: TableClass);
+    set sseSpecification(sseSpecification: SSESpecification);
+    set streamSpecification(streamSpecification: StreamSpecification);
     set timeToLiveAttribute(timeToLiveSpecification: TimeToLiveSpecification);
 }
 
@@ -275,6 +277,24 @@ export interface ProvisionedThroughput {
 export interface QueryFunctionSlot extends FunctionSlotBase {
     readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preDataLoad' | 'postDataLoad' | 'finish';
     readonly typeName: 'Query';
+}
+
+// @public
+export interface SSESpecification {
+    readonly kmsMasterKeyId?: string;
+    readonly sseEnabled: boolean;
+    readonly sseType?: SSEType;
+}
+
+// @public
+export enum SSEType {
+    // (undocumented)
+    KMS = "KMS"
+}
+
+// @public
+export interface StreamSpecification {
+    readonly streamViewType: StreamViewType;
 }
 
 // @public

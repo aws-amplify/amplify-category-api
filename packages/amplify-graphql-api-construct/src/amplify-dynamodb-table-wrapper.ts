@@ -1,5 +1,5 @@
 import { CfnResource } from 'aws-cdk-lib';
-import { BillingMode, TableClass } from 'aws-cdk-lib/aws-dynamodb';
+import { BillingMode, StreamViewType } from 'aws-cdk-lib/aws-dynamodb';
 
 const AMPLIFY_DYNAMODB_TABLE_RESOURCE_TYPE = 'Custom::AmplifyDynamoDBTable';
 
@@ -31,6 +31,55 @@ export interface ProvisionedThroughput {
    * The write capacity units on the table or index.
    */
   readonly writeCapacityUnits: number;
+}
+
+/**
+ * Server Side Encryption Type Values
+ * - `KMS` - Server-side encryption that uses AWS KMS. The key is stored in your account and is managed by KMS (AWS KMS charges apply).
+ */
+export enum SSEType {
+  KMS = 'KMS',
+}
+
+/**
+ * Represents the settings used to enable server-side encryption.
+ */
+export interface SSESpecification {
+  /**
+   * Indicates whether server-side encryption is done using an AWS managed key or an AWS owned key.
+   * If enabled (true), server-side encryption type is set to `KMS` and an AWS managed key is used ( AWS KMS charges apply).
+   * If disabled (false) or not specified, server-side encryption is set to AWS owned key.
+   */
+  readonly sseEnabled: boolean;
+
+  /**
+   * The AWS KMS key that should be used for the AWS KMS encryption.
+   * To specify a key, use its key ID, Amazon Resource Name (ARN), alias name, or alias ARN. Note that you should only provide
+   * this parameter if the key is different from the default DynamoDB key `alias/aws/dynamodb` .
+   */
+  readonly kmsMasterKeyId?: string;
+
+  /**
+   * Server-side encryption type. The only supported value is:
+   * `KMS` Server-side encryption that uses AWS Key Management Service.
+   *   The key is stored in your account and is managed by AWS KMS ( AWS KMS charges apply).
+   */
+  readonly sseType?: SSEType;
+}
+
+/**
+ * Represents the DynamoDB Streams configuration for a table in DynamoDB.
+ */
+export interface StreamSpecification {
+  /**
+   * When an item in the table is modified, `StreamViewType` determines what information is written to the stream for this table.
+   * Valid values for `StreamViewType` are:
+   * - `KEYS_ONLY` - Only the key attributes of the modified item are written to the stream.
+   * - `NEW_IMAGE` - The entire item, as it appears after it was modified, is written to the stream.
+   * - `OLD_IMAGE` - The entire item, as it appeared before it was modified, is written to the stream.
+   * - `NEW_AND_OLD_IMAGES` - Both the new and the old item images of the item are written to the stream.
+   */
+  readonly streamViewType: StreamViewType;
 }
 
 /**
@@ -69,13 +118,6 @@ export class AmplifyDynamoDbTableWrapper {
   }
 
   /**
-   * Specify the table class.
-   */
-  set tableClass(tableClass: TableClass) {
-    this.resource.addPropertyOverride('tableClass', tableClass);
-  }
-
-  /**
    * The name of TTL attribute.
    */
   set timeToLiveAttribute(timeToLiveSpecification: TimeToLiveSpecification) {
@@ -110,5 +152,26 @@ export class AmplifyDynamoDbTableWrapper {
       throw new Error(`Index with name ${indexName} not found in table definition`);
     }
     this.resource.addPropertyOverride(`globalSecondaryIndexes.${foundGsis[0]}.provisionedThroughput`, provisionedThroughput);
+  }
+
+  /**
+   * Set the ddb stream specification on the table.
+   */
+  set streamSpecification(streamSpecification: StreamSpecification) {
+    this.resource.addPropertyOverride('streamSpecification', streamSpecification);
+  }
+
+  /**
+   * Set the ddb server-side encryption specification on the table.
+   */
+  set sseSpecification(sseSpecification: SSESpecification) {
+    this.resource.addPropertyOverride('sseSpecification', sseSpecification);
+  }
+
+  /**
+   * Set table deletion protection.
+   */
+  set deletionProtectionEnabled(deletionProtectionEnabled: boolean) {
+    this.resource.addPropertyOverride('deletionProtectionEnabled', deletionProtectionEnabled);
   }
 }

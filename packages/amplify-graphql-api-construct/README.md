@@ -1151,7 +1151,7 @@ const amplifyGraphqlApiResources: AmplifyGraphqlApiResources = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiResources.property.amplifyDynamoDbTables">amplifyDynamoDbTables</a></code> | <code>{[ key: string ]: <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper">AmplifyDynamoDbTableWrapper</a>}</code> | The Generated Amplify DynamoDb Table wrapped if produced, keyed by logicalId. |
+| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiResources.property.amplifyDynamoDbTables">amplifyDynamoDbTables</a></code> | <code>{[ key: string ]: <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper">AmplifyDynamoDbTableWrapper</a>}</code> | The Generated Amplify DynamoDb Table wrapped if produced, keyed by name. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiResources.property.cfnResources">cfnResources</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiCfnResources">AmplifyGraphqlApiCfnResources</a></code> | L1 Cfn Resources, for when dipping down a level of abstraction is desirable. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiResources.property.functions">functions</a></code> | <code>{[ key: string ]: aws-cdk-lib.aws_lambda.IFunction}</code> | The Generated Lambda Function L1 Resources, keyed by function name. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiResources.property.graphqlApi">graphqlApi</a></code> | <code>aws-cdk-lib.aws_appsync.IGraphqlApi</code> | The Generated AppSync Api L2 Resource, includes the Schema. |
@@ -1169,7 +1169,7 @@ public readonly amplifyDynamoDbTables: {[ key: string ]: AmplifyDynamoDbTableWra
 
 - *Type:* {[ key: string ]: <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper">AmplifyDynamoDbTableWrapper</a>}
 
-The Generated Amplify DynamoDb Table wrapped if produced, keyed by logicalId.
+The Generated Amplify DynamoDb Table wrapped if produced, keyed by name.
 
 ---
 
@@ -2370,6 +2370,112 @@ This slot type applies to the Query type on the Api definition.
 
 ---
 
+### SSESpecification <a name="SSESpecification" id="@aws-amplify/graphql-api-construct.SSESpecification"></a>
+
+Represents the settings used to enable server-side encryption.
+
+#### Initializer <a name="Initializer" id="@aws-amplify/graphql-api-construct.SSESpecification.Initializer"></a>
+
+```typescript
+import { SSESpecification } from '@aws-amplify/graphql-api-construct'
+
+const sSESpecification: SSESpecification = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@aws-amplify/graphql-api-construct.SSESpecification.property.sseEnabled">sseEnabled</a></code> | <code>boolean</code> | Indicates whether server-side encryption is done using an AWS managed key or an AWS owned key. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SSESpecification.property.kmsMasterKeyId">kmsMasterKeyId</a></code> | <code>string</code> | The AWS KMS key that should be used for the AWS KMS encryption. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SSESpecification.property.sseType">sseType</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.SSEType">SSEType</a></code> | Server-side encryption type. |
+
+---
+
+##### `sseEnabled`<sup>Required</sup> <a name="sseEnabled" id="@aws-amplify/graphql-api-construct.SSESpecification.property.sseEnabled"></a>
+
+```typescript
+public readonly sseEnabled: boolean;
+```
+
+- *Type:* boolean
+
+Indicates whether server-side encryption is done using an AWS managed key or an AWS owned key.
+
+If enabled (true), server-side encryption type is set to `KMS` and an AWS managed key is used ( AWS KMS charges apply).
+If disabled (false) or not specified, server-side encryption is set to AWS owned key.
+
+---
+
+##### `kmsMasterKeyId`<sup>Optional</sup> <a name="kmsMasterKeyId" id="@aws-amplify/graphql-api-construct.SSESpecification.property.kmsMasterKeyId"></a>
+
+```typescript
+public readonly kmsMasterKeyId: string;
+```
+
+- *Type:* string
+
+The AWS KMS key that should be used for the AWS KMS encryption.
+
+To specify a key, use its key ID, Amazon Resource Name (ARN), alias name, or alias ARN. Note that you should only provide
+this parameter if the key is different from the default DynamoDB key `alias/aws/dynamodb` .
+
+---
+
+##### `sseType`<sup>Optional</sup> <a name="sseType" id="@aws-amplify/graphql-api-construct.SSESpecification.property.sseType"></a>
+
+```typescript
+public readonly sseType: SSEType;
+```
+
+- *Type:* <a href="#@aws-amplify/graphql-api-construct.SSEType">SSEType</a>
+
+Server-side encryption type.
+
+The only supported value is:
+`KMS` Server-side encryption that uses AWS Key Management Service.
+  The key is stored in your account and is managed by AWS KMS ( AWS KMS charges apply).
+
+---
+
+### StreamSpecification <a name="StreamSpecification" id="@aws-amplify/graphql-api-construct.StreamSpecification"></a>
+
+Represents the DynamoDB Streams configuration for a table in DynamoDB.
+
+#### Initializer <a name="Initializer" id="@aws-amplify/graphql-api-construct.StreamSpecification.Initializer"></a>
+
+```typescript
+import { StreamSpecification } from '@aws-amplify/graphql-api-construct'
+
+const streamSpecification: StreamSpecification = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@aws-amplify/graphql-api-construct.StreamSpecification.property.streamViewType">streamViewType</a></code> | <code>aws-cdk-lib.aws_dynamodb.StreamViewType</code> | When an item in the table is modified, `StreamViewType` determines what information is written to the stream for this table. |
+
+---
+
+##### `streamViewType`<sup>Required</sup> <a name="streamViewType" id="@aws-amplify/graphql-api-construct.StreamSpecification.property.streamViewType"></a>
+
+```typescript
+public readonly streamViewType: StreamViewType;
+```
+
+- *Type:* aws-cdk-lib.aws_dynamodb.StreamViewType
+
+When an item in the table is modified, `StreamViewType` determines what information is written to the stream for this table.
+
+Valid values for `StreamViewType` are:
+- `KEYS_ONLY` - Only the key attributes of the modified item are written to the stream.
+- `NEW_IMAGE` - The entire item, as it appears after it was modified, is written to the stream.
+- `OLD_IMAGE` - The entire item, as it appeared before it was modified, is written to the stream.
+- `NEW_AND_OLD_IMAGES` - Both the new and the old item images of the item are written to the stream.
+
+---
+
 ### SubscriptionFunctionSlot <a name="SubscriptionFunctionSlot" id="@aws-amplify/graphql-api-construct.SubscriptionFunctionSlot"></a>
 
 Slot types for Subscription Resolvers.
@@ -2824,9 +2930,11 @@ the object to check.
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.billingMode">billingMode</a></code> | <code>aws-cdk-lib.aws_dynamodb.BillingMode</code> | Specify how you are charged for read and write throughput and how you manage capacity. |
+| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.deletionProtectionEnabled">deletionProtectionEnabled</a></code> | <code>boolean</code> | Set table deletion protection. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.pointInTimeRecoveryEnabled">pointInTimeRecoveryEnabled</a></code> | <code>boolean</code> | Whether point-in-time recovery is enabled. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.provisionedThroughput">provisionedThroughput</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.ProvisionedThroughput">ProvisionedThroughput</a></code> | Update the provisioned throughput for the base table. |
-| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.tableClass">tableClass</a></code> | <code>aws-cdk-lib.aws_dynamodb.TableClass</code> | Specify the table class. |
+| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.sseSpecification">sseSpecification</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.SSESpecification">SSESpecification</a></code> | Set the ddb server-side encryption specification on the table. |
+| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.streamSpecification">streamSpecification</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.StreamSpecification">StreamSpecification</a></code> | Set the ddb stream specification on the table. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.timeToLiveAttribute">timeToLiveAttribute</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.TimeToLiveSpecification">TimeToLiveSpecification</a></code> | The name of TTL attribute. |
 
 ---
@@ -2840,6 +2948,18 @@ public readonly billingMode: BillingMode;
 - *Type:* aws-cdk-lib.aws_dynamodb.BillingMode
 
 Specify how you are charged for read and write throughput and how you manage capacity.
+
+---
+
+##### `deletionProtectionEnabled`<sup>Required</sup> <a name="deletionProtectionEnabled" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.deletionProtectionEnabled"></a>
+
+```typescript
+public readonly deletionProtectionEnabled: boolean;
+```
+
+- *Type:* boolean
+
+Set table deletion protection.
 
 ---
 
@@ -2867,15 +2987,27 @@ Update the provisioned throughput for the base table.
 
 ---
 
-##### `tableClass`<sup>Required</sup> <a name="tableClass" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.tableClass"></a>
+##### `sseSpecification`<sup>Required</sup> <a name="sseSpecification" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.sseSpecification"></a>
 
 ```typescript
-public readonly tableClass: TableClass;
+public readonly sseSpecification: SSESpecification;
 ```
 
-- *Type:* aws-cdk-lib.aws_dynamodb.TableClass
+- *Type:* <a href="#@aws-amplify/graphql-api-construct.SSESpecification">SSESpecification</a>
 
-Specify the table class.
+Set the ddb server-side encryption specification on the table.
+
+---
+
+##### `streamSpecification`<sup>Required</sup> <a name="streamSpecification" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.streamSpecification"></a>
+
+```typescript
+public readonly streamSpecification: StreamSpecification;
+```
+
+- *Type:* <a href="#@aws-amplify/graphql-api-construct.StreamSpecification">StreamSpecification</a>
+
+Set the ddb stream specification on the table.
 
 ---
 
@@ -3077,4 +3209,24 @@ the record to store in the backend output.
 
 ---
 
+
+## Enums <a name="Enums" id="Enums"></a>
+
+### SSEType <a name="SSEType" id="@aws-amplify/graphql-api-construct.SSEType"></a>
+
+Server Side Encryption Type Values - `KMS` - Server-side encryption that uses AWS KMS.
+
+The key is stored in your account and is managed by KMS (AWS KMS charges apply).
+
+#### Members <a name="Members" id="Members"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@aws-amplify/graphql-api-construct.SSEType.KMS">KMS</a></code> | *No description.* |
+
+---
+
+##### `KMS` <a name="KMS" id="@aws-amplify/graphql-api-construct.SSEType.KMS"></a>
+
+---
 

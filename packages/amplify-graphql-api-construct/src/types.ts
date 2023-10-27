@@ -689,7 +689,7 @@ export interface AmplifyGraphqlApiResources {
   readonly tables: Record<string, ITable>;
 
   /**
-   * The Generated Amplify DynamoDb Table wrapped if produced, keyed by logicalId.
+   * The Generated Amplify DynamoDb Table wrapped if produced, keyed by name.
    */
   readonly amplifyDynamoDbTables: Record<string, AmplifyDynamoDbTableWrapper>;
 

@@ -1,8 +1,8 @@
 import { CfnResource, Stack } from 'aws-cdk-lib';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
-import { BillingMode, TableClass } from 'aws-cdk-lib/aws-dynamodb';
+import { BillingMode, StreamViewType } from 'aws-cdk-lib/aws-dynamodb';
 import { Match, Template } from 'aws-cdk-lib/assertions';
-import { AmplifyDynamoDbTableWrapper } from '../amplify-dynamodb-table-wrapper';
+import { AmplifyDynamoDbTableWrapper, SSEType } from '../amplify-dynamodb-table-wrapper';
 
 describe('AmplifyDynamoDbTable', () => {
   describe('isAmplifyDynamoDbTableResource', () => {
@@ -101,21 +101,6 @@ describe('AmplifyDynamoDbTable', () => {
       });
     });
 
-    describe('tableClass', () => {
-      it('has no default value', () => {
-        validateProps({
-          tableClass: Match.absent(),
-        });
-      });
-
-      it('round trips an updated value', () => {
-        tableWrapper.tableClass = TableClass.STANDARD_INFREQUENT_ACCESS;
-        validateProps({
-          tableClass: 'STANDARD_INFREQUENT_ACCESS',
-        });
-      });
-    });
-
     describe('timeToLiveAttribute', () => {
       it('has no default value', () => {
         validateProps({
@@ -156,6 +141,27 @@ describe('AmplifyDynamoDbTable', () => {
         tableWrapper.pointInTimeRecoveryEnabled = false;
         validateProps({
           pointInTimeRecoverySpecification: { pointInTimeRecoveryEnabled: false },
+        });
+      });
+    });
+
+    describe('provisionedThroughput', () => {
+      it('has no default value', () => {
+        validateProps({
+          provisionedThroughput: Match.absent(),
+        });
+      });
+
+      it('round trips a value when enabled', () => {
+        tableWrapper.provisionedThroughput = {
+          readCapacityUnits: 8,
+          writeCapacityUnits: 9,
+        };
+        validateProps({
+          provisionedThroughput: {
+            readCapacityUnits: 8,
+            writeCapacityUnits: 9,
+          },
         });
       });
     });
@@ -211,6 +217,79 @@ describe('AmplifyDynamoDbTable', () => {
             writeCapacityUnits: 10,
           }),
         ).toThrowErrorMatchingInlineSnapshot('"Index with name unknownIndex not found in table definition"');
+      });
+    });
+
+    describe('streamSpecification', () => {
+      it('has no default value', () => {
+        validateProps({
+          streamSpecification: Match.absent(),
+        });
+      });
+
+      it('round trips a value when enabled', () => {
+        tableWrapper.streamSpecification = {
+          streamViewType: StreamViewType.KEYS_ONLY,
+        };
+        validateProps({
+          streamSpecification: {
+            streamViewType: StreamViewType.KEYS_ONLY,
+          },
+        });
+      });
+    });
+
+    describe('sseSpecification', () => {
+      it('has no default value', () => {
+        validateProps({
+          sseSpecification: Match.absent(),
+        });
+      });
+
+      it('round trips a value when disabled', () => {
+        tableWrapper.sseSpecification = {
+          sseEnabled: false,
+        };
+        validateProps({
+          sseSpecification: {
+            sseEnabled: false,
+          },
+        });
+      });
+
+      it('round trips a value when enabled', () => {
+        tableWrapper.sseSpecification = {
+          sseEnabled: true,
+          sseType: SSEType.KMS,
+        };
+        validateProps({
+          sseSpecification: {
+            sseEnabled: true,
+            sseType: SSEType.KMS,
+          },
+        });
+      });
+    });
+
+    describe('deletionProtectionEnabled', () => {
+      it('has no default value', () => {
+        validateProps({
+          deletionProtectionEnabled: Match.absent(),
+        });
+      });
+
+      it('round trips a value when enabled', () => {
+        tableWrapper.deletionProtectionEnabled = true;
+        validateProps({
+          deletionProtectionEnabled: true,
+        });
+      });
+
+      it('round trips a value when disabled', () => {
+        tableWrapper.deletionProtectionEnabled = false;
+        validateProps({
+          deletionProtectionEnabled: false,
+        });
       });
     });
   });
