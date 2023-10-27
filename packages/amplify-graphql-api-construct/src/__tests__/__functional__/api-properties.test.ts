@@ -53,4 +53,21 @@ describe('exposed api properties', () => {
 
     expect(api.apiKey).not.toBeDefined();
   });
+
+  it('exposes the api id', () => {
+    const stack = new cdk.Stack();
+
+    const api = new AmplifyGraphqlApi(stack, 'TestApi', {
+      definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+        type Todo @model @auth(rules: [{ allow: public }]) {
+          description: String!
+        }
+      `),
+      authorizationModes: {
+        apiKeyConfig: { expires: cdk.Duration.days(7) },
+      },
+    });
+
+    expect(api.apiId).toBeDefined();
+  });
 });

@@ -9,20 +9,12 @@ function getAWSConfigAndroidPath(projRoot: string): string {
   return path.join(projRoot, 'app', 'src', 'main', 'res', 'raw', 'awsconfiguration.json');
 }
 
-function getAmplifyConfigAndroidPath(projRoot: string): string {
-  return path.join(projRoot, 'app', 'src', 'main', 'res', 'raw', 'amplifyconfiguration.json');
-}
-
 function getAmplifyConfigIOSPath(projRoot: string): string {
   return path.join(projRoot, 'amplifyconfiguration.json');
 }
 
 function getAmplifyConfigFlutterPath(projRoot: string): string {
   return path.join(projRoot, 'lib', 'amplifyconfiguration.dart');
-}
-
-function getAmplifyDirPath(projRoot: string): string {
-  return path.join(projRoot, 'amplify');
 }
 
 function getAWSConfigIOSPath(projRoot: string): string {
@@ -57,44 +49,9 @@ function getLocalEnvInfo(projectRoot: string) {
   return JSON.parse(fs.readFileSync(localEnvInfoFilePath, 'utf8'));
 }
 
-function getProjectConfig(projectRoot: string) {
-  const projectConfigDir = path.join(projectRoot, 'amplify', '.config', 'project-config.json');
-  return JSONUtilities.readJson<any>(projectConfigDir);
-}
-
-function getCloudBackendConfig(projectRoot: string) {
-  const currentCloudPath: string = path.join(projectRoot, 'amplify', '#current-cloud-backend', 'backend-config.json');
-  return JSON.parse(fs.readFileSync(currentCloudPath, 'utf8'));
-}
-
-function getParameterPath(projRoot: string, category: string, resourceName: string) {
-  return path.join(projRoot, 'amplify', 'backend', category, resourceName, 'build', 'parameters.json');
-}
-
-function getCLIInputsPath(projRoot: string, category: string, resourceName: string) {
-  return path.join(projRoot, 'amplify', 'backend', category, resourceName, 'cli-inputs.json');
-}
-
-function getCategoryParameterPath(projRoot: string, category: string, resourceName: string) {
-  return path.join(projRoot, 'amplify', 'backend', category, resourceName, `${category}-parameters.json`);
-}
-
 function getTeamProviderInfo(projectRoot: string) {
   const teamProviderFilePath: string = path.join(projectRoot, 'amplify', 'team-provider-info.json');
   return JSON.parse(fs.readFileSync(teamProviderFilePath, 'utf8'));
-}
-
-function setTeamProviderInfo(projRoot: string, content: unknown) {
-  const teamProviderFilePath: string = path.join(projRoot, 'amplify', 'team-provider-info.json');
-  JSONUtilities.writeJson(teamProviderFilePath, content);
-}
-
-function getS3StorageBucketName(projectRoot: string) {
-  const meta = getProjectMeta(projectRoot);
-  const storage = meta['storage'];
-  const s3 = Object.keys(storage).filter((r) => storage[r].service === 'S3');
-  const fStorageName = s3[0];
-  return storage[fStorageName].output.BucketName;
 }
 
 function getAwsAndroidConfig(projectRoot: string): any {
@@ -127,77 +84,6 @@ function getDeploymentSecrets(): any {
   );
 }
 
-function isDeploymentSecretForEnvExists(projRoot: string, envName: string): boolean {
-  const teamproviderInfo = getTeamProviderInfo(projRoot);
-  const rootStackId = teamproviderInfo[envName].awscloudformation.StackId.split('/')[2];
-  const resource = _.first(Object.keys(teamproviderInfo[envName].categories.auth));
-  const deploymentSecrets = getDeploymentSecrets();
-  const deploymentSecretByAppId = _.find(deploymentSecrets.appSecrets, (appSecret) => appSecret.rootStackId === rootStackId);
-  if (deploymentSecretByAppId) {
-    const path = [envName, 'auth', resource, 'hostedUIProviderCreds'];
-    return _.has(deploymentSecretByAppId.environments, path);
-  }
-  return false;
-}
-export const parametersExists = (projectRoot: string, category: string, resourceName: string): boolean =>
-  fs.existsSync(getParameterPath(projectRoot, category, resourceName));
-
-function getParameters(projRoot: string, category: string, resourceName: string): any {
-  const parametersPath = getParameterPath(projRoot, category, resourceName);
-  return JSONUtilities.parse(fs.readFileSync(parametersPath, 'utf8'));
-}
-
-export const getCloudFormationTemplate = (projectRoot: string, category: string, resourceName: string): any => {
-  let templatePath = path.join(
-    projectRoot,
-    'amplify',
-    'backend',
-    category,
-    resourceName,
-    'build',
-    `${resourceName}-cloudformation-template.json`,
-  );
-  if (!fs.existsSync(templatePath)) {
-    templatePath = path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'build', 'cloudformation-template.json');
-  }
-  if (!fs.existsSync(templatePath)) {
-    templatePath = path.join(projectRoot, 'amplify', 'backend', category, resourceName, `${resourceName}-cloudformation-template.json`);
-  }
-  if (!fs.existsSync(templatePath)) {
-    throw new Error(`Unable to locate cloudformation template for ${category} ${resourceName}`);
-  }
-  return JSONUtilities.parse(fs.readFileSync(templatePath, 'utf8'));
-};
-
-function setParameters(projRoot: string, category: string, resourceName: string, parameters: unknown) {
-  const parametersPath = getParameterPath(projRoot, category, resourceName);
-  JSONUtilities.writeJson(parametersPath, parameters);
-}
-
-export function cliInputsExists(projRoot: string, category: string, resourceName: string): boolean {
-  return fs.existsSync(getCLIInputsPath(projRoot, category, resourceName));
-}
-
-export function getCLIInputs(projRoot: string, category: string, resourceName: string): any {
-  const parametersPath = getCLIInputsPath(projRoot, category, resourceName);
-  return JSONUtilities.parse(fs.readFileSync(parametersPath, 'utf8'));
-}
-
-export function setCLIInputs(projRoot: string, category: string, resourceName: string, parameters: unknown) {
-  const parametersPath = getCLIInputsPath(projRoot, category, resourceName);
-  JSONUtilities.writeJson(parametersPath, parameters);
-}
-
-function getCategoryParameters(projRoot: string, category: string, resourceName: string): any {
-  const filepath = getCategoryParameterPath(projRoot, category, resourceName);
-  return JSONUtilities.parse(fs.readFileSync(filepath, 'utf8'));
-}
-
-function setCategoryParameters(projRoot: string, category: string, resourceName: string, params: unknown): any {
-  const filepath = getCategoryParameterPath(projRoot, category, resourceName);
-  JSONUtilities.writeJson(filepath, params);
-}
-
 export {
   getProjectMeta,
   getProjectTags,
@@ -208,22 +94,11 @@ export {
   getAmplifyIOSConfig,
   getAmplifyConfigFlutterPath,
   getAWSConfigAndroidPath,
-  getAmplifyConfigAndroidPath,
   getAmplifyConfigIOSPath,
   getAWSConfigIOSPath,
   getDeploymentSecrets,
-  isDeploymentSecretForEnvExists,
-  getS3StorageBucketName,
-  getAmplifyDirPath,
   getBackendConfig,
-  getProjectConfig,
   getTeamProviderInfo,
-  getParameters,
-  setParameters,
-  getCategoryParameters,
-  setCategoryParameters,
-  getCloudBackendConfig,
-  setTeamProviderInfo,
   getLocalEnvInfo,
   getCustomPoliciesPath,
 };
