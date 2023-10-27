@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { ApiCategoryFacade, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import {
   ImportAppSyncAPIInputs,
@@ -89,7 +89,8 @@ export const writeDefaultGraphQLSchema = async (
 ): Promise<void> => {
   const dataSourceType = databaseConfig?.engine;
   if (Object.values(ImportedRDSType).includes(dataSourceType)) {
-    const globalAmplifyInputTemplate = await constructDefaultGlobalAmplifyInput(context, databaseConfig.engine);
+    const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
+    const globalAmplifyInputTemplate = await constructDefaultGlobalAmplifyInput(transformerVersion, databaseConfig.engine);
     writeSchemaFile(pathToSchemaFile, globalAmplifyInputTemplate);
   } else {
     throw new Error(`Data source type ${dataSourceType} is not supported.`);

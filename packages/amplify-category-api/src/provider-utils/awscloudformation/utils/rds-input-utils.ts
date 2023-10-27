@@ -1,6 +1,6 @@
 import { print, InputObjectTypeDefinitionNode, DocumentNode, StringValueNode } from 'graphql';
 import * as fs from 'fs-extra';
-import { $TSContext, ApiCategoryFacade, getGraphQLTransformerAuthDocLink } from '@aws-amplify/amplify-cli-core';
+import { getGraphQLTransformerAuthDocLink } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 
@@ -11,11 +11,11 @@ type AmplifyInputEntry = {
   comment?: string | undefined;
 };
 
-const getGlobalAmplifyInputEntries = async (
-  context: $TSContext,
+const getGlobalAmplifyInputEntries = (
+  transformerVersion: number,
   dataSourceType = ImportedRDSType.MYSQL,
   includeAuthRule = true,
-): Promise<AmplifyInputEntry[]> => {
+): AmplifyInputEntry[] => {
   const inputs: AmplifyInputEntry[] = [
     {
       name: 'engine',
@@ -24,7 +24,7 @@ const getGlobalAmplifyInputEntries = async (
     },
   ];
 
-  if (includeAuthRule && (await ApiCategoryFacade.getTransformerVersion(context)) === 2) {
+  if (includeAuthRule && transformerVersion === 2) {
     const authDocLink = getGraphQLTransformerAuthDocLink(2);
     inputs.push({
       name: 'globalAuthRule',
@@ -36,12 +36,12 @@ const getGlobalAmplifyInputEntries = async (
   return inputs;
 };
 
-export const constructDefaultGlobalAmplifyInput = async (
-  context: $TSContext,
+export const constructDefaultGlobalAmplifyInput = (
+  transformerVersion: number,
   dataSourceType: ImportedRDSType,
-  includeAuthRule: boolean = true,
-) => {
-  const inputs = await getGlobalAmplifyInputEntries(context, dataSourceType, includeAuthRule);
+  includeAuthRule = true,
+): string => {
+  const inputs = getGlobalAmplifyInputEntries(transformerVersion, dataSourceType, includeAuthRule);
   const inputsString = inputs.reduce(
     (acc: string, input): string =>
       acc +
@@ -53,9 +53,7 @@ export const constructDefaultGlobalAmplifyInput = async (
   return `input AMPLIFY {\n${inputsString}}\n`;
 };
 
-export const readRDSGlobalAmplifyInput = async (
-  schemaDocument: DocumentNode | undefined,
-): Promise<InputObjectTypeDefinitionNode | undefined> => {
+export const readRDSGlobalAmplifyInput = (schemaDocument: DocumentNode | undefined): InputObjectTypeDefinitionNode | undefined => {
   if (!schemaDocument) {
     return;
   }
@@ -68,7 +66,7 @@ export const readRDSGlobalAmplifyInput = async (
   }
 };
 
-export const readRDSSchema = async (pathToSchemaFile: string): Promise<string | undefined> => {
+export const readRDSSchema = (pathToSchemaFile: string): string | undefined => {
   if (!fs.existsSync(pathToSchemaFile)) {
     return;
   }
@@ -79,14 +77,14 @@ export const readRDSSchema = async (pathToSchemaFile: string): Promise<string | 
   return schemaContent;
 };
 
-export const constructRDSGlobalAmplifyInput = async (
-  context: $TSContext,
+export const constructRDSGlobalAmplifyInput = (
+  transformerVersion: number,
   config: any,
   schemaDocument: DocumentNode | undefined,
-): Promise<string> => {
-  const existingInputNode: any = await readRDSGlobalAmplifyInput(schemaDocument);
+): string => {
+  const existingInputNode: any = readRDSGlobalAmplifyInput(schemaDocument);
   if (existingInputNode && existingInputNode?.fields && existingInputNode?.fields?.length > 0) {
-    const expectedInputs = (await getGlobalAmplifyInputEntries(context, ImportedRDSType.MYSQL)).map((item) => item.name);
+    const expectedInputs = getGlobalAmplifyInputEntries(transformerVersion, ImportedRDSType.MYSQL).map((item) => item.name);
     expectedInputs.forEach((input) => {
       const inputNodeField = existingInputNode?.fields?.find((field: any) => field?.name?.value === input);
       if (inputNodeField && config[input]) {
@@ -96,12 +94,12 @@ export const constructRDSGlobalAmplifyInput = async (
     return print(existingInputNode);
   } else {
     const engine = config['engine'] || ImportedRDSType.MYSQL;
-    return constructDefaultGlobalAmplifyInput(context, engine, false);
+    return constructDefaultGlobalAmplifyInput(transformerVersion, engine, false);
   }
 };
 
-export const getEngineInput = async (schemaDocument: DocumentNode): Promise<ImportedRDSType> => {
-  const inputNode = await readRDSGlobalAmplifyInput(schemaDocument);
+export const getEngineInput = (schemaDocument: DocumentNode): ImportedRDSType => {
+  const inputNode = readRDSGlobalAmplifyInput(schemaDocument);
   if (inputNode) {
     const engine = (inputNode.fields.find((field) => field.name.value === 'engine')?.defaultValue as StringValueNode)?.value;
     if (engine && !Object.values(ImportedRDSType).includes(engine as ImportedRDSType)) {
