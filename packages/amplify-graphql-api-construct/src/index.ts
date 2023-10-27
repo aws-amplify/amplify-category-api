@@ -30,3 +30,11 @@ export type {
 } from './types';
 export { AmplifyGraphqlApi } from './amplify-graphql-api';
 export { AmplifyGraphqlDefinition } from './amplify-graphql-definition';
+export {
+  AmplifyDynamoDbTableWrapper,
+  TimeToLiveSpecification,
+  ProvisionedThroughput,
+  SSESpecification,
+  SSEType,
+  StreamSpecification,
+} from './amplify-dynamodb-table-wrapper';

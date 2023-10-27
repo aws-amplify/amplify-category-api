@@ -164,7 +164,11 @@ export const splitArray = <T>(inputArray: T[], chunkSize: number): T[][] => {
  * @param postProcessor the synth callback method.
  * @returns the file contents to write to disk as a string.
  */
-const generateApiPostProcessorFile = (postProcessor: ApiPostProcessor): string => `module.exports = ${postProcessor.toString()}`;
+const generateApiPostProcessorFile = (postProcessor: ApiPostProcessor): string => `
+  import * as aws_dynamodb_1 from 'aws-cdk-lib/aws-dynamodb';
+
+  module.exports = ${postProcessor.toString()}
+`;
 
 /**
  * Retrieve the record count from a given todo table for a provided endpoint config.

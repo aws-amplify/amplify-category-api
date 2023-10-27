@@ -14,6 +14,7 @@ import { CfnResource, NestedStack } from 'aws-cdk-lib';
 import { getResourceName } from '@aws-amplify/graphql-transformer-core';
 import { CfnFunction, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
 import { AmplifyGraphqlApiResources, FunctionSlot } from '../types';
+import { AmplifyDynamoDbTableWrapper } from '../amplify-dynamodb-table-wrapper';
 
 /**
  * Everything below here is intended to help us gather the
@@ -33,7 +34,7 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
   const cfnDataSources: Record<string, CfnDataSource> = {};
   const tables: Record<string, Table> = {};
   const cfnTables: Record<string, CfnTable> = {};
-  const cfnAmplifyTables: Record<string, CfnResource> = {};
+  const amplifyDynamoDbTables: Record<string, AmplifyDynamoDbTableWrapper> = {};
   const roles: Record<string, Role> = {};
   const cfnRoles: Record<string, CfnRole> = {};
   const functions: Record<string, LambdaFunction> = {};
@@ -78,8 +79,8 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
       cfnTables[resourceName] = currentScope;
       return;
     }
-    if (currentScope instanceof CfnResource && currentScope.cfnResourceType === 'Custom::AmplifyDynamoDBTable') {
-      cfnAmplifyTables[resourceName] = currentScope;
+    if (AmplifyDynamoDbTableWrapper.isAmplifyDynamoDbTableResource(currentScope)) {
+      amplifyDynamoDbTables[resourceName] = new AmplifyDynamoDbTableWrapper(currentScope);
       return;
     }
     if (currentScope instanceof Role) {
@@ -126,6 +127,7 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
   return {
     graphqlApi: GraphqlApi.fromGraphqlApiAttributes(scope, 'L2GraphqlApi', { graphqlApiId: cfnGraphqlApi.attrApiId }),
     tables,
+    amplifyDynamoDbTables,
     roles,
     functions,
     nestedStacks,
@@ -137,7 +139,6 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
       cfnFunctionConfigurations,
       cfnDataSources,
       cfnTables,
-      cfnAmplifyTables,
       cfnRoles,
       cfnFunctions,
       additionalCfnResources,
