@@ -71,6 +71,7 @@ export class AmplifyGraphqlApi extends Construct {
     addOpenSearchDataSource(id: string, domain: IDomain_2, options?: DataSourceOptions): OpenSearchDataSource;
     addRdsDataSource(id: string, serverlessCluster: IServerlessCluster, secretStore: ISecret, databaseName?: string, options?: DataSourceOptions): RdsDataSource;
     addResolver(id: string, props: ExtendedResolverProps): Resolver;
+    readonly apiId: string;
     readonly apiKey: string | undefined;
     readonly generatedFunctionSlots: FunctionSlot[];
     readonly graphqlUrl: string;
