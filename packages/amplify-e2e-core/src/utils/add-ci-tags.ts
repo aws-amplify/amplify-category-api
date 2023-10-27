@@ -21,7 +21,7 @@ export const addCITags = (projectPath: string): void => {
  * Refer https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html
  * @param projectPath
  */
-export const addCodeBuildCITags = (projectPath: string): void => {
+const addCodeBuildCITags = (projectPath: string): void => {
   const tags = stateManager.getProjectTags(projectPath);
 
   const addTagIfNotExist = (key: string, value: string): void => {

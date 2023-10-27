@@ -1,8 +1,7 @@
 import * as path from 'path';
-import { Lambda } from 'aws-sdk';
 import * as glob from 'glob';
 import _ from 'lodash';
-import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW, getCLIPath, getProjectMeta, getBackendAmplifyMeta, invokeFunction } from '..';
+import { nspawn as spawn, ExecutionContext, getCLIPath, getBackendAmplifyMeta } from '..';
 import { singleSelect, multiSelect, moveUp, moveDown } from '../utils/selectors';
 import { loadFeatureFlags } from '../utils/feature-flags';
 
@@ -13,7 +12,7 @@ type FunctionRuntimes = 'dotnetCore31' | 'go' | 'java' | 'nodejs' | 'python';
 type FunctionCallback = (chain: any, cwd: string, settings: any) => any;
 
 // runtimeChoices are shared between tests
-export const runtimeChoices = ['.NET Core 3.1', 'Go', 'Java', 'NodeJS', 'Python'];
+const runtimeChoices = ['.NET Core 3.1', 'Go', 'Java', 'NodeJS', 'Python'];
 
 // templateChoices is per runtime
 const dotNetCore31TemplateChoices = [
@@ -142,7 +141,7 @@ const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: Core
   }
 };
 
-export type CoreFunctionSettings = {
+type CoreFunctionSettings = {
   testingWithLatestCodebase?: boolean;
   name?: string;
   packageManager?: {
@@ -311,54 +310,6 @@ export const updateFunction = (cwd: string, settings: CoreFunctionSettings, runt
   return coreFunction(cwd, settings, 'update', runtime, undefined);
 };
 
-export const addLambdaTrigger = (chain: ExecutionContext, cwd: string, settings: any) => {
-  chain = singleSelect(
-    chain.wait('What event source do you want to associate with Lambda trigger'),
-    settings.triggerType === 'Kinesis' ? 'Amazon Kinesis Stream' : 'Amazon DynamoDB Stream',
-    ['Amazon DynamoDB Stream', 'Amazon Kinesis Stream'],
-  );
-
-  const res = chain
-    .wait(`Choose a ${settings.triggerType} event source option`)
-    /**
-     * Use API category graphql @model backed DynamoDB table(s) in the current Amplify project
-     * or
-     * Use storage category DynamoDB table configured in the current Amplify project
-     */
-    .sendLine(settings.eventSource === 'DynamoDB' ? KEY_DOWN_ARROW : '');
-
-  switch (settings.triggerType + (settings.eventSource || '')) {
-    case 'DynamoDBAppSync':
-      return settings.expectFailure ? res.wait('No AppSync resources have been configured in the API category.') : res;
-    case 'DynamoDBDynamoDB':
-      return settings.expectFailure
-        ? res.wait('There are no DynamoDB resources configured in your project currently')
-        : res.wait('Choose from one of the already configured DynamoDB tables').sendCarriageReturn();
-    case 'Kinesis':
-      return settings.expectFailure
-        ? res.wait('No Kinesis streams resource to select. Please use "amplify add analytics" command to create a new Kinesis stream')
-        : res;
-    default:
-      return res;
-  }
-};
-
-export const functionBuild = (cwd: string, settings: any): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['function', 'build'], { cwd, stripColors: true })
-      .wait('Are you sure you want to continue building the resources?')
-      .sendConfirmYes()
-      .sendEof()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-};
-
 export const selectRuntime = (chain: ExecutionContext, runtime: FunctionRuntimes) => {
   const runtimeName = getRuntimeDisplayName(runtime);
   chain.wait('Choose the runtime that you want to use:');
@@ -379,14 +330,7 @@ export const selectTemplate = (chain: ExecutionContext, functionTemplate: string
   singleSelect(chain, functionTemplate, templateChoices);
 };
 
-export const removeFunction = (cwd: string, funcName: string) =>
-  new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['remove', 'function', funcName, '--yes'], { cwd, stripColors: true }).run((err) =>
-      err ? reject(err) : resolve(),
-    );
-  });
-
-export interface LayerOptions {
+interface LayerOptions {
   select?: string[]; // list options to select
   layerAndFunctionExist?: boolean; // whether this test involves both a function and a layer
   expectedListOptions?: string[]; // the expected list of all layers
@@ -567,40 +511,6 @@ const addCron = (chain: ExecutionContext, settings: any) => {
   }
 
   return chain;
-};
-
-export const functionMockAssert = (
-  cwd: string,
-  settings: { funcName: string; successString: string; eventFile: string; timeout?: number },
-) => {
-  return new Promise<void>((resolve, reject) => {
-    const cliArgs = ['mock', 'function', settings.funcName, '--event', settings.eventFile].concat(
-      settings.timeout ? ['--timeout', settings.timeout.toString()] : [],
-    );
-    spawn(getCLIPath(), cliArgs, { cwd, stripColors: true })
-      .wait('Result:')
-      .wait(settings.successString)
-      .wait('Finished execution.')
-      .sendEof()
-      .run((err) => (err ? reject(err) : resolve()));
-  });
-};
-
-export const functionCloudInvoke = async (
-  cwd: string,
-  settings: { funcName: string; payload: string },
-): Promise<Lambda.InvocationResponse> => {
-  const meta = getProjectMeta(cwd);
-  const lookupName = settings.funcName;
-  expect(meta.function[lookupName]).toBeDefined();
-  const { Name: functionName, Region: region } = meta.function[lookupName].output;
-  expect(functionName).toBeDefined();
-  expect(region).toBeDefined();
-  const result = await invokeFunction(functionName, settings.payload, region);
-  if (!result.$response.data) {
-    fail('No data in lambda response');
-  }
-  return result.$response.data as Lambda.InvocationResponse;
 };
 
 const getTemplateChoices = (runtime: FunctionRuntimes) => {

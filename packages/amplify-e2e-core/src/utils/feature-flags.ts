@@ -14,7 +14,7 @@ export const loadFeatureFlags = (projectRoot: string): FeatureFlagData => {
   );
 };
 
-export const saveFeatureFlagFile = (projectRoot: string, data: FeatureFlagData) => {
+const saveFeatureFlagFile = (projectRoot: string, data: FeatureFlagData) => {
   const ffPath = getFeatureFlagFilePath(projectRoot);
   JSONUtilities.writeJson(ffPath, data);
 };

@@ -15,6 +15,7 @@ import { getResourceName } from '@aws-amplify/graphql-transformer-core';
 import { CfnFunction, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
 import { AmplifyGraphqlApiResources, FunctionSlot } from '../types';
 import { AmplifyDynamoDbTableWrapper } from '../amplify-dynamodb-table-wrapper';
+import { walkAndProcessNodes } from './construct-tree';
 
 /**
  * Everything below here is intended to help us gather the
@@ -105,12 +106,7 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
     }
   };
 
-  const walkAndClassifyConstructTree = (currentScope: Construct): void => {
-    classifyConstruct(currentScope);
-    currentScope.node.children.forEach(walkAndClassifyConstructTree);
-  };
-
-  scope.node.children.forEach(walkAndClassifyConstructTree);
+  scope.node.children.forEach((child) => walkAndProcessNodes(child, classifyConstruct));
 
   if (!cfnGraphqlApi) {
     throw new Error('Expected to find AWS::AppSync::GraphQLApi in the generated resource scope.');

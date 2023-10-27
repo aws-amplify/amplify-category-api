@@ -1,20 +1,8 @@
 import * as os from 'os';
 import * as fs from 'fs';
 import * as path from 'path';
-import { Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-/**
- * Given a scope, search up for the parent stack. This should be the nearest stack object.
- * @param scope the scope to search up against.
- * @returns the stack, if one can be found, else throws an error.
- */
-const getStackForScope = (scope: Construct): Stack => {
-  const stacksInHierarchy = scope.node.scopes.filter((parentScope) => 'templateOptions' in parentScope);
-  if (stacksInHierarchy.length === 0) {
-    throw new Error('No Stack Found in Construct Scope');
-  }
-  return stacksInHierarchy.reverse()[0] as Stack;
-};
+import { getStackForScope } from './construct-tree';
 
 /**
  * Compute the platform string, based on
