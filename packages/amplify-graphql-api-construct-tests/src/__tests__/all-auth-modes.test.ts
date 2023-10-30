@@ -24,7 +24,7 @@ describe('CDK Auth Modes', () => {
 
   test('CDK deploys with all auth modes enabled', async () => {
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'all-auth-modes'));
-    const name = await initCDKProject(projRoot, templatePath);
+    const name = await initCDKProject(projRoot, templatePath, { additionalDependencies: ['esbuild'] });
     const outputs = await cdkDeploy(projRoot, '--all');
     const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
 

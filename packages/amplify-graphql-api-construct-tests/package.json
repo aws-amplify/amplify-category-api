@@ -21,6 +21,7 @@
     "build-tests": "tsc --build tsconfig.tests.json"
   },
   "dependencies": {
+    "@aws-sdk/client-lambda": "^3.438.0",
     "amplify-category-api-e2e-core": "4.3.2",
     "node-fetch": "^2.6.7",
     "fs-extra": "^8.1.0"
