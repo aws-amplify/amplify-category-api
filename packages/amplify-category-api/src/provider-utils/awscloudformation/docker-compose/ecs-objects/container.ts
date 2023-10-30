@@ -57,9 +57,9 @@ class Container implements IContainerDefinitions {
     this.env_file = [].concat(env_file);
     this.environment = Array.isArray(environment)
       ? environment.reduce((acc, element) => {
-          const [key, value] = element.split('=');
+          const [key, ...value] = element.split('=');
 
-          acc[key] = value;
+          acc[key] = value.join('=');
           return acc;
         }, {} as Record<string, string>)
       : (environment as Record<string, string>);
