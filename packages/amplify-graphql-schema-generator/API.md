@@ -7,6 +7,8 @@
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql';
 import { FieldDefinitionNode } from 'graphql';
+import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { InputObjectTypeDefinitionNode } from 'graphql';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
@@ -33,6 +35,12 @@ export const applySchemaOverrides: (document: DocumentNode, existingDocument?: D
 
 // @public (undocumented)
 export const checkDestructiveNullabilityChange: (field: FieldDefinitionNode, existingField: FieldDefinitionNode) => void;
+
+// @public (undocumented)
+export const constructDefaultGlobalAmplifyInput: (transformerVersion: number, dataSourceType: ImportedRDSType, includeAuthRule?: boolean) => string;
+
+// @public (undocumented)
+export const constructRDSGlobalAmplifyInput: (transformerVersion: number, config: any, schemaDocument: DocumentNode | undefined) => string;
 
 // @public (undocumented)
 export const convertToGraphQLFieldName: (fieldName: string) => string;
@@ -153,6 +161,9 @@ export const getParentNode: (ancestors: any[]) => ObjectTypeDefinitionNode | und
 export const getRefersToDirective: (name: string) => DirectiveNode;
 
 // @public (undocumented)
+export const graphqlSchemaFromRDSSchema: (sqlSchema: string, engineType: ImportedRDSType, transformerVersion?: number) => string;
+
+// @public (undocumented)
 export class Index {
     constructor(name: string);
     // (undocumented)
@@ -236,6 +247,12 @@ export interface MySQLDataSourceConfig {
 }
 
 // @public (undocumented)
+export class MySQLStringDataSourceAdapter extends StringDataSourceAdapter {
+    // (undocumented)
+    protected parseSchema(schema: string): void;
+}
+
+// @public (undocumented)
 export interface NonNullType {
     // (undocumented)
     readonly kind: 'NonNull';
@@ -279,10 +296,22 @@ export interface PostgresDataSourceConfig {
 }
 
 // @public (undocumented)
+export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
+    // (undocumented)
+    protected parseSchema(schema: string): void;
+}
+
+// @public (undocumented)
 export const printSchema: (document: DocumentNode) => string;
 
 // @public (undocumented)
 export const provisionSchemaInspectorLambda: (lambdaName: string, vpc: VpcConfig, region: string) => Promise<void>;
+
+// @public (undocumented)
+export const readRDSGlobalAmplifyInput: (schemaDocument: DocumentNode | undefined) => InputObjectTypeDefinitionNode | undefined;
+
+// @public (undocumented)
+export const renderSchema: (schema: Schema, transformerVersion: number, databaseConfig: any, existingSchema?: DocumentNode) => string;
 
 // @public (undocumented)
 export class Schema {
@@ -299,6 +328,17 @@ export class Schema {
 
 // @public (undocumented)
 export const sleep: (milliseconds: number) => Promise<void>;
+
+// @public (undocumented)
+export abstract class StringDataSourceAdapter {
+    constructor(schema: string);
+    // (undocumented)
+    describeTable(tableName: string): Model;
+    // (undocumented)
+    getModels(): Model[];
+    // (undocumented)
+    protected abstract parseSchema(schema: string): void;
+}
 
 // (No @packageDocumentation comment for this package)
 

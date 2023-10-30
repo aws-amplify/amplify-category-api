@@ -13,6 +13,7 @@ import {
   PostgresDataSourceAdapter,
   PostgresDataSourceConfig,
   constructRDSGlobalAmplifyInput,
+  renderSchema,
 } from '@aws-amplify/graphql-schema-generator';
 import { readRDSSchema } from './rds-input-utils';
 import { $TSContext, AmplifyError, stateManager, ApiCategoryFacade } from '@aws-amplify/amplify-cli-core';
@@ -37,12 +38,7 @@ export const generateRDSSchema = async (
   const existingSchemaDocument = parseSchema(existingSchema, pathToSchemaFile);
 
   const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
-  const schemaString =
-    constructRDSGlobalAmplifyInput(transformerVersion, databaseConfig, existingSchemaDocument) +
-    os.EOL +
-    os.EOL +
-    generateGraphQLSchema(schema, existingSchemaDocument);
-  return schemaString;
+  return renderSchema(schema, transformerVersion, databaseConfig, existingSchemaDocument);
 };
 
 const retryWithVpcLambda = async (envName: string, databaseConfig, adapter: DataSourceAdapter): Promise<boolean> => {

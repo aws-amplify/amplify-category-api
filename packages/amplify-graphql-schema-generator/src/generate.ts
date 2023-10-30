@@ -1,27 +1,33 @@
 import * as os from 'os';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { DocumentNode } from 'graphql';
-import { Schema, Engine, generateGraphQLSchema } from './';
+import { Schema, Engine } from './schema-representation';
+import { generateGraphQLSchema } from './schema-generator';
 import { constructRDSGlobalAmplifyInput } from './input';
+import { MySQLStringDataSourceAdapter, PostgresStringDataSourceAdapter } from './datasource-adapter';
 
 const buildSchemaFromString = (stringSchema: string, engineType: ImportedRDSType): Schema => {
   let schema;
+  let adapter;
   switch (engineType) {
     case ImportedRDSType.MYSQL:
+      adapter = new MySQLStringDataSourceAdapter(stringSchema);
       schema = new Schema(new Engine('MySQL'));
       break;
     case ImportedRDSType.POSTGRESQL:
+      adapter = new PostgresStringDataSourceAdapter(stringSchema);
       schema = new Schema(new Engine('Postgres'));
       break;
     default:
       throw new Error('Only MySQL and Postgres Data Sources are supported');
   }
-  return schema;
 
-  // how to build schema without adapter
+  const models = adapter.getModels();
+  models.forEach((m) => schema.addModel(m));
+  return schema;
 };
 
-const renderSchema = (
+export const renderSchema = (
   schema: Schema,
   transformerVersion: number,
   databaseConfig: any,
@@ -35,12 +41,10 @@ const renderSchema = (
   );
 };
 
-export const graphqlSchemaFromRDSSchema = (sqlSchema: string, engineType: ImportedRDSType): string => {
+export const graphqlSchemaFromRDSSchema = (sqlSchema: string, engineType: ImportedRDSType, transformerVersion = 2): string => {
   const schema = buildSchemaFromString(sqlSchema, engineType);
 
-  const transformerVersion = 2;
-
-  // how to construct database config
+  // TODO: how to construct database config
   const databaseConfig = {};
   return renderSchema(schema, transformerVersion, databaseConfig);
 };
