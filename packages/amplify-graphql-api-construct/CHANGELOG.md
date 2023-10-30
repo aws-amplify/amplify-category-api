@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.1.5...@aws-amplify/graphql-api-construct@1.2.0) (2023-10-27)
+
+### Features
+
+- add apiId to AmplifyGraphqlApi construct properties ([#1987](https://github.com/aws-amplify/amplify-category-api/issues/1987)) ([ccc12f6](https://github.com/aws-amplify/amplify-category-api/commit/ccc12f602e5502a082f621717aa47a3443376870))
+- throw early exception if multiple instances exist in a single stack ([#1990](https://github.com/aws-amplify/amplify-category-api/issues/1990)) ([6dec41b](https://github.com/aws-amplify/amplify-category-api/commit/6dec41b7ad8946631e04e15d1b07aba94ec3fb3f))
+
+## [1.1.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.1.4...@aws-amplify/graphql-api-construct@1.1.5) (2023-10-21)
+
+**Note:** Version bump only for package @aws-amplify/graphql-api-construct
+
 ## [1.1.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.1.3...@aws-amplify/graphql-api-construct@1.1.4) (2023-10-12)
 
 ### Bug Fixes

@@ -43,3 +43,29 @@ export const graphql = async (apiEndpoint: string, apiKey: string, query: string
     body: body,
   };
 };
+
+export type ValidateGraphqlOptions = {
+  query: string;
+  apiEndpoint: string;
+  apiKey: string;
+  expectedStatusCode?: number;
+};
+
+/**
+ * Run a graphql request, and run cursory verifications on the response object.
+ * @returns the result, if validations pass.
+ */
+export const validateGraphql = async ({
+  query,
+  apiEndpoint,
+  apiKey,
+  expectedStatusCode,
+}: ValidateGraphqlOptions): Promise<GraphqlResponse> => {
+  const response = await graphql(apiEndpoint, apiKey, query);
+
+  if (expectedStatusCode) {
+    expect(response.statusCode).toEqual(expectedStatusCode);
+  }
+
+  return response;
+};
