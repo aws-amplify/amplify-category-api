@@ -140,4 +140,32 @@ describe('basic functionality', () => {
     const connectionTemplate = Template.fromStack(api.resources.nestedStacks.ConnectionStack);
     expect(connectionTemplate).toBeDefined();
   });
+
+  it('throws if multiple apis are attached to the same stack', () => {
+    const stack = new cdk.Stack();
+
+    const definition = AmplifyGraphqlDefinition.fromString('type Todo @model @auth(rules: [{ allow: public }]) { id: ID! }');
+    const authorizationModes = { apiKeyConfig: { expires: cdk.Duration.days(7) } };
+
+    new AmplifyGraphqlApi(stack, 'TestApi1', { definition, authorizationModes });
+
+    expect(() => new AmplifyGraphqlApi(stack, 'TestApi2', { definition, authorizationModes })).toThrowErrorMatchingInlineSnapshot(
+      '"Only one AmplifyGraphqlApi is expected in a stack"',
+    );
+  });
+
+  it('throws if multiple apis are attached to the same root stack within nested stacks', () => {
+    const stack = new cdk.Stack();
+    const nested1 = new cdk.NestedStack(stack, 'Nested1');
+    const nested2 = new cdk.NestedStack(stack, 'Nested2');
+
+    const definition = AmplifyGraphqlDefinition.fromString('type Todo @model @auth(rules: [{ allow: public }]) { id: ID! }');
+    const authorizationModes = { apiKeyConfig: { expires: cdk.Duration.days(7) } };
+
+    new AmplifyGraphqlApi(nested1, 'TestApi1', { definition, authorizationModes });
+
+    expect(() => new AmplifyGraphqlApi(nested2, 'TestApi2', { definition, authorizationModes })).toThrowErrorMatchingInlineSnapshot(
+      '"Only one AmplifyGraphqlApi is expected in a stack"',
+    );
+  });
 });

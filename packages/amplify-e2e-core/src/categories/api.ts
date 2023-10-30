@@ -15,7 +15,7 @@ import {
   updateSchema,
 } from '..';
 import { multiSelect, singleSelect } from '../utils/selectors';
-import { selectRuntime, selectTemplate } from './lambda-function';
+import { selectRuntime, selectTemplate } from './function';
 import { modifiedApi } from './resources/modified-api-index';
 
 const VPC_DEPLOYMENT_WAIT_TIME = 1000 * 60 * 12; // 12 minutes;
