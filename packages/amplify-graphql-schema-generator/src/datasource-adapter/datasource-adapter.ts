@@ -1,3 +1,5 @@
+import { singular } from 'pluralize';
+import { toPascalCase } from 'graphql-transformer-common';
 import { Field, FieldType, Index, Model } from '../schema-representation';
 
 export abstract class DataSourceAdapter {
@@ -50,5 +52,9 @@ export abstract class DataSourceAdapter {
     this.useVPC = true;
     this.vpcSchemaInspectorLambda = vpcSchemaInspectorLambda;
     this.vpcLambdaRegion = region;
+  }
+
+  protected getEnumName(name: string): string {
+    return singular(toPascalCase(name.split('_')));
   }
 }

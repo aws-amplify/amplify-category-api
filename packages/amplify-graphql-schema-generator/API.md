@@ -55,6 +55,8 @@ export abstract class DataSourceAdapter {
     // (undocumented)
     describeTable(tableName: string): Promise<Model>;
     // (undocumented)
+    protected getEnumName(name: string): string;
+    // (undocumented)
     abstract getFields(tableName: string): Promise<Field[]>;
     // (undocumented)
     abstract getIndexes(tableName: string): Promise<Index[]>;

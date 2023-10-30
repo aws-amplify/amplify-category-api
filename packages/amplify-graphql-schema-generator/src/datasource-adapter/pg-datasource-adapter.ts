@@ -43,6 +43,16 @@ export class PostgresDataSourceAdapter extends DataSourceAdapter {
 
   private readonly PRIMARY_KEY_INDEX_NAME = 'PRIMARY';
 
+  private readonly FETCH_ENUMS_QUERY = `
+    SELECT  n.nspname AS enum_schema,
+      t.typname AS enum_name,
+      e.enumlabel AS enum_value
+    FROM    pg_type t JOIN
+      pg_enum e ON t.oid = e.enumtypid JOIN
+      pg_catalog.pg_namespace n ON n.oid = t.typnamespace
+    WHERE   n.nspname = 'public'
+  `;
+
   constructor(private config: PostgresDataSourceConfig) {
     super();
   }
@@ -118,6 +128,30 @@ export class PostgresDataSourceAdapter extends DataSourceAdapter {
     return tables;
   }
 
+  private async loadAllEnums(): Promise<void> {
+    this.enums = new Map<string, EnumType>();
+    const result =
+      this.useVPC && this.vpcSchemaInspectorLambda
+        ? await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, this.FETCH_ENUMS_QUERY, this.vpcLambdaRegion)
+        : (await this.dbBuilder.raw(this.FETCH_ENUMS_QUERY)).rows;
+
+    result.forEach((row: any) => {
+      const enumName = row.enum_name;
+      const enumValue = row.enum_value;
+      if (this.enums.has(enumName)) {
+        const enumType = this.enums.get(enumName)!;
+        enumType.values.push(enumValue);
+      } else {
+        const enumType: EnumType = {
+          kind: 'Enum',
+          name: enumName,
+          values: [enumValue],
+        };
+        this.enums.set(enumName, enumType);
+      }
+    });
+  }
+
   public async getFields(tableName: string): Promise<Field[]> {
     const fieldsName: string[] = [
       ...new Set(
@@ -148,6 +182,7 @@ export class PostgresDataSourceAdapter extends DataSourceAdapter {
   }
 
   private async loadAllFields(): Promise<void> {
+    await this.loadAllEnums();
     // Query INFORMATION_SCHEMA.COLUMNS table and load fields of all the tables from the database
     const LOAD_FIELDS_QUERY = `SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'public' AND TABLE_CATALOG = '${this.config.database}'`;
     this.fields = [];
@@ -294,27 +329,26 @@ export class PostgresDataSourceAdapter extends DataSourceAdapter {
       case 'POLYGON':
         fieldDatatype = 'AWSJSON';
         break;
-      case 'ENUM':
-        fieldDatatype = 'ENUM';
-        break;
       case 'CIDR':
       case 'INET':
         fieldDatatype = 'AWSIPAddress';
         break;
       default:
-        fieldDatatype = 'String';
+        if (this.enums.has(columntype)) {
+          fieldDatatype = 'ENUM';
+        }
         break;
     }
 
     let result: FieldType;
     if (fieldDatatype === 'ENUM') {
-      const enumName = this.generateEnumName(tableName, fieldName);
+      const enumName = this.getEnumName(columntype);
+      const enumRef = this.enums.get(columntype);
       result = {
         kind: 'Enum',
-        values: this.getEnumValues(columntype),
-        name: this.generateEnumName(tableName, fieldName),
+        values: enumRef.values,
+        name: enumName,
       };
-      this.enums.set(enumName, result);
     } else {
       result = {
         kind: 'Scalar',
@@ -337,23 +371,5 @@ export class PostgresDataSourceAdapter extends DataSourceAdapter {
     }
 
     return result;
-  }
-
-  private getEnumValues(value: string): string[] {
-    // RegEx matches strings with quotes 'match' or "match"
-    const regex = /(["'])(?:(?=(\\?))\2.)*?\1/g;
-    // Remove the first and last character from the matched string which contains the quote
-    return value.match(regex).map((a) => a.slice(1, -1));
-  }
-
-  private generateEnumName(tableName: string, fieldName: string): string {
-    const enumNamePrefix = [tableName, fieldName].join('_');
-    let enumName = enumNamePrefix;
-    let counter = 0;
-    while (this.enums.has(enumName)) {
-      enumName = [enumNamePrefix, counter.toString()].join('_');
-      counter++;
-    }
-    return enumName;
   }
 }

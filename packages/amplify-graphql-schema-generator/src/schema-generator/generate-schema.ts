@@ -10,7 +10,7 @@ import {
   DirectiveNode,
   ObjectTypeDefinitionNode,
 } from 'graphql';
-import { EnumType, Field, Index, Model, Schema } from '../schema-representation';
+import { EnumType, Field, FieldType, Index, Model, Schema } from '../schema-representation';
 import { applySchemaOverrides } from './schema-overrides';
 import { singular } from 'pluralize';
 import { toCamelCase, toPascalCase } from 'graphql-transformer-common';
@@ -42,9 +42,11 @@ export const generateGraphQLSchema = (schema: Schema, existingSchemaDocument?: D
     const fields = model.getFields();
     const primaryKeyFields = primaryKey?.getFields();
     fields.forEach((f) => {
-      if (f.type.kind === 'Enum') {
-        const enumType = constructEnumType(f.type);
-        document.definitions.push(enumType.serialize());
+      if (isEnum(f.type)) {
+        const enumType = constructEnumType(getBaseType(f.type) as EnumType);
+        if (!document.definitions.find((d) => d.name.value === enumType.name)) {
+          document.definitions.push(enumType.serialize());
+        }
       }
 
       const field: any = convertInternalFieldTypeToGraphQL(f, primaryKeyFields.includes(f.name));
@@ -60,6 +62,20 @@ export const generateGraphQLSchema = (schema: Schema, existingSchemaDocument?: D
   const documentWithOverrides = applySchemaOverrides(document as DocumentNode, existingSchemaDocument);
   const schemaStr = printSchema(documentWithOverrides);
   return schemaStr;
+};
+
+const isEnum = (type: FieldType): boolean => {
+  if (type.kind === 'NonNull' || type.kind === 'List') {
+    return isEnum(type.type);
+  }
+  return type.kind === 'Enum';
+};
+
+const getBaseType = (type: FieldType): FieldType => {
+  if (type.kind === 'NonNull' || type.kind === 'List') {
+    return getBaseType(type.type);
+  }
+  return type;
 };
 
 const convertInternalFieldTypeToGraphQL = (field: Field, isPrimaryKeyField: boolean): FieldWrapper => {
@@ -172,7 +188,7 @@ const constructObjectType = (model: Model) => {
   });
 };
 
-const constructEnumType = (type: EnumType) => {
+const constructEnumType = (type: EnumType): EnumWrapper => {
   const enumValues = type.values.map((t) => {
     return {
       kind: Kind.ENUM_VALUE_DEFINITION,
