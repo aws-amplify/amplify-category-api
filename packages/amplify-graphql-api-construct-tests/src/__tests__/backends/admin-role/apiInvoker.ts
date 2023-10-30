@@ -83,6 +83,6 @@ export const handler = async (event: CreateTodoHandlerEvent): Promise<GraphqlPro
   }
 
   const responsePayload = { statusCode, body };
-  console.log('Returning response', responsePayload)
+  console.log('Returning response', responsePayload);
   return responsePayload;
 };
