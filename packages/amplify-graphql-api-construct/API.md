@@ -123,7 +123,7 @@ export interface AmplifyGraphqlApiProps {
     readonly authorizationModes: AuthorizationModes;
     readonly conflictResolution?: ConflictResolution;
     // (undocumented)
-    readonly dataSourceProvisionStrategy?: DataSourceProvisoinConfig;
+    readonly dataSourceProvisionStrategy?: DataSourceProvisionConfig;
     readonly definition: IAmplifyGraphqlDefinition;
     readonly functionNameMap?: Record<string, IFunction>;
     readonly functionSlots?: FunctionSlot[];
@@ -197,13 +197,13 @@ export interface CustomConflictResolutionStrategy extends ConflictResolutionStra
 }
 
 // @public
-export interface DataSourceProvisoinConfig {
-    readonly models?: Record<string, DataSourceProvisoinStrategy>;
-    readonly project?: DataSourceProvisoinStrategy;
+export interface DataSourceProvisionConfig {
+    readonly models?: Record<string, DataSourceProvisionStrategy>;
+    readonly project?: DataSourceProvisionStrategy;
 }
 
 // @public
-export type DataSourceProvisoinStrategy = DefaultDynamoDBTableStrategy | AmplifyDynamoDBTableStrategy;
+export type DataSourceProvisionStrategy = DefaultDynamoDBTableStrategy | AmplifyDynamoDBTableStrategy;
 
 // @public
 export interface DefaultDynamoDBTableStrategy {

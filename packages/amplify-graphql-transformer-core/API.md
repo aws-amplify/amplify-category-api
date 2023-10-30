@@ -190,7 +190,7 @@ export type GetArgumentsOptions = {
 };
 
 // @public (undocumented)
-export function getDatasourceProvisionStratety(ctx: TransformerBeforeStepContextProvider, typeName?: string): DatasourceProvisionStrategy | undefined;
+export function getDatasourceProvisionStrategy(ctx: TransformerBeforeStepContextProvider, typeName?: string): DatasourceProvisionStrategy | undefined;
 
 // Warning: (ae-forgotten-export) The symbol "Operation" needs to be exported by the entry point index.d.ts
 //

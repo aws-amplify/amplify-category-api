@@ -4861,7 +4861,7 @@
           "name": "dataSourceProvisionStrategy",
           "optional": true,
           "type": {
-            "fqn": "@aws-amplify/graphql-api-construct.DataSourceProvisoinConfig"
+            "fqn": "@aws-amplify/graphql-api-construct.DataSourceProvisionConfig"
           }
         },
         {
@@ -5673,20 +5673,20 @@
       ],
       "symbolId": "src/types:CustomConflictResolutionStrategy"
     },
-    "@aws-amplify/graphql-api-construct.DataSourceProvisoinConfig": {
+    "@aws-amplify/graphql-api-construct.DataSourceProvisionConfig": {
       "assembly": "@aws-amplify/graphql-api-construct",
       "datatype": true,
       "docs": {
         "stability": "stable",
         "summary": "Project level configuration for datasource provision strategy."
       },
-      "fqn": "@aws-amplify/graphql-api-construct.DataSourceProvisoinConfig",
+      "fqn": "@aws-amplify/graphql-api-construct.DataSourceProvisionConfig",
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
         "line": 552
       },
-      "name": "DataSourceProvisoinConfig",
+      "name": "DataSourceProvisionConfig",
       "properties": [
         {
           "abstract": true,
@@ -5747,7 +5747,7 @@
           }
         }
       ],
-      "symbolId": "src/types:DataSourceProvisoinConfig"
+      "symbolId": "src/types:DataSourceProvisionConfig"
     },
     "@aws-amplify/graphql-api-construct.DefaultDynamoDBTableStrategy": {
       "assembly": "@aws-amplify/graphql-api-construct",
@@ -7219,5 +7219,5 @@
     }
   },
   "version": "1.2.0",
-  "fingerprint": "bJmKZYyl5zqHqgdoAhfPgGTW9tYY2QWHUBmBWxke3y8="
+  "fingerprint": "rkugYaqPN9S0j6plfrbfz1aa5GExV9XCM8EPxfRf09I="
 }

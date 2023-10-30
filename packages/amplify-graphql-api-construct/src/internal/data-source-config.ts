@@ -3,13 +3,12 @@ import {
   DatasourceProvisionStrategy,
   DynamoDBProvisionStrategyType,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { DataSourceProvisoinConfig, DataSourceProvisoinStrategy } from '../types';
-import {} from '@aws-amplify/graphql-transformer-interfaces/src';
+import { DataSourceProvisionConfig, DataSourceProvisionStrategy } from '../types';
 
 type DataSourceConfig = {
   datasourceProvisionConfig: DatasourceProvisionConfig;
 };
-const convertToProvisionStrategy = (provisionStrategy: DataSourceProvisoinStrategy): DatasourceProvisionStrategy => {
+const convertToProvisionStrategy = (provisionStrategy: DataSourceProvisionStrategy): DatasourceProvisionStrategy => {
   switch (provisionStrategy.provisionStrategy) {
     case 'DEFAULT':
       return {
@@ -26,7 +25,7 @@ const convertToProvisionStrategy = (provisionStrategy: DataSourceProvisoinStrate
   }
 };
 
-export const parseDataSourceConfig = (dataSourceProvisionStrategy: DataSourceProvisoinConfig | undefined): DataSourceConfig | undefined => {
+export const parseDataSourceConfig = (dataSourceProvisionStrategy: DataSourceProvisionConfig | undefined): DataSourceConfig | undefined => {
   if (!dataSourceProvisionStrategy) {
     return undefined;
   }

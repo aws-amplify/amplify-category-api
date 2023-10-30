@@ -27,8 +27,8 @@ export type {
   IBackendOutputStorageStrategy,
   IBackendOutputEntry,
   AddFunctionProps,
-  DataSourceProvisoinConfig,
-  DataSourceProvisoinStrategy,
+  DataSourceProvisionConfig,
+  DataSourceProvisionStrategy,
   DefaultDynamoDBTableStrategy,
   AmplifyDynamoDBTableStrategy,
 } from './types';

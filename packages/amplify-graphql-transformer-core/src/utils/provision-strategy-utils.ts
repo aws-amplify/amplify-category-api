@@ -10,7 +10,7 @@ import {
  * @param typeName model name defined in GraphQL schema defintion
  * @returns Datasource provision strategy for the provided model. Undefined if not found
  */
-export function getDatasourceProvisionStratety(
+export function getDatasourceProvisionStrategy(
   ctx: TransformerBeforeStepContextProvider,
   typeName?: string,
 ): DatasourceProvisionStrategy | undefined {

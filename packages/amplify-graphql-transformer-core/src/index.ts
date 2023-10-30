@@ -29,7 +29,7 @@ export {
   APICategory,
   setResourceName,
   getResourceName,
-  getDatasourceProvisionStratety,
+  getDatasourceProvisionStrategy,
 } from './utils';
 export type { SetResourceNameProps } from './utils';
 export * from './utils/operation-names';

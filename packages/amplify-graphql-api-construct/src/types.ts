@@ -544,21 +544,21 @@ export interface AmplifyDynamoDBTableStrategy {
 /**
  * DataSource Provision Strategy to apply to the project or a particular model.
  */
-export type DataSourceProvisoinStrategy = DefaultDynamoDBTableStrategy | AmplifyDynamoDBTableStrategy;
+export type DataSourceProvisionStrategy = DefaultDynamoDBTableStrategy | AmplifyDynamoDBTableStrategy;
 
 /**
  * Project level configuration for datasource provision strategy.
  */
-export interface DataSourceProvisoinConfig {
+export interface DataSourceProvisionConfig {
   /**
    * Project-wide config for datasource provision. Applies to all non-overridden models.
    */
-  readonly project?: DataSourceProvisoinStrategy;
+  readonly project?: DataSourceProvisionStrategy;
 
   /**
    * Model-specific datasource provision overrides.
    */
-  readonly models?: Record<string, DataSourceProvisoinStrategy>;
+  readonly models?: Record<string, DataSourceProvisionStrategy>;
 }
 
 /**
@@ -636,7 +636,7 @@ export interface AmplifyGraphqlApiProps {
    */
   readonly outputStorageStrategy?: IBackendOutputStorageStrategy;
 
-  readonly dataSourceProvisionStrategy?: DataSourceProvisoinConfig;
+  readonly dataSourceProvisionStrategy?: DataSourceProvisionConfig;
 }
 
 /**

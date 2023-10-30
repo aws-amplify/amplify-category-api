@@ -5,7 +5,7 @@ import {
   MYSQL_DB_TYPE,
   DDB_DB_TYPE,
   DBType,
-  getDatasourceProvisionStratety,
+  getDatasourceProvisionStrategy,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
@@ -65,7 +65,7 @@ const API_KEY = 'API Key Authorization';
 export function replaceDdbPrimaryKey(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
   // Replace the table's primary key with the value from @primaryKey
   const { field, object } = config;
-  const tableProvisionStrategy = getDatasourceProvisionStratety(ctx, object.name.value);
+  const tableProvisionStrategy = getDatasourceProvisionStrategy(ctx, object.name.value);
   const useAmplifyManagedTableResources: boolean = tableProvisionStrategy
     ? tableProvisionStrategy.provisionStrategy === DynamoDBProvisionStrategyType.AMPLIFY_TABLE
     : false;
@@ -422,7 +422,7 @@ export function appendSecondaryIndex(config: IndexDirectiveConfiguration, ctx: T
  * @param indexInfo global secondary index properties
  */
 export function overrideIndexAtCfnLevel(ctx: TransformerContextProvider, typeName: string, table: any, indexInfo: any): void {
-  const tableProvisionStrategy = getDatasourceProvisionStratety(ctx, typeName);
+  const tableProvisionStrategy = getDatasourceProvisionStrategy(ctx, typeName);
   const useAmplifyManagedTableResources: boolean = tableProvisionStrategy
     ? tableProvisionStrategy.provisionStrategy === DynamoDBProvisionStrategyType.AMPLIFY_TABLE
     : false;
