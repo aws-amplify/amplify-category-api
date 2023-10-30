@@ -12,9 +12,11 @@ import {
   provisionSchemaInspectorLambda,
   PostgresDataSourceAdapter,
   PostgresDataSourceConfig,
+  constructRDSGlobalAmplifyInput,
 } from '@aws-amplify/graphql-schema-generator';
-import { constructRDSGlobalAmplifyInput, readRDSSchema } from './rds-input-utils';
+import { readRDSSchema } from './rds-input-utils';
 import { $TSContext, AmplifyError, stateManager, ApiCategoryFacade } from '@aws-amplify/amplify-cli-core';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { getVpcMetadataLambdaName } from './rds-resources/database-resources';
 import { DocumentNode, parse } from 'graphql';
 
@@ -49,13 +51,9 @@ const retryWithVpcLambda = async (envName: string, databaseConfig, adapter: Data
   const vpc = await getHostVpc(databaseConfig.host, Region);
 
   if (vpc) {
-    // todo prompter
-    /*
     const shouldTryVpc = await prompter.confirmContinue(
       `Unable to connect to the database from this machine. Would you like to try from VPC '${vpc.vpcId}'? (This will take several minutes):`,
     );
-    */
-    const shouldTryVpc = true;
 
     if (shouldTryVpc) {
       const schemaInspectorLambda = getVpcMetadataLambdaName(AmplifyAppId, envName);
@@ -89,6 +87,8 @@ const buildSchemaFromConnection = async (envName: string, databaseConfig: Import
   // Establish the connection
   let adapter: DataSourceAdapter;
   let schema: Schema;
+  const UNABLE_TO_CONNECT_MESSAGE =
+    'Failed to connect to the specified RDS Data Source. Check the connection details in the schema and re-try. Use "amplify api update-secrets" to update the user credentials.';
 
   switch (databaseConfig.engine) {
     case ImportedRDSType.MYSQL:
@@ -100,9 +100,7 @@ const buildSchemaFromConnection = async (envName: string, databaseConfig: Import
       schema = new Schema(new Engine('Postgres'));
       break;
     default:
-      throw new AmplifyError('UserInputError', {
-        message: 'Only MySQL and Postgres Data Sources are supported.',
-      });
+      printer.error('Only MySQL and Postgres Data Sources are supported.');
   }
 
   try {
@@ -113,8 +111,7 @@ const buildSchemaFromConnection = async (envName: string, databaseConfig: Import
       const canConnectFromVpc = await retryWithVpcLambda(envName, databaseConfig, adapter);
       if (!canConnectFromVpc) {
         throw new AmplifyError('UserInputError', {
-          message:
-            'Failed to connect to the specified RDS Data Source. Check the connection details in the schema and re-try. Use "amplify api update-secrets" to update the user credentials.',
+          message: UNABLE_TO_CONNECT_MESSAGE,
         });
       }
     } else {
@@ -127,47 +124,4 @@ const buildSchemaFromConnection = async (envName: string, databaseConfig: Import
   models.forEach((m) => schema.addModel(m));
 
   return schema;
-};
-
-const buildSchemaFromString = (stringSchema: string, engineType: ImportedRDSType): Schema => {
-  let schema;
-  switch (engineType) {
-    case ImportedRDSType.MYSQL:
-      schema = new Schema(new Engine('MySQL'));
-      break;
-    case ImportedRDSType.POSTGRESQL:
-      schema = new Schema(new Engine('Postgres'));
-      break;
-    default:
-      throw new AmplifyError('UserInputError', { message: 'Only MySQL and Postgres Data Sources are supported.' });
-  }
-  return schema;
-
-  // how to build schema without adapter
-};
-
-const renderSchema = (
-  schema: Schema,
-  transformerVersion: number,
-  databaseConfig: any,
-  existingSchema: DocumentNode = undefined,
-): string => {
-  return (
-    constructRDSGlobalAmplifyInput(transformerVersion, databaseConfig, existingSchema) +
-    os.EOL +
-    os.EOL +
-    generateGraphQLSchema(schema, existingSchema)
-  );
-};
-
-export const graphqlSchemaFromRDSSchema = (sqlSchema: string, engineType: ImportedRDSType): string => {
-  const schema = buildSchemaFromString(sqlSchema, engineType);
-
-  // build schema with schema text instead of DB connection
-
-  const transformerVersion = 2;
-
-  // how to construct database config
-  const databaseConfig = {};
-  return renderSchema(schema, transformerVersion, databaseConfig);
 };
