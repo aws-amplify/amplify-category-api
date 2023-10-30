@@ -68,6 +68,20 @@ export interface AmplifyDynamoDBTableStrategy {
 }
 
 // @public
+export class AmplifyDynamoDbTableWrapper {
+    constructor(resource: CfnResource);
+    set billingMode(billingMode: BillingMode);
+    set deletionProtectionEnabled(deletionProtectionEnabled: boolean);
+    static isAmplifyDynamoDbTableResource(x: any): x is CfnResource;
+    set pointInTimeRecoveryEnabled(pointInTimeRecoveryEnabled: boolean);
+    set provisionedThroughput(provisionedThroughput: ProvisionedThroughput);
+    setGlobalSecondaryIndexProvisionedThroughput(indexName: string, provisionedThroughput: ProvisionedThroughput): void;
+    set sseSpecification(sseSpecification: SSESpecification);
+    set streamSpecification(streamSpecification: StreamSpecification);
+    set timeToLiveAttribute(timeToLiveSpecification: TimeToLiveSpecification);
+}
+
+// @public
 export class AmplifyGraphqlApi extends Construct {
     constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps);
     addDynamoDbDataSource(id: string, table: ITable, options?: DataSourceOptions): DynamoDbDataSource;
