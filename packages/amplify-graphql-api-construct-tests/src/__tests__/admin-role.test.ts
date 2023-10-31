@@ -55,8 +55,8 @@ describe('CDK Auth Modes', () => {
       apiEndpoint,
       apiKey,
       /* GraphQL */ `
-        mutation GET_TODO {
-          getTodo(: { id: "${invokeResult.createTodo.id}" }) {
+        query GET_TODO {
+          getTodo(id: "${invokeResult.createTodo.id}") {
             id
             title
           }

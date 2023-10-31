@@ -68,9 +68,12 @@ export const handler = async (event: CreateTodoHandlerEvent): Promise<GraphqlPro
   try {
     response = await fetch(new Request(graphqlEndpoint, signedRequestBody));
     body = await response.json();
-    if (body.errors) statusCode = 400;
+    if (body.errors) {
+      statusCode = 400;
+      body = { errors: body.errors };
+    }
   } catch (error: any) {
-    statusCode = 400;
+    statusCode = 500;
     body = {
       errors: [
         {
