@@ -60,9 +60,9 @@ export interface AddFunctionProps {
 }
 
 // @public
-export interface AmplifyDynamoDBTableStrategy {
+export interface AmplifyDynamoDbModelDataSourceDefinitionStrategy {
     // (undocumented)
-    readonly dbType: 'DDB';
+    readonly dbType: 'DYNAMODB';
     // (undocumented)
     readonly provisionStrategy: 'AMPLIFY_TABLE';
 }
@@ -147,8 +147,9 @@ export interface AmplifyGraphqlApiResources {
 
 // @public
 export class AmplifyGraphqlDefinition {
-    static fromFiles(...filePaths: string[]): IAmplifyGraphqlDefinition;
-    static fromString(schema: string): IAmplifyGraphqlDefinition;
+    static combine(...definitions: IAmplifyGraphqlDefinition[]): IAmplifyGraphqlDefinition;
+    static fromFiles(filePaths: string | string[], modelDataSourceDefinition?: ModelDataSourceDefinition): IAmplifyGraphqlDefinition;
+    static fromString(schema: string, modelDataSourceDefinition?: ModelDataSourceDefinition): IAmplifyGraphqlDefinition;
 }
 
 // @public
@@ -198,17 +199,14 @@ export interface CustomConflictResolutionStrategy extends ConflictResolutionStra
 
 // @public
 export interface DataSourceProvisionConfig {
-    readonly models?: Record<string, DataSourceProvisionStrategy>;
-    readonly project?: DataSourceProvisionStrategy;
+    readonly models?: Record<string, ModelDataSourceDefinition>;
+    readonly project?: ModelDataSourceDefinition;
 }
 
 // @public
-export type DataSourceProvisionStrategy = DefaultDynamoDBTableStrategy | AmplifyDynamoDBTableStrategy;
-
-// @public
-export interface DefaultDynamoDBTableStrategy {
+export interface DefaultDynamoDbModelDataSourceDefinitionStrategy {
     // (undocumented)
-    readonly dbType: 'DDB';
+    readonly dbType: 'DYNAMODB';
     // (undocumented)
     readonly provisionStrategy: 'DEFAULT';
 }
@@ -238,6 +236,7 @@ export interface IAMAuthorizationConfig {
 
 // @public
 export interface IAmplifyGraphqlDefinition {
+    readonly dataSourceProvisionConfig: DataSourceProvisionConfig;
     readonly functionSlots: FunctionSlot[];
     readonly schema: string;
 }
@@ -258,6 +257,18 @@ export interface LambdaAuthorizationConfig {
     readonly function: IFunction;
     readonly ttl: Duration;
 }
+
+// @public
+export interface ModelDataSourceDefinition {
+    readonly name: string;
+    readonly strategy: ModelDataSourceDefinitionStrategy;
+}
+
+// @public (undocumented)
+export type ModelDataSourceDefinitionDbType = 'DYNAMODB';
+
+// @public
+export type ModelDataSourceDefinitionStrategy = DefaultDynamoDbModelDataSourceDefinitionStrategy | AmplifyDynamoDbModelDataSourceDefinitionStrategy;
 
 // @public
 export interface MutationFunctionSlot extends FunctionSlotBase {

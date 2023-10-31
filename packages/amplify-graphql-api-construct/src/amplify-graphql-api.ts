@@ -146,7 +146,6 @@ export class AmplifyGraphqlApi extends Construct {
       translationBehavior,
       functionNameMap,
       outputStorageStrategy,
-      dataSourceProvisionStrategy,
     } = props;
 
     addAmplifyMetadataToStackDescription(scope);
@@ -194,7 +193,7 @@ export class AmplifyGraphqlApi extends Construct {
         ...defaultTranslationBehavior,
         ...(translationBehavior ?? {}),
       },
-      ...parseDataSourceConfig(dataSourceProvisionStrategy),
+      ...parseDataSourceConfig(definition.dataSourceProvisionConfig),
     });
 
     this.codegenAssets = new CodegenAssets(this, 'AmplifyCodegenAssets', { modelSchema: definition.schema });

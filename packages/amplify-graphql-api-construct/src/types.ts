@@ -495,6 +495,12 @@ export interface IAmplifyGraphqlDefinition {
    * @returns generated function slots
    */
   readonly functionSlots: FunctionSlot[];
+
+  /**
+   * Retrieve the datasource provision configuration. The default strategy is to use DynamoDB from CloudFormation.
+   * @returns datasource provision configuration
+   */
+  readonly dataSourceProvisionConfig: DataSourceProvisionConfig;
 }
 
 /**
@@ -526,39 +532,60 @@ export interface IBackendOutputStorageStrategy {
 }
 
 /**
- * Use default CloudFormation type 'AWS::DynamoDB::Table' to provision table.
- */
-export interface DefaultDynamoDBTableStrategy {
-  readonly dbType: 'DDB';
-  readonly provisionStrategy: 'DEFAULT';
-}
-
-/**
- * Use custom resource type 'Custom::AmplifyDynamoDBTable' to provision table.
- */
-export interface AmplifyDynamoDBTableStrategy {
-  readonly dbType: 'DDB';
-  readonly provisionStrategy: 'AMPLIFY_TABLE';
-}
-
-/**
- * DataSource Provision Strategy to apply to the project or a particular model.
- */
-export type DataSourceProvisionStrategy = DefaultDynamoDBTableStrategy | AmplifyDynamoDBTableStrategy;
-
-/**
  * Project level configuration for datasource provision strategy.
  */
 export interface DataSourceProvisionConfig {
   /**
    * Project-wide config for datasource provision. Applies to all non-overridden models.
    */
-  readonly project?: DataSourceProvisionStrategy;
+  readonly project?: ModelDataSourceDefinition;
 
   /**
    * Model-specific datasource provision overrides.
    */
-  readonly models?: Record<string, DataSourceProvisionStrategy>;
+  readonly models?: Record<string, ModelDataSourceDefinition>;
+}
+
+/**
+ * Defines a datasource for resolving GraphQL operations against `@model` types in a GraphQL schema.
+ * @experimental
+ */
+export interface ModelDataSourceDefinition {
+  /**
+   * The name of the ModelDataSource. This will be used to name the AppSynce DataSource itself, plus any associated resources like resolver
+   * Lambdas, custom CDK resources. This name must be unique across all schema definitions in a GraphQL API.
+   */
+  readonly name: string;
+  /**
+   * The ModelDataSourceDefinitionStrategy.
+   */
+  readonly strategy: ModelDataSourceDefinitionStrategy;
+}
+/**
+ * All known ModelDataSourceDefinitionStrategies. Concrete strategies vary widely in their requirements and implementations.
+ * @experimental
+ */
+export type ModelDataSourceDefinitionStrategy =
+  | DefaultDynamoDbModelDataSourceDefinitionStrategy
+  | AmplifyDynamoDbModelDataSourceDefinitionStrategy;
+
+export type ModelDataSourceDefinitionDbType = 'DYNAMODB';
+
+/**
+ * Use default CloudFormation type 'AWS::DynamoDB::Table' to provision table.
+ * @experimental
+ */
+export interface DefaultDynamoDbModelDataSourceDefinitionStrategy {
+  readonly dbType: 'DYNAMODB';
+  readonly provisionStrategy: 'DEFAULT';
+}
+/**
+ * Use custom resource type 'Custom::AmplifyDynamoDBTable' to provision table.
+ * @experimental
+ */
+export interface AmplifyDynamoDbModelDataSourceDefinitionStrategy {
+  readonly dbType: 'DYNAMODB';
+  readonly provisionStrategy: 'AMPLIFY_TABLE';
 }
 
 /**
