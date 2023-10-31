@@ -212,26 +212,6 @@ export class Model {
 }
 
 // @public (undocumented)
-export interface MySQLColumn {
-    // (undocumented)
-    columnName: string;
-    // (undocumented)
-    columnType: string;
-    // (undocumented)
-    datatype: string;
-    // (undocumented)
-    default: string;
-    // (undocumented)
-    length: number | null | undefined;
-    // (undocumented)
-    nullable: boolean;
-    // (undocumented)
-    sequence: number;
-    // (undocumented)
-    tableName: string;
-}
-
-// @public (undocumented)
 export class MySQLDataSourceAdapter extends DataSourceAdapter {
     constructor(config: MySQLDataSourceConfig);
     // (undocumented)
@@ -264,22 +244,6 @@ export interface MySQLDataSourceConfig {
     port: number;
     // (undocumented)
     username: string;
-}
-
-// @public (undocumented)
-export interface MySQLIndex {
-    // (undocumented)
-    columnName: string;
-    // (undocumented)
-    indexName: string;
-    // (undocumented)
-    nonUnique: number;
-    // (undocumented)
-    nullable: boolean;
-    // (undocumented)
-    sequence: number;
-    // (undocumented)
-    tableName: string;
 }
 
 // @public (undocumented)
