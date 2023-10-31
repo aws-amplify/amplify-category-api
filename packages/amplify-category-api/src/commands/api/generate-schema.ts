@@ -3,8 +3,8 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import fs from 'fs-extra';
 import _ from 'lodash';
-import { graphqlSchemaFromRDSSchema } from '@aws-amplify/graphql-schema-generator';
 import { RDS_SCHEMA_FILE_NAME, ImportedDataSourceConfig, ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { graphqlSchemaFromRDSSchema } from '@aws-amplify/graphql-schema-generator';
 import { getAppSyncAPIName, getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import {
   storeConnectionSecrets,

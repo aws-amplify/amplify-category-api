@@ -9,8 +9,8 @@ import {
   ImportedDataSourceConfig,
   RDS_SCHEMA_FILE_NAME,
 } from '@aws-amplify/graphql-transformer-core';
-import { constructDefaultGlobalAmplifyInput } from '@aws-amplify/graphql-schema-generator';
 import { storeConnectionSecrets, getSecretsKey } from '../utils/rds-resources/database-resources';
+import { constructDefaultGlobalAmplifyInput } from '@aws-amplify/graphql-schema-generator';
 import { getAPIResourceDir, getAppSyncAPINames } from '../utils/amplify-meta-utils';
 import { writeSchemaFile } from '../utils/graphql-schema-utils';
 import { serviceMetadataFor } from '../utils/dynamic-imports';
