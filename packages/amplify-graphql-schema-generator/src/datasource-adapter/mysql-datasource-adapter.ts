@@ -40,11 +40,9 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     spinner.start('Fetching the database schema...');
     try {
       await this.establishDBConnection();
-      const schema =
-        JSON.stringify(await this.queryAllFields()) +
-        JSON.stringify(await this.queryAllIndexes()) +
-        JSON.stringify(await this.queryAllTables());
-      new MySQLStringDataSourceAdapter(schema);
+      const schema = await this.querySchema();
+      // todo convert to csv
+      new MySQLStringDataSourceAdapter(schema as unknown as string);
     } catch (error) {
       spinner.fail('Failed to fetch the database schema.');
       throw error;
@@ -98,33 +96,18 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     return this.adapter.getIndexes(tableName);
   }
 
-  private async queryAllTables(): Promise<any> {
-    const SHOW_TABLES_QUERY = 'SHOW TABLES';
+  protected async querySchema(): Promise<any[]> {
+    const SHOW_TABLES_QUERY = `
+      SELECT INFORMATION_SCHEMA.COLUMNS.*, INFORMATION_SCHEMA.STATISTICS.INDEX_NAME, INFORMATION_SCHEMA.STATISTICS.NON_UNIQUE, INFORMATION_SCHEMA.STATISTICS.SEQ_IN_INDEX, INFORMATION_SCHEMA.STATISTICS.NULLABLE
+      FROM INFORMATION_SCHEMA.COLUMNS
+      LEFT JOIN INFORMATION_SCHEMA.STATISTICS ON INFORMATION_SCHEMA.COLUMNS.TABLE_NAME=INFORMATION_SCHEMA.STATISTICS.TABLE_NAME AND INFORMATION_SCHEMA.COLUMNS.COLUMN_NAME=INFORMATION_SCHEMA.STATISTICS.COLUMN_NAME
+      WHERE INFORMATION_SCHEMA.COLUMNS.TABLE_SCHEMA = '${this.config.database}';
+    `;
     const result =
       this.useVPC && this.vpcSchemaInspectorLambda
         ? await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, SHOW_TABLES_QUERY, this.vpcLambdaRegion)
         : (await this.dbBuilder.raw(SHOW_TABLES_QUERY))[0];
     return result;
-  }
-
-  private async queryAllFields(): Promise<any> {
-    // Query INFORMATION_SCHEMA.COLUMNS table and load fields of all the tables from the database
-    const LOAD_FIELDS_QUERY = `SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '${this.config.database}'`;
-    const columnResult =
-      this.useVPC && this.vpcSchemaInspectorLambda
-        ? await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, LOAD_FIELDS_QUERY, this.vpcLambdaRegion)
-        : (await this.dbBuilder.raw(LOAD_FIELDS_QUERY))[0];
-    return columnResult;
-  }
-
-  private async queryAllIndexes(): Promise<any> {
-    // Query INFORMATION_SCHEMA.STATISTICS table and load indexes of all the tables from the database
-    const LOAD_INDEXES_QUERY = `SELECT * FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = '${this.config.database}'`;
-    const indexResult =
-      this.useVPC && this.vpcSchemaInspectorLambda
-        ? await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, LOAD_INDEXES_QUERY, this.vpcLambdaRegion)
-        : (await this.dbBuilder.raw(LOAD_INDEXES_QUERY))[0];
-    return indexResult;
   }
 
   public cleanup(): void {

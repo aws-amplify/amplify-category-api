@@ -2,9 +2,7 @@ import { Field, FieldType, Index, Model } from '../schema-representation';
 
 export abstract class StringDataSourceAdapter {
   constructor(schema: string) {
-    this.setFields(this.extractFields(schema));
-    this.setIndexes(this.extractIndexes(schema));
-    this.setTables(this.extractTables(schema));
+    this.parseSchema(schema);
   }
 
   public abstract getTablesList(): string[];
@@ -17,17 +15,13 @@ export abstract class StringDataSourceAdapter {
 
   protected abstract mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columnType: string): FieldType;
 
+  protected abstract parseSchema(schema: string): void;
+
   protected abstract setFields(fields: any[]): void;
 
   protected abstract setIndexes(indexes: any[]): void;
 
-  protected abstract setTables(tables: string[]): void;
-
-  protected abstract extractFields(schema: string): any[];
-
-  protected abstract extractIndexes(schema: string): any[];
-
-  protected abstract extractTables(schema: string): any[];
+  protected abstract setTables(tables: any[]): void;
 
   public getModels(): Model[] {
     const tableNames = this.getTablesList();

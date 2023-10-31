@@ -128,6 +128,11 @@ export class PostgresDataSourceAdapter extends DataSourceAdapter {
     return tables;
   }
 
+  // no-op
+  protected querySchema(): Promise<any[]> {
+    return Promise.resolve([]);
+  }
+
   private async loadAllEnums(): Promise<void> {
     this.enums = new Map<string, EnumType>();
     const result =
