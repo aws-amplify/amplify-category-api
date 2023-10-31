@@ -77,8 +77,6 @@ export abstract class DataSourceAdapter {
     // (undocumented)
     abstract initialize(): Promise<void>;
     // (undocumented)
-    abstract mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columnType: string): FieldType;
-    // (undocumented)
     abstract test(): Promise<boolean>;
     // (undocumented)
     useVPC: boolean;
@@ -212,6 +210,26 @@ export class Model {
 }
 
 // @public (undocumented)
+export interface MySQLColumn {
+    // (undocumented)
+    columnName: string;
+    // (undocumented)
+    columnType: string;
+    // (undocumented)
+    datatype: string;
+    // (undocumented)
+    default: string;
+    // (undocumented)
+    length: number | null | undefined;
+    // (undocumented)
+    nullable: boolean;
+    // (undocumented)
+    sequence: number;
+    // (undocumented)
+    tableName: string;
+}
+
+// @public (undocumented)
 export class MySQLDataSourceAdapter extends DataSourceAdapter {
     constructor(config: MySQLDataSourceConfig);
     // (undocumented)
@@ -226,8 +244,6 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     getTablesList(): Promise<string[]>;
     // (undocumented)
     initialize(): Promise<void>;
-    // (undocumented)
-    mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columntype: string): FieldType;
     // (undocumented)
     test(): Promise<boolean>;
 }
@@ -247,9 +263,45 @@ export interface MySQLDataSourceConfig {
 }
 
 // @public (undocumented)
+export interface MySQLIndex {
+    // (undocumented)
+    columnName: string;
+    // (undocumented)
+    indexName: string;
+    // (undocumented)
+    nonUnique: number;
+    // (undocumented)
+    nullable: boolean;
+    // (undocumented)
+    sequence: number;
+    // (undocumented)
+    tableName: string;
+}
+
+// @public (undocumented)
 export class MySQLStringDataSourceAdapter extends StringDataSourceAdapter {
     // (undocumented)
-    protected parseSchema(schema: string): void;
+    protected extractFields(schema: string): any[];
+    // (undocumented)
+    protected extractIndexes(schema: string): any[];
+    // (undocumented)
+    protected extractTables(schema: string): any[];
+    // (undocumented)
+    getFields(tableName: string): Field[];
+    // (undocumented)
+    getIndexes(tableName: string): Index[];
+    // (undocumented)
+    getPrimaryKey(tableName: string): Index | null;
+    // (undocumented)
+    getTablesList(): string[];
+    // (undocumented)
+    mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columntype: string): FieldType;
+    // (undocumented)
+    protected setFields(fields: any): void;
+    // (undocumented)
+    protected setIndexes(indexes: any): void;
+    // (undocumented)
+    protected setTables(tables: string[]): void;
 }
 
 // @public (undocumented)
@@ -296,12 +348,6 @@ export interface PostgresDataSourceConfig {
 }
 
 // @public (undocumented)
-export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
-    // (undocumented)
-    protected parseSchema(schema: string): void;
-}
-
-// @public (undocumented)
 export const printSchema: (document: DocumentNode) => string;
 
 // @public (undocumented)
@@ -335,9 +381,29 @@ export abstract class StringDataSourceAdapter {
     // (undocumented)
     describeTable(tableName: string): Model;
     // (undocumented)
+    protected abstract extractFields(schema: string): any[];
+    // (undocumented)
+    protected abstract extractIndexes(schema: string): any[];
+    // (undocumented)
+    protected abstract extractTables(schema: string): any[];
+    // (undocumented)
+    abstract getFields(tableName: string): Field[];
+    // (undocumented)
+    abstract getIndexes(tableName: string): Index[];
+    // (undocumented)
     getModels(): Model[];
     // (undocumented)
-    protected abstract parseSchema(schema: string): void;
+    abstract getPrimaryKey(tableName: string): Index | null;
+    // (undocumented)
+    abstract getTablesList(): string[];
+    // (undocumented)
+    protected abstract mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columnType: string): FieldType;
+    // (undocumented)
+    protected abstract setFields(fields: any[]): void;
+    // (undocumented)
+    protected abstract setIndexes(indexes: any[]): void;
+    // (undocumented)
+    protected abstract setTables(tables: string[]): void;
 }
 
 // (No @packageDocumentation comment for this package)
