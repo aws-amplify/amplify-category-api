@@ -23,10 +23,10 @@ export const name = subcommand;
 
 export const run = async (context: $TSContext): Promise<void> => {
   printer.warn(PREVIEW_BANNER);
-  // unauthenticated flow
   const sqlSchema = context.parameters?.options?.['sql-schema'];
   const engineType = context.parameters?.options?.['engine-type'];
   const out = context.parameters?.options?.out;
+  // unauthenticated flow
   if (sqlSchema || engineType || out) {
     if (!(sqlSchema && engineType && out)) {
       if (!sqlSchema) {
@@ -44,7 +44,7 @@ export const run = async (context: $TSContext): Promise<void> => {
       printer.error(`${engineType} is not a supported engine type.`);
       return;
     }
-    const schema = await graphqlSchemaFromRDSSchema(sqlSchema, engineType);
+    const schema = await graphqlSchemaFromRDSSchema(fs.readFileSync(sqlSchema, 'utf8'), engineType);
     writeSchemaFile(out, schema);
   } else {
     const apiName = getAppSyncAPIName();

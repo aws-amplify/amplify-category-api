@@ -1,3 +1,4 @@
+import { parse } from 'csv-parse/sync';
 import { EnumType, Field, FieldDataType, FieldType, Index } from '../schema-representation';
 import { StringDataSourceAdapter } from './string-datasource-adapter';
 
@@ -24,32 +25,61 @@ export interface MySQLColumn {
 export class MySQLStringDataSourceAdapter extends StringDataSourceAdapter {
   private dbBuilder: any;
 
-  private indexes: MySQLIndex[] = [];
+  private indexes: MySQLIndex[];
 
-  private fields: MySQLColumn[] = [];
+  private fields: MySQLColumn[];
 
-  private tables: string[] = [];
+  private tables: string[];
 
   private enums: Map<string, EnumType> = new Map<string, EnumType>();
 
   private readonly PRIMARY_KEY_INDEX_NAME = 'PRIMARY';
 
-  protected extractFields(schema: string) {
-    return '';
-  }
-  protected extractIndexes(schema: string) {
-    return '';
-  }
-  protected extractTables(schema: string) {
-    return '';
+  protected extractFields(schema: string): any[] {
+    return parse(schema, {
+      columns: true,
+    });
   }
 
-  protected setTables(tables: any) {
-    this.tables = tables.map((row: any) => {
-      const [firstKey] = Object.keys(row);
-      const tableName = row[firstKey];
-      return tableName;
+  protected extractIndexes(schema: string): any[] {
+    const testInput = `TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME,NON_UNIQUE,INDEX_SCHEMA,INDEX_NAME,SEQ_IN_INDEX,COLUMN_NAME,COLLATION,CARDINALITY,SUB_PART,PACKED,NULLABLE,INDEX_TYPE,COMMENT,INDEX_COMMENT,IS_VISIBLE,EXPRESSION
+def,default_database,Foo,0,default_database,PRIMARY,1,ID,A,0,NULL,NULL,,BTREE,,,YES,NULL
+`;
+    return parse(testInput, {
+      columns: true,
     });
+  }
+
+  protected extractTables(schema: string): any[] {
+    return Array.from(new Set(this.extractFields(schema).map(({ TABLE_NAME }) => TABLE_NAME)));
+  }
+
+  protected setFields(fields: any): void {
+    this.fields = fields.map((item: any) => ({
+      tableName: item.TABLE_NAME,
+      columnName: item.COLUMN_NAME,
+      default: item.COLUMN_DEFAULT,
+      sequence: item.ORDINAL_POSITION,
+      datatype: item.DATA_TYPE,
+      columnType: item.COLUMN_TYPE,
+      nullable: item.IS_NULLABLE === 'YES',
+      length: item.CHARACTER_MAXIMUM_LENGTH,
+    }));
+  }
+
+  protected setIndexes(indexes: any): void {
+    this.indexes = indexes.map((item: any) => ({
+      tableName: item.TABLE_NAME,
+      indexName: item.INDEX_NAME,
+      nonUnique: item.NON_UNIQUE,
+      columnName: item.COLUMN_NAME,
+      sequence: item.SEQ_IN_INDEX,
+      nullable: item.NULLABLE === 'YES',
+    }));
+  }
+
+  protected setTables(tables: string[]): void {
+    this.tables = tables;
   }
 
   public getTablesList(): string[] {
@@ -83,30 +113,6 @@ export class MySQLStringDataSourceAdapter extends StringDataSourceAdapter {
     });
 
     return modelFields;
-  }
-
-  protected setFields(fields: any): void {
-    this.fields = fields.map((item: any) => ({
-      tableName: item.TABLE_NAME,
-      columnName: item.COLUMN_NAME,
-      default: item.COLUMN_DEFAULT,
-      sequence: item.ORDINAL_POSITION,
-      datatype: item.DATA_TYPE,
-      columnType: item.COLUMN_TYPE,
-      nullable: item.IS_NULLABLE === 'YES',
-      length: item.CHARACTER_MAXIMUM_LENGTH,
-    }));
-  }
-
-  protected setIndexes(indexes: any): void {
-    this.indexes = indexes.map((item: any) => ({
-      tableName: item.TABLE_NAME,
-      indexName: item.INDEX_NAME,
-      nonUnique: item.NON_UNIQUE,
-      columnName: item.COLUMN_NAME,
-      sequence: item.SEQ_IN_INDEX,
-      nullable: item.NULLABLE === 'YES',
-    }));
   }
 
   public getPrimaryKey(tableName: string): Index | null {

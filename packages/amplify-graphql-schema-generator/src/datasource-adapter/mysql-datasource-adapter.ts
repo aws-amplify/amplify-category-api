@@ -2,7 +2,7 @@ import { knex } from 'knex';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { invokeSchemaInspectorLambda } from '../utils/vpc-helper';
 import ora from 'ora';
-import { EnumType, Field, FieldDataType, FieldType, Index } from '../schema-representation';
+import { Field, Index } from '../schema-representation';
 import { DataSourceAdapter } from './datasource-adapter';
 import { MySQLStringDataSourceAdapter } from './mysql-string-datasource-adapter';
 
@@ -18,10 +18,6 @@ export interface MySQLDataSourceConfig {
 export class MySQLDataSourceAdapter extends DataSourceAdapter {
   private adapter: MySQLStringDataSourceAdapter;
   private dbBuilder: any;
-
-  private enums: Map<string, EnumType> = new Map<string, EnumType>();
-
-  private readonly PRIMARY_KEY_INDEX_NAME = 'PRIMARY';
 
   constructor(private config: MySQLDataSourceConfig) {
     super();
@@ -44,8 +40,11 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     spinner.start('Fetching the database schema...');
     try {
       await this.establishDBConnection();
-      const schema = (await this.queryAllFields()) + (await this.queryAllIndexes()) + (await this.queryAllTables());
-      new MySQLDataSourceAdapter(schema);
+      const schema =
+        JSON.stringify(await this.queryAllFields()) +
+        JSON.stringify(await this.queryAllIndexes()) +
+        JSON.stringify(await this.queryAllTables());
+      new MySQLStringDataSourceAdapter(schema);
     } catch (error) {
       spinner.fail('Failed to fetch the database schema.');
       throw error;
@@ -53,7 +52,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     spinner.succeed('Successfully fetched the database schema.');
   }
 
-  private establishDBConnection() {
+  private establishDBConnection(): void {
     const databaseConfig = {
       host: this.config.host,
       database: this.config.database,
@@ -83,21 +82,29 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     }
   }
 
-  public async queryAllTables(): Promise<any> {
-    const SHOW_TABLES_QUERY = 'SHOW TABLES';
-    const result =
-      this.useVPC && this.vpcSchemaInspectorLambda
-        ? await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, SHOW_TABLES_QUERY, this.vpcLambdaRegion)
-        : (await this.dbBuilder.raw(SHOW_TABLES_QUERY))[0];
-    return result;
-  }
-
   public async getTablesList(): Promise<string[]> {
     return this.adapter.getTablesList();
   }
 
   public async getFields(tableName: string): Promise<Field[]> {
     return this.adapter.getFields(tableName);
+  }
+
+  public async getPrimaryKey(tableName: string): Promise<Index | null> {
+    return this.adapter.getPrimaryKey(tableName);
+  }
+
+  public async getIndexes(tableName: string): Promise<Index[]> {
+    return this.adapter.getIndexes(tableName);
+  }
+
+  private async queryAllTables(): Promise<any> {
+    const SHOW_TABLES_QUERY = 'SHOW TABLES';
+    const result =
+      this.useVPC && this.vpcSchemaInspectorLambda
+        ? await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, SHOW_TABLES_QUERY, this.vpcLambdaRegion)
+        : (await this.dbBuilder.raw(SHOW_TABLES_QUERY))[0];
+    return result;
   }
 
   private async queryAllFields(): Promise<any> {
@@ -118,14 +125,6 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
         ? await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, LOAD_INDEXES_QUERY, this.vpcLambdaRegion)
         : (await this.dbBuilder.raw(LOAD_INDEXES_QUERY))[0];
     return indexResult;
-  }
-
-  public async getPrimaryKey(tableName: string): Promise<Index | null> {
-    return this.adapter.getPrimaryKey(tableName);
-  }
-
-  public async getIndexes(tableName: string): Promise<Index[]> {
-    return this.adapter.getIndexes(tableName);
   }
 
   public cleanup(): void {

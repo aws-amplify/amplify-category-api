@@ -45,7 +45,8 @@ export const renderSchema = (
 export const graphqlSchemaFromRDSSchema = (sqlSchema: string, engineType: ImportedRDSType, transformerVersion = 2): string => {
   const schema = buildSchemaFromString(sqlSchema, engineType);
 
-  // TODO: how to construct database config
-  const databaseConfig = {};
+  const databaseConfig = {
+    engine: engineType,
+  };
   return renderSchema(schema, transformerVersion, databaseConfig);
 };

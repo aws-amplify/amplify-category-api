@@ -1,6 +1,6 @@
 import { singular } from 'pluralize';
 import { toPascalCase } from 'graphql-transformer-common';
-import { Field, FieldType, Index, Model } from '../schema-representation';
+import { Field, Index, Model } from '../schema-representation';
 
 export abstract class DataSourceAdapter {
   public abstract getTablesList(): Promise<string[]>;

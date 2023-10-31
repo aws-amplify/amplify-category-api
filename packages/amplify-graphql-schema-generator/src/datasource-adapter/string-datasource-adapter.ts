@@ -4,7 +4,7 @@ export abstract class StringDataSourceAdapter {
   constructor(schema: string) {
     this.setFields(this.extractFields(schema));
     this.setIndexes(this.extractIndexes(schema));
-    this.setTables(this.extractIndexes(schema));
+    this.setTables(this.extractTables(schema));
   }
 
   public abstract getTablesList(): string[];
@@ -17,17 +17,17 @@ export abstract class StringDataSourceAdapter {
 
   protected abstract mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columnType: string): FieldType;
 
-  protected abstract setFields(fields: string): void;
+  protected abstract setFields(fields: any[]): void;
 
-  protected abstract setIndexes(fields: string): void;
+  protected abstract setIndexes(indexes: any[]): void;
 
-  protected abstract setTables(fields: string): void;
+  protected abstract setTables(tables: string[]): void;
 
-  protected abstract extractFields(schema: string): string;
+  protected abstract extractFields(schema: string): any[];
 
-  protected abstract extractIndexes(schema: string): string;
+  protected abstract extractIndexes(schema: string): any[];
 
-  protected abstract extractTables(schema: string): string;
+  protected abstract extractTables(schema: string): any[];
 
   public getModels(): Model[] {
     const tableNames = this.getTablesList();
