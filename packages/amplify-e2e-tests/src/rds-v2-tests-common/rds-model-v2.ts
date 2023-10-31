@@ -159,7 +159,7 @@ export const testRDSModel = (engine: ImportedRDSType, queries: string[]) => {
         port,
         username,
         password,
-        useVpc: false,
+        useVpc: true,
         apiExists: true,
       });
 
