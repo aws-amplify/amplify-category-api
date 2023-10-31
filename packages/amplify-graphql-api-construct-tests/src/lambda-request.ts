@@ -11,7 +11,7 @@ export const invokeLambda = async <RequestType, ResponseType>(functionName: stri
   const { Payload } = await client.send(
     new InvokeCommand({
       FunctionName: functionName,
-      Payload: JSON.stringify(payload),
+      Payload: Buffer.from(JSON.stringify(payload)),
     }),
   );
   return JSON.parse(Buffer.from(Payload).toString());
