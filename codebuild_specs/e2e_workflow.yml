@@ -136,24 +136,24 @@ batch:
           CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
-    - identifier: api_3_rds_auth_apikey_lambda_rds_import_vpc_rds_model_v2
+    - identifier: api_3_rds_auth_apikey_lambda_rds_import_vpc_rds_mysql_auth_apikey_lambda
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_3.test.ts|src/__tests__/rds-auth-apikey-lambda.test.ts|src/__tests__/rds-import-vpc.test.ts|src/__tests__/rds-model-v2.test.ts
+            src/__tests__/api_3.test.ts|src/__tests__/rds-auth-apikey-lambda.test.ts|src/__tests__/rds-import-vpc.test.ts|src/__tests__/rds-mysql-auth-apikey-lambda.test.ts
           CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        rds_mysql_auth_apikey_lambda_rds_mysql_auth_iam_apikey_lambda_subscription_rds_mysql_auth_iam_rds_mysql_custom_claims_refersto_
+        rds_mysql_auth_iam_apikey_lambda_subscription_rds_mysql_auth_iam_rds_mysql_custom_claims_refersto_auth_rds_mysql_model_v2
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/rds-mysql-auth-apikey-lambda.test.ts|src/__tests__/rds-mysql-auth-iam-apikey-lambda-subscription.test.ts|src/__tests__/rds-mysql-auth-iam.test.ts|src/__tests__/rds-mysql-custom-claims-refersto-auth.test.ts
+            src/__tests__/rds-mysql-auth-iam-apikey-lambda-subscription.test.ts|src/__tests__/rds-mysql-auth-iam.test.ts|src/__tests__/rds-mysql-custom-claims-refersto-auth.test.ts|src/__tests__/rds-mysql-model-v2.test.ts
           CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry

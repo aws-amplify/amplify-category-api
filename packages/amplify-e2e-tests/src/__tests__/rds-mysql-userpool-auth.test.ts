@@ -10,6 +10,7 @@ import {
   setupRDSInstanceAndData,
   sleep,
   updateAuthAddUserGroups,
+  getProjectMeta,
 } from 'amplify-category-api-e2e-core';
 import { existsSync, writeFileSync, removeSync } from 'fs-extra';
 import generator from 'generate-password';
@@ -35,7 +36,7 @@ describe('RDS Cognito userpool provider Auth tests', () => {
   // Generate settings for RDS instance
   const username = db_user;
   const password = db_password;
-  const region = 'ap-northeast-2';
+  let region = 'us-east-1';
   let port = 3306;
   const database = 'default_db';
   let host = 'localhost';
@@ -125,6 +126,10 @@ describe('RDS Cognito userpool provider Auth tests', () => {
       useVpc: true,
       apiExists: true,
     });
+
+    const metaAfterInit = getProjectMeta(projRoot);
+    region = metaAfterInit.providers.awscloudformation.Region;
+
     writeFileSync(rdsSchemaFilePath, appendAmplifyInput(schema, 'mysql'), 'utf8');
 
     await updateAuthAddUserGroups(projRoot, [adminGroupName, devGroupName]);
