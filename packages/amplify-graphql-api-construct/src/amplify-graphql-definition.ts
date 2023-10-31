@@ -24,8 +24,6 @@ export class AmplifyGraphqlDefinition {
     schema: string,
     modelDataSourceDefinition: ModelDataSourceDefinition = DEFAULT_MODEL_DATA_SOURCE_DEFINITION,
   ): IAmplifyGraphqlDefinition {
-    const names = getModelTypeNames(schema);
-    console.log(names);
     return {
       schema,
       functionSlots: [],

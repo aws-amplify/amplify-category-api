@@ -5209,7 +5209,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-definition.ts",
-            "line": 61
+            "line": 62
           },
           "name": "combine",
           "parameters": [
@@ -5240,7 +5240,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-definition.ts",
-            "line": 44
+            "line": 42
           },
           "name": "fromFiles",
           "parameters": [
@@ -7343,5 +7343,5 @@
     }
   },
   "version": "1.2.0",
-  "fingerprint": "jvC92RwQLihSzH7rAflmVRjx1n9Fn2Vkz1kj4faHSlM="
+  "fingerprint": "4WBu0B1cvH3yPRC3drBlyaNGkOyuOo6xP+tUQXTopls="
 }
