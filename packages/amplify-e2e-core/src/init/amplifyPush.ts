@@ -127,17 +127,6 @@ export function amplifyPushForce(cwd: string, testingWithLatestCodebase = false)
 }
 
 /**
- * Function to test amplify push with --force and --yes flag
- */
-export function amplifyPushForceWithYesFlag(cwd: string, testingWithLatestCodebase = false): Promise<void> {
-  return spawn(getCLIPath(testingWithLatestCodebase), ['push', '--force', '--yes'], {
-    cwd,
-    stripColors: true,
-    noOutputTimeout: pushTimeoutMS,
-  }).runAsync();
-}
-
-/**
  * * Used to stop an iterative deployment
  * * Waits on the table stack to be complete and for the next stack to update in order to cancel the push
  */
@@ -304,70 +293,6 @@ export function amplifyPushUpdateForDependentModel(
 }
 
 /**
- * Function to test amplify push when deploying a layer
- * * this function expects a single layer's content to be modified
- */
-export function amplifyPushLayer(cwd: string, settings: LayerPushSettings, testingWithLatestCodebase = false): Promise<void> {
-  const defaultSettings: LayerPushSettings = {
-    acceptSuggestedLayerVersionConfigurations: true,
-    migrateLegacyLayer: false,
-    usePreviousPermissions: true,
-  };
-
-  const effectiveSettings = {
-    ...defaultSettings,
-    ...settings,
-  };
-
-  return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
-      .wait('Are you sure you want to continue?')
-      .sendConfirmYes();
-
-    if (settings.migrateLegacyLayer === true) {
-      chain
-        .wait('⚠️  Amplify updated the way Lambda layers work to better support team workflows and additional features.')
-        .wait('Continue?')
-        .sendConfirmYes();
-    }
-
-    chain.wait('Suggested configuration for new layer versions:').wait('Accept the suggested layer version configurations?');
-
-    if (effectiveSettings.acceptSuggestedLayerVersionConfigurations === true) {
-      chain.sendConfirmYes();
-    } else {
-      chain.sendConfirmNo();
-
-      chain.wait('What permissions do you want to grant to this new layer version');
-
-      if (effectiveSettings.usePreviousPermissions === true) {
-        chain.sendCarriageReturn(); // The same permission as the latest layer version
-      } else {
-        chain.sendKeyDown().sendCarriageReturn(); // Only accessible by the current account. You can always edit this later with: amplify update function
-      }
-
-      // Description prompt
-      chain.wait('Description');
-
-      if (effectiveSettings.layerDescription) {
-        chain.sendLine(effectiveSettings.layerDescription);
-      } else {
-        // Accept default description
-        chain.sendCarriageReturn();
-      }
-    }
-
-    chain.run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
-        reject(err);
-      }
-    });
-  });
-}
-
-/**
  * Function to test amplify push with iterativeRollback flag option
  */
 export function amplifyPushIterativeRollback(cwd: string, testingWithLatestCodebase = false) {
@@ -382,45 +307,6 @@ export function amplifyPushIterativeRollback(cwd: string, testingWithLatestCodeb
           reject(err);
         }
       });
-  });
-}
-
-/**
- * Function to test amplify push with missing environment variable
- */
-export function amplifyPushMissingEnvVar(cwd: string, newEnvVarValue: string) {
-  return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
-      .wait('Enter the missing environment variable value of')
-      .sendLine(newEnvVarValue)
-      .wait('Are you sure you want to continue?')
-      .sendConfirmYes()
-      .run((err) => (err ? reject(err) : resolve()));
-  });
-}
-
-/**
- * Function to test amplify push with missing function secrets
- */
-export function amplifyPushMissingFuncSecret(cwd: string, newSecretValue: string) {
-  return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
-      .wait('does not have a value in this environment. Specify one now:')
-      .sendLine(newSecretValue)
-      .wait('Are you sure you want to continue?')
-      .sendConfirmYes()
-      .run((err) => (err ? reject(err) : resolve()));
-  });
-}
-
-/**
- * Function to test amplify push with no changes in the resources
- */
-export function amplifyPushWithNoChanges(cwd: string, testingWithLatestCodebase = false): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
-      .wait('No changes detected')
-      .run((err: Error) => (err ? reject(err) : resolve()));
   });
 }
 

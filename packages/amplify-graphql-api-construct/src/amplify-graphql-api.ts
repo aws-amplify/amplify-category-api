@@ -51,6 +51,7 @@ import {
   getAdditionalAuthenticationTypes,
 } from './internal';
 import { isSqlModelDataSourceBinding } from './sql-model-datasource-binding';
+import { getStackForScope, walkAndProcessNodes } from './internal/construct-tree';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
@@ -115,6 +116,11 @@ export class AmplifyGraphqlApi extends Construct {
   public readonly apiKey: string | undefined;
 
   /**
+   * Generated Api Id. May be a CDK Token.
+   */
+  public readonly apiId: string;
+
+  /**
    * Conflict resolution setting
    */
   private readonly conflictResolution: ConflictResolution | undefined;
@@ -128,6 +134,8 @@ export class AmplifyGraphqlApi extends Construct {
    */
   constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps) {
     super(scope, id);
+
+    validateNoOtherAmplifyGraphqlApiInStack(this);
 
     const {
       definition,
@@ -201,6 +209,7 @@ export class AmplifyGraphqlApi extends Construct {
     this.generatedFunctionSlots = getGeneratedFunctionSlots(assetManager.resolverAssets);
     this.storeOutput(outputStorageStrategy);
 
+    this.apiId = this.resources.cfnResources.cfnGraphqlApi.attrApiId;
     this.graphqlUrl = this.resources.cfnResources.cfnGraphqlApi.attrGraphQlUrl;
     this.realtimeUrl = this.resources.cfnResources.cfnGraphqlApi.attrRealtimeUrl;
     this.apiKey = this.resources.cfnResources.cfnApiKey?.attrApiKey;
@@ -425,3 +434,23 @@ export class AmplifyGraphqlApi extends Construct {
     });
   }
 }
+
+/**
+ * Given the provided scope, walk the node tree, and throw an exception if any other AmplifyGraphqlApi constructs
+ * are found in the stack.
+ * @param scope the scope this construct is created in.
+ */
+const validateNoOtherAmplifyGraphqlApiInStack = (scope: Construct): void => {
+  const rootStack = getStackForScope(scope, true);
+
+  let wasOtherAmplifyGraphlApiFound = false;
+  walkAndProcessNodes(rootStack, (node: Construct) => {
+    if (node instanceof AmplifyGraphqlApi && scope !== node) {
+      wasOtherAmplifyGraphlApiFound = true;
+    }
+  });
+
+  if (wasOtherAmplifyGraphlApiFound) {
+    throw new Error('Only one AmplifyGraphqlApi is expected in a stack');
+  }
+};
