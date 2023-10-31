@@ -11,8 +11,6 @@ export abstract class DataSourceAdapter {
 
   public abstract getIndexes(tableName: string): Promise<Index[]>;
 
-  public abstract mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columnType: string): FieldType;
-
   public abstract initialize(): Promise<void>;
 
   public abstract cleanup(): void;

@@ -1,48 +1,48 @@
-import { IRSchema, IRSchemaInputs } from './ir-schema';
 import { Field, FieldType, Index, Model } from '../schema-representation';
 
 export abstract class StringDataSourceAdapter {
-  protected schema: IRSchema;
-  protected fields: any[];
-  protected indexes: any[];
-  protected tables: string[];
-
-  protected abstract setSchema(inputs: IRSchemaInputs): void;
-  protected abstract extractFieldsString(schema: string): string;
-  protected abstract extractIndexesString(schema: string): string;
-  protected abstract extractTablesString(schema: string): string;
-
-  /*
-  public abstract mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columnType: string): FieldType;
-  */
   constructor(schema: string) {
-    this.parseSchema(schema);
+    this.setFields(this.extractFields(schema));
+    this.setIndexes(this.extractIndexes(schema));
+    this.setTables(this.extractIndexes(schema));
   }
 
-  private parseSchema(schema: string): void {
-    const fields = this.extractFieldsString(schema);
-    const indexes = this.extractIndexesString(schema);
-    const tables = this.extractTablesString(schema);
-    this.setSchema({
-      fields,
-      indexes,
-      tables,
-    });
-  }
+  public abstract getTablesList(): string[];
+
+  public abstract getFields(tableName: string): Field[];
+
+  public abstract getPrimaryKey(tableName: string): Index | null;
+
+  public abstract getIndexes(tableName: string): Index[];
+
+  protected abstract mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columnType: string): FieldType;
+
+  protected abstract setFields(fields: string): void;
+
+  protected abstract setIndexes(fields: string): void;
+
+  protected abstract setTables(fields: string): void;
+
+  protected abstract extractFields(schema: string): string;
+
+  protected abstract extractIndexes(schema: string): string;
+
+  protected abstract extractTables(schema: string): string;
 
   public getModels(): Model[] {
+    const tableNames = this.getTablesList();
     const models = [];
-    for (const table of this.tables) {
+    for (const table of tableNames) {
       models.push(this.describeTable(table));
     }
     return models;
   }
 
-  private describeTable(tableName: string): Model {
+  public describeTable(tableName: string): Model {
     // Retrieve the fields, primary key and indexes info
-    const fields = this.schema.getFields(tableName);
-    const primaryKey = this.schema.getPrimaryKey(tableName);
-    const indexes = this.schema.getIndexes(tableName);
+    const fields = this.getFields(tableName);
+    const primaryKey = this.getPrimaryKey(tableName);
+    const indexes = this.getIndexes(tableName);
 
     // Construct the model from the retrieved details
     const model = new Model(tableName);
