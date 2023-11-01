@@ -56,6 +56,7 @@ const convertAuthModeToAuthProvider = (authMode: AuthorizationConfigMode): AppSy
       return {
         authenticationType,
         lambdaAuthorizerConfig: {
+          lambdaArn: authMode.function.functionArn,
           lambdaFunction: authMode.function.functionName,
           ttlSeconds: authMode.ttl.toSeconds(),
         },

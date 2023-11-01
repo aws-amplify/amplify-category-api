@@ -57,6 +57,7 @@ export interface OpenIDConnectConfig {
 
 export interface LambdaConfig {
   lambdaFunction: string;
+  lambdaArn?: string;
   ttlSeconds?: number;
 }
 
