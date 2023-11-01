@@ -9,6 +9,7 @@ import {
   OIDCAuthorizationConfig,
   UserPoolAuthorizationConfig,
 } from '../types';
+import { ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 
 type AuthorizationConfigMode =
   | (IAMAuthorizationConfig & { type: 'AWS_IAM' })
@@ -89,6 +90,12 @@ const convertAuthConfigToAppSyncAuth = (authModes: AuthorizationModes): AppSyncA
   if (authProviders.length > 1 && !authModes.defaultAuthorizationMode) {
     throw new Error('A defaultAuthorizationMode is required if multiple authorization modes are configured.');
   }
+
+  // Enable appsync to invoke a provided lambda authorizer function
+  authModes.lambdaConfig?.function.addPermission('appsync-auth-invoke', {
+    principal: new ServicePrincipal('appsync.amazonaws.com'),
+    action: 'lambda:InvokeFunction',
+  });
 
   // In the case of a single mode, defaultAuthorizationMode is not required, just use the provided value.
   if (authProviders.length === 1) {

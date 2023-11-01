@@ -53,7 +53,7 @@ describe('CDK Auth Modes', () => {
     `;
 
     const listWithInvalidTokenResult = await graphqlRequestWithLambda(apiEndpoint, 'badtoken', listTodosQuery);
-    expect(listWithInvalidTokenResult.statusCode).toEqual(401);
+    expect(listWithInvalidTokenResult.statusCode).toEqual(400);
 
     const listWithValidTokenResult = await graphqlRequestWithLambda(apiEndpoint, 'letmein', listTodosQuery);
     expect(listWithValidTokenResult.statusCode).toEqual(200);
