@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0-rds-5.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.4.8...@aws-amplify/graphql-schema-generator@0.5.0-rds-5.0) (2023-11-01)
+
+### Bug Fixes
+
+- check for duplicate model name mappings ([454f549](https://github.com/aws-amplify/amplify-category-api/commit/454f549d0cb33ff4074b8a9ef08061cf672b2258))
+- Fix schema import for RDS clusters in VPCs ([942ad39](https://github.com/aws-amplify/amplify-category-api/commit/942ad3923e826f77cc20a65beee3dfadd21e32ef))
+- handle field names starting with number ([2e9de1b](https://github.com/aws-amplify/amplify-category-api/commit/2e9de1b061ac212fad23b133ada44bfaadb1a2ff))
+- handle non-alphabetic names ([a116847](https://github.com/aws-amplify/amplify-category-api/commit/a1168475c0591c6dd785410feb44733cb995febb))
+- relational auth cases; preserve auth rule schema edits, added multi-auth e2e tests ([#1965](https://github.com/aws-amplify/amplify-category-api/issues/1965)) ([df085b2](https://github.com/aws-amplify/amplify-category-api/commit/df085b2bf75dded743809b59386272070fc92251))
+
+### Features
+
+- **api:** add enum support for postgres import ([2e63cec](https://github.com/aws-amplify/amplify-category-api/commit/2e63cecf1f04ec39b644f0ee0842ee79a4b4c149))
+- **api:** postgres import workflow ([a87203f](https://github.com/aws-amplify/amplify-category-api/commit/a87203f5e7b0a279f6c916069b648f973089e074))
+- **api:** specify include or exclude tables option to generate schema ([1fa52a1](https://github.com/aws-amplify/amplify-category-api/commit/1fa52a1f0c0d7bf82caebc94241774ac3b5c8aa1))
+- infer and preserve field mappings in schema ([4f8e7f4](https://github.com/aws-amplify/amplify-category-api/commit/4f8e7f43e6ba3e64702baffe60b8b4870d37ffb6))
+- infer refersTo for models in the import flow and preserve edits during schema regeneration ([#1845](https://github.com/aws-amplify/amplify-category-api/issues/1845)) ([2631c02](https://github.com/aws-amplify/amplify-category-api/commit/2631c027395a35d9841669f2aa034af93cbeb9fc))
+- Support RDS Proxy schema imports ([#1917](https://github.com/aws-amplify/amplify-category-api/issues/1917)) ([55bb698](https://github.com/aws-amplify/amplify-category-api/commit/55bb698f319d3abb63ad0a8260f731e57c0d0fa9))
+
 ## [0.4.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.4.7...@aws-amplify/graphql-schema-generator@0.4.8) (2023-10-21)
 
 **Note:** Version bump only for package @aws-amplify/graphql-schema-generator

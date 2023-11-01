@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0-rds-5.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.1.5...@aws-amplify/graphql-api-construct@1.3.0-rds-5.0) (2023-11-01)
+
+### Features
+
+- add postgres engine and update types as needed ([#1979](https://github.com/aws-amplify/amplify-category-api/issues/1979)) ([5257d53](https://github.com/aws-amplify/amplify-category-api/commit/5257d53f1d4d02be71b34ddf6757f22dd5d74aff))
+- Add SQL database support to AmplifyGraphqlApi construct ([#1986](https://github.com/aws-amplify/amplify-category-api/issues/1986)) ([2ff63a5](https://github.com/aws-amplify/amplify-category-api/commit/2ff63a540387d96cf10d8ae1975858a76d9ba045)), closes [#1917](https://github.com/aws-amplify/amplify-category-api/issues/1917) [#1983](https://github.com/aws-amplify/amplify-category-api/issues/1983)
+
 # [1.2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.1.5...@aws-amplify/graphql-api-construct@1.2.0) (2023-10-27)
 
 ### Features

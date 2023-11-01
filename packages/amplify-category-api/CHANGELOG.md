@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.8.0-rds-5.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.7.6...@aws-amplify/amplify-category-api@5.8.0-rds-5.0) (2023-11-01)
+
+### Bug Fixes
+
+- **api:** make id optional if not a string type ([48ecac0](https://github.com/aws-amplify/amplify-category-api/commit/48ecac0989097106a531ebb898abbda7a0f1745c))
+
+### Features
+
+- add postgres engine and update types as needed ([#1979](https://github.com/aws-amplify/amplify-category-api/issues/1979)) ([5257d53](https://github.com/aws-amplify/amplify-category-api/commit/5257d53f1d4d02be71b34ddf6757f22dd5d74aff))
+- Add SQL database support to AmplifyGraphqlApi construct ([#1986](https://github.com/aws-amplify/amplify-category-api/issues/1986)) ([2ff63a5](https://github.com/aws-amplify/amplify-category-api/commit/2ff63a540387d96cf10d8ae1975858a76d9ba045)), closes [#1917](https://github.com/aws-amplify/amplify-category-api/issues/1917) [#1983](https://github.com/aws-amplify/amplify-category-api/issues/1983)
+- **api:** add vpc endpoints for ssm ([5a4ffc4](https://github.com/aws-amplify/amplify-category-api/commit/5a4ffc4c1889536c8e1fdd1f31fe28ca4326100f))
+- **api:** custom queries support using sql directive ([5214037](https://github.com/aws-amplify/amplify-category-api/commit/52140374ca974956c5d5eac09fec91a51cfc9027))
+- **api:** postgres import workflow ([a87203f](https://github.com/aws-amplify/amplify-category-api/commit/a87203f5e7b0a279f6c916069b648f973089e074))
+- **api:** prompt changes to add postgres support ([9e4c41c](https://github.com/aws-amplify/amplify-category-api/commit/9e4c41c28b286e15a574eff9867f1f910a6f9ed3))
+- **api:** refactor auth transformer to use vtl generator factory pattern ([e965d24](https://github.com/aws-amplify/amplify-category-api/commit/e965d24731fc1e2300ef0e16b61af6b39afb0cad))
+- Support RDS Proxy schema imports ([#1917](https://github.com/aws-amplify/amplify-category-api/issues/1917)) ([55bb698](https://github.com/aws-amplify/amplify-category-api/commit/55bb698f319d3abb63ad0a8260f731e57c0d0fa9))
+
 ## [5.7.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.7.6...@aws-amplify/amplify-category-api@5.7.7) (2023-10-27)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api

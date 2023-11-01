@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.3.0-rds-5.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.2.4...@aws-amplify/graphql-maps-to-transformer@3.3.0-rds-5.0) (2023-11-01)
+
+### Bug Fixes
+
+- change field mapping slot to preAuth ([f529331](https://github.com/aws-amplify/amplify-category-api/commit/f529331797cea4c57da6063128dedf0c69bdf813))
+
+### Features
+
+- add postgres engine and update types as needed ([#1979](https://github.com/aws-amplify/amplify-category-api/issues/1979)) ([5257d53](https://github.com/aws-amplify/amplify-category-api/commit/5257d53f1d4d02be71b34ddf6757f22dd5d74aff))
+- add refersTo directive transformer for model renaming ([#1830](https://github.com/aws-amplify/amplify-category-api/issues/1830)) ([afbd6f2](https://github.com/aws-amplify/amplify-category-api/commit/afbd6f282bc411313ce098a53a87bb8c6481aa48))
+- refersTo supports field name mappings on RDS models ([#1865](https://github.com/aws-amplify/amplify-category-api/issues/1865)) ([ee60011](https://github.com/aws-amplify/amplify-category-api/commit/ee60011f5c41d0442e1096dd16d80e94b900745a))
+
 ## [3.2.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.2.3...@aws-amplify/graphql-maps-to-transformer@3.2.4) (2023-10-12)
 
 **Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
