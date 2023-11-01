@@ -3,7 +3,7 @@ import {
   generateGetArgumentsInput,
   InvalidDirectiveError,
   TransformerPluginBase,
-  DatasourceType,
+  FieldWrapper,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
@@ -19,7 +19,14 @@ import {
   Kind,
   ObjectTypeDefinitionNode,
 } from 'graphql';
-import { isListType, isNonNullType, isScalarOrEnum, makeInputValueDefinition, makeNamedType } from 'graphql-transformer-common';
+import {
+  isListType,
+  isNonNullType,
+  isScalarOrEnum,
+  makeDirective,
+  makeInputValueDefinition,
+  makeNamedType,
+} from 'graphql-transformer-common';
 import { constructSyncVTL, getVTLGenerator } from './resolvers/resolvers';
 import {
   addKeyConditionInputs,
@@ -38,6 +45,7 @@ const directiveName = 'primaryKey';
 const directiveDefinition = `
   directive @${directiveName}(sortKeyFields: [String]) on FIELD_DEFINITION
 `;
+const modelDirectiveName = 'model';
 
 export class PrimaryKeyTransformer extends TransformerPluginBase {
   private directiveList: PrimaryKeyDirectiveConfiguration[] = [];
@@ -101,7 +109,8 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
   };
 
   generateResolvers = (ctx: TransformerContextProvider): void => {
-    for (const config of this.directiveList) {
+    const implicitPrimaryKeyDirectiveConfigs = getImplicitPrimaryKeyDirectiveConfigs(ctx);
+    for (const config of [...this.directiveList, ...implicitPrimaryKeyDirectiveConfigs]) {
       const dbInfo = ctx.modelToDatasourceMap.get(config.object.name.value);
       const vtlGenerator = getVTLGenerator(dbInfo);
       vtlGenerator.generatePrimaryKeyVTL(config, ctx, this.resolverMap);
@@ -215,4 +224,40 @@ export function updateListField(config: PrimaryKeyDirectiveConfiguration, ctx: T
     };
     ctx.output.updateObject(query);
   }
+}
+
+function getImplicitPrimaryKeyDirectiveConfigs(ctx: TransformerContextProvider): PrimaryKeyDirectiveConfiguration[] {
+  const implicitPrimaryKeyDirectiveConfigs: PrimaryKeyDirectiveConfiguration[] = [];
+
+  for (const object of ctx.output.getTypeDefinitionsOfKind(Kind.OBJECT_TYPE_DEFINITION) as ObjectTypeDefinitionNode[]) {
+    const modelDirective = object?.directives?.find((directive) => {
+      return directive.name.value === modelDirectiveName;
+    });
+
+    if (!modelDirective) {
+      continue;
+    }
+
+    const primaryKeyFields = object?.fields?.filter((field) => {
+      return field?.directives?.find((directive) => {
+        return directive?.name?.value === directiveName;
+      });
+    });
+
+    if (!primaryKeyFields || primaryKeyFields?.length === 0) {
+      // If there are no primary key fields on a model, that means the 'id' field is implicitly the primary key.
+      const primaryKeyDirectiveConfig: PrimaryKeyDirectiveConfiguration = {
+        object,
+        field: FieldWrapper.create('id', 'ID', false, false)?.serialize(),
+        directive: makeDirective(directiveName, []),
+        sortKeyFields: [],
+        sortKey: [],
+        modelDirective,
+      };
+
+      implicitPrimaryKeyDirectiveConfigs.push(primaryKeyDirectiveConfig);
+    }
+  }
+
+  return implicitPrimaryKeyDirectiveConfigs;
 }

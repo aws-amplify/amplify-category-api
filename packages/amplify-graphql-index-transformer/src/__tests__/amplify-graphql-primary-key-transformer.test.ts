@@ -1,5 +1,5 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { validateModelSchema, DatasourceType } from '@aws-amplify/graphql-transformer-core';
+import { validateModelSchema, DatasourceType, ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Kind, parse } from 'graphql';
 import _ from 'lodash';
@@ -1005,6 +1005,37 @@ describe('RDS primary key transformer tests', () => {
     expect(query.fields.length).toEqual(1);
     const getQuery = query.fields.find((f: any) => f.name.value === 'testGet');
     expect(getQuery).toBeDefined();
+  });
+
+  it('id is treated as implicit primaryKey and necessary resolver resources are generated', () => {
+    const validSchema = `
+      type Song @model {
+        id: ID!
+        name: String!
+        genre: String!
+      }
+    `;
+
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      resolverConfig: {
+        project: {
+          ConflictDetection: 'VERSION',
+          ConflictHandler: ConflictHandlerType.AUTOMERGE,
+        },
+      },
+    });
+
+    expect(out).toBeDefined();
+
+    // Sync pre-auth resolver slot is generated
+    expect(out?.resolvers['Query.syncSongs.preAuth.1.req.vtl']).toBeDefined();
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+    expect(out.resolvers).toMatchSnapshot();
+
+    validateModelSchema(parse(definition));
   });
 });
 
