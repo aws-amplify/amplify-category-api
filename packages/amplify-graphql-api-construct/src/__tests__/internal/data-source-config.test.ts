@@ -5,7 +5,7 @@ import { DataSourceProvisionConfig } from '../../types';
 describe('datasource config', () => {
   it('should parse the datasource config correctly', () => {
     const input: DataSourceProvisionConfig = {
-      project: {
+      default: {
         name: 'defaultDDB',
         strategy: {
           dbType: 'DYNAMODB',
@@ -25,7 +25,7 @@ describe('datasource config', () => {
     const datasourceConfig = parseDataSourceConfig(input);
     expect(datasourceConfig).toEqual({
       datasourceProvisionConfig: {
-        project: {
+        default: {
           dbType: 'DDB',
           provisionStrategy: DynamoDBProvisionStrategyType.DEFAULT,
         },

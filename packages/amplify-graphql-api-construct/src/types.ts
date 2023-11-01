@@ -532,13 +532,13 @@ export interface IBackendOutputStorageStrategy {
 }
 
 /**
- * Project level configuration for datasource provision strategy.
+ * Configuration for datasource provision strategy.
  */
 export interface DataSourceProvisionConfig {
   /**
-   * Project-wide config for datasource provision. Applies to all non-overridden models.
+   * Default config for datasource provision. Applies to all non-overridden models.
    */
-  readonly project?: ModelDataSourceDefinition;
+  readonly default?: ModelDataSourceDefinition;
 
   /**
    * Model-specific datasource provision overrides.

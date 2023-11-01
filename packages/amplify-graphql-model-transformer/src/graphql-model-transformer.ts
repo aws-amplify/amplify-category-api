@@ -878,7 +878,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     if (!ctx.datasourceProvisionConfig) {
       return;
     }
-    const projectProvisionStrategy = ctx.datasourceProvisionConfig?.project?.provisionStrategy as any;
+    const projectProvisionStrategy = ctx.datasourceProvisionConfig?.default?.provisionStrategy as any;
     // Change the project level strategy only when amplify table is in used
     // The default strategy is using default CFN dynamodb table
     // TODO: add support for RDS strategy in project level

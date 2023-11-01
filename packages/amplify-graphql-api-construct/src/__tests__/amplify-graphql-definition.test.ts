@@ -24,11 +24,11 @@ describe('AmplifyGraphqlDefinition', () => {
       const definition = AmplifyGraphqlDefinition.fromString(TEST_SCHEMA);
       expect(definition.schema).toEqual(TEST_SCHEMA);
       expect(definition.functionSlots.length).toEqual(0);
-      expect(definition.dataSourceProvisionConfig).toEqual({ project: DEFAULT_MODEL_DATA_SOURCE_DEFINITION });
+      expect(definition.dataSourceProvisionConfig).toEqual({ default: DEFAULT_MODEL_DATA_SOURCE_DEFINITION });
     });
     it('returns amplify table strategy when explicitly defined', () => {
       const definition = AmplifyGraphqlDefinition.fromString(TEST_SCHEMA, AMPLIFY_TABLE_STRATEGY);
-      expect(definition.dataSourceProvisionConfig).toEqual({ project: AMPLIFY_TABLE_STRATEGY });
+      expect(definition.dataSourceProvisionConfig).toEqual({ default: AMPLIFY_TABLE_STRATEGY });
     });
   });
 
@@ -49,7 +49,7 @@ describe('AmplifyGraphqlDefinition', () => {
       const definition = AmplifyGraphqlDefinition.fromFiles(schemaFilePath);
       expect(definition.schema).toEqual(TEST_SCHEMA);
       expect(definition.functionSlots.length).toEqual(0);
-      expect(definition.dataSourceProvisionConfig).toEqual({ project: DEFAULT_MODEL_DATA_SOURCE_DEFINITION });
+      expect(definition.dataSourceProvisionConfig).toEqual({ default: DEFAULT_MODEL_DATA_SOURCE_DEFINITION });
     });
 
     it('extracts the definition from the schema files, appended in-order', () => {
@@ -68,7 +68,7 @@ describe('AmplifyGraphqlDefinition', () => {
       const rdsSchemaFilePath = path.join(tmpDir, 'schema.rds.graphql');
       fs.writeFileSync(schemaFilePath, TEST_SCHEMA);
       fs.writeFileSync(rdsSchemaFilePath, rdsTestSchema);
-      const definition = AmplifyGraphqlDefinition.fromFiles([schemaFilePath, rdsSchemaFilePath]);
+      const definition = AmplifyGraphqlDefinition.fromFiles(schemaFilePath, rdsSchemaFilePath);
       expect(definition.schema).toEqual(`${TEST_SCHEMA}${os.EOL}${rdsTestSchema}`);
       expect(definition.functionSlots.length).toEqual(0);
     });
@@ -93,7 +93,7 @@ describe('AmplifyGraphqlDefinition', () => {
       expect(combinedDefinition.schema).toEqual(`${TEST_SCHEMA}${os.EOL}${amplifyTableSchema}`);
       expect(combinedDefinition.functionSlots.length).toEqual(0);
       expect(combinedDefinition.dataSourceProvisionConfig).toEqual({
-        project: DEFAULT_MODEL_DATA_SOURCE_DEFINITION,
+        default: DEFAULT_MODEL_DATA_SOURCE_DEFINITION,
         models: {
           Blog: AMPLIFY_TABLE_STRATEGY,
           Post: AMPLIFY_TABLE_STRATEGY,

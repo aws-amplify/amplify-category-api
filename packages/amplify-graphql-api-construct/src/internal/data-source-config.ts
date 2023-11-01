@@ -32,14 +32,14 @@ export const parseDataSourceConfig = (dataSourceProvisionStrategy: DataSourcePro
   if (!dataSourceProvisionStrategy) {
     return undefined;
   }
-  const { project, models } = dataSourceProvisionStrategy;
+  const { models } = dataSourceProvisionStrategy;
   const result = {
-    project: project?.strategy && convertToProvisionStrategy(project.strategy),
+    default: dataSourceProvisionStrategy.default?.strategy && convertToProvisionStrategy(dataSourceProvisionStrategy.default.strategy),
     models:
       models &&
       Object.fromEntries(
         Object.entries(models).map(([modelName, strategyConfig]) => [modelName, convertToProvisionStrategy(strategyConfig.strategy)]),
       ),
   } as DatasourceProvisionConfig;
-  return result.models || result.project ? { datasourceProvisionConfig: result } : undefined;
+  return result.models || result.default ? { datasourceProvisionConfig: result } : undefined;
 };

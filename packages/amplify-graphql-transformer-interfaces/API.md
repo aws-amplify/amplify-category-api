@@ -156,7 +156,7 @@ export interface DataSourceProvider extends BackedDataSource {
 
 // @public (undocumented)
 export type DatasourceProvisionConfig = {
-    project?: DatasourceProvisionStrategy;
+    default?: DatasourceProvisionStrategy;
     models?: Record<string, DatasourceProvisionStrategy>;
 };
 

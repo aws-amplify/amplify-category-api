@@ -21,7 +21,7 @@ const amplifyTableStrategy: graphql.ModelDataSourceDefinition = {
   },
 };
 const api = new graphql.AmplifyGraphqlApi(stack, 'Harness', {
-  definition: graphql.AmplifyGraphqlDefinition.fromFiles(path.join(__dirname, 'schema.graphql'), amplifyTableStrategy),
+  definition: graphql.AmplifyGraphqlDefinition.fromFilesAndDefinition(path.join(__dirname, 'schema.graphql'), amplifyTableStrategy),
   authorizationModes: { apiKeyConfig: { expires: cdk.Duration.days(7) } },
 });
 

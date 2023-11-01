@@ -23,7 +23,7 @@ describe('ModelTransformer:', () => {
       schema: validSchema,
       transformers: [new ModelTransformer()],
       datasourceProvisionConfig: {
-        project: {
+        default: {
           dbType: 'DDB',
           provisionStrategy: DynamoDBProvisionStrategyType.AMPLIFY_TABLE,
         },

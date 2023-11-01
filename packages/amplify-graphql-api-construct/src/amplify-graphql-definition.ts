@@ -28,7 +28,25 @@ export class AmplifyGraphqlDefinition {
       schema,
       functionSlots: [],
       dataSourceProvisionConfig: {
-        project: modelDataSourceDefinition,
+        default: modelDataSourceDefinition,
+      },
+    };
+  }
+
+  /**
+   * Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema
+   * @param filePaths one or more paths to the graphql files to process
+   * @returns a fully formed amplify graphql definition
+   */
+  static fromFiles(...filePaths: string[]): IAmplifyGraphqlDefinition {
+    if (!Array.isArray(filePaths)) {
+      filePaths = [filePaths];
+    }
+    return {
+      schema: filePaths.map((filePath) => new SchemaFile({ filePath }).definition).join(os.EOL),
+      functionSlots: [],
+      dataSourceProvisionConfig: {
+        default: DEFAULT_MODEL_DATA_SOURCE_DEFINITION,
       },
     };
   }
@@ -39,7 +57,7 @@ export class AmplifyGraphqlDefinition {
    * @param modelDataSourceDefinition the provision definition for `@model` datasource. The DynamoDB from CloudFormation will be used by default.
    * @returns a fully formed amplify graphql definition
    */
-  static fromFiles(
+  static fromFilesAndDefinition(
     filePaths: string | string[],
     modelDataSourceDefinition: ModelDataSourceDefinition = DEFAULT_MODEL_DATA_SOURCE_DEFINITION,
   ): IAmplifyGraphqlDefinition {
@@ -50,7 +68,7 @@ export class AmplifyGraphqlDefinition {
       schema: filePaths.map((filePath) => new SchemaFile({ filePath }).definition).join(os.EOL),
       functionSlots: [],
       dataSourceProvisionConfig: {
-        project: modelDataSourceDefinition,
+        default: modelDataSourceDefinition,
       },
     };
   }
@@ -66,13 +84,13 @@ export class AmplifyGraphqlDefinition {
     if (definitions.length === 1) {
       return definitions[0];
     }
-    const projectStrategy = definitions[0].dataSourceProvisionConfig.project;
+    const defaultStrategy = definitions[0].dataSourceProvisionConfig.default;
     const datasourceConfigPerModelMap = definitions
       .slice(1)
-      .filter((def) => def.dataSourceProvisionConfig.project !== projectStrategy)
+      .filter((def) => def.dataSourceProvisionConfig.default !== defaultStrategy)
       .reduce((acc, cur) => {
         const modelTypeNames = getModelTypeNames(cur.schema);
-        const modelProvisionStrategyMap = modelTypeNames.reduce((a, c) => ({ ...a, [c]: cur.dataSourceProvisionConfig.project }), {});
+        const modelProvisionStrategyMap = modelTypeNames.reduce((a, c) => ({ ...a, [c]: cur.dataSourceProvisionConfig.default }), {});
         return {
           ...acc,
           ...modelProvisionStrategyMap,
@@ -82,7 +100,7 @@ export class AmplifyGraphqlDefinition {
       schema: definitions.map((def) => def.schema).join(os.EOL),
       functionSlots: [],
       dataSourceProvisionConfig: {
-        project: projectStrategy,
+        default: defaultStrategy,
         models: datasourceConfigPerModelMap,
       },
     };

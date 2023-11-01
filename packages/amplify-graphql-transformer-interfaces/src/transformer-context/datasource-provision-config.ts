@@ -23,11 +23,11 @@ export type DatasourceProvisionStrategy = DynamoDBProvisionStrategy;
 
 export type DatasourceProvisionConfig = {
   /**
-   * Project level datasource provision strategy
+   * Default datasource provision strategy
    */
-  project?: DatasourceProvisionStrategy;
+  default?: DatasourceProvisionStrategy;
   /**
-   * Model level datasource provision strategy, keyed by @model type name
+   * Model level datasource provision strategy, keyed by `@model` type name
    */
   models?: Record<string, DatasourceProvisionStrategy>;
 };

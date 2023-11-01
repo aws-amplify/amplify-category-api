@@ -148,7 +148,8 @@ export interface AmplifyGraphqlApiResources {
 // @public
 export class AmplifyGraphqlDefinition {
     static combine(...definitions: IAmplifyGraphqlDefinition[]): IAmplifyGraphqlDefinition;
-    static fromFiles(filePaths: string | string[], modelDataSourceDefinition?: ModelDataSourceDefinition): IAmplifyGraphqlDefinition;
+    static fromFiles(...filePaths: string[]): IAmplifyGraphqlDefinition;
+    static fromFilesAndDefinition(filePaths: string | string[], modelDataSourceDefinition?: ModelDataSourceDefinition): IAmplifyGraphqlDefinition;
     static fromString(schema: string, modelDataSourceDefinition?: ModelDataSourceDefinition): IAmplifyGraphqlDefinition;
 }
 
@@ -199,8 +200,8 @@ export interface CustomConflictResolutionStrategy extends ConflictResolutionStra
 
 // @public
 export interface DataSourceProvisionConfig {
+    readonly default?: ModelDataSourceDefinition;
     readonly models?: Record<string, ModelDataSourceDefinition>;
-    readonly project?: ModelDataSourceDefinition;
 }
 
 // @public
