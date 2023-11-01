@@ -40,7 +40,7 @@ describe('RDS Model Directive', () => {
   const identifier = `integtest${db_identifier}`;
   const projName = 'rdsmodelapitest';
   const apiName = 'rdsapi';
-    
+
   let projRoot;
   let appSyncClient;
 
@@ -78,7 +78,7 @@ describe('RDS Model Directive', () => {
       }
     `;
     updateSchema(projRoot, apiName, print(updatedSchema), 'schema.rds.graphql');
-  }
+  };
 
   const verifyApiEndpointAndCreateClient = async (): Promise<void> => {
     const meta = getProjectMeta(projRoot);
@@ -152,8 +152,6 @@ describe('RDS Model Directive', () => {
       password,
       region,
     };
-    
-    console.log(dbConfig);
 
     const queries = [
       'CREATE TABLE Contact (id INT PRIMARY KEY, firstname VARCHAR(20), lastname VARCHAR(50), tags VARCHAR[], address JSON)',
@@ -217,99 +215,91 @@ describe('RDS Model Directive', () => {
   };
 
   test('check CRUDL on contact table with array and objects', async () => {
-    const contact1 = await createContact(
-      'David',
-      'Smith',
-      1,
-      ['tag1', 'tag2'],
-      {
-        city: 'Seattle',
-        state: 'WA',
-        street: '123 Main St',
-        zip: '98115',
-      },
-    );
-    const contact2 = await createContact(
-      'Chris',
-      'Sundersingh',
-      2,
-      ['tag3', 'tag4'],
-      {
-        city: 'Seattle',
-        state: 'WA',
-        street: '456 Another St',
-        zip: '98119',
-      },
-    );
+    const contact1 = await createContact('David', 'Smith', 1, ['tag1', 'tag2'], {
+      city: 'Seattle',
+      state: 'WA',
+      street: '123 Main St',
+      zip: '98115',
+    });
+    const contact2 = await createContact('Chris', 'Sundersingh', 2, ['tag3', 'tag4'], {
+      city: 'Seattle',
+      state: 'WA',
+      street: '456 Another St',
+      zip: '98119',
+    });
 
     expect(contact1.data.createContact.id).toBeDefined();
     expect(contact1.data.createContact.firstname).toEqual('David');
     expect(contact1.data.createContact.lastname).toEqual('Smith');
     expect(contact1.data.createContact.tags).toEqual(expect.arrayContaining(['tag1', 'tag2']));
-    expect(contact1.data.createContact.address).toEqual(expect.objectContaining({
-      city: 'Seattle',
-      state: 'WA',
-      street: '123 Main St',
-      zip: '98115',
-    }));
+    expect(contact1.data.createContact.address).toEqual(
+      expect.objectContaining({
+        city: 'Seattle',
+        state: 'WA',
+        street: '123 Main St',
+        zip: '98115',
+      }),
+    );
 
     expect(contact2.data.createContact.id).toBeDefined();
     expect(contact2.data.createContact.firstname).toEqual('Chris');
     expect(contact2.data.createContact.lastname).toEqual('Sundersingh');
     expect(contact2.data.createContact.tags).toEqual(expect.arrayContaining(['tag3', 'tag4']));
-    expect(contact2.data.createContact.address).toEqual(expect.objectContaining({
-      city: 'Seattle',
-      state: 'WA',
-      street: '456 Another St',
-      zip: '98119',
-    }));
+    expect(contact2.data.createContact.address).toEqual(
+      expect.objectContaining({
+        city: 'Seattle',
+        state: 'WA',
+        street: '456 Another St',
+        zip: '98119',
+      }),
+    );
 
     const getContact1 = await getContact(contact1.data.createContact.id);
     expect(getContact1.data.getContact.id).toEqual(contact1.data.createContact.id);
     expect(getContact1.data.getContact.firstname).toEqual('David');
     expect(getContact1.data.getContact.lastname).toEqual('Smith');
     expect(getContact1.data.getContact.tags).toEqual(expect.arrayContaining(['tag1', 'tag2']));
-    expect(getContact1.data.getContact.address).toEqual(expect.objectContaining({
-      city: 'Seattle',
-      state: 'WA',
-      street: '123 Main St',
-      zip: '98115',
-    }));
-
-    const contact1Updated = await updateContact(
-      contact1.data.createContact.id,
-      'David',
-      'Jones',
-      ['tag1', 'tag2', 'tag3'],
-      {
+    expect(getContact1.data.getContact.address).toEqual(
+      expect.objectContaining({
         city: 'Seattle',
         state: 'WA',
-        street: '12345 Main St',
-        zip: '98110',
-      },
+        street: '123 Main St',
+        zip: '98115',
+      }),
     );
-    expect(contact1Updated.data.updateContact.id).toEqual(contact1.data.createContact.id);
-    expect(contact1Updated.data.updateContact.firstname).toEqual('David');
-    expect(contact1Updated.data.updateContact.lastname).toEqual('Jones');
-    expect(contact1Updated.data.updateContact.tags).toEqual(expect.arrayContaining(['tag1', 'tag2', 'tag3']));
-    expect(contact1Updated.data.updateContact.address).toEqual(expect.objectContaining({
+
+    const contact1Updated = await updateContact(contact1.data.createContact.id, 'David', 'Jones', ['tag1', 'tag2', 'tag3'], {
       city: 'Seattle',
       state: 'WA',
       street: '12345 Main St',
       zip: '98110',
-    }));
+    });
+    expect(contact1Updated.data.updateContact.id).toEqual(contact1.data.createContact.id);
+    expect(contact1Updated.data.updateContact.firstname).toEqual('David');
+    expect(contact1Updated.data.updateContact.lastname).toEqual('Jones');
+    expect(contact1Updated.data.updateContact.tags).toEqual(expect.arrayContaining(['tag1', 'tag2', 'tag3']));
+    expect(contact1Updated.data.updateContact.address).toEqual(
+      expect.objectContaining({
+        city: 'Seattle',
+        state: 'WA',
+        street: '12345 Main St',
+        zip: '98110',
+      }),
+    );
 
     const getContact1Updated = await getContact(contact1.data.createContact.id);
     expect(getContact1Updated.data.getContact.id).toEqual(contact1.data.createContact.id);
     expect(getContact1Updated.data.getContact.firstname).toEqual('David');
     expect(getContact1Updated.data.getContact.lastname).toEqual('Jones');
     expect(getContact1Updated.data.getContact.tags).toEqual(expect.arrayContaining(['tag1', 'tag2', 'tag3']));
-    expect(getContact1Updated.data.getContact.address).toEqual(expect.objectContaining({
-      city: 'Seattle',
-      state: 'WA',
-      street: '12345 Main St',
-      zip: '98110',
-    }));
+    expect(getContact1Updated.data.getContact.address).toEqual(
+      expect.objectContaining({
+        city: 'Seattle',
+        state: 'WA',
+        street: '12345 Main St',
+        zip: '98110',
+      }),
+    );
 
     const listContactsResult = await listContacts();
     expect(listContactsResult.data.listContacts.items.length).toEqual(2);
@@ -331,7 +321,7 @@ describe('RDS Model Directive', () => {
           id: contact2.data.createContact.id,
           firstname: 'Chris',
           lastname: 'Sundersingh',
-          tags: expect.arrayContaining(['tag3', 'tag4']), 
+          tags: expect.arrayContaining(['tag3', 'tag4']),
           address: expect.objectContaining({
             city: 'Seattle',
             state: 'WA',
@@ -347,12 +337,14 @@ describe('RDS Model Directive', () => {
     expect(deleteContact1.data.deleteContact.firstname).toEqual('David');
     expect(deleteContact1.data.deleteContact.lastname).toEqual('Jones');
     expect(deleteContact1.data.deleteContact.tags).toEqual(expect.arrayContaining(['tag1', 'tag2', 'tag3']));
-    expect(deleteContact1.data.deleteContact.address).toEqual(expect.objectContaining({
-      city: 'Seattle',
-      state: 'WA',
-      street: '12345 Main St',
-      zip: '98110',
-    }));
+    expect(deleteContact1.data.deleteContact.address).toEqual(
+      expect.objectContaining({
+        city: 'Seattle',
+        state: 'WA',
+        street: '12345 Main St',
+        zip: '98110',
+      }),
+    );
 
     const listContactsResultAfterDelete = await listContacts();
     expect(listContactsResultAfterDelete.data.listContacts.items.length).toEqual(1);
@@ -411,7 +403,6 @@ describe('RDS Model Directive', () => {
       createInput.input['id'] = id;
     }
 
-    console.log(JSON.stringify(createInput, null, 4));
     const createResult: any = await appSyncClient.mutate({
       mutation: gql(createMutation),
       fetchPolicy: 'no-cache',
