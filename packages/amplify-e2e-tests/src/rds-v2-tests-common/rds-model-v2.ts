@@ -34,10 +34,10 @@ export const testRDSModel = (engine: ImportedRDSType, queries: string[]) => {
     // Generate settings for RDS instance
     const username = db_user;
     const password = db_password;
-    let region = 'ap-northeast-2';
+    let region = 'us-east-1';
     let port = engine === ImportedRDSType.MYSQL ? 3306 : 5432;
     const database = 'default_db';
-    let host = 'integtestystpkmpunf.czacqjzzlzga.ap-northeast-2.rds.amazonaws.com';
+    let host = 'localhost';
     const identifier = `integtest${db_identifier}`;
     const engineSuffix = engine === ImportedRDSType.MYSQL ? 'mysql' : 'pg';
     const projName = `${engineSuffix}modeltest`;
