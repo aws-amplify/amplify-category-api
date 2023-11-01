@@ -116,7 +116,7 @@ describe('RDS Cognito userpool provider Auth tests', () => {
       port,
       username,
       password,
-      useVpc: false,
+      useVpc: true,
       apiExists: true,
     });
     writeFileSync(rdsSchemaFilePath, appendAmplifyInput(schema, 'mysql'), 'utf8');

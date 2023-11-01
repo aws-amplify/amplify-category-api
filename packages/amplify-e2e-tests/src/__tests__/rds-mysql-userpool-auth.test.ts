@@ -107,6 +107,9 @@ describe('RDS Cognito userpool provider Auth tests', () => {
       name: projName,
     });
 
+    const metaAfterInit = getProjectMeta(projRoot);
+    region = metaAfterInit.providers.awscloudformation.Region;
+
     await addApi(projRoot, {
       transformerVersion: 2,
       'Amazon Cognito User Pool': {},
@@ -126,9 +129,6 @@ describe('RDS Cognito userpool provider Auth tests', () => {
       useVpc: true,
       apiExists: true,
     });
-
-    const metaAfterInit = getProjectMeta(projRoot);
-    region = metaAfterInit.providers.awscloudformation.Region;
 
     writeFileSync(rdsSchemaFilePath, appendAmplifyInput(schema, 'mysql'), 'utf8');
 
