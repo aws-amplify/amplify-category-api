@@ -12,6 +12,7 @@ const getGlobalAmplifyInputEntries = (
   transformerVersion: number,
   dataSourceType = ImportedRDSType.MYSQL,
   includeAuthRule = true,
+  authDocLink?: string,
 ): AmplifyInputEntry[] => {
   const inputs: AmplifyInputEntry[] = [
     {
@@ -23,13 +24,13 @@ const getGlobalAmplifyInputEntries = (
 
   if (includeAuthRule && transformerVersion === 2) {
     // need to get from cli core
-    // const authDocLink = getGraphQLTransformerAuthDocLink(2);
-    const authDocLink = 'doc-link';
     inputs.push({
       name: 'globalAuthRule',
       type: 'AuthRule',
       default: '{ allow: public }',
-      comment: `This "input" configures a global authorization rule to enable public access to all models in this schema. Learn more about authorization rules here:${authDocLink}`,
+      comment:
+        'This "input" configures a global authorization rule to enable public access to all models in this schema.' +
+        (!!authDocLink ? ` Learn more about authorization rules here:${authDocLink}` : ''),
     });
   }
   return inputs;
@@ -39,8 +40,9 @@ export const constructDefaultGlobalAmplifyInput = (
   transformerVersion: number,
   dataSourceType: ImportedRDSType,
   includeAuthRule = true,
+  authDocLink?: string,
 ): string => {
-  const inputs = getGlobalAmplifyInputEntries(transformerVersion, dataSourceType, includeAuthRule);
+  const inputs = getGlobalAmplifyInputEntries(transformerVersion, dataSourceType, includeAuthRule, authDocLink);
   const inputsString = inputs.reduce(
     (acc: string, input): string =>
       acc +

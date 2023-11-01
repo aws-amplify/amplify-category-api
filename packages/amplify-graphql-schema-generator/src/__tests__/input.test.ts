@@ -23,11 +23,12 @@ describe('Amplify Input read/write from schema', () => {
   });
 
   it('constructs valid default input parameters for MySQL datasource with global auth rule', async () => {
+    const authDocLink = 'https://docs.amplify.aws/cli/graphql/authorization-rules';
     const expectedGraphQLInputString = `input AMPLIFY {
       engine: String = \"mysql\"
-      globalAuthRule: AuthRule = { allow: public } # This "input" configures a global authorization rule to enable public access to all models in this schema. Learn more about authorization rules here:https://docs.amplify.aws/cli/graphql/authorization-rules 
+      globalAuthRule: AuthRule = { allow: public } # This "input" configures a global authorization rule to enable public access to all models in this schema. Learn more about authorization rules here:${authDocLink}
     }`;
-    const constructedInputString = await constructDefaultGlobalAmplifyInput(2, ImportedRDSType.MYSQL);
+    const constructedInputString = await constructDefaultGlobalAmplifyInput(2, ImportedRDSType.MYSQL, true, authDocLink);
     expect(constructedInputString?.replace(/\s/g, '')).toEqual(expectedGraphQLInputString.replace(/\s/g, ''));
   });
 
