@@ -58,6 +58,9 @@
     },
     "testURL": "http://localhost",
     "testRegex": "(src/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "modulePathIgnorePatterns": [
+      "__utils__"
+    ],
     "moduleFileExtensions": [
       "ts",
       "tsx",

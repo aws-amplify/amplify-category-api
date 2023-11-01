@@ -1,6 +1,7 @@
 import { StringDataSourceAdapter, MySQLStringDataSourceAdapter } from '../datasource-adapter';
 import { Engine, Field, FieldType, Index, Model, Schema } from '../schema-representation';
 import { generateGraphQLSchema, isComputeExpression } from '../schema-generator';
+import { schemas } from './__utils__/schemas';
 import { gql } from 'graphql-transformer-core';
 
 class TestStringDataSourceAdapter extends StringDataSourceAdapter {
@@ -43,7 +44,7 @@ describe('testStringDataSourceAdapter', () => {
     adapter.getFields = jest.fn(() => []);
     adapter.getPrimaryKey = jest.fn();
     adapter.getIndexes = jest.fn(() => []);
-    await adapter.getModels();
+    adapter.getModels();
     expect(adapter.getTablesList).toBeCalledTimes(1);
     expect(adapter.getFields).toBeCalledTimes(1);
     expect(adapter.getIndexes).toBeCalledTimes(1);
@@ -81,5 +82,15 @@ describe('testStringDataSourceAdapter', () => {
         name: 'Int',
       },
     });
+  });
+
+  it('sets the correct models from a todo schema', () => {
+    const adapter = new MySQLStringDataSourceAdapter(schemas.mysql.todo);
+    expect(adapter.getModels()).toMatchSnapshot();
+  });
+
+  it('sets the correct models from a news schema', () => {
+    const adapter = new MySQLStringDataSourceAdapter(schemas.mysql.news);
+    expect(adapter.getModels()).toMatchSnapshot();
   });
 });
