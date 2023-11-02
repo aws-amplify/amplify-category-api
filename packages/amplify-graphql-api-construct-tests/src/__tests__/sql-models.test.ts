@@ -79,7 +79,7 @@ describe('CDK GraphQL Transformer', () => {
     deleteProjectDir(projRoot);
   });
 
-  [/* '2.80.0', */ 'latest'].forEach((cdkVersion) => {
+  ['2.80.0', 'latest'].forEach((cdkVersion) => {
     test(`SQL Models base case - aws-cdk-lib@${cdkVersion}`, async () => {
       const templatePath = path.resolve(path.join(__dirname, 'backends', 'sql-models'));
       const name = await initCDKProject(projRoot, templatePath, cdkVersion);
@@ -197,6 +197,15 @@ const cleanupDatabase = async (options: { identifier: string; region: string; db
   });
 };
 
+/**
+ * Writes the specified DB details to a file named `db-details.json` in the specified directory. Used to pass db configs from setup code to
+ * the CDK app under test.
+ *
+ * **NOTE** Do not call this until the CDK project is initialized: `cdk init` fails if the working directory is not empty.
+ *
+ * @param dbDetails the details object
+ * @param projRoot the destination directory to write the `db-details.json` file to
+ */
 const writeDbDetails = (dbDetails: DBDetails, projRoot: string): void => {
   const detailsStr = JSON.stringify(dbDetails);
   const filePath = path.join(projRoot, 'db-details.json');
