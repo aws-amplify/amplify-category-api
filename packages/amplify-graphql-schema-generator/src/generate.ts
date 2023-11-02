@@ -42,9 +42,10 @@ export const renderSchema = (
   );
 };
 
-export const graphqlSchemaFromRDSSchema = (sqlSchema: string, engineType: ImportedRDSType, transformerVersion = 2): string => {
+export const graphqlSchemaFromRDSSchema = (sqlSchema: string, engineType: ImportedRDSType): string => {
   const schema = buildSchemaFromString(sqlSchema, engineType);
 
+  const transformerVersion = 2;
   const databaseConfig = {
     engine: engineType,
   };
