@@ -371,7 +371,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       return undefined;
     }
     return {
-      authorizerUri: this.lambdaArnKey(config.lambdaFunction),
+      authorizerUri: config.lambdaArn ?? this.lambdaArnKey(config.lambdaFunction),
       authorizerResultTtlInSeconds: config.ttlSeconds,
       identityValidationExpression: '',
     };

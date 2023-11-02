@@ -76,6 +76,7 @@ export const adoptAuthMode = (
       return {
         authorizationType: authType,
         lambdaAuthorizerConfig: {
+          lambdaArn: entry.lambdaAuthorizerConfig!.lambdaArn,
           lambdaFunction: entry.lambdaAuthorizerConfig!.lambdaFunction,
           ttlSeconds: strToNumber(entry.lambdaAuthorizerConfig!.ttlSeconds),
         },

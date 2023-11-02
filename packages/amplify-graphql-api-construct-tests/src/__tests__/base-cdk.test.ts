@@ -27,7 +27,7 @@ describe('CDK GraphQL Transformer', () => {
   ['2.80.0', 'latest'].forEach((cdkVersion) => {
     test(`CDK base case - aws-cdk-lib@${cdkVersion}`, async () => {
       const templatePath = path.resolve(path.join(__dirname, 'backends', 'base-cdk'));
-      const name = await initCDKProject(projRoot, templatePath, cdkVersion);
+      const name = await initCDKProject(projRoot, templatePath, { cdkVersion });
       const outputs = await cdkDeploy(projRoot, '--all');
       const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
 
