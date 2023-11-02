@@ -41,7 +41,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     try {
       await this.establishDBConnection();
       const schema = await this.querySchema();
-      this.adapter = new MySQLStringDataSourceAdapter(schema as unknown as string);
+      this.adapter = new MySQLStringDataSourceAdapter(schema);
     } catch (error) {
       spinner.fail('Failed to fetch the database schema.');
       throw error;
