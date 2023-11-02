@@ -38,8 +38,8 @@ class TestDataSourceAdapter extends DataSourceAdapter {
     return true;
   }
 
-  protected async querySchema(): Promise<any[]> {
-    return [];
+  protected async querySchema(): Promise<string> {
+    return '';
   }
 }
 
