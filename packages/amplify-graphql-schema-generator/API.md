@@ -37,7 +37,7 @@ export const applySchemaOverrides: (document: DocumentNode, existingDocument?: D
 export const checkDestructiveNullabilityChange: (field: FieldDefinitionNode, existingField: FieldDefinitionNode) => void;
 
 // @public (undocumented)
-export const constructDefaultGlobalAmplifyInput: (transformerVersion: number, dataSourceType: ImportedRDSType, includeAuthRule?: boolean) => string;
+export const constructDefaultGlobalAmplifyInput: (transformerVersion: number, dataSourceType: ImportedRDSType, includeAuthRule?: boolean, authDocLink?: string) => string;
 
 // @public (undocumented)
 export const constructRDSGlobalAmplifyInput: (transformerVersion: number, config: any, schemaDocument: DocumentNode | undefined) => string;
@@ -77,7 +77,9 @@ export abstract class DataSourceAdapter {
     // (undocumented)
     abstract initialize(): Promise<void>;
     // (undocumented)
-    protected abstract querySchema(): Promise<any[]>;
+    protected abstract querySchema(): Promise<string>;
+    // (undocumented)
+    protected queryToCSV(queryResult: any[]): string;
     // (undocumented)
     abstract test(): Promise<boolean>;
     // (undocumented)
@@ -227,7 +229,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     // (undocumented)
     initialize(): Promise<void>;
     // (undocumented)
-    protected querySchema(): Promise<any[]>;
+    protected querySchema(): Promise<string>;
     // (undocumented)
     test(): Promise<boolean>;
 }
@@ -294,7 +296,7 @@ export class PostgresDataSourceAdapter extends DataSourceAdapter {
     // (undocumented)
     mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columntype: string): FieldType;
     // (undocumented)
-    protected querySchema(): Promise<any[]>;
+    protected querySchema(): Promise<string>;
     // (undocumented)
     test(): Promise<boolean>;
 }
