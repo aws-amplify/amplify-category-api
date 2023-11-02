@@ -56,8 +56,19 @@ export interface OpenIDConnectConfig {
 }
 
 export interface LambdaConfig {
+  /**
+   * Function name, excluding optional `-{env}` suffix.
+   */
   lambdaFunction: string;
+
+  /**
+   * Actually lambda Arn, if provided this will circumvent the arn construction when building the API auth mode config.
+   */
   lambdaArn?: string;
+
+  /**
+   * Optional auth response time to live.
+   */
   ttlSeconds?: number;
 }
 
