@@ -61,12 +61,10 @@ export abstract class DataSourceAdapter {
   }
 
   protected queryToCSV(queryResult: any[]): string {
-    console.log(queryResult);
     if (queryResult.length === 0) {
       return '';
     }
     const headers = Object.keys(queryResult[0]);
-    console.log(headers);
     const headerIndices = Object.fromEntries(headers.map((key, index) => [index, key]));
     const rows = queryResult.slice(1).map((row) =>
       [...Array(headers.length).keys()]
@@ -80,9 +78,6 @@ export abstract class DataSourceAdapter {
         })
         .join(','),
     );
-    console.log(rows[0]);
-    const res = headers.join(',') + os.EOL + rows.join(os.EOL);
-    console.log(res);
-    return res;
+    return headers.join(',') + os.EOL + rows.join(os.EOL);
   }
 }
