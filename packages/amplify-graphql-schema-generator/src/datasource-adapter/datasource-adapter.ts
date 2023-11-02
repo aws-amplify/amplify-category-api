@@ -1,3 +1,4 @@
+import * as os from 'os';
 import { singular } from 'pluralize';
 import { toPascalCase } from 'graphql-transformer-common';
 import { Field, Index, Model } from '../schema-representation';
@@ -18,7 +19,7 @@ export abstract class DataSourceAdapter {
   public abstract test(): Promise<boolean>;
 
   // todo correct function signature
-  protected abstract querySchema(): Promise<any[]>;
+  protected abstract querySchema(): Promise<string>;
 
   public useVPC = false;
 
@@ -57,5 +58,15 @@ export abstract class DataSourceAdapter {
 
   protected getEnumName(name: string): string {
     return singular(toPascalCase(name.split('_')));
+  }
+
+  protected queryToCSV(queryResult: any[]): string {
+    if (queryResult.length === 0) {
+      return '';
+    }
+    const headers = Object.keys(queryResult[0]);
+    const headerIndices = Object.fromEntries(headers.map((key, index) => [index, key]));
+    const rows = queryResult.slice(1).map((row) => [...Array(headers.length).keys()].map((index) => row[headerIndices[index]]).join(','));
+    return headers.join(',') + os.EOL + rows.join(os.EOL);
   }
 }

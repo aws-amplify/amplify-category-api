@@ -129,8 +129,8 @@ export class PostgresDataSourceAdapter extends DataSourceAdapter {
   }
 
   // no-op
-  protected querySchema(): Promise<any[]> {
-    return Promise.resolve([]);
+  protected querySchema(): Promise<string> {
+    return Promise.resolve('');
   }
 
   private async loadAllEnums(): Promise<void> {

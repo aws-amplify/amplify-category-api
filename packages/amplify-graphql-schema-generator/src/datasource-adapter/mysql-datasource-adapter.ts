@@ -41,8 +41,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     try {
       await this.establishDBConnection();
       const schema = await this.querySchema();
-      // todo convert to csv
-      new MySQLStringDataSourceAdapter(schema as unknown as string);
+      this.adapter = new MySQLStringDataSourceAdapter(schema as unknown as string);
     } catch (error) {
       spinner.fail('Failed to fetch the database schema.');
       throw error;
@@ -96,7 +95,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     return this.adapter.getIndexes(tableName);
   }
 
-  protected async querySchema(): Promise<any[]> {
+  protected async querySchema(): Promise<string> {
     const SHOW_TABLES_QUERY = `
       SELECT INFORMATION_SCHEMA.COLUMNS.*, INFORMATION_SCHEMA.STATISTICS.INDEX_NAME, INFORMATION_SCHEMA.STATISTICS.NON_UNIQUE, INFORMATION_SCHEMA.STATISTICS.SEQ_IN_INDEX, INFORMATION_SCHEMA.STATISTICS.NULLABLE
       FROM INFORMATION_SCHEMA.COLUMNS
@@ -107,7 +106,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
       this.useVPC && this.vpcSchemaInspectorLambda
         ? await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, SHOW_TABLES_QUERY, this.vpcLambdaRegion)
         : (await this.dbBuilder.raw(SHOW_TABLES_QUERY))[0];
-    return result;
+    return this.queryToCSV(result);
   }
 
   public cleanup(): void {
