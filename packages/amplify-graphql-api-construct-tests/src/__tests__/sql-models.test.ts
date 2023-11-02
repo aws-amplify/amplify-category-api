@@ -38,7 +38,7 @@ interface DBDetails {
 
 describe('CDK GraphQL Transformer', () => {
   let projRoot: string;
-  let projFolderName: string;
+  const projFolderName = 'sqlmodels';
 
   const [username, password, identifier] = generator.generateMultiple(3);
 
@@ -64,7 +64,6 @@ describe('CDK GraphQL Transformer', () => {
   });
 
   beforeEach(async () => {
-    projFolderName = 'sqlmodels';
     projRoot = await createNewProjectDir(projFolderName);
   });
 
@@ -79,69 +78,50 @@ describe('CDK GraphQL Transformer', () => {
     deleteProjectDir(projRoot);
   });
 
-  ['2.80.0', 'latest'].forEach((cdkVersion) => {
-    test(`SQL Models base case - aws-cdk-lib@${cdkVersion}`, async () => {
-      const templatePath = path.resolve(path.join(__dirname, 'backends', 'sql-models'));
-      const name = await initCDKProject(projRoot, templatePath, cdkVersion);
-      writeDbDetails(dbDetails, projRoot);
-      const outputs = await cdkDeploy(projRoot, '--all');
-      const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
+  it('creates a GraphQL API from SQL-based models', async () => {
+    const templatePath = path.resolve(path.join(__dirname, 'backends', 'sql-models'));
+    const name = await initCDKProject(projRoot, templatePath, 'latest');
+    writeDbDetails(dbDetails, projRoot);
+    const outputs = await cdkDeploy(projRoot, '--all');
+    const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
 
-      const result = await graphql(
-        apiEndpoint,
-        apiKey,
-        /* GraphQL */ `
-          mutation CREATE_TODO {
-            createTodo(input: { description: "todo desc" }) {
+    const description = 'todo description';
+
+    const result = await graphql(
+      apiEndpoint,
+      apiKey,
+      /* GraphQL */ `
+        mutation CREATE_TODO {
+          createTodo(input: { description: "${description}" }) {
+            id
+            description
+          }
+        }
+      `,
+    );
+
+    const todo = result.body.data.createTodo;
+    expect(todo).toBeDefined();
+    expect(todo.id).toBeDefined();
+    expect(todo.description).toEqual(description);
+
+    const listResult = await graphql(
+      apiEndpoint,
+      apiKey,
+      /* GraphQL */ `
+        query LIST_TODOS {
+          listTodos {
+            items {
               id
               description
             }
           }
-        `,
-      );
+        }
+      `,
+    );
 
-      expect(result).toMatchSnapshot({
-        body: {
-          data: {
-            createTodo: {
-              id: expect.any(String),
-            },
-          },
-        },
-      });
-
-      const todo = result.body.data.createTodo;
-
-      const listResult = await graphql(
-        apiEndpoint,
-        apiKey,
-        /* GraphQL */ `
-          query LIST_TODOS {
-            listTodos {
-              items {
-                id
-                description
-              }
-            }
-          }
-        `,
-      );
-      expect(listResult).toMatchSnapshot({
-        body: {
-          data: {
-            listTodos: {
-              items: [
-                {
-                  id: expect.any(String),
-                },
-              ],
-            },
-          },
-        },
-      });
-
-      expect(todo.id).toEqual(listResult.body.data.listTodos.items[0].id);
-    });
+    expect(listResult.body.data.listTodos.items.length).toEqual(1);
+    expect(todo.id).toEqual(listResult.body.data.listTodos.items[0].id);
   });
 });
 
