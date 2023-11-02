@@ -1037,6 +1037,50 @@ describe('RDS primary key transformer tests', () => {
 
     validateModelSchema(parse(definition));
   });
+
+  it('having id as implicit primary key is identical to it being explicit', () => {
+    const implicitSchema = `
+      type Song @model {
+        id: ID!
+        name: String!
+        genre: String!
+      }
+    `;
+    const explicitSchema = `
+      type Song @model {
+        id: ID! @primaryKey
+        name: String!
+        genre: String!
+      }
+    `;
+
+    const implicitOutput = testTransform({
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      resolverConfig: {
+        project: {
+          ConflictDetection: 'VERSION',
+          ConflictHandler: ConflictHandlerType.AUTOMERGE,
+        },
+      },
+      schema: implicitSchema,
+    });
+    const explicitOutput = testTransform({
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      resolverConfig: {
+        project: {
+          ConflictDetection: 'VERSION',
+          ConflictHandler: ConflictHandlerType.AUTOMERGE,
+        },
+      },
+      schema: implicitSchema,
+    });
+
+    expect(implicitOutput).toBeDefined();
+    expect(explicitOutput).toBeDefined();
+    validateModelSchema(parse(implicitOutput.schema));
+    expect(implicitOutput.schema).toEqual(explicitOutput.schema);
+    expect(implicitOutput.resolvers).toEqual(explicitOutput.resolvers);
+  });
 });
 
 const getDDBTableResources = (stack: any): string[] => {

@@ -49,6 +49,7 @@ const modelDirectiveName = 'model';
 
 export class PrimaryKeyTransformer extends TransformerPluginBase {
   private directiveList: PrimaryKeyDirectiveConfiguration[] = [];
+  private implicitPrimaryKeyDirectiveConfigs: PrimaryKeyDirectiveConfiguration[] = [];
 
   private resolverMap: Map<TransformerResolverProvider, string> = new Map();
 
@@ -97,20 +98,21 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
 
   transformSchema = (ctx: TransformerTransformSchemaStepContextProvider): void => {
     const context = ctx as TransformerContextProvider;
-
-    for (const config of this.directiveList) {
+    this.implicitPrimaryKeyDirectiveConfigs = getImplicitPrimaryKeyDirectiveConfigs(ctx);
+    for (const config of [...this.directiveList, ...this.implicitPrimaryKeyDirectiveConfigs]) {
       updateGetField(config, context);
       updateListField(config, context);
       updateInputObjects(config, context);
-      removeAutoCreatedPrimaryKey(config, context);
+      if (!this.implicitPrimaryKeyDirectiveConfigs?.includes(config)) {
+        removeAutoCreatedPrimaryKey(config, context);
+      }
       addKeyConditionInputs(config, context);
       updateMutationConditionInput(config, context);
     }
   };
 
   generateResolvers = (ctx: TransformerContextProvider): void => {
-    const implicitPrimaryKeyDirectiveConfigs = getImplicitPrimaryKeyDirectiveConfigs(ctx);
-    for (const config of [...this.directiveList, ...implicitPrimaryKeyDirectiveConfigs]) {
+    for (const config of [...this.directiveList, ...this.implicitPrimaryKeyDirectiveConfigs]) {
       const dbInfo = ctx.modelToDatasourceMap.get(config.object.name.value);
       const vtlGenerator = getVTLGenerator(dbInfo);
       vtlGenerator.generatePrimaryKeyVTL(config, ctx, this.resolverMap);
@@ -226,7 +228,7 @@ export function updateListField(config: PrimaryKeyDirectiveConfiguration, ctx: T
   }
 }
 
-function getImplicitPrimaryKeyDirectiveConfigs(ctx: TransformerContextProvider): PrimaryKeyDirectiveConfiguration[] {
+function getImplicitPrimaryKeyDirectiveConfigs(ctx: TransformerTransformSchemaStepContextProvider): PrimaryKeyDirectiveConfiguration[] {
   const implicitPrimaryKeyDirectiveConfigs: PrimaryKeyDirectiveConfiguration[] = [];
 
   for (const object of ctx.output.getTypeDefinitionsOfKind(Kind.OBJECT_TYPE_DEFINITION) as ObjectTypeDefinitionNode[]) {
