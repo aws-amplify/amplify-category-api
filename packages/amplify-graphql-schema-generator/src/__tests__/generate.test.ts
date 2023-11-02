@@ -8,7 +8,7 @@ describe('generate', () => {
       .map(([engineType, schemasForEngine]) => Object.entries(schemasForEngine).map((schema) => [engineType, ...schema]))
       .reduce((accumulator, value) => accumulator.concat(value), []);
     test.each(cases)('creates graphql schema from %p %p schema', (engineType, _, schema) => {
-      expect(graphqlSchemaFromRDSSchema(schema, engineType as ImportedRDSType, 2)).toMatchSnapshot();
+      expect(graphqlSchemaFromRDSSchema(schema, engineType as ImportedRDSType)).toMatchSnapshot();
     });
   });
 });
