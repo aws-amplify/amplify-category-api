@@ -62,7 +62,8 @@ export interface LambdaConfig {
   lambdaFunction: string;
 
   /**
-   * Actually lambda Arn, if provided this will circumvent the arn construction when building the API auth mode config.
+   * The ARN of an existing Lambda function. If provided, this will circumvent the ARN construction when building the API auth mode config. The ARN must refer to the same function
+   * named in `lambdaFunction`.
    */
   lambdaArn?: string;
 
