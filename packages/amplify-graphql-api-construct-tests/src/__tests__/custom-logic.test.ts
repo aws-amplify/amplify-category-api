@@ -1,5 +1,6 @@
 import * as path from 'path';
-import { createNewProjectDir, deleteProjectDir, initCDKProject, cdkDeploy, cdkDestroy } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
+import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { graphql } from '../graphql-request';
 
 jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
@@ -16,7 +17,7 @@ describe('CDK GraphQL Transformer - Custom Logic', () => {
   beforeAll(async () => {
     projRoot = await createNewProjectDir('cdkcustomlogic');
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'custom-logic'));
-    const name = await initCDKProject(projRoot, templatePath);
+    const name = await initCDKProject(projRoot, templatePath, { additionalDependencies: ['esbuild'] });
     const outputs = await cdkDeploy(projRoot, '--all');
     apiEndpoint = outputs[name].awsAppsyncApiEndpoint;
     apiKey = outputs[name].awsAppsyncApiKey;

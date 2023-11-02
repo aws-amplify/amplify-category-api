@@ -1,5 +1,6 @@
 import * as path from 'path';
-import { createNewProjectDir, deleteProjectDir, initCDKProject, cdkDeploy, cdkDestroy } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
+import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { graphql } from '../graphql-request';
 
 jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
@@ -26,7 +27,7 @@ describe('CDK GraphQL Transformer', () => {
   ['2.80.0', 'latest'].forEach((cdkVersion) => {
     test(`CDK base case - aws-cdk-lib@${cdkVersion}`, async () => {
       const templatePath = path.resolve(path.join(__dirname, 'backends', 'base-cdk'));
-      const name = await initCDKProject(projRoot, templatePath, cdkVersion);
+      const name = await initCDKProject(projRoot, templatePath, { cdkVersion });
       const outputs = await cdkDeploy(projRoot, '--all');
       const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
 
