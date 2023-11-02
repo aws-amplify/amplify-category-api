@@ -61,19 +61,17 @@ export abstract class DataSourceAdapter {
     // (undocumented)
     abstract cleanup(): void;
     // (undocumented)
-    describeTable(tableName: string): Promise<Model>;
+    describeTable(tableName: string): Model;
     // (undocumented)
-    protected getEnumName(name: string): string;
+    abstract getFields(tableName: string): Field[];
     // (undocumented)
-    abstract getFields(tableName: string): Promise<Field[]>;
+    abstract getIndexes(tableName: string): Index[];
     // (undocumented)
-    abstract getIndexes(tableName: string): Promise<Index[]>;
+    getModels(): Model[];
     // (undocumented)
-    getModels(): Promise<Model[]>;
+    abstract getPrimaryKey(tableName: string): Index | null;
     // (undocumented)
-    abstract getPrimaryKey(tableName: string): Promise<Index | null>;
-    // (undocumented)
-    abstract getTablesList(): Promise<string[]>;
+    abstract getTablesList(): string[];
     // (undocumented)
     abstract initialize(): Promise<void>;
     // (undocumented)
@@ -219,13 +217,13 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     // (undocumented)
     cleanup(): void;
     // (undocumented)
-    getFields(tableName: string): Promise<Field[]>;
+    getFields(tableName: string): Field[];
     // (undocumented)
-    getIndexes(tableName: string): Promise<Index[]>;
+    getIndexes(tableName: string): Index[];
     // (undocumented)
-    getPrimaryKey(tableName: string): Promise<Index | null>;
+    getPrimaryKey(tableName: string): Index | null;
     // (undocumented)
-    getTablesList(): Promise<string[]>;
+    getTablesList(): string[];
     // (undocumented)
     initialize(): Promise<void>;
     // (undocumented)
@@ -286,17 +284,15 @@ export class PostgresDataSourceAdapter extends DataSourceAdapter {
     // (undocumented)
     cleanup(): void;
     // (undocumented)
-    getFields(tableName: string): Promise<Field[]>;
+    getFields(tableName: string): Field[];
     // (undocumented)
-    getIndexes(tableName: string): Promise<Index[]>;
+    getIndexes(tableName: string): Index[];
     // (undocumented)
-    getPrimaryKey(tableName: string): Promise<Index | null>;
+    getPrimaryKey(tableName: string): Index | null;
     // (undocumented)
-    getTablesList(): Promise<string[]>;
+    getTablesList(): string[];
     // (undocumented)
     initialize(): Promise<void>;
-    // (undocumented)
-    mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columntype: string): FieldType;
     // (undocumented)
     protected querySchema(): Promise<string>;
     // (undocumented)
@@ -315,6 +311,28 @@ export interface PostgresDataSourceConfig {
     port: number;
     // (undocumented)
     username: string;
+}
+
+// @public (undocumented)
+export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
+    // (undocumented)
+    getFields(tableName: string): Field[];
+    // (undocumented)
+    getIndexes(tableName: string): Index[];
+    // (undocumented)
+    getPrimaryKey(tableName: string): Index | null;
+    // (undocumented)
+    getTablesList(): string[];
+    // (undocumented)
+    protected mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columntype: string): FieldType;
+    // (undocumented)
+    protected parseSchema(schema: string): void;
+    // (undocumented)
+    protected setFields(fields: any): void;
+    // (undocumented)
+    protected setIndexes(indexes: any): void;
+    // (undocumented)
+    protected setTables(parsedSchema: any[]): void;
 }
 
 // @public (undocumented)
@@ -350,6 +368,8 @@ export abstract class StringDataSourceAdapter {
     constructor(schema: string);
     // (undocumented)
     describeTable(tableName: string): Model;
+    // (undocumented)
+    protected getEnumName(name: string): string;
     // (undocumented)
     abstract getFields(tableName: string): Field[];
     // (undocumented)

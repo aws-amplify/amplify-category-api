@@ -79,19 +79,19 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     }
   }
 
-  public async getTablesList(): Promise<string[]> {
+  public getTablesList(): string[] {
     return this.adapter.getTablesList();
   }
 
-  public async getFields(tableName: string): Promise<Field[]> {
+  public getFields(tableName: string): Field[] {
     return this.adapter.getFields(tableName);
   }
 
-  public async getPrimaryKey(tableName: string): Promise<Index | null> {
+  public getPrimaryKey(tableName: string): Index | null {
     return this.adapter.getPrimaryKey(tableName);
   }
 
-  public async getIndexes(tableName: string): Promise<Index[]> {
+  public getIndexes(tableName: string): Index[] {
     return this.adapter.getIndexes(tableName);
   }
 

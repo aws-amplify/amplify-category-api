@@ -115,7 +115,7 @@ const buildSchemaFromConnection = async (envName: string, databaseConfig: Import
     }
   }
 
-  const models = await adapter.getModels();
+  const models = adapter.getModels();
   adapter.cleanup();
   models.forEach((m) => schema.addModel(m));
 

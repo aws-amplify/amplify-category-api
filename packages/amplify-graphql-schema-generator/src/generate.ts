@@ -4,7 +4,7 @@ import { DocumentNode } from 'graphql';
 import { Schema, Engine } from './schema-representation';
 import { generateGraphQLSchema } from './schema-generator';
 import { constructRDSGlobalAmplifyInput } from './input';
-import { MySQLStringDataSourceAdapter } from './datasource-adapter';
+import { MySQLStringDataSourceAdapter, PostgresStringDataSourceAdapter } from './datasource-adapter';
 
 const buildSchemaFromString = (stringSchema: string, engineType: ImportedRDSType): Schema => {
   let schema;
@@ -16,7 +16,7 @@ const buildSchemaFromString = (stringSchema: string, engineType: ImportedRDSType
       break;
     case ImportedRDSType.POSTGRESQL:
       // todo change to postgres
-      adapter = new MySQLStringDataSourceAdapter(stringSchema);
+      adapter = new PostgresStringDataSourceAdapter(stringSchema);
       schema = new Schema(new Engine('Postgres'));
       break;
     default:
