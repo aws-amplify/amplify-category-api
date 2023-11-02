@@ -61,12 +61,28 @@ export abstract class DataSourceAdapter {
   }
 
   protected queryToCSV(queryResult: any[]): string {
+    console.log(queryResult);
     if (queryResult.length === 0) {
       return '';
     }
     const headers = Object.keys(queryResult[0]);
+    console.log(headers);
     const headerIndices = Object.fromEntries(headers.map((key, index) => [index, key]));
-    const rows = queryResult.slice(1).map((row) => [...Array(headers.length).keys()].map((index) => row[headerIndices[index]]).join(','));
-    return headers.join(',') + os.EOL + rows.join(os.EOL);
+    const rows = queryResult.slice(1).map((row) =>
+      [...Array(headers.length).keys()]
+        .map((index) => {
+          const value = row[headerIndices[index]];
+          // sanitize if comma is present in value
+          if (typeof value === 'string' && value.includes(',')) {
+            return `"${value}"`;
+          }
+          return value;
+        })
+        .join(','),
+    );
+    console.log(rows[0]);
+    const res = headers.join(',') + os.EOL + rows.join(os.EOL);
+    console.log(res);
+    return res;
   }
 }
