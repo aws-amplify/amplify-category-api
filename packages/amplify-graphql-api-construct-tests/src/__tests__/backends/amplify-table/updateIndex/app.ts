@@ -21,10 +21,6 @@ const api = new AmplifyGraphqlApi(stack, 'GraphqlApi', {
         description: String!
         name: String! @index(name: "byName2")
       }
-      type Author @model @auth(rules: [{ allow: public }]) {
-        id: ID!
-        name: String
-      }
     `,
     {
       name: 'customDDB',

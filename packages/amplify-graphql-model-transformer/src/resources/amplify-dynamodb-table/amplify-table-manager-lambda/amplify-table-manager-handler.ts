@@ -41,7 +41,7 @@ const log = (msg: string, ...other: any[]) => {
  * @returns Response object which is sent back to CFN
  */
 export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): Promise<AWSCDKAsyncCustomResource.OnEventResponse> => {
-  console.log({ ...event, ResponseURL: '...' });
+  console.log({ ...event, ResponseURL: '[redacted]' });
   const tableDef = extractTableInputFromEvent(event);
   console.log('Input table state: ', tableDef);
 
@@ -718,7 +718,7 @@ const usePascalCaseForObjectKeys = (obj: { [key: string]: any }): { [key: string
  * Util function to convert string values to the correct form
  * Such as 'true' to true, '5' to 5
  * @param obj Input object
- * @returns Oject with its values converted to the correct form of boolean or number
+ * @returns Object with its values converted to the correct form of boolean or number
  */
 const convertStringToBooleanOrNumber = (obj: Record<string, any>): Record<string, any> => {
   const fieldsToBeConvertedToBoolean = ['deletionProtectionEnabled', 'enabled', 'sseEnabled', 'pointInTimeRecoveryEnabled'];
