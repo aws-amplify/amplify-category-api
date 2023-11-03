@@ -112,10 +112,10 @@ export const enum ConflictHandlerType {
 }
 
 // @public (undocumented)
-export const constructDataSourceMap: (schema: string, datasourceType: DatasourceType) => Map<string, DatasourceType>;
+export const constructDataSourceMap: (schema: string, datasourceType: DataSourceType) => Map<string, DataSourceType>;
 
 // @public (undocumented)
-export interface DatasourceType {
+export interface DataSourceType {
     // (undocumented)
     dbType: DBType;
     // (undocumented)
@@ -299,7 +299,7 @@ export type ProjectRule = (diffs: Diff[], currentBuild: DiffableProject, nextBui
 // @public (undocumented)
 const readSchema: (projectDirectory: string) => Promise<{
     schema: string;
-    modelToDatasourceMap: Map<string, DatasourceType>;
+    modelToDatasourceMap: Map<string, DataSourceType>;
 }>;
 export { readSchema as readProjectSchema }
 export { readSchema }

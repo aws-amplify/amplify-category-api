@@ -3,7 +3,7 @@ import {
   DDB_DB_TYPE,
   DirectiveWrapper,
   generateGetArgumentsInput,
-  getDatasourceType,
+  getDataSourceType,
   InvalidDirectiveError,
   TransformerPluginBase,
   isRDSModel,
@@ -154,7 +154,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      const dbType = getDatasourceType(config.field.type, context);
+      const dbType = getDataSourceType(config.field.type, context);
       if (dbType === DDB_DB_TYPE) {
         config.relatedTypeIndex = getRelatedTypeIndex(config, context);
       } else if (isRDSDBType(dbType)) {
@@ -168,7 +168,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      const dbType = getDatasourceType(config.field.type, context);
+      const dbType = getDataSourceType(config.field.type, context);
       const generator = getGenerator(dbType);
       generator.makeBelongsToGetItemConnectionWithKeyResolver(config, context);
     }
@@ -178,7 +178,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
 const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field, object } = config;
 
-  const dbType = getDatasourceType(field.type, ctx);
+  const dbType = getDataSourceType(field.type, ctx);
   config.relatedType = getRelatedType(config, ctx);
 
   if (dbType === DDB_DB_TYPE) {

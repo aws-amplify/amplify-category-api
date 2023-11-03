@@ -21,7 +21,7 @@ import { CfnRole } from 'aws-cdk-lib/aws-iam';
 import { CfnStack } from 'aws-cdk-lib';
 import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
-import { DatasourceType } from '@aws-amplify/graphql-transformer-core';
+import { DataSourceType } from '@aws-amplify/graphql-transformer-core';
 import { ISynthesisSession } from 'aws-cdk-lib';
 import type { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
@@ -138,7 +138,7 @@ export type TestTransformParameters = {
     authConfig?: AppSyncAuthConfiguration;
     userDefinedSlots?: Record<string, UserDefinedSlot[]>;
     stackMapping?: Record<string, string>;
-    modelToDatasourceMap?: Map<string, DatasourceType>;
+    modelToDatasourceMap?: Map<string, DataSourceType>;
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
     customQueries?: Map<string, string>;
     overrideConfig?: OverrideConfig;

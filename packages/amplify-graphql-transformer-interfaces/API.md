@@ -155,7 +155,7 @@ export interface DataSourceProvider extends BackedDataSource {
 }
 
 // @public (undocumented)
-export interface DatasourceType {
+export interface DataSourceType {
     // (undocumented)
     dbType: DBType;
     // (undocumented)
@@ -436,7 +436,7 @@ export interface TransformerContextProvider {
     // (undocumented)
     metadata: TransformerContextMetadataProvider;
     // (undocumented)
-    modelToDatasourceMap: Map<string, DatasourceType>;
+    modelToDatasourceMap: Map<string, DataSourceType>;
     // (undocumented)
     output: TransformerContextOutputProvider;
     // (undocumented)

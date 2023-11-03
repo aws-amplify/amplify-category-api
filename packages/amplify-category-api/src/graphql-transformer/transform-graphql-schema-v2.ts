@@ -1,7 +1,7 @@
 import path from 'path';
 import {
   RDSConnectionSecrets,
-  DatasourceType,
+  DataSourceType,
   UserDefinedSlot,
   isImportedRDSType,
   DBType,
@@ -206,7 +206,7 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
   checkForUnsupportedDirectives(schema, opts.projectConfig.modelToDatasourceMap);
 
   const { modelToDatasourceMap } = opts.projectConfig;
-  const datasourceMapValues: Array<DatasourceType> = modelToDatasourceMap ? Array.from(modelToDatasourceMap.values()) : [];
+  const datasourceMapValues: Array<DataSourceType> = modelToDatasourceMap ? Array.from(modelToDatasourceMap.values()) : [];
   const datasourceSecretMap = new Map<string, RDSConnectionSecrets>();
   let sqlLambdaVpcConfig: VpcConfig | undefined;
   if (datasourceMapValues.some((value) => isImportedRDSType(value))) {

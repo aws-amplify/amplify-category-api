@@ -170,7 +170,7 @@ interface ProjectConfiguration {
     [k: string]: Template;
   };
   config: TransformConfig;
-  modelToDatasourceMap: Map<string, DatasourceType>;
+  modelToDatasourceMap: Map<string, DataSourceType>;
   customQueries: Map<string, string>;
 }
 export const loadProject = async (projectDirectory: string, opts?: ProjectOptions): Promise<ProjectConfiguration> => {
@@ -288,8 +288,8 @@ export const loadProject = async (projectDirectory: string, opts?: ProjectOption
  */
 export const readSchema = async (
   projectDirectory: string,
-): Promise<{ schema: string; modelToDatasourceMap: Map<string, DatasourceType> }> => {
-  let modelToDatasourceMap = new Map<string, DatasourceType>();
+): Promise<{ schema: string; modelToDatasourceMap: Map<string, DataSourceType> }> => {
+  let modelToDatasourceMap = new Map<string, DataSourceType>();
   const schemaFilePaths = [path.join(projectDirectory, 'schema.graphql'), path.join(projectDirectory, 'schema.rds.graphql')];
 
   const existingSchemaFiles = schemaFilePaths.filter((p) => fs.existsSync(p));
@@ -410,12 +410,12 @@ export type DBType = 'DDB' | 'MySQL' | 'Postgres';
  * Configuration for a datasource. Defines the underlying database engine, and instructs the tranformer whether to provision the database
  * storage or whether it already exists.
  */
-export interface DatasourceType {
+export interface DataSourceType {
   dbType: DBType;
   provisionDB: boolean;
 }
 
-function constructDataSourceType(dbType: DBType, provisionDB: boolean = true): DatasourceType {
+function constructDataSourceType(dbType: DBType, provisionDB: boolean = true): DataSourceType {
   return {
     dbType,
     provisionDB,
@@ -429,9 +429,9 @@ function constructDataSourceType(dbType: DBType, provisionDB: boolean = true): D
  * @param datasourceType the datasource type for each model to be associated with
  * @returns a map of model names to datasource types
  */
-export const constructDataSourceMap = (schema: string, datasourceType: DatasourceType): Map<string, DatasourceType> => {
+export const constructDataSourceMap = (schema: string, datasourceType: DataSourceType): Map<string, DataSourceType> => {
   const parsedSchema = parse(schema);
-  const result = new Map<string, DatasourceType>();
+  const result = new Map<string, DataSourceType>();
   parsedSchema.definitions
     .filter((obj) => obj.kind === Kind.OBJECT_TYPE_DEFINITION && obj.directives.some((dir) => dir.name.value === MODEL_DIRECTIVE_NAME))
     .forEach((type) => {

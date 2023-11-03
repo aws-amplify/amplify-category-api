@@ -1,7 +1,7 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import {
   ConflictHandlerType,
-  DatasourceType,
+  DataSourceType,
   validateModelSchema,
   MYSQL_DB_TYPE,
   POSTGRES_DB_TYPE,
@@ -1563,7 +1563,7 @@ describe('ModelTransformer:', () => {
         }
       `;
 
-      const modelToDatasourceMap = new Map<string, DatasourceType>();
+      const modelToDatasourceMap = new Map<string, DataSourceType>();
       modelToDatasourceMap.set('Note', {
         dbType: dbType,
         provisionDB: false,
@@ -1589,7 +1589,7 @@ describe('ModelTransformer:', () => {
         }
       `;
 
-      const modelToDatasourceMap = new Map<string, DatasourceType>();
+      const modelToDatasourceMap = new Map<string, DataSourceType>();
       modelToDatasourceMap.set('Note', {
         dbType: dbType,
         provisionDB: false,
@@ -1639,7 +1639,7 @@ describe('ModelTransformer:', () => {
         }
       `;
 
-      const modelToDatasourceMap = new Map<string, DatasourceType>();
+      const modelToDatasourceMap = new Map<string, DataSourceType>();
       modelToDatasourceMap.set('Note', {
         dbType: dbType,
         provisionDB: false,
@@ -1664,7 +1664,7 @@ describe('ModelTransformer:', () => {
           name: String
         }
       `;
-      const modelToDatasourceMap = new Map<string, DatasourceType>();
+      const modelToDatasourceMap = new Map<string, DataSourceType>();
       modelToDatasourceMap.set('Post', {
         dbType: dbType,
         provisionDB: false,
@@ -1701,7 +1701,7 @@ describe('ModelTransformer:', () => {
     }
     `;
 
-    const modelToDatasourceMap = new Map<string, DatasourceType>();
+    const modelToDatasourceMap = new Map<string, DataSourceType>();
     modelToDatasourceMap.set('Note', {
       dbType: rdsDatasources[0],
       provisionDB: false,

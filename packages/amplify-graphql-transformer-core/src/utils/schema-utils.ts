@@ -53,6 +53,6 @@ export const getSortKeyFieldNames = (type: ObjectTypeDefinitionNode): string[] =
 /**
  * Get DB type from the transformer context
  */
-export const getDatasourceType = (type: TypeNode, ctx: TransformerContextProvider): DBType => {
+export const getDataSourceType = (type: TypeNode, ctx: TransformerContextProvider): DBType => {
   return ctx.modelToDatasourceMap.get(getBaseType(type))?.dbType ?? DDB_DB_TYPE;
 };

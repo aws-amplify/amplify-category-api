@@ -111,7 +111,7 @@ export const enum ConflictHandlerType {
 }
 
 // @public (undocumented)
-export const constructDataSourceMap: (schema: string, datasourceType: DatasourceType) => Map<string, DatasourceType>;
+export const constructDataSourceMap: (schema: string, datasourceType: DataSourceType) => Map<string, DataSourceType>;
 
 // @public (undocumented)
 function createSyncLambdaIAMPolicy(context: TransformerContextProvider, scope: Construct, name: string, region?: string): iam.Policy;
@@ -122,7 +122,7 @@ function createSyncLambdaIAMPolicy(context: TransformerContextProvider, scope: C
 function createSyncTable(context: TransformerContext): void;
 
 // @public (undocumented)
-export interface DatasourceType {
+export interface DataSourceType {
     // (undocumented)
     dbType: DBType;
     // (undocumented)
@@ -190,7 +190,7 @@ export type GetArgumentsOptions = {
 };
 
 // @public (undocumented)
-export const getDatasourceType: (type: TypeNode, ctx: TransformerContextProvider) => DBType;
+export const getDataSourceType: (type: TypeNode, ctx: TransformerContextProvider) => DBType;
 
 // @public (undocumented)
 export const getEngineFromDBType: (dbType: DBType) => ImportedRDSType;
@@ -201,7 +201,7 @@ export const getEngineFromDBType: (dbType: DBType) => ImportedRDSType;
 export const getFieldNameFor: (op: Operation, typeName: string) => string;
 
 // @public (undocumented)
-export const getImportedRDSType: (modelToDatasourceMap: Map<string, DatasourceType>) => DBType;
+export const getImportedRDSType: (modelToDatasourceMap: Map<string, DataSourceType>) => DBType;
 
 // @public (undocumented)
 export const getKeySchema: (table: any, indexName?: string) => any;
@@ -354,7 +354,7 @@ export class InvalidTransformerError extends Error {
 }
 
 // @public (undocumented)
-export const isImportedRDSType: (dbInfo: DatasourceType) => boolean;
+export const isImportedRDSType: (dbInfo: DataSourceType) => boolean;
 
 // @public (undocumented)
 function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncConfigLambda;

@@ -1,5 +1,5 @@
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
-import { MappingTemplate, DatasourceType, DDB_DB_TYPE, DBType } from '@aws-amplify/graphql-transformer-core';
+import { MappingTemplate, DataSourceType, DDB_DB_TYPE, DBType } from '@aws-amplify/graphql-transformer-core';
 import { DataSourceProvider, TransformerContextProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
@@ -863,7 +863,7 @@ export function getDBType(ctx: TransformerContextProvider, modelName: string) {
   return dbType;
 }
 
-export const getVTLGenerator = (dbInfo: DatasourceType | undefined): RDSIndexVTLGenerator | DynamoDBIndexVTLGenerator => {
+export const getVTLGenerator = (dbInfo: DataSourceType | undefined): RDSIndexVTLGenerator | DynamoDBIndexVTLGenerator => {
   const dbType = dbInfo ? dbInfo.dbType : DDB_DB_TYPE;
   if (dbType === DDB_DB_TYPE) {
     return new DynamoDBIndexVTLGenerator();

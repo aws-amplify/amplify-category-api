@@ -43,7 +43,7 @@ import { TransformerOutput } from '../transformer-context/output';
 import { adoptAuthModes } from '../utils/authType';
 import { MappingTemplate } from '../cdk-compat';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
-import { DatasourceType } from '../config/project-config';
+import { DataSourceType } from '../config/project-config';
 import { defaultTransformParameters } from '../transformer-context/transform-parameters';
 import * as SyncUtils from './sync-utils';
 import { UserDefinedSlot, DatasourceTransformationConfig } from './types';
@@ -207,7 +207,7 @@ export class GraphQLTransform {
       assetProvider,
       synthParameters,
       parsedDocument,
-      datasourceConfig?.modelToDatasourceMap ?? new Map<string, DatasourceType>(),
+      datasourceConfig?.modelToDatasourceMap ?? new Map<string, DataSourceType>(),
       datasourceConfig?.customQueries ?? new Map<string, string>(),
       this.stackMappingOverrides,
       this.authConfig,
