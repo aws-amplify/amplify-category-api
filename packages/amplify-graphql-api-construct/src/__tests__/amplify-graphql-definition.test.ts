@@ -24,11 +24,11 @@ describe('AmplifyGraphqlDefinition', () => {
       const definition = AmplifyGraphqlDefinition.fromString(TEST_SCHEMA);
       expect(definition.schema).toEqual(TEST_SCHEMA);
       expect(definition.functionSlots.length).toEqual(0);
-      expect(definition.dataSourceDefinitionMap).toEqual({ Todo: DEFAULT_MODEL_DATA_SOURCE_DEFINITION });
+      expect(definition.dataSourceDefinition).toEqual({ Todo: DEFAULT_MODEL_DATA_SOURCE_DEFINITION });
     });
     it('returns amplify table strategy when explicitly defined', () => {
       const definition = AmplifyGraphqlDefinition.fromString(TEST_SCHEMA, AMPLIFY_TABLE_STRATEGY);
-      expect(definition.dataSourceDefinitionMap).toEqual({ Todo: AMPLIFY_TABLE_STRATEGY });
+      expect(definition.dataSourceDefinition).toEqual({ Todo: AMPLIFY_TABLE_STRATEGY });
     });
   });
 
@@ -49,7 +49,7 @@ describe('AmplifyGraphqlDefinition', () => {
       const definition = AmplifyGraphqlDefinition.fromFiles(schemaFilePath);
       expect(definition.schema).toEqual(TEST_SCHEMA);
       expect(definition.functionSlots.length).toEqual(0);
-      expect(definition.dataSourceDefinitionMap).toEqual({ Todo: DEFAULT_MODEL_DATA_SOURCE_DEFINITION });
+      expect(definition.dataSourceDefinition).toEqual({ Todo: DEFAULT_MODEL_DATA_SOURCE_DEFINITION });
     });
 
     it('extracts the definition from the schema files, appended in-order', () => {
@@ -89,10 +89,10 @@ describe('AmplifyGraphqlDefinition', () => {
       `;
       const definition1 = AmplifyGraphqlDefinition.fromString(TEST_SCHEMA);
       const definition2 = AmplifyGraphqlDefinition.fromString(amplifyTableSchema, AMPLIFY_TABLE_STRATEGY);
-      const combinedDefinition = AmplifyGraphqlDefinition.combine(definition1, definition2);
+      const combinedDefinition = AmplifyGraphqlDefinition.combine([definition1, definition2]);
       expect(combinedDefinition.schema).toEqual(`${TEST_SCHEMA}${os.EOL}${amplifyTableSchema}`);
       expect(combinedDefinition.functionSlots.length).toEqual(0);
-      expect(combinedDefinition.dataSourceDefinitionMap).toEqual({
+      expect(combinedDefinition.dataSourceDefinition).toEqual({
         Todo: DEFAULT_MODEL_DATA_SOURCE_DEFINITION,
         Blog: AMPLIFY_TABLE_STRATEGY,
         Post: AMPLIFY_TABLE_STRATEGY,

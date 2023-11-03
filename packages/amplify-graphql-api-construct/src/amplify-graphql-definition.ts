@@ -27,7 +27,7 @@ export class AmplifyGraphqlDefinition {
     return {
       schema,
       functionSlots: [],
-      dataSourceDefinitionMap: constructDataSourceDefinitionMap(schema, modelDataSourceDefinition),
+      dataSourceDefinition: constructDataSourceDefinitionMap(schema, modelDataSourceDefinition),
     };
   }
 
@@ -44,7 +44,7 @@ export class AmplifyGraphqlDefinition {
     return {
       schema,
       functionSlots: [],
-      dataSourceDefinitionMap: constructDataSourceDefinitionMap(schema, DEFAULT_MODEL_DATA_SOURCE_DEFINITION),
+      dataSourceDefinition: constructDataSourceDefinitionMap(schema, DEFAULT_MODEL_DATA_SOURCE_DEFINITION),
     };
   }
 
@@ -65,7 +65,7 @@ export class AmplifyGraphqlDefinition {
     return {
       schema,
       functionSlots: [],
-      dataSourceDefinitionMap: constructDataSourceDefinitionMap(schema, modelDataSourceDefinition),
+      dataSourceDefinition: constructDataSourceDefinitionMap(schema, modelDataSourceDefinition),
     };
   }
 
@@ -73,14 +73,17 @@ export class AmplifyGraphqlDefinition {
    * Combines multiple IAmplifyGraphqlDefinitions into a single definition.
    * @param definitions the definitions to combine
    */
-  static combine(...definitions: IAmplifyGraphqlDefinition[]): IAmplifyGraphqlDefinition {
+  static combine(definitions: IAmplifyGraphqlDefinition[]): IAmplifyGraphqlDefinition {
     if (definitions.length === 0) {
       throw new Error('The definitions of amplify GraphQL cannot be empty.');
+    }
+    if (definitions.length === 1) {
+      return definitions[0];
     }
     return {
       schema: definitions.map((def) => def.schema).join(os.EOL),
       functionSlots: [],
-      dataSourceDefinitionMap: definitions.reduce((acc, cur) => ({ ...acc, ...cur.dataSourceDefinitionMap }), {}),
+      dataSourceDefinition: definitions.reduce((acc, cur) => ({ ...acc, ...cur.dataSourceDefinition }), {}),
     };
   }
 }

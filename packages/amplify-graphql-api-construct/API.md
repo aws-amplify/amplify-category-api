@@ -145,7 +145,7 @@ export interface AmplifyGraphqlApiResources {
 
 // @public
 export class AmplifyGraphqlDefinition {
-    static combine(...definitions: IAmplifyGraphqlDefinition[]): IAmplifyGraphqlDefinition;
+    static combine(definitions: IAmplifyGraphqlDefinition[]): IAmplifyGraphqlDefinition;
     static fromFiles(...filePaths: string[]): IAmplifyGraphqlDefinition;
     static fromFilesAndDefinition(filePaths: string | string[], modelDataSourceDefinition?: ModelDataSourceDefinition): IAmplifyGraphqlDefinition;
     static fromString(schema: string, modelDataSourceDefinition?: ModelDataSourceDefinition): IAmplifyGraphqlDefinition;
@@ -229,7 +229,7 @@ export interface IAMAuthorizationConfig {
 
 // @public
 export interface IAmplifyGraphqlDefinition {
-    readonly dataSourceDefinitionMap: Record<string, ModelDataSourceDefinition>;
+    readonly dataSourceDefinition: Record<string, ModelDataSourceDefinition>;
     readonly functionSlots: FunctionSlot[];
     readonly schema: string;
 }

@@ -500,7 +500,7 @@ export interface IAmplifyGraphqlDefinition {
    * Retrieve the datasource definition mapping. The default strategy is to use DynamoDB from CloudFormation.
    * @returns datasource definition mapping
    */
-  readonly dataSourceDefinitionMap: Record<string, ModelDataSourceDefinition>;
+  readonly dataSourceDefinition: Record<string, ModelDataSourceDefinition>;
 }
 
 /**

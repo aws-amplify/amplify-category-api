@@ -5203,9 +5203,13 @@
               },
               "name": "definitions",
               "type": {
-                "fqn": "@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition"
-              },
-              "variadic": true
+                "collection": {
+                  "elementtype": {
+                    "fqn": "@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition"
+                  },
+                  "kind": "array"
+                }
+              }
             }
           ],
           "returns": {
@@ -5213,8 +5217,7 @@
               "fqn": "@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition"
             }
           },
-          "static": true,
-          "variadic": true
+          "static": true
         },
         {
           "docs": {
@@ -6016,7 +6019,7 @@
             "filename": "src/types.ts",
             "line": 503
           },
-          "name": "dataSourceDefinitionMap",
+          "name": "dataSourceDefinition",
           "type": {
             "collection": {
               "elementtype": {
@@ -7305,5 +7308,5 @@
     }
   },
   "version": "1.2.0",
-  "fingerprint": "u3can9WhWLCWbq1oDxUeCF2CL0hFi7VXiJPqy59k3AE="
+  "fingerprint": "a5WXo9mtKrq6+YCUcAsLXwIr1dWmqHHoLlUoPs2YyAs="
 }
