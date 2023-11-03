@@ -10,7 +10,7 @@ import {
   storeDbConnectionConfig,
 } from 'amplify-category-api-e2e-core';
 import generator from 'generate-password';
-import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
+import { initCDKProject, cdkDeploy, cdkDestroyForce } from '../commands';
 import { graphql } from '../graphql-request';
 
 jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
@@ -69,7 +69,7 @@ describe('CDK GraphQL Transformer', () => {
 
   afterEach(async () => {
     try {
-      await cdkDestroy(projRoot, '--all');
+      await cdkDestroyForce(projRoot, '--all');
     } catch (err) {
       console.log(`Error invoking 'cdk destroy': ${err}`);
     }
