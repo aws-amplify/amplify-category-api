@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.2.3...@aws-amplify/graphql-transformer-core@2.2.4) (2023-11-02)
+
+### Bug Fixes
+
+- pass in and use correct lambda arn for lambdaauthorizers ([#2007](https://github.com/aws-amplify/amplify-category-api/issues/2007)) ([4114411](https://github.com/aws-amplify/amplify-category-api/commit/4114411ba6d086d46ac0e9967139cb287e3fc22b))
+
 ## [2.2.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.2.2...@aws-amplify/graphql-transformer-core@2.2.3) (2023-10-12)
 
 ### Bug Fixes

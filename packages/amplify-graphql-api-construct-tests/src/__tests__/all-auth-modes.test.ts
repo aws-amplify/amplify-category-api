@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
-import { graphql } from '../graphql-request';
+import { graphql, graphqlRequestWithLambda } from '../graphql-request';
 
 jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
 
@@ -24,7 +24,7 @@ describe('CDK Auth Modes', () => {
 
   test('CDK deploys with all auth modes enabled', async () => {
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'all-auth-modes'));
-    const name = await initCDKProject(projRoot, templatePath);
+    const name = await initCDKProject(projRoot, templatePath, { additionalDependencies: ['esbuild'] });
     const outputs = await cdkDeploy(projRoot, '--all');
     const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
 
@@ -41,5 +41,21 @@ describe('CDK Auth Modes', () => {
       `,
     );
     expect(createResult.statusCode).toEqual(200);
+
+    const listTodosQuery = /* GraphQL */ `
+      query LIST_TODOS {
+        listTodos {
+          items {
+            id
+          }
+        }
+      }
+    `;
+
+    const listWithInvalidTokenResult = await graphqlRequestWithLambda(apiEndpoint, 'badtoken', listTodosQuery);
+    expect(listWithInvalidTokenResult.statusCode).toEqual(400);
+
+    const listWithValidTokenResult = await graphqlRequestWithLambda(apiEndpoint, 'letmein', listTodosQuery);
+    expect(listWithValidTokenResult.statusCode).toEqual(200);
   });
 });

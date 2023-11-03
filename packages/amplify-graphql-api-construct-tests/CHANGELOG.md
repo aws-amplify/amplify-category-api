@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.0.5...amplify-graphql-api-construct-tests@1.0.6) (2023-11-02)
+
+### Bug Fixes
+
+- pass in and use correct lambda arn for lambdaauthorizers ([#2007](https://github.com/aws-amplify/amplify-category-api/issues/2007)) ([4114411](https://github.com/aws-amplify/amplify-category-api/commit/4114411ba6d086d46ac0e9967139cb287e3fc22b))
+
 ## [1.0.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.0.4...amplify-graphql-api-construct-tests@1.0.5) (2023-10-27)
 
 **Note:** Version bump only for package amplify-graphql-api-construct-tests
