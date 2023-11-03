@@ -126,4 +126,14 @@ describe('testPostgresStringDataSourceAdapter', () => {
       },
     });
   });
+
+  it('sets the correct models from a todo schema', () => {
+    const adapter = new PostgresStringDataSourceAdapter(schemas.postgres.todo);
+    expect(adapter.getModels()).toMatchSnapshot();
+  });
+
+  it('sets the correct models from a news schema', () => {
+    const adapter = new PostgresStringDataSourceAdapter(schemas.postgres.news);
+    expect(adapter.getModels()).toMatchSnapshot();
+  });
 });

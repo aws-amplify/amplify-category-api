@@ -47,3 +47,51 @@ type Todo @model {
 }
 "
 `;
+
+exports[`generate graphqlSchemaFromRDSSchema creates graphql schema from "postgres" "news" schema 1`] = `
+"input AMPLIFY {
+ engine: String = \\"postgres\\"  
+}
+
+
+type Article @refersTo(name: \\"articles\\") @model {
+  pubId: Int! @refersTo(name: \\"pub_id\\") @default(value: \\"NULL\\") @primaryKey(sortKeyFields: [\\"pubType\\"])
+  pubType: String! @refersTo(name: \\"pub_type\\") @default(value: \\"'A'::bpchar\\")
+  placeholder: String @default(value: \\"NULL\\")
+}
+
+type Comment @refersTo(name: \\"comments\\") @model {
+  pubId: Int! @refersTo(name: \\"pub_id\\") @default(value: \\"NULL\\") @primaryKey(sortKeyFields: [\\"commentTimestamp\\", \\"commenterEmail\\"])
+  commentTimestamp: AWSDateTime! @refersTo(name: \\"comment_timestamp\\")
+  commenterEmail: String! @refersTo(name: \\"commenter_email\\") @default(value: \\"NULL\\")
+  commentText: String @refersTo(name: \\"comment_text\\") @default(value: \\"NULL\\")
+}
+
+type Publication @refersTo(name: \\"publications\\") @model {
+  pubId: Int! @refersTo(name: \\"pub_id\\") @default(value: \\"NULL\\") @primaryKey @index(name: \\"publications_superkey\\", sortKeyFields: [\\"pubType\\"])
+  pubType: String @refersTo(name: \\"pub_type\\") @default(value: \\"NULL\\")
+  pubUrl: String @refersTo(name: \\"pub_url\\") @default(value: \\"NULL\\") @index(name: \\"publications_pub_url_key\\")
+}
+
+type Story @refersTo(name: \\"stories\\") @model {
+  pubId: Int! @refersTo(name: \\"pub_id\\") @default(value: \\"NULL\\") @primaryKey(sortKeyFields: [\\"pubType\\"])
+  pubType: String! @refersTo(name: \\"pub_type\\") @default(value: \\"'S'::bpchar\\")
+  placeholder: String @default(value: \\"NULL\\")
+}
+"
+`;
+
+exports[`generate graphqlSchemaFromRDSSchema creates graphql schema from "postgres" "todo" schema 1`] = `
+"input AMPLIFY {
+ engine: String = \\"postgres\\"  
+}
+
+
+type Todo @refersTo(name: \\"todo\\") @model {
+  id: Int! @default(value: \\"NULL\\") @primaryKey
+  title: String @default(value: \\"NULL\\")
+  startDate: AWSDate @refersTo(name: \\"start_date\\") @default(value: \\"NULL\\")
+  dueDate: AWSDate @refersTo(name: \\"due_date\\") @default(value: \\"NULL\\")
+}
+"
+`;
