@@ -11,22 +11,12 @@ import {
   initJSProjectWithProfile,
   setupRDSInstanceAndData,
   sleep,
-  enableUserPoolUnauthenticatedAccess,
 } from 'amplify-category-api-e2e-core';
 import { existsSync, writeFileSync } from 'fs-extra';
 import generator from 'generate-password';
 import path from 'path';
 import { GQLQueryHelper } from '../query-utils/gql-helper';
-import {
-  configureAmplify,
-  getConfiguredAppsyncClientIAMAuth,
-  setupUser,
-  signInUser,
-  getConfiguredAppsyncClientAPIKeyAuth,
-  getConfiguredAppsyncClientLambdaAuth,
-} from '../schema-api-directives';
-import { Auth } from 'aws-amplify';
-import { getUserPoolId } from '../schema-api-directives/authHelper';
+import { getConfiguredAppsyncClientAPIKeyAuth, getConfiguredAppsyncClientLambdaAuth } from '../schema-api-directives';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -38,23 +28,21 @@ describe('RDS Relational Directives', () => {
   const username = db_user;
   const password = db_password;
   let region = 'us-east-1';
-  let port = 3306;
+  let port = 5432;
   const database = 'default_db';
   let host = 'localhost';
   const identifier = `integtest${db_identifier}`;
   const projName = 'rdsmodelauthtest';
 
   let projRoot;
-  let blogIAMUnauthClient, postIAMUnauthClient, userIAMUnauthClient, profileIAMUnauthClient;
-  let blogIAMAuthClient, postIAMAuthClient, userIAMAuthClient, profileIAMAuthClient;
-  let userApiKeyClient;
-  let userLambdaClient;
+  let blogApiKeyClient, postApiKeyClient, userApiKeyClient, profileApiKeyClient;
+  let blogLambdaClient, postLambdaClient, userLambdaClient, profileLambdaClient;
 
   beforeAll(async () => {
     projRoot = await createNewProjectDir('rdsmodelapi');
     await initProjectAndImportSchema();
-
-    await sleep(1 * 60 * 1000); // Wait for a minute for the VPC endpoints to be live.
+    await amplifyPush(projRoot);
+    await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.
 
     const meta = getProjectMeta(projRoot);
     const appRegion = meta.providers.awscloudformation.Region;
@@ -72,33 +60,20 @@ describe('RDS Relational Directives', () => {
     const apiEndPoint = GraphQLAPIEndpointOutput as string;
     const apiKey = GraphQLAPIKeyOutput as string;
 
-    await createAppSyncClients(apiEndPoint, appRegion, apiKey);
+    createAppSyncClients(apiEndPoint, appRegion, apiKey);
   });
 
-  const createAppSyncClients = async (apiEndPoint, appRegion, apiKey): Promise<void> => {
-    configureAmplify(projRoot);
-    const unAuthCredentials = await Auth.currentCredentials();
-    const [cognito_username, cognito_password] = ['test@test.com', 'Password123!'];
-    const userPoolId = getUserPoolId(projRoot);
-    await setupUser(userPoolId, cognito_username, cognito_password);
-    await signInUser(cognito_username, cognito_password);
-    const authCredentials = await Auth.currentCredentials();
-
-    const unauthAppSyncClient = getConfiguredAppsyncClientIAMAuth(apiEndPoint, appRegion, unAuthCredentials);
-    const authAppSyncClient = getConfiguredAppsyncClientIAMAuth(apiEndPoint, appRegion, authCredentials);
+  const createAppSyncClients = (apiEndPoint, appRegion, apiKey): void => {
     const apiKeyClient = getConfiguredAppsyncClientAPIKeyAuth(apiEndPoint, appRegion, apiKey);
     const lambdaClient = getConfiguredAppsyncClientLambdaAuth(apiEndPoint, appRegion, 'custom-authorized');
-
-    blogIAMUnauthClient = constructBlogHelper(unauthAppSyncClient);
-    postIAMUnauthClient = constructPostHelper(unauthAppSyncClient);
-    userIAMUnauthClient = constructUserHelper(unauthAppSyncClient);
-    profileIAMUnauthClient = constructProfileHelper(unauthAppSyncClient);
-    blogIAMAuthClient = constructBlogHelper(authAppSyncClient);
-    postIAMAuthClient = constructPostHelper(authAppSyncClient);
-    userIAMAuthClient = constructUserHelper(authAppSyncClient);
-    profileIAMAuthClient = constructProfileHelper(authAppSyncClient);
+    blogApiKeyClient = constructBlogHelper(apiKeyClient);
+    postApiKeyClient = constructPostHelper(apiKeyClient);
     userApiKeyClient = constructUserHelper(apiKeyClient);
+    profileApiKeyClient = constructProfileHelper(apiKeyClient);
+    blogLambdaClient = constructBlogHelper(lambdaClient);
+    postLambdaClient = constructPostHelper(lambdaClient);
     userLambdaClient = constructUserHelper(lambdaClient);
+    profileLambdaClient = constructProfileHelper(lambdaClient);
   };
 
   afterAll(async () => {
@@ -113,7 +88,7 @@ describe('RDS Relational Directives', () => {
   const setupDatabase = async (): Promise<void> => {
     const dbConfig = {
       identifier,
-      engine: 'mysql' as const,
+      engine: 'postgres' as const,
       dbname: database,
       username,
       password,
@@ -121,10 +96,10 @@ describe('RDS Relational Directives', () => {
     };
 
     const queries = [
-      'CREATE TABLE Blog (id VARCHAR(40) PRIMARY KEY, content VARCHAR(255))',
-      'CREATE TABLE Post (id VARCHAR(40) PRIMARY KEY, content VARCHAR(255), blogId VARCHAR(40))',
-      'CREATE TABLE User (id VARCHAR(40) PRIMARY KEY, name VARCHAR(255))',
-      'CREATE TABLE Profile (id VARCHAR(40) PRIMARY KEY, details VARCHAR(255), userId VARCHAR(40))',
+      'CREATE TABLE "Blog" (id VARCHAR(40) PRIMARY KEY, content VARCHAR(255))',
+      'CREATE TABLE "Post" (id VARCHAR(40) PRIMARY KEY, content VARCHAR(255), "blogId" VARCHAR(40))',
+      'CREATE TABLE "User" (id VARCHAR(40) PRIMARY KEY, name VARCHAR(255))',
+      'CREATE TABLE "Profile" (id VARCHAR(40) PRIMARY KEY, details VARCHAR(255), "userId" VARCHAR(40))',
     ];
 
     const db = await setupRDSInstanceAndData(dbConfig, queries);
@@ -153,6 +128,7 @@ describe('RDS Relational Directives', () => {
 
     await importRDSDatabase(projRoot, {
       database,
+      engine: 'postgres',
       host,
       port,
       username,
@@ -160,30 +136,29 @@ describe('RDS Relational Directives', () => {
       useVpc: true,
       apiExists: true,
     });
-    await amplifyPush(projRoot);
 
     const schema = /* GraphQL */ `
       input AMPLIFY {
-        engine: String = "mysql"
+        engine: String = "postgres"
         globalAuthRule: AuthRule = { allow: public }
       }
-      type Blog @model @auth(rules: [{ allow: private, provider: iam }]) {
+      type Blog @model @auth(rules: [{ allow: public }, { allow: custom }]) {
         id: String! @primaryKey
         content: String
         posts: [Post] @hasMany(references: ["blogId"])
       }
-      type Post @model @auth(rules: [{ allow: private, provider: iam }]) {
+      type Post @model @auth(rules: [{ allow: public }]) {
         id: String! @primaryKey
         content: String
         blogId: String!
         blog: Blog @belongsTo(references: ["blogId"])
       }
-      type User @model @auth(rules: [{ allow: public, provider: iam }, { allow: custom }]) {
+      type User @model @auth(rules: [{ allow: custom }]) {
         id: String! @primaryKey
         name: String
         profile: Profile @hasOne(references: ["userId"])
       }
-      type Profile @model @auth(rules: [{ allow: public, provider: iam }, { allow: custom }]) {
+      type Profile @model @auth(rules: [{ allow: custom }]) {
         id: String! @primaryKey
         details: String
         userId: String!
@@ -191,24 +166,18 @@ describe('RDS Relational Directives', () => {
       }
     `;
     writeFileSync(rdsSchemaFilePath, schema, 'utf8');
-
-    // Enable unauthenticated access to the Cognito resource and push again
-    await enableUserPoolUnauthenticatedAccess(projRoot);
-    await amplifyPush(projRoot, false, {
-      skipCodegen: true,
-    });
   };
 
-  test('check iam private auth can perform all valid operations on blog', async () => {
-    await blogIAMAuthClient.create('createBlog', {
+  test('check apikey auth can perform all valid operations on blog', async () => {
+    await blogApiKeyClient.create('createBlog', {
       id: 'B-1',
       content: 'Blog 1',
     });
-    await blogIAMAuthClient.update('updateBlog', {
+    await blogApiKeyClient.update('updateBlog', {
       id: 'B-1',
       content: 'Blog 1 updated',
     });
-    const getBlogResult = await blogIAMAuthClient.get({
+    const getBlogResult = await blogApiKeyClient.get({
       id: 'B-1',
     });
     expect(getBlogResult.data.getBlog).toEqual(
@@ -217,7 +186,7 @@ describe('RDS Relational Directives', () => {
         content: 'Blog 1 updated',
       }),
     );
-    const listBlogsResult = await blogIAMAuthClient.list();
+    const listBlogsResult = await blogApiKeyClient.list();
     expect(listBlogsResult.data.listBlogs.items.length).toEqual(1);
     expect(listBlogsResult.data.listBlogs.items).toEqual(
       expect.arrayContaining([
@@ -227,75 +196,43 @@ describe('RDS Relational Directives', () => {
         }),
       ]),
     );
-    await blogIAMAuthClient.delete('deleteBlog', {
+    await blogApiKeyClient.delete('deleteBlog', {
       id: 'B-1',
     });
   });
 
-  test('check iam public auth can perform all valid operations on user', async () => {
-    await userIAMUnauthClient.create('createUser', {
-      id: 'U-1',
-      name: 'User 1',
+  test('check lambda auth can perform all valid operations on blog', async () => {
+    await blogLambdaClient.create('createBlog', {
+      id: 'B-2',
+      content: 'Blog 2',
     });
-    await userIAMUnauthClient.update('updateUser', {
-      id: 'U-1',
-      name: 'User 1 updated',
+    await blogLambdaClient.update('updateBlog', {
+      id: 'B-2',
+      content: 'Blog 2 updated',
     });
-    const getUserResult = await userIAMUnauthClient.get({
-      id: 'U-1',
-    });
-    expect(getUserResult.data.getUser).toEqual(
-      expect.objectContaining({
-        id: 'U-1',
-        name: 'User 1 updated',
+    await expect(
+      blogLambdaClient.get({
+        id: 'B-2',
       }),
-    );
-    const listUsersResult = await userIAMUnauthClient.list();
-    expect(listUsersResult.data.listUsers.items.length).toEqual(1);
-    expect(listUsersResult.data.listUsers.items).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          id: 'U-1',
-          name: 'User 1 updated',
-        }),
-      ]),
-    );
-    await userIAMUnauthClient.delete('deleteUser', {
-      id: 'U-1',
+    ).rejects.toThrow('GraphQL error: Not Authorized to access posts on type Blog');
+    await expect(blogLambdaClient.list()).rejects.toThrow('GraphQL error: Not Authorized to access posts on type Blog');
+    await blogLambdaClient.delete('deleteBlog', {
+      id: 'B-2',
     });
   });
 
-  test('on multi auth model - check lambda auth can perform all valid operations on user', async () => {
-    await userLambdaClient.create('createUser', {
-      id: 'U-2',
-      name: 'User 2',
-    });
-    await userLambdaClient.update('updateUser', {
-      id: 'U-2',
-      name: 'User 2 updated',
-    });
-    const getUserResult = await userLambdaClient.get({
-      id: 'U-2',
-    });
-    expect(getUserResult.data.getUser).toEqual(
-      expect.objectContaining({
-        id: 'U-2',
-        name: 'User 2 updated',
-      }),
+  test('check lambda auth can not perform any operation on post', async () => {
+    await expect(postLambdaClient.create('createPost', { id: 'P-1', content: 'Post 1', blogId: 'B-1' })).rejects.toThrow(
+      'GraphQL error: Not Authorized to access createPost on type Mutation',
     );
-    const listUsersResult = await userLambdaClient.list();
-    expect(listUsersResult.data.listUsers.items.length).toEqual(1);
-    expect(listUsersResult.data.listUsers.items).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          id: 'U-2',
-          name: 'User 2 updated',
-        }),
-      ]),
+    await expect(postLambdaClient.update('updatePost', { id: 'P-1', content: 'Post 1 updated' })).rejects.toThrow(
+      'GraphQL error: Not Authorized to access updatePost on type Mutation',
     );
-    await userLambdaClient.delete('deleteUser', {
-      id: 'U-2',
-    });
+    await expect(postLambdaClient.get({ id: 'P-1' })).rejects.toThrow('GraphQL error: Not Authorized to access getPost on type Query');
+    await expect(postLambdaClient.list()).rejects.toThrow('GraphQL error: Not Authorized to access listPosts on type Query');
+    await expect(postLambdaClient.delete('deletePost', { id: 'P-1' })).rejects.toThrow(
+      'GraphQL error: Not Authorized to access deletePost on type Mutation',
+    );
   });
 
   test('check apikey auth can not perform any operation on user', async () => {

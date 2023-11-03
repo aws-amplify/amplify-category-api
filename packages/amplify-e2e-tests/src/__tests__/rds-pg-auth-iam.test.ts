@@ -31,20 +31,20 @@ import { getUserPoolId } from '../schema-api-directives/authHelper';
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 
-describe('RDS Relational Directives', () => {
+describe('Postgres RDS IAM Auth', () => {
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
 
   // Generate settings for RDS instance
   const username = db_user;
   const password = db_password;
   let region = 'us-east-1';
-  let port = 3306;
+  let port = 5432;
   const database = 'default_db';
   let host = 'localhost';
   const identifier = `integtest${db_identifier}`;
   const projName = 'rdsmodelauthtest';
 
-  let projRoot;
+  let projRoot: string;
   let blogIAMUnauthClient, postIAMUnauthClient, userIAMUnauthClient, profileIAMUnauthClient;
   let blogIAMAuthClient, postIAMAuthClient, userIAMAuthClient, profileIAMAuthClient;
   let userApiKeyClient;
@@ -113,7 +113,7 @@ describe('RDS Relational Directives', () => {
   const setupDatabase = async (): Promise<void> => {
     const dbConfig = {
       identifier,
-      engine: 'mysql' as const,
+      engine: 'postgres' as const,
       dbname: database,
       username,
       password,
@@ -121,10 +121,10 @@ describe('RDS Relational Directives', () => {
     };
 
     const queries = [
-      'CREATE TABLE Blog (id VARCHAR(40) PRIMARY KEY, content VARCHAR(255))',
-      'CREATE TABLE Post (id VARCHAR(40) PRIMARY KEY, content VARCHAR(255), blogId VARCHAR(40))',
-      'CREATE TABLE User (id VARCHAR(40) PRIMARY KEY, name VARCHAR(255))',
-      'CREATE TABLE Profile (id VARCHAR(40) PRIMARY KEY, details VARCHAR(255), userId VARCHAR(40))',
+      'CREATE TABLE "Blog" (id VARCHAR(40) PRIMARY KEY, content VARCHAR(255))',
+      'CREATE TABLE "Post" (id VARCHAR(40) PRIMARY KEY, content VARCHAR(255), "blogId" VARCHAR(40))',
+      'CREATE TABLE "User" (id VARCHAR(40) PRIMARY KEY, name VARCHAR(255))',
+      'CREATE TABLE "Profile" (id VARCHAR(40) PRIMARY KEY, details VARCHAR(255), "userId" VARCHAR(40))',
     ];
 
     const db = await setupRDSInstanceAndData(dbConfig, queries);
@@ -153,6 +153,7 @@ describe('RDS Relational Directives', () => {
 
     await importRDSDatabase(projRoot, {
       database,
+      engine: 'postgres',
       host,
       port,
       username,
@@ -164,7 +165,7 @@ describe('RDS Relational Directives', () => {
 
     const schema = /* GraphQL */ `
       input AMPLIFY {
-        engine: String = "mysql"
+        engine: String = "postgres"
         globalAuthRule: AuthRule = { allow: public }
       }
       type Blog @model @auth(rules: [{ allow: private, provider: iam }]) {

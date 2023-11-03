@@ -683,9 +683,11 @@ function createExpectationError(expected: string | RegExp, actual: string) {
 
 export function nspawn(command: string | string[], params: string[] = [], options: SpawnOptions = {}) {
   if (Array.isArray(command)) {
+    console.log(`Executing command: ${command.join(' ')} with params: ${params.join(' ')}`);
     params = command;
     command = params.shift();
   } else if (typeof command === 'string') {
+    console.log(`Executing command: ${command} with params: ${params.join(' ')}`);
     const parsedPath = parse(command);
     const parsedArgs = parsedPath.base.split(' ');
     command = join(parsedPath.dir, parsedArgs[0]);
