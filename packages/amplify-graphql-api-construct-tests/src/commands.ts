@@ -89,5 +89,10 @@ export const cdkDeploy = async (cwd: string, option: string): Promise<any> => {
  * @returns a promise which resolves after teardown of the stack
  */
 export const cdkDestroy = async (cwd: string, option: string): Promise<void> => {
-  return spawn(getNpxPath(), ['cdk', 'destroy', option], { cwd, stripColors: true }).sendYes().runAsync();
+  // Be sure to wait for the prompt. Some CDK projects attempt to retrieve state from the network (e.g., the latest RDS Layer configuration)
+  // before presenting the prompt, and sending an immediate 'yes' will cause the nexpect script to hang
+  return spawn(getNpxPath(), ['cdk', 'destroy', option], { cwd, stripColors: true })
+    .wait('Are you sure you want to delete')
+    .sendYes()
+    .runAsync();
 };

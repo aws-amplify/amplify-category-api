@@ -69,10 +69,9 @@ describe('CDK GraphQL Transformer', () => {
 
   afterEach(async () => {
     try {
-      const result = await cdkDestroy(projRoot, '--all');
-      console.log(`cdkDestroy result: ${JSON.stringify(result)}`);
-    } catch (_) {
-      /* No-op */
+      await cdkDestroy(projRoot, '--all');
+    } catch (err) {
+      console.log(`Error invoking 'cdk destroy': ${err}`);
     }
 
     deleteProjectDir(projRoot);
