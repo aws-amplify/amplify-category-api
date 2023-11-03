@@ -80,6 +80,13 @@ const RUN_SOLO = [
   'src/__tests__/FunctionTransformerTestsV2.e2e.test.ts',
   'src/__tests__/HttpTransformer.e2e.test.ts',
   'src/__tests__/HttpTransformerV2.e2e.test.ts',
+  'src/__tests__/rds-mysql-auth-apikey-lambda.test.ts',
+  'src/__tests__/rds-mysql-auth-iam-apikey-lambda-subscription.test.ts',
+  'src/__tests__/rds-mysql-auth-iam.test.ts',
+  'src/__tests__/rds-mysql-custom-claims-refersto-auth.test.ts',
+  'src/__tests__/rds-mysql-multi-auth-1.test.ts',
+  'src/__tests__/rds-mysql-oidc-auth.test.ts',
+  'src/__tests__/rds-mysql-userpool-auth.test.ts',
 ];
 const DEBUG_FLAG = '--debug';
 

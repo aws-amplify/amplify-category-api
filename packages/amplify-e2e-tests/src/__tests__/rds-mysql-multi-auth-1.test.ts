@@ -122,7 +122,7 @@ describe('RDS Cognito userpool provider Auth tests', () => {
     writeFileSync(rdsSchemaFilePath, appendAmplifyInput(schema, 'mysql'), 'utf8');
 
     await updateAuthAddUserGroups(projRoot, [adminGroupName, devGroupName, moderatorGroupName]);
-    await amplifyPush(projRoot, true);
+    await amplifyPush(projRoot);
     await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.
 
     const userPoolId = getUserPoolId(projRoot);
