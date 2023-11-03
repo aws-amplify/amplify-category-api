@@ -79,7 +79,7 @@ describe('CDK GraphQL Transformer', () => {
 
   it('creates a GraphQL API from SQL-based models', async () => {
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'sql-models'));
-    const name = await initCDKProject(projRoot, templatePath, 'latest');
+    const name = await initCDKProject(projRoot, templatePath);
     writeDbDetails(dbDetails, projRoot);
     const outputs = await cdkDeploy(projRoot, '--all');
     const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
