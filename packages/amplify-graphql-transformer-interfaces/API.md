@@ -653,6 +653,8 @@ export interface TransformerResourceHelperProvider {
     // (undocumented)
     addDirectiveConfigExclusion(object: ObjectTypeDefinitionNode | ObjectTypeExtensionNode, field: FieldNode, directive: DirectiveNode): void;
     // (undocumented)
+    generateDomainName(): string;
+    // (undocumented)
     generateIAMRoleName(name: string): string;
     // (undocumented)
     generateTableName(modelName: string): string;

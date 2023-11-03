@@ -14,6 +14,7 @@ import { AmplifyApiGraphQlResourceStackTemplate } from './cdk-compat/amplify-api
  * @param scope
  * @param overrideDir
  */
+
 export function applyFileBasedOverride(scope: Construct, overrideDirPath?: string): AmplifyApiGraphQlResourceStackTemplate {
   const overrideDir = overrideDirPath ?? path.join(pathManager.getBackendDirPath(), 'api', getAppSyncAPIName());
   const overrideFilePath = path.join(overrideDir, 'build', 'override.js');

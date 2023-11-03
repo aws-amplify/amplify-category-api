@@ -1,8 +1,13 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
 import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
+
+jest.spyOn(stateManager, 'getCurrentEnvName').mockReturnValue('testenv');
+jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
+jest.spyOn(stateManager, 'getMeta').mockReturnValue({ api: { testApi: { service: 'AppSync' } } });
 
 const mappedSearchableSchema = /* GraphQL */ `
   type Agenda @model {

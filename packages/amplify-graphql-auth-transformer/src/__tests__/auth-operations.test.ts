@@ -1,11 +1,16 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ConflictHandlerType, SyncConfig } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AccessControlMatrix } from '../accesscontrol';
 import { AuthTransformer } from '../graphql-auth-transformer';
 import { MODEL_OPERATIONS } from '../utils';
+
+jest.spyOn(stateManager, 'getCurrentEnvName').mockReturnValue('testenv');
+jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
+jest.spyOn(stateManager, 'getMeta').mockReturnValue({ api: { testApi: { service: 'AppSync' } } });
 
 test('invalid granular read operation at the field level', () => {
   const authConfig: AppSyncAuthConfiguration = {

@@ -1,6 +1,7 @@
 import { ResourceConstants } from 'graphql-transformer-common';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { default as moment } from 'moment';
@@ -14,6 +15,9 @@ import { resolveTestRegion } from '../testSetup';
 const region = resolveTestRegion();
 
 // tslint:disable: no-magic-numbers
+jest.spyOn(stateManager, 'getCurrentEnvName').mockReturnValue('testenv');
+jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
+jest.spyOn(stateManager, 'getMeta').mockReturnValue({ api: { testApi: { service: 'AppSync' } } });
 jest.setTimeout(60000 * 60);
 
 const cf = new CloudFormationClient(region);

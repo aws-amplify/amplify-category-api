@@ -6,6 +6,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Token } from 'aws-cdk-lib';
 import { ModelResourceIDs } from 'graphql-transformer-common';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import md5 from 'md5';
 import { DirectiveNode, FieldNode, ObjectTypeDefinitionNode, ObjectTypeExtensionNode } from 'graphql';
 import { ModelFieldMapImpl } from './model-field-map';
@@ -42,6 +43,31 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
     const { apiId } = this.api!;
     const baseName = this.#modelNameMap.get(modelName) ?? modelName;
     return `${baseName}-${apiId}-${env}`;
+  };
+
+  /**
+   * Fetching all the parameters from state manager instead of CFN params to perform compile time
+   * transformations
+   * (8 + 8 + 2 + 10) = 28
+   * @returns Domain name containing maximum of 28 characters all lower case
+   */
+
+  generateDomainName = (): string => {
+    if (!this.api) {
+      throw new Error('API not initialized');
+    }
+    const env = stateManager.getCurrentEnvName();
+    const { projectName } = stateManager.getProjectConfig();
+    const apiNames = Object.entries(stateManager.getMeta()?.api || {})
+      .filter(([, apiResource]) => (apiResource as any).service === 'AppSync')
+      .map(([name]) => name);
+    const shortAPIName = apiNames[0].slice(0, 8).toLowerCase();
+    const shortProjectName = projectName.slice(0, 8).toLowerCase();
+    if (env) {
+      return `${shortProjectName}-${shortAPIName}-${env}`;
+    } else {
+      return `${shortProjectName}-${shortAPIName}`;
+    }
   };
 
   public generateIAMRoleName = (name: string): string => {

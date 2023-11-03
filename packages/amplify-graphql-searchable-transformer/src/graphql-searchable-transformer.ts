@@ -306,12 +306,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     const parameterMap = createParametersInStack(context.stackManager.scope);
 
-    const domain = createSearchableDomain(
-      stack,
-      parameterMap,
-      context.api.apiId,
-      context.transformParameters.enableSearchNodeToNodeEncryption,
-    );
+    const domain = createSearchableDomain(stack, parameterMap, context, context.transformParameters.enableSearchNodeToNodeEncryption);
 
     const openSearchRole = createSearchableDomainRole(context, stack, parameterMap);
 

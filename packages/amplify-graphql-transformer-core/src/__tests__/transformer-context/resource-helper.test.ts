@@ -1,5 +1,10 @@
 import { GraphQLAPIProvider, TransformerResourceHelperProvider, SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { TransformerResourceHelper } from '../../transformer-context/resource-helper';
+
+jest.spyOn(stateManager, 'getCurrentEnvName').mockReturnValue('testenv');
+jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
+jest.spyOn(stateManager, 'getMeta').mockReturnValue({ api: { testApi: { service: 'AppSync' } } });
 
 const testEnv = 'testenv';
 const testApiId = 'testtest123';
@@ -23,6 +28,17 @@ describe('generateTableName', () => {
   it('uses model rename if specified', () => {
     resourceHelper.setModelNameMapping('TestRename', 'Test');
     expect(resourceHelper.generateTableName('TestRename')).toEqual(`Test-${testApiId}-${testEnv}`);
+  });
+});
+
+describe('generateDomainName', () => {
+  it('throws if api not initialized', () => {
+    resourceHelper = getResourceHelper(false);
+    expect(() => resourceHelper.generateDomainName()).toThrowErrorMatchingInlineSnapshot(`"API not initialized"`);
+  });
+
+  it('generate domain name', () => {
+    expect(resourceHelper.generateDomainName()).toEqual('testproj-testapi-testenv');
   });
 });
 
