@@ -91,3 +91,16 @@ export const cdkDeploy = async (cwd: string, option: string): Promise<any> => {
 export const cdkDestroy = async (cwd: string, option: string): Promise<void> => {
   return spawn(getNpxPath(), ['cdk', 'destroy', option], { cwd, stripColors: true }).sendYes().runAsync();
 };
+
+/**
+ * Execute `cdk destroy --force [...options]` to tear down test stacks.
+ *
+ * Adding this as a replacement for cdkDestroy. If it works in other tests, we'll replace the implementation of cdkDestroy and remove this
+ * function
+ * @param cwd the directory of the cdk project
+ * @param options an array of additional options to pass into the `cdk destroy` command, e.g. the stack name.
+ * @returns a promise which resolves after teardown of the stack
+ */
+export const cdkDestroyForce = async (cwd: string, ...options: string[]): Promise<void> => {
+  return spawn(getNpxPath(), ['cdk', 'destroy', '--force', ...options], { cwd, stripColors: true }).runAsync();
+};
