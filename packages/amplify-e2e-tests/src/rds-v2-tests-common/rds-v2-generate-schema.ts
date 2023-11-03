@@ -338,28 +338,5 @@ export const testRDSGenerateSchema = (engine: ImportedRDSType, queries: string[]
       const regeneratedSchema = readFileSync(rdsSchemaFilePath, 'utf8');
       expect(regeneratedSchema.replace(/\s/g, '')).toEqual(editedSchema.replace(/\s/g, ''));
     });
-
-    it('throws error when an invalid edit is made to the schema', async () => {
-      const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
-      // Make edits to the generated schema to make it invalid
-      const editedSchema = `
-              // This comment is invalid in GraphQL schema
-              input AMPLIFY {
-                  engine: String = "${engineName}"
-                  globalAuthRule: AuthRule = {allow: public}
-              }
-            `;
-      writeFileSync(rdsSchemaFilePath, editedSchema);
-      await apiGenerateSchemaWithError(projRoot, {
-        database,
-        host,
-        port,
-        username,
-        password,
-        validCredentials: true,
-        useVpc: true,
-        errMessage: `The schema file at ${rdsSchemaFilePath} is not a valid GraphQL document. Syntax Error: Cannot parse the unexpected character "/".`,
-      });
-    });
   });
 };

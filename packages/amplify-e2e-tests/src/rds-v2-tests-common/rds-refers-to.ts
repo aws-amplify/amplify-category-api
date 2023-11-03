@@ -50,7 +50,7 @@ export const testRDSRefersTo = (engine: ImportedRDSType, queries: string[]) => {
 
       const meta = getProjectMeta(projRoot);
       const appRegion = meta.providers.awscloudformation.Region;
-      const { output } = meta.api.rdsrelationalapi;
+      const { output } = meta.api[apiName];
       const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
       const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, appRegion);
 
