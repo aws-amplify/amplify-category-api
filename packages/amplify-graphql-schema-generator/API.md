@@ -324,13 +324,15 @@ export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
     // (undocumented)
     getTablesList(): string[];
     // (undocumented)
-    protected mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columntype: string): FieldType;
+    mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columntype: string): FieldType;
     // (undocumented)
     protected parseSchema(schema: string): void;
     // (undocumented)
-    protected setFields(fields: any): void;
+    protected setEnums(parsedSchema: any[]): void;
     // (undocumented)
-    protected setIndexes(indexes: any): void;
+    protected setFields(fields: any[]): void;
+    // (undocumented)
+    protected setIndexes(indexes: any[]): void;
     // (undocumented)
     protected setTables(parsedSchema: any[]): void;
 }
