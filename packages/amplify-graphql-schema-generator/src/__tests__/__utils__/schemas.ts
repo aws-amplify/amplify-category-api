@@ -24,7 +24,7 @@ def,todo_database,Todo,title,2,NULL,NO,varchar,255,1020,NULL,NULL,NULL,utf8mb4,u
      * CREATE TABLE articles (
      *   pub_id INTEGER NOT NULL,
      *   pub_type CHAR(1) DEFAULT 'A' CHECK (pub_type = 'A'),
-     *   placeholder CHAR(1) NOT NULL, -- placeholder for other attributes of articles
+     *   placeholder CHAR(1) NOT NULL,
      *   PRIMARY KEY (pub_id, pub_type),
      *   FOREIGN KEY (pub_id, pub_type) REFERENCES publications (pub_id, pub_type)
      * );
@@ -32,16 +32,15 @@ def,todo_database,Todo,title,2,NULL,NO,varchar,255,1020,NULL,NULL,NULL,utf8mb4,u
      * CREATE TABLE stories (
      *   pub_id INTEGER NOT NULL,
      *   pub_type CHAR(1) DEFAULT 'S' CHECK (pub_type = 'S'),
-     *   placeholder CHAR(1) NOT NULL, -- placeholder for other attributes of stories
+     *   placeholder CHAR(1) NOT NULL,
      *   PRIMARY KEY (pub_id, pub_type),
      *   FOREIGN KEY (pub_id, pub_type) REFERENCES publications (pub_id, pub_type)
      * );
      * CREATE TABLE comments (
      *   pub_id INTEGER NOT NULL REFERENCES publications (pub_id),
      *   comment_timestamp TIMESTAMP NOT NULL DEFAULT now(),
-     *   commenter_email VARCHAR(10) NOT NULL, -- Only allow people who have
-     *                                         -- really short email addresses
-     *   comment_text VARCHAR(30) NOT NULL,    -- Keep 'em short!
+     *   commenter_email VARCHAR(10) NOT NULL,
+     *   comment_text VARCHAR(30) NOT NULL,
      *   PRIMARY KEY (pub_id, comment_timestamp, commenter_email)
      * );
      */
