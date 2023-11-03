@@ -27,7 +27,6 @@ export type {
   IBackendOutputStorageStrategy,
   IBackendOutputEntry,
   AddFunctionProps,
-  DataSourceProvisionConfig,
   ModelDataSourceDefinition,
   ModelDataSourceDefinitionStrategy,
   DefaultDynamoDbModelDataSourceDefinitionStrategy,

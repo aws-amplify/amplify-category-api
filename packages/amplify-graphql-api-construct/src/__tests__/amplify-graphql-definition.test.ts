@@ -24,11 +24,11 @@ describe('AmplifyGraphqlDefinition', () => {
       const definition = AmplifyGraphqlDefinition.fromString(TEST_SCHEMA);
       expect(definition.schema).toEqual(TEST_SCHEMA);
       expect(definition.functionSlots.length).toEqual(0);
-      expect(definition.dataSourceProvisionConfig).toEqual({ default: DEFAULT_MODEL_DATA_SOURCE_DEFINITION });
+      expect(definition.dataSourceDefinitionMap).toEqual({ Todo: DEFAULT_MODEL_DATA_SOURCE_DEFINITION });
     });
     it('returns amplify table strategy when explicitly defined', () => {
       const definition = AmplifyGraphqlDefinition.fromString(TEST_SCHEMA, AMPLIFY_TABLE_STRATEGY);
-      expect(definition.dataSourceProvisionConfig).toEqual({ default: AMPLIFY_TABLE_STRATEGY });
+      expect(definition.dataSourceDefinitionMap).toEqual({ Todo: AMPLIFY_TABLE_STRATEGY });
     });
   });
 
@@ -49,7 +49,7 @@ describe('AmplifyGraphqlDefinition', () => {
       const definition = AmplifyGraphqlDefinition.fromFiles(schemaFilePath);
       expect(definition.schema).toEqual(TEST_SCHEMA);
       expect(definition.functionSlots.length).toEqual(0);
-      expect(definition.dataSourceProvisionConfig).toEqual({ default: DEFAULT_MODEL_DATA_SOURCE_DEFINITION });
+      expect(definition.dataSourceDefinitionMap).toEqual({ Todo: DEFAULT_MODEL_DATA_SOURCE_DEFINITION });
     });
 
     it('extracts the definition from the schema files, appended in-order', () => {
@@ -92,12 +92,10 @@ describe('AmplifyGraphqlDefinition', () => {
       const combinedDefinition = AmplifyGraphqlDefinition.combine(definition1, definition2);
       expect(combinedDefinition.schema).toEqual(`${TEST_SCHEMA}${os.EOL}${amplifyTableSchema}`);
       expect(combinedDefinition.functionSlots.length).toEqual(0);
-      expect(combinedDefinition.dataSourceProvisionConfig).toEqual({
-        default: DEFAULT_MODEL_DATA_SOURCE_DEFINITION,
-        models: {
-          Blog: AMPLIFY_TABLE_STRATEGY,
-          Post: AMPLIFY_TABLE_STRATEGY,
-        },
+      expect(combinedDefinition.dataSourceDefinitionMap).toEqual({
+        Todo: DEFAULT_MODEL_DATA_SOURCE_DEFINITION,
+        Blog: AMPLIFY_TABLE_STRATEGY,
+        Post: AMPLIFY_TABLE_STRATEGY,
       });
     });
   });

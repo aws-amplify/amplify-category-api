@@ -1,17 +1,12 @@
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
-import {
-  MappingTemplate,
-  DatasourceType,
-  MYSQL_DB_TYPE,
-  DDB_DB_TYPE,
-  DBType,
-  getDatasourceProvisionStrategy,
-} from '@aws-amplify/graphql-transformer-core';
+import { MappingTemplate, MYSQL_DB_TYPE, DDB_DB_TYPE, getDatasourceProvisionStrategy } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
   TransformerContextProvider,
   TransformerResolverProvider,
-  DynamoDBProvisionStrategyType,
+  DynamoDBProvisionStrategy,
+  DBType,
+  DataSourceType,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
@@ -67,7 +62,7 @@ export function replaceDdbPrimaryKey(config: PrimaryKeyDirectiveConfiguration, c
   const { field, object } = config;
   const tableProvisionStrategy = getDatasourceProvisionStrategy(ctx, object.name.value);
   const useAmplifyManagedTableResources: boolean = tableProvisionStrategy
-    ? tableProvisionStrategy.provisionStrategy === DynamoDBProvisionStrategyType.AMPLIFY_TABLE
+    ? tableProvisionStrategy === DynamoDBProvisionStrategy.AMPLIFY_TABLE
     : false;
   const table = getTable(ctx, object) as any;
   const cfnTable = useAmplifyManagedTableResources ? table.node.defaultChild.node.defaultChild : table.table;
@@ -424,7 +419,7 @@ export function appendSecondaryIndex(config: IndexDirectiveConfiguration, ctx: T
 export function overrideIndexAtCfnLevel(ctx: TransformerContextProvider, typeName: string, table: any, indexInfo: any): void {
   const tableProvisionStrategy = getDatasourceProvisionStrategy(ctx, typeName);
   const useAmplifyManagedTableResources: boolean = tableProvisionStrategy
-    ? tableProvisionStrategy.provisionStrategy === DynamoDBProvisionStrategyType.AMPLIFY_TABLE
+    ? tableProvisionStrategy === DynamoDBProvisionStrategy.AMPLIFY_TABLE
     : false;
 
   if (!useAmplifyManagedTableResources) {
@@ -892,7 +887,7 @@ export const generateAuthExpressionForSandboxMode = (enabled: boolean): string =
 
 export function getDBInfo(ctx: TransformerContextProvider, modelName: string) {
   const dbInfo = ctx.modelToDatasourceMap.get(modelName);
-  const result = dbInfo ?? { dbType: 'DDB', provisionDB: true };
+  const result = dbInfo ?? { dbType: 'DDB', provisionDB: true, provisionStrategy: DynamoDBProvisionStrategy.DEFAULT };
   return result;
 }
 
@@ -902,7 +897,7 @@ export function getDBType(ctx: TransformerContextProvider, modelName: string) {
   return dbType;
 }
 
-export const getVTLGenerator = (dbInfo: DatasourceType | undefined): RDSIndexVTLGenerator | DynamoDBIndexVTLGenerator => {
+export const getVTLGenerator = (dbInfo: DataSourceType | undefined): RDSIndexVTLGenerator | DynamoDBIndexVTLGenerator => {
   const dbType = dbInfo ? dbInfo.dbType : 'DDB';
   if (dbType === 'MySQL') {
     return new RDSIndexVTLGenerator();

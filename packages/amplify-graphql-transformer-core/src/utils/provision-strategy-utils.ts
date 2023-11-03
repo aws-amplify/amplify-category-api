@@ -1,7 +1,6 @@
 import {
-  DatasourceProvisionConfig,
-  DatasourceProvisionStrategy,
-  DynamoDBProvisionStrategyType,
+  DataSourceProvisionStrategy,
+  DynamoDBProvisionStrategy,
   TransformerBeforeStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 
@@ -11,23 +10,14 @@ import {
  * @param typeName model name defined in GraphQL schema defintion
  * @returns Datasource provision strategy for the provided model.
  */
-export function getDatasourceProvisionStrategy(ctx: TransformerBeforeStepContextProvider, typeName?: string): DatasourceProvisionStrategy {
-  let config: DatasourceProvisionStrategy = {
-    dbType: 'DDB',
-    provisionStrategy: DynamoDBProvisionStrategyType.DEFAULT,
-  };
-
-  const datasourceProvisionConfig = ctx.datasourceProvisionConfig as DatasourceProvisionConfig;
-  if (datasourceProvisionConfig && datasourceProvisionConfig.default) {
-    config = datasourceProvisionConfig.default;
-  }
+export function getDatasourceProvisionStrategy(ctx: TransformerBeforeStepContextProvider, typeName?: string): DataSourceProvisionStrategy {
+  let config: DataSourceProvisionStrategy = DynamoDBProvisionStrategy.DEFAULT;
 
   if (typeName) {
-    const typeConfig = datasourceProvisionConfig?.models?.[typeName];
+    const typeConfig = ctx.modelToDatasourceMap.get(typeName);
     if (typeConfig && typeConfig.dbType && typeConfig.provisionStrategy) {
-      config = typeConfig;
+      config = typeConfig.provisionStrategy;
     }
   }
-
   return config;
 }

@@ -1,10 +1,10 @@
 import * as os from 'os';
 import { SchemaFile } from 'aws-cdk-lib/aws-appsync';
 import { IAmplifyGraphqlDefinition, ModelDataSourceDefinition } from './types';
-import { getModelTypeNames } from './internal';
+import { constructDataSourceDefinitionMap } from './internal';
 
 export const DEFAULT_MODEL_DATA_SOURCE_DEFINITION: ModelDataSourceDefinition = {
-  name: 'defaultDDB',
+  name: 'DefaultDynamoDB',
   strategy: {
     dbType: 'DYNAMODB',
     provisionStrategy: 'DEFAULT',
@@ -27,9 +27,7 @@ export class AmplifyGraphqlDefinition {
     return {
       schema,
       functionSlots: [],
-      dataSourceProvisionConfig: {
-        default: modelDataSourceDefinition,
-      },
+      dataSourceDefinitionMap: constructDataSourceDefinitionMap(schema, modelDataSourceDefinition),
     };
   }
 
@@ -42,12 +40,11 @@ export class AmplifyGraphqlDefinition {
     if (!Array.isArray(filePaths)) {
       filePaths = [filePaths];
     }
+    const schema = filePaths.map((filePath) => new SchemaFile({ filePath }).definition).join(os.EOL);
     return {
-      schema: filePaths.map((filePath) => new SchemaFile({ filePath }).definition).join(os.EOL),
+      schema,
       functionSlots: [],
-      dataSourceProvisionConfig: {
-        default: DEFAULT_MODEL_DATA_SOURCE_DEFINITION,
-      },
+      dataSourceDefinitionMap: constructDataSourceDefinitionMap(schema, DEFAULT_MODEL_DATA_SOURCE_DEFINITION),
     };
   }
 
@@ -64,12 +61,11 @@ export class AmplifyGraphqlDefinition {
     if (!Array.isArray(filePaths)) {
       filePaths = [filePaths];
     }
+    const schema = filePaths.map((filePath) => new SchemaFile({ filePath }).definition).join(os.EOL);
     return {
-      schema: filePaths.map((filePath) => new SchemaFile({ filePath }).definition).join(os.EOL),
+      schema,
       functionSlots: [],
-      dataSourceProvisionConfig: {
-        default: modelDataSourceDefinition,
-      },
+      dataSourceDefinitionMap: constructDataSourceDefinitionMap(schema, modelDataSourceDefinition),
     };
   }
 
@@ -81,28 +77,10 @@ export class AmplifyGraphqlDefinition {
     if (definitions.length === 0) {
       throw new Error('The definitions of amplify GraphQL cannot be empty.');
     }
-    if (definitions.length === 1) {
-      return definitions[0];
-    }
-    const defaultStrategy = definitions[0].dataSourceProvisionConfig.default;
-    const datasourceConfigPerModelMap = definitions
-      .slice(1)
-      .filter((def) => def.dataSourceProvisionConfig.default !== defaultStrategy)
-      .reduce((acc, cur) => {
-        const modelTypeNames = getModelTypeNames(cur.schema);
-        const modelProvisionStrategyMap = modelTypeNames.reduce((a, c) => ({ ...a, [c]: cur.dataSourceProvisionConfig.default }), {});
-        return {
-          ...acc,
-          ...modelProvisionStrategyMap,
-        };
-      }, {});
     return {
       schema: definitions.map((def) => def.schema).join(os.EOL),
       functionSlots: [],
-      dataSourceProvisionConfig: {
-        default: defaultStrategy,
-        models: datasourceConfigPerModelMap,
-      },
+      dataSourceDefinitionMap: definitions.reduce((acc, cur) => ({ ...acc, ...cur.dataSourceDefinitionMap }), {}),
     };
   }
 }

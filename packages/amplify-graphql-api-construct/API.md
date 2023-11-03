@@ -122,8 +122,6 @@ export interface AmplifyGraphqlApiProps {
     readonly apiName?: string;
     readonly authorizationModes: AuthorizationModes;
     readonly conflictResolution?: ConflictResolution;
-    // (undocumented)
-    readonly dataSourceProvisionStrategy?: DataSourceProvisionConfig;
     readonly definition: IAmplifyGraphqlDefinition;
     readonly functionNameMap?: Record<string, IFunction>;
     readonly functionSlots?: FunctionSlot[];
@@ -199,12 +197,6 @@ export interface CustomConflictResolutionStrategy extends ConflictResolutionStra
 }
 
 // @public
-export interface DataSourceProvisionConfig {
-    readonly default?: ModelDataSourceDefinition;
-    readonly models?: Record<string, ModelDataSourceDefinition>;
-}
-
-// @public
 export interface DefaultDynamoDbModelDataSourceDefinitionStrategy {
     // (undocumented)
     readonly dbType: 'DYNAMODB';
@@ -237,7 +229,7 @@ export interface IAMAuthorizationConfig {
 
 // @public
 export interface IAmplifyGraphqlDefinition {
-    readonly dataSourceProvisionConfig: DataSourceProvisionConfig;
+    readonly dataSourceDefinitionMap: Record<string, ModelDataSourceDefinition>;
     readonly functionSlots: FunctionSlot[];
     readonly schema: string;
 }

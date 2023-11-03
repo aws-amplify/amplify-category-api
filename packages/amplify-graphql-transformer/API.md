@@ -7,8 +7,7 @@
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AssetProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct } from 'constructs';
-import { DatasourceProvisionConfig } from '@aws-amplify/graphql-transformer-interfaces';
-import { DatasourceType } from '@aws-amplify/graphql-transformer-core';
+import { DataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -35,7 +34,7 @@ export const executeTransform: (config: ExecuteTransformConfig) => void;
 // @public (undocumented)
 export type ExecuteTransformConfig = TransformConfig & {
     schema: string;
-    modelToDatasourceMap?: Map<string, DatasourceType>;
+    modelToDatasourceMap?: Map<string, DataSourceType>;
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
     printTransformerLog?: (log: TransformerLog) => void;
     sqlLambdaVpcConfig?: VpcConfig;
@@ -45,7 +44,6 @@ export type ExecuteTransformConfig = TransformConfig & {
     parameterProvider?: TransformParameterProvider;
     assetProvider: AssetProvider;
     synthParameters: SynthParameters;
-    datasourceProvisionConfig?: DatasourceProvisionConfig;
 };
 
 // @public (undocumented)

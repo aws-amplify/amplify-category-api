@@ -497,10 +497,10 @@ export interface IAmplifyGraphqlDefinition {
   readonly functionSlots: FunctionSlot[];
 
   /**
-   * Retrieve the datasource provision configuration. The default strategy is to use DynamoDB from CloudFormation.
-   * @returns datasource provision configuration
+   * Retrieve the datasource definition mapping. The default strategy is to use DynamoDB from CloudFormation.
+   * @returns datasource definition mapping
    */
-  readonly dataSourceProvisionConfig: DataSourceProvisionConfig;
+  readonly dataSourceDefinitionMap: Record<string, ModelDataSourceDefinition>;
 }
 
 /**
@@ -529,21 +529,6 @@ export interface IBackendOutputStorageStrategy {
    */
   // eslint-disable-next-line @typescript-eslint/method-signature-style
   addBackendOutputEntry(keyName: string, backendOutputEntry: IBackendOutputEntry): void;
-}
-
-/**
- * Configuration for datasource provision strategy.
- */
-export interface DataSourceProvisionConfig {
-  /**
-   * Default config for datasource provision. Applies to all non-overridden models.
-   */
-  readonly default?: ModelDataSourceDefinition;
-
-  /**
-   * Model-specific datasource provision overrides.
-   */
-  readonly models?: Record<string, ModelDataSourceDefinition>;
 }
 
 /**
@@ -662,8 +647,6 @@ export interface AmplifyGraphqlApiProps {
    * Strategy to store construct outputs. If no outputStorageStrategey is provided a default strategy will be used.
    */
   readonly outputStorageStrategy?: IBackendOutputStorageStrategy;
-
-  readonly dataSourceProvisionStrategy?: DataSourceProvisionConfig;
 }
 
 /**

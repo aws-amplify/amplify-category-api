@@ -11,6 +11,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type {
   AssetProvider,
+  DataSourceType,
   StackManagerProvider,
   TransformParameterProvider,
   TransformParameters,
@@ -43,7 +44,6 @@ import { TransformerOutput } from '../transformer-context/output';
 import { adoptAuthModes } from '../utils/authType';
 import { MappingTemplate } from '../cdk-compat';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
-import { DatasourceType } from '../config/project-config';
 import { defaultTransformParameters } from '../transformer-context/transform-parameters';
 import * as SyncUtils from './sync-utils';
 import { UserDefinedSlot, DatasourceTransformationConfig } from './types';
@@ -209,7 +209,7 @@ export class GraphQLTransform {
       assetProvider,
       synthParameters,
       parsedDocument,
-      datasourceConfig?.modelToDatasourceMap ?? new Map<string, DatasourceType>(),
+      datasourceConfig?.modelToDatasourceMap ?? new Map<string, DataSourceType>(),
       this.stackMappingOverrides,
       this.authConfig,
       this.transformParameters,
@@ -217,7 +217,6 @@ export class GraphQLTransform {
       datasourceConfig?.datasourceSecretParameterLocations,
       this.sqlLambdaVpcConfig,
       this.rdsLayerMapping,
-      datasourceConfig?.datasourceProvisionConfig,
     );
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),

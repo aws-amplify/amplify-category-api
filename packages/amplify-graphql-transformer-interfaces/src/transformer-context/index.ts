@@ -3,6 +3,10 @@ export {
   TransformerDataSourceManagerProvider,
   AppSyncDataSourceType,
   DataSourceInstance,
+  DataSourceType,
+  DBType,
+  DataSourceProvisionStrategy,
+  DynamoDBProvisionStrategy,
 } from './transformer-datasource-provider';
 export { TransformerContextOutputProvider } from './transformer-context-output-provider';
 export { TransformerProviderRegistry } from './transformer-provider-registry';
@@ -22,9 +26,3 @@ export { TransformerPreProcessContextProvider } from './transformer-preprocess-c
 export { StackManagerProvider } from './stack-manager-provider';
 export { SynthParameters } from './synth-parameters';
 export { TransformParameterProvider } from './transform-parameter-provider';
-export {
-  DatasourceProvisionConfig,
-  DatasourceProvisionStrategy,
-  DynamoDBProvisionStrategy,
-  DynamoDBProvisionStrategyType,
-} from './datasource-provision-config';

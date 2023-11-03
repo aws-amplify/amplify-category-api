@@ -10,7 +10,6 @@ import {
   ObjectDefinitionWrapper,
   SyncUtils,
   TransformerModelBase,
-  DatasourceType,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncDataSourceType,
@@ -27,7 +26,8 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
   TransformerValidationStepContextProvider,
-  DynamoDBProvisionStrategyType,
+  DataSourceType,
+  DynamoDBProvisionStrategy,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -113,11 +113,13 @@ export const directiveDefinition = /* GraphQl */ `
   }
 `;
 
-const DDB_DATASOURCE_TYPE: DatasourceType = { dbType: DDB_DB_TYPE, provisionDB: true };
+const DDB_DATASOURCE_TYPE: DataSourceType = {
+  dbType: DDB_DB_TYPE,
+  provisionDB: true,
+  provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
+};
 
 const CUSTOM_DDB_DB_TYPE = 'AmplifyDDB';
-
-type DatabaseProvisionType = DatasourceType | { dbType: 'AmplifyDDB'; provisionDB: boolean };
 
 /**
  * ModelTransformer
@@ -135,9 +137,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
   private resourceGeneratorMap: Map<string, ModelResourceGenerator> = new Map<string, ModelResourceGenerator>();
 
-  private modelToDatasourceProvisionTypeMap: Map<string, DatabaseProvisionType> = new Map<string, DatabaseProvisionType>();
+  private modelToDatasourceProvisionTypeMap: Map<string, DataSourceType> = new Map<string, DataSourceType>();
 
-  private projectProvisionStrategy: DatabaseProvisionType = DDB_DATASOURCE_TYPE;
   /**
    * A Map to hold the directive configuration
    */
@@ -157,10 +158,12 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     // Resource generators, but do not have access to the context
     this.modelToDatasourceProvisionTypeMap = ctx.modelToDatasourceMap;
 
-    this.applyDatasourceProvisionConfig(ctx);
-
-    const datasourceMapValues: Array<DatabaseProvisionType> = Array.from(this.modelToDatasourceProvisionTypeMap.values());
-    if (datasourceMapValues.some((value) => value.dbType === DDB_DB_TYPE && value.provisionDB)) {
+    const datasourceMapValues: Array<DataSourceType> = Array.from(this.modelToDatasourceProvisionTypeMap.values());
+    if (
+      datasourceMapValues.some(
+        (value) => value.dbType === DDB_DB_TYPE && value.provisionDB && value.provisionStrategy === DynamoDBProvisionStrategy.DEFAULT,
+      )
+    ) {
       this.resourceGeneratorMap.get(DDB_DB_TYPE)?.enableGenerator();
       this.resourceGeneratorMap.get(DDB_DB_TYPE)?.enableProvisioned();
     }
@@ -168,13 +171,17 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       this.resourceGeneratorMap.get(MYSQL_DB_TYPE)?.enableGenerator();
       this.resourceGeneratorMap.get(MYSQL_DB_TYPE)?.enableUnprovisioned();
     }
-    if (datasourceMapValues.some((value) => value.dbType === CUSTOM_DDB_DB_TYPE && value.provisionDB)) {
+    if (
+      datasourceMapValues.some(
+        (value) => value.dbType === DDB_DB_TYPE && value.provisionDB && value.provisionStrategy === DynamoDBProvisionStrategy.AMPLIFY_TABLE,
+      )
+    ) {
       this.resourceGeneratorMap.get(CUSTOM_DDB_DB_TYPE)?.enableGenerator();
       this.resourceGeneratorMap.get(CUSTOM_DDB_DB_TYPE)?.enableProvisioned();
     }
 
-    this.resourceGeneratorMap.get(this.projectProvisionStrategy.dbType)?.enableGenerator();
-    this.resourceGeneratorMap.get(this.projectProvisionStrategy.dbType)?.enableProvisioned();
+    this.resourceGeneratorMap.get(DDB_DB_TYPE)?.enableGenerator();
+    this.resourceGeneratorMap.get(DDB_DB_TYPE)?.enableProvisioned();
   };
 
   object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider): void => {
@@ -871,42 +878,18 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   });
 
   /**
-   * Apply the user-defined provision strategies to the model to datasource provision type map
-   * @param ctx Transformer before step context
-   */
-  private applyDatasourceProvisionConfig = (ctx: TransformerBeforeStepContextProvider): void => {
-    if (!ctx.datasourceProvisionConfig) {
-      return;
-    }
-    const projectProvisionStrategy = ctx.datasourceProvisionConfig?.default?.provisionStrategy as any;
-    // Change the project level strategy only when amplify table is in used
-    // The default strategy is using default CFN dynamodb table
-    // TODO: add support for RDS strategy in project level
-    if (projectProvisionStrategy === DynamoDBProvisionStrategyType.AMPLIFY_TABLE) {
-      // Amplify table only supports green field for now
-      this.projectProvisionStrategy = { dbType: CUSTOM_DDB_DB_TYPE, provisionDB: true };
-    }
-    const perModelProvisionStrategyMap = ctx.datasourceProvisionConfig?.models;
-    if (perModelProvisionStrategyMap) {
-      Object.keys(perModelProvisionStrategyMap).forEach((typeName) => {
-        const modelProvisionStrategy = perModelProvisionStrategyMap[typeName].provisionStrategy as any;
-        if (modelProvisionStrategy === DynamoDBProvisionStrategyType.AMPLIFY_TABLE) {
-          this.modelToDatasourceProvisionTypeMap.set(typeName, { dbType: CUSTOM_DDB_DB_TYPE, provisionDB: true });
-        } else if (modelProvisionStrategy === DynamoDBProvisionStrategyType.DEFAULT) {
-          this.modelToDatasourceProvisionTypeMap.set(typeName, { dbType: DDB_DB_TYPE, provisionDB: true });
-        }
-      });
-    }
-  };
-
-  /**
    * Get the resource generator based on the type name definition of model directive
    * The project level strategy will be returned if type name is not found in the map
    * @param typeName type name definition of model directive
    * @returns datasource provision type from map.
    */
   private getResourceGenerator = (typeName: string): ModelResourceGenerator | undefined => {
-    const datasourceProvisionType = this.modelToDatasourceProvisionTypeMap.get(typeName) ?? this.projectProvisionStrategy;
-    return this.resourceGeneratorMap.get(datasourceProvisionType.dbType);
+    const datasourceType = this.modelToDatasourceProvisionTypeMap.get(typeName) ?? DDB_DATASOURCE_TYPE;
+    if (datasourceType.provisionStrategy === DynamoDBProvisionStrategy.DEFAULT) {
+      return this.resourceGeneratorMap.get(DDB_DB_TYPE);
+    } else if (datasourceType.provisionStrategy === DynamoDBProvisionStrategy.AMPLIFY_TABLE) {
+      return this.resourceGeneratorMap.get(CUSTOM_DDB_DB_TYPE);
+    }
+    return this.resourceGeneratorMap.get(datasourceType.dbType);
   };
 }

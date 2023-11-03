@@ -193,7 +193,7 @@ export class AmplifyGraphqlApi extends Construct {
         ...defaultTranslationBehavior,
         ...(translationBehavior ?? {}),
       },
-      ...parseDataSourceConfig(definition.dataSourceProvisionConfig),
+      ...parseDataSourceConfig(definition.dataSourceDefinitionMap),
     });
 
     this.codegenAssets = new CodegenAssets(this, 'AmplifyCodegenAssets', { modelSchema: definition.schema });

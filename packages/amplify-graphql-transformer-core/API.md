@@ -19,8 +19,8 @@ import { CfnResource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { DatasourceProvisionConfig } from '@aws-amplify/graphql-transformer-interfaces';
-import { DatasourceProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { DataSourceProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { DataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveDefinitionNode } from 'graphql';
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql/language';
@@ -114,23 +114,15 @@ export const enum ConflictHandlerType {
 }
 
 // @public (undocumented)
+export function constructDataSourceMap(schema: string, datasourceType: DataSourceType): Map<string, DataSourceType>;
+
+// @public (undocumented)
 function createSyncLambdaIAMPolicy(context: TransformerContextProvider, scope: Construct, name: string, region?: string): iam.Policy;
 
 // Warning: (ae-forgotten-export) The symbol "TransformerContext" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 function createSyncTable(context: TransformerContext): void;
-
-// @public (undocumented)
-export interface DatasourceType {
-    // (undocumented)
-    dbType: DBType;
-    // (undocumented)
-    provisionDB: boolean;
-}
-
-// @public (undocumented)
-export type DBType = 'MySQL' | 'DDB';
 
 // @public (undocumented)
 export const DDB_DB_TYPE = "DDB";
@@ -190,7 +182,7 @@ export type GetArgumentsOptions = {
 };
 
 // @public (undocumented)
-export function getDatasourceProvisionStrategy(ctx: TransformerBeforeStepContextProvider, typeName?: string): DatasourceProvisionStrategy;
+export function getDatasourceProvisionStrategy(ctx: TransformerBeforeStepContextProvider, typeName?: string): DataSourceProvisionStrategy;
 
 // Warning: (ae-forgotten-export) The symbol "Operation" needs to be exported by the entry point index.d.ts
 //

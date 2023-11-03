@@ -24,16 +24,10 @@ import {
   AssetProvider,
   SynthParameters,
   TransformParameterProvider,
-  DatasourceProvisionConfig,
+  DataSourceType,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
-import {
-  DatasourceType,
-  GraphQLTransform,
-  RDSConnectionSecrets,
-  ResolverConfig,
-  UserDefinedSlot,
-} from '@aws-amplify/graphql-transformer-core';
+import { GraphQLTransform, RDSConnectionSecrets, ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 import { Construct } from 'constructs';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 
@@ -119,7 +113,7 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
 
 export type ExecuteTransformConfig = TransformConfig & {
   schema: string;
-  modelToDatasourceMap?: Map<string, DatasourceType>;
+  modelToDatasourceMap?: Map<string, DataSourceType>;
   datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
   printTransformerLog?: (log: TransformerLog) => void;
   sqlLambdaVpcConfig?: VpcConfig;
@@ -129,7 +123,6 @@ export type ExecuteTransformConfig = TransformConfig & {
   parameterProvider?: TransformParameterProvider;
   assetProvider: AssetProvider;
   synthParameters: SynthParameters;
-  datasourceProvisionConfig?: DatasourceProvisionConfig;
 };
 
 /**
@@ -172,7 +165,6 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
     assetProvider,
     synthParameters,
     parameterProvider,
-    datasourceProvisionConfig,
   } = config;
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
@@ -190,7 +182,6 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
         modelToDatasourceMap,
         datasourceSecretParameterLocations,
         rdsLayerMapping,
-        datasourceProvisionConfig,
       },
     });
   } finally {

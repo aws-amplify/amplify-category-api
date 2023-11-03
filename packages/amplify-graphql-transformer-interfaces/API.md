@@ -155,13 +155,20 @@ export interface DataSourceProvider extends BackedDataSource {
 }
 
 // @public (undocumented)
-export type DatasourceProvisionConfig = {
-    default?: DatasourceProvisionStrategy;
-    models?: Record<string, DatasourceProvisionStrategy>;
-};
+export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy;
 
 // @public (undocumented)
-export type DatasourceProvisionStrategy = DynamoDBProvisionStrategy;
+export interface DataSourceType {
+    // (undocumented)
+    dbType: DBType;
+    // (undocumented)
+    provisionDB: boolean;
+    // (undocumented)
+    provisionStrategy: DataSourceProvisionStrategy;
+}
+
+// @public (undocumented)
+export type DBType = 'MySQL' | 'DDB';
 
 // @public (undocumented)
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {
@@ -169,16 +176,8 @@ export interface DynamoDbDataSourceOptions extends DataSourceOptions {
     readonly serviceRole: IRole;
 }
 
-// Warning: (ae-forgotten-export) The symbol "DatasourceProvisionStrategyBase" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
-export type DynamoDBProvisionStrategy = DatasourceProvisionStrategyBase & {
-    dbType: 'DDB';
-    provisionStrategy: DynamoDBProvisionStrategyType;
-};
-
-// @public (undocumented)
-export const enum DynamoDBProvisionStrategyType {
+export const enum DynamoDBProvisionStrategy {
     // (undocumented)
     AMPLIFY_TABLE = "AMPLIFY_TABLE",
     // (undocumented)
@@ -361,7 +360,7 @@ export type SynthParameters = {
 export type TransformerAuthProvider = TransformerPluginProvider;
 
 // @public (undocumented)
-export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager' | 'synthParameters' | 'datasourceProvisionConfig'>;
+export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager' | 'synthParameters'>;
 
 // @public (undocumented)
 export interface TransformerContextOutputProvider {
@@ -428,8 +427,6 @@ export interface TransformerContextProvider {
     // (undocumented)
     authConfig: AppSyncAuthConfiguration;
     // (undocumented)
-    readonly datasourceProvisionConfig?: DatasourceProvisionConfig;
-    // (undocumented)
     dataSources: TransformerDataSourceManagerProvider;
     // (undocumented)
     datasourceSecretParameterLocations: Map<string, TransformerSecrets>;
@@ -443,10 +440,8 @@ export interface TransformerContextProvider {
     //
     // (undocumented)
     metadata: TransformerContextMetadataProvider;
-    // Warning: (ae-forgotten-export) The symbol "DatasourceType" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
-    modelToDatasourceMap: Map<string, DatasourceType>;
+    modelToDatasourceMap: Map<string, DataSourceType>;
     // (undocumented)
     output: TransformerContextOutputProvider;
     // (undocumented)
