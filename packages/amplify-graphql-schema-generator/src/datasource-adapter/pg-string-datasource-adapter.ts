@@ -147,7 +147,7 @@ export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
       }));
   }
 
-  protected mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columntype: string): FieldType {
+  public mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columntype: string): FieldType {
     let fieldDatatype: FieldDataType = 'String';
     let listtype = false;
 
