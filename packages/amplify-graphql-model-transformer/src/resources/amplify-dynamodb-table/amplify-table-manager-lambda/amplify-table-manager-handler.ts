@@ -228,7 +228,7 @@ export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
 export const isComplete = async (
   event: AWSCDKAsyncCustomResource.IsCompleteRequest,
 ): Promise<AWSCDKAsyncCustomResource.IsCompleteResponse> => {
-  log('got event', { ...event, ResponseURL: '...' });
+  log('got event', { ...event, ResponseURL: '[redacted]' });
   if (event.RequestType === 'Delete') {
     // nothing else to do on delete
     console.log('Delete is finished');
