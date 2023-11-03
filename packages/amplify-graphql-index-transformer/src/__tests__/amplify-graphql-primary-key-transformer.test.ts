@@ -1,5 +1,5 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { validateModelSchema, DatasourceType } from '@aws-amplify/graphql-transformer-core';
+import { validateModelSchema, DataSourceType } from '@aws-amplify/graphql-transformer-core';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Kind, parse } from 'graphql';
 import _ from 'lodash';
@@ -726,7 +726,7 @@ test('lowercase model names generate the correct get/list query arguments', () =
 });
 
 describe('RDS primary key transformer tests', () => {
-  const modelToDatasourceMap = new Map<string, DatasourceType>();
+  const modelToDatasourceMap = new Map<string, DataSourceType>();
   modelToDatasourceMap.set('Test', {
     dbType: 'MySQL',
     provisionDB: false,

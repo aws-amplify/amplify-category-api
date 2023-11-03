@@ -2,11 +2,11 @@ export { getPrimaryKeyFields } from './model-util';
 export { DirectiveWrapper, GetArgumentsOptions, generateGetArgumentsInput } from './directive-wrapper';
 export { collectDirectives, collectDirectivesByTypeNames } from './type-map-utils';
 export { stripDirectives } from './strip-directives';
-export { getTable, getKeySchema, getSortKeyFieldNames, getDatasourceType } from './schema-utils';
+export { getTable, getKeySchema, getSortKeyFieldNames, getDataSourceType } from './schema-utils';
 export { DEFAULT_SCHEMA_DEFINITION } from './defaultSchema';
 export {
   getParameterStoreSecretPath,
-  getModelDatasourceType,
+  getModelDataSourceType,
   isDynamoDBModel,
   isRDSModel,
   isImportedRDSType,

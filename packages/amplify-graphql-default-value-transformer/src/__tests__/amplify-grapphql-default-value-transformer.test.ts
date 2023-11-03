@@ -1,5 +1,5 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { DatasourceType, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { DataSourceType, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { DefaultValueTransformer } from '..';
@@ -322,7 +322,7 @@ describe('DefaultValueModelTransformer:', () => {
       }
     `;
 
-    const modelToDatasourceMap = new Map<string, DatasourceType>();
+    const modelToDatasourceMap = new Map<string, DataSourceType>();
     modelToDatasourceMap.set('Note', {
       dbType: 'MySQL',
       provisionDB: false,

@@ -36,7 +36,7 @@ export type DBType = 'DDB' | 'MySQL' | 'Postgres';
  * Configuration for a datasource. Defines the underlying database engine, and instructs the tranformer whether to provision the database
  * storage or whether it already exists.
  */
-export interface DatasourceType {
+export interface DataSourceType {
   dbType: DBType;
   provisionDB: boolean;
 }

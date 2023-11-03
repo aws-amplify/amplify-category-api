@@ -260,11 +260,11 @@ export class AmplifyGraphqlApi extends Construct {
     );
 
     if (!extendedConfig.modelToDatasourceMap || extendedConfig.modelToDatasourceMap.size === 0) {
-      const defaultDatasourceType = {
+      const defaultDataSourceType = {
         dbType: modelDataSourceBinding.bindingType,
         provisionDB: false,
       };
-      extendedConfig.modelToDatasourceMap = constructDataSourceMap(extendedConfig.schema, defaultDatasourceType);
+      extendedConfig.modelToDatasourceMap = constructDataSourceMap(extendedConfig.schema, defaultDataSourceType);
     }
 
     extendedConfig.sqlLambdaVpcConfig = {

@@ -13,7 +13,7 @@ export {
   SyncConfigServer,
   SyncConfigLambda,
   TransformConfig,
-  DatasourceType,
+  DataSourceType,
   DBType,
 } from './config/index';
 export {
@@ -28,7 +28,7 @@ export {
   DirectiveWrapper,
   APICategory,
   getPrimaryKeyFields,
-  getDatasourceType,
+  getDataSourceType,
   setResourceName,
   getResourceName,
   isRDSModel,
