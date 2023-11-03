@@ -12,15 +12,12 @@
   "main": "lib/index.js",
   "scripts": {
     "jsii": "jsii",
-    "build": "yarn config set script-shell bash && yarn transform-deps && yarn config delete script-shell && jsii",
+    "build": "jsii",
     "watch": "jsii -w",
     "package": "jsii-pacmak",
     "clean": "rimraf lib dist tsconfig.json tsconfig.tsbuildinfo node_modules",
     "test": "jest",
     "test-watch": "jest --watch",
-    "transform-deps": "dir=node_modules/@aws-amplify/backend-output-schemas yarn transform-in-place && dir=node_modules/@aws-amplify/backend-output-storage yarn transform-in-place",
-    "transform-in-place": "npx babel $dir --extensions .js --out-dir transpiled --copy-files && cp -r transpiled/* $dir && rimraf transpiled && yarn force-cjs-module $dir",
-    "force-cjs-module": "ts-node --project extract-api.tsconfig.json ./remove-module-type-from-package-json.ts",
     "extract-api": "ts-node --project extract-api.tsconfig.json ../../scripts/extract-api.ts",
     "update-readme": "cp README_HEAD.md README.md && jsii && jsii-docgen --readme --output README.md",
     "prepublishOnly": "jsii && git add .jsii && git commit -m \"chore: update .jsii assembly\" --no-verify"
@@ -54,6 +51,7 @@
     "@aws-amplify/graphql-predictions-transformer",
     "@aws-amplify/graphql-relational-transformer",
     "@aws-amplify/graphql-searchable-transformer",
+    "@aws-amplify/platform-core",
     "fs-extra",
     "graphql",
     "graphql-transformer-common",
@@ -74,8 +72,8 @@
     "universalify"
   ],
   "dependencies": {
-    "@aws-amplify/backend-output-schemas": "^0.2.0-alpha.6",
-    "@aws-amplify/backend-output-storage": "^0.1.1-alpha.2",
+    "@aws-amplify/backend-output-schemas": "^0.2.1",
+    "@aws-amplify/backend-output-storage": "^0.2.0",
     "@aws-amplify/graphql-auth-transformer": "3.1.10",
     "@aws-amplify/graphql-default-value-transformer": "2.1.8",
     "@aws-amplify/graphql-function-transformer": "2.1.7",
@@ -89,6 +87,7 @@
     "@aws-amplify/graphql-transformer": "1.2.6",
     "@aws-amplify/graphql-transformer-core": "2.2.4",
     "@aws-amplify/graphql-transformer-interfaces": "3.2.2",
+    "@aws-amplify/platform-core": "^0.1.2",
     "charenc": "^0.0.2",
     "crypt": "^0.0.2",
     "fs-extra": "^8.1.0",
