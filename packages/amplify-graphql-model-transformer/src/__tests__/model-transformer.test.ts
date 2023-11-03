@@ -1,4 +1,4 @@
-import { ConflictHandlerType, DatasourceType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, NamedTypeNode, parse } from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
 import { Template } from 'aws-cdk-lib/assertions';
@@ -15,6 +15,7 @@ import {
   verifyInputCount,
   verifyMatchingTypes,
 } from './test-utils/helpers';
+import { DynamoDBProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 
 describe('ModelTransformer:', () => {
   it('should successfully transform simple valid schema', async () => {
@@ -1504,6 +1505,7 @@ describe('ModelTransformer:', () => {
           Post: {
             dbType: 'MySQL',
             provisionDB: false,
+            provisionStrategy: DynamoDBProvisionStrategy.DEFAULT, // TODO: replace this once the RDS strategy is implemented
           },
         }),
       ),
