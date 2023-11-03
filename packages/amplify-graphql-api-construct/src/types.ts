@@ -393,15 +393,6 @@ export interface TranslationBehavior {
    */
   readonly respectPrimaryKeyAttributesOnConnectionField: boolean;
 
-  /**
-   * Used for AmplifyGrapqhlApi construct ONLY
-   * If enabled, the table resources will be generated under custom resource provider,
-   * which enables the multiple GSI updates within one deployment phase
-   * @default false
-   * @experimental
-   */
-  readonly useAmplifyManagedTableResources: boolean;
-
   readonly enableSearchNodeToNodeEncryption: boolean;
 
   /**
@@ -487,13 +478,6 @@ export interface PartialTranslationBehavior {
    * @default false
    */
   readonly enableTransformerCfnOutputs?: boolean;
-
-  /**
-   * When enabled, amplify DynamoDB table will be generated instead of CFN pre-defined DynamoDB table
-   * @default false
-   * @experimental
-   */
-  readonly useAmplifyManagedTableResources?: boolean;
 }
 
 /**
@@ -511,6 +495,12 @@ export interface IAmplifyGraphqlDefinition {
    * @returns generated function slots
    */
   readonly functionSlots: FunctionSlot[];
+
+  /**
+   * Retrieve the datasource definition mapping. The default strategy is to use DynamoDB from CloudFormation.
+   * @returns datasource definition mapping
+   */
+  readonly dataSourceDefinition: Record<string, ModelDataSourceDefinition>;
 }
 
 /**
@@ -539,6 +529,48 @@ export interface IBackendOutputStorageStrategy {
    */
   // eslint-disable-next-line @typescript-eslint/method-signature-style
   addBackendOutputEntry(keyName: string, backendOutputEntry: IBackendOutputEntry): void;
+}
+
+/**
+ * Defines a datasource for resolving GraphQL operations against `@model` types in a GraphQL schema.
+ * @experimental
+ */
+export interface ModelDataSourceDefinition {
+  /**
+   * The name of the ModelDataSource. This will be used to name the AppSynce DataSource itself, plus any associated resources like resolver
+   * Lambdas, custom CDK resources. This name must be unique across all schema definitions in a GraphQL API.
+   */
+  readonly name: string;
+  /**
+   * The ModelDataSourceDefinitionStrategy.
+   */
+  readonly strategy: ModelDataSourceDefinitionStrategy;
+}
+/**
+ * All known ModelDataSourceDefinitionStrategies. Concrete strategies vary widely in their requirements and implementations.
+ * @experimental
+ */
+export type ModelDataSourceDefinitionStrategy =
+  | DefaultDynamoDbModelDataSourceDefinitionStrategy
+  | AmplifyDynamoDbModelDataSourceDefinitionStrategy;
+
+export type ModelDataSourceDefinitionDbType = 'DYNAMODB';
+
+/**
+ * Use default CloudFormation type 'AWS::DynamoDB::Table' to provision table.
+ * @experimental
+ */
+export interface DefaultDynamoDbModelDataSourceDefinitionStrategy {
+  readonly dbType: 'DYNAMODB';
+  readonly provisionStrategy: 'DEFAULT';
+}
+/**
+ * Use custom resource type 'Custom::AmplifyDynamoDBTable' to provision table.
+ * @experimental
+ */
+export interface AmplifyDynamoDbModelDataSourceDefinitionStrategy {
+  readonly dbType: 'DYNAMODB';
+  readonly provisionStrategy: 'AMPLIFY_TABLE';
 }
 
 /**

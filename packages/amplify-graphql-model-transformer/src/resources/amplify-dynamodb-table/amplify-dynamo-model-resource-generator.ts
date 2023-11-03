@@ -93,14 +93,14 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
 
     this.ddbManagerPolicy.attachToRole(gsiOnEventHandler.role!);
     this.ddbManagerPolicy.attachToRole(gsiIsCompleteHandler.role!);
-    this.customResourceProvider = new custom_resources.Provider(scope, ResourceConstants.RESOURCES.TableManagerCustomProviderLogicalID, {
+    const customResourceProvider = new custom_resources.Provider(scope, ResourceConstants.RESOURCES.TableManagerCustomProviderLogicalID, {
       onEventHandler: gsiOnEventHandler,
       isCompleteHandler: gsiIsCompleteHandler,
       logRetention: aws_logs.RetentionDays.ONE_MONTH,
       queryInterval: Duration.seconds(30),
       totalTimeout: Duration.hours(2),
     });
-    this.customResourceServiceToken = this.customResourceProvider.serviceToken;
+    this.customResourceServiceToken = customResourceProvider.serviceToken;
   }
 
   protected createModelTable(scope: Construct, def: ObjectTypeDefinitionNode, context: TransformerContextProvider): void {

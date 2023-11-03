@@ -421,7 +421,7 @@ export function updateTableForConnection(config: HasManyDirectiveConfiguration, 
     }),
   };
 
-  overrideIndexAtCfnLevel(ctx, table, newIndex);
+  overrideIndexAtCfnLevel(ctx, relatedType.name.value, table, newIndex);
 }
 
 type SortKeyAttributeDefinitions = {

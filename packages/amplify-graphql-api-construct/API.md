@@ -60,6 +60,14 @@ export interface AddFunctionProps {
 }
 
 // @public
+export interface AmplifyDynamoDbModelDataSourceDefinitionStrategy {
+    // (undocumented)
+    readonly dbType: 'DYNAMODB';
+    // (undocumented)
+    readonly provisionStrategy: 'AMPLIFY_TABLE';
+}
+
+// @public
 export class AmplifyDynamoDbTableWrapper {
     constructor(resource: CfnResource);
     set billingMode(billingMode: BillingMode);
@@ -137,8 +145,10 @@ export interface AmplifyGraphqlApiResources {
 
 // @public
 export class AmplifyGraphqlDefinition {
+    static combine(definitions: IAmplifyGraphqlDefinition[]): IAmplifyGraphqlDefinition;
     static fromFiles(...filePaths: string[]): IAmplifyGraphqlDefinition;
-    static fromString(schema: string): IAmplifyGraphqlDefinition;
+    static fromFilesAndDefinition(filePaths: string | string[], modelDataSourceDefinition?: ModelDataSourceDefinition): IAmplifyGraphqlDefinition;
+    static fromString(schema: string, modelDataSourceDefinition?: ModelDataSourceDefinition): IAmplifyGraphqlDefinition;
 }
 
 // @public
@@ -187,6 +197,14 @@ export interface CustomConflictResolutionStrategy extends ConflictResolutionStra
 }
 
 // @public
+export interface DefaultDynamoDbModelDataSourceDefinitionStrategy {
+    // (undocumented)
+    readonly dbType: 'DYNAMODB';
+    // (undocumented)
+    readonly provisionStrategy: 'DEFAULT';
+}
+
+// @public
 export type FunctionSlot = MutationFunctionSlot | QueryFunctionSlot | SubscriptionFunctionSlot;
 
 // @public
@@ -211,6 +229,7 @@ export interface IAMAuthorizationConfig {
 
 // @public
 export interface IAmplifyGraphqlDefinition {
+    readonly dataSourceDefinition: Record<string, ModelDataSourceDefinition>;
     readonly functionSlots: FunctionSlot[];
     readonly schema: string;
 }
@@ -231,6 +250,18 @@ export interface LambdaAuthorizationConfig {
     readonly function: IFunction;
     readonly ttl: Duration;
 }
+
+// @public
+export interface ModelDataSourceDefinition {
+    readonly name: string;
+    readonly strategy: ModelDataSourceDefinitionStrategy;
+}
+
+// @public (undocumented)
+export type ModelDataSourceDefinitionDbType = 'DYNAMODB';
+
+// @public
+export type ModelDataSourceDefinitionStrategy = DefaultDynamoDbModelDataSourceDefinitionStrategy | AmplifyDynamoDbModelDataSourceDefinitionStrategy;
 
 // @public
 export interface MutationFunctionSlot extends FunctionSlotBase {
@@ -264,7 +295,6 @@ export interface PartialTranslationBehavior {
     readonly secondaryKeyAsGSI?: boolean;
     readonly shouldDeepMergeDirectiveConfigDefaults?: boolean;
     readonly suppressApiKeyGeneration?: boolean;
-    readonly useAmplifyManagedTableResources?: boolean;
     readonly useSubUsernameForDefaultIdentityClaim?: boolean;
 }
 
@@ -323,7 +353,6 @@ export interface TranslationBehavior {
     readonly secondaryKeyAsGSI: boolean;
     readonly shouldDeepMergeDirectiveConfigDefaults: boolean;
     readonly suppressApiKeyGeneration: boolean;
-    readonly useAmplifyManagedTableResources: boolean;
     readonly useSubUsernameForDefaultIdentityClaim: boolean;
 }
 

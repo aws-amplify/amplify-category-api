@@ -155,9 +155,33 @@ export interface DataSourceProvider extends BackedDataSource {
 }
 
 // @public (undocumented)
+export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy;
+
+// @public (undocumented)
+export interface DataSourceType {
+    // (undocumented)
+    dbType: DBType;
+    // (undocumented)
+    provisionDB: boolean;
+    // (undocumented)
+    provisionStrategy: DataSourceProvisionStrategy;
+}
+
+// @public (undocumented)
+export type DBType = 'MySQL' | 'DDB';
+
+// @public (undocumented)
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {
     // (undocumented)
     readonly serviceRole: IRole;
+}
+
+// @public (undocumented)
+export const enum DynamoDBProvisionStrategy {
+    // (undocumented)
+    AMPLIFY_TABLE = "AMPLIFY_TABLE",
+    // (undocumented)
+    DEFAULT = "DEFAULT"
 }
 
 // @public (undocumented)
@@ -416,10 +440,8 @@ export interface TransformerContextProvider {
     //
     // (undocumented)
     metadata: TransformerContextMetadataProvider;
-    // Warning: (ae-forgotten-export) The symbol "DatasourceType" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
-    modelToDatasourceMap: Map<string, DatasourceType>;
+    modelToDatasourceMap: Map<string, DataSourceType>;
     // (undocumented)
     output: TransformerContextOutputProvider;
     // (undocumented)
@@ -738,7 +760,6 @@ export type TransformParameters = {
     shouldDeepMergeDirectiveConfigDefaults: boolean;
     disableResolverDeduping: boolean;
     sandboxModeEnabled: boolean;
-    useAmplifyManagedTableResources: boolean;
     useSubUsernameForDefaultIdentityClaim: boolean;
     populateOwnerFieldForStaticGroupAuth: boolean;
     suppressApiKeyGeneration: boolean;

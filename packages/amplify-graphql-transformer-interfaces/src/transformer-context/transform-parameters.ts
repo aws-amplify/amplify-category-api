@@ -12,7 +12,6 @@ export type TransformParameters = {
   shouldDeepMergeDirectiveConfigDefaults: boolean;
   disableResolverDeduping: boolean;
   sandboxModeEnabled: boolean;
-  useAmplifyManagedTableResources: boolean; // Used for CDK construct ONLY
 
   // Auth Params
   useSubUsernameForDefaultIdentityClaim: boolean;

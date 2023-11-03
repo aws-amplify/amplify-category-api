@@ -16,6 +16,5 @@ export const defaultTranslationBehavior: TranslationBehavior = {
   enableAutoIndexQueryNames: true,
   respectPrimaryKeyAttributesOnConnectionField: true,
   enableSearchNodeToNodeEncryption: false,
-  useAmplifyManagedTableResources: false, // TODO: flip to true once all implementations are finished
   enableTransformerCfnOutputs: false,
 };

@@ -7,3 +7,4 @@ export { getParameterStoreSecretPath } from './rds-secret-utils';
 export const APICategory = 'api';
 export { setResourceName, getResourceName } from './resource-name';
 export type { SetResourceNameProps } from './resource-name';
+export { getDatasourceProvisionStrategy } from './provision-strategy-utils';
