@@ -885,9 +885,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
    */
   private getResourceGenerator = (typeName: string): ModelResourceGenerator | undefined => {
     const datasourceType = this.modelToDatasourceProvisionTypeMap.get(typeName) ?? DDB_DATASOURCE_TYPE;
-    if (datasourceType.provisionStrategy === DynamoDBProvisionStrategy.DEFAULT) {
+    if (datasourceType.dbType === DDB_DB_TYPE && datasourceType.provisionStrategy === DynamoDBProvisionStrategy.DEFAULT) {
       return this.resourceGeneratorMap.get(DDB_DB_TYPE);
-    } else if (datasourceType.provisionStrategy === DynamoDBProvisionStrategy.AMPLIFY_TABLE) {
+    } else if (datasourceType.dbType === DDB_DB_TYPE && datasourceType.provisionStrategy === DynamoDBProvisionStrategy.AMPLIFY_TABLE) {
       return this.resourceGeneratorMap.get(CUSTOM_DDB_DB_TYPE);
     }
     return this.resourceGeneratorMap.get(datasourceType.dbType);
