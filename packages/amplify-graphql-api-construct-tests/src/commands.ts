@@ -83,5 +83,16 @@ export const cdkDeploy = async (cwd: string, option: string, props?: CdkDeployPr
  * @returns a promise which resolves after teardown of the stack
  */
 export const cdkDestroy = async (cwd: string, option: string): Promise<void> => {
-  return spawn(getNpxPath(), ['cdk', 'destroy', option], { cwd, stripColors: true }).sendYes().runAsync();
+  return spawn(getNpxPath(), ['cdk', 'destroy', '--force', option], { cwd, stripColors: true }).runAsync();
 };
+
+/**
+ * Helper function to update the cdk app code by a given diretory path containing the new `app.ts`
+ * @param cwd cdk app project root
+ * @param templatePath updated cdk app code directory path. The new `app.ts` should be defined under this directory
+ */
+export function updateCDKAppWithTemplate(cwd: string, templatePath: string): void {
+  const binDir = path.join(cwd, 'bin');
+  copySync(templatePath, binDir, { overwrite: true });
+  moveSync(path.join(binDir, 'app.ts'), path.join(binDir, `${path.basename(cwd)}.ts`), { overwrite: true });
+}

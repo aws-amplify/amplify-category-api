@@ -41,7 +41,7 @@ const log = (msg: string, ...other: any[]) => {
  * @returns Response object which is sent back to CFN
  */
 export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): Promise<AWSCDKAsyncCustomResource.OnEventResponse> => {
-  console.log(event);
+  console.log({ ...event, ResponseURL: '[redacted]' });
   const tableDef = extractTableInputFromEvent(event);
   console.log('Input table state: ', tableDef);
 
@@ -228,7 +228,7 @@ export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
 export const isComplete = async (
   event: AWSCDKAsyncCustomResource.IsCompleteRequest,
 ): Promise<AWSCDKAsyncCustomResource.IsCompleteResponse> => {
-  log('got event', event);
+  log('got event', { ...event, ResponseURL: '[redacted]' });
   if (event.RequestType === 'Delete') {
     // nothing else to do on delete
     console.log('Delete is finished');
@@ -718,9 +718,11 @@ const usePascalCaseForObjectKeys = (obj: { [key: string]: any }): { [key: string
  * Util function to convert string values to the correct form
  * Such as 'true' to true, '5' to 5
  * @param obj Input object
- * @returns Oject with its values converted to the correct form of boolean or number
+ * @returns Object with its values converted to the correct form of boolean or number
  */
 const convertStringToBooleanOrNumber = (obj: Record<string, any>): Record<string, any> => {
+  const fieldsToBeConvertedToBoolean = ['deletionProtectionEnabled', 'enabled', 'sseEnabled', 'pointInTimeRecoveryEnabled'];
+  const fieldsToBeConvertedToNumber = ['readCapacityUnits', 'writeCapacityUnits'];
   for (const key in obj) {
     if (Array.isArray(obj[key])) {
       obj[key] = obj[key].map((o: Record<string, any>) => convertStringToBooleanOrNumber(o));
@@ -728,10 +730,10 @@ const convertStringToBooleanOrNumber = (obj: Record<string, any>): Record<string
       // If the property is an object, recursively call the function
       obj[key] = convertStringToBooleanOrNumber(obj[key]);
     } else if (typeof obj[key] === 'string') {
-      if (obj[key] === 'true' || obj[key] === 'false') {
+      if ((obj[key] === 'true' || obj[key] === 'false') && fieldsToBeConvertedToBoolean.includes(key)) {
         // If the property is a string with value 'true' or 'false', convert it to a boolean
         obj[key] = obj[key] === 'true';
-      } else if (!isNaN(Number(obj[key]))) {
+      } else if (!isNaN(Number(obj[key])) && fieldsToBeConvertedToNumber.includes(key)) {
         // If the property is a string that can be parsed into a number, convert it to a number
         obj[key] = Number(obj[key]);
       }

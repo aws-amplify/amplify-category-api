@@ -6,6 +6,22 @@ import { testTransform, Template, AmplifyApiGraphQlResourceStackTemplate } from 
 import { Construct } from 'constructs';
 import { IndexTransformer, PrimaryKeyTransformer } from '..';
 
+test('throws if index name is invalid', () => {
+  const schema = `
+    type Test @model {
+      id: ID! @index(name: "Canary/$")
+    }`;
+
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+    }),
+  ).toThrow(
+    'The indexName is invalid. It should be between 3 and 255 characters. Only A–Z, a–z, 0–9, underscore characters, hyphens, and periods allowed.',
+  );
+});
+
 test('throws if @index is used in a non-@model type', () => {
   const schema = `
     type Test {
