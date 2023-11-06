@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, AmplifyError, ApiCategoryFacade } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import fs from 'fs-extra';
 import _ from 'lodash';
@@ -42,7 +42,8 @@ export const run = async (context: $TSContext): Promise<void> => {
     if (!Object.values(ImportedRDSType).includes(engineType)) {
       throw new AmplifyError('UserInputError', { message: `${engineType} is not a supported engine type.` });
     }
-    const schema = await graphqlSchemaFromRDSSchema(fs.readFileSync(sqlSchema, 'utf8'), engineType);
+    const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
+    const schema = await graphqlSchemaFromRDSSchema(fs.readFileSync(sqlSchema, 'utf8'), engineType, transformerVersion);
     writeSchemaFile(out, schema);
   } else {
     const apiName = getAppSyncAPIName();
