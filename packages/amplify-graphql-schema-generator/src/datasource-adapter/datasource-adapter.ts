@@ -18,7 +18,6 @@ export abstract class DataSourceAdapter {
 
   public abstract test(): Promise<boolean>;
 
-  // todo correct function signature
   protected abstract querySchema(): Promise<string>;
 
   public useVPC = false;
