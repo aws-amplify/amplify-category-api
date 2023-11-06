@@ -23,6 +23,7 @@ const getGlobalAmplifyInputEntries = (
   ];
 
   if (includeAuthRule && transformerVersion === 2) {
+    // need to get from cli core
     inputs.push({
       name: 'globalAuthRule',
       type: 'AuthRule',
