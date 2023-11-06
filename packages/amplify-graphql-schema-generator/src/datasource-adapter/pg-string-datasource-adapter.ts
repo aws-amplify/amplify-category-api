@@ -32,15 +32,14 @@ export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
 
   private readonly PRIMARY_KEY_INDEX_NAME = 'PRIMARY';
 
-  protected parseSchema(schema: string): void {
-    const parsedSchema = parse(schema, {
-      columns: true,
-    });
-    this.setEnums(parsedSchema);
-    this.setFields(parsedSchema);
-    this.setIndexes(parsedSchema);
-    this.setTables(parsedSchema);
+  protected setSchema(schema: any[]): void {
+    this.setEnums(schema);
+    this.setFields(schema);
+    this.setIndexes(schema);
+    this.setTables(schema);
   }
+
+  protected validateSchema(schema: any[]): void {}
 
   public getTablesList(): string[] {
     return this.tables;
