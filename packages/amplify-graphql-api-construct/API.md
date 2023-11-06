@@ -194,6 +194,7 @@ export interface FunctionSlotOverride {
 
 // @public
 export interface IAMAuthorizationConfig {
+    readonly allowListedRoles?: (IRole | string)[];
     readonly authenticatedUserRole: IRole;
     readonly identityPoolId: string;
     readonly unauthenticatedUserRole: IRole;
