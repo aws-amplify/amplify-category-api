@@ -792,7 +792,7 @@ export interface SqlModelDataSourceBinding {
   /**
    * The configuration of the VPC into which to install the Lambda.
    */
-  readonly vpcConfiguration: SqlModelDataSourceBindingVpcConfig;
+  readonly vpcConfiguration?: SqlModelDataSourceBindingVpcConfig;
 
   /**
    * Custom SQL statements. The key is the value of the `references` attribute of the `@sql` directive in the `schema`; the value is the SQL

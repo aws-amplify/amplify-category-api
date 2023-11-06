@@ -135,7 +135,7 @@ describe('supports different props configurations', () => {
     });
   });
 
-  it('supports a definition with a SQLModelDataSourceBinding', () => {
+  it('supports a definition with a SQLModelDataSourceBinding with a VPC configuration', () => {
     verifySynth((stack) => {
       new AmplifyGraphqlApi(stack, 'TestApi', {
         definition: AmplifyGraphqlDefinition.fromString(
@@ -163,6 +163,34 @@ describe('supports different props configurations', () => {
                   availabilityZone: 'us-east-1a',
                 },
               ],
+            },
+          },
+        ),
+        authorizationModes: {
+          apiKeyConfig: { expires: cdk.Duration.days(7) },
+        },
+      });
+    });
+  });
+
+  it('supports a definition with a SQLModelDataSourceBinding without a VPC configuration', () => {
+    verifySynth((stack) => {
+      new AmplifyGraphqlApi(stack, 'TestApi', {
+        definition: AmplifyGraphqlDefinition.fromString(
+          /* GraphQL */ `
+            type Todo @model @auth(rules: [{ allow: public }]) {
+              id: ID! @primaryKey
+              description: String!
+            }
+          `,
+          {
+            bindingType: 'MySQL',
+            dbConnectionConfig: {
+              hostnameSsmPath: '/path/to/hostname',
+              usernameSsmPath: '/path/to/username',
+              passwordSsmPath: '/path/to/password',
+              portSsmPath: '/path/to/port',
+              databaseNameSsmPath: '/path/to/databaseName',
             },
           },
         ),
