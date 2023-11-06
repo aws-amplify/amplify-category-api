@@ -1,4 +1,4 @@
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { ImportedSQLType } from '@aws-amplify/graphql-transformer-core';
 import { testRDSRefersTo } from '../rds-v2-tests-common/rds-refers-to';
 
 // to deal with bug in cognito-identity-js
@@ -13,5 +13,5 @@ describe('RDS Postgres RefersTo on Models', () => {
     'CREATE TABLE "Task" (id text PRIMARY KEY, description text)',
   ];
 
-  testRDSRefersTo(ImportedRDSType.POSTGRESQL, queries);
+  testRDSRefersTo(ImportedSQLType.POSTGRESQL, queries);
 });

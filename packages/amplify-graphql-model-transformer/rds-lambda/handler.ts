@@ -1,6 +1,6 @@
 import { SSMClient, GetParameterCommand, GetParameterCommandOutput } from '@aws-sdk/client-ssm';
 // @ts-ignore
-import { DBAdapter, DBConfig, getDBAdapter } from 'rds-query-processor';
+import { DBAdapter, DBConfig, getDBAdapter } from 'sql-query-processor';
 
 let adapter: DBAdapter;
 let secretsClient: SSMClient;

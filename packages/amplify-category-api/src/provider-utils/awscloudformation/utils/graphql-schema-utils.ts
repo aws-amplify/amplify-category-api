@@ -1,5 +1,5 @@
 import * as os from 'os';
-import { ImportedRDSType, ImportedDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
+import { ImportedSQLType, ImportedDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs-extra';
 import {
   MySQLDataSourceAdapter,
@@ -87,11 +87,11 @@ const buildSchemaFromConnection = async (envName: string, databaseConfig: Import
     'Failed to connect to the specified RDS Data Source. Check the connection details in the schema and re-try. Use "amplify api update-secrets" to update the user credentials.';
 
   switch (databaseConfig.engine) {
-    case ImportedRDSType.MYSQL:
+    case ImportedSQLType.MYSQL:
       adapter = new MySQLDataSourceAdapter(databaseConfig as MySQLDataSourceConfig);
       schema = new Schema(new Engine('MySQL'));
       break;
-    case ImportedRDSType.POSTGRESQL:
+    case ImportedSQLType.POSTGRESQL:
       adapter = new PostgresDataSourceAdapter(databaseConfig as PostgresDataSourceConfig);
       schema = new Schema(new Engine('Postgres'));
       break;

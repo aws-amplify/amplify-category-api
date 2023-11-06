@@ -1,4 +1,4 @@
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { ImportedSQLType } from '@aws-amplify/graphql-transformer-core';
 import { testRdsIamAuth } from '../rds-v2-tests-common/rds-auth-iam';
 
 // to deal with bug in cognito-identity-js
@@ -12,5 +12,5 @@ describe('RDS MySQL IAM Auth directive on Models', () => {
     'CREATE TABLE "Profile" (id VARCHAR(40) PRIMARY KEY, details VARCHAR(255), "userId" VARCHAR(40))',
   ];
 
-  testRdsIamAuth(ImportedRDSType.MYSQL, queries);
+  testRdsIamAuth(ImportedSQLType.MYSQL, queries);
 });

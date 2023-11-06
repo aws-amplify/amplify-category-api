@@ -44,7 +44,7 @@ import _ from 'lodash';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../types';
 import { lookupResolverName } from '../utils';
 import { RDSIndexVTLGenerator, DynamoDBIndexVTLGenerator } from './generators';
-import { isRDSModel } from '@aws-amplify/graphql-transformer-core';
+import { isSQLModel } from '@aws-amplify/graphql-transformer-core';
 
 const API_KEY = 'API Key Authorization';
 
@@ -331,7 +331,7 @@ export function validateSortDirectionInput(config: PrimaryKeyDirectiveConfigurat
  */
 export function appendSecondaryIndex(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void {
   const { name, object, primaryKeyField } = config;
-  if (isRDSModel(ctx, object.name.value)) {
+  if (isSQLModel(ctx, object.name.value)) {
     return;
   }
 
@@ -456,7 +456,7 @@ export function updateResolversForIndex(
 }
 
 export function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider, dbType: DBType) {
-  const { RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
+  const { SQLLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
   const isDynamoDB = dbType === DDB_DB_TYPE;
   const { name, object, queryField } = config;
   if (!(name && queryField)) {
@@ -466,7 +466,7 @@ export function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Tran
   const dbInfo = getDBInfo(ctx, modelName);
   let dataSourceName = `${object.name.value}Table`;
   if (!isDynamoDB) {
-    dataSourceName = RDSLambdaDataSourceLogicalID;
+    dataSourceName = SQLLambdaDataSourceLogicalID;
   }
   const dataSource = ctx.api.host.getDataSource(dataSourceName);
   const queryTypeName = ctx.output.getQueryTypeName() as string;

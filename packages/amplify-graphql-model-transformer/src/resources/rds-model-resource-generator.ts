@@ -1,23 +1,23 @@
-import { MYSQL_DB_TYPE, RDSConnectionSecrets, getImportedRDSType, getEngineFromDBType } from '@aws-amplify/graphql-transformer-core';
+import { MYSQL_DB_TYPE, SQLDBConnectionSecrets, getImportedSQLType, getEngineFromDBType } from '@aws-amplify/graphql-transformer-core';
 import { QueryFieldType, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Topic, SubscriptionFilter } from 'aws-cdk-lib/aws-sns';
 import { LambdaSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { ModelVTLGenerator, RDSModelVTLGenerator } from '../resolvers';
+import { ModelVTLGenerator, SQLModelVTLGenerator } from '../resolvers';
 import {
   createRdsLambda,
   createRdsLambdaRole,
   createRdsPatchingLambda,
   createRdsPatchingLambdaRole,
-  setRDSLayerMappings,
+  setSQLLayerMappings,
 } from '../resolvers/rds';
 import { ModelResourceGenerator } from './model-resource-generator';
 import { Fn } from 'aws-cdk-lib';
 
-export const RDS_STACK_NAME = 'RdsApiStack';
-// Beta SNS topic - 'arn:aws:sns:us-east-1:956468067974:AmplifyRDSLayerNotification'
-// PROD SNS topic - 'arn:aws:sns:us-east-1:582037449441:AmplifyRDSLayerNotification'
-const RDS_PATCHING_SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:582037449441:AmplifyRDSLayerNotification';
+export const SQL_STACK_NAME = 'SqlApiStack';
+// Beta SNS topic - 'arn:aws:sns:us-east-1:956468067974:AmplifySQLLayerNotification'
+// PROD SNS topic - 'arn:aws:sns:us-east-1:582037449441:AmplifySQLLayerNotification'
+const RDS_PATCHING_SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:582037449441:AmplifySQLLayerNotification';
 /**
  * An implementation of ModelResourceGenerator responsible for generated CloudFormation resources
  * for models backed by an RDS data source
@@ -27,24 +27,24 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
 
   generateResources(context: TransformerContextProvider): void {
     if (this.isEnabled()) {
-      const dbType = getImportedRDSType(context.modelToDatasourceMap);
+      const dbType = getImportedSQLType(context.modelToDatasourceMap);
       const engine = getEngineFromDBType(dbType);
       const secretEntry = context.datasourceSecretParameterLocations.get(dbType);
       const {
-        RDSLambdaIAMRoleLogicalID,
-        RDSPatchingLambdaIAMRoleLogicalID,
-        RDSLambdaLogicalID,
-        RDSPatchingLambdaLogicalID,
-        RDSLambdaDataSourceLogicalID,
-        RDSPatchingSubscriptionLogicalID,
+        SQLLambdaIAMRoleLogicalID,
+        SQLPatchingLambdaIAMRoleLogicalID,
+        SQLLambdaLogicalID,
+        SQLPatchingLambdaLogicalID,
+        SQLLambdaDataSourceLogicalID,
+        SQLPatchingSubscriptionLogicalID,
       } = ResourceConstants.RESOURCES;
-      const lambdaRoleScope = context.stackManager.getScopeFor(RDSLambdaIAMRoleLogicalID, RDS_STACK_NAME);
-      const lambdaScope = context.stackManager.getScopeFor(RDSLambdaLogicalID, RDS_STACK_NAME);
-      setRDSLayerMappings(lambdaScope, context.rdsLayerMapping);
+      const lambdaRoleScope = context.stackManager.getScopeFor(SQLLambdaIAMRoleLogicalID, SQL_STACK_NAME);
+      const lambdaScope = context.stackManager.getScopeFor(SQLLambdaLogicalID, SQL_STACK_NAME);
+      setSQLLayerMappings(lambdaScope, context.sqlLayerMapping);
       const role = createRdsLambdaRole(
-        context.resourceHelper.generateIAMRoleName(RDSLambdaIAMRoleLogicalID),
+        context.resourceHelper.generateIAMRoleName(SQLLambdaIAMRoleLogicalID),
         lambdaRoleScope,
-        secretEntry as RDSConnectionSecrets,
+        secretEntry as SQLDBConnectionSecrets,
       );
 
       const lambda = createRdsLambda(
@@ -62,10 +62,10 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
         context.sqlLambdaVpcConfig,
       );
 
-      const patchingLambdaRoleScope = context.stackManager.getScopeFor(RDSPatchingLambdaIAMRoleLogicalID, RDS_STACK_NAME);
-      const patchingLambdaScope = context.stackManager.getScopeFor(RDSPatchingLambdaLogicalID, RDS_STACK_NAME);
+      const patchingLambdaRoleScope = context.stackManager.getScopeFor(SQLPatchingLambdaIAMRoleLogicalID, SQL_STACK_NAME);
+      const patchingLambdaScope = context.stackManager.getScopeFor(SQLPatchingLambdaLogicalID, SQL_STACK_NAME);
       const patchingLambdaRole = createRdsPatchingLambdaRole(
-        context.resourceHelper.generateIAMRoleName(RDSPatchingLambdaIAMRoleLogicalID),
+        context.resourceHelper.generateIAMRoleName(SQLPatchingLambdaIAMRoleLogicalID),
         patchingLambdaRoleScope,
         lambda.functionArn,
       );
@@ -76,8 +76,8 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       });
 
       // Add SNS subscription for patching notifications
-      const patchingSubscriptionScope = context.stackManager.getScopeFor(RDSPatchingSubscriptionLogicalID, RDS_STACK_NAME);
-      const snsTopic = Topic.fromTopicArn(patchingSubscriptionScope, 'RDSPatchingTopic', RDS_PATCHING_SNS_TOPIC_ARN);
+      const patchingSubscriptionScope = context.stackManager.getScopeFor(SQLPatchingSubscriptionLogicalID, SQL_STACK_NAME);
+      const snsTopic = Topic.fromTopicArn(patchingSubscriptionScope, 'SQLLayerPatchingTopic', RDS_PATCHING_SNS_TOPIC_ARN);
       const subscription = new LambdaSubscription(patchingLambda, {
         filterPolicy: {
           Region: SubscriptionFilter.stringFilter({
@@ -87,8 +87,8 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       });
       snsTopic.addSubscription(subscription);
 
-      const lambdaDataSourceScope = context.stackManager.getScopeFor(RDSLambdaDataSourceLogicalID, RDS_STACK_NAME);
-      const rdsDatasource = context.api.host.addLambdaDataSource(`${RDSLambdaDataSourceLogicalID}`, lambda, {}, lambdaDataSourceScope);
+      const lambdaDataSourceScope = context.stackManager.getScopeFor(SQLLambdaDataSourceLogicalID, SQL_STACK_NAME);
+      const rdsDatasource = context.api.host.addLambdaDataSource(`${SQLLambdaDataSourceLogicalID}`, lambda, {}, lambdaDataSourceScope);
       this.models.forEach((model) => {
         context.dataSources.add(model, rdsDatasource);
         this.datasourceMap[model.name.value] = rdsDatasource;
@@ -100,7 +100,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
 
   // eslint-disable-next-line class-methods-use-this
   getVTLGenerator(): ModelVTLGenerator {
-    return new RDSModelVTLGenerator();
+    return new SQLModelVTLGenerator();
   }
 
   setFieldMappingResolverReferences(context: TransformerContextProvider): void {

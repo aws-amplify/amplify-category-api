@@ -6,9 +6,9 @@ import {
   generateGetArgumentsInput,
   getDataSourceType,
   InvalidDirectiveError,
-  isRDSDBType,
+  isSQLDBType,
   TransformerPluginBase,
-  isRDSModel,
+  isSQLModel,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
@@ -143,7 +143,7 @@ export class HasManyTransformer extends TransformerPluginBase {
   prepare = (context: TransformerPrepareStepContextProvider): void => {
     this.directiveList.forEach((config) => {
       const modelName = config.object.name.value;
-      if (isRDSModel(context as TransformerContextProvider, modelName)) {
+      if (isSQLModel(context as TransformerContextProvider, modelName)) {
         setFieldMappingResolverReference(context, config.relatedType?.name?.value, modelName, config.field.name.value, true);
         return;
       }
@@ -164,7 +164,7 @@ export class HasManyTransformer extends TransformerPluginBase {
       const dbType = getDataSourceType(config.field.type, context);
       if (dbType === DDB_DB_TYPE) {
         config.relatedTypeIndex = getRelatedTypeIndex(config, context, config.indexName);
-      } else if (isRDSDBType(dbType)) {
+      } else if (isSQLDBType(dbType)) {
         validateParentReferencesFields(config, context);
       }
       ensureHasManyConnectionField(config, context);
@@ -201,7 +201,7 @@ const validate = (config: HasManyDirectiveConfiguration, ctx: TransformerContext
     config.fieldNodes = getFieldsNodes(config, ctx);
   }
 
-  if (isRDSDBType(dbType)) {
+  if (isSQLDBType(dbType)) {
     ensureReferencesArray(config);
     getReferencesNodes(config, ctx);
   }

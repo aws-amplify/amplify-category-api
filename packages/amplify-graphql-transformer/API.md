@@ -11,9 +11,9 @@ import { DataSourceType } from '@aws-amplify/graphql-transformer-core';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
-import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
+import { SQLDBConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
+import { SQLLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -36,10 +36,10 @@ export type ExecuteTransformConfig = TransformConfig & {
     schema: string;
     modelToDatasourceMap?: Map<string, DataSourceType>;
     customQueries?: Map<string, string>;
-    datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
+    datasourceSecretParameterLocations?: Map<string, SQLDBConnectionSecrets>;
     printTransformerLog?: (log: TransformerLog) => void;
     sqlLambdaVpcConfig?: VpcConfig;
-    rdsLayerMapping?: RDSLayerMapping;
+    sqlLayerMapping?: SQLLayerMapping;
     scope: Construct;
     nestedStackProvider: NestedStackProvider;
     parameterProvider?: TransformParameterProvider;
@@ -56,7 +56,7 @@ export type TransformConfig = {
     stackMapping?: Record<string, string>;
     transformParameters: TransformParameters;
     sqlLambdaVpcConfig?: VpcConfig;
-    rdsLayerMapping?: RDSLayerMapping;
+    sqlLayerMapping?: SQLLayerMapping;
 };
 
 // @public (undocumented)

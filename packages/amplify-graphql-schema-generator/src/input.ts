@@ -1,5 +1,5 @@
 import { print, InputObjectTypeDefinitionNode, DocumentNode } from 'graphql';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { ImportedSQLType } from '@aws-amplify/graphql-transformer-core';
 
 type AmplifyInputEntry = {
   name: string;
@@ -9,7 +9,7 @@ type AmplifyInputEntry = {
 };
 
 const getGlobalAmplifyInputEntries = (
-  dataSourceType = ImportedRDSType.MYSQL,
+  dataSourceType = ImportedSQLType.MYSQL,
   includeAuthRule = true,
   authDocLink?: string,
 ): AmplifyInputEntry[] => {
@@ -35,7 +35,7 @@ const getGlobalAmplifyInputEntries = (
 };
 
 export const constructDefaultGlobalAmplifyInput = (
-  dataSourceType: ImportedRDSType,
+  dataSourceType: ImportedSQLType,
   includeAuthRule = true,
   authDocLink?: string,
 ): string => {
@@ -67,7 +67,7 @@ export const readRDSGlobalAmplifyInput = (schemaDocument: DocumentNode | undefin
 export const constructRDSGlobalAmplifyInput = (config: any, schemaDocument: DocumentNode | undefined): string => {
   const existingInputNode: any = readRDSGlobalAmplifyInput(schemaDocument);
   if (existingInputNode && existingInputNode?.fields && existingInputNode?.fields?.length > 0) {
-    const expectedInputs = getGlobalAmplifyInputEntries(ImportedRDSType.MYSQL).map((item) => item.name);
+    const expectedInputs = getGlobalAmplifyInputEntries(ImportedSQLType.MYSQL).map((item) => item.name);
     expectedInputs.forEach((input) => {
       const inputNodeField = existingInputNode?.fields?.find((field: any) => field?.name?.value === input);
       if (inputNodeField && config[input]) {
@@ -76,7 +76,7 @@ export const constructRDSGlobalAmplifyInput = (config: any, schemaDocument: Docu
     });
     return print(existingInputNode);
   } else {
-    const engine = config['engine'] || ImportedRDSType.MYSQL;
+    const engine = config['engine'] || ImportedSQLType.MYSQL;
     return constructDefaultGlobalAmplifyInput(engine, false);
   }
 };

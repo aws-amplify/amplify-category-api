@@ -1,4 +1,4 @@
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { ImportedSQLType } from '@aws-amplify/graphql-transformer-core';
 import { testRDSModel } from '../rds-v2-tests-common/rds-model-v2';
 
 // to deal with bug in cognito-identity-js
@@ -12,5 +12,5 @@ describe('RDS MySQL Model Directive', () => {
     'CREATE TABLE Student (studentId INT NOT NULL, classId CHAR(1) NOT NULL, firstName VARCHAR(20), lastName VARCHAR(50), PRIMARY KEY (studentId, classId))',
   ];
 
-  testRDSModel(ImportedRDSType.MYSQL, queries);
+  testRDSModel(ImportedSQLType.MYSQL, queries);
 });

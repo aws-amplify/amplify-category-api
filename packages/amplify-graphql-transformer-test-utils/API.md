@@ -24,8 +24,8 @@ import { Construct } from 'constructs';
 import { DataSourceType } from '@aws-amplify/graphql-transformer-core';
 import { ISynthesisSession } from 'aws-cdk-lib';
 import type { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
+import { SQLDBConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 import { Stack } from 'aws-cdk-lib';
 import type { SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -139,7 +139,7 @@ export type TestTransformParameters = {
     userDefinedSlots?: Record<string, UserDefinedSlot[]>;
     stackMapping?: Record<string, string>;
     modelToDatasourceMap?: Map<string, DataSourceType>;
-    datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
+    datasourceSecretParameterLocations?: Map<string, SQLDBConnectionSecrets>;
     customQueries?: Map<string, string>;
     overrideConfig?: OverrideConfig;
     sqlLambdaVpcConfig?: VpcConfig;

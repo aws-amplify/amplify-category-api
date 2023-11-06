@@ -17,7 +17,7 @@ import {
 import { existsSync, writeFileSync } from 'fs-extra';
 import generator from 'generate-password';
 import { Auth } from 'aws-amplify';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { ImportedSQLType } from '@aws-amplify/graphql-transformer-core';
 import { GQLQueryHelper } from '../query-utils/gql-helper';
 import {
   configureAmplify,
@@ -32,7 +32,7 @@ import { getUserPoolId } from '../schema-api-directives/authHelper';
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 
-export const testRdsIamAuth = (engine: ImportedRDSType, queries: string[]): void => {
+export const testRdsIamAuth = (engine: ImportedSQLType, queries: string[]): void => {
   describe('RDS Relational Directives', () => {
     const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
 

@@ -30,7 +30,7 @@ export {
   VpcConfig,
   SubnetAvailabilityZone,
   SearchableDataSourceOptions,
-  RDSLayerMapping,
+  SQLLayerMapping,
 } from './graphql-api-provider';
 export { TransformHostProvider, DynamoDbDataSourceOptions } from './transform-host-provider';
 export { TransformerLog, TransformerLogLevel } from './transformer-log';

@@ -19,12 +19,12 @@ import { ObjectTypeDefinitionNode, parse } from 'graphql';
 import path from 'path';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { ImportedSQLType } from '@aws-amplify/graphql-transformer-core';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 
-export const testRDSModel = (engine: ImportedRDSType, queries: string[]) => {
+export const testRDSModel = (engine: ImportedSQLType, queries: string[]) => {
   const CDK_FUNCTION_TYPE = 'AWS::Lambda::Function';
   const CDK_VPC_ENDPOINT_TYPE = 'AWS::EC2::VPCEndpoint';
 
@@ -35,11 +35,11 @@ export const testRDSModel = (engine: ImportedRDSType, queries: string[]) => {
     const username = db_user;
     const password = db_password;
     let region = 'us-east-1';
-    let port = engine === ImportedRDSType.MYSQL ? 3306 : 5432;
+    let port = engine === ImportedSQLType.MYSQL ? 3306 : 5432;
     const database = 'default_db';
     let host = 'localhost';
     const identifier = `integtest${db_identifier}`;
-    const engineSuffix = engine === ImportedRDSType.MYSQL ? 'mysql' : 'pg';
+    const engineSuffix = engine === ImportedSQLType.MYSQL ? 'mysql' : 'pg';
     const projName = `${engineSuffix}modeltest`;
     const apiName = projName;
 
@@ -88,13 +88,13 @@ export const testRDSModel = (engine: ImportedRDSType, queries: string[]) => {
       // Validate the generated resources in the CloudFormation template
       const apisDirectory = path.join(projRoot, 'amplify', 'backend', 'api');
       const apiDirectory = path.join(apisDirectory, apiName);
-      const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', 'RdsApiStack.json');
+      const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', 'SqlApiStack.json');
       const cfnTemplate = JSON.parse(readFileSync(cfnRDSTemplateFile, 'utf8'));
       expect(cfnTemplate.Resources).toBeDefined();
       const resources = cfnTemplate.Resources;
 
       // Validate if the SQL lambda function has VPC configuration even if the database is accessible through internet
-      const rdsLambdaFunction = getResource(resources, 'RDSLambdaLogicalID', CDK_FUNCTION_TYPE);
+      const rdsLambdaFunction = getResource(resources, 'SQLLambdaLogicalID', CDK_FUNCTION_TYPE);
       expect(rdsLambdaFunction).toBeDefined();
       expect(rdsLambdaFunction.Properties).toBeDefined();
       expect(rdsLambdaFunction.Properties.VpcConfig).toBeDefined();
@@ -103,11 +103,11 @@ export const testRDSModel = (engine: ImportedRDSType, queries: string[]) => {
       expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds).toBeDefined();
       expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds.length).toBeGreaterThan(0);
 
-      expect(getResource(resources, 'RDSVpcEndpointssm', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-      expect(getResource(resources, 'RDSVpcEndpointssmmessages', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-      expect(getResource(resources, 'RDSVpcEndpointkms', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-      expect(getResource(resources, 'RDSVpcEndpointec2', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-      expect(getResource(resources, 'RDSVpcEndpointec2messages', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+      expect(getResource(resources, 'SQLVpcEndpointssm', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+      expect(getResource(resources, 'SQLVpcEndpointssmmessages', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+      expect(getResource(resources, 'SQLVpcEndpointkms', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+      expect(getResource(resources, 'SQLVpcEndpointec2', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+      expect(getResource(resources, 'SQLVpcEndpointec2messages', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
     };
 
     afterAll(async () => {
@@ -122,7 +122,7 @@ export const testRDSModel = (engine: ImportedRDSType, queries: string[]) => {
     const setupDatabase = async (): Promise<void> => {
       const dbConfig = {
         identifier,
-        engine: engine === ImportedRDSType.MYSQL ? ('mysql' as const) : ('postgres' as const),
+        engine: engine === ImportedSQLType.MYSQL ? ('mysql' as const) : ('postgres' as const),
         dbname: database,
         username,
         password,
@@ -148,7 +148,7 @@ export const testRDSModel = (engine: ImportedRDSType, queries: string[]) => {
       region = metaAfterInit.providers.awscloudformation.Region;
       await setupDatabase();
 
-      const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+      const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.sql.graphql');
 
       await addApiWithoutSchema(projRoot, { transformerVersion: 2, apiName });
 

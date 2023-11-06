@@ -1,19 +1,19 @@
 import path from 'path';
 import {
-  RDSConnectionSecrets,
+  SQLDBConnectionSecrets,
   DataSourceType,
   UserDefinedSlot,
-  isImportedRDSType,
+  isImportedSQLType,
   DBType,
   getEngineFromDBType,
-  getImportedRDSType,
+  getImportedSQLType,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncAuthConfiguration,
   TransformerLog,
   TransformerLogLevel,
   VpcConfig,
-  RDSLayerMapping,
+  SQLLayerMapping,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import * as fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
@@ -207,14 +207,14 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
 
   const { modelToDatasourceMap } = opts.projectConfig;
   const datasourceMapValues: Array<DataSourceType> = modelToDatasourceMap ? Array.from(modelToDatasourceMap.values()) : [];
-  const datasourceSecretMap = new Map<string, RDSConnectionSecrets>();
+  const datasourceSecretMap = new Map<string, SQLDBConnectionSecrets>();
   let sqlLambdaVpcConfig: VpcConfig | undefined;
-  if (datasourceMapValues.some((value) => isImportedRDSType(value))) {
-    const dbType = getImportedRDSType(modelToDatasourceMap);
+  if (datasourceMapValues.some((value) => isImportedSQLType(value))) {
+    const dbType = getImportedSQLType(modelToDatasourceMap);
     datasourceSecretMap.set(dbType, await getDatasourceSecretMap(context));
     sqlLambdaVpcConfig = await isSqlLambdaVpcConfigRequired(context, dbType);
   }
-  const rdsLayerMapping = await getRDSLayerMapping();
+  const sqlLayerMapping = await getSQLLayerMapping();
 
   const transformManager = new TransformManager(
     opts.overrideConfig,
@@ -237,7 +237,7 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
     datasourceSecretParameterLocations: datasourceSecretMap,
     printTransformerLog,
     sqlLambdaVpcConfig,
-    rdsLayerMapping,
+    sqlLayerMapping,
   });
 
   const transformOutput: DeploymentResources = {
@@ -271,12 +271,12 @@ export const getUserOverridenSlots = (userDefinedSlots: Record<string, UserDefin
     .flat()
     .filter((slotName) => slotName !== undefined);
 
-const getRDSLayerMapping = async (): Promise<RDSLayerMapping> => {
+const getSQLLayerMapping = async (): Promise<SQLLayerMapping> => {
   try {
     const response = await fetch(LAYER_MAPPING_URL);
     if (response.status === 200) {
       const result = await response.json();
-      return result as RDSLayerMapping;
+      return result as SQLLayerMapping;
     }
   } catch (err) {
     // Ignore the error and return default layer mapping
@@ -294,8 +294,8 @@ const isSqlLambdaVpcConfigRequired = async (context: $TSContext, dbType: DBType)
   return vpcSubnetConfig;
 };
 
-const getDatasourceSecretMap = async (context: $TSContext): Promise<RDSConnectionSecrets> => {
-  const outputMap = new Map<string, RDSConnectionSecrets>();
+const getDatasourceSecretMap = async (context: $TSContext): Promise<SQLDBConnectionSecrets> => {
+  const outputMap = new Map<string, SQLDBConnectionSecrets>();
   const apiName = getAppSyncAPIName();
   const secretsKey = await getSecretsKey();
   const rdsSecretPaths = await getExistingConnectionSecretNames(context, apiName, secretsKey);

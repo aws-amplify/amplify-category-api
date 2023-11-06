@@ -5,7 +5,7 @@ import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-int
 import { DDB_DB_TYPE, MYSQL_DB_TYPE, ModelDataSourceType, POSTGRES_DB_TYPE } from '../types';
 import { DataSourceType, DBType } from '../config';
 import { APICategory } from './api-category';
-import { ImportedRDSType } from '../types';
+import { ImportedSQLType } from '../types';
 
 const getParameterNameForDBSecret = (secret: string, secretsKey: string): string => {
   return `${secretsKey}_${secret}`;
@@ -61,7 +61,7 @@ export const isDynamoDBModel = (ctx: TransformerContextProvider, typename: strin
  * @param typename Model name
  * @returns boolean
  */
-export const isRDSModel = (ctx: TransformerContextProvider, typename: string): boolean => {
+export const isSQLModel = (ctx: TransformerContextProvider, typename: string): boolean => {
   const modelDataSourceType = getModelDataSourceType(ctx, typename);
   return [MYSQL_DB_TYPE, POSTGRES_DB_TYPE].includes(modelDataSourceType);
 };
@@ -71,11 +71,11 @@ export const isRDSModel = (ctx: TransformerContextProvider, typename: string): b
  * @param dbInfo Datasource information
  * @returns boolean
  */
-export const isImportedRDSType = (dbInfo: DataSourceType): boolean => {
-  return isRDSDBType(dbInfo?.dbType) && !dbInfo?.provisionDB;
+export const isImportedSQLType = (dbInfo: DataSourceType): boolean => {
+  return isSQLDBType(dbInfo?.dbType) && !dbInfo?.provisionDB;
 };
 
-export const isRDSDBType = (dbType: DBType): boolean => {
+export const isSQLDBType = (dbType: DBType): boolean => {
   return [MYSQL_DB_TYPE, POSTGRES_DB_TYPE].includes(dbType);
 };
 
@@ -98,16 +98,16 @@ export const constructDataSourceMap = (schema: string, datasourceType: DataSourc
 };
 
 /**
- * Map the DBType that is set in the modelToDatasourceMap to the engine represented by ImportedRDSType
+ * Map the DBType that is set in the modelToDatasourceMap to the engine represented by ImportedSQLType
  * @param dbType datasource type
  * @returns
  */
-export const getEngineFromDBType = (dbType: DBType): ImportedRDSType => {
+export const getEngineFromDBType = (dbType: DBType): ImportedSQLType => {
   switch (dbType) {
     case MYSQL_DB_TYPE:
-      return ImportedRDSType.MYSQL;
+      return ImportedSQLType.MYSQL;
     case POSTGRES_DB_TYPE:
-      return ImportedRDSType.POSTGRESQL;
+      return ImportedSQLType.POSTGRESQL;
     default:
       throw new Error(`Unsupported RDS datasource type: ${dbType}`);
   }
@@ -119,9 +119,9 @@ export const getEngineFromDBType = (dbType: DBType): ImportedRDSType => {
  * @param modelToDatasourceMap Array of datasource types
  * @returns datasource type
  */
-export const getImportedRDSType = (modelToDatasourceMap: Map<string, DataSourceType>): DBType => {
+export const getImportedSQLType = (modelToDatasourceMap: Map<string, DataSourceType>): DBType => {
   const datasourceMapValues = Array.from(modelToDatasourceMap?.values());
-  const dbTypes = new Set(datasourceMapValues?.filter((value) => isImportedRDSType(value))?.map((value) => value?.dbType));
+  const dbTypes = new Set(datasourceMapValues?.filter((value) => isImportedSQLType(value))?.map((value) => value?.dbType));
   if (dbTypes.size > 1) {
     throw new Error(`Multiple imported SQL datasource types ${Array.from(dbTypes)} are detected. Only one type is supported.`);
   }

@@ -1,4 +1,4 @@
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { ImportedSQLType } from '@aws-amplify/graphql-transformer-core';
 import { constructDefaultGlobalAmplifyInput, readRDSGlobalAmplifyInput, constructRDSGlobalAmplifyInput } from '../input';
 import { parse } from 'graphql';
 
@@ -28,7 +28,7 @@ describe('Amplify Input read/write from schema', () => {
       engine: String = \"mysql\"
       globalAuthRule: AuthRule = { allow: public } # This "input" configures a global authorization rule to enable public access to all models in this schema. Learn more about authorization rules here:${authDocLink}
     }`;
-    const constructedInputString = await constructDefaultGlobalAmplifyInput(ImportedRDSType.MYSQL, true, authDocLink);
+    const constructedInputString = await constructDefaultGlobalAmplifyInput(ImportedSQLType.MYSQL, true, authDocLink);
     expect(constructedInputString?.replace(/\s/g, '')).toEqual(expectedGraphQLInputString.replace(/\s/g, ''));
   });
 

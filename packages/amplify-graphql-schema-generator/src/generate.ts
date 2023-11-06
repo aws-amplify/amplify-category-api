@@ -1,20 +1,20 @@
 import * as os from 'os';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { ImportedSQLType } from '@aws-amplify/graphql-transformer-core';
 import { DocumentNode } from 'graphql';
 import { Schema, Engine } from './schema-representation';
 import { generateGraphQLSchema } from './schema-generator';
 import { constructRDSGlobalAmplifyInput } from './input';
 import { MySQLStringDataSourceAdapter, PostgresStringDataSourceAdapter } from './datasource-adapter';
 
-const buildSchemaFromString = (stringSchema: string, engineType: ImportedRDSType): Schema => {
+const buildSchemaFromString = (stringSchema: string, engineType: ImportedSQLType): Schema => {
   let schema;
   let adapter;
   switch (engineType) {
-    case ImportedRDSType.MYSQL:
+    case ImportedSQLType.MYSQL:
       adapter = new MySQLStringDataSourceAdapter(stringSchema);
       schema = new Schema(new Engine('MySQL'));
       break;
-    case ImportedRDSType.POSTGRESQL:
+    case ImportedSQLType.POSTGRESQL:
       adapter = new PostgresStringDataSourceAdapter(stringSchema);
       schema = new Schema(new Engine('Postgres'));
       break;
@@ -36,7 +36,7 @@ export const renderSchema = (
   return constructRDSGlobalAmplifyInput(databaseConfig, existingSchema) + os.EOL + os.EOL + generateGraphQLSchema(schema, existingSchema);
 };
 
-export const graphqlSchemaFromRDSSchema = (sqlSchema: string, engineType: ImportedRDSType): string => {
+export const graphqlSchemaFromRDSSchema = (sqlSchema: string, engineType: ImportedSQLType): string => {
   const schema = buildSchemaFromString(sqlSchema, engineType);
 
   const databaseConfig = {

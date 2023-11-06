@@ -8,12 +8,12 @@ export {
   getParameterStoreSecretPath,
   getModelDataSourceType,
   isDynamoDBModel,
-  isRDSModel,
-  isImportedRDSType,
-  isRDSDBType,
+  isSQLModel,
+  isImportedSQLType,
+  isSQLDBType,
   constructDataSourceMap,
   getEngineFromDBType,
-  getImportedRDSType,
+  getImportedSQLType,
 } from './rds-util';
 export const APICategory = 'api';
 export { setResourceName, getResourceName } from './resource-name';

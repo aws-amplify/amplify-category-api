@@ -32,7 +32,7 @@ import {
 import { Auth, API } from 'aws-amplify';
 import { getUserPoolId } from '../schema-api-directives/authHelper';
 import { reconfigureAmplifyAPI, withTimeOut } from '../utils/api';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { ImportedSQLType } from '@aws-amplify/graphql-transformer-core';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -43,7 +43,7 @@ import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 const SUBSCRIPTION_DELAY = 10000;
 const SUBSCRIPTION_TIMEOUT = 10000;
 
-export const testApiKeyLambdaIamAuthSubscription = (engine: ImportedRDSType, queries: string[]): void => {
+export const testApiKeyLambdaIamAuthSubscription = (engine: ImportedSQLType, queries: string[]): void => {
   describe('RDS Relational Directives', () => {
     const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
 

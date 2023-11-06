@@ -29,16 +29,16 @@ export class ResourceConstants {
     OpenSearchStreamingLambdaFunctionLogicalID: 'OpenSearchStreamingLambdaFunction',
     OpenSearchDataSourceLogicalID: 'OpenSearchDataSource',
 
-    // RDS
-    RDSLambdaIAMRoleLogicalID: 'RDSLambdaIAMRole',
-    RDSLambdaLogAccessPolicy: 'RDSLambdaLogAccessPolicy',
-    RDSPatchingLambdaIAMRoleLogicalID: 'RDSPatchingLambdaIAMRole',
-    RDSLambdaLogicalID: 'RDSLambdaLogicalID',
-    RDSPatchingLambdaLogAccessPolicy: 'RDSPatchingLambdaLogAccessPolicy',
-    RDSPatchingLambdaLogicalID: 'RDSPatchingLambdaLogicalID',
-    RDSLambdaDataSourceLogicalID: 'RDSLambdaDataSource',
-    RDSLambdaDataSourceLogicalName: 'RDSLambdaDatabase',
-    RDSPatchingSubscriptionLogicalID: 'RDSPatchingSubscriptionLogicalID',
+    // SQL
+    SQLLambdaIAMRoleLogicalID: 'SQLLambdaIAMRole',
+    SQLLambdaLogAccessPolicy: 'SQLLambdaLogAccessPolicy',
+    SQLPatchingLambdaIAMRoleLogicalID: 'SQLPatchingLambdaIAMRole',
+    SQLLambdaLogicalID: 'SQLLambdaLogicalID',
+    SQLPatchingLambdaLogAccessPolicy: 'SQLPatchingLambdaLogAccessPolicy',
+    SQLPatchingLambdaLogicalID: 'SQLPatchingLambdaLogicalID',
+    SQLLambdaDataSourceLogicalID: 'SQLLambdaDataSource',
+    SQLLambdaDataSourceLogicalName: 'SQLLambdaDatabase',
+    SQLPatchingSubscriptionLogicalID: 'SQLPatchingSubscriptionLogicalID',
 
     // Local. Try not to collide with model data sources.
     NoneDataSource: 'NoneDataSource',

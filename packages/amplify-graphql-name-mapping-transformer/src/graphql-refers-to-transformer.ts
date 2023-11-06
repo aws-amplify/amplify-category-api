@@ -1,4 +1,4 @@
-import { TransformerPluginBase, isRDSModel, getFieldNameFor, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
+import { TransformerPluginBase, isSQLModel, getFieldNameFor, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
   TransformerPluginType,
@@ -75,7 +75,7 @@ export class RefersToTransformer extends TransformerPluginBase {
    */
   after = (context: TransformerContextProvider) => {
     context.resourceHelper.getModelFieldMapKeys().forEach((modelName) => {
-      if (!isRDSModel(context, modelName)) {
+      if (!isSQLModel(context, modelName)) {
         return;
       }
       const modelFieldMap = context.resourceHelper.getModelFieldMap(modelName);
@@ -112,7 +112,7 @@ export const shouldBeAppliedToRDSModels = (
   ctx: TransformerContextProvider,
 ) => {
   const modelName = definition.name.value;
-  if (!isRDSModel(ctx, modelName)) {
+  if (!isSQLModel(ctx, modelName)) {
     throw new Error(`@${directiveName} is only supported on RDS models. ${modelName} is not an RDS model.`);
   }
 };

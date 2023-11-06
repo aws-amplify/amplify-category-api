@@ -121,7 +121,7 @@ export const run = async (context: $TSContext): Promise<void> => {
 
       fs.writeFileSync(graphqlSchemaFilePath, graphql.print(concatGraphQLSchemaDoc), 'utf8');
     } else if (fs.existsSync(schemaDirectoryPath)) {
-      const rdsSchemaFilePath = path.join(schemaDirectoryPath, 'rds.graphql');
+      const rdsSchemaFilePath = path.join(schemaDirectoryPath, 'sql.graphql');
 
       fs.writeFileSync(rdsSchemaFilePath, graphql.print(rdsGraphQLSchemaDoc), 'utf8');
     } else {

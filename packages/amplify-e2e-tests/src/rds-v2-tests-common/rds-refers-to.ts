@@ -17,12 +17,12 @@ import generator from 'generate-password';
 import path from 'path';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { GQLQueryHelper } from '../query-utils/gql-helper';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { ImportedSQLType } from '@aws-amplify/graphql-transformer-core';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 
-export const testRDSRefersTo = (engine: ImportedRDSType, queries: string[]) => {
+export const testRDSRefersTo = (engine: ImportedSQLType, queries: string[]) => {
   describe('RDS refersTo directive on models', () => {
     const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
 
@@ -30,12 +30,12 @@ export const testRDSRefersTo = (engine: ImportedRDSType, queries: string[]) => {
     const username = db_user;
     const password = db_password;
     let region = 'us-east-1';
-    let port = engine === ImportedRDSType.MYSQL ? 3306 : 5432;
+    let port = engine === ImportedSQLType.MYSQL ? 3306 : 5432;
     const database = 'default_db';
     let host = 'localhost';
     const identifier = `integtest${db_identifier}`;
-    const engineSuffix = engine === ImportedRDSType.MYSQL ? 'mysql' : 'pg';
-    const engineName = engine === ImportedRDSType.MYSQL ? 'mysql' : 'postgres';
+    const engineSuffix = engine === ImportedSQLType.MYSQL ? 'mysql' : 'pg';
+    const engineName = engine === ImportedSQLType.MYSQL ? 'mysql' : 'postgres';
     const projName = `${engineSuffix}refer1`;
     const apiName = projName;
 
@@ -87,7 +87,7 @@ export const testRDSRefersTo = (engine: ImportedRDSType, queries: string[]) => {
     const setupDatabase = async (): Promise<void> => {
       const dbConfig = {
         identifier,
-        engine: engine === ImportedRDSType.MYSQL ? ('mysql' as const) : ('postgres' as const),
+        engine: engine === ImportedSQLType.MYSQL ? ('mysql' as const) : ('postgres' as const),
         dbname: database,
         username,
         password,
@@ -113,7 +113,7 @@ export const testRDSRefersTo = (engine: ImportedRDSType, queries: string[]) => {
       region = metaAfterInit.providers.awscloudformation.Region;
       await setupDatabase();
 
-      const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+      const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.sql.graphql');
 
       await addApiWithoutSchema(projRoot, { transformerVersion: 2, apiName });
 

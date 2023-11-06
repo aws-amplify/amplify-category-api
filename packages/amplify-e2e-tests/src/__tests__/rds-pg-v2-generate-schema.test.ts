@@ -1,4 +1,4 @@
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { ImportedSQLType } from '@aws-amplify/graphql-transformer-core';
 import { testRDSGenerateSchema } from '../rds-v2-tests-common/rds-v2-generate-schema';
 
 // to deal with bug in cognito-identity-js
@@ -12,5 +12,5 @@ describe('RDS Postgres Generate Schema', () => {
     'CREATE TABLE "Task" ("Id" integer PRIMARY KEY, "Description" text, "task_name" text)',
   ];
 
-  testRDSGenerateSchema(ImportedRDSType.POSTGRESQL, queries);
+  testRDSGenerateSchema(ImportedSQLType.POSTGRESQL, queries);
 });

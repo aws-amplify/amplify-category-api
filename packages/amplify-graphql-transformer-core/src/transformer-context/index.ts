@@ -6,7 +6,7 @@ import {
   TransformerContextProvider,
   TransformerDataSourceManagerProvider,
   AppSyncAuthConfiguration,
-  RDSLayerMapping,
+  SQLLayerMapping,
   SynthParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type {
@@ -21,7 +21,7 @@ import { DocumentNode } from 'graphql';
 import { Construct } from 'constructs';
 import { DataSourceType } from '../config/project-config';
 import { ResolverConfig } from '../config/transformer-config';
-import { RDSConnectionSecrets } from '../types';
+import { SQLDBConnectionSecrets } from '../types';
 import { TransformerDataSourceManager } from './datasource';
 import { TransformerOutput } from './output';
 import { TransformerContextProviderRegistry } from './provider-registry';
@@ -74,11 +74,11 @@ export class TransformerContext implements TransformerContextProvider {
 
   public readonly modelToDatasourceMap: Map<string, DataSourceType>;
 
-  public readonly datasourceSecretParameterLocations: Map<string, RDSConnectionSecrets>;
+  public readonly datasourceSecretParameterLocations: Map<string, SQLDBConnectionSecrets>;
 
   public readonly sqlLambdaVpcConfig?: VpcConfig;
 
-  public readonly rdsLayerMapping?: RDSLayerMapping;
+  public readonly sqlLayerMapping?: SQLLayerMapping;
 
   public readonly customQueries: Map<string, string>;
 
@@ -97,9 +97,9 @@ export class TransformerContext implements TransformerContextProvider {
     authConfig: AppSyncAuthConfiguration,
     transformParameters: TransformParameters,
     resolverConfig?: ResolverConfig,
-    datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>,
+    datasourceSecretParameterLocations?: Map<string, SQLDBConnectionSecrets>,
     sqlLambdaVpcConfig?: VpcConfig,
-    rdsLayerMapping?: RDSLayerMapping,
+    sqlLayerMapping?: SQLLayerMapping,
   ) {
     assetManager.setAssetProvider(assetProvider);
     this.output = new TransformerOutput(inputDocument);
@@ -113,9 +113,9 @@ export class TransformerContext implements TransformerContextProvider {
     this.resolverConfig = resolverConfig;
     this.metadata = new TransformerContextMetadata();
     this.modelToDatasourceMap = modelToDatasourceMap;
-    this.datasourceSecretParameterLocations = datasourceSecretParameterLocations ?? new Map<string, RDSConnectionSecrets>();
+    this.datasourceSecretParameterLocations = datasourceSecretParameterLocations ?? new Map<string, SQLDBConnectionSecrets>();
     this.sqlLambdaVpcConfig = sqlLambdaVpcConfig;
-    this.rdsLayerMapping = rdsLayerMapping;
+    this.sqlLayerMapping = sqlLayerMapping;
     this.customQueries = customQueries;
   }
 

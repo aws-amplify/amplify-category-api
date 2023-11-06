@@ -2,8 +2,8 @@ import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import {
   getParameterStoreSecretPath,
-  RDSConnectionSecrets,
-  ImportedRDSType,
+  SQLDBConnectionSecrets,
+  ImportedSQLType,
   ImportedDataSourceConfig,
 } from '@aws-amplify/graphql-transformer-core';
 import { MySQLDataSourceAdapter, DataSourceAdapter, MySQLDataSourceConfig } from '@aws-amplify/graphql-schema-generator';
@@ -17,7 +17,7 @@ import { SSMClient } from './ssmClient';
 const secretNames = ['database', 'host', 'port', 'username', 'password'];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const isConnectionSecrets = (obj: any): obj is RDSConnectionSecrets => {
+const isConnectionSecrets = (obj: any): obj is SQLDBConnectionSecrets => {
   if (typeof obj !== 'object' || obj === null) {
     return false;
   }
@@ -51,7 +51,7 @@ export const getExistingConnectionSecrets = async (
   secretsKey: string,
   apiName: string,
   envName?: string,
-): Promise<RDSConnectionSecrets | undefined> => {
+): Promise<SQLDBConnectionSecrets | undefined> => {
   try {
     const environmentName = envName || stateManager.getCurrentEnvName();
     const appId = stateManager.getAppID();
@@ -106,7 +106,7 @@ export const getExistingConnectionSecretNames = async (
   apiName: string,
   secretsKey: string,
   envName?: string,
-): Promise<RDSConnectionSecrets | undefined> => {
+): Promise<SQLDBConnectionSecrets | undefined> => {
   try {
     const environmentName = envName || stateManager.getCurrentEnvName();
     const appId = stateManager.getAppID();
@@ -156,7 +156,7 @@ export const getExistingConnectionSecretNames = async (
  */
 export const storeConnectionSecrets = async (
   context: $TSContext,
-  secrets: RDSConnectionSecrets,
+  secrets: SQLDBConnectionSecrets,
   apiName: string,
   secretsKey: string,
 ): Promise<void> => {
@@ -202,13 +202,13 @@ export const deleteConnectionSecrets = async (
  * Try to establish a connection using the provided connection information
  * @param config the database connection information
  */
-export const testDatabaseConnection = async (config: RDSConnectionSecrets): Promise<boolean> => {
+export const testDatabaseConnection = async (config: SQLDBConnectionSecrets): Promise<boolean> => {
   // Establish the connection
   let adapter: DataSourceAdapter;
   let canConnect = false;
 
   switch (config.engine) {
-    case ImportedRDSType.MYSQL:
+    case ImportedSQLType.MYSQL:
       adapter = new MySQLDataSourceAdapter(config as MySQLDataSourceConfig);
       break;
     default:
@@ -298,8 +298,8 @@ export const removeVpcSchemaInspectorLambda = async (context: $TSContext): Promi
 export const getConnectionSecrets = async (
   context: $TSContext,
   secretsKey: string,
-  engine: ImportedRDSType,
-): Promise<{ secrets: RDSConnectionSecrets & { engine: ImportedRDSType }; storeSecrets: boolean }> => {
+  engine: ImportedSQLType,
+): Promise<{ secrets: SQLDBConnectionSecrets & { engine: ImportedSQLType }; storeSecrets: boolean }> => {
   const apiName = getAppSyncAPIName();
   const existingSecrets = await getExistingConnectionSecrets(context, secretsKey, apiName);
   if (existingSecrets) {

@@ -1,4 +1,4 @@
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { ImportedSQLType } from '@aws-amplify/graphql-transformer-core';
 import { testApiKeyLambdaIamAuthSubscription } from '../rds-v2-tests-common/rds-auth-apikey-lambda-iam-subscription';
 
 // to deal with bug in cognito-identity-js
@@ -12,5 +12,5 @@ describe('MySQL ApiKey, IAM and Lambda Subscription Auth on Models', () => {
     'CREATE TABLE "Profile" (id VARCHAR(40) PRIMARY KEY, details VARCHAR(255), "userId" VARCHAR(40))',
   ];
 
-  testApiKeyLambdaIamAuthSubscription(ImportedRDSType.MYSQL, queries);
+  testApiKeyLambdaIamAuthSubscription(ImportedSQLType.MYSQL, queries);
 });

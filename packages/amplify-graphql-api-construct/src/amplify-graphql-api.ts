@@ -28,7 +28,7 @@ import { IEventBus } from 'aws-cdk-lib/aws-events';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { IServerlessCluster } from 'aws-cdk-lib/aws-rds';
 import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
-import { MYSQL_DB_TYPE, POSTGRES_DB_TYPE, RDSConnectionSecrets, constructDataSourceMap } from '@aws-amplify/graphql-transformer-core';
+import { MYSQL_DB_TYPE, POSTGRES_DB_TYPE, SQLDBConnectionSecrets, constructDataSourceMap } from '@aws-amplify/graphql-transformer-core';
 import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
 import type {
   AmplifyGraphqlApiResources,
@@ -229,7 +229,7 @@ export class AmplifyGraphqlApi extends Construct {
       extendedConfig.customQueries = new Map(Object.entries(modelDataSourceBinding.customSqlStatements));
     }
 
-    const dbSecrets: Map<string, RDSConnectionSecrets> = new Map();
+    const dbSecrets: Map<string, SQLDBConnectionSecrets> = new Map();
     let dbSecretDbTypeKey: string;
     switch (modelDataSourceBinding.bindingType) {
       case MYSQL_DB_TYPE:

@@ -290,7 +290,7 @@ export const readSchema = async (
   projectDirectory: string,
 ): Promise<{ schema: string; modelToDatasourceMap: Map<string, DataSourceType> }> => {
   let modelToDatasourceMap = new Map<string, DataSourceType>();
-  const schemaFilePaths = [path.join(projectDirectory, 'schema.graphql'), path.join(projectDirectory, 'schema.rds.graphql')];
+  const schemaFilePaths = [path.join(projectDirectory, 'schema.graphql'), path.join(projectDirectory, 'schema.sql.graphql')];
 
   const existingSchemaFiles = schemaFilePaths.filter((p) => fs.existsSync(p));
   const schemaDirectoryPath = path.join(projectDirectory, 'schema');
@@ -298,12 +298,12 @@ export const readSchema = async (
   let schema = '';
   if (!_.isEmpty(existingSchemaFiles)) {
     // Schema.graphql contains the models for DynamoDB datasource.
-    // Schema.rds.graphql contains the models for imported 'MySQL' datasource.
+    // Schema.sql.graphql contains the models for imported 'MySQL' datasource.
     // Intentionally using 'for ... of ...' instead of 'object.foreach' to process this in sequence.
     for (const file of existingSchemaFiles) {
       const fileSchema = (await fs.readFile(file)).toString();
       const { amplifyType, schema: fileSchemaWithoutAmplifyInput } = removeAmplifyInput(fileSchema);
-      const datasourceType = file.endsWith('.rds.graphql')
+      const datasourceType = file.endsWith('.sql.graphql')
         ? constructDataSourceType(getRDSDBTypeFromInput(amplifyType), false)
         : constructDataSourceType('DDB');
       modelToDatasourceMap = new Map([...modelToDatasourceMap.entries(), ...constructDataSourceMap(fileSchema, datasourceType).entries()]);

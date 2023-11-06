@@ -254,13 +254,6 @@ export enum QueryFieldType {
 }
 
 // @public (undocumented)
-export type RDSLayerMapping = {
-    [key: string]: {
-        layerRegion: string;
-    };
-};
-
-// @public (undocumented)
 type ReadonlyArray_2<T> = Readonly<Array<Readonly<T>>>;
 export { ReadonlyArray_2 as ReadonlyArray }
 
@@ -303,6 +296,13 @@ export interface SearchableDataSourceOptions extends DataSourceOptions {
     // (undocumented)
     readonly serviceRole: IRole;
 }
+
+// @public (undocumented)
+export type SQLLayerMapping = {
+    [key: string]: {
+        layerRegion: string;
+    };
+};
 
 // @public (undocumented)
 export interface StackManagerProvider {
@@ -442,13 +442,13 @@ export interface TransformerContextProvider {
     // (undocumented)
     providerRegistry: TransformerProviderRegistry;
     // (undocumented)
-    readonly rdsLayerMapping?: RDSLayerMapping;
-    // (undocumented)
     resolvers: TransformerResolversManagerProvider;
     // (undocumented)
     resourceHelper: TransformerResourceHelperProvider;
     // (undocumented)
     readonly sqlLambdaVpcConfig?: VpcConfig;
+    // (undocumented)
+    readonly sqlLayerMapping?: SQLLayerMapping;
     // (undocumented)
     stackManager: StackManagerProvider;
     // (undocumented)

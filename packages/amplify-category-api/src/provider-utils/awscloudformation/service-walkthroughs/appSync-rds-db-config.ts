@@ -1,6 +1,6 @@
 import { prompter, printer, minLength, integer } from '@aws-amplify/amplify-prompts';
 import { ImportedDataSourceType, ImportedDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { ImportedSQLType } from '@aws-amplify/graphql-transformer-core';
 import { parseDatabaseUrl } from '../utils/database-url';
 
 /**
@@ -10,8 +10,8 @@ import { parseDatabaseUrl } from '../utils/database-url';
  */
 export const databaseConfigurationInputWalkthrough = async (engine: ImportedDataSourceType): Promise<ImportedDataSourceConfig> => {
   const defaultPorts = {
-    [ImportedRDSType.MYSQL]: 3306,
-    [ImportedRDSType.POSTGRESQL]: 5432,
+    [ImportedSQLType.MYSQL]: 3306,
+    [ImportedSQLType.POSTGRESQL]: 5432,
   };
 
   printer.info('Please provide the following database connection information:');

@@ -314,7 +314,10 @@ export const OPERATION_KEY = "__operation";
 export const propagateApiKeyToNestedTypes: (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode, seenNonModelTypes: Set<string>) => void;
 
 // @public (undocumented)
-export class RDSModelVTLGenerator implements ModelVTLGenerator {
+export const removeSubscriptionFilterInputAttribute: (ctx: TransformerTransformSchemaStepContextProvider, typeName: string, fieldName: string) => void;
+
+// @public (undocumented)
+export class SQLModelVTLGenerator implements ModelVTLGenerator {
     // (undocumented)
     generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig, initializeIdField: boolean): string;
     // (undocumented)
@@ -340,9 +343,6 @@ export class RDSModelVTLGenerator implements ModelVTLGenerator {
     // (undocumented)
     generateUpdateRequestTemplate(config: ModelUpdateRequestConfig, ctx: TransformerContextProvider): string;
 }
-
-// @public (undocumented)
-export const removeSubscriptionFilterInputAttribute: (ctx: TransformerTransformSchemaStepContextProvider, typeName: string, fieldName: string) => void;
 
 // @public (undocumented)
 export enum SubscriptionLevel {

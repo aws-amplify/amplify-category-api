@@ -1,4 +1,4 @@
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { ImportedSQLType } from '@aws-amplify/graphql-transformer-core';
 import { testRDSRefersTo } from '../rds-v2-tests-common/rds-refers-to';
 
 // to deal with bug in cognito-identity-js
@@ -13,5 +13,5 @@ describe('RDS MySQL RefersTo on Models', () => {
     'CREATE TABLE Task (id VARCHAR(40) PRIMARY KEY, description VARCHAR(255))',
   ];
 
-  testRDSRefersTo(ImportedRDSType.MYSQL, queries);
+  testRDSRefersTo(ImportedSQLType.MYSQL, queries);
 });

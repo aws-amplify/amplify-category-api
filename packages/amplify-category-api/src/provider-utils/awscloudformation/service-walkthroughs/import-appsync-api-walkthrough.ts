@@ -5,9 +5,9 @@ import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import {
   ImportAppSyncAPIInputs,
   ImportedDataSourceType,
-  ImportedRDSType,
+  ImportedSQLType,
   ImportedDataSourceConfig,
-  RDS_SCHEMA_FILE_NAME,
+  SQL_SCHEMA_FILE_NAME,
 } from '@aws-amplify/graphql-transformer-core';
 import { storeConnectionSecrets, getSecretsKey } from '../utils/rds-resources/database-resources';
 import { constructDefaultGlobalAmplifyInput } from '@aws-amplify/graphql-schema-generator';
@@ -39,7 +39,7 @@ export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<
   }
 
   const apiResourceDir = getAPIResourceDir(apiName);
-  const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
+  const pathToSchemaFile = path.join(apiResourceDir, SQL_SCHEMA_FILE_NAME);
   const secretsKey = await getSecretsKey();
 
   if (fs.pathExistsSync(pathToSchemaFile)) {
@@ -61,19 +61,19 @@ export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<
   };
 };
 
-const promptDatabaseEngine = async (): Promise<ImportedRDSType> => {
+const promptDatabaseEngine = async (): Promise<ImportedSQLType> => {
   const engine = await prompter.pick<'one', string>('Select the database type:', [
     {
       name: 'MySQL',
-      value: ImportedRDSType.MYSQL as string,
+      value: ImportedSQLType.MYSQL as string,
     },
     {
       name: 'PostgreSQL',
-      value: ImportedRDSType.POSTGRESQL as string,
+      value: ImportedSQLType.POSTGRESQL as string,
     },
   ]);
 
-  return engine as ImportedRDSType;
+  return engine as ImportedSQLType;
 };
 
 /**
@@ -88,7 +88,7 @@ export const writeDefaultGraphQLSchema = async (
   databaseConfig: ImportedDataSourceConfig,
 ): Promise<void> => {
   const dataSourceType = databaseConfig?.engine;
-  if (Object.values(ImportedRDSType).includes(dataSourceType)) {
+  if (Object.values(ImportedSQLType).includes(dataSourceType)) {
     const includeAuthRule = false;
     const globalAmplifyInputTemplate = await constructDefaultGlobalAmplifyInput(databaseConfig.engine, includeAuthRule);
     writeSchemaFile(pathToSchemaFile, globalAmplifyInputTemplate);
@@ -104,9 +104,9 @@ export const writeDefaultGraphQLSchema = async (
  */
 export const formatEngineName = (engine: ImportedDataSourceType): string => {
   switch (engine) {
-    case ImportedRDSType.MYSQL:
+    case ImportedSQLType.MYSQL:
       return 'MySQL';
-    case ImportedRDSType.POSTGRESQL:
+    case ImportedSQLType.POSTGRESQL:
       return 'PostgreSQL';
     default:
       throw new Error(`Unsupported database engine: ${engine}`);

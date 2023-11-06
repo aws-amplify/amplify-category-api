@@ -17,12 +17,12 @@ import generator from 'generate-password';
 import path from 'path';
 import { GQLQueryHelper } from '../query-utils/gql-helper';
 import { getConfiguredAppsyncClientAPIKeyAuth, getConfiguredAppsyncClientLambdaAuth } from '../schema-api-directives';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { ImportedSQLType } from '@aws-amplify/graphql-transformer-core';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 
-export const testRdsApiKeyAndLambdaAuth = (engine: ImportedRDSType, queries: string[]): void => {
+export const testRdsApiKeyAndLambdaAuth = (engine: ImportedSQLType, queries: string[]): void => {
   describe('RDS Relational Directives', () => {
     const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
 

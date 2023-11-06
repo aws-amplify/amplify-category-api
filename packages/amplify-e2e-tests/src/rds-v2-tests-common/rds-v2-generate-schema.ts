@@ -15,9 +15,9 @@ import { existsSync, readFileSync, writeFileSync } from 'fs-extra';
 import generator from 'generate-password';
 import { ObjectTypeDefinitionNode, StringValueNode, parse } from 'graphql';
 import path from 'path';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { ImportedSQLType } from '@aws-amplify/graphql-transformer-core';
 
-export const testRDSGenerateSchema = (engine: ImportedRDSType, queries: string[]) => {
+export const testRDSGenerateSchema = (engine: ImportedSQLType, queries: string[]) => {
   describe('RDS Generate Schema tests', () => {
     const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
 
@@ -25,12 +25,12 @@ export const testRDSGenerateSchema = (engine: ImportedRDSType, queries: string[]
     const username = db_user;
     const password = db_password;
     let region = 'us-east-1';
-    let port = engine === ImportedRDSType.MYSQL ? 3306 : 5432;
+    let port = engine === ImportedSQLType.MYSQL ? 3306 : 5432;
     const database = 'default_db';
     let host = 'localhost';
     const identifier = `integtest${db_identifier}`;
-    const engineSuffix = engine === ImportedRDSType.MYSQL ? 'mysql' : 'pg';
-    const engineName = engine === ImportedRDSType.MYSQL ? 'mysql' : 'postgres';
+    const engineSuffix = engine === ImportedSQLType.MYSQL ? 'mysql' : 'pg';
+    const engineName = engine === ImportedSQLType.MYSQL ? 'mysql' : 'postgres';
     const projName = `${engineSuffix}generate`;
     const apiName = projName;
 
@@ -73,7 +73,7 @@ export const testRDSGenerateSchema = (engine: ImportedRDSType, queries: string[]
     const setupDatabase = async () => {
       const dbConfig = {
         identifier,
-        engine: engine === ImportedRDSType.MYSQL ? ('mysql' as const) : ('postgres' as const),
+        engine: engine === ImportedSQLType.MYSQL ? ('mysql' as const) : ('postgres' as const),
         dbname: database,
         username,
         password,
@@ -90,7 +90,7 @@ export const testRDSGenerateSchema = (engine: ImportedRDSType, queries: string[]
     };
 
     it('preserves the schema edits for JSON field', async () => {
-      const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+      const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.sql.graphql');
       const schemaContent = readFileSync(rdsSchemaFilePath, 'utf8');
       const schema = parse(schemaContent);
 
@@ -167,7 +167,7 @@ export const testRDSGenerateSchema = (engine: ImportedRDSType, queries: string[]
     });
 
     it('infers and preserves the model name mapping edits', async () => {
-      const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+      const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.sql.graphql');
       const schemaContent = readFileSync(rdsSchemaFilePath, 'utf8');
       const schema = parse(schemaContent);
 
@@ -241,7 +241,7 @@ export const testRDSGenerateSchema = (engine: ImportedRDSType, queries: string[]
     });
 
     it('infers and preserves the field name mapping edits', async () => {
-      const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+      const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.sql.graphql');
       const schemaContent = readFileSync(rdsSchemaFilePath, 'utf8');
       const schema = parse(schemaContent);
 

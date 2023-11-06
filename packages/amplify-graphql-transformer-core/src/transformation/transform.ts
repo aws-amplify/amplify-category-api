@@ -5,7 +5,7 @@ import {
   TransformHostProvider,
   TransformerLog,
   NestedStackProvider,
-  RDSLayerMapping,
+  SQLLayerMapping,
   SynthParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type {
@@ -87,7 +87,7 @@ export interface GraphQLTransformOptions {
   readonly userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   readonly resolverConfig?: ResolverConfig;
   readonly sqlLambdaVpcConfig?: VpcConfig;
-  readonly rdsLayerMapping?: RDSLayerMapping;
+  readonly sqlLayerMapping?: SQLLayerMapping;
 }
 
 export type TransformOption = {
@@ -215,7 +215,7 @@ export class GraphQLTransform {
       this.resolverConfig,
       datasourceConfig?.datasourceSecretParameterLocations,
       this.sqlLambdaVpcConfig,
-      datasourceConfig?.rdsLayerMapping,
+      datasourceConfig?.sqlLayerMapping,
     );
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),

@@ -92,7 +92,7 @@ describe('RDS Tests', () => {
   };
 
   it('import workflow of mysql relational database with public access', async () => {
-    const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+    const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.sql.graphql');
 
     const schemaContent = readFileSync(rdsSchemaFilePath, 'utf8');
     const schema = parse(schemaContent);

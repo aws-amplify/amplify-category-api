@@ -21,7 +21,7 @@ import {
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 // TODO: This class is created only to show the class structure. This needs a revisit to generate correct resolvers for RDS.
-export class RDSModelVTLGenerator implements ModelVTLGenerator {
+export class SQLModelVTLGenerator implements ModelVTLGenerator {
   generateUpdateRequestTemplate(config: ModelUpdateRequestConfig, ctx: TransformerContextProvider): string {
     return generateLambdaUpdateRequestTemplate(config.modelName, config.operationName, config.modelIndexFields ?? ['id'], ctx);
   }

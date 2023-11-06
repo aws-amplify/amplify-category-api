@@ -7,7 +7,7 @@ import {
   TransformerResolver,
   getSortKeyFieldNames,
   generateGetArgumentsInput,
-  isRDSModel,
+  isSQLModel,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
@@ -936,10 +936,10 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
 
       return roleDefinition;
     });
-    const { RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
+    const { SQLLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
     const dataSource = (
-      isRDSModel(ctx, def.name.value)
-        ? ctx.api.host.getDataSource(RDSLambdaDataSourceLogicalID)
+      isSQLModel(ctx, def.name.value)
+        ? ctx.api.host.getDataSource(SQLLambdaDataSourceLogicalID)
         : ctx.api.host.getDataSource(`${def.name.value}Table`)
     ) as DataSourceProvider;
     const requestExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthRequestExpression(ctx, def);
@@ -973,10 +973,10 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       roleDefinition.allowedFields = allowedFields;
       return roleDefinition;
     });
-    const { RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
+    const { SQLLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
     const dataSource = (
-      isRDSModel(ctx, def.name.value)
-        ? ctx.api.host.getDataSource(RDSLambdaDataSourceLogicalID)
+      isSQLModel(ctx, def.name.value)
+        ? ctx.api.host.getDataSource(SQLLambdaDataSourceLogicalID)
         : ctx.api.host.getDataSource(`${def.name.value}Table`)
     ) as DataSourceProvider;
     const requestExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthRequestExpression(ctx, def);
@@ -1475,7 +1475,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
           (directive.name.value === 'belongsTo' &&
             relatedType.fields.some((f) => getBaseType(f.type) === def.name.value && f.directives?.some((d) => d.name.value === 'hasOne')))
         ) {
-          if (!isRDSModel(ctx, def.name.value)) {
+          if (!isSQLModel(ctx, def.name.value)) {
             allowedFields.add(
               getConnectionAttributeName(ctx.transformParameters, def.name.value, field, getObjectPrimaryKey(relatedType).name.value),
             );
@@ -1500,7 +1500,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     }
 
     // Check based on schema file
-    if (isRDSModel(ctx, typename)) {
+    if (isSQLModel(ctx, typename)) {
       return new RDSAuthVTLGenerator();
     }
     return new DDBAuthVTLGenerator();

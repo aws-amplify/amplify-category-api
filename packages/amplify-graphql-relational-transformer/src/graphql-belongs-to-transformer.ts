@@ -6,8 +6,8 @@ import {
   getDataSourceType,
   InvalidDirectiveError,
   TransformerPluginBase,
-  isRDSModel,
-  isRDSDBType,
+  isSQLModel,
+  isSQLDBType,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
@@ -135,7 +135,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
       .filter((config) => config.relationType === 'hasOne')
       .forEach((config) => {
         const modelName = config.object.name.value;
-        if (isRDSModel(context as TransformerContextProvider, modelName)) {
+        if (isSQLModel(context as TransformerContextProvider, modelName)) {
           return;
         }
         // a belongsTo with hasOne behaves the same as hasOne
@@ -157,7 +157,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
       const dbType = getDataSourceType(config.field.type, context);
       if (dbType === DDB_DB_TYPE) {
         config.relatedTypeIndex = getRelatedTypeIndex(config, context);
-      } else if (isRDSDBType(dbType)) {
+      } else if (isSQLDBType(dbType)) {
         validateChildReferencesFields(config, context);
       }
       ensureBelongsToConnectionField(config, context);
@@ -186,7 +186,7 @@ const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerConte
     config.fieldNodes = getFieldsNodes(config, ctx);
   }
 
-  if (isRDSDBType(dbType)) {
+  if (isSQLDBType(dbType)) {
     ensureReferencesArray(config);
     getBelongsToReferencesNodes(config, ctx);
   }
@@ -225,7 +225,7 @@ const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerConte
 const setFieldMappingReferences = (context: TransformerPrepareStepContextProvider, directiveList: BelongsToDirectiveConfiguration[]) => {
   directiveList.forEach((config) => {
     const modelName = config.object.name.value;
-    const areFieldMappingsSupported = isRDSModel(context as TransformerContextProvider, modelName);
+    const areFieldMappingsSupported = isSQLModel(context as TransformerContextProvider, modelName);
     if (!areFieldMappingsSupported) {
       return;
     }

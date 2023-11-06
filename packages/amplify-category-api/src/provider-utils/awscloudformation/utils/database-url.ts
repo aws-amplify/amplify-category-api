@@ -1,5 +1,5 @@
 import { URL } from 'url';
-import { ImportedRDSType, RDSDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
+import { ImportedSQLType, RDSDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 export const parseDatabaseUrl = (databaseUrl: string): Partial<RDSDataSourceConfig> => {
@@ -9,7 +9,7 @@ export const parseDatabaseUrl = (databaseUrl: string): Partial<RDSDataSourceConf
     const { username, password, hostname: host } = parsedDatabaseUrl;
     const database = parsedDatabaseUrl?.pathname?.slice(1);
     const port = parseInt(parsedDatabaseUrl?.port, 10);
-    const engine = parsedDatabaseUrl?.protocol?.slice(0, -1) as ImportedRDSType;
+    const engine = parsedDatabaseUrl?.protocol?.slice(0, -1) as ImportedSQLType;
 
     const isValidEngine = allowedProtocols.includes(engine);
     if (!isValidEngine) {

@@ -1,4 +1,4 @@
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { ImportedSQLType } from '@aws-amplify/graphql-transformer-core';
 import { testRDSGenerateSchema } from '../rds-v2-tests-common/rds-v2-generate-schema';
 
 // to deal with bug in cognito-identity-js
@@ -12,5 +12,5 @@ describe('RDS MySQL Generate Schema', () => {
     'CREATE TABLE Task (Id INT PRIMARY KEY, Description VARCHAR(20), task_name VARCHAR(20))',
   ];
 
-  testRDSGenerateSchema(ImportedRDSType.MYSQL, queries);
+  testRDSGenerateSchema(ImportedSQLType.MYSQL, queries);
 });

@@ -1,4 +1,4 @@
-import { TransformerPluginBase, DDB_DB_TYPE, isRDSModel } from '@aws-amplify/graphql-transformer-core';
+import { TransformerPluginBase, DDB_DB_TYPE, isSQLModel } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
   TransformerPluginType,
@@ -46,7 +46,7 @@ export class MapsToTransformer extends TransformerPluginBase {
    */
   after = (context: TransformerContextProvider) => {
     context.resourceHelper.getModelFieldMapKeys().forEach((modelName) => {
-      if (isRDSModel(context, modelName)) {
+      if (isSQLModel(context, modelName)) {
         return;
       }
       const modelFieldMap = context.resourceHelper.getModelFieldMap(modelName);

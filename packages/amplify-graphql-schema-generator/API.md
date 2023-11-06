@@ -7,7 +7,7 @@
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql';
 import { FieldDefinitionNode } from 'graphql';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { ImportedSQLType } from '@aws-amplify/graphql-transformer-core';
 import { InputObjectTypeDefinitionNode } from 'graphql';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
@@ -37,7 +37,7 @@ export const applySchemaOverrides: (document: DocumentNode, existingDocument?: D
 export const checkDestructiveNullabilityChange: (field: FieldDefinitionNode, existingField: FieldDefinitionNode) => void;
 
 // @public (undocumented)
-export const constructDefaultGlobalAmplifyInput: (dataSourceType: ImportedRDSType, includeAuthRule?: boolean, authDocLink?: string) => string;
+export const constructDefaultGlobalAmplifyInput: (dataSourceType: ImportedSQLType, includeAuthRule?: boolean, authDocLink?: string) => string;
 
 // @public (undocumented)
 export const constructRDSGlobalAmplifyInput: (config: any, schemaDocument: DocumentNode | undefined) => string;
@@ -161,7 +161,7 @@ export const getParentNode: (ancestors: any[]) => ObjectTypeDefinitionNode | und
 export const getRefersToDirective: (name: string) => DirectiveNode;
 
 // @public (undocumented)
-export const graphqlSchemaFromRDSSchema: (sqlSchema: string, engineType: ImportedRDSType) => string;
+export const graphqlSchemaFromRDSSchema: (sqlSchema: string, engineType: ImportedSQLType) => string;
 
 // @public (undocumented)
 export class Index {

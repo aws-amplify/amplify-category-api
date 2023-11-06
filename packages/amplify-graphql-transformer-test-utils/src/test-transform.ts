@@ -3,7 +3,7 @@ import type { SynthParameters, TransformParameters, VpcConfig } from '@aws-ampli
 import {
   DataSourceType,
   GraphQLTransform,
-  RDSConnectionSecrets,
+  SQLDBConnectionSecrets,
   ResolverConfig,
   UserDefinedSlot,
 } from '@aws-amplify/graphql-transformer-core';
@@ -19,7 +19,7 @@ export type TestTransformParameters = {
   userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   stackMapping?: Record<string, string>;
   modelToDatasourceMap?: Map<string, DataSourceType>;
-  datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
+  datasourceSecretParameterLocations?: Map<string, SQLDBConnectionSecrets>;
   customQueries?: Map<string, string>;
   overrideConfig?: OverrideConfig;
   sqlLambdaVpcConfig?: VpcConfig;

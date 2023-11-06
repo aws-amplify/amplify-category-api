@@ -1,4 +1,4 @@
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { ImportedSQLType } from '@aws-amplify/graphql-transformer-core';
 import { testRDSModel } from '../rds-v2-tests-common/rds-model-v2';
 
 // to deal with bug in cognito-identity-js
@@ -12,5 +12,5 @@ describe('RDS Postgres Model Directive', () => {
     'CREATE TABLE "Student" ("studentId" integer NOT NULL, "classId" text NOT NULL, "firstName" text, "lastName" text, PRIMARY KEY ("studentId", "classId"))',
   ];
 
-  testRDSModel(ImportedRDSType.POSTGRESQL, queries);
+  testRDSModel(ImportedSQLType.POSTGRESQL, queries);
 });

@@ -50,9 +50,9 @@ import { ObjectTypeDefinitionNode } from 'graphql';
 import { ObjectTypeExtensionNode } from 'graphql';
 import { OperationTypeDefinitionNode } from 'graphql';
 import { QueryFieldType } from '@aws-amplify/graphql-transformer-interfaces';
-import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { S3MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { SchemaDefinitionNode } from 'graphql';
+import { SQLLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { Stack } from 'aws-cdk-lib';
 import { StackManagerProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { StringValueNode } from 'graphql';
@@ -193,7 +193,7 @@ export type GetArgumentsOptions = {
 export const getDataSourceType: (type: TypeNode, ctx: TransformerContextProvider) => DBType;
 
 // @public (undocumented)
-export const getEngineFromDBType: (dbType: DBType) => ImportedRDSType;
+export const getEngineFromDBType: (dbType: DBType) => ImportedSQLType;
 
 // Warning: (ae-forgotten-export) The symbol "Operation" needs to be exported by the entry point index.d.ts
 //
@@ -201,7 +201,7 @@ export const getEngineFromDBType: (dbType: DBType) => ImportedRDSType;
 export const getFieldNameFor: (op: Operation, typeName: string) => string;
 
 // @public (undocumented)
-export const getImportedRDSType: (modelToDatasourceMap: Map<string, DataSourceType>) => DBType;
+export const getImportedSQLType: (modelToDatasourceMap: Map<string, DataSourceType>) => DBType;
 
 // @public (undocumented)
 export const getKeySchema: (table: any, indexName?: string) => any;
@@ -249,11 +249,11 @@ export interface GraphQLTransformOptions {
     // (undocumented)
     readonly host?: TransformHostProvider;
     // (undocumented)
-    readonly rdsLayerMapping?: RDSLayerMapping;
-    // (undocumented)
     readonly resolverConfig?: ResolverConfig;
     // (undocumented)
     readonly sqlLambdaVpcConfig?: VpcConfig;
+    // (undocumented)
+    readonly sqlLayerMapping?: SQLLayerMapping;
     // Warning: (ae-forgotten-export) The symbol "StackMapping" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -276,10 +276,10 @@ export type ImportAppSyncAPIInputs = {
 export type ImportedDataSourceConfig = RDSDataSourceConfig;
 
 // @public (undocumented)
-export type ImportedDataSourceType = ImportedRDSType;
+export type ImportedDataSourceType = ImportedSQLType;
 
 // @public (undocumented)
-export enum ImportedRDSType {
+export enum ImportedSQLType {
     // (undocumented)
     MYSQL = "mysql",
     // (undocumented)
@@ -354,16 +354,16 @@ export class InvalidTransformerError extends Error {
 }
 
 // @public (undocumented)
-export const isImportedRDSType: (dbInfo: DataSourceType) => boolean;
+export const isImportedSQLType: (dbInfo: DataSourceType) => boolean;
 
 // @public (undocumented)
 function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncConfigLambda;
 
 // @public (undocumented)
-export const isRDSDBType: (dbType: DBType) => boolean;
+export const isSQLDBType: (dbType: DBType) => boolean;
 
 // @public (undocumented)
-export const isRDSModel: (ctx: TransformerContextProvider, typename: string) => boolean;
+export const isSQLModel: (ctx: TransformerContextProvider, typename: string) => boolean;
 
 // @public (undocumented)
 export class MappingTemplate {
@@ -407,20 +407,8 @@ export class ObjectDefinitionWrapper {
 export const POSTGRES_DB_TYPE = "Postgres";
 
 // @public (undocumented)
-export const RDS_SCHEMA_FILE_NAME = "schema.rds.graphql";
-
-// @public (undocumented)
-export type RDSConnectionSecrets = TransformerSecrets & {
-    username: string;
-    password: string;
-    host: string;
-    database: string;
-    port: number;
-};
-
-// @public (undocumented)
-export type RDSDataSourceConfig = RDSConnectionSecrets & {
-    engine: ImportedRDSType;
+export type RDSDataSourceConfig = SQLDBConnectionSecrets & {
+    engine: ImportedSQLType;
 };
 
 // @public (undocumented)
@@ -441,6 +429,18 @@ export const setResourceName: (scope: Construct, { name, setOnDefaultChild }: Se
 export type SetResourceNameProps = {
     name: string;
     setOnDefaultChild?: boolean;
+};
+
+// @public (undocumented)
+export const SQL_SCHEMA_FILE_NAME = "schema.sql.graphql";
+
+// @public (undocumented)
+export type SQLDBConnectionSecrets = TransformerSecrets & {
+    username: string;
+    password: string;
+    host: string;
+    database: string;
+    port: number;
 };
 
 // @public (undocumented)

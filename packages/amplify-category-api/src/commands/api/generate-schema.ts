@@ -3,7 +3,7 @@ import { $TSContext, AmplifyError, ApiCategoryFacade } from '@aws-amplify/amplif
 import { printer } from '@aws-amplify/amplify-prompts';
 import fs from 'fs-extra';
 import _ from 'lodash';
-import { RDS_SCHEMA_FILE_NAME, ImportedDataSourceConfig, ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { SQL_SCHEMA_FILE_NAME, ImportedDataSourceConfig, ImportedSQLType } from '@aws-amplify/graphql-transformer-core';
 import { graphqlSchemaFromRDSSchema } from '@aws-amplify/graphql-schema-generator';
 import { getAppSyncAPIName, getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import {
@@ -45,7 +45,7 @@ export const run = async (context: $TSContext): Promise<void> => {
         throw new AmplifyError('UserInputError', { message: 'An output path must be provided with --out' });
       }
     }
-    if (!Object.values(ImportedRDSType).includes(engineType)) {
+    if (!Object.values(ImportedSQLType).includes(engineType)) {
       throw new AmplifyError('UserInputError', { message: `${engineType} is not a supported engine type.` });
     }
     if (!fs.existsSync(sqlSchema)) {
@@ -58,7 +58,7 @@ export const run = async (context: $TSContext): Promise<void> => {
     const apiResourceDir = getAPIResourceDir(apiName);
 
     // proceed if there are any existing imported Relational Data Sources
-    const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
+    const pathToSchemaFile = path.join(apiResourceDir, SQL_SCHEMA_FILE_NAME);
 
     if (!fs.existsSync(pathToSchemaFile)) {
       throw new AmplifyError('UserInputError', { message: 'No imported Data Sources to Generate GraphQL Schema.' });

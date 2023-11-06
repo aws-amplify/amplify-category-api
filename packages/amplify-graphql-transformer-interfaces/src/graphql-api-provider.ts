@@ -96,7 +96,7 @@ export type SubnetAvailabilityZone = {
 /**
  * Maps a given AWS region to the SQL Lambda layer version ARN for that region.
  */
-export type RDSLayerMapping = {
+export type SQLLayerMapping = {
   [key: string]: {
     layerRegion: string;
   };
