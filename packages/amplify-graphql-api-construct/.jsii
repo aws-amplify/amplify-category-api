@@ -3726,7 +3726,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 326
+            "line": 327
           },
           "name": "addDynamoDbDataSource",
           "parameters": [
@@ -3775,7 +3775,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 338
+            "line": 339
           },
           "name": "addElasticsearchDataSource",
           "parameters": [
@@ -3822,7 +3822,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 348
+            "line": 349
           },
           "name": "addEventBridgeDataSource",
           "parameters": [
@@ -3869,7 +3869,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 430
+            "line": 431
           },
           "name": "addFunction",
           "parameters": [
@@ -3904,7 +3904,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 359
+            "line": 360
           },
           "name": "addHttpDataSource",
           "parameters": [
@@ -3952,7 +3952,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 370
+            "line": 371
           },
           "name": "addLambdaDataSource",
           "parameters": [
@@ -4000,7 +4000,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 381
+            "line": 382
           },
           "name": "addNoneDataSource",
           "parameters": [
@@ -4039,7 +4039,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 392
+            "line": 393
           },
           "name": "addOpenSearchDataSource",
           "parameters": [
@@ -4087,7 +4087,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 405
+            "line": 406
           },
           "name": "addRdsDataSource",
           "parameters": [
@@ -4154,7 +4154,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 421
+            "line": 422
           },
           "name": "addResolver",
           "parameters": [
@@ -6459,22 +6459,6 @@
         {
           "abstract": true,
           "docs": {
-            "stability": "experimental",
-            "summary": "The configuration of the VPC into which to install the Lambda."
-          },
-          "immutable": true,
-          "locationInModule": {
-            "filename": "src/types.ts",
-            "line": 795
-          },
-          "name": "vpcConfiguration",
-          "type": {
-            "fqn": "@aws-amplify/graphql-api-construct.SqlModelDataSourceBindingVpcConfig"
-          }
-        },
-        {
-          "abstract": true,
-          "docs": {
             "remarks": "The key is the value of the `references` attribute of the `@sql` directive in the `schema`; the value is the SQL\nto be executed.",
             "stability": "experimental",
             "summary": "Custom SQL statements."
@@ -6493,6 +6477,23 @@
               },
               "kind": "map"
             }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "experimental",
+            "summary": "The configuration of the VPC into which to install the Lambda."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 795
+          },
+          "name": "vpcConfiguration",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-amplify/graphql-api-construct.SqlModelDataSourceBindingVpcConfig"
           }
         }
       ],
@@ -7034,5 +7035,5 @@
     }
   },
   "version": "1.2.1",
-  "fingerprint": "Ah8EjlOl+q0ncPnkEi6hXjMpxAlStvrx+2MWR2pEeOM="
+  "fingerprint": "d8bSmCAInJFCQG3mfiB0d73UflgRXwTg2PRkuafPJgQ="
 }

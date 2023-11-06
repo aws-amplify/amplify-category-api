@@ -272,7 +272,7 @@ export interface SqlModelDataSourceBinding {
     readonly bindingType: SQLDBType;
     readonly customSqlStatements?: Record<string, string>;
     readonly dbConnectionConfig: SqlModelDataSourceBindingDbConnectionConfig;
-    readonly vpcConfiguration: SqlModelDataSourceBindingVpcConfig;
+    readonly vpcConfiguration?: SqlModelDataSourceBindingVpcConfig;
 }
 
 // @public
