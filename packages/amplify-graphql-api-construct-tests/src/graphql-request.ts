@@ -5,24 +5,13 @@ export type GraphqlResponse = {
   body: any;
 };
 
-export const graphql = async (apiEndpoint: string, apiKey: string, query: string): Promise<GraphqlResponse> => {
-  const options = {
-    method: 'POST',
-    headers: {
-      'x-api-key': apiKey,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ query }),
-  };
-
-  const request = new Request(apiEndpoint, options);
-
+const graphqlRequest = async (apiEndpoint: string, payload: any): Promise<GraphqlResponse> => {
   let statusCode = 200;
   let body;
   let response;
 
   try {
-    response = await fetch(request);
+    response = await fetch(new Request(apiEndpoint, payload));
     body = await response.json();
     if (body.errors) statusCode = 400;
   } catch (error) {
@@ -69,3 +58,22 @@ export const validateGraphql = async ({
 
   return response;
 };
+export const graphql = async (apiEndpoint: string, apiKey: string, query: string): Promise<GraphqlResponse> =>
+  graphqlRequest(apiEndpoint, {
+    method: 'POST',
+    headers: {
+      'x-api-key': apiKey,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ query }),
+  });
+
+export const graphqlRequestWithLambda = async (apiEndpoint: string, authToken: string, query: string): Promise<GraphqlResponse> =>
+  graphqlRequest(apiEndpoint, {
+    method: 'POST',
+    headers: {
+      Authorization: authToken,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ query }),
+  });

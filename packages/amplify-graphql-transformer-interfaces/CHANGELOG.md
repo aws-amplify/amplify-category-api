@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.2.1...@aws-amplify/graphql-transformer-interfaces@3.2.2) (2023-11-02)
+
+### Bug Fixes
+
+- pass in and use correct lambda arn for lambdaauthorizers ([#2007](https://github.com/aws-amplify/amplify-category-api/issues/2007)) ([4114411](https://github.com/aws-amplify/amplify-category-api/commit/4114411ba6d086d46ac0e9967139cb287e3fc22b))
+
 ## [3.2.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.2.0...@aws-amplify/graphql-transformer-interfaces@3.2.1) (2023-10-05)
 
 ### Bug Fixes

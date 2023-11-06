@@ -1,6 +1,7 @@
 import { AppSyncAuthConfiguration, AppSyncAuthConfigurationEntry, SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { CfnGraphQLApi } from 'aws-cdk-lib/aws-appsync';
 import { isArray } from 'lodash';
+import { IRole, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import {
   AuthorizationModes,
   ApiKeyAuthorizationConfig,
@@ -56,6 +57,7 @@ const convertAuthModeToAuthProvider = (authMode: AuthorizationConfigMode): AppSy
       return {
         authenticationType,
         lambdaAuthorizerConfig: {
+          lambdaArn: authMode.function.functionArn,
           lambdaFunction: authMode.function.functionName,
           ttlSeconds: authMode.ttl.toSeconds(),
         },
@@ -88,6 +90,12 @@ const convertAuthConfigToAppSyncAuth = (authModes: AuthorizationModes): AppSyncA
   if (authProviders.length > 1 && !authModes.defaultAuthorizationMode) {
     throw new Error('A defaultAuthorizationMode is required if multiple authorization modes are configured.');
   }
+
+  // Enable appsync to invoke a provided lambda authorizer function
+  authModes.lambdaConfig?.function.addPermission('appsync-auth-invoke', {
+    principal: new ServicePrincipal('appsync.amazonaws.com'),
+    action: 'lambda:InvokeFunction',
+  });
 
   // In the case of a single mode, defaultAuthorizationMode is not required, just use the provided value.
   if (authProviders.length === 1) {
@@ -150,12 +158,25 @@ export const convertAuthorizationModesToTransformerAuthConfig = (authModes: Auth
 });
 
 /**
+ * Merge iamConfig allowListedRoles with deprecated adminRoles property, converting to strings.
+ * @param authModes the auth modes provided to the construct.
+ * @returns the list of admin roles as strings to pass into the transformer
+ */
+const getAllowListedRoles = (authModes: AuthorizationModes): string[] =>
+  [...(authModes?.iamConfig?.allowListedRoles ?? []), ...(authModes.adminRoles ?? [])].map((roleOrRoleName: IRole | string) => {
+    if (typeof roleOrRoleName === 'string' || roleOrRoleName instanceof String) {
+      return roleOrRoleName as string;
+    }
+    return roleOrRoleName.roleName;
+  });
+
+/**
  * Transform the authorization config into the transformer synth parameters pertaining to auth.
  * @param authModes the auth modes provided to the construct.
  * @returns a record of params to be consumed by the transformer.
  */
 const getSynthParameters = (authModes: AuthorizationModes): AuthSynthParameters => ({
-  adminRoles: authModes.adminRoles?.map((role) => role.roleName) ?? [],
+  adminRoles: getAllowListedRoles(authModes),
   identityPoolId: authModes.iamConfig?.identityPoolId,
   ...(authModes.userPoolConfig ? { userPoolId: authModes.userPoolConfig.userPool.userPoolId } : {}),
   ...(authModes?.iamConfig

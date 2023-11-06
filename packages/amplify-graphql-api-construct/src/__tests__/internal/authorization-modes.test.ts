@@ -47,4 +47,48 @@ describe('convertAuthorizationModesToTransformerAuthConfig', () => {
     expect(authConfig).toBeDefined();
     expect(authConfig?.additionalAuthenticationProviders.length).toEqual(1);
   });
+
+  it('generates for deprecated adminRoles', () => {
+    const { authSynthParameters } = convertAuthorizationModesToTransformerAuthConfig({
+      iamConfig: {
+        identityPoolId: 'identitypool123',
+        authenticatedUserRole: { roleName: 'testAuthRole' } as IRole,
+        unauthenticatedUserRole: { roleName: 'testUnauthRole' } as IRole,
+      },
+      adminRoles: [{ roleName: 'adminRole1' } as IRole, { roleName: 'adminRole2' } as IRole],
+    });
+    expect(authSynthParameters.adminRoles?.length).toEqual(2);
+    expect(authSynthParameters.adminRoles?.[0]).toEqual('adminRole1');
+    expect(authSynthParameters.adminRoles?.[1]).toEqual('adminRole2');
+  });
+
+  it('generates for allowListedRoles', () => {
+    const { authSynthParameters } = convertAuthorizationModesToTransformerAuthConfig({
+      iamConfig: {
+        identityPoolId: 'identitypool123',
+        authenticatedUserRole: { roleName: 'testAuthRole' } as IRole,
+        unauthenticatedUserRole: { roleName: 'testUnauthRole' } as IRole,
+        allowListedRoles: [{ roleName: 'allowListed1Role' } as IRole, 'allowListed2String'],
+      },
+    });
+    expect(authSynthParameters.adminRoles?.length).toEqual(2);
+    expect(authSynthParameters.adminRoles?.[0]).toEqual('allowListed1Role');
+    expect(authSynthParameters.adminRoles?.[1]).toEqual('allowListed2String');
+  });
+
+  it('merged allowListedRoles and deprecated adminRoles', () => {
+    const { authSynthParameters } = convertAuthorizationModesToTransformerAuthConfig({
+      iamConfig: {
+        identityPoolId: 'identitypool123',
+        authenticatedUserRole: { roleName: 'testAuthRole' } as IRole,
+        unauthenticatedUserRole: { roleName: 'testUnauthRole' } as IRole,
+        allowListedRoles: [{ roleName: 'allowListed1Role' } as IRole, 'allowListed2String'],
+      },
+      adminRoles: [{ roleName: 'adminRole3' } as IRole],
+    });
+    expect(authSynthParameters.adminRoles?.length).toEqual(3);
+    expect(authSynthParameters.adminRoles?.[0]).toEqual('allowListed1Role');
+    expect(authSynthParameters.adminRoles?.[1]).toEqual('allowListed2String');
+    expect(authSynthParameters.adminRoles?.[2]).toEqual('adminRole3');
+  });
 });
