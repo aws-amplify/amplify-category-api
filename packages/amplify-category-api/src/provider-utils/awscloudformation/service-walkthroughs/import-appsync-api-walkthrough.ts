@@ -89,8 +89,8 @@ export const writeDefaultGraphQLSchema = async (
 ): Promise<void> => {
   const dataSourceType = databaseConfig?.engine;
   if (Object.values(ImportedRDSType).includes(dataSourceType)) {
-    const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
-    const globalAmplifyInputTemplate = await constructDefaultGlobalAmplifyInput(transformerVersion, databaseConfig.engine);
+    const includeAuthRule = false;
+    const globalAmplifyInputTemplate = await constructDefaultGlobalAmplifyInput(databaseConfig.engine, includeAuthRule);
     writeSchemaFile(pathToSchemaFile, globalAmplifyInputTemplate);
   } else {
     throw new Error(`Data source type ${dataSourceType} is not supported.`);

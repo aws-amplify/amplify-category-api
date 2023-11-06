@@ -37,8 +37,8 @@ export const generateRDSSchema = async (
   const existingSchema = await readRDSSchema(pathToSchemaFile);
   const existingSchemaDocument = parseSchema(existingSchema, pathToSchemaFile);
 
-  const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
-  return renderSchema(schema, transformerVersion, databaseConfig, existingSchemaDocument);
+  const includeAuthRule = false;
+  return renderSchema(schema, databaseConfig, includeAuthRule, existingSchemaDocument);
 };
 
 const retryWithVpcLambda = async (envName: string, databaseConfig, adapter: DataSourceAdapter): Promise<boolean> => {

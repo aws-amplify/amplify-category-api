@@ -9,7 +9,6 @@ type AmplifyInputEntry = {
 };
 
 const getGlobalAmplifyInputEntries = (
-  transformerVersion: number,
   dataSourceType = ImportedRDSType.MYSQL,
   includeAuthRule = true,
   authDocLink?: string,
@@ -22,7 +21,7 @@ const getGlobalAmplifyInputEntries = (
     },
   ];
 
-  if (includeAuthRule && transformerVersion === 2) {
+  if (includeAuthRule) {
     inputs.push({
       name: 'globalAuthRule',
       type: 'AuthRule',
@@ -36,12 +35,11 @@ const getGlobalAmplifyInputEntries = (
 };
 
 export const constructDefaultGlobalAmplifyInput = (
-  transformerVersion: number,
   dataSourceType: ImportedRDSType,
   includeAuthRule = true,
   authDocLink?: string,
 ): string => {
-  const inputs = getGlobalAmplifyInputEntries(transformerVersion, dataSourceType, includeAuthRule, authDocLink);
+  const inputs = getGlobalAmplifyInputEntries(dataSourceType, includeAuthRule, authDocLink);
   const inputsString = inputs.reduce(
     (acc: string, input): string =>
       acc +
@@ -66,14 +64,10 @@ export const readRDSGlobalAmplifyInput = (schemaDocument: DocumentNode | undefin
   }
 };
 
-export const constructRDSGlobalAmplifyInput = (
-  transformerVersion: number,
-  config: any,
-  schemaDocument: DocumentNode | undefined,
-): string => {
+export const constructRDSGlobalAmplifyInput = (config: any, schemaDocument: DocumentNode | undefined): string => {
   const existingInputNode: any = readRDSGlobalAmplifyInput(schemaDocument);
   if (existingInputNode && existingInputNode?.fields && existingInputNode?.fields?.length > 0) {
-    const expectedInputs = getGlobalAmplifyInputEntries(transformerVersion, ImportedRDSType.MYSQL).map((item) => item.name);
+    const expectedInputs = getGlobalAmplifyInputEntries(ImportedRDSType.MYSQL).map((item) => item.name);
     expectedInputs.forEach((input) => {
       const inputNodeField = existingInputNode?.fields?.find((field: any) => field?.name?.value === input);
       if (inputNodeField && config[input]) {
@@ -83,6 +77,6 @@ export const constructRDSGlobalAmplifyInput = (
     return print(existingInputNode);
   } else {
     const engine = config['engine'] || ImportedRDSType.MYSQL;
-    return constructDefaultGlobalAmplifyInput(transformerVersion, engine, false);
+    return constructDefaultGlobalAmplifyInput(engine, false);
   }
 };

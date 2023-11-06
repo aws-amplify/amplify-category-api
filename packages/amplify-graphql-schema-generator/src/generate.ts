@@ -30,23 +30,19 @@ const buildSchemaFromString = (stringSchema: string, engineType: ImportedRDSType
 
 export const renderSchema = (
   schema: Schema,
-  transformerVersion: number,
   databaseConfig: any,
+  includeAuthRule: boolean = false,
   existingSchema: DocumentNode = undefined,
 ): string => {
-  return (
-    constructRDSGlobalAmplifyInput(transformerVersion, databaseConfig, existingSchema) +
-    os.EOL +
-    os.EOL +
-    generateGraphQLSchema(schema, existingSchema)
-  );
+  return constructRDSGlobalAmplifyInput(databaseConfig, existingSchema) + os.EOL + os.EOL + generateGraphQLSchema(schema, existingSchema);
 };
 
-export const graphqlSchemaFromRDSSchema = (sqlSchema: string, engineType: ImportedRDSType, transformerVersion: number = 2): string => {
+export const graphqlSchemaFromRDSSchema = (sqlSchema: string, engineType: ImportedRDSType): string => {
   const schema = buildSchemaFromString(sqlSchema, engineType);
 
   const databaseConfig = {
     engine: engineType,
   };
-  return renderSchema(schema, transformerVersion, databaseConfig);
+  const includeAuthRule = false;
+  return renderSchema(schema, databaseConfig, includeAuthRule);
 };

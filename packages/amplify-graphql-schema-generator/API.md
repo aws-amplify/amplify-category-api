@@ -37,10 +37,10 @@ export const applySchemaOverrides: (document: DocumentNode, existingDocument?: D
 export const checkDestructiveNullabilityChange: (field: FieldDefinitionNode, existingField: FieldDefinitionNode) => void;
 
 // @public (undocumented)
-export const constructDefaultGlobalAmplifyInput: (transformerVersion: number, dataSourceType: ImportedRDSType, includeAuthRule?: boolean, authDocLink?: string) => string;
+export const constructDefaultGlobalAmplifyInput: (dataSourceType: ImportedRDSType, includeAuthRule?: boolean, authDocLink?: string) => string;
 
 // @public (undocumented)
-export const constructRDSGlobalAmplifyInput: (transformerVersion: number, config: any, schemaDocument: DocumentNode | undefined) => string;
+export const constructRDSGlobalAmplifyInput: (config: any, schemaDocument: DocumentNode | undefined) => string;
 
 // @public (undocumented)
 export const convertToGraphQLFieldName: (fieldName: string) => string;
@@ -163,7 +163,7 @@ export const getParentNode: (ancestors: any[]) => ObjectTypeDefinitionNode | und
 export const getRefersToDirective: (name: string) => DirectiveNode;
 
 // @public (undocumented)
-export const graphqlSchemaFromRDSSchema: (sqlSchema: string, engineType: ImportedRDSType, transformerVersion?: number) => string;
+export const graphqlSchemaFromRDSSchema: (sqlSchema: string, engineType: ImportedRDSType) => string;
 
 // @public (undocumented)
 export class Index {
@@ -325,7 +325,7 @@ export const provisionSchemaInspectorLambda: (lambdaName: string, vpc: VpcConfig
 export const readRDSGlobalAmplifyInput: (schemaDocument: DocumentNode | undefined) => InputObjectTypeDefinitionNode | undefined;
 
 // @public (undocumented)
-export const renderSchema: (schema: Schema, transformerVersion: number, databaseConfig: any, existingSchema?: DocumentNode) => string;
+export const renderSchema: (schema: Schema, databaseConfig: any, includeAuthRule?: boolean, existingSchema?: DocumentNode) => string;
 
 // @public (undocumented)
 export class Schema {
