@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import fs from 'fs-extra';
 import _ from 'lodash';
@@ -30,19 +30,17 @@ export const run = async (context: $TSContext): Promise<void> => {
   if (sqlSchema || engineType || out) {
     if (!(sqlSchema && engineType && out)) {
       if (!sqlSchema) {
-        printer.error('A SQL schema must be provided with --sql-schema');
+        throw new AmplifyError('UserInputError', { message: 'A SQL schema must be provided with --sql-schema' });
       }
       if (!engineType) {
-        printer.error('An engine type must be provided with --engine-type');
+        throw new AmplifyError('UserInputError', { message: 'An engine type must be provided with --engine-type' });
       }
       if (!out) {
-        printer.error('An output path must be provided with --out');
+        throw new AmplifyError('UserInputError', { message: 'An output path must be provided with --out' });
       }
-      return;
     }
     if (!Object.values(ImportedRDSType).includes(engineType)) {
-      printer.error(`${engineType} is not a supported engine type.`);
-      return;
+      throw new AmplifyError('UserInputError', { message: `${engineType} is not a supported engine type.` });
     }
     const schema = await graphqlSchemaFromRDSSchema(fs.readFileSync(sqlSchema, 'utf8'), engineType);
     writeSchemaFile(out, schema);
@@ -54,8 +52,7 @@ export const run = async (context: $TSContext): Promise<void> => {
     const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
 
     if (!fs.existsSync(pathToSchemaFile)) {
-      printer.info('No imported Data Sources to Generate GraphQL Schema.');
-      return;
+      throw new AmplifyError('UserInputError', { message: 'No imported Data Sources to Generate GraphQL Schema.' });
     }
 
     const importedSchema = parse(fs.readFileSync(pathToSchemaFile, 'utf8'));
@@ -64,10 +61,10 @@ export const run = async (context: $TSContext): Promise<void> => {
     const secretsKey = getSecretsKey();
     const database = await getDatabaseName(context, apiName, secretsKey);
     if (!database) {
-      printer.error(
-        'Cannot fetch the imported database name to generate the schema. Use "amplify api update-secrets" to update the database information.',
-      );
-      return;
+      throw new AmplifyError('UserInputError', {
+        message:
+          'Cannot fetch the imported database name to generate the schema. Use "amplify api update-secrets" to update the database information.',
+      });
     }
 
     // read and validate the RDS connection secrets

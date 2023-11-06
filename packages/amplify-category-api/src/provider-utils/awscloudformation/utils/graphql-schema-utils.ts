@@ -17,7 +17,7 @@ import {
 } from '@aws-amplify/graphql-schema-generator';
 import { readRDSSchema } from './rds-input-utils';
 import { $TSContext, AmplifyError, stateManager, ApiCategoryFacade } from '@aws-amplify/amplify-cli-core';
-import { printer, prompter } from '@aws-amplify/amplify-prompts';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import { getVpcMetadataLambdaName } from './rds-resources/database-resources';
 import { DocumentNode, parse } from 'graphql';
 
@@ -96,7 +96,7 @@ const buildSchemaFromConnection = async (envName: string, databaseConfig: Import
       schema = new Schema(new Engine('Postgres'));
       break;
     default:
-      printer.error('Only MySQL and Postgres Data Sources are supported.');
+      throw new AmplifyError('UserInputError', { message: 'Only MySQL and Postgres Data Sources are supported.' });
   }
 
   try {
