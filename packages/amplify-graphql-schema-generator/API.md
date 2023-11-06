@@ -163,7 +163,7 @@ export const getParentNode: (ancestors: any[]) => ObjectTypeDefinitionNode | und
 export const getRefersToDirective: (name: string) => DirectiveNode;
 
 // @public (undocumented)
-export const graphqlSchemaFromRDSSchema: (sqlSchema: string, engineType: ImportedRDSType) => string;
+export const graphqlSchemaFromRDSSchema: (sqlSchema: string, engineType: ImportedRDSType, transformerVersion?: number) => string;
 
 // @public (undocumented)
 export class Index {
