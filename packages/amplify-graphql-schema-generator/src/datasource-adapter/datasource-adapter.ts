@@ -1,6 +1,7 @@
+import * as os from 'os';
 import { singular } from 'pluralize';
 import { toPascalCase } from 'graphql-transformer-common';
-import { Field, FieldType, Index, Model } from '../schema-representation';
+import { Field, Index, Model } from '../schema-representation';
 
 export abstract class DataSourceAdapter {
   public abstract getTablesList(): Promise<string[]>;
@@ -11,13 +12,13 @@ export abstract class DataSourceAdapter {
 
   public abstract getIndexes(tableName: string): Promise<Index[]>;
 
-  public abstract mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columnType: string): FieldType;
-
   public abstract initialize(): Promise<void>;
 
   public abstract cleanup(): void;
 
   public abstract test(): Promise<boolean>;
+
+  protected abstract querySchema(): Promise<string>;
 
   public useVPC = false;
 
@@ -56,5 +57,26 @@ export abstract class DataSourceAdapter {
 
   protected getEnumName(name: string): string {
     return singular(toPascalCase(name.split('_')));
+  }
+
+  protected queryToCSV(queryResult: any[]): string {
+    if (queryResult.length === 0) {
+      return '';
+    }
+    const headers = Object.keys(queryResult[0]);
+    const headerIndices = Object.fromEntries(headers.map((key, index) => [index, key]));
+    const rows = queryResult.slice(1).map((row) =>
+      [...Array(headers.length).keys()]
+        .map((index) => {
+          const value = row[headerIndices[index]];
+          // sanitize if comma is present in value
+          if (typeof value === 'string' && value.includes(',')) {
+            return `"${value}"`;
+          }
+          return value;
+        })
+        .join(','),
+    );
+    return headers.join(',') + os.EOL + rows.join(os.EOL);
   }
 }

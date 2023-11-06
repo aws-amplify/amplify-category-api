@@ -35,21 +35,22 @@
     "@aws-sdk/client-iam": "3.338.0",
     "@aws-sdk/client-lambda": "3.338.0",
     "@aws-sdk/client-rds": "3.338.0",
+    "csv-parse": "^5.5.2",
     "fs-extra": "11.1.1",
     "graphql": "^15.5.0",
     "graphql-transformer-common": "4.25.1",
     "knex": "~2.4.0",
     "mysql2": "~2.3.3",
-    "pg": "~8.11.3",
     "ora": "^4.0.3",
-    "pluralize": "^8.0.0",
-    "@types/pluralize": "^0.0.29"
+    "pg": "~8.11.3",
+    "pluralize": "^8.0.0"
   },
   "peerDependencies": {
     "@aws-amplify/amplify-prompts": "^2.8.4"
   },
   "devDependencies": {
-    "@types/node": "^12.12.6"
+    "@types/node": "^12.12.6",
+    "@types/pluralize": "^0.0.29"
   },
   "jest": {
     "transform": {
@@ -57,6 +58,9 @@
     },
     "testURL": "http://localhost",
     "testRegex": "(src/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "modulePathIgnorePatterns": [
+      "__utils__"
+    ],
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -72,6 +76,9 @@
         "functions": 40,
         "lines": 50
       }
+    },
+    "moduleNameMapper": {
+      "^csv-parse/sync": "<rootDir>/../../node_modules/csv-parse/dist/cjs/sync.cjs"
     }
   }
 }

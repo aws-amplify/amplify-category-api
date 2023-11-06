@@ -7,6 +7,8 @@
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql';
 import { FieldDefinitionNode } from 'graphql';
+import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { InputObjectTypeDefinitionNode } from 'graphql';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
@@ -33,6 +35,12 @@ export const applySchemaOverrides: (document: DocumentNode, existingDocument?: D
 
 // @public (undocumented)
 export const checkDestructiveNullabilityChange: (field: FieldDefinitionNode, existingField: FieldDefinitionNode) => void;
+
+// @public (undocumented)
+export const constructDefaultGlobalAmplifyInput: (dataSourceType: ImportedRDSType, includeAuthRule?: boolean, authDocLink?: string) => string;
+
+// @public (undocumented)
+export const constructRDSGlobalAmplifyInput: (config: any, schemaDocument: DocumentNode | undefined) => string;
 
 // @public (undocumented)
 export const convertToGraphQLFieldName: (fieldName: string) => string;
@@ -69,7 +77,9 @@ export abstract class DataSourceAdapter {
     // (undocumented)
     abstract initialize(): Promise<void>;
     // (undocumented)
-    abstract mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columnType: string): FieldType;
+    protected abstract querySchema(): Promise<string>;
+    // (undocumented)
+    protected queryToCSV(queryResult: any[]): string;
     // (undocumented)
     abstract test(): Promise<boolean>;
     // (undocumented)
@@ -153,6 +163,9 @@ export const getParentNode: (ancestors: any[]) => ObjectTypeDefinitionNode | und
 export const getRefersToDirective: (name: string) => DirectiveNode;
 
 // @public (undocumented)
+export const graphqlSchemaFromRDSSchema: (sqlSchema: string, engineType: ImportedRDSType) => string;
+
+// @public (undocumented)
 export class Index {
     constructor(name: string);
     // (undocumented)
@@ -216,7 +229,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     // (undocumented)
     initialize(): Promise<void>;
     // (undocumented)
-    mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columntype: string): FieldType;
+    protected querySchema(): Promise<string>;
     // (undocumented)
     test(): Promise<boolean>;
 }
@@ -233,6 +246,30 @@ export interface MySQLDataSourceConfig {
     port: number;
     // (undocumented)
     username: string;
+}
+
+// @public (undocumented)
+export class MySQLStringDataSourceAdapter extends StringDataSourceAdapter {
+    // (undocumented)
+    getFields(tableName: string): Field[];
+    // (undocumented)
+    getIndexes(tableName: string): Index[];
+    // (undocumented)
+    getPrimaryKey(tableName: string): Index | null;
+    // (undocumented)
+    getTablesList(): string[];
+    // (undocumented)
+    mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columntype: string): FieldType;
+    // (undocumented)
+    protected setFields(parsedSchema: any[]): void;
+    // (undocumented)
+    protected setIndexes(parsedSchema: any[]): void;
+    // (undocumented)
+    protected setSchema(schema: any[]): void;
+    // (undocumented)
+    protected setTables(parsedSchema: any[]): void;
+    // (undocumented)
+    protected validateSchema(schema: any[]): void;
 }
 
 // @public (undocumented)
@@ -261,6 +298,8 @@ export class PostgresDataSourceAdapter extends DataSourceAdapter {
     // (undocumented)
     mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columntype: string): FieldType;
     // (undocumented)
+    protected querySchema(): Promise<string>;
+    // (undocumented)
     test(): Promise<boolean>;
 }
 
@@ -285,6 +324,12 @@ export const printSchema: (document: DocumentNode) => string;
 export const provisionSchemaInspectorLambda: (lambdaName: string, vpc: VpcConfig, region: string) => Promise<void>;
 
 // @public (undocumented)
+export const readRDSGlobalAmplifyInput: (schemaDocument: DocumentNode | undefined) => InputObjectTypeDefinitionNode | undefined;
+
+// @public (undocumented)
+export const renderSchema: (schema: Schema, databaseConfig: any, includeAuthRule?: boolean, existingSchema?: DocumentNode) => string;
+
+// @public (undocumented)
 export class Schema {
     constructor(engine: Engine);
     // (undocumented)
@@ -299,6 +344,37 @@ export class Schema {
 
 // @public (undocumented)
 export const sleep: (milliseconds: number) => Promise<void>;
+
+// @public (undocumented)
+export abstract class StringDataSourceAdapter {
+    constructor(schema: string);
+    // (undocumented)
+    describeTable(tableName: string): Model;
+    // (undocumented)
+    abstract getFields(tableName: string): Field[];
+    // (undocumented)
+    abstract getIndexes(tableName: string): Index[];
+    // (undocumented)
+    getModels(): Model[];
+    // (undocumented)
+    abstract getPrimaryKey(tableName: string): Index | null;
+    // (undocumented)
+    abstract getTablesList(): string[];
+    // (undocumented)
+    protected abstract mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columnType: string): FieldType;
+    // (undocumented)
+    protected parseSchema(schema: string): any[];
+    // (undocumented)
+    protected abstract setFields(fields: any[]): void;
+    // (undocumented)
+    protected abstract setIndexes(indexes: any[]): void;
+    // (undocumented)
+    protected abstract setSchema(schema: any[]): void;
+    // (undocumented)
+    protected abstract setTables(tables: any[]): void;
+    // (undocumented)
+    protected abstract validateSchema(schema: any[]): void;
+}
 
 // (No @packageDocumentation comment for this package)
 

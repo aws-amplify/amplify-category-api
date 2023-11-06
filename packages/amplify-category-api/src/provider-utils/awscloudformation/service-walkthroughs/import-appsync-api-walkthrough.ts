@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { ApiCategoryFacade, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import {
   ImportAppSyncAPIInputs,
@@ -10,7 +10,7 @@ import {
   RDS_SCHEMA_FILE_NAME,
 } from '@aws-amplify/graphql-transformer-core';
 import { storeConnectionSecrets, getSecretsKey } from '../utils/rds-resources/database-resources';
-import { constructDefaultGlobalAmplifyInput } from '../utils/rds-input-utils';
+import { constructDefaultGlobalAmplifyInput } from '@aws-amplify/graphql-schema-generator';
 import { getAPIResourceDir, getAppSyncAPINames } from '../utils/amplify-meta-utils';
 import { writeSchemaFile } from '../utils/graphql-schema-utils';
 import { serviceMetadataFor } from '../utils/dynamic-imports';
@@ -89,7 +89,8 @@ export const writeDefaultGraphQLSchema = async (
 ): Promise<void> => {
   const dataSourceType = databaseConfig?.engine;
   if (Object.values(ImportedRDSType).includes(dataSourceType)) {
-    const globalAmplifyInputTemplate = await constructDefaultGlobalAmplifyInput(context, databaseConfig.engine);
+    const includeAuthRule = false;
+    const globalAmplifyInputTemplate = await constructDefaultGlobalAmplifyInput(databaseConfig.engine, includeAuthRule);
     writeSchemaFile(pathToSchemaFile, globalAmplifyInputTemplate);
   } else {
     throw new Error(`Data source type ${dataSourceType} is not supported.`);

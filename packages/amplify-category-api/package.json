@@ -106,6 +106,9 @@
         "functions": 36,
         "lines": 44
       }
+    },
+    "moduleNameMapper": {
+      "^csv-parse/sync": "<rootDir>/../../node_modules/csv-parse/dist/cjs/sync.cjs"
     }
   }
 }
