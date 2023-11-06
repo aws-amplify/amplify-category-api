@@ -18,6 +18,7 @@ export class AmplifyGraphqlDefinition {
    * Produce a schema definition from a string input
    * @param schema the graphql input as a string
    * @param modelDataSourceDefinition the provision definition for `@model` datasource. The DynamoDB from CloudFormation will be used by default.
+   * @experimental modelDataSourceDefinition
    * @returns a fully formed amplify graphql definition
    */
   static fromString(
@@ -50,6 +51,7 @@ export class AmplifyGraphqlDefinition {
 
   /**
    * Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema
+   * @experimental
    * @param filePaths one or more paths to the graphql files to process
    * @param modelDataSourceDefinition the provision definition for `@model` datasource. The DynamoDB from CloudFormation will be used by default.
    * @returns a fully formed amplify graphql definition
@@ -71,6 +73,7 @@ export class AmplifyGraphqlDefinition {
 
   /**
    * Combines multiple IAmplifyGraphqlDefinitions into a single definition.
+   * @experimental
    * @param definitions the definitions to combine
    */
   static combine(definitions: IAmplifyGraphqlDefinition[]): IAmplifyGraphqlDefinition {
