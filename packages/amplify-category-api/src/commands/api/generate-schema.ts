@@ -23,6 +23,12 @@ export const name = subcommand;
 
 export const run = async (context: $TSContext): Promise<void> => {
   printer.warn(PREVIEW_BANNER);
+  const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
+  if (transformerVersion !== 2) {
+    throw new AmplifyError('InvalidDirectiveError', {
+      message: 'Imported SQL schema can only generate a GraphQL schema with the version 2 transromer.',
+    });
+  }
   const sqlSchema = context.parameters?.options?.['sql-schema'];
   const engineType = context.parameters?.options?.['engine-type'];
   const out = context.parameters?.options?.out;
