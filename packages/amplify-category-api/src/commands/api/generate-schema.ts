@@ -26,7 +26,7 @@ export const run = async (context: $TSContext): Promise<void> => {
   const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
   if (transformerVersion !== 2) {
     throw new AmplifyError('InvalidDirectiveError', {
-      message: 'Imported SQL schema can only generate a GraphQL schema with the version 2 transromer.',
+      message: 'Imported SQL schema can only generate a GraphQL schema with the version 2 transformer.',
     });
   }
   const sqlSchema = context.parameters?.options?.['sql-schema'];
