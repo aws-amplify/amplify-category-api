@@ -1,6 +1,7 @@
 import { AppSyncAuthConfiguration, AppSyncAuthConfigurationEntry, SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { CfnGraphQLApi } from 'aws-cdk-lib/aws-appsync';
 import { isArray } from 'lodash';
+import { IRole, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import {
   AuthorizationModes,
   ApiKeyAuthorizationConfig,
@@ -9,7 +10,6 @@ import {
   OIDCAuthorizationConfig,
   UserPoolAuthorizationConfig,
 } from '../types';
-import { ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 
 type AuthorizationConfigMode =
   | (IAMAuthorizationConfig & { type: 'AWS_IAM' })
@@ -158,12 +158,25 @@ export const convertAuthorizationModesToTransformerAuthConfig = (authModes: Auth
 });
 
 /**
+ * Merge iamConfig allowListedRoles with deprecated adminRoles property, converting to strings.
+ * @param authModes the auth modes provided to the construct.
+ * @returns the list of admin roles as strings to pass into the transformer
+ */
+const getAllowListedRoles = (authModes: AuthorizationModes): string[] =>
+  [...(authModes?.iamConfig?.allowListedRoles ?? []), ...(authModes.adminRoles ?? [])].map((roleOrRoleName: IRole | string) => {
+    if (typeof roleOrRoleName === 'string' || roleOrRoleName instanceof String) {
+      return roleOrRoleName as string;
+    }
+    return roleOrRoleName.roleName;
+  });
+
+/**
  * Transform the authorization config into the transformer synth parameters pertaining to auth.
  * @param authModes the auth modes provided to the construct.
  * @returns a record of params to be consumed by the transformer.
  */
 const getSynthParameters = (authModes: AuthorizationModes): AuthSynthParameters => ({
-  adminRoles: authModes.adminRoles?.map((role) => role.roleName) ?? [],
+  adminRoles: getAllowListedRoles(authModes),
   identityPoolId: authModes.iamConfig?.identityPoolId,
   ...(authModes.userPoolConfig ? { userPoolId: authModes.userPoolConfig.userPool.userPoolId } : {}),
   ...(authModes?.iamConfig

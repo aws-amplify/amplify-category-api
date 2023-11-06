@@ -38,6 +38,13 @@ export interface IAMAuthorizationConfig {
    * Unauthenticated user role, applies to { provider: iam, allow: public } access.
    */
   readonly unauthenticatedUserRole: IRole;
+
+  /**
+   * A list of IAM roles which will be granted full read/write access to the generated model if IAM auth is enabled.
+   * If an IRole is provided, the role `name` will be used for matching.
+   * If a string is provided, the raw value will be used for matching.
+   */
+  readonly allowListedRoles?: (IRole | string)[];
 }
 
 /**
@@ -156,6 +163,7 @@ export interface AuthorizationModes {
 
   /**
    * A list of roles granted full R/W access to the Api.
+   * @deprecated, use iamConfig.allowListedRoles instead.
    */
   readonly adminRoles?: IRole[];
 }
