@@ -15,7 +15,6 @@ const buildSchemaFromString = (stringSchema: string, engineType: ImportedRDSType
       schema = new Schema(new Engine('MySQL'));
       break;
     case ImportedRDSType.POSTGRESQL:
-      // todo change to postgres
       adapter = new PostgresStringDataSourceAdapter(stringSchema);
       schema = new Schema(new Engine('Postgres'));
       break;
