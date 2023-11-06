@@ -28,7 +28,13 @@ class TestStringDataSourceAdapter extends StringDataSourceAdapter {
     };
   }
 
-  protected parseSchema(schema: string): void {}
+  protected parseSchema(schema: string): any[] {
+    return [];
+  }
+
+  protected validateSchema(schema: any[]): void {}
+
+  protected setSchema(schema: any[]): void {}
 
   protected setFields(fields: any[]): void {}
 

@@ -1,8 +1,11 @@
+import { parse } from 'csv-parse/sync';
 import { Field, FieldType, Index, Model } from '../schema-representation';
 
 export abstract class StringDataSourceAdapter {
   constructor(schema: string) {
-    this.parseSchema(schema);
+    const parsedSchema = this.parseSchema(schema);
+    this.validateSchema(parsedSchema);
+    this.setSchema(parsedSchema);
   }
 
   public abstract getTablesList(): string[];
@@ -15,13 +18,21 @@ export abstract class StringDataSourceAdapter {
 
   protected abstract mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columnType: string): FieldType;
 
-  protected abstract parseSchema(schema: string): void;
+  protected abstract validateSchema(schema: any[]): void;
+
+  protected abstract setSchema(schema: any[]): void;
 
   protected abstract setFields(fields: any[]): void;
 
   protected abstract setIndexes(indexes: any[]): void;
 
   protected abstract setTables(tables: any[]): void;
+
+  protected parseSchema(schema: string): any[] {
+    return parse(schema, {
+      columns: true,
+    });
+  }
 
   public getModels(): Model[] {
     const tableNames = this.getTablesList();

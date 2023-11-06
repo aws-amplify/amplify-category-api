@@ -1,4 +1,3 @@
-import { parse } from 'csv-parse/sync';
 import { EnumType, Field, FieldDataType, FieldType, Index } from '../schema-representation';
 import { StringDataSourceAdapter } from './string-datasource-adapter';
 
@@ -35,14 +34,13 @@ export class MySQLStringDataSourceAdapter extends StringDataSourceAdapter {
 
   private readonly PRIMARY_KEY_INDEX_NAME = 'PRIMARY';
 
-  protected parseSchema(schema: string): void {
-    const parsedSchema = parse(schema, {
-      columns: true,
-    });
-    this.setFields(parsedSchema);
-    this.setIndexes(parsedSchema);
-    this.setTables(parsedSchema);
+  protected setSchema(schema: any[]): void {
+    this.setFields(schema);
+    this.setIndexes(schema);
+    this.setTables(schema);
   }
+
+  protected validateSchema(schema: any[]): void {}
 
   protected setFields(parsedSchema: any[]): void {
     this.fields = parsedSchema.map((item: any) => ({

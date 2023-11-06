@@ -48,6 +48,9 @@ export const run = async (context: $TSContext): Promise<void> => {
     if (!Object.values(ImportedRDSType).includes(engineType)) {
       throw new AmplifyError('UserInputError', { message: `${engineType} is not a supported engine type.` });
     }
+    if (!fs.existsSync(sqlSchema)) {
+      throw new AmplifyError('UserInputError', { message: `SQL schema file ${sqlSchema} does not exists.` });
+    }
     const schema = await graphqlSchemaFromRDSSchema(fs.readFileSync(sqlSchema, 'utf8'), engineType);
     writeSchemaFile(out, schema);
   } else {
