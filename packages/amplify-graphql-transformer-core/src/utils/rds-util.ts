@@ -2,8 +2,8 @@ import path from 'path';
 import _ from 'lodash';
 import { parse, Kind, ObjectTypeDefinitionNode } from 'graphql';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { DDB_DB_TYPE, MYSQL_DB_TYPE, ModelDatasourceType, POSTGRES_DB_TYPE } from '../types';
-import { DatasourceType, DBType } from '../config';
+import { DDB_DB_TYPE, MYSQL_DB_TYPE, ModelDataSourceType, POSTGRES_DB_TYPE } from '../types';
+import { DataSourceType, DBType } from '../config';
 import { APICategory } from './api-category';
 import { ImportedRDSType } from '../types';
 
@@ -40,7 +40,7 @@ export const getParameterStoreSecretPath = (
  * @param typename Model name
  * @returns datasource type
  */
-export const getModelDatasourceType = (ctx: TransformerContextProvider, typename: string): ModelDatasourceType => {
+export const getModelDataSourceType = (ctx: TransformerContextProvider, typename: string): ModelDataSourceType => {
   const config = ctx.modelToDatasourceMap.get(typename);
   return config?.dbType || DDB_DB_TYPE;
 };
@@ -52,7 +52,7 @@ export const getModelDatasourceType = (ctx: TransformerContextProvider, typename
  * @returns boolean
  */
 export const isDynamoDBModel = (ctx: TransformerContextProvider, typename: string): boolean => {
-  return getModelDatasourceType(ctx, typename) === DDB_DB_TYPE;
+  return getModelDataSourceType(ctx, typename) === DDB_DB_TYPE;
 };
 
 /**
@@ -62,8 +62,8 @@ export const isDynamoDBModel = (ctx: TransformerContextProvider, typename: strin
  * @returns boolean
  */
 export const isRDSModel = (ctx: TransformerContextProvider, typename: string): boolean => {
-  const modelDatasourceType = getModelDatasourceType(ctx, typename);
-  return [MYSQL_DB_TYPE, POSTGRES_DB_TYPE].includes(modelDatasourceType);
+  const modelDataSourceType = getModelDataSourceType(ctx, typename);
+  return [MYSQL_DB_TYPE, POSTGRES_DB_TYPE].includes(modelDataSourceType);
 };
 
 /**
@@ -71,7 +71,7 @@ export const isRDSModel = (ctx: TransformerContextProvider, typename: string): b
  * @param dbInfo Datasource information
  * @returns boolean
  */
-export const isImportedRDSType = (dbInfo: DatasourceType): boolean => {
+export const isImportedRDSType = (dbInfo: DataSourceType): boolean => {
   return isRDSDBType(dbInfo?.dbType) && !dbInfo?.provisionDB;
 };
 
@@ -86,9 +86,9 @@ export const isRDSDBType = (dbType: DBType): boolean => {
  * @param datasourceType the datasource type for each model to be associated with
  * @returns a map of model names to datasource types
  */
-export const constructDataSourceMap = (schema: string, datasourceType: DatasourceType): Map<string, DatasourceType> => {
+export const constructDataSourceMap = (schema: string, datasourceType: DataSourceType): Map<string, DataSourceType> => {
   const parsedSchema = parse(schema);
-  const result = new Map<string, DatasourceType>();
+  const result = new Map<string, DataSourceType>();
   parsedSchema.definitions
     .filter((obj) => obj.kind === Kind.OBJECT_TYPE_DEFINITION && obj.directives?.some((dir) => dir.name.value === 'model'))
     .forEach((type) => {
@@ -119,7 +119,7 @@ export const getEngineFromDBType = (dbType: DBType): ImportedRDSType => {
  * @param modelToDatasourceMap Array of datasource types
  * @returns datasource type
  */
-export const getImportedRDSType = (modelToDatasourceMap: Map<string, DatasourceType>): DBType => {
+export const getImportedRDSType = (modelToDatasourceMap: Map<string, DataSourceType>): DBType => {
   const datasourceMapValues = Array.from(modelToDatasourceMap?.values());
   const dbTypes = new Set(datasourceMapValues?.filter((value) => isImportedRDSType(value))?.map((value) => value?.dbType));
   if (dbTypes.size > 1) {

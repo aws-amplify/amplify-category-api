@@ -1,6 +1,6 @@
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { ConflictHandlerType, DatasourceType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType, DataSourceType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { DocumentNode, Kind, parse } from 'graphql';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { HasManyTransformer, HasOneTransformer } from '..';
@@ -747,7 +747,7 @@ describe('@hasOne connection field nullability tests', () => {
 
 describe('@hasOne directive with RDS datasource', () => {
   test('happy case should generate correct resolvers', () => {
-    const modelToDatasourceMap = new Map<string, DatasourceType>();
+    const modelToDatasourceMap = new Map<string, DataSourceType>();
     modelToDatasourceMap.set('User', {
       dbType: 'MySQL',
       provisionDB: false,
@@ -786,7 +786,7 @@ describe('@hasOne directive with RDS datasource', () => {
   });
 
   test('composite key should generate correct resolvers', () => {
-    const modelToDatasourceMap = new Map<string, DatasourceType>();
+    const modelToDatasourceMap = new Map<string, DataSourceType>();
     modelToDatasourceMap.set('User', {
       dbType: 'MySQL',
       provisionDB: false,

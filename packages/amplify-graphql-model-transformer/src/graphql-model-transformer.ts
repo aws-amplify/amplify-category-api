@@ -11,7 +11,7 @@ import {
   ObjectDefinitionWrapper,
   SyncUtils,
   TransformerModelBase,
-  DatasourceType,
+  DataSourceType,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncDataSourceType,
@@ -130,7 +130,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
   private resourceGeneratorMap: Map<string, ModelResourceGenerator> = new Map<string, ModelResourceGenerator>();
 
-  private modelToDatasourceMap: Map<string, DatasourceType> = new Map<string, DatasourceType>();
+  private modelToDatasourceMap: Map<string, DataSourceType> = new Map<string, DataSourceType>();
 
   /**
    * A Map to hold the directive configuration
@@ -146,7 +146,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   }
 
   before = (ctx: TransformerBeforeStepContextProvider): void => {
-    const datasourceMapValues: Array<DatasourceType> = Array.from(ctx.modelToDatasourceMap.values());
+    const datasourceMapValues: Array<DataSourceType> = Array.from(ctx.modelToDatasourceMap.values());
     if (datasourceMapValues.some((value) => value.dbType === DDB_DB_TYPE && value.provisionDB)) {
       this.resourceGeneratorMap.get(DDB_DB_TYPE)?.enableGenerator();
       this.resourceGeneratorMap.get(DDB_DB_TYPE)?.enableProvisioned();

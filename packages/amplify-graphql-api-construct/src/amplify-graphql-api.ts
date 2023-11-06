@@ -252,26 +252,27 @@ export class AmplifyGraphqlApi extends Construct {
     });
     extendedConfig.datasourceSecretParameterLocations = dbSecrets;
 
-    const subnetAvailabilityZoneConfig = modelDataSourceBinding.vpcConfiguration.subnetAvailabilityZones.map(
-      (saz): { SubnetId: string; AvailabilityZone: string } => ({
-        SubnetId: saz.subnetId,
-        AvailabilityZone: saz.availabilityZone,
-      }),
-    );
+    if (modelDataSourceBinding.vpcConfiguration) {
+      const subnetAvailabilityZoneConfig = modelDataSourceBinding.vpcConfiguration.subnetAvailabilityZones.map(
+        (saz): { SubnetId: string; AvailabilityZone: string } => ({
+          SubnetId: saz.subnetId,
+          AvailabilityZone: saz.availabilityZone,
+        }),
+      );
+      extendedConfig.sqlLambdaVpcConfig = {
+        vpcId: modelDataSourceBinding.vpcConfiguration.vpcId,
+        securityGroupIds: modelDataSourceBinding.vpcConfiguration.securityGroupIds,
+        subnetAvailabilityZoneConfig,
+      };
+    }
 
     if (!extendedConfig.modelToDatasourceMap || extendedConfig.modelToDatasourceMap.size === 0) {
-      const defaultDatasourceType = {
+      const defaultDataSourceType = {
         dbType: modelDataSourceBinding.bindingType,
         provisionDB: false,
       };
-      extendedConfig.modelToDatasourceMap = constructDataSourceMap(extendedConfig.schema, defaultDatasourceType);
+      extendedConfig.modelToDatasourceMap = constructDataSourceMap(extendedConfig.schema, defaultDataSourceType);
     }
-
-    extendedConfig.sqlLambdaVpcConfig = {
-      vpcId: modelDataSourceBinding.vpcConfiguration.vpcId,
-      securityGroupIds: modelDataSourceBinding.vpcConfiguration.securityGroupIds,
-      subnetAvailabilityZoneConfig,
-    };
 
     return extendedConfig;
   }

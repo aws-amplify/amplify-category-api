@@ -10,6 +10,7 @@ import {
   setupRDSInstanceAndData,
   sleep,
   updateAuthAddUserGroups,
+  getProjectMeta,
 } from 'amplify-category-api-e2e-core';
 import { existsSync, writeFileSync, removeSync } from 'fs-extra';
 import generator from 'generate-password';
@@ -35,7 +36,7 @@ describe('RDS Cognito userpool provider Auth tests', () => {
   // Generate settings for RDS instance
   const username = db_user;
   const password = db_password;
-  const region = 'ap-northeast-2';
+  let region = 'us-east-1';
   let port = 3306;
   const database = 'default_db';
   let host = 'localhost';
@@ -106,6 +107,9 @@ describe('RDS Cognito userpool provider Auth tests', () => {
       name: projName,
     });
 
+    const metaAfterInit = getProjectMeta(projRoot);
+    region = metaAfterInit.providers.awscloudformation.Region;
+
     await addApi(projRoot, {
       transformerVersion: 2,
       'Amazon Cognito User Pool': {},
@@ -125,10 +129,11 @@ describe('RDS Cognito userpool provider Auth tests', () => {
       useVpc: true,
       apiExists: true,
     });
+
     writeFileSync(rdsSchemaFilePath, appendAmplifyInput(schema, 'mysql'), 'utf8');
 
     await updateAuthAddUserGroups(projRoot, [adminGroupName, devGroupName]);
-    await amplifyPush(projRoot, true);
+    await amplifyPush(projRoot);
     await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.
 
     const userPoolId = getUserPoolId(projRoot);

@@ -4,7 +4,7 @@ export {
   AppSyncDataSourceType,
   DataSourceInstance,
   DBType,
-  DatasourceType,
+  DataSourceType,
 } from './transformer-datasource-provider';
 export { TransformerContextOutputProvider } from './transformer-context-output-provider';
 export { TransformerProviderRegistry } from './transformer-provider-registry';

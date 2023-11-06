@@ -119,7 +119,7 @@ describe('AmplifyGraphqlDefinition', () => {
       expect(definition.modelDataSourceBinding).toEqual(defaultBinding);
     });
 
-    it('binds to a sql data source', () => {
+    it('binds to a sql data source with a VPC configuration', () => {
       const schemaFilePath = path.join(tmpDir, 'schema.graphql');
       const binding: SqlModelDataSourceBinding = {
         bindingType: 'MySQL',
@@ -128,6 +128,23 @@ describe('AmplifyGraphqlDefinition', () => {
           securityGroupIds: ['sg-123'],
           subnetAvailabilityZones: [{ subnetId: 'subnet-123', availabilityZone: 'us-east-1a' }],
         },
+        dbConnectionConfig: {
+          hostnameSsmPath: '/ssm/path/hostnameSsmPath',
+          portSsmPath: '/ssm/path/portSsmPath',
+          usernameSsmPath: '/ssm/path/usernameSsmPath',
+          passwordSsmPath: '/ssm/path/passwordSsmPath',
+          databaseNameSsmPath: '/ssm/path/databaseNameSsmPath',
+        },
+      };
+      fs.writeFileSync(schemaFilePath, TEST_SCHEMA);
+      const definition = AmplifyGraphqlDefinition.fromFilesAndBinding([schemaFilePath], binding);
+      expect(definition.modelDataSourceBinding).toEqual(binding);
+    });
+
+    it('binds to a sql data source with no VPC configuration', () => {
+      const schemaFilePath = path.join(tmpDir, 'schema.graphql');
+      const binding: SqlModelDataSourceBinding = {
+        bindingType: 'MySQL',
         dbConnectionConfig: {
           hostnameSsmPath: '/ssm/path/hostnameSsmPath',
           portSsmPath: '/ssm/path/portSsmPath',

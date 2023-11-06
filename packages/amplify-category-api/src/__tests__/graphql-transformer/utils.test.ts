@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { DatasourceType } from '@aws-amplify/graphql-transformer-core';
+import { DataSourceType } from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs-extra';
 import { $TSContext, CloudformationProviderFacade, pathManager, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk, getAdminRoles } from '../../graphql-transformer/utils';
@@ -74,7 +74,7 @@ describe('graphql transformer utils', () => {
           pipelineFunctions: {},
           resolvers: {},
           stacks: {},
-          modelToDatasourceMap: new Map<string, DatasourceType>(),
+          modelToDatasourceMap: new Map<string, DataSourceType>(),
           config: { Version: 5, ElasticsearchWarning: true },
           customQueries: new Map<string, string>(),
         } as TransformerProjectConfig;
@@ -97,7 +97,7 @@ describe('graphql transformer utils', () => {
             'Query.listTodos.req.vtl': '$util.unauthorized\n',
           },
           stacks: {},
-          modelToDatasourceMap: new Map<string, DatasourceType>(),
+          modelToDatasourceMap: new Map<string, DataSourceType>(),
           config: { Version: 5, ElasticsearchWarning: true },
           customQueries: new Map<string, string>(),
         } as TransformerProjectConfig;
@@ -120,7 +120,7 @@ describe('graphql transformer utils', () => {
           },
           resolvers: {},
           stacks: {},
-          modelToDatasourceMap: new Map<string, DatasourceType>(),
+          modelToDatasourceMap: new Map<string, DataSourceType>(),
           config: { Version: 5, ElasticsearchWarning: true },
           customQueries: new Map<string, string>(),
         } as TransformerProjectConfig;
@@ -207,7 +207,7 @@ describe('graphql transformer utils', () => {
               },
             },
           },
-          modelToDatasourceMap: new Map<string, DatasourceType>(),
+          modelToDatasourceMap: new Map<string, DataSourceType>(),
           config: { Version: 5, ElasticsearchWarning: true },
         } as unknown as TransformerProjectConfig;
       });

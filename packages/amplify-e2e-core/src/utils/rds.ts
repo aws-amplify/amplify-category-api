@@ -1,11 +1,20 @@
 import {
   RDSClient,
   CreateDBInstanceCommand,
-  waitUntilDBInstanceAvailable,
-  DeleteDBInstanceCommand,
   CreateDBInstanceCommandInput,
+  DBInstance,
+  DeleteDBInstanceCommand,
+  waitUntilDBInstanceAvailable,
 } from '@aws-sdk/client-rds';
 import { EC2Client, AuthorizeSecurityGroupIngressCommand, RevokeSecurityGroupIngressCommand } from '@aws-sdk/client-ec2';
+import {
+  SSMClient,
+  DeleteParametersCommand,
+  DeleteParametersCommandInput,
+  PutParameterCommand,
+  PutParameterCommandInput,
+  PutParameterCommandOutput,
+} from '@aws-sdk/client-ssm';
 import { knex } from 'knex';
 import axios from 'axios';
 import { sleep } from './sleep';
@@ -34,7 +43,14 @@ type RDSConfig = {
  * @param config Configuration of the database instance
  * @returns EndPoint address, port and database name of the created RDS instance.
  */
-export const createRDSInstance = async (config: RDSConfig): Promise<{ endpoint: string; port: number; dbName: string }> => {
+export const createRDSInstance = async (
+  config: RDSConfig,
+): Promise<{
+  endpoint: string;
+  port: number;
+  dbName: string;
+  dbInstance: DBInstance;
+}> => {
   const client = new RDSClient({ region: config.region });
   const params: CreateDBInstanceCommandInput = {
     /** input parameters */
@@ -76,6 +92,7 @@ export const createRDSInstance = async (config: RDSConfig): Promise<{ endpoint: 
       endpoint: dbInstance.Endpoint.Address as string,
       port: dbInstance.Endpoint.Port as number,
       dbName: dbInstance.DBName as string,
+      dbInstance,
     };
   } catch (error) {
     console.error(error);
@@ -84,7 +101,8 @@ export const createRDSInstance = async (config: RDSConfig): Promise<{ endpoint: 
 };
 
 /**
- * Creates a new RDS instance using the given input configuration, runs the given queries and returns the details of the created RDS instance.
+ * Creates a new RDS instance using the given input configuration, runs the given queries and returns the details of the created RDS
+ * instance.
  * @param config Configuration of the database instance
  * @param queries Initial queries to be executed
  * @returns EndPoint address, port and database name of the created RDS instance.
@@ -92,7 +110,7 @@ export const createRDSInstance = async (config: RDSConfig): Promise<{ endpoint: 
 export const setupRDSInstanceAndData = async (
   config: RDSConfig,
   queries?: string[],
-): Promise<{ endpoint: string; port: number; dbName: string }> => {
+): Promise<{ endpoint: string; port: number; dbName: string; dbInstance: DBInstance }> => {
   const dbConfig = await createRDSInstance(config);
 
   if (queries && queries.length > 0) {
@@ -194,6 +212,7 @@ export const addRDSPortInboundRule = async (config: {
   });
 
   try {
+    console.log(`Security group ${config.securityGroup ?? DEFAULT_SECURITY_GROUP}: Opening inbound port ${config.port}`);
     await ec2_client.send(command);
   } catch (error) {
     // Ignore this error
@@ -221,6 +240,7 @@ export const addRDSPortInboundRuleToGroupId = async (config: {
   });
 
   try {
+    console.log(`Security group ${config.securityGroupId}: Opening inbound port ${config.port}`);
     await ec2_client.send(command);
   } catch (error) {
     console.log(error);
@@ -253,6 +273,7 @@ export const removeRDSPortInboundRule = async (config: {
   });
 
   try {
+    console.log(`Security group ${config.securityGroup ?? DEFAULT_SECURITY_GROUP}: Removing inbound port ${config.port}`);
     await ec2_client.send(command);
   } catch (error) {
     // Ignore this error
@@ -278,6 +299,7 @@ export class RDSTestDataProvider {
   }
 
   private establishDatabaseConnection(): void {
+    console.log(`Establishing database connection to ${this.config.host}`);
     const databaseConfig = {
       host: this.config.host,
       database: this.config.database,
@@ -311,7 +333,7 @@ export class RDSTestDataProvider {
     this.dbBuilder && this.dbBuilder.destroy();
   }
 
-  public async runQuery(statements: string[]) {
+  public async runQuery(statements: string[]): Promise<void> {
     for (const statement of statements) {
       await this.dbBuilder.raw(statement);
     }
@@ -337,4 +359,94 @@ export const getIpRanges = async (): Promise<string[]> => {
       return `${ipParts[0]}.${ipParts[1]}.0.0/16`;
     }),
   );
+};
+
+export const deleteDbConnectionConfig = async (options: {
+  region: string;
+  hostnameSsmPath: string;
+  portSsmPath: string;
+  usernameSsmPath: string;
+  passwordSsmPath: string;
+  databaseNameSsmPath: string;
+}): Promise<void> => {
+  const ssmClient = new SSMClient({ region: options.region });
+
+  const input: DeleteParametersCommandInput = {
+    Names: [options.hostnameSsmPath, options.portSsmPath, options.usernameSsmPath, options.passwordSsmPath, options.databaseNameSsmPath],
+  };
+
+  console.log('Deleting SSM parameters');
+  await ssmClient.send(new DeleteParametersCommand(input));
+};
+
+export const storeDbConnectionConfig = async (options: {
+  region: string;
+  pathPrefix: string;
+  hostname: string;
+  port: number;
+  username: string;
+  password: string;
+  databaseName: string;
+}): Promise<{
+  hostnameSsmPath: string;
+  portSsmPath: string;
+  usernameSsmPath: string;
+  passwordSsmPath: string;
+  databaseNameSsmPath: string;
+}> => {
+  const ssmClient = new SSMClient({ region: options.region });
+  const pathPrefix = options.pathPrefix;
+  const paths = {
+    hostnameSsmPath: '',
+    portSsmPath: '',
+    usernameSsmPath: '',
+    passwordSsmPath: '',
+    databaseNameSsmPath: '',
+  };
+
+  const keys = ['hostname', 'port', 'username', 'password', 'databaseName'];
+
+  const promises: Promise<PutParameterCommandOutput>[] = [];
+
+  for (const key of keys) {
+    const ssmPath = `${pathPrefix}/${key}`;
+    paths[`${key}SsmPath`] = ssmPath;
+
+    // Handle non-string values like `port`
+    const value = typeof options[key] === 'string' ? options[key] : JSON.stringify(options[key]);
+    const input: PutParameterCommandInput = {
+      Name: ssmPath,
+      Value: value,
+      Type: 'SecureString',
+      Overwrite: true,
+    };
+
+    promises.push(ssmClient.send(new PutParameterCommand(input)));
+  }
+
+  await Promise.all(promises);
+
+  return paths;
+};
+
+export const extractVpcConfigFromDbInstance = (
+  dbInstance: DBInstance,
+): {
+  vpcId: string;
+  securityGroupIds: string[];
+  subnetAvailabilityZones: {
+    subnetId: string;
+    availabilityZone: string;
+  }[];
+} => {
+  const subnetAvailabilityZones = dbInstance.DBSubnetGroup.Subnets.map((subnet) => ({
+    subnetId: subnet.SubnetIdentifier,
+    availabilityZone: subnet.SubnetAvailabilityZone.Name,
+  }));
+
+  return {
+    vpcId: dbInstance.DBSubnetGroup.VpcId,
+    securityGroupIds: dbInstance.VpcSecurityGroups.map((sg) => sg.VpcSecurityGroupId),
+    subnetAvailabilityZones,
+  };
 };
