@@ -23,13 +23,29 @@ const getPackagedConstructPath = (): string => {
 };
 
 /**
+ * Copy the backend snapshot into the generated app location.
+ */
+const copyTemplateDirectory = (projectPath: string, templatePath: string): void => {
+  const binDir = path.join(projectPath, 'bin');
+  copySync(templatePath, binDir, { overwrite: true });
+  moveSync(path.join(binDir, 'app.ts'), path.join(binDir, `${path.basename(projectPath)}.ts`), { overwrite: true });
+};
+
+export type InitCDKProjectProps = {
+  cdkVersion?: string;
+  additionalDependencies?: Array<string>;
+};
+
+/**
  * Initialize a CDK project in the cwd using a reference backend `app.ts` file, and optional cdkVersion specified.
  * @param cwd the directory to initialize the CDK project in
  * @param templatePath path to the project to overwrite the cdk sample code with
- * @param cdkVersion optional cdk version if a newer version is being tested
+ * @param props additional properties to configure the test app setup.
  * @returns a promise which resolves to the stack name
  */
-export const initCDKProject = async (cwd: string, templatePath: string, cdkVersion = '2.80.0'): Promise<string> => {
+export const initCDKProject = async (cwd: string, templatePath: string, props?: InitCDKProjectProps): Promise<string> => {
+  const { cdkVersion = '2.80.0', additionalDependencies = [] } = props ?? {};
+
   await spawn(getNpxPath(), ['cdk', 'init', 'app', '--language', 'typescript'], {
     cwd,
     stripColors: true,
@@ -41,15 +57,10 @@ export const initCDKProject = async (cwd: string, templatePath: string, cdkVersi
     .sendYes()
     .runAsync();
 
-  const binDir = path.join(cwd, 'bin');
-  copySync(templatePath, binDir, { overwrite: true });
-  moveSync(path.join(binDir, 'app.ts'), path.join(binDir, `${path.basename(cwd)}.ts`), { overwrite: true });
+  copyTemplateDirectory(cwd, templatePath);
 
-  const devDependencies = [getPackagedConstructPath()];
-  const runtimeDependencies = [`aws-cdk-lib@${cdkVersion}`, 'esbuild'];
-
-  await spawn('npm', ['install', '--save-dev', ...devDependencies], { cwd, stripColors: true }).runAsync();
-  await spawn('npm', ['install', '--save', ...runtimeDependencies], { cwd, stripColors: true }).runAsync();
+  const deps = [getPackagedConstructPath(), `aws-cdk-lib@${cdkVersion}`, ...additionalDependencies];
+  await spawn('npm', ['install', ...deps], { cwd, stripColors: true }).runAsync();
 
   return JSON.parse(readFileSync(path.join(cwd, 'package.json'), 'utf8')).name.replace(/_/g, '-');
 };
