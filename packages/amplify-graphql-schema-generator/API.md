@@ -261,13 +261,15 @@ export class MySQLStringDataSourceAdapter extends StringDataSourceAdapter {
     // (undocumented)
     mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columntype: string): FieldType;
     // (undocumented)
-    protected parseSchema(schema: string): void;
-    // (undocumented)
     protected setFields(parsedSchema: any[]): void;
     // (undocumented)
     protected setIndexes(parsedSchema: any[]): void;
     // (undocumented)
+    protected setSchema(schema: any[]): void;
+    // (undocumented)
     protected setTables(parsedSchema: any[]): void;
+    // (undocumented)
+    protected validateSchema(schema: any[]): void;
 }
 
 // @public (undocumented)
@@ -361,13 +363,17 @@ export abstract class StringDataSourceAdapter {
     // (undocumented)
     protected abstract mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columnType: string): FieldType;
     // (undocumented)
-    protected abstract parseSchema(schema: string): void;
+    protected parseSchema(schema: string): any[];
     // (undocumented)
     protected abstract setFields(fields: any[]): void;
     // (undocumented)
     protected abstract setIndexes(indexes: any[]): void;
     // (undocumented)
+    protected abstract setSchema(schema: any[]): void;
+    // (undocumented)
     protected abstract setTables(tables: any[]): void;
+    // (undocumented)
+    protected abstract validateSchema(schema: any[]): void;
 }
 
 // (No @packageDocumentation comment for this package)
