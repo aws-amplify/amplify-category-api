@@ -5188,12 +5188,12 @@
       "methods": [
         {
           "docs": {
-            "stability": "stable",
+            "stability": "experimental",
             "summary": "Combines multiple IAmplifyGraphqlDefinitions into a single definition."
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-definition.ts",
-            "line": 76
+            "line": 79
           },
           "name": "combine",
           "parameters": [
@@ -5227,7 +5227,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-definition.ts",
-            "line": 39
+            "line": 40
           },
           "name": "fromFiles",
           "parameters": [
@@ -5253,12 +5253,12 @@
         {
           "docs": {
             "returns": "a fully formed amplify graphql definition",
-            "stability": "stable",
+            "stability": "experimental",
             "summary": "Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema."
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-definition.ts",
-            "line": 57
+            "line": 59
           },
           "name": "fromFilesAndDefinition",
           "parameters": [
@@ -5307,12 +5307,12 @@
         {
           "docs": {
             "returns": "a fully formed amplify graphql definition",
-            "stability": "stable",
+            "stability": "experimental",
             "summary": "Produce a schema definition from a string input."
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-definition.ts",
-            "line": 23
+            "line": 24
           },
           "name": "fromString",
           "parameters": [
@@ -7341,5 +7341,5 @@
     }
   },
   "version": "1.3.0",
-  "fingerprint": "cn07sdB6m2f20kiooes0gHJfIZ2pTU0WSepycOAHHl4="
+  "fingerprint": "ggHB1O3FjkyHnBCgFNT8W+nQCHck+cSxJExlJuH1sgk="
 }

@@ -515,23 +515,23 @@ batch:
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
-    - identifier: add_resources_admin_role_all_auth_modes_base_cdk
+    - identifier: add_resources_admin_role_all_auth_modes_amplify_table
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/add-resources.test.ts|src/__tests__/admin-role.test.ts|src/__tests__/all-auth-modes.test.ts|src/__tests__/base-cdk.test.ts
+            src/__tests__/add-resources.test.ts|src/__tests__/admin-role.test.ts|src/__tests__/all-auth-modes.test.ts|src/__tests__/amplify-table.test.ts
           CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
-    - identifier: custom_logic_relationships
+    - identifier: base_cdk_custom_logic_relationships
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/custom-logic.test.ts|src/__tests__/relationships.test.ts
+            src/__tests__/base-cdk.test.ts|src/__tests__/custom-logic.test.ts|src/__tests__/relationships.test.ts
           CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
