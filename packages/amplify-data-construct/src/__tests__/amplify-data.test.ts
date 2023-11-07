@@ -9,7 +9,7 @@ describe('AmplifyData', () => {
 
     new AmplifyData(stack, 'TestApi', {
       definition: AmplifyDataDefinition.fromString(/* GraphQL */ `
-        type Todo @model @auth(rules: [{ allow: owner }]) {
+        type Todo @model @auth(rules: [{ allow: public }]) {
           description: String!
         }
       `),
