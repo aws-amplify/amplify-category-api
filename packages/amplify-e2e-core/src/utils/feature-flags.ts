@@ -1,6 +1,5 @@
 import _ from 'lodash';
-import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
-import { pathManager, FeatureFlagsEntry } from '@aws-amplify/amplify-cli-core';
+import { JSONUtilities, pathManager, FeatureFlagsEntry } from '@aws-amplify/amplify-cli-core';
 
 type FeatureFlagData = { features: FeatureFlagsEntry };
 const getFeatureFlagFilePath = (projectRoot: string) => {
@@ -15,7 +14,7 @@ export const loadFeatureFlags = (projectRoot: string): FeatureFlagData => {
   );
 };
 
-export const saveFeatureFlagFile = (projectRoot: string, data: FeatureFlagData) => {
+const saveFeatureFlagFile = (projectRoot: string, data: FeatureFlagData) => {
   const ffPath = getFeatureFlagFilePath(projectRoot);
   JSONUtilities.writeJson(ffPath, data);
 };

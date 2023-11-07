@@ -10,7 +10,6 @@ import {
   ObjectDefinitionWrapper,
   SyncUtils,
   TransformerModelBase,
-  DatasourceType,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncDataSourceType,
@@ -27,8 +26,10 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
   TransformerValidationStepContextProvider,
+  DataSourceType,
+  DynamoDBProvisionStrategy,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { ITable, StreamViewType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
+import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import {
@@ -72,6 +73,7 @@ import { ModelResourceGenerator } from './resources/model-resource-generator';
 import { DynamoModelResourceGenerator } from './resources/dynamo-model-resource-generator';
 import { RdsModelResourceGenerator } from './resources/rds-model-resource-generator';
 import { ModelTransformerOptions } from './types';
+import { AmplifyDynamoModelResourceGenerator } from './resources/amplify-dynamodb-table/amplify-dynamo-model-resource-generator';
 
 /**
  * Nullable
@@ -111,7 +113,13 @@ export const directiveDefinition = /* GraphQl */ `
   }
 `;
 
-const DDB_DATASOURCE_TYPE = { dbType: DDB_DB_TYPE, provisioned: true };
+const DDB_DATASOURCE_TYPE: DataSourceType = {
+  dbType: DDB_DB_TYPE,
+  provisionDB: true,
+  provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
+};
+
+const CUSTOM_DDB_DB_TYPE = 'AmplifyDDB';
 
 /**
  * ModelTransformer
@@ -129,7 +137,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
   private resourceGeneratorMap: Map<string, ModelResourceGenerator> = new Map<string, ModelResourceGenerator>();
 
-  private modelToDatasourceMap: Map<string, DatasourceType> = new Map<string, DatasourceType>();
+  private modelToDatasourceProvisionTypeMap: Map<string, DataSourceType> = new Map<string, DataSourceType>();
 
   /**
    * A Map to hold the directive configuration
@@ -142,11 +150,20 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const rdsGenerator = new RdsModelResourceGenerator();
     this.resourceGeneratorMap.set(DDB_DB_TYPE, new DynamoModelResourceGenerator());
     this.resourceGeneratorMap.set(MYSQL_DB_TYPE, rdsGenerator);
+    this.resourceGeneratorMap.set(CUSTOM_DDB_DB_TYPE, new AmplifyDynamoModelResourceGenerator());
   }
 
   before = (ctx: TransformerBeforeStepContextProvider): void => {
-    const datasourceMapValues: Array<DatasourceType> = Array.from(ctx.modelToDatasourceMap.values());
-    if (datasourceMapValues.some((value) => value.dbType === DDB_DB_TYPE && value.provisionDB)) {
+    // We only store this in the model because some of the required override methods need to pass through to the
+    // Resource generators, but do not have access to the context
+    this.modelToDatasourceProvisionTypeMap = ctx.modelToDatasourceMap;
+
+    const datasourceMapValues: Array<DataSourceType> = Array.from(this.modelToDatasourceProvisionTypeMap.values());
+    if (
+      datasourceMapValues.some(
+        (value) => value.dbType === DDB_DB_TYPE && value.provisionDB && value.provisionStrategy === DynamoDBProvisionStrategy.DEFAULT,
+      )
+    ) {
       this.resourceGeneratorMap.get(DDB_DB_TYPE)?.enableGenerator();
       this.resourceGeneratorMap.get(DDB_DB_TYPE)?.enableProvisioned();
     }
@@ -154,14 +171,17 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       this.resourceGeneratorMap.get(MYSQL_DB_TYPE)?.enableGenerator();
       this.resourceGeneratorMap.get(MYSQL_DB_TYPE)?.enableUnprovisioned();
     }
-    if (datasourceMapValues.length === 0) {
-      // Just enable DynamoDB provisioned, legacy use
-      this.resourceGeneratorMap.get(DDB_DB_TYPE)?.enableGenerator();
-      this.resourceGeneratorMap.get(DDB_DB_TYPE)?.enableProvisioned();
+    if (
+      datasourceMapValues.some(
+        (value) => value.dbType === DDB_DB_TYPE && value.provisionDB && value.provisionStrategy === DynamoDBProvisionStrategy.AMPLIFY_TABLE,
+      )
+    ) {
+      this.resourceGeneratorMap.get(CUSTOM_DDB_DB_TYPE)?.enableGenerator();
+      this.resourceGeneratorMap.get(CUSTOM_DDB_DB_TYPE)?.enableProvisioned();
     }
-    // We only store this in the model because some of the required override methods need to pass through to the
-    // Resource generators, but do not have access to the context
-    this.modelToDatasourceMap = ctx.modelToDatasourceMap;
+
+    this.resourceGeneratorMap.get(DDB_DB_TYPE)?.enableGenerator();
+    this.resourceGeneratorMap.get(DDB_DB_TYPE)?.enableProvisioned();
   };
 
   object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider): void => {
@@ -256,8 +276,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     this.modelDirectiveConfig.set(typeName, options);
     this.typesWithModelDirective.add(typeName);
 
-    const dataType = ctx.modelToDatasourceMap.get(typeName) ?? DDB_DATASOURCE_TYPE;
-    const resourceGenerator = this.resourceGeneratorMap.get(dataType.dbType);
+    const resourceGenerator = this.getResourceGenerator(typeName);
     if (resourceGenerator) {
       resourceGenerator.addModelDefinition(definition, options);
     } else {
@@ -335,10 +354,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     fieldName: string,
     resolverLogicalId: string,
   ): TransformerResolverProvider => {
-    const dbInfo = ctx.modelToDatasourceMap.get(type.name.value) ?? DDB_DATASOURCE_TYPE;
-    if (dbInfo?.dbType && this.resourceGeneratorMap.has(dbInfo.dbType)) {
-      // Coercing this into being defined as we're running a check on it first
-      return this.resourceGeneratorMap.get(dbInfo.dbType)!.generateGetResolver(ctx, type, typeName, fieldName, resolverLogicalId);
+    const resourceGenerator = this.getResourceGenerator(type.name.value);
+    if (resourceGenerator) {
+      return resourceGenerator.generateGetResolver(ctx, type, typeName, fieldName, resolverLogicalId);
     }
     throw new Error(`DB Type undefined or resource generator not provided for ${type.name.value}`);
   };
@@ -350,10 +368,10 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     fieldName: string,
     resolverLogicalId: string,
   ): TransformerResolverProvider => {
-    const dbInfo = ctx.modelToDatasourceMap.get(type.name.value) ?? DDB_DATASOURCE_TYPE;
-    if (dbInfo?.dbType && this.resourceGeneratorMap.has(dbInfo.dbType)) {
+    const resourceGenerator = this.getResourceGenerator(type.name.value);
+    if (resourceGenerator) {
       // Coercing this into being defined as we're running a check on it first
-      return this.resourceGeneratorMap.get(dbInfo.dbType)!.generateListResolver(ctx, type, typeName, fieldName, resolverLogicalId);
+      return resourceGenerator.generateListResolver(ctx, type, typeName, fieldName, resolverLogicalId);
     }
     throw new Error(`DB Type undefined or resource generator not provided for ${type.name.value}`);
   };
@@ -365,10 +383,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     fieldName: string,
     resolverLogicalId: string,
   ): TransformerResolverProvider => {
-    const dbInfo = ctx.modelToDatasourceMap.get(type.name.value) ?? DDB_DATASOURCE_TYPE;
-    if (dbInfo?.dbType && this.resourceGeneratorMap.has(dbInfo.dbType)) {
-      // Coercing this into being defined as we're running a check on it first
-      return this.resourceGeneratorMap.get(dbInfo.dbType)!.generateCreateResolver(ctx, type, typeName, fieldName, resolverLogicalId);
+    const resourceGenerator = this.getResourceGenerator(type.name.value);
+    if (resourceGenerator) {
+      return resourceGenerator.generateCreateResolver(ctx, type, typeName, fieldName, resolverLogicalId);
     }
     throw new Error(`DB Type undefined or resource generator not provided for ${type.name.value}`);
   };
@@ -381,12 +398,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     resolverLogicalId: string,
   ): TransformerResolverProvider => {
     const modelDirectiveConfig = this.modelDirectiveConfig.get(type.name.value)!;
-    const dbInfo = ctx.modelToDatasourceMap.get(type.name.value) ?? DDB_DATASOURCE_TYPE;
-    if (dbInfo?.dbType && this.resourceGeneratorMap.has(dbInfo.dbType)) {
-      // Coercing this into being defined as we're running a check on it first
-      return this.resourceGeneratorMap
-        .get(dbInfo.dbType)!
-        .generateUpdateResolver(ctx, type, modelDirectiveConfig, typeName, fieldName, resolverLogicalId);
+    const resourceGenerator = this.getResourceGenerator(type.name.value);
+    if (resourceGenerator) {
+      return resourceGenerator.generateUpdateResolver(ctx, type, modelDirectiveConfig, typeName, fieldName, resolverLogicalId);
     }
     throw new Error(`DB Type undefined or resource generator not provided for ${type.name.value}`);
   };
@@ -398,10 +412,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     fieldName: string,
     resolverLogicalId: string,
   ): TransformerResolverProvider => {
-    const dbInfo = ctx.modelToDatasourceMap.get(type.name.value) ?? DDB_DATASOURCE_TYPE;
-    if (dbInfo?.dbType && this.resourceGeneratorMap.has(dbInfo.dbType)) {
-      // Coercing this into being defined as we're running a check on it first
-      return this.resourceGeneratorMap.get(dbInfo.dbType)!.generateDeleteResolver(ctx, type, typeName, fieldName, resolverLogicalId);
+    const resourceGenerator = this.getResourceGenerator(type.name.value);
+    if (resourceGenerator) {
+      return resourceGenerator.generateDeleteResolver(ctx, type, typeName, fieldName, resolverLogicalId);
     }
     throw new Error(`DB Type undefined or resource generator not provided for ${type.name.value}`);
   };
@@ -452,10 +465,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     fieldName: string,
     resolverLogicalId: string,
   ): TransformerResolverProvider => {
-    const dbInfo = ctx.modelToDatasourceMap.get(type.name.value) ?? DDB_DATASOURCE_TYPE;
-    if (dbInfo?.dbType && this.resourceGeneratorMap.has(dbInfo.dbType)) {
-      // Coercing this into being defined as we're running a check on it first
-      return this.resourceGeneratorMap.get(dbInfo.dbType)!.generateSyncResolver(ctx, type, typeName, fieldName, resolverLogicalId);
+    const resourceGenerator = this.getResourceGenerator(type.name.value);
+    if (resourceGenerator) {
+      return resourceGenerator.generateSyncResolver(ctx, type, typeName, fieldName, resolverLogicalId);
     }
     throw new Error(`DB Type undefined or resource generator not provided for ${type.name.value}`);
   };
@@ -550,8 +562,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   getQueryFieldNames = (
     type: ObjectTypeDefinitionNode,
   ): Set<{ fieldName: string; typeName: string; type: QueryFieldType; resolverLogicalId: string }> => {
-    const dbType = (this.modelToDatasourceMap.get(type.name.value) ?? DDB_DATASOURCE_TYPE)?.dbType;
-    const resourceGenerator = dbType ? this.resourceGeneratorMap.get(dbType) : null;
+    const resourceGenerator = this.getResourceGenerator(type.name.value);
     if (resourceGenerator) {
       return resourceGenerator.getQueryFieldNames(type);
     }
@@ -561,8 +572,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   getMutationFieldNames = (
     type: ObjectTypeDefinitionNode,
   ): Set<{ fieldName: string; typeName: string; type: MutationFieldType; resolverLogicalId: string }> => {
-    const dbType = (this.modelToDatasourceMap.get(type.name.value) ?? DDB_DATASOURCE_TYPE)?.dbType;
-    const resourceGenerator = dbType ? this.resourceGeneratorMap.get(dbType) : null;
+    const resourceGenerator = this.getResourceGenerator(type.name.value);
     if (resourceGenerator) {
       return resourceGenerator.getMutationFieldNames(type);
     }
@@ -577,8 +587,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     type: SubscriptionFieldType;
     resolverLogicalId: string;
   }> => {
-    const dbType = (this.modelToDatasourceMap.get(type.name.value) ?? DDB_DATASOURCE_TYPE)?.dbType;
-    const resourceGenerator = dbType ? this.resourceGeneratorMap.get(dbType) : null;
+    const resourceGenerator = this.getResourceGenerator(type.name.value);
     if (resourceGenerator) {
       return resourceGenerator.getSubscriptionFieldNames(type);
     }
@@ -698,7 +707,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       }
       case SubscriptionFieldType.ON_CREATE:
       case SubscriptionFieldType.ON_DELETE:
-      case SubscriptionFieldType.ON_UPDATE:
+      case SubscriptionFieldType.ON_UPDATE: {
         const filterInputName = toPascalCase(['ModelSubscription', type.name.value, 'FilterInput']);
         const filterInputs = createEnumModelFilters(ctx, type);
         filterInputs.push(makeSubscriptionQueryFilterInput(ctx, filterInputName, type));
@@ -710,6 +719,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         });
 
         return [makeInputValueDefinition('filter', makeNamedType(filterInputName))];
+      }
 
       default:
         throw new Error('Unknown operation type');
@@ -866,4 +876,20 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     EnableDeletionProtection: false,
     ...options,
   });
+
+  /**
+   * Get the resource generator based on the type name definition of model directive
+   * The project level strategy will be returned if type name is not found in the map
+   * @param typeName type name definition of model directive
+   * @returns datasource provision type from map.
+   */
+  private getResourceGenerator = (typeName: string): ModelResourceGenerator | undefined => {
+    const datasourceType = this.modelToDatasourceProvisionTypeMap.get(typeName) ?? DDB_DATASOURCE_TYPE;
+    if (datasourceType.dbType === DDB_DB_TYPE && datasourceType.provisionStrategy === DynamoDBProvisionStrategy.DEFAULT) {
+      return this.resourceGeneratorMap.get(DDB_DB_TYPE);
+    } else if (datasourceType.dbType === DDB_DB_TYPE && datasourceType.provisionStrategy === DynamoDBProvisionStrategy.AMPLIFY_TABLE) {
+      return this.resourceGeneratorMap.get(CUSTOM_DDB_DB_TYPE);
+    }
+    return this.resourceGeneratorMap.get(datasourceType.dbType);
+  };
 }

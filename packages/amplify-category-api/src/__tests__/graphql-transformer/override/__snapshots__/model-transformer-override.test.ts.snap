@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ModelTransformer:  should not override model objects when override file does not exist 1`] = `
+exports[`ModelTransformer: should not override model objects when override file does not exist 1`] = `
 Object {
   "Conditions": Object {
     "HasEnvironmentParameter": Object {
@@ -241,6 +241,7 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "PostTable",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -293,6 +294,7 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "PostTable",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -420,6 +422,7 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "PostTable",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -472,6 +475,7 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "PostTable",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -1095,6 +1099,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -1143,6 +1148,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -1191,6 +1197,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -1249,6 +1256,7 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "PostTable",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -1262,7 +1270,7 @@ $util.toJson({})",
 }
 `;
 
-exports[`ModelTransformer:  should not override model objects when override file does not exist 2`] = `
+exports[`ModelTransformer: should not override model objects when override file does not exist 2`] = `
 Object {
   "Conditions": Object {
     "HasEnvironmentParameter": Object {
@@ -1659,6 +1667,7 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "CommentTable",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -1708,6 +1717,7 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "CommentTable",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -1832,6 +1842,7 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "CommentTable",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -1881,6 +1892,7 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "CommentTable",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -2178,6 +2190,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -2220,6 +2233,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -2262,6 +2276,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -2314,6 +2329,7 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "CommentTable",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -2327,7 +2343,7 @@ $util.toJson({})",
 }
 `;
 
-exports[`ModelTransformer:  should override  model objects when given override config 1`] = `
+exports[`ModelTransformer: should override  model objects when given override config 1`] = `
 Object {
   "Conditions": Object {
     "HasEnvironmentParameter": Object {
@@ -2568,6 +2584,7 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "PostTable",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -2620,6 +2637,7 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "PostTable",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -2747,6 +2765,7 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "PostTable",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -2799,6 +2818,7 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "PostTable",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -3414,6 +3434,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -3462,6 +3483,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -3549,6 +3571,7 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "PostTable",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -3562,7 +3585,7 @@ $util.toJson({})",
 }
 `;
 
-exports[`ModelTransformer:  should override  model objects when given override config 2`] = `
+exports[`ModelTransformer: should override  model objects when given override config 2`] = `
 Object {
   "Conditions": Object {
     "HasEnvironmentParameter": Object {
@@ -3951,6 +3974,7 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "CommentTable",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -4000,6 +4024,7 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "CommentTable",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -4124,6 +4149,7 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "CommentTable",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -4173,6 +4199,7 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "CommentTable",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -4470,6 +4497,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -4512,6 +4540,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -4554,6 +4583,7 @@ $util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
               "\\"))
 $util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
 
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],
@@ -4606,6 +4636,7 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
                 "Ref": "CommentTable",
               },
               "\\"))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
             ],
           ],

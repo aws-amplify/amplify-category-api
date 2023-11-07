@@ -15,7 +15,7 @@ import {
   updateSchema,
 } from '..';
 import { multiSelect, singleSelect } from '../utils/selectors';
-import { selectRuntime, selectTemplate } from './lambda-function';
+import { selectRuntime, selectTemplate } from './function';
 import { modifiedApi } from './resources/modified-api-index';
 
 export function getSchemaPath(schemaName: string): string {

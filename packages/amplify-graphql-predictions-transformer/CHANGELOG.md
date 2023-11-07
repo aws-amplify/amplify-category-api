@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@2.1.6...@aws-amplify/graphql-predictions-transformer@2.1.7) (2023-11-02)
+
+**Note:** Version bump only for package @aws-amplify/graphql-predictions-transformer
+
+## [2.1.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@2.1.5...@aws-amplify/graphql-predictions-transformer@2.1.6) (2023-10-12)
+
+**Note:** Version bump only for package @aws-amplify/graphql-predictions-transformer
+
+## [2.1.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@2.1.4...@aws-amplify/graphql-predictions-transformer@2.1.5) (2023-10-05)
+
+**Note:** Version bump only for package @aws-amplify/graphql-predictions-transformer
+
+## [2.1.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@2.1.3...@aws-amplify/graphql-predictions-transformer@2.1.4) (2023-10-02)
+
+**Note:** Version bump only for package @aws-amplify/graphql-predictions-transformer
+
+## [2.1.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@2.1.2...@aws-amplify/graphql-predictions-transformer@2.1.3) (2023-09-20)
+
+**Note:** Version bump only for package @aws-amplify/graphql-predictions-transformer
+
+## [2.1.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@2.1.1...@aws-amplify/graphql-predictions-transformer@2.1.2) (2023-08-30)
+
+**Note:** Version bump only for package @aws-amplify/graphql-predictions-transformer
+
+## [2.1.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@2.1.0...@aws-amplify/graphql-predictions-transformer@2.1.1) (2023-08-28)
+
+### Bug Fixes
+
+- don't perform sub if bucketName is an unresolved token ([7750868](https://github.com/aws-amplify/amplify-category-api/commit/7750868b2da660f1b31d6a23c73b7d8543120fd6))
+
 # [2.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@1.2.11...@aws-amplify/graphql-predictions-transformer@2.1.0) (2023-08-09)
 
 ### Features

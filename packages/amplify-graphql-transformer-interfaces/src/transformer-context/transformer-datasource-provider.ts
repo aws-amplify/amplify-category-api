@@ -29,7 +29,22 @@ export interface DataSourceProvider extends BackedDataSource {}
 
 export type DBType = 'MySQL' | 'DDB';
 
-export interface DatasourceType {
+export const enum DynamoDBProvisionStrategy {
+  /**
+   * Use default cloud formation resource of `AWS::DynamoDB::Table`
+   */
+  DEFAULT = 'DEFAULT',
+  /**
+   * Use custom resource type `Custom::AmplifyDynamoDBTable`
+   */
+  AMPLIFY_TABLE = 'AMPLIFY_TABLE',
+}
+
+// TODO: add strategy for the RDS
+export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy;
+
+export interface DataSourceType {
   dbType: DBType;
   provisionDB: boolean;
+  provisionStrategy: DataSourceProvisionStrategy;
 }

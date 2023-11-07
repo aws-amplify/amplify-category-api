@@ -4,6 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
+import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 
 /**
  * Utility to wrap construct creation a basic synth step to smoke test
@@ -19,12 +20,12 @@ describe('auth modes', () => {
   it('synths with api key auth', () => {
     verifySynth((stack) => {
       new AmplifyGraphqlApi(stack, 'TestApi', {
-        schema: /* GraphQL */ `
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
           type Todo @model @auth(rules: [{ provider: apiKey, allow: public }]) {
             description: String!
           }
-        `,
-        authorizationConfig: {
+        `),
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
       });
@@ -39,12 +40,12 @@ describe('auth modes', () => {
       const unauthenticatedUserRole = new iam.Role(stack, 'UnauthRole', { assumedBy: appsync });
 
       new AmplifyGraphqlApi(stack, 'TestApi', {
-        schema: /* GraphQL */ `
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
           type Todo @model @auth(rules: [{ provider: iam, allow: public }, { provider: iam, allow: private }]) {
             description: String!
           }
-        `,
-        authorizationConfig: {
+        `),
+        authorizationModes: {
           iamConfig: {
             identityPoolId: identityPool.logicalId,
             authenticatedUserRole,
@@ -62,16 +63,41 @@ describe('auth modes', () => {
       const unauthenticatedUserRole = new iam.Role(stack, 'UnauthRole', { assumedBy: appsync });
 
       new AmplifyGraphqlApi(stack, 'TestApi', {
-        schema: /* GraphQL */ `
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
           type Todo @model {
             description: String!
           }
-        `,
-        authorizationConfig: {
+        `),
+        authorizationModes: {
           iamConfig: {
+            identityPoolId: 'identityPool123',
             authenticatedUserRole,
             unauthenticatedUserRole,
-            adminRoles: [authenticatedUserRole],
+          },
+          adminRoles: [authenticatedUserRole],
+        },
+      });
+    });
+  });
+
+  it('renders with iam auth and allow listed roles', () => {
+    verifySynth((stack) => {
+      const appsync = new iam.ServicePrincipal('appsync.amazonaws.com');
+      const authenticatedUserRole = new iam.Role(stack, 'AuthRole', { assumedBy: appsync });
+      const unauthenticatedUserRole = new iam.Role(stack, 'UnauthRole', { assumedBy: appsync });
+
+      new AmplifyGraphqlApi(stack, 'TestApi', {
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+          type Todo @model {
+            description: String!
+          }
+        `),
+        authorizationModes: {
+          iamConfig: {
+            identityPoolId: 'identityPool123',
+            authenticatedUserRole,
+            unauthenticatedUserRole,
+            allowListedRoles: [authenticatedUserRole, 'admin2'],
           },
         },
       });
@@ -83,12 +109,12 @@ describe('auth modes', () => {
       const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
 
       new AmplifyGraphqlApi(stack, 'TestApi', {
-        schema: /* GraphQL */ `
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
           type Todo @model @auth(rules: [{ provider: userPools, allow: owner }]) {
             description: String!
           }
-        `,
-        authorizationConfig: {
+        `),
+        authorizationModes: {
           userPoolConfig: { userPool },
         },
       });
@@ -100,12 +126,12 @@ describe('auth modes', () => {
       const authFunction = lambda.Function.fromFunctionName(stack, 'ImportedFn', 'ImportedFn');
 
       new AmplifyGraphqlApi(stack, 'TestApi', {
-        schema: /* GraphQL */ `
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
           type Todo @model @auth(rules: [{ provider: function, allow: custom }]) {
             description: String!
           }
-        `,
-        authorizationConfig: {
+        `),
+        authorizationModes: {
           lambdaConfig: {
             function: authFunction,
             ttl: cdk.Duration.minutes(5),
@@ -118,12 +144,12 @@ describe('auth modes', () => {
   it('renders with oidc auth', () => {
     verifySynth((stack) => {
       new AmplifyGraphqlApi(stack, 'TestApi', {
-        schema: /* GraphQL */ `
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
           type Todo @model @auth(rules: [{ provider: oidc, allow: owner }]) {
             description: String!
           }
-        `,
-        authorizationConfig: {
+        `),
+        authorizationModes: {
           oidcConfig: {
             oidcProviderName: 'testProvider',
             oidcIssuerUrl: 'https://test.client/',

@@ -3,6 +3,70 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.7.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.7.7...@aws-amplify/amplify-category-api@5.7.8) (2023-11-02)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+## [5.7.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.7.6...@aws-amplify/amplify-category-api@5.7.7) (2023-10-27)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+## [5.7.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.7.5...@aws-amplify/amplify-category-api@5.7.6) (2023-10-21)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+## [5.7.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.7.4...@aws-amplify/amplify-category-api@5.7.5) (2023-10-12)
+
+### Bug Fixes
+
+- convert single action to list of actions ([#1937](https://github.com/aws-amplify/amplify-category-api/issues/1937)) ([22c3115](https://github.com/aws-amplify/amplify-category-api/commit/22c3115b93264d1fb637c13ba7c9f20915f99904))
+
+## [5.7.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.7.3...@aws-amplify/amplify-category-api@5.7.4) (2023-10-05)
+
+### Bug Fixes
+
+- iam auth values can be passed as cdk tokens ([#1919](https://github.com/aws-amplify/amplify-category-api/issues/1919)) ([9297fa5](https://github.com/aws-amplify/amplify-category-api/commit/9297fa5cda87697645ad0c78b84c3004b32ac319))
+
+## [5.7.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.7.2...@aws-amplify/amplify-category-api@5.7.3) (2023-10-03)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+## [5.7.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.7.1...@aws-amplify/amplify-category-api@5.7.2) (2023-10-02)
+
+### Bug Fixes
+
+- change the ttl to integer ([#1901](https://github.com/aws-amplify/amplify-category-api/issues/1901)) ([9cfaa02](https://github.com/aws-amplify/amplify-category-api/commit/9cfaa02b429f3933d44c5dd117105a816d24ef6c))
+
+## [5.7.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.7.0...@aws-amplify/amplify-category-api@5.7.1) (2023-09-27)
+
+### Bug Fixes
+
+- **apigw:** replace path param with wildcard ([#1880](https://github.com/aws-amplify/amplify-category-api/issues/1880)) ([25b6523](https://github.com/aws-amplify/amplify-category-api/commit/25b65238b5e35e03b1275f432693d8dd6c8fc966))
+
+# [5.7.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.6.4...@aws-amplify/amplify-category-api@5.7.0) (2023-09-20)
+
+### Features
+
+- disable amplify cfn outputs for cdk apps ([0c72d18](https://github.com/aws-amplify/amplify-category-api/commit/0c72d1822f8e5ccb3e04a0a49049a459b5fb49e6))
+
+## [5.6.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.6.3...@aws-amplify/amplify-category-api@5.6.4) (2023-09-13)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+## [5.6.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.6.2...@aws-amplify/amplify-category-api@5.6.3) (2023-09-07)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+## [5.6.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.6.1...@aws-amplify/amplify-category-api@5.6.2) (2023-08-30)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+## [5.6.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.6.0...@aws-amplify/amplify-category-api@5.6.1) (2023-08-28)
+
+### Bug Fixes
+
+- reading admin role names ([#1823](https://github.com/aws-amplify/amplify-category-api/issues/1823)) ([987b6a6](https://github.com/aws-amplify/amplify-category-api/commit/987b6a6d4e0cbdcc64edbbddbfd8a16b30c7f199))
+
 # [5.6.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.5.3...@aws-amplify/amplify-category-api@5.6.0) (2023-08-09)
 
 ### Features

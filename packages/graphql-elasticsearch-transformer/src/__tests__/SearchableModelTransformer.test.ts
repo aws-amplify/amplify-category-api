@@ -13,7 +13,7 @@ const featureFlags = {
   getObject: jest.fn(),
 };
 
-test('Test SearchableModelTransformer validation happy case', () => {
+test('SearchableModelTransformer validation happy case', () => {
   const validSchema = `
     type Post @model @searchable {
         id: ID!
@@ -32,7 +32,7 @@ test('Test SearchableModelTransformer validation happy case', () => {
   expect(out.schema).toMatchSnapshot();
 });
 
-test('Test SearchableModelTransformer with query overrides', () => {
+test('SearchableModelTransformer with query overrides', () => {
   const validSchema = `type Post @model @searchable(queries: { search: "customSearchPost" }) {
         id: ID!
         title: String!
@@ -50,7 +50,7 @@ test('Test SearchableModelTransformer with query overrides', () => {
   expect(out.schema).toMatchSnapshot();
 });
 
-test('Test SearchableModelTransformer with only create mutations', () => {
+test('SearchableModelTransformer with only create mutations', () => {
   const validSchema = `type Post @model(mutations: { create: "customCreatePost" }) @searchable {
         id: ID!
         title: String!
@@ -68,7 +68,7 @@ test('Test SearchableModelTransformer with only create mutations', () => {
   expect(out.schema).toMatchSnapshot();
 });
 
-test('Test SearchableModelTransformer with multiple model searchable directives', () => {
+test('SearchableModelTransformer with multiple model searchable directives', () => {
   const validSchema = `
     type Post @model @searchable {
         id: ID!
@@ -92,7 +92,7 @@ test('Test SearchableModelTransformer with multiple model searchable directives'
   expect(out.schema).toMatchSnapshot();
 });
 
-test('Test SearchableModelTransformer with sort fields', () => {
+test('SearchableModelTransformer with sort fields', () => {
   const validSchema = `
     type Post @model @searchable {
         id: ID!

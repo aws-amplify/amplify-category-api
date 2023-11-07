@@ -7,6 +7,7 @@
 import { BackedDataSource } from 'aws-cdk-lib/aws-appsync';
 import { BaseDataSource } from 'aws-cdk-lib/aws-appsync';
 import { CfnDomain } from 'aws-cdk-lib/aws-elasticsearch';
+import { CfnParameter } from 'aws-cdk-lib';
 import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import { CfnResource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
@@ -154,9 +155,33 @@ export interface DataSourceProvider extends BackedDataSource {
 }
 
 // @public (undocumented)
+export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy;
+
+// @public (undocumented)
+export interface DataSourceType {
+    // (undocumented)
+    dbType: DBType;
+    // (undocumented)
+    provisionDB: boolean;
+    // (undocumented)
+    provisionStrategy: DataSourceProvisionStrategy;
+}
+
+// @public (undocumented)
+export type DBType = 'MySQL' | 'DDB';
+
+// @public (undocumented)
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {
     // (undocumented)
     readonly serviceRole: IRole;
+}
+
+// @public (undocumented)
+export const enum DynamoDBProvisionStrategy {
+    // (undocumented)
+    AMPLIFY_TABLE = "AMPLIFY_TABLE",
+    // (undocumented)
+    DEFAULT = "DEFAULT"
 }
 
 // @public (undocumented)
@@ -297,9 +322,13 @@ export interface StackManagerProvider {
     // (undocumented)
     createStack: (stackName: string) => Stack;
     // (undocumented)
+    getParameter: (name: string) => CfnParameter | void;
+    // (undocumented)
     getScopeFor: (resourceId: string, defaultStackName?: string) => Construct;
     // (undocumented)
     getStack: (stackName: string) => Stack;
+    // (undocumented)
+    getStackFor: (resourceId: string, defaultStackName?: string) => Construct;
     // (undocumented)
     hasStack: (stackName: string) => boolean;
     // (undocumented)
@@ -323,6 +352,8 @@ export type SynthParameters = {
     authenticatedUserRoleName?: string;
     unauthenticatedUserRoleName?: string;
     userPoolId?: string;
+    identityPoolId?: string;
+    adminRoles?: string[];
 };
 
 // @public (undocumented)
@@ -409,10 +440,8 @@ export interface TransformerContextProvider {
     //
     // (undocumented)
     metadata: TransformerContextMetadataProvider;
-    // Warning: (ae-forgotten-export) The symbol "DatasourceType" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
-    modelToDatasourceMap: Map<string, DatasourceType>;
+    modelToDatasourceMap: Map<string, DataSourceType>;
     // (undocumented)
     output: TransformerContextOutputProvider;
     // (undocumented)
@@ -614,6 +643,8 @@ export interface TransformerResolverProvider {
     // (undocumented)
     addToSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider, dataSource?: DataSourceProvider) => void;
     // (undocumented)
+    mapToStack: (stack: Stack) => void;
+    // (undocumented)
     setScope: (scope: Construct) => void;
     // (undocumented)
     synthesize: (context: TransformerContextProvider, api: GraphQLAPIProvider) => void;
@@ -718,7 +749,14 @@ export interface TransformHostProvider {
 }
 
 // @public (undocumented)
+export interface TransformParameterProvider {
+    // (undocumented)
+    provide: (name: string) => CfnParameter | void;
+}
+
+// @public (undocumented)
 export type TransformParameters = {
+    enableTransformerCfnOutputs: boolean;
     shouldDeepMergeDirectiveConfigDefaults: boolean;
     disableResolverDeduping: boolean;
     sandboxModeEnabled: boolean;

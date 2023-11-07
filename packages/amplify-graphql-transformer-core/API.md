@@ -14,10 +14,13 @@ import { AuthorizationConfig } from 'aws-cdk-lib/aws-appsync';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
 import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
+import { CfnParameter } from 'aws-cdk-lib';
 import { CfnResource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { DataSourceProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { DataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveDefinitionNode } from 'graphql';
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql/language';
@@ -47,6 +50,7 @@ import { NamedTypeNode } from 'graphql';
 import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { ObjectTypeExtensionNode } from 'graphql';
+import { OperationTypeDefinitionNode } from 'graphql';
 import { QueryFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { S3MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -57,6 +61,7 @@ import { StringValueNode } from 'graphql';
 import { SubscriptionFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerAuthProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerBeforeStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
 import { TransformerContextOutputProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -74,6 +79,7 @@ import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-
 import { TransformerSecrets } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformParameterProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TypeDefinitionNode } from 'graphql';
 import { TypeNode } from 'graphql';
@@ -108,23 +114,15 @@ export const enum ConflictHandlerType {
 }
 
 // @public (undocumented)
+export function constructDataSourceMap(schema: string, datasourceType: DataSourceType): Map<string, DataSourceType>;
+
+// @public (undocumented)
 function createSyncLambdaIAMPolicy(context: TransformerContextProvider, scope: Construct, name: string, region?: string): iam.Policy;
 
 // Warning: (ae-forgotten-export) The symbol "TransformerContext" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 function createSyncTable(context: TransformerContext): void;
-
-// @public (undocumented)
-export interface DatasourceType {
-    // (undocumented)
-    dbType: DBType;
-    // (undocumented)
-    provisionDB: boolean;
-}
-
-// @public (undocumented)
-export type DBType = 'MySQL' | 'DDB';
 
 // @public (undocumented)
 export const DDB_DB_TYPE = "DDB";
@@ -183,6 +181,9 @@ export type GetArgumentsOptions = {
     deepMergeArguments?: boolean;
 };
 
+// @public (undocumented)
+export function getDatasourceProvisionStrategy(ctx: TransformerBeforeStepContextProvider, typeName?: string): DataSourceProvisionStrategy;
+
 // Warning: (ae-forgotten-export) The symbol "Operation" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -213,7 +214,7 @@ export class GraphQLTransform {
     // Warning: (ae-forgotten-export) The symbol "GraphQLApi" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    protected generateGraphQlApi(stackManager: StackManagerProvider, synthParameters: SynthParameters, output: TransformerOutput): GraphQLApi;
+    protected generateGraphQlApi(stackManager: StackManagerProvider, synthParameters: SynthParameters, output: TransformerOutput, transformParameters: TransformParameters): GraphQLApi;
     // (undocumented)
     getLogs(): TransformerLog[];
     // (undocumented)
@@ -221,7 +222,7 @@ export class GraphQLTransform {
     // Warning: (ae-forgotten-export) The symbol "TransformOption" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    transform({ scope, nestedStackProvider, assetProvider, synthParameters, schema, datasourceConfig }: TransformOption): void;
+    transform({ scope, nestedStackProvider, parameterProvider, assetProvider, synthParameters, schema, datasourceConfig, }: TransformOption): void;
 }
 
 // @public (undocumented)
@@ -416,13 +417,17 @@ export type SetResourceNameProps = {
 // @public (undocumented)
 export class StackManager implements StackManagerProvider {
     // Warning: (ae-forgotten-export) The symbol "ResourceToStackMap" needs to be exported by the entry point index.d.ts
-    constructor(scope: Construct, nestedStackProvider: NestedStackProvider, resourceMapping: ResourceToStackMap);
+    constructor(scope: Construct, nestedStackProvider: NestedStackProvider, parameterProvider: TransformParameterProvider | undefined, resourceMapping: ResourceToStackMap);
     // (undocumented)
     createStack: (stackName: string) => Stack;
+    // (undocumented)
+    getParameter: (name: string) => CfnParameter | void;
     // (undocumented)
     getScopeFor: (resourceId: string, defaultStackName?: string) => Construct;
     // (undocumented)
     getStack: (stackName: string) => Stack;
+    // (undocumented)
+    getStackFor: (resourceId: string, defaultStackName?: string) => Construct;
     // (undocumented)
     hasStack: (stackName: string) => boolean;
     // (undocumented)
@@ -592,6 +597,8 @@ export class TransformerResolver implements TransformerResolverProvider {
     //
     // (undocumented)
     findSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider) => Slot | undefined;
+    // (undocumented)
+    mapToStack: (stack: Stack) => void;
     // (undocumented)
     setScope: (scope: Construct) => void;
     // (undocumented)

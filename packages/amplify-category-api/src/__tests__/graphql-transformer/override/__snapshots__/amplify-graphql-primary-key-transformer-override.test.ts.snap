@@ -56,7 +56,8 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
             "Ref": "TestTable",
           },
           "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"25\\"))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", 25))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
         ],
       ],
@@ -118,7 +119,8 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
             "Ref": "TestTable",
           },
           "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"25\\"))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", 25))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
         ],
       ],
@@ -180,7 +182,8 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
             "Ref": "TestTable",
           },
           "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"25\\"))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", 25))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
         ],
       ],
@@ -242,7 +245,8 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
             "Ref": "TestTable",
           },
           "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"25\\"))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", 25))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
         ],
       ],
@@ -310,7 +314,8 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
             "Ref": "TestTable",
           },
           "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"25\\"))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", 25))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
         ],
       ],
@@ -372,7 +377,8 @@ $util.qr($ctx.stash.put(\\"tableName\\", \\"",
             "Ref": "TestTable",
           },
           "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", \\"25\\"))
+$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", 25))
+$util.qr($ctx.stash.put(\\"adminRoles\\", []))
 $util.toJson({})",
         ],
       ],

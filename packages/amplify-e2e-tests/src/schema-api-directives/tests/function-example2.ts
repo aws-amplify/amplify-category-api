@@ -9,7 +9,7 @@ import {
   addAuthWithDefault,
 } from 'amplify-category-api-e2e-core';
 
-import { updateFunctionNameInSchema } from '../functionTester';
+import { updateFunctionNameInSchema, randomizedFunctionName } from '../functionTester';
 
 import {
   configureAmplify,
@@ -21,8 +21,6 @@ import {
 } from '../authHelper';
 
 import { updateSchemaInTestProject, testQueries } from '../common';
-
-import { randomizedFunctionName } from '../functionTester';
 
 const GROUPNAME = 'Admin';
 const USERNAME = 'user1';

@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.17.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.17.5...amplify-category-api-e2e-tests@3.17.6) (2023-11-02)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.17.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.17.4...amplify-category-api-e2e-tests@3.17.5) (2023-10-27)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.17.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.17.3...amplify-category-api-e2e-tests@3.17.4) (2023-10-21)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.17.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.17.2...amplify-category-api-e2e-tests@3.17.3) (2023-10-12)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.17.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.17.1...amplify-category-api-e2e-tests@3.17.2) (2023-10-05)
+
+### Bug Fixes
+
+- iam auth values can be passed as cdk tokens ([#1919](https://github.com/aws-amplify/amplify-category-api/issues/1919)) ([9297fa5](https://github.com/aws-amplify/amplify-category-api/commit/9297fa5cda87697645ad0c78b84c3004b32ac319))
+
+## [3.17.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.17.0...amplify-category-api-e2e-tests@3.17.1) (2023-10-02)
+
+### Bug Fixes
+
+- change the ttl to integer ([#1901](https://github.com/aws-amplify/amplify-category-api/issues/1901)) ([9cfaa02](https://github.com/aws-amplify/amplify-category-api/commit/9cfaa02b429f3933d44c5dd117105a816d24ef6c))
+
+# [3.17.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.16.0...amplify-category-api-e2e-tests@3.17.0) (2023-09-28)
+
+### Features
+
+- bump graphql construct to stable/v1 ([#1876](https://github.com/aws-amplify/amplify-category-api/issues/1876)) ([9f66e9c](https://github.com/aws-amplify/amplify-category-api/commit/9f66e9c5610bc47a2ab75775a46135aeca8df990))
+
+# [3.16.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.15.1...amplify-category-api-e2e-tests@3.16.0) (2023-09-27)
+
+### Features
+
+- rename authorizationConfig into authorizationModes, and move adminRoles up ([#1888](https://github.com/aws-amplify/amplify-category-api/issues/1888)) ([7148814](https://github.com/aws-amplify/amplify-category-api/commit/714881476a962cb0f681bc68a7f309fe43e97a60))
+
+## [3.15.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.15.0...amplify-category-api-e2e-tests@3.15.1) (2023-09-20)
+
+### Bug Fixes
+
+- update cdk e2e tests to use the updated outputs ([dd018de](https://github.com/aws-amplify/amplify-category-api/commit/dd018de774b0edea891c19dee3e30aedb8edb0dd))
+
+# [3.15.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.14.2...amplify-category-api-e2e-tests@3.15.0) (2023-09-13)
+
+### Features
+
+- enable jsii builds for the api construct ([#1840](https://github.com/aws-amplify/amplify-category-api/issues/1840)) ([f6e9aff](https://github.com/aws-amplify/amplify-category-api/commit/f6e9aff2b7e8ad620e1899d29c8cb330b4d6a30f))
+
+## [3.14.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.14.1...amplify-category-api-e2e-tests@3.14.2) (2023-08-30)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.14.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.14.0...amplify-category-api-e2e-tests@3.14.1) (2023-08-28)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
 # [3.14.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.13.1...amplify-category-api-e2e-tests@3.14.0) (2023-08-09)
 
 ### Bug Fixes

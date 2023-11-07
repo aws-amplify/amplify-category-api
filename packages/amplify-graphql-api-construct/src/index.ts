@@ -4,10 +4,8 @@ export type {
   OIDCAuthorizationConfig,
   ApiKeyAuthorizationConfig,
   LambdaAuthorizationConfig,
-  AuthorizationConfig,
-  AmplifyApiGraphqlSchema,
-  AmplifyApiSchemaPreprocessor,
-  AmplifyApiSchemaPreprocessorOutput,
+  AuthorizationModes,
+  PartialTranslationBehavior,
   AmplifyGraphqlApiProps,
   AmplifyGraphqlApiResources,
   AmplifyGraphqlApiCfnResources,
@@ -19,15 +17,29 @@ export type {
   FunctionSlotOverride,
   ConflictResolution,
   ConflictDetectionType,
-  ConflictHandlerType,
   OptimisticConflictResolutionStrategy,
   CustomConflictResolutionStrategy,
   AutomergeConflictResolutionStrategy,
   ConflictResolutionStrategyBase,
   ConflictResolutionStrategy,
-  SchemaTranslationBehavior,
+  TranslationBehavior,
+  IAmplifyGraphqlDefinition,
+  IBackendOutputStorageStrategy,
+  IBackendOutputEntry,
+  AddFunctionProps,
+  ModelDataSourceDefinition,
+  ModelDataSourceDefinitionStrategy,
+  DefaultDynamoDbModelDataSourceDefinitionStrategy,
+  AmplifyDynamoDbModelDataSourceDefinitionStrategy,
+  ModelDataSourceDefinitionDbType,
 } from './types';
 export { AmplifyGraphqlApi } from './amplify-graphql-api';
-
-// remove these exports when provided by cli
-export { GraphqlOutput, BackendOutputStorageStrategy, BackendOutputEntry, versionedGraphqlOutputSchema } from './graphql-output';
+export { AmplifyGraphqlDefinition } from './amplify-graphql-definition';
+export {
+  AmplifyDynamoDbTableWrapper,
+  TimeToLiveSpecification,
+  ProvisionedThroughput,
+  SSESpecification,
+  SSEType,
+  StreamSpecification,
+} from './amplify-dynamodb-table-wrapper';

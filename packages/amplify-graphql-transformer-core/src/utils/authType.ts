@@ -47,7 +47,7 @@ export const adoptAuthMode = (
             : undefined,
         },
       };
-    case AuthorizationType.USER_POOL:
+    case AuthorizationType.USER_POOL: {
       if (!synthParameters.userPoolId) {
         throw new Error('Expected userPoolId to be present in synth parameters when user pool auth is specified.');
       }
@@ -57,6 +57,7 @@ export const adoptAuthMode = (
           userPool: UserPool.fromUserPoolId(stackManager.scope, 'transformer-user-pool', synthParameters.userPoolId),
         },
       };
+    }
     case AuthorizationType.IAM:
       return {
         authorizationType: authType,
@@ -75,6 +76,7 @@ export const adoptAuthMode = (
       return {
         authorizationType: authType,
         lambdaAuthorizerConfig: {
+          lambdaArn: entry.lambdaAuthorizerConfig!.lambdaArn,
           lambdaFunction: entry.lambdaAuthorizerConfig!.lambdaFunction,
           ttlSeconds: strToNumber(entry.lambdaAuthorizerConfig!.ttlSeconds),
         },

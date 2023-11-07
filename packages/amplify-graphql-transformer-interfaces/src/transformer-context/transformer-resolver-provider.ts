@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { Stack } from 'aws-cdk-lib';
 import { GraphQLAPIProvider, MappingTemplateProvider } from '../graphql-api-provider';
 import { DataSourceProvider } from './transformer-datasource-provider';
 import { TransformerContextProvider } from './transformer-context-provider';
@@ -12,6 +13,12 @@ export interface TransformerResolverProvider {
   ) => void;
   synthesize: (context: TransformerContextProvider, api: GraphQLAPIProvider) => void;
   setScope: (scope: Construct) => void;
+
+  /**
+   * Map the given resolver to a stack.
+   * @deprecated use setScope instead.
+   */
+  mapToStack: (stack: Stack) => void;
 }
 
 export interface TransformerResolversManagerProvider {

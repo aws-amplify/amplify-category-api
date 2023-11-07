@@ -1,17 +1,12 @@
 import path from 'path';
-import {
-  RDSConnectionSecrets,
-  MYSQL_DB_TYPE,
-  ImportedRDSType,
-  DatasourceType,
-  UserDefinedSlot,
-} from '@aws-amplify/graphql-transformer-core';
+import { RDSConnectionSecrets, MYSQL_DB_TYPE, ImportedRDSType, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncAuthConfiguration,
   TransformerLog,
   TransformerLogLevel,
   VpcConfig,
   RDSLayerMapping,
+  DataSourceType,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
@@ -30,7 +25,7 @@ import {
 } from '../provider-utils/awscloudformation/utils/rds-resources/database-resources';
 import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { isAuthModeUpdated } from './auth-mode-compare';
-import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
+import { getAdminRoles, getIdentityPoolId, mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
 import { generateTransformerOptions } from './transformer-options-v2';
 import { TransformerProjectOptions } from './transformer-options-types';
 import { DeploymentResources } from './cdk-compat/deployment-resources';
@@ -203,21 +198,28 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
 
   const { modelToDatasourceMap } = opts.projectConfig;
   const datasourceSecretMap = await getDatasourceSecretMap(context);
-  const datasourceMapValues: Array<DatasourceType> = modelToDatasourceMap ? Array.from(modelToDatasourceMap.values()) : [];
+  const datasourceMapValues: Array<DataSourceType> = modelToDatasourceMap ? Array.from(modelToDatasourceMap.values()) : [];
   let sqlLambdaVpcConfig: VpcConfig | undefined;
   if (datasourceMapValues.some((value) => value.dbType === MYSQL_DB_TYPE && !value.provisionDB)) {
     sqlLambdaVpcConfig = await isSqlLambdaVpcConfigRequired(context, getSecretsKey(), ImportedRDSType.MYSQL);
   }
   const rdsLayerMapping = await getRDSLayerMapping();
 
-  const transformManager = new TransformManager(opts.overrideConfig);
+  const transformManager = new TransformManager(
+    opts.overrideConfig,
+    hasIamAuth(opts.authConfig),
+    hasUserPoolAuth(opts.authConfig),
+    await getAdminRoles(context, opts.resourceName),
+    await getIdentityPoolId(context),
+  );
 
   executeTransform({
     ...opts,
     scope: transformManager.rootStack,
     nestedStackProvider: transformManager.getNestedStackProvider(),
     assetProvider: transformManager.getAssetProvider(),
-    synthParameters: transformManager.getSynthParameters(hasIamAuth(opts.authConfig), hasUserPoolAuth(opts.authConfig)),
+    parameterProvider: transformManager.getParameterProvider(),
+    synthParameters: transformManager.getSynthParameters(),
     schema,
     modelToDatasourceMap: opts.projectConfig.modelToDatasourceMap,
     datasourceSecretParameterLocations: datasourceSecretMap,

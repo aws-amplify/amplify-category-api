@@ -135,24 +135,24 @@ batch:
           CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
-    - identifier: base_cdk_api_1_resolvers_sync_query_datastore
+    - identifier: api_1_resolvers_sync_query_datastore_api_6
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/cdk/base-cdk.test.ts|src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts|src/__tests__/graphql-v2/sync_query_datastore.test.ts
+            src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts|src/__tests__/graphql-v2/sync_query_datastore.test.ts|src/__tests__/api_6.test.ts
           CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
-    - identifier: api_6_api_lambda_auth_api_9
+    - identifier: api_lambda_auth_api_9
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_6.test.ts|src/__tests__/graphql-v2/api_lambda_auth.test.ts|src/__tests__/api_9.test.ts
-          CLI_REGION: ap-southeast-1
+            src/__tests__/graphql-v2/api_lambda_auth.test.ts|src/__tests__/api_9.test.ts
+          CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: function_migration
@@ -426,7 +426,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-auth-5.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: searchable_datastore
@@ -435,7 +435,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/graphql-v2/searchable-datastore.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: ap-southeast-2
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
@@ -445,7 +445,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-iterative-update-4.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_searchable
@@ -454,7 +454,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-searchable.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: us-east-2
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
@@ -513,6 +513,211 @@ batch:
           TEST_SUITE: src/__tests__/transformer-migrations/searchable-migration.test.ts
           CLI_REGION: us-east-1
           USE_PARENT_ACCOUNT: 1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: add_resources_admin_role_all_auth_modes_amplify_table
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/add-resources.test.ts|src/__tests__/admin-role.test.ts|src/__tests__/all-auth-modes.test.ts|src/__tests__/amplify-table.test.ts
+          CLI_REGION: us-east-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: base_cdk_custom_logic_relationships
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/base-cdk.test.ts|src/__tests__/custom-logic.test.ts|src/__tests__/relationships.test.ts
+          CLI_REGION: us-east-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: 3_gsis_100k_records
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/deploy-velocity/3-gsis-100k-records.test.ts
+          CLI_REGION: us-west-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: 3_gsis_10k_records
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/deploy-velocity/3-gsis-10k-records.test.ts
+          CLI_REGION: eu-west-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: 3_gsis_1k_records
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/deploy-velocity/3-gsis-1k-records.test.ts
+          CLI_REGION: eu-central-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: 3_gsis_empty_table
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/deploy-velocity/3-gsis-empty-table.test.ts
+          CLI_REGION: ap-northeast-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: 3_gsis_single_record
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/deploy-velocity/3-gsis-single-record.test.ts
+          CLI_REGION: ap-southeast-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: replace_2_gsis_100k_records
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/deploy-velocity/replace-2-gsis-100k-records.test.ts
+          CLI_REGION: ap-southeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: replace_2_gsis_10k_records
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/deploy-velocity/replace-2-gsis-10k-records.test.ts
+          CLI_REGION: us-east-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: replace_2_gsis_1k_records
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/deploy-velocity/replace-2-gsis-1k-records.test.ts
+          CLI_REGION: us-east-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: replace_2_gsis_empty_table
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/deploy-velocity/replace-2-gsis-empty-table.test.ts
+          CLI_REGION: us-west-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: replace_2_gsis_single_record
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/deploy-velocity/replace-2-gsis-single-record.test.ts
+          CLI_REGION: eu-west-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: replace_2_gsis_update_attr_100k_records
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/deploy-velocity/replace-2-gsis-update-attr-100k-records.test.ts
+          CLI_REGION: eu-central-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: replace_2_gsis_update_attr_10k_records
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/deploy-velocity/replace-2-gsis-update-attr-10k-records.test.ts
+          CLI_REGION: ap-northeast-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: replace_2_gsis_update_attr_1k_records
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/deploy-velocity/replace-2-gsis-update-attr-1k-records.test.ts
+          CLI_REGION: ap-southeast-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: replace_2_gsis_update_attr_empty_table
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/deploy-velocity/replace-2-gsis-update-attr-empty-table.test.ts
+          CLI_REGION: ap-southeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: replace_2_gsis_update_attr_single_record
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/deploy-velocity/replace-2-gsis-update-attr-single-record.test.ts
+          CLI_REGION: us-east-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: single_gsi_100k_records
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/deploy-velocity/single-gsi-100k-records.test.ts
+          CLI_REGION: us-east-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: single_gsi_10k_records
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/deploy-velocity/single-gsi-10k-records.test.ts
+          CLI_REGION: us-west-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: single_gsi_1k_records
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/deploy-velocity/single-gsi-1k-records.test.ts
+          CLI_REGION: eu-west-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: single_gsi_empty_table
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/deploy-velocity/single-gsi-empty-table.test.ts
+          CLI_REGION: eu-central-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: single_gsi_single_record
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/deploy-velocity/single-gsi-single-record.test.ts
+          CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
@@ -706,92 +911,6 @@ batch:
         variables:
           TEST_SUITE: src/__tests__/HttpTransformerV2.e2e.test.ts
           CLI_REGION: ap-southeast-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_key_migration_v5
-      buildspec: codebuild_specs/migration_tests_v5.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/migration_tests/transformer_migration/api.key.migration.test.ts
-          CLI_REGION: us-east-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_key_migration_2_v5
-      buildspec: codebuild_specs/migration_tests_v5.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/migration_tests/transformer_migration/api.key.migration-2.test.ts
-          CLI_REGION: us-west-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_key_migration_v6
-      buildspec: codebuild_specs/migration_tests_v6.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/migration_tests/transformer_migration/api.key.migration.test.ts
-          CLI_REGION: us-east-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_key_migration_2_v6
-      buildspec: codebuild_specs/migration_tests_v6.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/migration_tests/transformer_migration/api.key.migration-2.test.ts
-          CLI_REGION: us-west-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: scaffold_v10
-      buildspec: codebuild_specs/migration_tests_v10.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/migration_tests_v10/scaffold.test.ts
-          CLI_REGION: us-east-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_rest_serverless_migration_v10
-      buildspec: codebuild_specs/migration_tests_v10.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/migration_tests_v10/api-rest-serverless.migration.test.ts
-          CLI_REGION: us-west-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_rest_basic_migration_v10
-      buildspec: codebuild_specs/migration_tests_v10.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/migration_tests_v10/api-rest-basic.migration.test.ts
-          CLI_REGION: eu-west-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_graphql_v2_migration_v10
-      buildspec: codebuild_specs/migration_tests_v10.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/migration_tests_v10/api-graphql-v2.migration.test.ts
-          CLI_REGION: eu-central-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_rest_lambda_migration_v10
-      buildspec: codebuild_specs/migration_tests_v10.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/migration_tests_v10/api-rest-lambda.migration.test.ts
-          CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: cleanup_e2e_resources

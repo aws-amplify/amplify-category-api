@@ -1,6 +1,7 @@
 import {
   AppSyncAuthConfiguration,
   NestedStackProvider,
+  TransformParameters,
   TransformerPluginProvider,
   TransformerPluginType,
 } from '@aws-amplify/graphql-transformer-interfaces';
@@ -20,6 +21,7 @@ class TestGraphQLTransform extends GraphQLTransform {
         apiName: 'testApi',
       },
       output,
+      { enableTransformerCfnOutputs: true } as TransformParameters,
     );
   }
 }
@@ -69,7 +71,7 @@ describe('GraphQLTransform', () => {
     }): void => {
       const app = new App();
       const stack = new Stack(app, 'TestStack');
-      const stackManager = new StackManager(stack, testNestedStackProvider, {});
+      const stackManager = new StackManager(stack, testNestedStackProvider, undefined, {});
       const transformerOutput = {
         buildSchema: jest.fn(() => ''),
       } as unknown as TransformerOutput;
@@ -98,7 +100,7 @@ describe('GraphQLTransform', () => {
       const transform = new TestGraphQLTransform({ transformers: [mockTransformer] });
       const app = new App();
       const stack = new Stack(app, 'TestStack');
-      const stackManager = new StackManager(stack, testNestedStackProvider, {});
+      const stackManager = new StackManager(stack, testNestedStackProvider, undefined, {});
       const transformerOutput = {
         buildSchema: jest.fn(() => ''),
       } as unknown as TransformerOutput;

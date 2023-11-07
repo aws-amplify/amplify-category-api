@@ -9,11 +9,10 @@ import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { gt } from 'semver';
 import { sleep } from '.';
 
-export * from './configure/';
-export * from './init/';
-export * from './utils/';
+export * from './configure';
+export * from './init';
+export * from './utils';
 export * from './categories';
-export * from './export/';
 export { addFeatureFlag } from './utils/feature-flags';
 export * from './cli-version-controller';
 
@@ -54,14 +53,6 @@ export function getScriptRunnerPath(testingWithLatestCodebase = false) {
   return process.execPath;
 }
 
-export function getNpxPath() {
-  let npxPath = 'npx';
-  if (process.platform === 'win32') {
-    npxPath = getScriptRunnerPath().replace('node.exe', 'npx.cmd');
-  }
-  return npxPath;
-}
-
 export function getNpmPath() {
   let npmPath = 'npm';
   if (process.platform === 'win32') {
@@ -71,7 +62,7 @@ export function getNpmPath() {
 }
 
 export function isCI(): boolean {
-  return process.env.CI && process.env.CODEBUILD ? true : false;
+  return !!(process.env.CI && process.env.CODEBUILD);
 }
 
 export function injectSessionToken(profileName: string) {

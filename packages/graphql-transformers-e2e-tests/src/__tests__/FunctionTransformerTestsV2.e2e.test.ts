@@ -274,7 +274,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test('Test simple echo function', async () => {
+test('simple echo function', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         echo(msg: "Hello") {
@@ -292,7 +292,7 @@ test('Test simple echo function', async () => {
   expect(response.data.echo.fieldName).toEqual('echo');
 });
 
-test('Test simple echoEnv function', async () => {
+test('simple echoEnv function', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         echoEnv(msg: "Hello") {
@@ -310,7 +310,7 @@ test('Test simple echoEnv function', async () => {
   expect(response.data.echoEnv.fieldName).toEqual('echoEnv');
 });
 
-test('Test simple duplicate function', async () => {
+test('simple duplicate function', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         duplicate(msg: "Hello") {
@@ -328,7 +328,7 @@ test('Test simple duplicate function', async () => {
   expect(response.data.duplicate.fieldName).toEqual('duplicate');
 });
 
-test('Test pipeline of @function(s)', async () => {
+test('pipeline of @function(s)', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         pipeline(msg: "IGNORED")
@@ -338,7 +338,7 @@ test('Test pipeline of @function(s)', async () => {
   expect(response.data.pipeline).toEqual('Hello, world!');
 });
 
-test('Test pipelineReverse of @function(s)', async () => {
+test('pipelineReverse of @function(s)', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         pipelineReverse(msg: "Hello") {
@@ -356,7 +356,7 @@ test('Test pipelineReverse of @function(s)', async () => {
   expect(response.data.pipelineReverse.fieldName).toEqual('pipelineReverse');
 });
 
-test('Test echo function with accountId as the same AWS account', async () => {
+test('echo function with accountId as the same AWS account', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         echoFromSameAccount(msg: "Hello") {
@@ -374,7 +374,7 @@ test('Test echo function with accountId as the same AWS account', async () => {
   expect(response.data.echoFromSameAccount.fieldName).toEqual('echoFromSameAccount');
 });
 
-test('Test echo function with accountId as the different AWS account', async () => {
+test('echo function with accountId as the different AWS account', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         echoFromDifferentAccount(msg: "Hello") {

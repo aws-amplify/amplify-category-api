@@ -8,7 +8,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces/src';
-import { CfnParameter, CfnParameterProps, NestedStack, Stack } from 'aws-cdk-lib';
+import { NestedStack, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import * as fs from 'fs-extra';
@@ -34,11 +34,7 @@ describe('constructTransformerChain', () => {
   });
 
   it('succeeds on admin roles', () => {
-    expect(
-      constructTransformerChain({
-        adminRoles: ['testRole'],
-      }).length,
-    ).toEqual(14);
+    expect(constructTransformerChain().length).toEqual(14);
   });
 });
 
@@ -55,6 +51,7 @@ const defaultTransformConfig: TransformConfig = {
     enableAutoIndexQueryNames: false,
     respectPrimaryKeyAttributesOnConnectionField: false,
     enableSearchNodeToNodeEncryption: false,
+    enableTransformerCfnOutputs: true,
   },
 };
 
@@ -146,7 +143,6 @@ describe('executeTransform', () => {
           content: String!
         }
       `,
-      transformersFactoryArgs: { authConfig: userPoolAuthConfig },
       authConfig: userPoolAuthConfig,
       printTransformerLog: (): void => {
         didLog = true;

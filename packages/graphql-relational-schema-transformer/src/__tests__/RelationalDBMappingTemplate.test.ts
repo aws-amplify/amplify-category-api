@@ -7,7 +7,7 @@ const sql = 'SELECT * FROM Pets';
  * Test for verifying that provided a sql statement, we successfully create
  * the rds query mapping template
  */
-test('Test RDS Query Mapping Template Creation', () => {
+test('RDS Query Mapping Template Creation', () => {
   const queryObj: ObjectNode = RelationalDBMappingTemplate.rdsQuery({
     statements: list([str(sql)]),
   });

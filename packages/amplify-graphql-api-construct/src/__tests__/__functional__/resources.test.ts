@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
+import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 
 describe('generated resource access', () => {
   describe('l1 resources', () => {
@@ -13,12 +14,12 @@ describe('generated resource access', () => {
             cfnResources: { cfnGraphqlApi, cfnGraphqlSchema, cfnApiKey },
           },
         } = new AmplifyGraphqlApi(stack, 'TestApi', {
-          schema: /* GraphQL */ `
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
             type Todo @model @auth(rules: [{ allow: owner }]) {
               description: String!
             }
-          `,
-          authorizationConfig: {
+          `),
+          authorizationModes: {
             userPoolConfig: { userPool },
           },
         });
@@ -34,12 +35,12 @@ describe('generated resource access', () => {
             cfnResources: { cfnApiKey },
           },
         } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
-          schema: /* GraphQL */ `
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
             type Todo @model @auth(rules: [{ allow: public }]) {
               description: String!
             }
-          `,
-          authorizationConfig: {
+          `),
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
@@ -55,12 +56,12 @@ describe('generated resource access', () => {
             cfnResources: { cfnResolvers },
           },
         } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
-          schema: /* GraphQL */ `
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
             type Todo @model @auth(rules: [{ allow: public }]) {
               description: String!
             }
-          `,
-          authorizationConfig: {
+          `),
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
@@ -82,12 +83,12 @@ describe('generated resource access', () => {
             cfnResources: { cfnResolvers },
           },
         } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
-          schema: /* GraphQL */ `
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
             type Todo @model @auth(rules: [{ allow: public }]) @searchable {
               description: String!
             }
-          `,
-          authorizationConfig: {
+          `),
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
@@ -102,12 +103,12 @@ describe('generated resource access', () => {
             cfnResources: { cfnResolvers },
           },
         } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
-          schema: /* GraphQL */ `
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
             type Todo @model @auth(rules: [{ allow: public }]) {
               description: String! @index
             }
-          `,
-          authorizationConfig: {
+          `),
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
@@ -122,7 +123,7 @@ describe('generated resource access', () => {
             cfnResources: { cfnResolvers },
           },
         } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
-          schema: /* GraphQL */ `
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
             type Todo @model @auth(rules: [{ allow: public }]) {
               description: String!
               authors: [Author] @hasMany
@@ -143,8 +144,8 @@ describe('generated resource access', () => {
               name: String!
               todo: Todo @belongsTo
             }
-          `,
-          authorizationConfig: {
+          `),
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
@@ -186,12 +187,12 @@ describe('generated resource access', () => {
             cfnResources: { cfnDataSources },
           },
         } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
-          schema: /* GraphQL */ `
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
             type Todo @model @auth(rules: [{ allow: public }]) {
               description: String!
             }
-          `,
-          authorizationConfig: {
+          `),
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
@@ -207,12 +208,12 @@ describe('generated resource access', () => {
             cfnResources: { cfnDataSources },
           },
         } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
-          schema: /* GraphQL */ `
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
             type Todo @model @auth(rules: [{ allow: public }]) @searchable {
               description: String!
             }
-          `,
-          authorizationConfig: {
+          `),
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
@@ -227,12 +228,12 @@ describe('generated resource access', () => {
             cfnResources: { cfnDataSources },
           },
         } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
-          schema: /* GraphQL */ `
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
             type Query {
               echo(message: String!): String! @function(name: "echo")
             }
-          `,
-          authorizationConfig: {
+          `),
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
@@ -249,13 +250,16 @@ describe('generated resource access', () => {
             cfnResources: { cfnFunctionConfigurations },
           },
         } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
-          schema: /* GraphQL */ `
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
             type Todo @model @auth(rules: [{ allow: public }]) {
               description: String!
             }
-          `,
-          authorizationConfig: {
+          `),
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
+          },
+          translationBehavior: {
+            disableResolverDeduping: false,
           },
         });
 
@@ -286,7 +290,7 @@ describe('generated resource access', () => {
             cfnResources: { cfnTables },
           },
         } = new AmplifyGraphqlApi(stack, 'TestApi', {
-          schema: /* GraphQL */ `
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
             type Todo @model @auth(rules: [{ allow: owner }]) {
               description: String!
             }
@@ -300,8 +304,8 @@ describe('generated resource access', () => {
               title: String!
               posts: [Post] @manyToMany(relationName: "PostAuthors")
             }
-          `,
-          authorizationConfig: {
+          `),
+          authorizationModes: {
             userPoolConfig: { userPool },
           },
         });
@@ -321,18 +325,18 @@ describe('generated resource access', () => {
             cfnResources: { cfnTables },
           },
         } = new AmplifyGraphqlApi(stack, 'TestApi', {
-          schema: /* GraphQL */ `
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
             type Todo @model @auth(rules: [{ allow: owner }]) {
               description: String!
             }
-          `,
+          `),
           conflictResolution: {
             project: {
               handlerType: 'AUTOMERGE',
               detectionType: 'VERSION',
             },
           },
-          authorizationConfig: {
+          authorizationModes: {
             userPoolConfig: { userPool },
           },
         });
@@ -350,12 +354,12 @@ describe('generated resource access', () => {
             cfnResources: { cfnFunctions },
           },
         } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
-          schema: /* GraphQL */ `
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
             type Todo @model @auth(rules: [{ allow: public }]) @searchable {
               description: String!
             }
-          `,
-          authorizationConfig: {
+          `),
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
@@ -372,12 +376,12 @@ describe('generated resource access', () => {
             cfnResources: { cfnRoles },
           },
         } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
-          schema: /* GraphQL */ `
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
             type Todo @model @auth(rules: [{ allow: public }]) {
               description: String!
             }
-          `,
-          authorizationConfig: {
+          `),
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
@@ -392,12 +396,12 @@ describe('generated resource access', () => {
             cfnResources: { cfnRoles },
           },
         } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
-          schema: /* GraphQL */ `
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
             type Todo @model @auth(rules: [{ allow: public }]) @searchable {
               description: String!
             }
-          `,
-          authorizationConfig: {
+          `),
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
@@ -416,12 +420,12 @@ describe('generated resource access', () => {
             cfnResources: { additionalCfnResources },
           },
         } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
-          schema: /* GraphQL */ `
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
             type Todo @model @auth(rules: [{ allow: public }]) @searchable {
               description: String!
             }
-          `,
-          authorizationConfig: {
+          `),
+          authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
@@ -438,12 +442,12 @@ describe('generated resource access', () => {
       const {
         resources: { graphqlApi },
       } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
-        schema: /* GraphQL */ `
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
           type Todo @model @auth(rules: [{ allow: public }]) {
             description: String!
           }
-        `,
-        authorizationConfig: {
+        `),
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
       });
@@ -455,12 +459,12 @@ describe('generated resource access', () => {
       const {
         resources: { tables },
       } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
-        schema: /* GraphQL */ `
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
           type Todo @model @auth(rules: [{ allow: public }]) {
             description: String!
           }
-        `,
-        authorizationConfig: {
+        `),
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
       });
@@ -473,12 +477,12 @@ describe('generated resource access', () => {
       const {
         resources: { roles },
       } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
-        schema: /* GraphQL */ `
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
           type Todo @model @auth(rules: [{ allow: public }]) {
             description: String!
           }
-        `,
-        authorizationConfig: {
+        `),
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
       });
@@ -491,12 +495,12 @@ describe('generated resource access', () => {
       const {
         resources: { functions },
       } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
-        schema: /* GraphQL */ `
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
           type Todo @model @auth(rules: [{ allow: public }]) @searchable {
             description: String!
           }
-        `,
-        authorizationConfig: {
+        `),
+        authorizationModes: {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
       });

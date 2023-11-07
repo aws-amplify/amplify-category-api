@@ -176,7 +176,7 @@ function _installCLIFromLocalRegistry {
     # set longer timeout to avoid socket timeout error
     npm config set fetch-retry-mintimeout 20000
     npm config set fetch-retry-maxtimeout 120000
-    npm install -g @aws-amplify/cli-internal@12.2.4-aug-transformer-mv-bump.0
+    npm install -g @aws-amplify/cli-internal
     echo "using Amplify CLI version: "$(amplify --version)
     npm list -g --depth=1 | grep -e '@aws-amplify/amplify-category-api' -e 'amplify-codegen'
     unsetNpmRegistryUrl
@@ -199,7 +199,19 @@ function _setupE2ETestsLinux {
     echo "Setup E2E Tests Linux"
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
-    _installCLIFromLocalRegistry  
+    _installCLIFromLocalRegistry
+    _loadTestAccountCredentials
+    _setShell
+}
+
+function _setupCDKTestsLinux {
+    echo "Setup E2E Tests Linux"
+    loadCacheFromBuildJob
+    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    _installCLIFromLocalRegistry
+    cd packages/amplify-graphql-api-construct
+    yarn package
+    cd ../..
     _loadTestAccountCredentials
     _setShell
 }
@@ -209,45 +221,16 @@ function _runE2ETestsLinux {
     retry runE2eTest
 }
 
+function _runCDKTestsLinux {
+    echo "RUN CDK Tests Linux"
+    retry runCDKTest
+}
+
 function _runGqlE2ETests {
     echo "RUN GraphQL E2E tests"
     loadCacheFromBuildJob
     _loadTestAccountCredentials
     retry runGraphQLE2eTest
-}
-function _runMigrationV5Test {
-    echo RUN Migration V5 Test
-    loadCacheFromBuildJob
-    yarn setup-dev
-    source codebuild_specs/scripts/local_publish_helpers.sh
-    changeNpmGlobalPath
-    cd packages/amplify-migration-tests
-    _loadTestAccountCredentials
-    retry yarn run migration_v5.2.0 --no-cache --detectOpenHandles --forceExit $TEST_SUITE
-}
-function _runMigrationV6Test {
-    echo RUN Migration V6 Test
-    loadCacheFromBuildJob
-    yarn setup-dev
-    source codebuild_specs/scripts/local_publish_helpers.sh
-    changeNpmGlobalPath
-    cd packages/amplify-migration-tests
-    _loadTestAccountCredentials
-    retry yarn run migration_v6.1.0 --no-cache --detectOpenHandles --forceExit $TEST_SUITE
-}
-function _runMigrationV10Test {
-    echo RUN Migration V10 Test
-    loadCacheFromBuildJob
-    yarn setup-dev
-    source codebuild_specs/scripts/local_publish_helpers.sh
-    changeNpmGlobalPath
-    cd packages/amplify-migration-tests
-    unset IS_AMPLIFY_CI
-    echo $IS_AMPLIFY_CI
-    _loadTestAccountCredentials
-    npm i -g @aws-amplify/cli@10.5.1
-    /root/.amplify/bin/amplify -v
-    retry yarn run migration_v10.5.1 --no-cache --detectOpenHandles --forceExit $TEST_SUITE
 }
 function _runCanaryTest {
     echo RUN Canary Test
@@ -386,6 +369,22 @@ function runE2eTest {
     if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
         echo "using Amplify CLI version: "$(amplify --version)
         cd $(pwd)/packages/amplify-e2e-tests
+    fi
+
+    if [ -f  $FAILED_TEST_REGEX_FILE ]; then
+        # read the content of failed tests
+        failedTests=$(<$FAILED_TEST_REGEX_FILE)
+        yarn run e2e --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+    else
+        yarn run e2e --maxWorkers=4 $TEST_SUITE
+    fi
+}
+
+function runCDKTest {
+    FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
+
+    if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
+        cd $(pwd)/packages/amplify-graphql-api-construct-tests
     fi
 
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then

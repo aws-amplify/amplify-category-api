@@ -3,6 +3,7 @@ import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transfo
 import { AppSyncAuthConfiguration, AppSyncAuthConfigurationOIDCEntry, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse, InputValueDefinitionNode } from 'graphql';
 import { AuthTransformer } from '../graphql-auth-transformer';
+import { expectStashValueLike } from './test-helpers';
 
 const userPoolsDefaultConfig: AppSyncAuthConfiguration = {
   defaultAuthentication: {
@@ -588,24 +589,26 @@ describe('schema generation directive tests', () => {
 
 describe('iam checks', () => {
   const identityPoolId = 'us-fake-1:abc';
-  const adminRoles = ['helloWorldFunction', 'echoMessageFunction'];
+  const identityPoolStashValue = '$util.qr($ctx.stash.put(\\"identityPoolId\\", \\"us-fake-1:abc\\"))';
 
   test('identity pool check gets added when using private rule', () => {
     const schema = getSchema(privateIAMDirective);
     const out = testTransform({
       schema,
       authConfig: iamDefaultConfig,
-      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId })],
+      synthParameters: { identityPoolId },
+      transformers: [new ModelTransformer(), new AuthTransformer()],
     });
     expect(out).toBeDefined();
     const createResolver = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
     expect(createResolver).toContain(
-      `#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == "${identityPoolId}" && $ctx.identity.cognitoIdentityAuthType == "authenticated") )`,
+      `#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == $ctx.stash.identityPoolId && $ctx.identity.cognitoIdentityAuthType == "authenticated") )`,
     );
     const queryResolver = out.resolvers['Query.listPosts.auth.1.req.vtl'];
     expect(queryResolver).toContain(
-      `#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == "${identityPoolId}" && $ctx.identity.cognitoIdentityAuthType == "authenticated") )`,
+      `#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == $ctx.stash.identityPoolId && $ctx.identity.cognitoIdentityAuthType == "authenticated") )`,
     );
+    expectStashValueLike(out, 'Post', identityPoolStashValue);
   });
 
   test('identity pool check does not get added when using public rule', () => {
@@ -613,25 +616,30 @@ describe('iam checks', () => {
     const out = testTransform({
       schema,
       authConfig: iamDefaultConfig,
-      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId })],
+      synthParameters: { identityPoolId },
+      transformers: [new ModelTransformer(), new AuthTransformer()],
     });
     expect(out).toBeDefined();
     const createResolver = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
     expect(createResolver).toContain('#if( $ctx.identity.userArn == $ctx.stash.unauthRole )');
     const queryResolver = out.resolvers['Query.listPosts.auth.1.req.vtl'];
     expect(queryResolver).toContain('#if( $ctx.identity.userArn == $ctx.stash.unauthRole )');
+    expectStashValueLike(out, 'Post', identityPoolStashValue);
   });
 
   test('that admin roles are added when functions have access to the graphql api', () => {
+    const adminRoles = ['helloWorldFunction', 'echoMessageFunction'];
     const schema = getSchema(privateIAMDirective);
     const out = testTransform({
       schema,
       authConfig: iamDefaultConfig,
-      transformers: [new ModelTransformer(), new AuthTransformer({ adminRoles })],
+      synthParameters: { adminRoles },
+      transformers: [new ModelTransformer(), new AuthTransformer()],
     });
     expect(out).toBeDefined();
     const createResolver = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
-    expect(createResolver).toContain('#set( $adminRoles = ["helloWorldFunction","echoMessageFunction"] )');
+    expectStashValueLike(out, 'Post', '$util.qr($ctx.stash.put(\\"adminRoles\\", [\\"helloWorldFunction\\",\\"echoMessageFunction\\"]))');
+    expect(createResolver).toContain('#foreach( $adminRole in $ctx.stash.adminRoles )');
     expect(createResolver).toMatchSnapshot();
   });
 });

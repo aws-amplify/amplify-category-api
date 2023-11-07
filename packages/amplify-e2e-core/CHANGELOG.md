@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.3.2...amplify-category-api-e2e-core@4.3.3) (2023-11-02)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
+## [4.3.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.3.1...amplify-category-api-e2e-core@4.3.2) (2023-10-27)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
+## [4.3.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.3.0...amplify-category-api-e2e-core@4.3.1) (2023-10-21)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
+# [4.3.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.2.4...amplify-category-api-e2e-core@4.3.0) (2023-09-13)
+
+### Features
+
+- enable jsii builds for the api construct ([#1840](https://github.com/aws-amplify/amplify-category-api/issues/1840)) ([f6e9aff](https://github.com/aws-amplify/amplify-category-api/commit/f6e9aff2b7e8ad620e1899d29c8cb330b4d6a30f))
+
+## [4.2.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.2.3...amplify-category-api-e2e-core@4.2.4) (2023-08-30)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
+## [4.2.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.2.2...amplify-category-api-e2e-core@4.2.3) (2023-08-28)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
 ## [4.2.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.2.1...amplify-category-api-e2e-core@4.2.2) (2023-08-09)
 
 **Note:** Version bump only for package amplify-category-api-e2e-core

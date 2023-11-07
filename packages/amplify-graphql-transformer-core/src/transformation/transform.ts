@@ -9,7 +9,13 @@ import {
   RDSLayerMapping,
   SynthParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import type { AssetProvider, StackManagerProvider, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import type {
+  AssetProvider,
+  DataSourceType,
+  StackManagerProvider,
+  TransformParameterProvider,
+  TransformParameters,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { Aws, CfnOutput, Fn, Stack } from 'aws-cdk-lib';
 import {
@@ -38,7 +44,6 @@ import { TransformerOutput } from '../transformer-context/output';
 import { adoptAuthModes } from '../utils/authType';
 import { MappingTemplate } from '../cdk-compat';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
-import { DatasourceType } from '../config/project-config';
 import { defaultTransformParameters } from '../transformer-context/transform-parameters';
 import * as SyncUtils from './sync-utils';
 import { UserDefinedSlot, DatasourceTransformationConfig } from './types';
@@ -88,6 +93,7 @@ export interface GraphQLTransformOptions {
 export type TransformOption = {
   scope: Construct;
   nestedStackProvider: NestedStackProvider;
+  parameterProvider?: TransformParameterProvider;
   assetProvider: AssetProvider;
   synthParameters: SynthParameters;
   schema: string;
@@ -185,16 +191,25 @@ export class GraphQLTransform {
    * on to the next transformer. At the end of the transformation a
    * cloudformation template is returned.
    */
-  public transform({ scope, nestedStackProvider, assetProvider, synthParameters, schema, datasourceConfig }: TransformOption): void {
+  public transform({
+    scope,
+    nestedStackProvider,
+    parameterProvider,
+    assetProvider,
+    synthParameters,
+    schema,
+    datasourceConfig,
+  }: TransformOption): void {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
     const context = new TransformerContext(
       scope,
       nestedStackProvider,
+      parameterProvider,
       assetProvider,
       synthParameters,
       parsedDocument,
-      datasourceConfig?.modelToDatasourceMap ?? new Map<string, DatasourceType>(),
+      datasourceConfig?.modelToDatasourceMap ?? new Map<string, DataSourceType>(),
       this.stackMappingOverrides,
       this.authConfig,
       this.transformParameters,
@@ -289,7 +304,7 @@ export class GraphQLTransform {
 
     // Synth the API and make it available to allow transformer plugins to manipulate the API
     const output: TransformerOutput = context.output as TransformerOutput;
-    const api = this.generateGraphQlApi(context.stackManager, context.synthParameters, output);
+    const api = this.generateGraphQlApi(context.stackManager, context.synthParameters, output, context.transformParameters);
 
     // generate resolvers
     (context as TransformerContext).bind(api);
@@ -325,6 +340,7 @@ export class GraphQLTransform {
     stackManager: StackManagerProvider,
     synthParameters: SynthParameters,
     output: TransformerOutput,
+    transformParameters: TransformParameters,
   ): GraphQLApi {
     // Todo: Move this to its own transformer plugin to support modifying the API
     // Like setting the auth mode and enabling logging and such
@@ -362,24 +378,29 @@ export class GraphQLTransform {
         expires: apiKeyExpirationDays,
       });
 
-      new CfnOutput(Stack.of(scope), 'GraphQLAPIKeyOutput', {
-        value: apiKey.attrApiKey,
+      if (transformParameters.enableTransformerCfnOutputs) {
+        new CfnOutput(Stack.of(scope), 'GraphQLAPIKeyOutput', {
+          value: apiKey.attrApiKey,
+          description: 'Your GraphQL API ID.',
+          exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiKey']),
+        });
+      }
+    }
+
+    if (transformParameters.enableTransformerCfnOutputs) {
+      new CfnOutput(Stack.of(scope), 'GraphQLAPIIdOutput', {
+        value: api.apiId,
         description: 'Your GraphQL API ID.',
-        exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiKey']),
+        exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiId']),
+      });
+
+      new CfnOutput(Stack.of(scope), 'GraphQLAPIEndpointOutput', {
+        value: api.graphqlUrl,
+        description: 'Your GraphQL API endpoint.',
+        exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiEndpoint']),
       });
     }
 
-    new CfnOutput(Stack.of(scope), 'GraphQLAPIIdOutput', {
-      value: api.apiId,
-      description: 'Your GraphQL API ID.',
-      exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiId']),
-    });
-
-    new CfnOutput(Stack.of(scope), 'GraphQLAPIEndpointOutput', {
-      value: api.graphqlUrl,
-      description: 'Your GraphQL API endpoint.',
-      exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiEndpoint']),
-    });
     api.addToSchema(output.buildSchema());
     return api;
   }

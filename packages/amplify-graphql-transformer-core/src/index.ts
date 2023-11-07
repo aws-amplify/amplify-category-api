@@ -1,7 +1,7 @@
 import { print } from 'graphql';
 import { EXTRA_DIRECTIVES_DOCUMENT } from './transformation/validation';
 
-export { GraphQLTransform, GraphQLTransformOptions, SyncUtils } from './transformation';
+export { GraphQLTransform, GraphQLTransformOptions, SyncUtils, constructDataSourceMap } from './transformation';
 export { UserDefinedSlot, UserDefinedResolver } from './transformation/types';
 export { validateModelSchema } from './transformation/validation';
 export {
@@ -13,8 +13,6 @@ export {
   SyncConfigServer,
   SyncConfigLambda,
   TransformConfig,
-  DatasourceType,
-  DBType,
 } from './config/index';
 export {
   GetArgumentsOptions,
@@ -29,6 +27,7 @@ export {
   APICategory,
   setResourceName,
   getResourceName,
+  getDatasourceProvisionStrategy,
 } from './utils';
 export type { SetResourceNameProps } from './utils';
 export * from './utils/operation-names';

@@ -2,8 +2,13 @@ import _ from 'lodash';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AuthTransformer } from '../graphql-auth-transformer';
+import { expectStashValueLike, expectNoStashValueLike } from './test-helpers';
 
 const ADMIN_UI_ROLES = ['us-fake-1_uuid_Full-access/CognitoIdentityCredentials', 'us-fake-1_uuid_Manage-only/CognitoIdentityCredentials'];
+const ADMIN_UI_ADMIN_ROLES =
+  '$util.qr($ctx.stash.put(\\"adminRoles\\", [\\"us-fake-1_uuid_Full-access/CognitoIdentityCredentials\\",\\"us-fake-1_uuid_Manage-only/CognitoIdentityCredentials\\"])';
+const EMPTY_ADMIN_ROLES = '$util.qr($ctx.stash.put(\\"adminRoles\\", [])';
+const IDENTITY_POOL_ASSIGNMENT_PREFIX = '$util.qr($ctx.stash.put(\\"identityPoolId\\"';
 
 test('simple model with public auth rule and amplify admin app is present', () => {
   const validSchema = `
@@ -25,15 +30,15 @@ test('simple model with public auth rule and amplify admin app is present', () =
         },
       ],
     },
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        adminRoles: ADMIN_UI_ROLES,
-      }),
-    ],
+    synthParameters: {
+      adminRoles: ADMIN_UI_ROLES,
+    },
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   expect(out).toBeDefined();
   expect(out.schema).toContain('Post @aws_api_key @aws_iam');
+  expectStashValueLike(out, 'Post', ADMIN_UI_ADMIN_ROLES);
+  expectNoStashValueLike(out, 'Post', IDENTITY_POOL_ASSIGNMENT_PREFIX);
 });
 
 test('simple model with public auth rule and amplify admin app is not enabled', () => {
@@ -57,6 +62,8 @@ test('simple model with public auth rule and amplify admin app is not enabled', 
   });
   expect(out).toBeDefined();
   expect(out.schema).not.toContain('Post @aws_api_key @aws_iam');
+  expectStashValueLike(out, 'Post', EMPTY_ADMIN_ROLES);
+  expectNoStashValueLike(out, 'Post', IDENTITY_POOL_ASSIGNMENT_PREFIX);
 });
 
 test('model with public auth rule without all operations and amplify admin app is present', () => {
@@ -80,12 +87,10 @@ test('model with public auth rule without all operations and amplify admin app i
         },
       ],
     },
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        adminRoles: ADMIN_UI_ROLES,
-      }),
-    ],
+    synthParameters: {
+      adminRoles: ADMIN_UI_ROLES,
+    },
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   expect(out).toBeDefined();
 
@@ -93,6 +98,8 @@ test('model with public auth rule without all operations and amplify admin app i
   expect(out.schema).toContain('createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post @aws_api_key @aws_iam');
   expect(out.schema).toContain('updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post @aws_api_key @aws_iam');
   expect(out.schema).toContain('deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post @aws_api_key @aws_iam');
+  expectStashValueLike(out, 'Post', ADMIN_UI_ADMIN_ROLES);
+  expectNoStashValueLike(out, 'Post', IDENTITY_POOL_ASSIGNMENT_PREFIX);
 
   // No Resource extending Auth and UnAuth role
   const policyResources = Object.values(out.rootStack.Resources!).filter((r) => r.Type === 'AWS::IAM::ManagedPolicy');
@@ -120,15 +127,15 @@ test('simple model with private auth rule and amplify admin app is present', () 
         },
       ],
     },
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        adminRoles: ADMIN_UI_ROLES,
-      }),
-    ],
+    synthParameters: {
+      adminRoles: ADMIN_UI_ROLES,
+    },
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   expect(out).toBeDefined();
   expect(out.schema).toContain('type Post @aws_iam @aws_cognito_user_pools');
+  expectStashValueLike(out, 'Post', ADMIN_UI_ADMIN_ROLES);
+  expectNoStashValueLike(out, 'Post', IDENTITY_POOL_ASSIGNMENT_PREFIX);
 });
 
 test('simple model with private auth rule and amplify admin app not enabled', () => {
@@ -156,6 +163,8 @@ test('simple model with private auth rule and amplify admin app not enabled', ()
   });
   expect(out).toBeDefined();
   expect(out.schema).not.toContain('type Post @aws_iam @aws_cognito_user_pools');
+  expectStashValueLike(out, 'Post', EMPTY_ADMIN_ROLES);
+  expectNoStashValueLike(out, 'Post', IDENTITY_POOL_ASSIGNMENT_PREFIX);
 });
 
 test('simple model with private auth rule, few operations, and amplify admin app enabled', () => {
@@ -179,12 +188,10 @@ test('simple model with private auth rule, few operations, and amplify admin app
         },
       ],
     },
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        adminRoles: ADMIN_UI_ROLES,
-      }),
-    ],
+    synthParameters: {
+      adminRoles: ADMIN_UI_ROLES,
+    },
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   expect(out).toBeDefined();
   expect(out.schema).toContain('type Post @aws_iam @aws_cognito_user_pools');
@@ -197,6 +204,8 @@ test('simple model with private auth rule, few operations, and amplify admin app
   expect(out.schema).toContain(
     'deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post @aws_iam @aws_cognito_user_pools',
   );
+  expectStashValueLike(out, 'Post', ADMIN_UI_ADMIN_ROLES);
+  expectNoStashValueLike(out, 'Post', IDENTITY_POOL_ASSIGNMENT_PREFIX);
 
   // No Resource extending Auth and UnAuth role
   const policyResources = Object.values(out.rootStack.Resources!).filter((r) => r.Type === 'AWS::IAM::ManagedPolicy');
@@ -212,6 +221,7 @@ test('simple model with private IAM auth rule, few operations, and amplify admin
           updatedAt: String
       }
       `;
+  const identityPoolId = 'testIdentityPoolId';
   const out = testTransform({
     schema: validSchema,
     authConfig: {
@@ -224,12 +234,10 @@ test('simple model with private IAM auth rule, few operations, and amplify admin
         },
       ],
     },
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        identityPoolId: 'testIdentityPoolId',
-      }),
-    ],
+    synthParameters: {
+      identityPoolId,
+    },
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   expect(out).toBeDefined();
   expect(out.schema).toContain('Post @aws_iam');
@@ -244,8 +252,10 @@ test('simple model with private IAM auth rule, few operations, and amplify admin
 
   expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toMatchSnapshot();
   expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toContain(
-    '#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == "testIdentityPoolId" && $ctx.identity.cognitoIdentityAuthType == "authenticated") )',
+    '#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == $ctx.stash.identityPoolId && $ctx.identity.cognitoIdentityAuthType == "authenticated") )',
   );
+  expectStashValueLike(out, 'Post', EMPTY_ADMIN_ROLES);
+  expectStashValueLike(out, 'Post', '$util.qr($ctx.stash.put(\\"identityPoolId\\", \\"testIdentityPoolId\\"))');
 });
 
 test('simple model with AdminUI enabled should add IAM policy only for fields that have explicit IAM auth', () => {
@@ -269,12 +279,10 @@ test('simple model with AdminUI enabled should add IAM policy only for fields th
         },
       ],
     },
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        adminRoles: ADMIN_UI_ROLES,
-      }),
-    ],
+    synthParameters: {
+      adminRoles: ADMIN_UI_ROLES,
+    },
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   expect(out).toBeDefined();
   expect(out.schema).toContain('Post @aws_iam @aws_cognito_user_pool');
@@ -287,6 +295,8 @@ test('simple model with AdminUI enabled should add IAM policy only for fields th
   expect(out.schema).toContain(
     'deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post @aws_iam @aws_cognito_user_pools',
   );
+  expectStashValueLike(out, 'Post', ADMIN_UI_ADMIN_ROLES);
+  expectNoStashValueLike(out, 'Post', IDENTITY_POOL_ASSIGNMENT_PREFIX);
 
   expect(out.schema).toContain('getPost(id: ID!): Post @aws_iam');
   expect(out.schema).toContain('listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection @aws_iam');
@@ -331,15 +341,15 @@ test('admin roles should be return the field name inside field resolvers', () =>
         },
       ],
     },
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        adminRoles: ADMIN_UI_ROLES,
-      }),
-    ],
+    synthParameters: {
+      adminRoles: ADMIN_UI_ROLES,
+    },
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   expect(out).toBeDefined();
 
   expect(out.resolvers['Student.secretValue.req.vtl']).toMatchSnapshot();
+  expectStashValueLike(out, 'Student', ADMIN_UI_ADMIN_ROLES);
+  expectNoStashValueLike(out, 'Student', IDENTITY_POOL_ASSIGNMENT_PREFIX);
   expect(out.resolvers['Mutation.createStudent.auth.1.req.vtl']).toMatchSnapshot();
 });

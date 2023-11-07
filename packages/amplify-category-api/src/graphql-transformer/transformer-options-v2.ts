@@ -21,7 +21,6 @@ import type { TransformParameters } from '@aws-amplify/graphql-transformer-inter
 import { Construct } from 'constructs';
 import { contextUtil } from '../category-utils/context-util';
 import { shouldEnableNodeToNodeEncryption } from '../provider-utils/awscloudformation/current-backend-state/searchable-node-to-node-encryption';
-import { getAdminRoles, getIdentityPoolId } from './utils';
 import { schemaHasSandboxModeEnabled, showGlobalSandboxModeWarning, showSandboxModePrompts } from './sandbox-mode-helpers';
 import { importTransformerModule } from './transformer-factory';
 import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
@@ -150,11 +149,6 @@ export const generateTransformerOptions = async (context: $TSContext, options: a
     }
   }
 
-  // for auth transformer we get any admin roles and a cognito identity pool to check for
-  // potential authenticated roles outside of the provided authRole
-  const adminRoles = await getAdminRoles(context, resourceName);
-  const identityPoolId = await getIdentityPoolId(context);
-
   // for the predictions directive get storage config
   const s3Resource = s3ResourceAlreadyExists();
   const storageConfig = s3Resource ? getBucketName(s3Resource) : undefined;
@@ -236,13 +230,11 @@ export const generateTransformerOptions = async (context: $TSContext, options: a
 
   return {
     ...options,
+    resourceName,
     buildParameters,
     projectDirectory: resourceDir,
     transformersFactoryArgs: {
       storageConfig,
-      authConfig,
-      adminRoles,
-      identityPoolId,
       customTransformers: await loadCustomTransformersV2(resourceDir),
     },
     rootStackFileName: 'cloudformation-template.json',
@@ -291,6 +283,7 @@ const generateTransformParameters = (
       pathManager.getCurrentCloudBackendDirPath(),
     ),
     sandboxModeEnabled,
+    enableTransformerCfnOutputs: true,
   };
 };
 

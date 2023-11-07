@@ -23,15 +23,11 @@ import {
   NestedStackProvider,
   AssetProvider,
   SynthParameters,
+  TransformParameterProvider,
+  DataSourceType,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
-import {
-  DatasourceType,
-  GraphQLTransform,
-  RDSConnectionSecrets,
-  ResolverConfig,
-  UserDefinedSlot,
-} from '@aws-amplify/graphql-transformer-core';
+import { GraphQLTransform, RDSConnectionSecrets, ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 import { Construct } from 'constructs';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 
@@ -40,10 +36,7 @@ import { IFunction } from 'aws-cdk-lib/aws-lambda';
  * Used to determine how to create a new GraphQLTransform
  */
 export type TransformerFactoryArgs = {
-  authConfig?: any;
   storageConfig?: any;
-  adminRoles?: Array<string>;
-  identityPoolId?: string;
   customTransformers?: TransformerPluginProvider[];
   functionNameMap?: Record<string, IFunction>;
 };
@@ -64,10 +57,7 @@ export type TransformConfig = {
 
 export const constructTransformerChain = (options?: TransformerFactoryArgs): TransformerPluginProvider[] => {
   const modelTransformer = new ModelTransformer();
-  const authTransformer = new AuthTransformer({
-    adminRoles: options?.adminRoles ?? [],
-    identityPoolId: options?.identityPoolId,
-  });
+  const authTransformer = new AuthTransformer();
   const indexTransformer = new IndexTransformer();
   const hasOneTransformer = new HasOneTransformer();
 
@@ -123,13 +113,14 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
 
 export type ExecuteTransformConfig = TransformConfig & {
   schema: string;
-  modelToDatasourceMap?: Map<string, DatasourceType>;
+  modelToDatasourceMap?: Map<string, DataSourceType>;
   datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
   printTransformerLog?: (log: TransformerLog) => void;
   sqlLambdaVpcConfig?: VpcConfig;
   rdsLayerMapping?: RDSLayerMapping;
   scope: Construct;
   nestedStackProvider: NestedStackProvider;
+  parameterProvider?: TransformParameterProvider;
   assetProvider: AssetProvider;
   synthParameters: SynthParameters;
 };
@@ -173,6 +164,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
     nestedStackProvider,
     assetProvider,
     synthParameters,
+    parameterProvider,
   } = config;
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
@@ -182,6 +174,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
     transform.transform({
       scope,
       nestedStackProvider,
+      parameterProvider,
       assetProvider,
       synthParameters,
       schema,

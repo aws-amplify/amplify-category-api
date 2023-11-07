@@ -63,7 +63,7 @@ it(`should init and deploy a api container, attach custom policies to the Fargat
       Name: '/amplify/testCustomPolicies',
     })
     .promise();
-  var ssmParameterArn = getParaResponse.Parameter.ARN;
+  let ssmParameterArn = getParaResponse.Parameter.ARN;
 
   customIAMPolicy.Resource.push(ssmParameterArn);
   const customPoliciesPath = getCustomPoliciesPath(projRoot, 'api', name);
