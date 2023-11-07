@@ -1323,7 +1323,9 @@ const authorizationModes: AuthorizationModes = { ... }
 
 ---
 
-##### `adminRoles`<sup>Optional</sup> <a name="adminRoles" id="@aws-amplify/graphql-api-construct.AuthorizationModes.property.adminRoles"></a>
+##### ~~`adminRoles`~~<sup>Optional</sup> <a name="adminRoles" id="@aws-amplify/graphql-api-construct.AuthorizationModes.property.adminRoles"></a>
+
+- *Deprecated:* , use iamConfig.allowListedRoles instead.
 
 ```typescript
 public readonly adminRoles: IRole[];
@@ -1734,6 +1736,7 @@ const iAMAuthorizationConfig: IAMAuthorizationConfig = { ... }
 | <code><a href="#@aws-amplify/graphql-api-construct.IAMAuthorizationConfig.property.authenticatedUserRole">authenticatedUserRole</a></code>     | <code>aws-cdk-lib.aws_iam.IRole</code> | Authenticated user role, applies to { provider: iam, allow: private } access.  |
 | <code><a href="#@aws-amplify/graphql-api-construct.IAMAuthorizationConfig.property.identityPoolId">identityPoolId</a></code>                   | <code>string</code>                    | ID for the Cognito Identity Pool vending auth and unauth roles.                |
 | <code><a href="#@aws-amplify/graphql-api-construct.IAMAuthorizationConfig.property.unauthenticatedUserRole">unauthenticatedUserRole</a></code> | <code>aws-cdk-lib.aws_iam.IRole</code> | Unauthenticated user role, applies to { provider: iam, allow: public } access. |
+| <code><a href="#@aws-amplify/graphql-api-construct.IAMAuthorizationConfig.property.allowListedRoles">allowListedRoles</a></code> | <code>string \| aws-cdk-lib.aws_iam.IRole[]</code> | A list of IAM roles which will be granted full read/write access to the generated model if IAM auth is enabled. |
 
 ---
 
@@ -1772,6 +1775,21 @@ public readonly unauthenticatedUserRole: IRole;
 - _Type:_ aws-cdk-lib.aws_iam.IRole
 
 Unauthenticated user role, applies to { provider: iam, allow: public } access.
+
+---
+
+##### `allowListedRoles`<sup>Optional</sup> <a name="allowListedRoles" id="@aws-amplify/graphql-api-construct.IAMAuthorizationConfig.property.allowListedRoles"></a>
+
+```typescript
+public readonly allowListedRoles: string | IRole[];
+```
+
+- *Type:* string | aws-cdk-lib.aws_iam.IRole[]
+
+A list of IAM roles which will be granted full read/write access to the generated model if IAM auth is enabled.
+
+If an IRole is provided, the role `name` will be used for matching.
+If a string is provided, the raw value will be used for matching.
 
 ---
 
