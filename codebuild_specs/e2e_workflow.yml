@@ -409,6 +409,60 @@ batch:
           CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
+    - identifier: rds_mysql_auth_apikey_lambda
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-auth-apikey-lambda.test.ts
+          CLI_REGION: ap-northeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_mysql_auth_iam_apikey_lambda_subscription
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-auth-iam-apikey-lambda-subscription.test.ts
+          CLI_REGION: ap-northeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_mysql_auth_iam
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-auth-iam.test.ts
+          CLI_REGION: ap-northeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_mysql_multi_auth_1
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-multi-auth-1.test.ts
+          CLI_REGION: ap-northeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_mysql_oidc_auth
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-oidc-auth.test.ts
+          CLI_REGION: ap-northeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_mysql_userpool_auth
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-userpool-auth.test.ts
+          CLI_REGION: ap-northeast-2
+      depend-on:
+        - publish_to_local_registry
     - identifier: schema_model
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
