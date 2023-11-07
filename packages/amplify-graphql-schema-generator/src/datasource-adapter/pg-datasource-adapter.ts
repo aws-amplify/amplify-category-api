@@ -110,9 +110,9 @@ export class PostgresDataSourceAdapter extends DataSourceAdapter {
     const result =
       this.useVPC && this.vpcSchemaInspectorLambda
         ? await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, schemaQuery, this.vpcLambdaRegion)
-        : await this.dbBuilder.raw(schemaQuery);
+        : await this.dbBuilder.raw(schemaQuery).rows;
 
-    return this.queryToCSV(result.rows);
+    return this.queryToCSV(result);
   }
 
   public getFields(tableName: string): Field[] {
