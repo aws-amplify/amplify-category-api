@@ -58,8 +58,7 @@ describe('testStringDataSourceAdapter', () => {
   });
 
   it('test mysql datatype mapping', () => {
-    const schema = '';
-    const adapter = new MySQLStringDataSourceAdapter(schema);
+    const adapter = new MySQLStringDataSourceAdapter(schemas.mysql.todo);
     expect(adapter.mapDataType('varchar', true, 'table', 'field', 'varchar(50)')).toEqual({
       kind: 'Scalar',
       name: 'String',
@@ -98,5 +97,16 @@ describe('testStringDataSourceAdapter', () => {
   it('sets the correct models from a news schema', () => {
     const adapter = new MySQLStringDataSourceAdapter(schemas.mysql.news);
     expect(adapter.getModels()).toMatchSnapshot();
+  });
+
+  it('errors on empty schema', () => {
+    expect(() => new MySQLStringDataSourceAdapter('')).toThrow('Imported SQL schema is empty.');
+    expect(() => new MySQLStringDataSourceAdapter('foo,bar')).toThrow('Imported SQL schema is empty.');
+  });
+
+  it('errors on invalid schema', () => {
+    expect(() => new MySQLStringDataSourceAdapter('foo,bar\nbaz,bat')).toThrow(
+      'Imported SQL schema is invalid. Imported schema is missing columns: TABLE_NAME, COLUMN_NAME, COLUMN_DEFAULT, ORDINAL_POSITION, DATA_TYPE, COLUMN_TYPE, IS_NULLABLE, CHARACTER_MAXIMUM_LENGTH, INDEX_NAME, NON_UNIQUE, SEQ_IN_INDEX, NULLABLE',
+    );
   });
 });

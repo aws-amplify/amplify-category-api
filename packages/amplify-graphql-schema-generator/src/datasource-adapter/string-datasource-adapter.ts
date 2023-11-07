@@ -5,7 +5,7 @@ import { Field, FieldType, Index, Model } from '../schema-representation';
 
 export abstract class StringDataSourceAdapter {
   constructor(schema: string) {
-    const parsedSchema = this.parseSchema(schema);
+    const parsedSchema = this.parseSchema(schema.trim());
     this.validateSchema(parsedSchema);
     this.setSchema(parsedSchema);
   }
@@ -61,5 +61,19 @@ export abstract class StringDataSourceAdapter {
 
   protected getEnumName(name: string): string {
     return singular(toPascalCase(name.split('_')));
+  }
+}
+
+export class EmptySchemaError extends Error {
+  constructor() {
+    super('Imported SQL schema is empty.');
+  }
+}
+export class InvalidSchemaError extends Error {
+  constructor(schema: any[], expectedColumns: string[]) {
+    const columns = Object.keys(schema[0]);
+    const missingColumns = expectedColumns.filter((column) => !columns.includes(column));
+    const message = `Imported SQL schema is invalid. Imported schema is missing columns: ${missingColumns.join(', ')}`;
+    super(message);
   }
 }
