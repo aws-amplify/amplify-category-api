@@ -1,16 +1,14 @@
 import * as os from 'os';
-import { singular } from 'pluralize';
-import { toPascalCase } from 'graphql-transformer-common';
 import { Field, Index, Model } from '../schema-representation';
 
 export abstract class DataSourceAdapter {
-  public abstract getTablesList(): Promise<string[]>;
+  public abstract getTablesList(): string[];
 
-  public abstract getFields(tableName: string): Promise<Field[]>;
+  public abstract getFields(tableName: string): Field[];
 
-  public abstract getPrimaryKey(tableName: string): Promise<Index | null>;
+  public abstract getPrimaryKey(tableName: string): Index | null;
 
-  public abstract getIndexes(tableName: string): Promise<Index[]>;
+  public abstract getIndexes(tableName: string): Index[];
 
   public abstract initialize(): Promise<void>;
 
@@ -26,20 +24,20 @@ export abstract class DataSourceAdapter {
 
   public vpcLambdaRegion: string | undefined = undefined;
 
-  public async getModels(): Promise<Model[]> {
-    const tableNames = await this.getTablesList();
+  public getModels(): Model[] {
+    const tableNames = this.getTablesList();
     const models = [];
     for (const table of tableNames) {
-      models.push(await this.describeTable(table));
+      models.push(this.describeTable(table));
     }
     return models;
   }
 
-  public async describeTable(tableName: string): Promise<Model> {
+  public describeTable(tableName: string): Model {
     // Retrieve the fields, primary key and indexes info
-    const fields = await this.getFields(tableName);
-    const primaryKey = await this.getPrimaryKey(tableName);
-    const indexes = await this.getIndexes(tableName);
+    const fields = this.getFields(tableName);
+    const primaryKey = this.getPrimaryKey(tableName);
+    const indexes = this.getIndexes(tableName);
 
     // Construct the model from the retrieved details
     const model = new Model(tableName);
@@ -53,10 +51,6 @@ export abstract class DataSourceAdapter {
     this.useVPC = true;
     this.vpcSchemaInspectorLambda = vpcSchemaInspectorLambda;
     this.vpcLambdaRegion = region;
-  }
-
-  protected getEnumName(name: string): string {
-    return singular(toPascalCase(name.split('_')));
   }
 
   protected queryToCSV(queryResult: any[]): string {

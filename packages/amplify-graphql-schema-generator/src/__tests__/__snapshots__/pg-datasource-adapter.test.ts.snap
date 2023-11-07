@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`testMySQLDataSourceAdapter exclude option should not import the given tables 1`] = `
+exports[`testPostgresDataSourceAdapter exclude option should not import the given tables 1`] = `
 "type Capital @model {
   id: Int! @primaryKey
   name: String
@@ -14,7 +14,7 @@ type Country @model {
 "
 `;
 
-exports[`testMySQLDataSourceAdapter generate schema retains hasMany and belongsTo relationship 1`] = `
+exports[`testPostgresDataSourceAdapter generate schema retains hasMany and belongsTo relationship 1`] = `
 "type Blog @model {
   id: Int! @primaryKey
   name: String
@@ -30,7 +30,7 @@ type Post @model {
 "
 `;
 
-exports[`testMySQLDataSourceAdapter generate schema retains hasOne and belongsTo relationship and removes the non-relational fields added manually 1`] = `
+exports[`testPostgresDataSourceAdapter generate schema retains hasOne and belongsTo relationship and removes the non-relational fields added manually 1`] = `
 "type Profile @model {
   id: Int! @primaryKey
   content: String
@@ -46,7 +46,7 @@ type User @model {
 "
 `;
 
-exports[`testMySQLDataSourceAdapter generates a default directive and optional types for fields with literal default values 1`] = `
+exports[`testPostgresDataSourceAdapter generates a default directive and optional types for fields with literal default values 1`] = `
 "type Account @model {
   id: Int! @primaryKey
   serialNumber: Int @default(value: \\"-1\\")
@@ -56,7 +56,7 @@ exports[`testMySQLDataSourceAdapter generates a default directive and optional t
 "
 `;
 
-exports[`testMySQLDataSourceAdapter generates optional type but no default directive for fields with computed default values 1`] = `
+exports[`testPostgresDataSourceAdapter generates optional type but no default directive for fields with computed default values 1`] = `
 "type Account @model {
   id: Int! @primaryKey
   computed: Float
@@ -64,7 +64,7 @@ exports[`testMySQLDataSourceAdapter generates optional type but no default direc
 "
 `;
 
-exports[`testMySQLDataSourceAdapter generates primary key fields as required without the default directive added 1`] = `
+exports[`testPostgresDataSourceAdapter generates primary key fields as required without the default directive added 1`] = `
 "type Account @model {
   id: Int! @primaryKey(sortKeyFields: [\\"serialNumber\\"])
   serialNumber: Int!
@@ -74,7 +74,7 @@ exports[`testMySQLDataSourceAdapter generates primary key fields as required wit
 "
 `;
 
-exports[`testMySQLDataSourceAdapter include option should import only the given tables 1`] = `
+exports[`testPostgresDataSourceAdapter include option should import only the given tables 1`] = `
 "type Task @refersTo(name: \\"Tasks\\") @model {
   id: String! @primaryKey(sortKeyFields: [\\"title\\"])
   title: String @index(name: \\"tasks_title\\") @index(name: \\"tasks_title_description\\", sortKeyFields: [\\"description\\"])
@@ -84,7 +84,7 @@ exports[`testMySQLDataSourceAdapter include option should import only the given 
 "
 `;
 
-exports[`testMySQLDataSourceAdapter test generate graphql schema from internal reprensentation 1`] = `
+exports[`testPostgresDataSourceAdapter test generate graphql schema from internal reprensentation 1`] = `
 "type Capital @model {
   id: Int! @primaryKey
   name: String
@@ -105,7 +105,7 @@ type Task @refersTo(name: \\"Tasks\\") @model {
 "
 `;
 
-exports[`testMySQLDataSourceAdapter test generate graphql schema on model with enum field 1`] = `
+exports[`testPostgresDataSourceAdapter test generate graphql schema on model with enum field 1`] = `
 "type Profile @model {
   id: Int! @primaryKey
   name: String

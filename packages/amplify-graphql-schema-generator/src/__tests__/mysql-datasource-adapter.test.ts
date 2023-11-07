@@ -15,19 +15,19 @@ class TestDataSourceAdapter extends DataSourceAdapter {
     };
   }
 
-  public async getTablesList(): Promise<string[]> {
+  public getTablesList(): string[] {
     return ['Test'];
   }
 
-  public async getFields(tableName: string): Promise<Field[]> {
+  public getFields(tableName: string): Field[] {
     return [];
   }
 
-  public async getPrimaryKey(tableName: string): Promise<Index | null> {
+  public getPrimaryKey(tableName: string): Index | null {
     return null;
   }
 
-  public async getIndexes(tableName: string): Promise<Index[]> {
+  public getIndexes(tableName: string): Index[] {
     return [];
   }
 
@@ -43,13 +43,13 @@ class TestDataSourceAdapter extends DataSourceAdapter {
   }
 }
 
-describe('testDataSourceAdapter', () => {
+describe('testMySQLDataSourceAdapter', () => {
   it('getModels call the default implementation', async () => {
     const adapter: DataSourceAdapter = new TestDataSourceAdapter();
-    adapter.getTablesList = jest.fn(async () => ['Test']);
-    adapter.getFields = jest.fn(async () => []);
+    adapter.getTablesList = jest.fn(() => ['Test']);
+    adapter.getFields = jest.fn(() => []);
     adapter.getPrimaryKey = jest.fn();
-    adapter.getIndexes = jest.fn(async () => []);
+    adapter.getIndexes = jest.fn(() => []);
     await adapter.getModels();
     expect(adapter.getTablesList).toBeCalledTimes(1);
     expect(adapter.getFields).toBeCalledTimes(1);
