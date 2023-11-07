@@ -4064,6 +4064,17 @@ $util.toJson({
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Mutation.createSong.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## [End] Merge default values and inputs. **
+## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id)
+}))
+## [End] Set the primary key. **
+
+{}",
   "Mutation.createSong.req.vtl": "## [Start] Create Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -4152,6 +4163,16 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Mutation.deleteSong.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## [End] Merge default values and inputs. **
+## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id)
+}))
+## [End] Set the primary key. **
+{}",
   "Mutation.deleteSong.req.vtl": "## [Start] Delete Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
@@ -4234,6 +4255,17 @@ $util.toJson({
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Mutation.updateSong.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## [End] Merge default values and inputs. **
+## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id)
+}))
+## [End] Set the primary key. **
+
+{}",
   "Mutation.updateSong.req.vtl": "## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -4379,6 +4411,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Query.getSong.preAuth.1.req.vtl": "## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($ctx.args.id)
+}))
+## [End] Set the primary key. **
+{}",
   "Query.getSong.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -4432,6 +4470,25 @@ $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Query.listSongs.preAuth.1.req.vtl": "## [Start] Set query expression for key **
+#if( !$util.isNull($ctx.args.sortDirection) )
+  $util.error(\\"sortDirection is not supported for List operations without a Sort key defined.\\", \\"InvalidArgumentsError\\")
+#end
+#set( $modelQueryExpression = {} )
+#if( !$util.isNull($ctx.args.id) )
+  #set( $modelQueryExpression.expression = \\"#id = :id\\" )
+  #set( $modelQueryExpression.expressionNames = {
+  \\"#id\\": \\"id\\"
+} )
+  #set( $modelQueryExpression.expressionValues = {
+  \\":id\\": {
+      \\"S\\": \\"$ctx.args.id\\"
+  }
+} )
+#end
+## [End] Set query expression for key **
+$util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
+{}",
   "Query.listSongs.req.vtl": "## [Start] List Request. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $limit = $util.defaultIfNull($args.limit, 100) )
@@ -4563,6 +4620,139 @@ $util.toJson($ctx.result)",
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Query.syncSongs.preAuth.1.req.vtl": "## [Start] Set map initialization for @key **
+#set( $index = \\"\\" )
+#set( $scan = true )
+#set( $filterMap = {} )
+#set( $QueryMap = {} )
+#set( $PkMap = {} )
+#set( $SkMap = {} )
+#set( $filterArgsMap = {} )
+#if( $ctx.stash.QueryRequest )
+  #return
+#end
+#set( $queryRequestVariables = {} )
+## [End] Set map initialization for @key **
+## [Start] Set query expression for @key **
+$util.qr($QueryMap.put('id' , 'dbTable'))
+$util.qr($PkMap.put('id' , 'dbTable'))
+$util.qr($SkMap.put(\\"dbTable\\", []))
+## [End] Set query expression for @key **
+## [Start] Set query expression for @key **
+#set( $filterArgsMap = $ctx.args.filter.get(\\"and\\") )
+#set( $isLastSyncInDeltaTTLWindow = false )
+#set( $minLastSync = $util.time.nowEpochMilliSeconds() - $ctx.stash.deltaSyncTableTtl * 60 * 1000 )
+#if( !$util.isNull($ctx.args.lastSync) && $ctx.args.lastSync != 0 && $minLastSync <= $ctx.args.lastSync )
+  #set( $isLastSyncInDeltaTTLWindow = true )
+#end
+#if( !$util.isNullOrEmpty($filterArgsMap) && !$isLastSyncInDeltaTTLWindow )
+  #set( $json = $filterArgsMap )
+  #foreach( $item in $json )
+    #set( $ind = $foreach.index )
+    #foreach( $entry in $item.entrySet() )
+      #if( $ind == 0 && !$util.isNullOrEmpty($entry.value.eq) && !$util.isNullOrEmpty($PkMap.get($entry.key)) )
+        #set( $pk = $entry.key )
+        #set( $scan = false )
+        #set( $queryRequestVariables.partitionKey = $pk )
+        #set( $queryRequestVariables.sortKeys = $SkMap.get($PkMap.get($pk)) )
+        #set( $queryRequestVariables.partitionKeyFilter = {} )
+        $util.qr($queryRequestVariables.partitionKeyFilter.put($pk, {'eq': $entry.value.eq}))
+        $util.qr($ctx.args.put($pk,$entry.value.eq))
+        #set( $index = $PkMap.get($pk) )
+      #end
+      #if( $ind == 1 && !$util.isNullOrEmpty($pk) && !$util.isNullOrEmpty($QueryMap.get(\\"\${pk}+$entry.key\\")) )
+        #set( $sk = $entry.key )
+        $util.qr($ctx.args.put($sk,$entry.value))
+        #set( $index = $QueryMap.get(\\"\${pk}+$sk\\") )
+      #else
+        #if( $ind > 0 )
+          $util.qr($filterMap.put($entry.key,$entry.value))
+        #end
+      #end
+    #end
+  #end
+#else
+  #set( $filterMap = $ctx.args.filter )
+#end
+## [End] Set query expression for @key **
+## [Start] Set Primary Key initialization @key **
+#set( $modelQueryExpression = {} )
+#if( !$util.isNull($pk) )
+  #set( $modelQueryExpression.expression = \\"#pk = :pk\\" )
+  #set( $modelQueryExpression.expressionNames = {
+  \\"#pk\\": \\"$pk\\"
+} )
+  #set( $modelQueryExpression.expressionValues = {
+  \\":pk\\": $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($pk)))
+} )
+#end
+## [End] Set Primary Key initialization @key **
+## [Start] Applying Key Condition **
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).beginsWith) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND begins_with(#sortKey, :sortKey)\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).beginsWith))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).between) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).between[0]))))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).between[1]))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).eq) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey = :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).eq))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).lt) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey < :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).lt))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).le) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey <= :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).le))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).gt) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey > :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).gt))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).ge) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey >= :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).ge))))
+#end
+## [End] Applying Key Condition **
+## [Start]  Set query expression for @key **
+#if( !$scan )
+  #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $ctx.stash.QueryRequestVariables = $queryRequestVariables )
+  #set( $ctx.stash.QueryRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Sync\\",
+  \\"limit\\": $limit,
+  \\"lastSync\\": $util.defaultIfNull($ctx.args.lastSync, null),
+  \\"query\\": $modelQueryExpression
+} )
+  #if( !$util.isNull($ctx.args.sortDirection)
+                    && $ctx.args.sortDirection == \\"DESC\\" )
+    #set( $ctx.stash.QueryRequest.scanIndexForward = false )
+  #else
+    #set( $ctx.stash.QueryRequest.scanIndexForward = true )
+  #end
+#if( $context.args.nextToken ) #set( $ctx.stash.QueryRequest.nextToken = $context.args.nextToken ) #end
+  #if( !$util.isNullOrEmpty($filterMap) && $util.toJson($filterMap) != $util.toJson({}) )
+    #set( $ctx.stash.QueryRequest.filter = $filterMap )
+  #end
+  #if( $index != \\"dbTable\\" )
+    #set( $ctx.stash.QueryRequest.index = $index )
+  #end
+#end
+$util.toJson({})
+## [End]  Set query expression for @key **
+",
+  "Query.syncSongs.preAuth.2.req.vtl": "## [Start] Set map initialization for @key **
 #set( $index = \\"\\" )
 #set( $scan = true )
 #set( $filterMap = {} )
@@ -4859,6 +5049,17 @@ $util.toJson({
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Mutation.createSong.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## [End] Merge default values and inputs. **
+## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id)
+}))
+## [End] Set the primary key. **
+
+{}",
   "Mutation.createSong.req.vtl": "## [Start] Create Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -4947,6 +5148,16 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Mutation.deleteSong.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## [End] Merge default values and inputs. **
+## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id)
+}))
+## [End] Set the primary key. **
+{}",
   "Mutation.deleteSong.req.vtl": "## [Start] Delete Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
@@ -5029,6 +5240,17 @@ $util.toJson({
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Mutation.updateSong.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## [End] Merge default values and inputs. **
+## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id)
+}))
+## [End] Set the primary key. **
+
+{}",
   "Mutation.updateSong.req.vtl": "## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -5174,6 +5396,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Query.getSong.preAuth.1.req.vtl": "## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($ctx.args.id)
+}))
+## [End] Set the primary key. **
+{}",
   "Query.getSong.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -5227,6 +5455,25 @@ $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Query.listSongs.preAuth.1.req.vtl": "## [Start] Set query expression for key **
+#if( !$util.isNull($ctx.args.sortDirection) )
+  $util.error(\\"sortDirection is not supported for List operations without a Sort key defined.\\", \\"InvalidArgumentsError\\")
+#end
+#set( $modelQueryExpression = {} )
+#if( !$util.isNull($ctx.args.id) )
+  #set( $modelQueryExpression.expression = \\"#id = :id\\" )
+  #set( $modelQueryExpression.expressionNames = {
+  \\"#id\\": \\"id\\"
+} )
+  #set( $modelQueryExpression.expressionValues = {
+  \\":id\\": {
+      \\"S\\": \\"$ctx.args.id\\"
+  }
+} )
+#end
+## [End] Set query expression for key **
+$util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
+{}",
   "Query.listSongs.req.vtl": "## [Start] List Request. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $limit = $util.defaultIfNull($args.limit, 100) )
@@ -5374,6 +5621,139 @@ $util.toJson({})
 $util.qr($QueryMap.put('genre' , 'byGenre'))
 $util.qr($PkMap.put('genre' , 'byGenre'))
 $util.qr($SkMap.put(\\"byGenre\\", []))
+## [End] Set query expression for @key **
+## [Start] Set query expression for @key **
+#set( $filterArgsMap = $ctx.args.filter.get(\\"and\\") )
+#set( $isLastSyncInDeltaTTLWindow = false )
+#set( $minLastSync = $util.time.nowEpochMilliSeconds() - $ctx.stash.deltaSyncTableTtl * 60 * 1000 )
+#if( !$util.isNull($ctx.args.lastSync) && $ctx.args.lastSync != 0 && $minLastSync <= $ctx.args.lastSync )
+  #set( $isLastSyncInDeltaTTLWindow = true )
+#end
+#if( !$util.isNullOrEmpty($filterArgsMap) && !$isLastSyncInDeltaTTLWindow )
+  #set( $json = $filterArgsMap )
+  #foreach( $item in $json )
+    #set( $ind = $foreach.index )
+    #foreach( $entry in $item.entrySet() )
+      #if( $ind == 0 && !$util.isNullOrEmpty($entry.value.eq) && !$util.isNullOrEmpty($PkMap.get($entry.key)) )
+        #set( $pk = $entry.key )
+        #set( $scan = false )
+        #set( $queryRequestVariables.partitionKey = $pk )
+        #set( $queryRequestVariables.sortKeys = $SkMap.get($PkMap.get($pk)) )
+        #set( $queryRequestVariables.partitionKeyFilter = {} )
+        $util.qr($queryRequestVariables.partitionKeyFilter.put($pk, {'eq': $entry.value.eq}))
+        $util.qr($ctx.args.put($pk,$entry.value.eq))
+        #set( $index = $PkMap.get($pk) )
+      #end
+      #if( $ind == 1 && !$util.isNullOrEmpty($pk) && !$util.isNullOrEmpty($QueryMap.get(\\"\${pk}+$entry.key\\")) )
+        #set( $sk = $entry.key )
+        $util.qr($ctx.args.put($sk,$entry.value))
+        #set( $index = $QueryMap.get(\\"\${pk}+$sk\\") )
+      #else
+        #if( $ind > 0 )
+          $util.qr($filterMap.put($entry.key,$entry.value))
+        #end
+      #end
+    #end
+  #end
+#else
+  #set( $filterMap = $ctx.args.filter )
+#end
+## [End] Set query expression for @key **
+## [Start] Set Primary Key initialization @key **
+#set( $modelQueryExpression = {} )
+#if( !$util.isNull($pk) )
+  #set( $modelQueryExpression.expression = \\"#pk = :pk\\" )
+  #set( $modelQueryExpression.expressionNames = {
+  \\"#pk\\": \\"$pk\\"
+} )
+  #set( $modelQueryExpression.expressionValues = {
+  \\":pk\\": $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($pk)))
+} )
+#end
+## [End] Set Primary Key initialization @key **
+## [Start] Applying Key Condition **
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).beginsWith) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND begins_with(#sortKey, :sortKey)\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).beginsWith))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).between) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).between[0]))))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).between[1]))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).eq) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey = :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).eq))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).lt) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey < :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).lt))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).le) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey <= :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).le))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).gt) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey > :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).gt))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).ge) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey >= :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).ge))))
+#end
+## [End] Applying Key Condition **
+## [Start]  Set query expression for @key **
+#if( !$scan )
+  #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $ctx.stash.QueryRequestVariables = $queryRequestVariables )
+  #set( $ctx.stash.QueryRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Sync\\",
+  \\"limit\\": $limit,
+  \\"lastSync\\": $util.defaultIfNull($ctx.args.lastSync, null),
+  \\"query\\": $modelQueryExpression
+} )
+  #if( !$util.isNull($ctx.args.sortDirection)
+                    && $ctx.args.sortDirection == \\"DESC\\" )
+    #set( $ctx.stash.QueryRequest.scanIndexForward = false )
+  #else
+    #set( $ctx.stash.QueryRequest.scanIndexForward = true )
+  #end
+#if( $context.args.nextToken ) #set( $ctx.stash.QueryRequest.nextToken = $context.args.nextToken ) #end
+  #if( !$util.isNullOrEmpty($filterMap) && $util.toJson($filterMap) != $util.toJson({}) )
+    #set( $ctx.stash.QueryRequest.filter = $filterMap )
+  #end
+  #if( $index != \\"dbTable\\" )
+    #set( $ctx.stash.QueryRequest.index = $index )
+  #end
+#end
+$util.toJson({})
+## [End]  Set query expression for @key **
+",
+  "Query.syncSongs.preAuth.2.req.vtl": "## [Start] Set map initialization for @key **
+#set( $index = \\"\\" )
+#set( $scan = true )
+#set( $filterMap = {} )
+#set( $QueryMap = {} )
+#set( $PkMap = {} )
+#set( $SkMap = {} )
+#set( $filterArgsMap = {} )
+#if( $ctx.stash.QueryRequest )
+  #return
+#end
+#set( $queryRequestVariables = {} )
+## [End] Set map initialization for @key **
+## [Start] Set query expression for @key **
+$util.qr($QueryMap.put('id' , 'dbTable'))
+$util.qr($PkMap.put('id' , 'dbTable'))
+$util.qr($SkMap.put(\\"dbTable\\", []))
 ## [End] Set query expression for @key **
 ## [Start] Set query expression for @key **
 #set( $filterArgsMap = $ctx.args.filter.get(\\"and\\") )

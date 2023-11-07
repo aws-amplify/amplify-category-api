@@ -198,7 +198,7 @@ type Query {
   getModelB(id: ID!, sortId: ID!): ModelB
   listModelBS(id: ID, sortId: ModelIDKeyConditionInput, filter: ModelModelBFilterInput, limit: Int, nextToken: String, sortDirection: ModelSortDirection): ModelModelBConnection
   getModelAModelB(id: ID!): ModelAModelB
-  listModelAModelBS(filter: ModelModelAModelBFilterInput, limit: Int, nextToken: String): ModelModelAModelBConnection
+  listModelAModelBS(id: ID, filter: ModelModelAModelBFilterInput, limit: Int, nextToken: String, sortDirection: ModelSortDirection): ModelModelAModelBConnection
 }
 
 input ModelModelAConditionInput {
@@ -722,6 +722,17 @@ $util.toJson({
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Mutation.createModelAModelB.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## [End] Merge default values and inputs. **
+## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id)
+}))
+## [End] Set the primary key. **
+
+{}",
   "Mutation.createModelAModelB.req.vtl": "## [Start] Create Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -996,6 +1007,16 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Mutation.deleteModelAModelB.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## [End] Merge default values and inputs. **
+## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id)
+}))
+## [End] Set the primary key. **
+{}",
   "Mutation.deleteModelAModelB.req.vtl": "## [Start] Delete Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
@@ -1325,6 +1346,17 @@ $util.toJson({
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Mutation.updateModelAModelB.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## [End] Merge default values and inputs. **
+## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id)
+}))
+## [End] Set the primary key. **
+
+{}",
   "Mutation.updateModelAModelB.req.vtl": "## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -1694,6 +1726,12 @@ $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Query.getModelAModelB.preAuth.1.req.vtl": "## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($ctx.args.id)
+}))
+## [End] Set the primary key. **
+{}",
   "Query.getModelAModelB.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -1807,6 +1845,25 @@ $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Query.listModelAModelBS.preAuth.1.req.vtl": "## [Start] Set query expression for key **
+#if( !$util.isNull($ctx.args.sortDirection) )
+  $util.error(\\"sortDirection is not supported for List operations without a Sort key defined.\\", \\"InvalidArgumentsError\\")
+#end
+#set( $modelQueryExpression = {} )
+#if( !$util.isNull($ctx.args.id) )
+  #set( $modelQueryExpression.expression = \\"#id = :id\\" )
+  #set( $modelQueryExpression.expressionNames = {
+  \\"#id\\": \\"id\\"
+} )
+  #set( $modelQueryExpression.expressionValues = {
+  \\":id\\": {
+      \\"S\\": \\"$ctx.args.id\\"
+  }
+} )
+#end
+## [End] Set query expression for key **
+$util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
+{}",
   "Query.listModelAModelBS.req.vtl": "## [Start] List Request. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $limit = $util.defaultIfNull($args.limit, 100) )
@@ -3482,7 +3539,7 @@ type Query {
   getModelB(id: ID!, sortId: ID!): ModelB
   listModelBS(id: ID, sortId: ModelIDKeyConditionInput, filter: ModelModelBFilterInput, limit: Int, nextToken: String, sortDirection: ModelSortDirection): ModelModelBConnection
   getModelAModelB(id: ID!): ModelAModelB
-  listModelAModelBS(filter: ModelModelAModelBFilterInput, limit: Int, nextToken: String): ModelModelAModelBConnection
+  listModelAModelBS(id: ID, filter: ModelModelAModelBFilterInput, limit: Int, nextToken: String, sortDirection: ModelSortDirection): ModelModelAModelBConnection
 }
 
 input ModelModelAConditionInput {
@@ -3879,9 +3936,9 @@ type Query {
   getModelA(id: ID!, sortId: ID!): ModelA
   listModelAS(id: ID, sortId: ModelIDKeyConditionInput, filter: ModelModelAFilterInput, limit: Int, nextToken: String, sortDirection: ModelSortDirection): ModelModelAConnection
   getModelB(id: ID!): ModelB
-  listModelBS(filter: ModelModelBFilterInput, limit: Int, nextToken: String): ModelModelBConnection
+  listModelBS(id: ID, filter: ModelModelBFilterInput, limit: Int, nextToken: String, sortDirection: ModelSortDirection): ModelModelBConnection
   getModelAModelB(id: ID!): ModelAModelB
-  listModelAModelBS(filter: ModelModelAModelBFilterInput, limit: Int, nextToken: String): ModelModelAModelBConnection
+  listModelAModelBS(id: ID, filter: ModelModelAModelBFilterInput, limit: Int, nextToken: String, sortDirection: ModelSortDirection): ModelModelAModelBConnection
 }
 
 input ModelModelAConditionInput {
@@ -4224,11 +4281,11 @@ input ModelFooFilterInput {
 
 type Query {
   getFoo(id: ID!): Foo
-  listFoos(filter: ModelFooFilterInput, limit: Int, nextToken: String): ModelFooConnection
+  listFoos(id: ID, filter: ModelFooFilterInput, limit: Int, nextToken: String, sortDirection: ModelSortDirection): ModelFooConnection
   getBar(id: ID!): Bar
-  listBars(filter: ModelBarFilterInput, limit: Int, nextToken: String): ModelBarConnection
+  listBars(id: ID, filter: ModelBarFilterInput, limit: Int, nextToken: String, sortDirection: ModelSortDirection): ModelBarConnection
   getFooBar(id: ID!): FooBar
-  listFooBars(filter: ModelFooBarFilterInput, limit: Int, nextToken: String): ModelFooBarConnection
+  listFooBars(id: ID, filter: ModelFooBarFilterInput, limit: Int, nextToken: String, sortDirection: ModelSortDirection): ModelFooBarConnection
 }
 
 input ModelFooConditionInput {
@@ -4610,6 +4667,17 @@ $util.toJson({
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Mutation.createBar.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## [End] Merge default values and inputs. **
+## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id)
+}))
+## [End] Set the primary key. **
+
+{}",
   "Mutation.createBar.req.vtl": "## [Start] Create Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -4701,6 +4769,17 @@ $util.toJson({
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Mutation.createFoo.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## [End] Merge default values and inputs. **
+## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id)
+}))
+## [End] Set the primary key. **
+
+{}",
   "Mutation.createFoo.req.vtl": "## [Start] Create Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -4792,6 +4871,17 @@ $util.toJson({
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Mutation.createFooBar.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## [End] Merge default values and inputs. **
+## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id)
+}))
+## [End] Set the primary key. **
+
+{}",
   "Mutation.createFooBar.req.vtl": "## [Start] Create Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -4880,6 +4970,16 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Mutation.deleteBar.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## [End] Merge default values and inputs. **
+## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id)
+}))
+## [End] Set the primary key. **
+{}",
   "Mutation.deleteBar.req.vtl": "## [Start] Delete Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
@@ -4952,6 +5052,16 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Mutation.deleteFoo.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## [End] Merge default values and inputs. **
+## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id)
+}))
+## [End] Set the primary key. **
+{}",
   "Mutation.deleteFoo.req.vtl": "## [Start] Delete Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
@@ -5024,6 +5134,16 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Mutation.deleteFooBar.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## [End] Merge default values and inputs. **
+## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id)
+}))
+## [End] Set the primary key. **
+{}",
   "Mutation.deleteFooBar.req.vtl": "## [Start] Delete Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
@@ -5105,6 +5225,17 @@ $util.toJson({
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Mutation.updateBar.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## [End] Merge default values and inputs. **
+## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id)
+}))
+## [End] Set the primary key. **
+
+{}",
   "Mutation.updateBar.req.vtl": "## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -5258,6 +5389,17 @@ $util.toJson({
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Mutation.updateFoo.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## [End] Merge default values and inputs. **
+## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id)
+}))
+## [End] Set the primary key. **
+
+{}",
   "Mutation.updateFoo.req.vtl": "## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -5411,6 +5553,17 @@ $util.toJson({
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Mutation.updateFooBar.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## [End] Merge default values and inputs. **
+## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id)
+}))
+## [End] Set the primary key. **
+
+{}",
   "Mutation.updateFooBar.req.vtl": "## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -5555,6 +5708,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Query.getBar.preAuth.1.req.vtl": "## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($ctx.args.id)
+}))
+## [End] Set the primary key. **
+{}",
   "Query.getBar.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -5608,6 +5767,12 @@ $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Query.getFoo.preAuth.1.req.vtl": "## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($ctx.args.id)
+}))
+## [End] Set the primary key. **
+{}",
   "Query.getFoo.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -5661,6 +5826,12 @@ $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Query.getFooBar.preAuth.1.req.vtl": "## [Start] Set the primary key. **
+$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
+  \\"id\\": $util.dynamodb.toDynamoDB($ctx.args.id)
+}))
+## [End] Set the primary key. **
+{}",
   "Query.getFooBar.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -5714,6 +5885,25 @@ $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Query.listBars.preAuth.1.req.vtl": "## [Start] Set query expression for key **
+#if( !$util.isNull($ctx.args.sortDirection) )
+  $util.error(\\"sortDirection is not supported for List operations without a Sort key defined.\\", \\"InvalidArgumentsError\\")
+#end
+#set( $modelQueryExpression = {} )
+#if( !$util.isNull($ctx.args.id) )
+  #set( $modelQueryExpression.expression = \\"#id = :id\\" )
+  #set( $modelQueryExpression.expressionNames = {
+  \\"#id\\": \\"id\\"
+} )
+  #set( $modelQueryExpression.expressionValues = {
+  \\":id\\": {
+      \\"S\\": \\"$ctx.args.id\\"
+  }
+} )
+#end
+## [End] Set query expression for key **
+$util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
+{}",
   "Query.listBars.req.vtl": "## [Start] List Request. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $limit = $util.defaultIfNull($args.limit, 100) )
@@ -5777,6 +5967,25 @@ $util.toJson($ListRequest)
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Query.listFooBars.preAuth.1.req.vtl": "## [Start] Set query expression for key **
+#if( !$util.isNull($ctx.args.sortDirection) )
+  $util.error(\\"sortDirection is not supported for List operations without a Sort key defined.\\", \\"InvalidArgumentsError\\")
+#end
+#set( $modelQueryExpression = {} )
+#if( !$util.isNull($ctx.args.id) )
+  #set( $modelQueryExpression.expression = \\"#id = :id\\" )
+  #set( $modelQueryExpression.expressionNames = {
+  \\"#id\\": \\"id\\"
+} )
+  #set( $modelQueryExpression.expressionValues = {
+  \\":id\\": {
+      \\"S\\": \\"$ctx.args.id\\"
+  }
+} )
+#end
+## [End] Set query expression for key **
+$util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
+{}",
   "Query.listFooBars.req.vtl": "## [Start] List Request. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $limit = $util.defaultIfNull($args.limit, 100) )
@@ -5840,6 +6049,25 @@ $util.toJson($ListRequest)
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
+  "Query.listFoos.preAuth.1.req.vtl": "## [Start] Set query expression for key **
+#if( !$util.isNull($ctx.args.sortDirection) )
+  $util.error(\\"sortDirection is not supported for List operations without a Sort key defined.\\", \\"InvalidArgumentsError\\")
+#end
+#set( $modelQueryExpression = {} )
+#if( !$util.isNull($ctx.args.id) )
+  #set( $modelQueryExpression.expression = \\"#id = :id\\" )
+  #set( $modelQueryExpression.expressionNames = {
+  \\"#id\\": \\"id\\"
+} )
+  #set( $modelQueryExpression.expressionValues = {
+  \\":id\\": {
+      \\"S\\": \\"$ctx.args.id\\"
+  }
+} )
+#end
+## [End] Set query expression for key **
+$util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
+{}",
   "Query.listFoos.req.vtl": "## [Start] List Request. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $limit = $util.defaultIfNull($args.limit, 100) )
