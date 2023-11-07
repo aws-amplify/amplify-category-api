@@ -19,6 +19,7 @@ import { GQLQueryHelper } from '../query-utils/gql-helper';
 import { getConfiguredAppsyncClientAPIKeyAuth, getConfiguredAppsyncClientLambdaAuth } from '../schema-api-directives';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { SQL_TESTS_USE_BETA } from './sql-e2e-config';
+import { getDefaultDatabasePort } from '../rds-v2-test-utils';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -30,8 +31,8 @@ export const testRdsApiKeyAndLambdaAuth = (engine: ImportedRDSType, queries: str
     // Generate settings for RDS instance
     const username = db_user;
     const password = db_password;
-    let region = 'ap-northeast-2';
-    let port = engine === ImportedRDSType.MYSQL ? 3306 : 5432;
+    let region = 'us-east-1';
+    let port = getDefaultDatabasePort(engine);
     const database = 'default_db';
     let host = 'localhost';
     const identifier = `integtest${db_identifier}`;
@@ -139,7 +140,7 @@ export const testRdsApiKeyAndLambdaAuth = (engine: ImportedRDSType, queries: str
 
       const schema = /* GraphQL */ `
         input AMPLIFY {
-          engine: String = "${engineName}"
+          engine: String = "${engine}"
           globalAuthRule: AuthRule = { allow: public }
         }
         type Blog @model @auth(rules: [{ allow: public }, { allow: custom }]) {
