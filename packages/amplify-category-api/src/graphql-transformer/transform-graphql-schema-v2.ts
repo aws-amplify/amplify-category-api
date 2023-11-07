@@ -1,17 +1,12 @@
 import path from 'path';
-import {
-  RDSConnectionSecrets,
-  MYSQL_DB_TYPE,
-  ImportedRDSType,
-  DatasourceType,
-  UserDefinedSlot,
-} from '@aws-amplify/graphql-transformer-core';
+import { RDSConnectionSecrets, MYSQL_DB_TYPE, ImportedRDSType, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncAuthConfiguration,
   TransformerLog,
   TransformerLogLevel,
   VpcConfig,
   RDSLayerMapping,
+  DataSourceType,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
@@ -203,7 +198,7 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
 
   const { modelToDatasourceMap } = opts.projectConfig;
   const datasourceSecretMap = await getDatasourceSecretMap(context);
-  const datasourceMapValues: Array<DatasourceType> = modelToDatasourceMap ? Array.from(modelToDatasourceMap.values()) : [];
+  const datasourceMapValues: Array<DataSourceType> = modelToDatasourceMap ? Array.from(modelToDatasourceMap.values()) : [];
   let sqlLambdaVpcConfig: VpcConfig | undefined;
   if (datasourceMapValues.some((value) => value.dbType === MYSQL_DB_TYPE && !value.provisionDB)) {
     sqlLambdaVpcConfig = await isSqlLambdaVpcConfigRequired(context, getSecretsKey(), ImportedRDSType.MYSQL);

@@ -1,4 +1,4 @@
-import { attributeTypeFromType } from '@aws-amplify/graphql-index-transformer';
+import { attributeTypeFromType, overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
 import { getKeySchema, getTable, MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from 'aws-cdk-lib';
@@ -409,10 +409,9 @@ export function updateTableForConnection(config: HasManyDirectiveConfiguration, 
   // At the L2 level, the CDK does not handle the way Amplify sets GSI read and write capacity
   // very well. At the L1 level, the CDK does not create the correct IAM policy for accessing the
   // GSI. To get around these issues, keep the L1 and L2 GSI list in sync.
-  const cfnTable = table.table;
   const gsi = gsis.find((gsi: any) => gsi.indexName === indexName);
 
-  cfnTable.globalSecondaryIndexes = appendIndex(cfnTable.globalSecondaryIndexes, {
+  const newIndex = {
     indexName,
     keySchema: gsi.keySchema,
     projection: { projectionType: 'ALL' },
@@ -420,16 +419,9 @@ export function updateTableForConnection(config: HasManyDirectiveConfiguration, 
       ReadCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
       WriteCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
     }),
-  });
-}
+  };
 
-function appendIndex(list: any, newIndex: any): any[] {
-  if (Array.isArray(list)) {
-    list.push(newIndex);
-    return list;
-  }
-
-  return [newIndex];
+  overrideIndexAtCfnLevel(ctx, relatedType.name.value, table, newIndex);
 }
 
 type SortKeyAttributeDefinitions = {

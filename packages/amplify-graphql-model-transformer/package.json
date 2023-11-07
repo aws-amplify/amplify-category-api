@@ -43,6 +43,8 @@
     "constructs": "^10.0.5"
   },
   "devDependencies": {
+    "@types/aws-lambda": "8.10.119",
+    "@aws-sdk/client-dynamodb": "^3.431.0",
     "@aws-amplify/graphql-transformer-test-utils": "0.2.7",
     "@types/node": "^12.12.6"
   },

@@ -1,4 +1,5 @@
-import { TransformConfig, DatasourceType } from 'graphql-transformer-core';
+import { DataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformConfig } from 'graphql-transformer-core';
 
 export type Template = {
   Parameters: Record<string, any>;
@@ -14,5 +15,5 @@ export interface TransformerProjectConfig {
   resolvers: Record<string, string>;
   stacks: Record<string, Template>;
   config: TransformConfig;
-  modelToDatasourceMap: Map<string, DatasourceType>;
+  modelToDatasourceMap: Map<string, DataSourceType>;
 }

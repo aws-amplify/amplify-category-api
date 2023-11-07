@@ -369,12 +369,32 @@ export type DBType = 'MySQL' | 'DDB';
 export interface DatasourceType {
   dbType: DBType;
   provisionDB: boolean;
+  provisionStrategy: DataSourceProvisionStrategy;
 }
 
-function constructDataSourceType(dbType: DBType, provisionDB: boolean = true): DatasourceType {
+export const enum DynamoDBProvisionStrategy {
+  /**
+   * Use default cloud formation resource of `AWS::DynamoDB::Table`
+   */
+  DEFAULT = 'DEFAULT',
+  /**
+   * Use custom resource type `Custom::AmplifyDynamoDBTable`
+   */
+  AMPLIFY_TABLE = 'AMPLIFY_TABLE',
+}
+
+// TODO: add strategy for the RDS
+export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy;
+
+function constructDataSourceType(
+  dbType: DBType,
+  provisionDB: boolean = true,
+  provisionStrategy = DynamoDBProvisionStrategy.DEFAULT,
+): DatasourceType {
   return {
     dbType,
     provisionDB,
+    provisionStrategy,
   };
 }
 

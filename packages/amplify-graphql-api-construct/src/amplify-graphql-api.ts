@@ -48,6 +48,7 @@ import {
   addAmplifyMetadataToStackDescription,
   getAdditionalAuthenticationTypes,
 } from './internal';
+import { parseDataSourceConfig } from './internal/data-source-config';
 import { getStackForScope, walkAndProcessNodes } from './internal/construct-tree';
 
 /**
@@ -192,6 +193,7 @@ export class AmplifyGraphqlApi extends Construct {
         ...defaultTranslationBehavior,
         ...(translationBehavior ?? {}),
       },
+      ...parseDataSourceConfig(definition.dataSourceDefinition),
     });
 
     this.codegenAssets = new CodegenAssets(this, 'AmplifyCodegenAssets', { modelSchema: definition.schema });

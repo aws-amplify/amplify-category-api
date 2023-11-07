@@ -14,6 +14,7 @@ import { CfnResource, NestedStack } from 'aws-cdk-lib';
 import { getResourceName } from '@aws-amplify/graphql-transformer-core';
 import { CfnFunction, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
 import { AmplifyGraphqlApiResources, FunctionSlot } from '../types';
+import { AmplifyDynamoDbTableWrapper } from '../amplify-dynamodb-table-wrapper';
 import { walkAndProcessNodes } from './construct-tree';
 
 /**
@@ -34,6 +35,7 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
   const cfnDataSources: Record<string, CfnDataSource> = {};
   const tables: Record<string, Table> = {};
   const cfnTables: Record<string, CfnTable> = {};
+  const amplifyDynamoDbTables: Record<string, AmplifyDynamoDbTableWrapper> = {};
   const roles: Record<string, Role> = {};
   const cfnRoles: Record<string, CfnRole> = {};
   const functions: Record<string, LambdaFunction> = {};
@@ -78,6 +80,10 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
       cfnTables[resourceName] = currentScope;
       return;
     }
+    if (AmplifyDynamoDbTableWrapper.isAmplifyDynamoDbTableResource(currentScope)) {
+      amplifyDynamoDbTables[resourceName] = new AmplifyDynamoDbTableWrapper(currentScope);
+      return;
+    }
     if (currentScope instanceof Role) {
       roles[resourceName] = currentScope;
       return;
@@ -117,6 +123,7 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
   return {
     graphqlApi: GraphqlApi.fromGraphqlApiAttributes(scope, 'L2GraphqlApi', { graphqlApiId: cfnGraphqlApi.attrApiId }),
     tables,
+    amplifyDynamoDbTables,
     roles,
     functions,
     nestedStacks,
