@@ -1,0 +1,23 @@
+import { Stack, Duration } from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
+import { AmplifyData } from '../amplify-data';
+import { AmplifyDataDefinition } from '../amplify-data-definition';
+
+describe('AmplifyData', () => {
+  it('can be invoked', () => {
+    const stack = new Stack();
+
+    new AmplifyData(stack, 'TestApi', {
+      definition: AmplifyDataDefinition.fromString(/* GraphQL */ `
+        type Todo @model @auth(rules: [{ allow: owner }]) {
+          description: String!
+        }
+      `),
+      authorizationModes: {
+        apiKeyConfig: { expires: Duration.days(7) },
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', { Name: 'TestApi' });
+  });
+});
