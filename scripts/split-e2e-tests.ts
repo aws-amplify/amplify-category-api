@@ -87,6 +87,9 @@ const RUN_SOLO = [
   'src/__tests__/rds-mysql-multi-auth-1.test.ts',
   'src/__tests__/rds-mysql-oidc-auth.test.ts',
   'src/__tests__/rds-mysql-userpool-auth.test.ts',
+  'src/__tests__/rds-pg-auth-apikey-lambda.test.ts',
+  'src/__tests__/rds-pg-auth-iam-apikey-lambda-subscription.test.ts',
+  'src/__tests__/rds-pg-auth-iam.test.ts',
 ];
 const DEBUG_FLAG = '--debug';
 
