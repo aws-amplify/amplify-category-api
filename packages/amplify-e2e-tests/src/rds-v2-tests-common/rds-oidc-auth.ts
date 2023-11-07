@@ -43,7 +43,7 @@ import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 
-export const testOIDCAuth = (engine: ImportedRDSType): void => { 
+export const testOIDCAuth = (engine: ImportedRDSType): void => {
   const schema = generateSchema(engine);
   describe('RDS OIDC provider Auth tests', () => {
     const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
@@ -96,8 +96,6 @@ export const testOIDCAuth = (engine: ImportedRDSType): void => {
         region,
         port,
       };
-
-      console.log(JSON.stringify(dbConfig, null, 4));
 
       const db = await setupRDSInstanceAndData(dbConfig, sqlCreateStatements(engine));
       port = db.port;
@@ -161,7 +159,7 @@ export const testOIDCAuth = (engine: ImportedRDSType): void => {
         apiExists: true,
       });
       writeFileSync(rdsSchemaFilePath, appendAmplifyInput(schema, engine), 'utf8');
-      
+
       await updateAuthAddUserGroups(projRoot, [adminGroupName, devGroupName]);
       await amplifyPush(projRoot);
       await sleep(1 * 60 * 1000); // Wait for a minute for the VPC endpoints to be live.
@@ -344,9 +342,9 @@ export const testOIDCAuth = (engine: ImportedRDSType): void => {
         content: 'Todo updated',
         owner: userName2,
       };
-      await expect(
-        todoHelperNonOwner.update(`update${modelName}`, todoUpdated),
-      ).rejects.toThrow('GraphQL error: Not Authorized to access updateTodoOwner on type Mutation');
+      await expect(todoHelperNonOwner.update(`update${modelName}`, todoUpdated)).rejects.toThrow(
+        'GraphQL error: Not Authorized to access updateTodoOwner on type Mutation',
+      );
 
       const getResult = await todoHelperNonOwner.get({
         id: todo['id'],
@@ -356,9 +354,11 @@ export const testOIDCAuth = (engine: ImportedRDSType): void => {
       const listTodosResult = await todoHelperNonOwner.list();
       checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
 
-      await expect(todoHelperNonOwner.delete(`delete${modelName}`, {
+      await expect(
+        todoHelperNonOwner.delete(`delete${modelName}`, {
           id: todo['id'],
-      })).rejects.toThrow('GraphQL error: Not Authorized to access deleteTodoOwner on type Mutation');
+        }),
+      ).rejects.toThrow('GraphQL error: Not Authorized to access deleteTodoOwner on type Mutation');
 
       const todoRandom = {
         id: Date.now().toString(),
@@ -495,9 +495,9 @@ export const testOIDCAuth = (engine: ImportedRDSType): void => {
         content: 'Todo updated',
         author: userName1,
       };
-      await expect(
-        todoHelperNonOwner.update(`update${modelName}`, todoUpdated),
-      ).rejects.toThrow('GraphQL error: Not Authorized to access updateTodoOwnerFieldString on type Mutation');
+      await expect(todoHelperNonOwner.update(`update${modelName}`, todoUpdated)).rejects.toThrow(
+        'GraphQL error: Not Authorized to access updateTodoOwnerFieldString on type Mutation',
+      );
 
       const getResult = await todoHelperNonOwner.get({
         id: todo['id'],
@@ -507,9 +507,11 @@ export const testOIDCAuth = (engine: ImportedRDSType): void => {
       const listTodosResult = await todoHelperNonOwner.list();
       checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
 
-      await expect(todoHelperNonOwner.delete(`delete${modelName}`, {
+      await expect(
+        todoHelperNonOwner.delete(`delete${modelName}`, {
           id: todo['id'],
-      })).rejects.toThrow('GraphQL error: Not Authorized to access deleteTodoOwnerFieldString on type Mutation');
+        }),
+      ).rejects.toThrow('GraphQL error: Not Authorized to access deleteTodoOwnerFieldString on type Mutation');
 
       const todoRandom = {
         id: Date.now().toString(),
@@ -644,9 +646,9 @@ export const testOIDCAuth = (engine: ImportedRDSType): void => {
         content: 'Todo updated',
         authors: [userName1, userName2],
       };
-      await expect(
-        todoHelperNonOwner.update(`update${modelName}`, todoUpdated),
-      ).rejects.toThrow('GraphQL error: Not Authorized to access updateTodoOwnerFieldList on type Mutation');
+      await expect(todoHelperNonOwner.update(`update${modelName}`, todoUpdated)).rejects.toThrow(
+        'GraphQL error: Not Authorized to access updateTodoOwnerFieldList on type Mutation',
+      );
 
       const getResult = await todoHelperNonOwner.get({
         id: todo['id'],
@@ -853,15 +855,17 @@ export const testOIDCAuth = (engine: ImportedRDSType): void => {
       expect(createResult.data[resultSetName].id).toBeDefined();
       todo['id'] = createResult.data[resultSetName].id;
 
-      await expect(todoHelperNonAdmin.create(`create${modelName}`, todo)).rejects.toThrow('GraphQL error: Not Authorized to access createTodoStaticGroup on type Mutation');
+      await expect(todoHelperNonAdmin.create(`create${modelName}`, todo)).rejects.toThrow(
+        'GraphQL error: Not Authorized to access createTodoStaticGroup on type Mutation',
+      );
 
       const todoUpdated = {
         id: todo['id'],
         content: 'Todo updated',
       };
-      await expect(
-        todoHelperNonAdmin.update(`update${modelName}`, todoUpdated),
-      ).rejects.toThrow('GraphQL error: Not Authorized to access updateTodoStaticGroup on type Mutation');
+      await expect(todoHelperNonAdmin.update(`update${modelName}`, todoUpdated)).rejects.toThrow(
+        'GraphQL error: Not Authorized to access updateTodoStaticGroup on type Mutation',
+      );
 
       expect(
         todoHelperNonAdmin.get({
@@ -869,9 +873,7 @@ export const testOIDCAuth = (engine: ImportedRDSType): void => {
         }),
       ).rejects.toThrow('GraphQL error: Not Authorized to access getTodoStaticGroup on type Query');
 
-      await expect(
-        todoHelperNonAdmin.list(),
-      ).rejects.toThrow('GraphQL error: Not Authorized to access listTodoStaticGroups on type Query');
+      await expect(todoHelperNonAdmin.list()).rejects.toThrow('GraphQL error: Not Authorized to access listTodoStaticGroups on type Query');
 
       await expect(
         todoHelperNonAdmin.delete(`delete${modelName}`, {
@@ -968,18 +970,18 @@ export const testOIDCAuth = (engine: ImportedRDSType): void => {
       expect(createResult.data[resultSetName].id).toBeDefined();
       todo['id'] = createResult.data[resultSetName].id;
 
-      await expect(
-        todoHelperNonAdmin.create(resultSetName, todo),
-      ).rejects.toThrow('GraphQL error: Not Authorized to access createTodoGroupFieldString on type Mutation');
+      await expect(todoHelperNonAdmin.create(resultSetName, todo)).rejects.toThrow(
+        'GraphQL error: Not Authorized to access createTodoGroupFieldString on type Mutation',
+      );
 
       const todoUpdated = {
         id: todo['id'],
         content: 'Todo updated',
         groupField: devGroupName,
       };
-      await expect(
-        todoHelperNonAdmin.update(`update${modelName}`, todoUpdated),
-      ).rejects.toThrow('GraphQL error: Not Authorized to access updateTodoGroupFieldString on type Mutation');
+      await expect(todoHelperNonAdmin.update(`update${modelName}`, todoUpdated)).rejects.toThrow(
+        'GraphQL error: Not Authorized to access updateTodoGroupFieldString on type Mutation',
+      );
 
       const getResult = await todoHelperNonAdmin.get({
         id: todo['id'],
@@ -1089,9 +1091,9 @@ export const testOIDCAuth = (engine: ImportedRDSType): void => {
         content: 'Todo updated',
         groupsField: [adminGroupName, devGroupName],
       };
-      await expect(
-        todoHelperNonAdmin.update(`update${modelName}`, todoUpdated),
-      ).rejects.toThrow('GraphQL error: Not Authorized to access updateTodoGroupFieldList on type Mutation');
+      await expect(todoHelperNonAdmin.update(`update${modelName}`, todoUpdated)).rejects.toThrow(
+        'GraphQL error: Not Authorized to access updateTodoGroupFieldList on type Mutation',
+      );
 
       const getResult = await todoHelperNonAdmin.get({
         id: todo['id'],
