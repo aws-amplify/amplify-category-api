@@ -1,5 +1,5 @@
 import { StringDataSourceAdapter, PostgresStringDataSourceAdapter } from '../datasource-adapter';
-import { Engine, Field, FieldType, Index, Model, Schema } from '../schema-representation';
+import { Field, FieldType, Index } from '../schema-representation';
 import { generateGraphQLSchema, isComputeExpression } from '../schema-generator';
 import { schemas } from './__utils__/schemas';
 import { gql } from 'graphql-transformer-core';
@@ -54,8 +54,7 @@ describe('testPostgresStringDataSourceAdapter', () => {
   });
 
   it('test postgres datatype mapping', () => {
-    const schema = '';
-    const adapter = new PostgresStringDataSourceAdapter(schema);
+    const adapter = new PostgresStringDataSourceAdapter(schemas.postgres.todo);
     ['char', 'varchar', 'text'].forEach((type) => {
       expect(adapter.mapDataType(type, true, 'table', 'field', type)).toEqual({
         kind: 'Scalar',
@@ -137,5 +136,16 @@ describe('testPostgresStringDataSourceAdapter', () => {
   it('sets the correct models from a news schema', () => {
     const adapter = new PostgresStringDataSourceAdapter(schemas.postgres.news);
     expect(adapter.getModels()).toMatchSnapshot();
+  });
+
+  it('errors on empty schema', () => {
+    expect(() => new PostgresStringDataSourceAdapter('')).toThrow('Imported SQL schema is empty.');
+    expect(() => new PostgresStringDataSourceAdapter('foo,bar')).toThrow('Imported SQL schema is empty.');
+  });
+
+  it('errors on invalid schema', () => {
+    expect(() => new PostgresStringDataSourceAdapter('foo,bar\nbaz,bat')).toThrow(
+      'Imported SQL schema is invalid. Imported schema is missing columns: enum_name, enum_values, table_name, column_name, column_default, ordinal_position, data_type, udt_name, is_nullable, character_maximum_length, index_columns',
+    );
   });
 });

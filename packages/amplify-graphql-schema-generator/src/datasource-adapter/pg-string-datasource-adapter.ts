@@ -1,6 +1,6 @@
 import { parse } from 'csv-parse/sync';
 import { EnumType, Field, FieldDataType, FieldType, Index } from '../schema-representation';
-import { StringDataSourceAdapter } from './string-datasource-adapter';
+import { StringDataSourceAdapter, EmptySchemaError, InvalidSchemaError } from './string-datasource-adapter';
 
 export interface PostgresIndex {
   tableName: string;
@@ -19,6 +19,36 @@ export interface PostgresColumn {
   length: number | null | undefined;
 }
 
+type PostgresSchema = PostgresSchemaField[];
+
+type PostgresSchemaField = {
+  enum_name: string;
+  enum_values: string;
+  table_name: string;
+  column_name: string;
+  column_default: string;
+  ordinal_position: string;
+  data_type: string;
+  udt_name: string;
+  is_nullable: string;
+  character_maximum_length: string;
+  index_columns: string;
+};
+
+const expectedColumns = [
+  'enum_name',
+  'enum_values',
+  'table_name',
+  'column_name',
+  'column_default',
+  'ordinal_position',
+  'data_type',
+  'udt_name',
+  'is_nullable',
+  'character_maximum_length',
+  'index_columns',
+];
+
 export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
   private dbBuilder: any;
 
@@ -32,14 +62,25 @@ export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
 
   private readonly PRIMARY_KEY_INDEX_NAME = 'PRIMARY';
 
-  protected setSchema(schema: any[]): void {
+  protected setSchema(schema: PostgresSchema): void {
     this.setEnums(schema);
     this.setFields(schema);
     this.setIndexes(schema);
     this.setTables(schema);
   }
 
-  protected validateSchema(schema: any[]): void {}
+  protected validateSchema(schema: any[]): schema is PostgresSchema {
+    if (schema.length === 0) {
+      throw new EmptySchemaError();
+    }
+    const columns = Object.keys(schema[0]);
+    const hasAllExpectedColumns = expectedColumns.every((column) => columns.includes(column));
+    if (!hasAllExpectedColumns) {
+      throw new InvalidSchemaError(schema, expectedColumns);
+    }
+
+    return true;
+  }
 
   public getTablesList(): string[] {
     return this.tables;
@@ -102,7 +143,7 @@ export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
     return tableIndexes;
   }
 
-  protected setEnums(parsedSchema: any[]): void {
+  protected setEnums(parsedSchema: PostgresSchema): void {
     this.enums = new Map<string, EnumType>();
     parsedSchema
       .filter(({ enum_name }) => !!enum_name)
@@ -119,11 +160,11 @@ export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
       });
   }
 
-  protected setTables(parsedSchema: any[]): void {
+  protected setTables(parsedSchema: PostgresSchema): void {
     this.tables = Array.from(new Set(parsedSchema.map(({ table_name }) => table_name)));
   }
 
-  protected setFields(fields: any[]): void {
+  protected setFields(fields: PostgresSchema): void {
     this.fields = fields.map((item: any) => ({
       tableName: item.table_name,
       columnName: item.column_name,
@@ -136,7 +177,7 @@ export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
     }));
   }
 
-  protected setIndexes(indexes: any[]): void {
+  protected setIndexes(indexes: PostgresSchema): void {
     this.indexes = indexes
       .filter(({ index_columns }) => !!index_columns)
       .map((item: any) => ({

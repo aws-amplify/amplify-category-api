@@ -110,6 +110,11 @@ export interface DefaultValue {
 }
 
 // @public (undocumented)
+export class EmptySchemaError extends Error {
+    constructor();
+}
+
+// @public (undocumented)
 export class Engine {
     constructor(type: DBEngineType);
     // (undocumented)
@@ -172,6 +177,11 @@ export class Index {
     name: string;
     // (undocumented)
     setFields(fields: string[]): void;
+}
+
+// @public (undocumented)
+export class InvalidSchemaError extends Error {
+    constructor(schema: any[], expectedColumns: string[]);
 }
 
 // @public (undocumented)
@@ -259,15 +269,17 @@ export class MySQLStringDataSourceAdapter extends StringDataSourceAdapter {
     // (undocumented)
     mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columntype: string): FieldType;
     // (undocumented)
-    protected setFields(parsedSchema: any[]): void;
+    protected setFields(parsedSchema: MySQLSchema): void;
     // (undocumented)
-    protected setIndexes(parsedSchema: any[]): void;
+    protected setIndexes(parsedSchema: MySQLSchema): void;
+    // Warning: (ae-forgotten-export) The symbol "MySQLSchema" needs to be exported by the entry point index.d.ts
+    //
     // (undocumented)
-    protected setSchema(schema: any[]): void;
+    protected setSchema(schema: MySQLSchema): void;
     // (undocumented)
-    protected setTables(parsedSchema: any[]): void;
+    protected setTables(parsedSchema: MySQLSchema): void;
     // (undocumented)
-    protected validateSchema(schema: any[]): void;
+    protected validateSchema(schema: any[]): schema is MySQLSchema;
 }
 
 // @public (undocumented)
@@ -326,17 +338,19 @@ export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
     // (undocumented)
     mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columntype: string): FieldType;
     // (undocumented)
-    protected setEnums(parsedSchema: any[]): void;
+    protected setEnums(parsedSchema: PostgresSchema): void;
     // (undocumented)
-    protected setFields(fields: any[]): void;
+    protected setFields(fields: PostgresSchema): void;
     // (undocumented)
-    protected setIndexes(indexes: any[]): void;
+    protected setIndexes(indexes: PostgresSchema): void;
+    // Warning: (ae-forgotten-export) The symbol "PostgresSchema" needs to be exported by the entry point index.d.ts
+    //
     // (undocumented)
-    protected setSchema(schema: any[]): void;
+    protected setSchema(schema: PostgresSchema): void;
     // (undocumented)
-    protected setTables(parsedSchema: any[]): void;
+    protected setTables(parsedSchema: PostgresSchema): void;
     // (undocumented)
-    protected validateSchema(schema: any[]): void;
+    protected validateSchema(schema: any[]): schema is PostgresSchema;
 }
 
 // @public (undocumented)

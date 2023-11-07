@@ -1,5 +1,5 @@
 import { EnumType, Field, FieldDataType, FieldType, Index } from '../schema-representation';
-import { StringDataSourceAdapter } from './string-datasource-adapter';
+import { StringDataSourceAdapter, EmptySchemaError, InvalidSchemaError } from './string-datasource-adapter';
 
 export interface MySQLIndex {
   tableName: string;
@@ -21,6 +21,37 @@ export interface MySQLColumn {
   length: number | null | undefined;
 }
 
+type MySQLSchema = MySQLSchemaField[];
+
+type MySQLSchemaField = {
+  TABLE_NAME: string;
+  COLUMN_NAME: string;
+  COLUMN_DEFAULT: string;
+  ORDINAL_POSITION: string;
+  DATA_TYPE: string;
+  COLUMN_TYPE: string;
+  IS_NULLABLE: string;
+  CHARACTER_MAXIMUM_LENGTH: string;
+  INDEX_NAME: string;
+  NON_UNIQUE: string;
+  SEQ_IN_INDEX: string;
+  NULLABLE: string;
+};
+const expectedColumns = [
+  'TABLE_NAME',
+  'COLUMN_NAME',
+  'COLUMN_DEFAULT',
+  'ORDINAL_POSITION',
+  'DATA_TYPE',
+  'COLUMN_TYPE',
+  'IS_NULLABLE',
+  'CHARACTER_MAXIMUM_LENGTH',
+  'INDEX_NAME',
+  'NON_UNIQUE',
+  'SEQ_IN_INDEX',
+  'NULLABLE',
+];
+
 export class MySQLStringDataSourceAdapter extends StringDataSourceAdapter {
   private dbBuilder: any;
 
@@ -34,15 +65,26 @@ export class MySQLStringDataSourceAdapter extends StringDataSourceAdapter {
 
   private readonly PRIMARY_KEY_INDEX_NAME = 'PRIMARY';
 
-  protected setSchema(schema: any[]): void {
+  protected setSchema(schema: MySQLSchema): void {
     this.setFields(schema);
     this.setIndexes(schema);
     this.setTables(schema);
   }
 
-  protected validateSchema(schema: any[]): void {}
+  protected validateSchema(schema: any[]): schema is MySQLSchema {
+    if (schema.length === 0) {
+      throw new EmptySchemaError();
+    }
+    const columns = Object.keys(schema[0]);
+    const hasAllExpectedColumns = expectedColumns.every((column) => columns.includes(column));
+    if (!hasAllExpectedColumns) {
+      throw new InvalidSchemaError(schema, expectedColumns);
+    }
 
-  protected setFields(parsedSchema: any[]): void {
+    return true;
+  }
+
+  protected setFields(parsedSchema: MySQLSchema): void {
     this.fields = parsedSchema.map((item: any) => ({
       tableName: item.TABLE_NAME,
       columnName: item.COLUMN_NAME,
@@ -55,7 +97,7 @@ export class MySQLStringDataSourceAdapter extends StringDataSourceAdapter {
     }));
   }
 
-  protected setIndexes(parsedSchema: any[]): void {
+  protected setIndexes(parsedSchema: MySQLSchema): void {
     this.indexes = parsedSchema
       .filter(({ INDEX_NAME }) => !!INDEX_NAME)
       .map((item: any) => ({
@@ -68,7 +110,7 @@ export class MySQLStringDataSourceAdapter extends StringDataSourceAdapter {
       }));
   }
 
-  protected setTables(parsedSchema: any[]): void {
+  protected setTables(parsedSchema: MySQLSchema): void {
     this.tables = Array.from(new Set(parsedSchema.map(({ TABLE_NAME }) => TABLE_NAME)));
   }
 
