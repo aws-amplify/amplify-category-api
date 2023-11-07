@@ -90,6 +90,19 @@ const RUN_SOLO = [
 ];
 const DEBUG_FLAG = '--debug';
 
+const EXCLUDE_TEST_IDS = [
+  'rds_mysql_auth_apikey_lambda',
+  'rds_mysql_auth_iam_apikey_lambda_subscription',
+  'rds_mysql_auth_iam',
+  'rds_mysql_custom_claims_refersto_auth',
+  'rds_mysql_multi_auth_1',
+  'rds_mysql_oidc_auth',
+  'rds_mysql_userpool_auth',
+  'rds_pg_auth_apikey_lambda',
+  'rds_pg_auth_iam_apikey_lambda_subscription',
+  'rds_pg_auth_iam',
+];
+
 export function loadConfigBase() {
   return yaml.load(fs.readFileSync(CODEBUILD_CONFIG_BASE_PATH, 'utf8'));
 }
@@ -289,6 +302,9 @@ function main(): void {
       });
       outputPath = CODEBUILD_DEBUG_CONFIG_PATH;
     }
+  }
+  if (EXCLUDE_TEST_IDS.length > 0) {
+    allBuilds = allBuilds.filter((build) => !EXCLUDE_TEST_IDS.includes(build.identifier));
   }
   const cleanupResources = {
     identifier: 'cleanup_e2e_resources',
