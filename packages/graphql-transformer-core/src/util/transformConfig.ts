@@ -336,7 +336,7 @@ export const readSchema = async (
 const getRDSDBTypeFromInput = (amplifyType: InputObjectTypeDefinitionNode): DBType => {
   const engineInput = amplifyType.fields.find((f) => f.name.value === 'engine');
   if (!engineInput) {
-    throw new Error('engine is not defined in the RDS schema file');
+    throw new Error('engine is not defined in the SQL schema file');
   }
   const engine = (engineInput?.defaultValue as StringValueNode)?.value;
   switch (engine) {
@@ -345,7 +345,7 @@ const getRDSDBTypeFromInput = (amplifyType: InputObjectTypeDefinitionNode): DBTy
     case 'postgres':
       return 'Postgres';
     default:
-      throw new Error(`engine ${engine} specified in the RDS schema file is not supported`);
+      throw new Error(`engine ${engine} specified in the SQL schema file is not supported`);
   }
 };
 

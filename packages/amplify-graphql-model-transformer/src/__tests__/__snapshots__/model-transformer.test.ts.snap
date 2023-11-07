@@ -4337,7 +4337,7 @@ $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **"
 `;
 
-exports[`ModelTransformer: should successfully transform rds schema with array and object fields 1`] = `
+exports[`ModelTransformer: should successfully transform SQL schema with array and object fields 1`] = `
 "type Note {
   id: ID!
   content: String!
@@ -4572,7 +4572,7 @@ type Subscription {
 "
 `;
 
-exports[`ModelTransformer: should successfully transform rds schema with array and object fields 2`] = `
+exports[`ModelTransformer: should successfully transform SQL schema with array and object fields 2`] = `
 Object {
   "Mutation.createNote.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
@@ -4865,7 +4865,7 @@ $util.toJson(null)
 }
 `;
 
-exports[`ModelTransformer: should successfully transform rds schema with array and object fields 3`] = `
+exports[`ModelTransformer: should successfully transform SQL schema with array and object fields 3`] = `
 "type Note {
   id: ID!
   content: String!
@@ -5100,7 +5100,7 @@ type Subscription {
 "
 `;
 
-exports[`ModelTransformer: should successfully transform rds schema with array and object fields 4`] = `
+exports[`ModelTransformer: should successfully transform SQL schema with array and object fields 4`] = `
 Object {
   "Mutation.createNote.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))

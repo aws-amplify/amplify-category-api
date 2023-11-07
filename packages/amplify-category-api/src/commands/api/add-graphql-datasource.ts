@@ -127,7 +127,7 @@ export const run = async (context: $TSContext): Promise<void> => {
     } else {
       throw new AmplifyError('ApiCategorySchemaNotFoundError', {
         message: 'No schema found',
-        resolution: `Your RDS schema should be in either ${graphqlSchemaFilePath} or schema directory ${schemaDirectoryPath}`,
+        resolution: `Your SQL schema should be in either ${graphqlSchemaFilePath} or schema directory ${schemaDirectoryPath}`,
       });
     }
 

@@ -1548,7 +1548,7 @@ describe('ModelTransformer:', () => {
       parse(out.schema);
     });
 
-    it('should successfully transform rds schema with array and object fields', async () => {
+    it('should successfully transform SQL schema with array and object fields', async () => {
       const validSchema = `
         type Note @model {
             id: ID! @primaryKey
