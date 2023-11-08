@@ -3,8 +3,12 @@ import {
   MUTATION_FOUR_FIELD_CREATE_STATIC,
   SCHEMA_FOUR_FIELDS_FINAL_TWO_INDEXED,
   SCHEMA_FOUR_FIELDS_INITIAL_TWO_INDEXED,
-} from './deploy-velocity-constants';
-import { recordByIdDataValidator, recordProviderWithIdState, testManagedTableDeployment } from './deploy-velocity-test-core';
+} from '../deploy-velocity/deploy-velocity-constants';
+import {
+  recordByIdDataValidator,
+  recordProviderWithIdState,
+  testManagedTableDeployment,
+} from '../deploy-velocity/deploy-velocity-test-core';
 
 testManagedTableDeployment({
   name: 'Replace 2 GSIs updated - Single Record',
