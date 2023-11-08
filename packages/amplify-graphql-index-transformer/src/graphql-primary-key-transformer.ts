@@ -3,7 +3,6 @@ import {
   generateGetArgumentsInput,
   InvalidDirectiveError,
   TransformerPluginBase,
-  DatasourceType,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,

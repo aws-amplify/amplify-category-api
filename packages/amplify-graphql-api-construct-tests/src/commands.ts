@@ -73,18 +73,23 @@ export const initCDKProject = async (cwd: string, templatePath: string, props?: 
   return JSON.parse(readFileSync(path.join(cwd, 'package.json'), 'utf8')).name.replace(/_/g, '-');
 };
 
+export type CdkDeployProps = {
+  timeoutMs: number;
+};
+
 /**
  * Execute `cdk deploy` on the project to push to the cloud.
  * @param cwd the cwd of the cdk project
  * @param option additional option to pass into the deployment
  * @returns the generated outputs file as a JSON object
  */
-export const cdkDeploy = async (cwd: string, option: string): Promise<any> => {
+export const cdkDeploy = async (cwd: string, option: string, props?: CdkDeployProps): Promise<any> => {
   await spawn(getNpxPath(), ['cdk', 'deploy', '--outputs-file', 'outputs.json', '--require-approval', 'never', option], {
     cwd,
     stripColors: true,
     // npx cdk does not work on verdaccio
     env: { npm_config_registry: 'https://registry.npmjs.org/' },
+    noOutputTimeout: props?.timeoutMs,
   }).runAsync();
 
   return JSON.parse(readFileSync(path.join(cwd, 'outputs.json'), 'utf8'));
@@ -97,5 +102,16 @@ export const cdkDeploy = async (cwd: string, option: string): Promise<any> => {
  * @returns a promise which resolves after teardown of the stack
  */
 export const cdkDestroy = async (cwd: string, option: string): Promise<void> => {
-  return spawn(getNpxPath(), ['cdk', 'destroy', option], { cwd, stripColors: true }).sendYes().runAsync();
+  return spawn(getNpxPath(), ['cdk', 'destroy', '--force', option], { cwd, stripColors: true }).runAsync();
 };
+
+/**
+ * Helper function to update the cdk app code by a given diretory path containing the new `app.ts`
+ * @param cwd cdk app project root
+ * @param templatePath updated cdk app code directory path. The new `app.ts` should be defined under this directory
+ */
+export function updateCDKAppWithTemplate(cwd: string, templatePath: string): void {
+  const binDir = path.join(cwd, 'bin');
+  copySync(templatePath, binDir, { overwrite: true });
+  moveSync(path.join(binDir, 'app.ts'), path.join(binDir, `${path.basename(cwd)}.ts`), { overwrite: true });
+}

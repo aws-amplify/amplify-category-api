@@ -10,8 +10,9 @@ import {
   parse,
   print,
   DefinitionNode,
+  ObjectTypeDefinitionNode,
 } from 'graphql';
-import { TransformerPluginProvider, TransformerPluginType } from '@aws-amplify/graphql-transformer-interfaces';
+import { DataSourceType, TransformerPluginProvider, TransformerPluginType } from '@aws-amplify/graphql-transformer-interfaces';
 import _ from 'lodash';
 
 export function makeSeenTransformationKey(
@@ -204,3 +205,20 @@ export const removeAmplifyInputDefinition = (schema: string): string => {
     ...rest,
   });
 };
+
+/**
+ * Return the datasource map for the input schema with the provided datasource type
+ * @param schema input schema
+ * @param datasourceType input datasoure type
+ * @returns a map of datasource type per model
+ */
+export function constructDataSourceMap(schema: string, datasourceType: DataSourceType): Map<string, DataSourceType> {
+  const parsedSchema = parse(schema);
+  const result = new Map<string, DataSourceType>();
+  parsedSchema.definitions
+    .filter((obj) => obj.kind === Kind.OBJECT_TYPE_DEFINITION && obj.directives?.some((dir) => dir.name.value === 'model'))
+    .forEach((type) => {
+      result.set((type as ObjectTypeDefinitionNode).name.value, datasourceType);
+    });
+  return result;
+}
