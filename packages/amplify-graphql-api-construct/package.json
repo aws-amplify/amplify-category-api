@@ -11,7 +11,6 @@
   "license": "Apache-2.0",
   "main": "lib/index.js",
   "scripts": {
-    "jsii": "jsii",
     "build": "jsii",
     "watch": "jsii -w",
     "package": "jsii-pacmak",
@@ -157,7 +156,7 @@
     "collectCoverage": true,
     "coverageThreshold": {
       "global": {
-        "branches": 78,
+        "branches": 80,
         "functions": 80,
         "lines": 80
       }
