@@ -19,7 +19,6 @@
     "test": "jest",
     "test-watch": "jest --watch",
     "extract-api": "ts-node --project extract-api.tsconfig.json ../../scripts/extract-api.ts",
-    "update-readme": "cp README_HEAD.md README.md && jsii && jsii-docgen --readme --output README.md",
     "prepublishOnly": "jsii && git add .jsii && git commit -m \"chore: update .jsii assembly\" --no-verify"
   },
   "keywords": [
@@ -117,7 +116,6 @@
     "aws-cdk-lib": "2.80.0",
     "constructs": "10.0.5",
     "jsii": "^5.1.5",
-    "jsii-docgen": "9.1.2",
     "jsii-pacmak": "^1.84.0",
     "rimraf": "^3.0.0",
     "ts-jest": "^26.4.4",

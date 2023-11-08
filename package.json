@@ -16,7 +16,6 @@
     "check-version-conflicts:release": "yarn ts-node ./scripts/check-version.ts",
     "build": "lerna run build",
     "package": "lerna run package",
-    "update-readme": "lerna run update-readme",
     "build-tests-changed": "lerna run build-tests --since main",
     "build-tests": "lerna run build-tests",
     "production-build": "yarn --frozen-lockfile --cache-folder ~/.cache/yarn && lerna run build --concurrency 3 --stream",
