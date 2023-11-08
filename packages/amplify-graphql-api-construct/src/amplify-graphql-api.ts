@@ -28,7 +28,7 @@ import { IEventBus } from 'aws-cdk-lib/aws-events';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { IServerlessCluster } from 'aws-cdk-lib/aws-rds';
 import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
-import { MYSQL_DB_TYPE, POSTGRES_DB_TYPE, RDSConnectionSecrets, constructDataSourceMap } from '@aws-amplify/graphql-transformer-core';
+import { MYSQL_DB_TYPE, POSTGRES_DB_TYPE, RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
 import type {
   AmplifyGraphqlApiResources,
@@ -50,7 +50,7 @@ import {
   addAmplifyMetadataToStackDescription,
   getAdditionalAuthenticationTypes,
 } from './internal';
-import { isSqlModelDataSourceDefinition } from './sql-model-datasource-binding';
+import { isSQLLambdaModelDataSourceDefinition } from './sql-model-datasource-binding';
 import { parseDataSourceConfig } from './internal/data-source-config';
 import { getStackForScope, walkAndProcessNodes } from './internal/construct-tree';
 
@@ -195,11 +195,14 @@ export class AmplifyGraphqlApi extends Construct {
         ...defaultTranslationBehavior,
         ...(translationBehavior ?? {}),
       },
+
+      // Adds a modelToDataSourceMap field/value
       ...parseDataSourceConfig(definition.dataSourceDefinition),
     };
 
-    if (isSqlModelDataSourceDefinition(definition.dataSourceDefinition)) {
-      executeTransformConfig = this.extendTransformConfig(executeTransformConfig, definition.modelDataSourceBinding);
+    // TODO: Update this to support multiple definitions; right now we assume only one SQL data source type
+    if (isSQLLambdaModelDataSourceDefinition(definition.dataSourceDefinition)) {
+      executeTransformConfig = this.extendTransformConfig(executeTransformConfig, definition.dataSourceDefinition);
     }
 
     executeTransform(executeTransformConfig);
@@ -220,60 +223,56 @@ export class AmplifyGraphqlApi extends Construct {
   /**
    * Extends executeTransformConfig with fields for provisioning a SQL Lambda
    * @param executeTransformConfig the executeTransformConfig to extend
-   * @param modelDataSourceBinding the modelDataSourceBinding containing the values to add to the transform config
+   * @param dataSourceDefinition the ModelDataSourceDefinition containing the SQL connection values to add to the transform config
+   * @returns the extended configuration that includes SQL DB connection information
    */
   private extendTransformConfig(
     executeTransformConfig: ExecuteTransformConfig,
-    modelDataSourceBinding: SqlModelDataSourceBinding,
+    dataSourceDefinition: {name: string, strategy: SQLLambdaModelDataSourceDefinitionStrategy},
   ): ExecuteTransformConfig {
+
+    const { strategy } = dataSourceDefinition;
+
     const extendedConfig = { ...executeTransformConfig };
-    if (modelDataSourceBinding.customSqlStatements) {
-      extendedConfig.customQueries = new Map(Object.entries(modelDataSourceBinding.customSqlStatements));
+    if (strategy.customSqlStatements) {
+      extendedConfig.customQueries = new Map(Object.entries(strategy.customSqlStatements));
     }
 
     const dbSecrets: Map<string, RDSConnectionSecrets> = new Map();
     let dbSecretDbTypeKey: string;
-    switch (modelDataSourceBinding.bindingType) {
-      case MYSQL_DB_TYPE:
+    switch (strategy.dbType) {
+      case 'MYSQL':
         dbSecretDbTypeKey = MYSQL_DB_TYPE;
         break;
-      case POSTGRES_DB_TYPE:
+      case 'POSTGRES':
         dbSecretDbTypeKey = POSTGRES_DB_TYPE;
         break;
       default:
-        throw new Error(`Unsupported binding type ${modelDataSourceBinding.bindingType}`);
+        throw new Error(`Unsupported binding type ${strategy.dbType}`);
     }
     dbSecrets.set(dbSecretDbTypeKey, {
-      username: modelDataSourceBinding.dbConnectionConfig.usernameSsmPath,
-      password: modelDataSourceBinding.dbConnectionConfig.passwordSsmPath,
-      host: modelDataSourceBinding.dbConnectionConfig.hostnameSsmPath,
+      username: strategy.dbConnectionConfig.usernameSsmPath,
+      password: strategy.dbConnectionConfig.passwordSsmPath,
+      host: strategy.dbConnectionConfig.hostnameSsmPath,
       // Cast through `any` to allow the SSM Path string to be used on a type expecting a number. This flow expects the incoming value to be
       // a string containing the SSM path.
-      port: modelDataSourceBinding.dbConnectionConfig.portSsmPath as any,
-      database: modelDataSourceBinding.dbConnectionConfig.databaseNameSsmPath,
+      port: strategy.dbConnectionConfig.portSsmPath as any,
+      database: strategy.dbConnectionConfig.databaseNameSsmPath,
     });
     extendedConfig.datasourceSecretParameterLocations = dbSecrets;
 
-    if (modelDataSourceBinding.vpcConfiguration) {
-      const subnetAvailabilityZoneConfig = modelDataSourceBinding.vpcConfiguration.subnetAvailabilityZones.map(
-        (saz): { SubnetId: string; AvailabilityZone: string } => ({
-          SubnetId: saz.subnetId,
-          AvailabilityZone: saz.availabilityZone,
+    if (strategy.vpcConfiguration) {
+      const subnetAvailabilityZoneConfig = strategy.vpcConfiguration.subnetAvailabilityZoneConfig.map(
+        (saz): { subnetId: string; availabilityZone: string } => ({
+          subnetId: saz.subnetId,
+          availabilityZone: saz.availabilityZone,
         }),
       );
       extendedConfig.sqlLambdaVpcConfig = {
-        vpcId: modelDataSourceBinding.vpcConfiguration.vpcId,
-        securityGroupIds: modelDataSourceBinding.vpcConfiguration.securityGroupIds,
+        vpcId: strategy.vpcConfiguration.vpcId,
+        securityGroupIds: strategy.vpcConfiguration.securityGroupIds,
         subnetAvailabilityZoneConfig,
       };
-    }
-
-    if (!extendedConfig.modelToDatasourceMap || extendedConfig.modelToDatasourceMap.size === 0) {
-      const defaultDataSourceType = {
-        dbType: modelDataSourceBinding.bindingType,
-        provisionDB: false,
-      };
-      extendedConfig.modelToDatasourceMap = constructDataSourceMap(extendedConfig.schema, defaultDataSourceType);
     }
 
     return extendedConfig;

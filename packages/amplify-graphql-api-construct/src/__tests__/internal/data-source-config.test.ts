@@ -1,4 +1,4 @@
-import { DynamoDBProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { DynamoDBProvisionStrategy, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { parseDataSourceConfig } from '../../internal/data-source-config';
 import { ModelDataSourceDefinition } from '../../types';
 
@@ -19,6 +19,33 @@ describe('datasource config', () => {
           provisionStrategy: 'AMPLIFY_TABLE',
         },
       },
+      Post: {
+        name: 'mysqlTable',
+        strategy: {
+          dbType: 'MYSQL',
+          dbConnectionConfig: {
+            hostnameSsmPath: 'hostnameSsmPath',
+            portSsmPath: 'portSsmPath',
+            usernameSsmPath: 'usernameSsmPath',
+            passwordSsmPath: 'passwordSsmPath',
+            databaseNameSsmPath: 'databaseNameSsmPath'
+          }
+        }
+      },
+      Comment: {
+        name: 'pgTable',
+        strategy: {
+          dbType: 'POSTGRES',
+          dbConnectionConfig: {
+            hostnameSsmPath: 'hostnameSsmPath',
+            portSsmPath: 'portSsmPath',
+            usernameSsmPath: 'usernameSsmPath',
+            passwordSsmPath: 'passwordSsmPath',
+            databaseNameSsmPath: 'databaseNameSsmPath'
+          }
+        }
+      }
+
     };
     const datasourceConfig = parseDataSourceConfig(input);
     expect(datasourceConfig).toEqual({
@@ -39,6 +66,22 @@ describe('datasource config', () => {
             provisionStrategy: DynamoDBProvisionStrategy.AMPLIFY_TABLE,
           },
         ],
+        [
+          'Post',
+          {
+            dbType: 'MySQL',
+            provisionDB: false,
+            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT
+          }
+        ],
+        [
+          'Comment',
+          {
+            dbType: 'Postgres',
+            provisionDB: false,
+            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT
+          }
+        ]
       ]),
     });
   });

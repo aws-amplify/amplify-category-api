@@ -82,31 +82,31 @@ export interface LambdaConfig {
  * Secure Systems Manager.
  * @experimental
  */
-export type VpcConfig = {
+export interface VpcConfig {
   /** The VPC to install the Lambda data source in. */
-  vpcId: string;
+  readonly vpcId: string;
 
   /** The security groups to install the Lambda data source in. */
-  securityGroupIds: string[];
+  readonly securityGroupIds: string[];
 
   /** The subnets to install the Lambda data source in, one per availability zone. */
-  subnetAvailabilityZoneConfig: SubnetAvailabilityZone[];
+  readonly subnetAvailabilityZoneConfig: SubnetAvailabilityZone[];
 };
 
 /**
  * Although it is possible to create multiple subnets in a single availability zone, VPC Endpoints may only be deployed to a single subnet
  * in a given availability zone. We use this structure to ensure that the Lambda function and VPC endpoints are mutually consistent.
  */
-export type SubnetAvailabilityZone = {
-  subnetId: string;
-  availabilityZone: string;
+export interface SubnetAvailabilityZone {
+  readonly subnetId: string;
+  readonly availabilityZone: string;
 };
 
 /**
  * Maps a given AWS region to the SQL Lambda layer version ARN for that region. TODO: Rename to SQLLambdaLayerMapping
  */
-export type RDSLayerMapping = {
-  [key: string]: {
+export interface RDSLayerMapping {
+  readonly [key: string]: {
     layerRegion: string;
   };
 };

@@ -17,7 +17,7 @@ import { IRole, CfnRole } from 'aws-cdk-lib/aws-iam';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { IFunction, CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
-import { RDSLayerMapping, SQLDBType, VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { RDSLayerMapping, VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { AmplifyDynamoDbTableWrapper } from './amplify-dynamodb-table-wrapper';
 
 /**
@@ -770,8 +770,8 @@ export interface AddFunctionProps {
  */
 export interface ModelDataSourceDefinition {
   /**
-   * The name of the ModelDataSource. This will be used to name the AppSynce DataSource itself, plus any associated resources like resolver
-   * Lambdas, custom CDK resources. This name must be unique across all schema definitions in a GraphQL API.
+   * The name of the ModelDataSourceDefinition. This will be used to name the AppSync DataSource itself, plus any associated resources like
+   * resolver Lambdas and custom CDK resources. This name must be unique across all schema definitions in a GraphQL API.
    */
   readonly name: string;
   /**
@@ -785,7 +785,8 @@ export interface ModelDataSourceDefinition {
  */
 export type ModelDataSourceDefinitionStrategy =
   | DefaultDynamoDbModelDataSourceDefinitionStrategy
-  | AmplifyDynamoDbModelDataSourceDefinitionStrategy;
+  | AmplifyDynamoDbModelDataSourceDefinitionStrategy
+  | SQLLambdaModelDataSourceDefinitionStrategy;
 
 export type ModelDataSourceDefinitionDbType = 'DYNAMODB';
 
@@ -797,6 +798,7 @@ export interface DefaultDynamoDbModelDataSourceDefinitionStrategy {
   readonly dbType: 'DYNAMODB';
   readonly provisionStrategy: 'DEFAULT';
 }
+
 /**
  * Use custom resource type 'Custom::AmplifyDynamoDBTable' to provision table.
  * @experimental
@@ -815,7 +817,7 @@ export interface SQLLambdaModelDataSourceDefinitionStrategy {
   /**
    * The type of the SQL database used to process model operations for this definition.
    */
-  readonly dbType: SQLDBType;
+  readonly dbType: 'MYSQL' | 'POSTGRES';
 
   /**
    * The parameters the Lambda data source will use to connect to the database.

@@ -8,14 +8,26 @@ import { SQLLambdaModelDataSourceDefinitionStrategy, SqlModelDataSourceDefinitio
  * @param obj the object to inspect
  * @returns true if the object is shaped like a SQLLambdaModelDataSourceDefinitionStrategy
  */
-export const isSqlModelDataSourceDefinition = (obj: any): obj is SQLLambdaModelDataSourceDefinitionStrategy => {
+export const isSQLLambdaModelDataSourceDefinitionStrategy = (obj: any): obj is SQLLambdaModelDataSourceDefinitionStrategy => {
   return (
     (typeof obj === 'object' || typeof obj === 'function') &&
+    typeof obj.strategy === 'string' &&
     typeof obj.dbType === 'string' &&
     [MYSQL_DB_TYPE, POSTGRES_DB_TYPE].includes(obj.dbType) &&
     isSqlModelDataSourceDefinitionDbConnectionConfig(obj.dbConnectionConfig)
   );
 };
+
+export const isSQLLambdaModelDataSourceDefinition = (obj: any): obj is {
+  name: string,
+  strategy: SQLLambdaModelDataSourceDefinitionStrategy
+} => {
+  return (
+    (typeof obj === 'object' || typeof obj === 'function') &&
+    typeof obj.name === 'string' &&
+    isSQLLambdaModelDataSourceDefinitionStrategy(obj.strategy)
+  );
+}
 
 /**
  * Type predicate that returns true if the object is a SqlModelDataSourceDefinitionDbConnectionConfig.
