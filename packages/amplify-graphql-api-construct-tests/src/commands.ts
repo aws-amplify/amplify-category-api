@@ -9,12 +9,19 @@ import { getScriptRunnerPath, nspawn as spawn } from 'amplify-category-api-e2e-c
  */
 const getNpxPath = (): string => (process.platform === 'win32' ? getScriptRunnerPath().replace('node.exe', 'npx.cmd') : 'npx');
 
+export type CdkConstruct = 'GraphqlApi' | 'Data';
+
+const cdkConstructToPackagedConstructDirectory: Record<CdkConstruct, string> = {
+  GraphqlApi: path.join(__dirname, '..', '..', 'amplify-graphql-api-construct', 'dist', 'js'),
+  Data: path.join(__dirname, '..', '..', 'amplify-data-construct', 'dist', 'js'),
+};
+
 /**
  * Try and retrieve the locally packaged construct path, and throw an error if not found.
  * @returns path to the packaged construct for testing.
  */
-const getPackagedConstructPath = (): string => {
-  const packagedConstructDirectory = path.join(__dirname, '..', '..', 'amplify-graphql-api-construct', 'dist', 'js');
+const getPackagedConstructPath = (cdkConstruct: CdkConstruct): string => {
+  const packagedConstructDirectory = cdkConstructToPackagedConstructDirectory[cdkConstruct];
   const packagedConstructTarballs = fs.readdirSync(packagedConstructDirectory).filter((fileName) => fileName.match(/\.tgz/));
   if (packagedConstructTarballs.length !== 1) {
     throw new Error('Construct packaged tarball not found');
@@ -32,6 +39,7 @@ const copyTemplateDirectory = (projectPath: string, templatePath: string): void 
 };
 
 export type InitCDKProjectProps = {
+  construct?: CdkConstruct;
   cdkVersion?: string;
   additionalDependencies?: Array<string>;
 };
@@ -59,7 +67,7 @@ export const initCDKProject = async (cwd: string, templatePath: string, props?: 
 
   copyTemplateDirectory(cwd, templatePath);
 
-  const deps = [getPackagedConstructPath(), `aws-cdk-lib@${cdkVersion}`, ...additionalDependencies];
+  const deps = [getPackagedConstructPath(props?.construct ?? 'GraphqlApi'), `aws-cdk-lib@${cdkVersion}`, ...additionalDependencies];
   await spawn('npm', ['install', ...deps], { cwd, stripColors: true }).runAsync();
 
   return JSON.parse(readFileSync(path.join(cwd, 'package.json'), 'utf8')).name.replace(/_/g, '-');

@@ -26,8 +26,8 @@ describe('Data Construct', () => {
 
   ['2.80.0', 'latest'].forEach((cdkVersion) => {
     test(`Data Construct - aws-cdk-lib@${cdkVersion}`, async () => {
-      const templatePath = path.resolve(path.join(__dirname, 'backends', 'base-cdk'));
-      const name = await initCDKProject(projRoot, templatePath, { cdkVersion });
+      const templatePath = path.resolve(path.join(__dirname, 'backends', 'data-construct'));
+      const name = await initCDKProject(projRoot, templatePath, { cdkVersion, construct: 'Data' });
       const outputs = await cdkDeploy(projRoot, '--all');
       const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
 
