@@ -1,6 +1,6 @@
 # AmplifyGraphqlApi Construct Tests
 
-This packages contains end to end tests that are run in Codebuild to ensure that your changes are not breaking the CDK construct. Each test in this package creates resources in the cloud.
+This packages contains end to end tests that are run in Codebuild to ensure that your changes are not breaking the CDK constructs. Each test in this package creates resources in the cloud.
 
 ## Setup
 
@@ -15,9 +15,14 @@ In order to test locally, you must first package the construct, this is done by 
 yarn build
 cd packages/amplify-graphql-api-construct
 yarn package
+cd ..//amplify-data-construct
+yarn package
 
 # If only rebuilding construct code (much faster)
 cd packages/amplify-graphql-api-construct
+yarn build
+yarn package
+cd ../amplify-data-construct
 yarn build
 yarn package
 ```
