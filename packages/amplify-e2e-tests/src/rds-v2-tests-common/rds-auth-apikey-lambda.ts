@@ -29,26 +29,29 @@ export const testRdsApiKeyAndLambdaAuth = (engine: ImportedRDSType, queries: str
     // Generate settings for RDS instance
     const username = db_user;
     const password = db_password;
-    let region = 'us-east-1';
-    let port = 5432;
+    let region = 'ap-northeast-2';
+    let port = engine === ImportedRDSType.MYSQL ? 3306 : 5432;
     const database = 'default_db';
     let host = 'localhost';
     const identifier = `integtest${db_identifier}`;
-    const projName = 'rdsmodelauthtest';
+    const engineSuffix = engine === ImportedRDSType.MYSQL ? 'mysql' : 'pg';
+    const engineName = engine === ImportedRDSType.MYSQL ? 'mysql' : 'postgres';
+    const projName = `${engineSuffix}modelauth2`;
+    const apiName = projName;
 
     let projRoot;
     let blogApiKeyClient, postApiKeyClient, userApiKeyClient, profileApiKeyClient;
     let blogLambdaClient, postLambdaClient, userLambdaClient, profileLambdaClient;
 
     beforeAll(async () => {
-      projRoot = await createNewProjectDir('rdsmodelapi');
+      projRoot = await createNewProjectDir(projName);
       await initProjectAndImportSchema();
       await amplifyPush(projRoot);
       await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.
 
       const meta = getProjectMeta(projRoot);
       const appRegion = meta.providers.awscloudformation.Region;
-      const { output } = meta.api.rdsmodelauth;
+      const { output } = meta.api[apiName];
       const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
       const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, appRegion);
 
@@ -107,7 +110,6 @@ export const testRdsApiKeyAndLambdaAuth = (engine: ImportedRDSType, queries: str
     };
 
     const initProjectAndImportSchema = async (): Promise<void> => {
-      const apiName = 'rdsmodelauth';
       await initJSProjectWithProfile(projRoot, {
         disableAmplifyAppCreation: false,
         name: projName,
@@ -123,7 +125,7 @@ export const testRdsApiKeyAndLambdaAuth = (engine: ImportedRDSType, queries: str
 
       await importRDSDatabase(projRoot, {
         database,
-        engine: 'postgres',
+        engine,
         host,
         port,
         username,
@@ -134,7 +136,7 @@ export const testRdsApiKeyAndLambdaAuth = (engine: ImportedRDSType, queries: str
 
       const schema = /* GraphQL */ `
         input AMPLIFY {
-          engine: String = "postgres"
+          engine: String = "${engineName}"
           globalAuthRule: AuthRule = { allow: public }
         }
         type Blog @model @auth(rules: [{ allow: public }, { allow: custom }]) {
