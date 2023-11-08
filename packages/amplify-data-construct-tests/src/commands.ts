@@ -85,9 +85,8 @@ export const cdkDeploy = async (cwd: string, option: string): Promise<any> => {
 /**
  * Execute `cdk destroy` in the project directory to tear down test stacks.
  * @param cwd the directory of the cdk project
- * @param option option to pass into the destroy command, e.g. the stack name.
+ * @param options an array of additional options to pass into the `cdk destroy` command, e.g. the stack name.
  * @returns a promise which resolves after teardown of the stack
  */
-export const cdkDestroy = async (cwd: string, option: string): Promise<void> => {
-  return spawn(getNpxPath(), ['cdk', 'destroy', option], { cwd, stripColors: true }).sendYes().runAsync();
-};
+export const cdkDestroy = async (cwd: string, ...options: string[]): Promise<void> =>
+  spawn(getNpxPath(), ['cdk', 'destroy', '--force', ...options], { cwd, stripColors: true }).runAsync();

@@ -62,7 +62,7 @@ describe('Data Construct', () => {
         `,
       );
       expect(listResult.statusCode).toEqual(200);
-      expect(listResult.body.listTodos.length).toEqual(1);
+      expect(listResult.body.data.listTodos.items.length).toEqual(1);
       expect(todo.id).toEqual(listResult.body.data.listTodos.items[0].id);
     });
   });
