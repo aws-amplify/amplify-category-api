@@ -46,6 +46,12 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
       depend-on:
         - build_linux
+    - identifier: verify_dependency_licenses_extract
+      buildspec: codebuild_specs/verify_dependency_licenses_extract.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+      depend-on:
+        - build_linux
     - identifier: publish_to_local_registry
       buildspec: codebuild_specs/publish_to_local_registry.yml
       env:
