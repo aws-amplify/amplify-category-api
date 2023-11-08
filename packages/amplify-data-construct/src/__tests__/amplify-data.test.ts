@@ -1,7 +1,6 @@
 import { Stack, Duration } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
-import { AmplifyData } from '../amplify-data';
-import { AmplifyDataDefinition } from '../amplify-data-definition';
+import { AmplifyData, AmplifyDataDefinition } from '..';
 
 describe('AmplifyData', () => {
   it('can be invoked', () => {

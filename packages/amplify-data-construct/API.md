@@ -5,13 +5,13 @@
 ```ts
 
 import type { AddFunctionProps } from '@aws-amplify/graphql-api-construct';
+import { AmplifyGraphqlApi as AmplifyData } from '@aws-amplify/graphql-api-construct';
+import type { AmplifyGraphqlApiCfnResources as AmplifyDataCfnResources } from '@aws-amplify/graphql-api-construct';
+import { AmplifyGraphqlDefinition as AmplifyDataDefinition } from '@aws-amplify/graphql-api-construct';
+import type { AmplifyGraphqlApiProps as AmplifyDataProps } from '@aws-amplify/graphql-api-construct';
+import type { AmplifyGraphqlApiResources as AmplifyDataResources } from '@aws-amplify/graphql-api-construct';
 import type { AmplifyDynamoDbModelDataSourceDefinitionStrategy } from '@aws-amplify/graphql-api-construct';
 import { AmplifyDynamoDbTableWrapper } from '@aws-amplify/graphql-api-construct';
-import { AmplifyGraphqlApi } from '@aws-amplify/graphql-api-construct';
-import type { AmplifyGraphqlApiCfnResources } from '@aws-amplify/graphql-api-construct';
-import type { AmplifyGraphqlApiProps } from '@aws-amplify/graphql-api-construct';
-import type { AmplifyGraphqlApiResources } from '@aws-amplify/graphql-api-construct';
-import { AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
 import type { ApiKeyAuthorizationConfig } from '@aws-amplify/graphql-api-construct';
 import type { AuthorizationModes } from '@aws-amplify/graphql-api-construct';
 import type { AutomergeConflictResolutionStrategy } from '@aws-amplify/graphql-api-construct';
@@ -25,7 +25,7 @@ import type { FunctionSlot } from '@aws-amplify/graphql-api-construct';
 import type { FunctionSlotBase } from '@aws-amplify/graphql-api-construct';
 import type { FunctionSlotOverride } from '@aws-amplify/graphql-api-construct';
 import type { IAMAuthorizationConfig } from '@aws-amplify/graphql-api-construct';
-import type { IAmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
+import type { IAmplifyGraphqlDefinition as IAmplifyDataDefinition } from '@aws-amplify/graphql-api-construct';
 import type { IBackendOutputEntry } from '@aws-amplify/graphql-api-construct';
 import type { IBackendOutputStorageStrategy } from '@aws-amplify/graphql-api-construct';
 import type { LambdaAuthorizationConfig } from '@aws-amplify/graphql-api-construct';
@@ -48,23 +48,19 @@ import type { UserPoolAuthorizationConfig } from '@aws-amplify/graphql-api-const
 
 export { AddFunctionProps }
 
-// @public
-export class AmplifyData extends AmplifyGraphqlApi {
-}
+export { AmplifyData }
 
-// @public (undocumented)
-export class AmplifyDataDefinition extends AmplifyGraphqlDefinition {
-}
+export { AmplifyDataCfnResources }
+
+export { AmplifyDataDefinition }
+
+export { AmplifyDataProps }
+
+export { AmplifyDataResources }
 
 export { AmplifyDynamoDbModelDataSourceDefinitionStrategy }
 
 export { AmplifyDynamoDbTableWrapper }
-
-export { AmplifyGraphqlApiCfnResources }
-
-export { AmplifyGraphqlApiProps }
-
-export { AmplifyGraphqlApiResources }
 
 export { ApiKeyAuthorizationConfig }
 
@@ -92,7 +88,7 @@ export { FunctionSlotOverride }
 
 export { IAMAuthorizationConfig }
 
-export { IAmplifyGraphqlDefinition }
+export { IAmplifyDataDefinition }
 
 export { IBackendOutputEntry }
 
