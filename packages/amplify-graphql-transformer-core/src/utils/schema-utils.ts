@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { DBType, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import { ListValueNode, ObjectTypeDefinitionNode, StringValueNode, TypeNode } from 'graphql';
 import { ModelResourceIDs, getBaseType } from 'graphql-transformer-common';
 import { DDB_DB_TYPE } from '../types';
-import { DBType } from '../config';
 
 /**
  * getKeySchema
