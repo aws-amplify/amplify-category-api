@@ -718,8 +718,28 @@ new AmplifyDataDefinition()
 
 | **Name** | **Description** |
 | --- | --- |
+| <code><a href="#@aws-amplify/data-construct.AmplifyDataDefinition.combine">combine</a></code> | Combines multiple IAmplifyGraphqlDefinitions into a single definition. |
 | <code><a href="#@aws-amplify/data-construct.AmplifyDataDefinition.fromFiles">fromFiles</a></code> | Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema. |
+| <code><a href="#@aws-amplify/data-construct.AmplifyDataDefinition.fromFilesAndDefinition">fromFilesAndDefinition</a></code> | Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema. |
 | <code><a href="#@aws-amplify/data-construct.AmplifyDataDefinition.fromString">fromString</a></code> | Produce a schema definition from a string input. |
+
+---
+
+##### `combine` <a name="combine" id="@aws-amplify/data-construct.AmplifyDataDefinition.combine"></a>
+
+```typescript
+import { AmplifyDataDefinition } from '@aws-amplify/data-construct'
+
+AmplifyDataDefinition.combine(definitions: IAmplifyGraphqlDefinition[])
+```
+
+Combines multiple IAmplifyGraphqlDefinitions into a single definition.
+
+###### `definitions`<sup>Required</sup> <a name="definitions" id="@aws-amplify/data-construct.AmplifyDataDefinition.combine.parameter.definitions"></a>
+
+- *Type:* @aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition[]
+
+the definitions to combine.
 
 ---
 
@@ -741,12 +761,40 @@ one or more paths to the graphql files to process.
 
 ---
 
+##### `fromFilesAndDefinition` <a name="fromFilesAndDefinition" id="@aws-amplify/data-construct.AmplifyDataDefinition.fromFilesAndDefinition"></a>
+
+```typescript
+import { AmplifyDataDefinition } from '@aws-amplify/data-construct'
+
+AmplifyDataDefinition.fromFilesAndDefinition(filePaths: string | string[], modelDataSourceDefinition?: ModelDataSourceDefinition)
+```
+
+Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema.
+
+###### `filePaths`<sup>Required</sup> <a name="filePaths" id="@aws-amplify/data-construct.AmplifyDataDefinition.fromFilesAndDefinition.parameter.filePaths"></a>
+
+- *Type:* string | string[]
+
+one or more paths to the graphql files to process.
+
+---
+
+###### `modelDataSourceDefinition`<sup>Optional</sup> <a name="modelDataSourceDefinition" id="@aws-amplify/data-construct.AmplifyDataDefinition.fromFilesAndDefinition.parameter.modelDataSourceDefinition"></a>
+
+- *Type:* @aws-amplify/graphql-api-construct.ModelDataSourceDefinition
+
+the provision definition for `@model` datasource.
+
+The DynamoDB from CloudFormation will be used by default.
+
+---
+
 ##### `fromString` <a name="fromString" id="@aws-amplify/data-construct.AmplifyDataDefinition.fromString"></a>
 
 ```typescript
 import { AmplifyDataDefinition } from '@aws-amplify/data-construct'
 
-AmplifyDataDefinition.fromString(schema: string)
+AmplifyDataDefinition.fromString(schema: string, modelDataSourceDefinition?: ModelDataSourceDefinition)
 ```
 
 Produce a schema definition from a string input.
@@ -756,6 +804,16 @@ Produce a schema definition from a string input.
 - *Type:* string
 
 the graphql input as a string.
+
+---
+
+###### `modelDataSourceDefinition`<sup>Optional</sup> <a name="modelDataSourceDefinition" id="@aws-amplify/data-construct.AmplifyDataDefinition.fromString.parameter.modelDataSourceDefinition"></a>
+
+- *Type:* @aws-amplify/graphql-api-construct.ModelDataSourceDefinition
+
+the provision definition for `@model` datasource.
+
+The DynamoDB from CloudFormation will be used by default.
 
 ---
 
