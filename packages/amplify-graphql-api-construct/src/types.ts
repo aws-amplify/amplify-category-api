@@ -17,6 +17,7 @@ import { IRole, CfnRole } from 'aws-cdk-lib/aws-iam';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { IFunction, CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
+import { AmplifyDynamoDbTableWrapper } from './amplify-dynamodb-table-wrapper';
 
 /**
  * Configuration for IAM Authorization on the Graphql Api.
@@ -400,13 +401,6 @@ export interface TranslationBehavior {
    */
   readonly respectPrimaryKeyAttributesOnConnectionField: boolean;
 
-  /**
-   * If enabled, set nodeToNodeEncryption on the searchable domain (if one exists). Not recommended for use, prefer
-   * to use `Object.values(resources.additionalResources['AWS::Elasticsearch::Domain']).forEach((domain: CfnDomain) => {
-   *   domain.NodeToNodeEncryptionOptions = { Enabled: True };
-   * });
-   * @default false
-   */
   readonly enableSearchNodeToNodeEncryption: boolean;
 
   /**
@@ -509,6 +503,12 @@ export interface IAmplifyGraphqlDefinition {
    * @returns generated function slots
    */
   readonly functionSlots: FunctionSlot[];
+
+  /**
+   * Retrieve the datasource definition mapping. The default strategy is to use DynamoDB from CloudFormation.
+   * @returns datasource definition mapping
+   */
+  readonly dataSourceDefinition: Record<string, ModelDataSourceDefinition>;
 }
 
 /**
@@ -537,6 +537,48 @@ export interface IBackendOutputStorageStrategy {
    */
   // eslint-disable-next-line @typescript-eslint/method-signature-style
   addBackendOutputEntry(keyName: string, backendOutputEntry: IBackendOutputEntry): void;
+}
+
+/**
+ * Defines a datasource for resolving GraphQL operations against `@model` types in a GraphQL schema.
+ * @experimental
+ */
+export interface ModelDataSourceDefinition {
+  /**
+   * The name of the ModelDataSource. This will be used to name the AppSynce DataSource itself, plus any associated resources like resolver
+   * Lambdas, custom CDK resources. This name must be unique across all schema definitions in a GraphQL API.
+   */
+  readonly name: string;
+  /**
+   * The ModelDataSourceDefinitionStrategy.
+   */
+  readonly strategy: ModelDataSourceDefinitionStrategy;
+}
+/**
+ * All known ModelDataSourceDefinitionStrategies. Concrete strategies vary widely in their requirements and implementations.
+ * @experimental
+ */
+export type ModelDataSourceDefinitionStrategy =
+  | DefaultDynamoDbModelDataSourceDefinitionStrategy
+  | AmplifyDynamoDbModelDataSourceDefinitionStrategy;
+
+export type ModelDataSourceDefinitionDbType = 'DYNAMODB';
+
+/**
+ * Use default CloudFormation type 'AWS::DynamoDB::Table' to provision table.
+ * @experimental
+ */
+export interface DefaultDynamoDbModelDataSourceDefinitionStrategy {
+  readonly dbType: 'DYNAMODB';
+  readonly provisionStrategy: 'DEFAULT';
+}
+/**
+ * Use custom resource type 'Custom::AmplifyDynamoDBTable' to provision table.
+ * @experimental
+ */
+export interface AmplifyDynamoDbModelDataSourceDefinitionStrategy {
+  readonly dbType: 'DYNAMODB';
+  readonly provisionStrategy: 'AMPLIFY_TABLE';
 }
 
 /**
@@ -685,6 +727,11 @@ export interface AmplifyGraphqlApiResources {
    * The Generated DynamoDB Table L2 Resources, keyed by logicalId.
    */
   readonly tables: Record<string, ITable>;
+
+  /**
+   * The Generated Amplify DynamoDb Table wrapped if produced, keyed by name.
+   */
+  readonly amplifyDynamoDbTables: Record<string, AmplifyDynamoDbTableWrapper>;
 
   /**
    * The Generated IAM Role L2 Resources, keyed by logicalId.

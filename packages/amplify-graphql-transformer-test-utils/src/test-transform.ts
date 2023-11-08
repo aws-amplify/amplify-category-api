@@ -1,12 +1,6 @@
 import { AppSyncAuthConfiguration, TransformerPluginProvider, TransformerLogLevel } from '@aws-amplify/graphql-transformer-interfaces';
-import type { SynthParameters, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  DatasourceType,
-  GraphQLTransform,
-  RDSConnectionSecrets,
-  ResolverConfig,
-  UserDefinedSlot,
-} from '@aws-amplify/graphql-transformer-core';
+import type { DataSourceType, SynthParameters, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import { GraphQLTransform, RDSConnectionSecrets, ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 import { OverrideConfig, TransformManager } from './cdk-compat/transform-manager';
 import { DeploymentResources } from './deployment-resources';
 
@@ -18,7 +12,7 @@ export type TestTransformParameters = {
   authConfig?: AppSyncAuthConfiguration;
   userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   stackMapping?: Record<string, string>;
-  modelToDatasourceMap?: Map<string, DatasourceType>;
+  modelToDatasourceMap?: Map<string, DataSourceType>;
   datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
   overrideConfig?: OverrideConfig;
   synthParameters?: Partial<SynthParameters>;

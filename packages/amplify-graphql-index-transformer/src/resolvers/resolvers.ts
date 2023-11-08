@@ -1,6 +1,13 @@
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
-import { MappingTemplate, DatasourceType, MYSQL_DB_TYPE, DDB_DB_TYPE, DBType } from '@aws-amplify/graphql-transformer-core';
-import { DataSourceProvider, TransformerContextProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { MappingTemplate, MYSQL_DB_TYPE, DDB_DB_TYPE, getDatasourceProvisionStrategy } from '@aws-amplify/graphql-transformer-core';
+import {
+  DataSourceProvider,
+  TransformerContextProvider,
+  TransformerResolverProvider,
+  DynamoDBProvisionStrategy,
+  DBType,
+  DataSourceType,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import * as cdk from 'aws-cdk-lib';
@@ -53,8 +60,12 @@ const API_KEY = 'API Key Authorization';
 export function replaceDdbPrimaryKey(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
   // Replace the table's primary key with the value from @primaryKey
   const { field, object } = config;
+  const tableProvisionStrategy = getDatasourceProvisionStrategy(ctx, object.name.value);
+  const useAmplifyManagedTableResources: boolean = tableProvisionStrategy
+    ? tableProvisionStrategy === DynamoDBProvisionStrategy.AMPLIFY_TABLE
+    : false;
   const table = getTable(ctx, object) as any;
-  const cfnTable = table.table;
+  const cfnTable = useAmplifyManagedTableResources ? table.node.defaultChild.node.defaultChild : table.table;
   const tableAttrDefs = table.attributeDefinitions;
   const tableKeySchema = table.keySchema;
   const keySchema = getDdbKeySchema(config);
@@ -82,8 +93,13 @@ export function replaceDdbPrimaryKey(config: PrimaryKeyDirectiveConfiguration, c
   }
 
   // CDK does not support modifying all of these things, so keep them in sync.
-  cfnTable.keySchema = table.keySchema;
-  cfnTable.attributeDefinitions = table.attributeDefinitions;
+  if (useAmplifyManagedTableResources) {
+    cfnTable.addPropertyOverride('keySchema', table.keySchema);
+    cfnTable.addPropertyOverride('attributeDefinitions', table.attributeDefinitions);
+  } else {
+    cfnTable.keySchema = table.keySchema;
+    cfnTable.attributeDefinitions = table.attributeDefinitions;
+  }
 }
 
 /**
@@ -378,8 +394,7 @@ export function appendSecondaryIndex(config: IndexDirectiveConfiguration, ctx: T
     // At the L2 level, the CDK does not handle the way Amplify sets GSI read and write capacity
     // very well. At the L1 level, the CDK does not create the correct IAM policy for accessing the
     // GSI. To get around these issues, keep the L1 and L2 GSI list in sync.
-    const cfnTable = table.table;
-    cfnTable.globalSecondaryIndexes = appendIndex(cfnTable.globalSecondaryIndexes, {
+    const newIndex = {
       indexName: name,
       keySchema,
       projection: { projectionType: 'ALL' },
@@ -387,7 +402,33 @@ export function appendSecondaryIndex(config: IndexDirectiveConfiguration, ctx: T
         ReadCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
         WriteCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
       }),
-    });
+    };
+    overrideIndexAtCfnLevel(ctx, object.name.value, table, newIndex);
+  }
+}
+
+/**
+ * Util function to override the index properties in L1 level.
+ * The structure for CDK L2 table is `Table -> CfnTable`, in which `table` is a property refering the CfnTable
+ * For amplify dynamodb table, the structure is `AmplifyDynamoDBTable -> CustomResource -> CfnCustomResource`
+ * @param ctx transformer context
+ * @param typeName type name of model directive
+ * @param table input table
+ * @param indexInfo global secondary index properties
+ */
+export function overrideIndexAtCfnLevel(ctx: TransformerContextProvider, typeName: string, table: any, indexInfo: any): void {
+  const tableProvisionStrategy = getDatasourceProvisionStrategy(ctx, typeName);
+  const useAmplifyManagedTableResources: boolean = tableProvisionStrategy
+    ? tableProvisionStrategy === DynamoDBProvisionStrategy.AMPLIFY_TABLE
+    : false;
+
+  if (!useAmplifyManagedTableResources) {
+    const cfnTable = table.table;
+    cfnTable.globalSecondaryIndexes = appendIndex(cfnTable.globalSecondaryIndexes, indexInfo);
+  } else {
+    const cfnTable = table.table.node.defaultChild;
+    const idx = table.globalSecondaryIndexes.length - 1;
+    cfnTable.addOverride(`Properties.globalSecondaryIndexes.${idx}`, indexInfo);
   }
 }
 
@@ -846,7 +887,7 @@ export const generateAuthExpressionForSandboxMode = (enabled: boolean): string =
 
 export function getDBInfo(ctx: TransformerContextProvider, modelName: string) {
   const dbInfo = ctx.modelToDatasourceMap.get(modelName);
-  const result = dbInfo ?? { dbType: 'DDB', provisionDB: true };
+  const result = dbInfo ?? { dbType: 'DDB', provisionDB: true, provisionStrategy: DynamoDBProvisionStrategy.DEFAULT };
   return result;
 }
 
@@ -856,7 +897,7 @@ export function getDBType(ctx: TransformerContextProvider, modelName: string) {
   return dbType;
 }
 
-export const getVTLGenerator = (dbInfo: DatasourceType | undefined): RDSIndexVTLGenerator | DynamoDBIndexVTLGenerator => {
+export const getVTLGenerator = (dbInfo: DataSourceType | undefined): RDSIndexVTLGenerator | DynamoDBIndexVTLGenerator => {
   const dbType = dbInfo ? dbInfo.dbType : 'DDB';
   if (dbType === 'MySQL') {
     return new RDSIndexVTLGenerator();

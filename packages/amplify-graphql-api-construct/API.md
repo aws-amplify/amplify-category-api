@@ -6,6 +6,7 @@
 
 import { AppsyncFunction } from 'aws-cdk-lib/aws-appsync';
 import { BaseDataSource } from 'aws-cdk-lib/aws-appsync';
+import { BillingMode } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
@@ -45,6 +46,7 @@ import { NoneDataSource } from 'aws-cdk-lib/aws-appsync';
 import { OpenSearchDataSource } from 'aws-cdk-lib/aws-appsync';
 import { RdsDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Resolver } from 'aws-cdk-lib/aws-appsync';
+import { StreamViewType } from 'aws-cdk-lib/aws-dynamodb';
 
 // @public
 export interface AddFunctionProps {
@@ -55,6 +57,28 @@ export interface AddFunctionProps {
     readonly requestMappingTemplate?: MappingTemplate;
     readonly responseMappingTemplate?: MappingTemplate;
     readonly runtime?: FunctionRuntime;
+}
+
+// @public
+export interface AmplifyDynamoDbModelDataSourceDefinitionStrategy {
+    // (undocumented)
+    readonly dbType: 'DYNAMODB';
+    // (undocumented)
+    readonly provisionStrategy: 'AMPLIFY_TABLE';
+}
+
+// @public
+export class AmplifyDynamoDbTableWrapper {
+    constructor(resource: CfnResource);
+    set billingMode(billingMode: BillingMode);
+    set deletionProtectionEnabled(deletionProtectionEnabled: boolean);
+    static isAmplifyDynamoDbTableResource(x: any): x is CfnResource;
+    set pointInTimeRecoveryEnabled(pointInTimeRecoveryEnabled: boolean);
+    set provisionedThroughput(provisionedThroughput: ProvisionedThroughput);
+    setGlobalSecondaryIndexProvisionedThroughput(indexName: string, provisionedThroughput: ProvisionedThroughput): void;
+    set sseSpecification(sseSpecification: SSESpecification);
+    set streamSpecification(streamSpecification: StreamSpecification);
+    set timeToLiveAttribute(timeToLiveSpecification: TimeToLiveSpecification);
 }
 
 // @public
@@ -110,6 +134,7 @@ export interface AmplifyGraphqlApiProps {
 
 // @public
 export interface AmplifyGraphqlApiResources {
+    readonly amplifyDynamoDbTables: Record<string, AmplifyDynamoDbTableWrapper>;
     readonly cfnResources: AmplifyGraphqlApiCfnResources;
     readonly functions: Record<string, IFunction>;
     readonly graphqlApi: IGraphqlApi;
@@ -120,8 +145,10 @@ export interface AmplifyGraphqlApiResources {
 
 // @public
 export class AmplifyGraphqlDefinition {
+    static combine(definitions: IAmplifyGraphqlDefinition[]): IAmplifyGraphqlDefinition;
     static fromFiles(...filePaths: string[]): IAmplifyGraphqlDefinition;
-    static fromString(schema: string): IAmplifyGraphqlDefinition;
+    static fromFilesAndDefinition(filePaths: string | string[], modelDataSourceDefinition?: ModelDataSourceDefinition): IAmplifyGraphqlDefinition;
+    static fromString(schema: string, modelDataSourceDefinition?: ModelDataSourceDefinition): IAmplifyGraphqlDefinition;
 }
 
 // @public
@@ -170,6 +197,14 @@ export interface CustomConflictResolutionStrategy extends ConflictResolutionStra
 }
 
 // @public
+export interface DefaultDynamoDbModelDataSourceDefinitionStrategy {
+    // (undocumented)
+    readonly dbType: 'DYNAMODB';
+    // (undocumented)
+    readonly provisionStrategy: 'DEFAULT';
+}
+
+// @public
 export type FunctionSlot = MutationFunctionSlot | QueryFunctionSlot | SubscriptionFunctionSlot;
 
 // @public
@@ -195,6 +230,7 @@ export interface IAMAuthorizationConfig {
 
 // @public
 export interface IAmplifyGraphqlDefinition {
+    readonly dataSourceDefinition: Record<string, ModelDataSourceDefinition>;
     readonly functionSlots: FunctionSlot[];
     readonly schema: string;
 }
@@ -215,6 +251,18 @@ export interface LambdaAuthorizationConfig {
     readonly function: IFunction;
     readonly ttl: Duration;
 }
+
+// @public
+export interface ModelDataSourceDefinition {
+    readonly name: string;
+    readonly strategy: ModelDataSourceDefinitionStrategy;
+}
+
+// @public (undocumented)
+export type ModelDataSourceDefinitionDbType = 'DYNAMODB';
+
+// @public
+export type ModelDataSourceDefinitionStrategy = DefaultDynamoDbModelDataSourceDefinitionStrategy | AmplifyDynamoDbModelDataSourceDefinitionStrategy;
 
 // @public
 export interface MutationFunctionSlot extends FunctionSlotBase {
@@ -252,9 +300,33 @@ export interface PartialTranslationBehavior {
 }
 
 // @public
+export interface ProvisionedThroughput {
+    readonly readCapacityUnits: number;
+    readonly writeCapacityUnits: number;
+}
+
+// @public
 export interface QueryFunctionSlot extends FunctionSlotBase {
     readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preDataLoad' | 'postDataLoad' | 'finish';
     readonly typeName: 'Query';
+}
+
+// @public
+export interface SSESpecification {
+    readonly kmsMasterKeyId?: string;
+    readonly sseEnabled: boolean;
+    readonly sseType?: SSEType;
+}
+
+// @public
+export enum SSEType {
+    // (undocumented)
+    KMS = "KMS"
+}
+
+// @public
+export interface StreamSpecification {
+    readonly streamViewType: StreamViewType;
 }
 
 // @public
@@ -264,9 +336,16 @@ export interface SubscriptionFunctionSlot extends FunctionSlotBase {
 }
 
 // @public
+export interface TimeToLiveSpecification {
+    readonly attributeName?: string;
+    readonly enabled: boolean;
+}
+
+// @public
 export interface TranslationBehavior {
     readonly disableResolverDeduping: boolean;
     readonly enableAutoIndexQueryNames: boolean;
+    // (undocumented)
     readonly enableSearchNodeToNodeEncryption: boolean;
     readonly enableTransformerCfnOutputs: boolean;
     readonly populateOwnerFieldForStaticGroupAuth: boolean;

@@ -1,5 +1,4 @@
-import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
-import { DatasourceType } from '../config';
+import { DataSourceType, RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSConnectionSecrets } from '../types';
 
 export type UserDefinedSlot = {
@@ -16,7 +15,7 @@ export type UserDefinedResolver = {
 };
 
 export type DatasourceTransformationConfig = {
-  modelToDatasourceMap?: Map<string, DatasourceType>;
+  modelToDatasourceMap?: Map<string, DataSourceType>;
   datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
   rdsLayerMapping?: RDSLayerMapping;
 };
