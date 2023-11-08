@@ -1,5 +1,5 @@
-import { ModelDataSourceDefinition } from '../types';
 import { DataSourceType, DynamoDBProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { ModelDataSourceDefinition } from '../types';
 
 type DataSourceConfig = {
   modelToDatasourceMap: Map<string, DataSourceType>;

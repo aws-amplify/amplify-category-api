@@ -232,7 +232,7 @@ export interface IAMAuthorizationConfig {
 export interface IAmplifyGraphqlDefinition {
     readonly dataSourceDefinition: Record<string, ModelDataSourceDefinition>;
     readonly functionSlots: FunctionSlot[];
-    readonly modelDataSourceBinding: ModelDataSourceBinding;
+    readonly modelDataSourceBinding: ModelDataSourceDefinition;
     readonly schema: string;
 }
 

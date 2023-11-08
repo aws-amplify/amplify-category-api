@@ -5,7 +5,7 @@ import { App, Stack, Duration } from 'aws-cdk-lib';
 import {
   AmplifyGraphqlApi,
   AmplifyGraphqlDefinition,
-  SqlModelDataSourceBindingDbConnectionConfig,
+  SqlModelDataSourceDefinitionDbConnectionConfig,
 } from '@aws-amplify/graphql-api-construct';
 
 interface DBDetails {

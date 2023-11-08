@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-cycle
 export * from './transformer-context';
 export { TransformerPluginProvider, TransformerPluginType } from './transformer-plugin-provider';
 export {

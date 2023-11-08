@@ -32,6 +32,7 @@ export type {
   DefaultDynamoDbModelDataSourceDefinitionStrategy,
   AmplifyDynamoDbModelDataSourceDefinitionStrategy,
   ModelDataSourceDefinitionDbType,
+  SQLLambdaModelDataSourceDefinitionStrategy,
 } from './types';
 export { AmplifyGraphqlApi } from './amplify-graphql-api';
 export { AmplifyGraphqlDefinition } from './amplify-graphql-definition';

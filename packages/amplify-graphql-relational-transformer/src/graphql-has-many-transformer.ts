@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 import {
-  DBType,
   DDB_DB_TYPE,
   DirectiveWrapper,
   generateGetArgumentsInput,
@@ -11,6 +10,7 @@ import {
   isRDSModel,
 } from '@aws-amplify/graphql-transformer-core';
 import {
+  DBType,
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,

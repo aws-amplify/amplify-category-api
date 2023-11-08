@@ -57,7 +57,6 @@ export {
   RDSConnectionSecrets,
   ImportedDataSourceConfig,
   RDSDataSourceConfig,
-  SQLDBType,
 } from './types';
 /**
  * Returns the extra set of directives that are supported by AppSync service.

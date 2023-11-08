@@ -84,7 +84,7 @@ describe('AmplifyGraphqlDefinition', () => {
   describe('fromFilesAndBinding', () => {
     let tmpDir: string;
 
-    const defaultBinding: ModelDataSourceBinding = {
+    const defaultBinding: ModelDataSourceDefinition = {
       bindingType: 'DynamoDB',
     };
 

@@ -1,6 +1,7 @@
 import { parse, FieldDefinitionNode, ObjectTypeDefinitionNode, visit } from 'graphql';
 import _ from 'lodash';
-import { DataSourceType, isImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { isImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { DataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
 
 export const checkForUnsupportedDirectives = (schema: string, modelToDatasourceMap: Map<string, DataSourceType>): void => {
   const unsupportedRDSDirectives = ['searchable', 'predictions', 'function', 'manyToMany', 'http', 'mapsTo'];

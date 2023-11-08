@@ -8,7 +8,7 @@ export const getAvailabilityZoneOfSubnets = async (subnetIds: string[], region: 
   });
   const subnets = await ec2.send(command);
   return subnets.Subnets?.map((subnet) => ({
-    SubnetId: subnet.SubnetId,
-    AvailabilityZone: subnet.AvailabilityZone,
+    subnetId: subnet.SubnetId,
+    availabilityZone: subnet.AvailabilityZone,
   }));
 };

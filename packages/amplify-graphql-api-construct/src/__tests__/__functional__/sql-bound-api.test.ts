@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
-import { SqlModelDataSourceBindingDbConnectionConfig, SqlModelDataSourceBindingVpcConfig } from '../../types';
+import { SqlModelDataSourceDefinitionDbConnectionConfig, SqlModelDataSourceBindingVpcConfig } from '../../types';
 import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
 
 const defaultSchema = /* GraphQL */ `
@@ -18,7 +18,7 @@ const vpcConfiguration: SqlModelDataSourceBindingVpcConfig = {
   subnetAvailabilityZones: [{ subnetId: 'subnet-123abc', availabilityZone: 'us-east-1a' }],
 };
 
-const dbConnectionConfig: SqlModelDataSourceBindingDbConnectionConfig = {
+const dbConnectionConfig: SqlModelDataSourceDefinitionDbConnectionConfig = {
   hostnameSsmPath: '/ssm/path/hostnameSsmPath',
   usernameSsmPath: '/ssm/path/usernameSsmPath',
   passwordSsmPath: '/ssm/path/passwordSsmPath',

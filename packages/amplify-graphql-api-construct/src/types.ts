@@ -17,7 +17,7 @@ import { IRole, CfnRole } from 'aws-cdk-lib/aws-iam';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { IFunction, CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
-import { SQLDBType } from '@aws-amplify/graphql-transformer-core';
+import { RDSLayerMapping, SQLDBType, VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { AmplifyDynamoDbTableWrapper } from './amplify-dynamodb-table-wrapper';
 
 /**
@@ -541,48 +541,6 @@ export interface IBackendOutputStorageStrategy {
 }
 
 /**
- * Defines a datasource for resolving GraphQL operations against `@model` types in a GraphQL schema.
- * @experimental
- */
-export interface ModelDataSourceDefinition {
-  /**
-   * The name of the ModelDataSource. This will be used to name the AppSynce DataSource itself, plus any associated resources like resolver
-   * Lambdas, custom CDK resources. This name must be unique across all schema definitions in a GraphQL API.
-   */
-  readonly name: string;
-  /**
-   * The ModelDataSourceDefinitionStrategy.
-   */
-  readonly strategy: ModelDataSourceDefinitionStrategy;
-}
-/**
- * All known ModelDataSourceDefinitionStrategies. Concrete strategies vary widely in their requirements and implementations.
- * @experimental
- */
-export type ModelDataSourceDefinitionStrategy =
-  | DefaultDynamoDbModelDataSourceDefinitionStrategy
-  | AmplifyDynamoDbModelDataSourceDefinitionStrategy;
-
-export type ModelDataSourceDefinitionDbType = 'DYNAMODB';
-
-/**
- * Use default CloudFormation type 'AWS::DynamoDB::Table' to provision table.
- * @experimental
- */
-export interface DefaultDynamoDbModelDataSourceDefinitionStrategy {
-  readonly dbType: 'DYNAMODB';
-  readonly provisionStrategy: 'DEFAULT';
-}
-/**
- * Use custom resource type 'Custom::AmplifyDynamoDBTable' to provision table.
- * @experimental
- */
-export interface AmplifyDynamoDbModelDataSourceDefinitionStrategy {
-  readonly dbType: 'DYNAMODB';
-  readonly provisionStrategy: 'AMPLIFY_TABLE';
-}
-
-/**
  * Input props for the AmplifyGraphqlApi construct. Specifies what the input to transform into an Api, and configurations for
  * the transformation process.
  */
@@ -807,42 +765,67 @@ export interface AddFunctionProps {
 }
 
 /**
- * Additional binding configurations used to resolve models in an AmplifyGraphqlDefinition with a data source. AmplifyGraphqlApiDefinitions
- * created with one of these data sources can use the `@model` directive to provision storage (DynamoDB only), define fine-grained
- * authorization rules, re-map GraphQL field names, define model-to-model relationships, and more. See
- * https://docs.amplify.aws/cli/graphql/directives-reference/.
+ * Defines a datasource for resolving GraphQL operations against `@model` types in a GraphQL schema.
  * @experimental
  */
-export type ModelDataSourceBinding = DynamoModelDataSourceBinding | SqlModelDataSourceBinding;
+export interface ModelDataSourceDefinition {
+  /**
+   * The name of the ModelDataSource. This will be used to name the AppSynce DataSource itself, plus any associated resources like resolver
+   * Lambdas, custom CDK resources. This name must be unique across all schema definitions in a GraphQL API.
+   */
+  readonly name: string;
+  /**
+   * The ModelDataSourceDefinitionStrategy.
+   */
+  readonly strategy: ModelDataSourceDefinitionStrategy;
+}
+/**
+ * All known ModelDataSourceDefinitionStrategies. Concrete strategies vary widely in their requirements and implementations.
+ * @experimental
+ */
+export type ModelDataSourceDefinitionStrategy =
+  | DefaultDynamoDbModelDataSourceDefinitionStrategy
+  | AmplifyDynamoDbModelDataSourceDefinitionStrategy;
+
+export type ModelDataSourceDefinitionDbType = 'DYNAMODB';
 
 /**
- * Binding type to specify a DyanamoDB data source.
+ * Use default CloudFormation type 'AWS::DynamoDB::Table' to provision table.
  * @experimental
  */
-export interface DynamoModelDataSourceBinding {
-  /**
-   * The type of the data source used to process model operations for this definition.
-   * @default 'DynamoDB'
-   */
-  readonly bindingType: 'DynamoDB';
+export interface DefaultDynamoDbModelDataSourceDefinitionStrategy {
+  readonly dbType: 'DYNAMODB';
+  readonly provisionStrategy: 'DEFAULT';
+}
+/**
+ * Use custom resource type 'Custom::AmplifyDynamoDBTable' to provision table.
+ * @experimental
+ */
+export interface AmplifyDynamoDbModelDataSourceDefinitionStrategy {
+  readonly dbType: 'DYNAMODB';
+  readonly provisionStrategy: 'AMPLIFY_TABLE';
 }
 
 /**
- * Additional binding configurations used to connect an AmplifyGraphqlApi to a SQL-based data source using a Lambda.
+ * A strategy that creates a Lambda to connect to a pre-existing SQL table to resolve model data.
  *
- * The `bindingType` of this data source must be one of the values defined by `SqlModelDataSourceBindingType`.
  * @experimental
  */
-export interface SqlModelDataSourceBinding {
+export interface SQLLambdaModelDataSourceDefinitionStrategy {
   /**
    * The type of the SQL database used to process model operations for this definition.
    */
-  readonly bindingType: SQLDBType;
+  readonly dbType: SQLDBType;
+
+  /**
+   * The parameters the Lambda data source will use to connect to the database.
+   */
+  readonly dbConnectionConfig: SqlModelDataSourceDefinitionDbConnectionConfig;
 
   /**
    * The configuration of the VPC into which to install the Lambda.
    */
-  readonly vpcConfiguration?: SqlModelDataSourceBindingVpcConfig;
+  readonly vpcConfiguration?: VpcConfig;
 
   /**
    * Custom SQL statements. The key is the value of the `references` attribute of the `@sql` directive in the `schema`; the value is the SQL
@@ -851,28 +834,9 @@ export interface SqlModelDataSourceBinding {
   readonly customSqlStatements?: Record<string, string>;
 
   /**
-   * The parameters the Lambda data source will use to connect to the database.
+   * An optional override for the default SQL Lambda Layer
    */
-  readonly dbConnectionConfig: SqlModelDataSourceBindingDbConnectionConfig;
-}
-
-/**
- * Configuration of the VPC in which to install a Lambda to resolve queries against a SQL-based data source. The SQL Lambda will be deployed
- * into the specified VPC, subnets, and security groups. The specified subnets and security groups must be in the same VPC. The VPC must
- * have at least one subnet. The construct will also create VPC service endpoints in the specified subnets, as well as inbound security
- * rules, to allow traffic on port 443 within each security group. This allows the Lambda to read database connection information from
- * Secure Systems Manager.
- * @experimental
- */
-export interface SqlModelDataSourceBindingVpcConfig {
-  /** The VPC to install the Lambda data source in. */
-  readonly vpcId: string;
-
-  /** The security groups to install the Lambda data source in. */
-  readonly securityGroupIds: string[];
-
-  /** The subnets to install the Lambda data source in, one per availability zone. */
-  readonly subnetAvailabilityZones: SubnetAvailabilityZone[];
+  readonly sqlLambdaLayerMapping?: RDSLayerMapping;
 }
 
 /**
@@ -895,7 +859,7 @@ export interface SubnetAvailabilityZone {
  * These parameters are retrieved from Secure Systems Manager in the same region as the Lambda.
  * @experimental
  */
-export interface SqlModelDataSourceBindingDbConnectionConfig {
+export interface SqlModelDataSourceDefinitionDbConnectionConfig {
   /** The Secure Systems Manager parameter containing the hostname of the database. For RDS-based SQL data sources, this can be the hostname
    * of a database proxy, cluster, or instance.
    */

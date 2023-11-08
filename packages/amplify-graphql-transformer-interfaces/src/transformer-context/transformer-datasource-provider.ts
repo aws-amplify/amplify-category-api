@@ -28,12 +28,21 @@ export interface TransformerDataSourceManagerProvider {
 export interface DataSourceProvider extends BackedDataSource {}
 
 /**
- * Supported transformable database types.
+ * Supported transformable database types. TODO: Move this to amplify-graphql-api-construct
  */
-export type DBType = 'DDB' | 'MySQL' | 'Postgres';
+export type DBType = 'DDB' | SQLDBType;
 
 /**
- * Provisioning configuration for a DynamoDB datasource
+ * Supported transformable SQL database types. TODO: Move this to amplify-graphql-api-construct
+ */
+export type SQLDBType = 'MySQL' | 'Postgres';
+
+// TODO: add strategy for the RDS. TODO: Move this to amplify-graphql-api-construct
+export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy | SQLLambdaModelProvisionStrategy;
+
+/**
+ * Provisioning configuration for a DynamoDB datasource. TODO: Remove this type in favor of strategy definitions in
+ * amplify-graphql-api-construct
  */
 export const enum DynamoDBProvisionStrategy {
   /**
@@ -46,9 +55,15 @@ export const enum DynamoDBProvisionStrategy {
   AMPLIFY_TABLE = 'AMPLIFY_TABLE',
 }
 
-// TODO: add strategy for the RDS
-export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy;
+// TODO: Remove this type in favor of fully-specified SQLLambdaModelDataSourceDefinitionStrategy from amplify-graphql-api-construct
+export const enum SQLLambdaModelProvisionStrategy {
+  /**
+   * A strategy that creates a Lambda to connect to a pre-existing SQL table to resolve model data. 
+   */
+  DEFAULT = 'DEFAULT'
+}
 
+// TODO: Replace usages of this type with ModelDataSourceDefinitions
 export interface DataSourceType {
   dbType: DBType;
   provisionDB: boolean;

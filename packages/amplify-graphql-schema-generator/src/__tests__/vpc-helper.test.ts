@@ -18,12 +18,12 @@ const vpcId = 'vpc-aaaaaaaaaaaaaaaaa';
 // Note that this configuration includes two subnet definitions for us-west-2a. In our tests,
 // we will assert that only one of the subnets is actually used.
 const subnetAvailabilityZones: SubnetAvailabilityZone[] = [
-  { SubnetId: 'subnet-1111111111', AvailabilityZone: 'us-west-2a' },
-  { SubnetId: 'subnet-2222222222', AvailabilityZone: 'us-west-2b' },
-  { SubnetId: 'subnet-3333333333', AvailabilityZone: 'us-west-2a' },
+  { subnetId: 'subnet-1111111111', availabilityZone: 'us-west-2a' },
+  { subnetId: 'subnet-2222222222', availabilityZone: 'us-west-2b' },
+  { subnetId: 'subnet-3333333333', availabilityZone: 'us-west-2a' },
 ];
 
-const expectedSubnetIds = [subnetAvailabilityZones[0].SubnetId, subnetAvailabilityZones[1].SubnetId];
+const expectedSubnetIds = [subnetAvailabilityZones[0].subnetId, subnetAvailabilityZones[1].subnetId];
 
 const securityGroupIds = ['sg-abc123'];
 
@@ -41,7 +41,7 @@ describe('detect VPC settings', () => {
 
     const result = await getHostVpc('mock-rds-cluster-instance-1.aaaaaaaaaaaa.us-west-2.rds.amazonaws.com', 'us-west-2');
 
-    const resultSubnetIds = result?.subnetAvailabilityZoneConfig.map((sn) => sn.SubnetId);
+    const resultSubnetIds = result?.subnetAvailabilityZoneConfig.map((sn) => sn.subnetId);
 
     expect(result).toBeDefined();
     expect(result?.vpcId).toEqual(vpcId);
@@ -67,7 +67,7 @@ describe('detect VPC settings', () => {
 
     const result = await getHostVpc('mock-rds-cluster.cluster-abc123.us-west-2.rds.amazonaws.com', 'us-west-2');
 
-    const resultSubnetIds = result?.subnetAvailabilityZoneConfig.map((sn) => sn.SubnetId);
+    const resultSubnetIds = result?.subnetAvailabilityZoneConfig.map((sn) => sn.subnetId);
 
     expect(result).toBeDefined();
     expect(result?.vpcId).toEqual(vpcId);
@@ -89,7 +89,7 @@ describe('detect VPC settings', () => {
 
     const result = await getHostVpc('mock-rds-cluster.proxy-abc123.us-west-2.rds.amazonaws.com', 'us-west-2');
 
-    const resultSubnetIds = result?.subnetAvailabilityZoneConfig.map((sn) => sn.SubnetId);
+    const resultSubnetIds = result?.subnetAvailabilityZoneConfig.map((sn) => sn.subnetId);
 
     expect(result).toBeDefined();
     expect(result?.vpcId).toEqual(vpcId);
@@ -145,7 +145,7 @@ const instanceResponse: DescribeDBInstancesCommandOutput = {
           ParameterApplyStatus: 'in-sync',
         },
       ],
-      AvailabilityZone: subnetAvailabilityZones[0].AvailabilityZone,
+      AvailabilityZone: subnetAvailabilityZones[0].availabilityZone,
       DBSubnetGroup: {
         DBSubnetGroupName: 'default-vpc-abc123',
         DBSubnetGroupDescription: 'Created from the RDS Management Console',
@@ -153,25 +153,25 @@ const instanceResponse: DescribeDBInstancesCommandOutput = {
         SubnetGroupStatus: 'Complete',
         Subnets: [
           {
-            SubnetIdentifier: subnetAvailabilityZones[0].SubnetId,
+            SubnetIdentifier: subnetAvailabilityZones[0].subnetId,
             SubnetAvailabilityZone: {
-              Name: subnetAvailabilityZones[0].AvailabilityZone,
+              Name: subnetAvailabilityZones[0].availabilityZone,
             },
             SubnetOutpost: {},
             SubnetStatus: 'Active',
           },
           {
-            SubnetIdentifier: subnetAvailabilityZones[1].SubnetId,
+            SubnetIdentifier: subnetAvailabilityZones[1].subnetId,
             SubnetAvailabilityZone: {
-              Name: subnetAvailabilityZones[1].AvailabilityZone,
+              Name: subnetAvailabilityZones[1].availabilityZone,
             },
             SubnetOutpost: {},
             SubnetStatus: 'Active',
           },
           {
-            SubnetIdentifier: subnetAvailabilityZones[2].SubnetId,
+            SubnetIdentifier: subnetAvailabilityZones[2].subnetId,
             SubnetAvailabilityZone: {
-              Name: subnetAvailabilityZones[2].AvailabilityZone,
+              Name: subnetAvailabilityZones[2].availabilityZone,
             },
             SubnetOutpost: {},
             SubnetStatus: 'Active',
@@ -225,7 +225,7 @@ const clusterResponse: DescribeDBClustersCommandOutput = {
   DBClusters: [
     {
       AllocatedStorage: 1,
-      AvailabilityZones: subnetAvailabilityZones.map((saz) => saz.AvailabilityZone),
+      AvailabilityZones: subnetAvailabilityZones.map((saz) => saz.availabilityZone),
       BackupRetentionPeriod: 1,
       DBClusterIdentifier: 'mock-rds-cluster',
       DBClusterParameterGroup: 'default.aurora-mysql8.0',
@@ -293,25 +293,25 @@ const describeDbSubnetGroupsResponse: DescribeDBSubnetGroupsCommandOutput = {
       SubnetGroupStatus: 'Complete',
       Subnets: [
         {
-          SubnetIdentifier: subnetAvailabilityZones[0].SubnetId,
+          SubnetIdentifier: subnetAvailabilityZones[0].subnetId,
           SubnetAvailabilityZone: {
-            Name: subnetAvailabilityZones[0].AvailabilityZone,
+            Name: subnetAvailabilityZones[0].availabilityZone,
           },
           SubnetOutpost: {},
           SubnetStatus: 'Active',
         },
         {
-          SubnetIdentifier: subnetAvailabilityZones[1].SubnetId,
+          SubnetIdentifier: subnetAvailabilityZones[1].subnetId,
           SubnetAvailabilityZone: {
-            Name: subnetAvailabilityZones[1].AvailabilityZone,
+            Name: subnetAvailabilityZones[1].availabilityZone,
           },
           SubnetOutpost: {},
           SubnetStatus: 'Active',
         },
         {
-          SubnetIdentifier: subnetAvailabilityZones[2].SubnetId,
+          SubnetIdentifier: subnetAvailabilityZones[2].subnetId,
           SubnetAvailabilityZone: {
-            Name: subnetAvailabilityZones[2].AvailabilityZone,
+            Name: subnetAvailabilityZones[2].availabilityZone,
           },
           SubnetOutpost: {},
           SubnetStatus: 'Active',
@@ -335,7 +335,7 @@ const proxyResponse: DescribeDBProxiesCommandOutput = {
       EngineFamily: 'MYSQL',
       VpcId: vpcId,
       VpcSecurityGroupIds: securityGroupIds,
-      VpcSubnetIds: subnetAvailabilityZones.map((saz) => saz.SubnetId),
+      VpcSubnetIds: subnetAvailabilityZones.map((saz) => saz.subnetId),
       Auth: [
         {
           AuthScheme: 'SECRETS',
@@ -358,21 +358,21 @@ const describeSubnetsResponse: DescribeSubnetsCommandOutput = {
   $metadata: {},
   Subnets: [
     {
-      AvailabilityZone: subnetAvailabilityZones[0].AvailabilityZone,
-      AvailabilityZoneId: `${subnetAvailabilityZones[0].AvailabilityZone}-id`,
+      AvailabilityZone: subnetAvailabilityZones[0].availabilityZone,
+      AvailabilityZoneId: `${subnetAvailabilityZones[0].availabilityZone}-id`,
       AvailableIpAddressCount: 16379,
       CidrBlock: '10.0.192.0/18',
       DefaultForAz: false,
       MapPublicIpOnLaunch: false,
       MapCustomerOwnedIpOnLaunch: false,
       State: 'available',
-      SubnetId: subnetAvailabilityZones[0].SubnetId,
+      SubnetId: subnetAvailabilityZones[0].subnetId,
       VpcId: vpcId,
       OwnerId: '123456789012',
       AssignIpv6AddressOnCreation: false,
       Ipv6CidrBlockAssociationSet: [],
       Tags: [],
-      SubnetArn: `arn:aws:ec2:us-west-2:123456789012:subnet/${subnetAvailabilityZones[0].SubnetId}`,
+      SubnetArn: `arn:aws:ec2:us-west-2:123456789012:subnet/${subnetAvailabilityZones[0].subnetId}`,
       EnableDns64: false,
       Ipv6Native: false,
       PrivateDnsNameOptionsOnLaunch: {
@@ -382,21 +382,21 @@ const describeSubnetsResponse: DescribeSubnetsCommandOutput = {
       },
     },
     {
-      AvailabilityZone: subnetAvailabilityZones[1].AvailabilityZone,
-      AvailabilityZoneId: `${subnetAvailabilityZones[1].AvailabilityZone}-id`,
+      AvailabilityZone: subnetAvailabilityZones[1].availabilityZone,
+      AvailabilityZoneId: `${subnetAvailabilityZones[1].availabilityZone}-id`,
       AvailableIpAddressCount: 16379,
       CidrBlock: '10.0.128.0/18',
       DefaultForAz: false,
       MapPublicIpOnLaunch: false,
       MapCustomerOwnedIpOnLaunch: false,
       State: 'available',
-      SubnetId: subnetAvailabilityZones[1].SubnetId,
+      SubnetId: subnetAvailabilityZones[1].subnetId,
       VpcId: vpcId,
       OwnerId: '123456789012',
       AssignIpv6AddressOnCreation: false,
       Ipv6CidrBlockAssociationSet: [],
       Tags: [],
-      SubnetArn: `arn:aws:ec2:us-west-2:123456789012:subnet/${subnetAvailabilityZones[1].SubnetId}`,
+      SubnetArn: `arn:aws:ec2:us-west-2:123456789012:subnet/${subnetAvailabilityZones[1].subnetId}`,
       EnableDns64: false,
       Ipv6Native: false,
       PrivateDnsNameOptionsOnLaunch: {
@@ -406,21 +406,21 @@ const describeSubnetsResponse: DescribeSubnetsCommandOutput = {
       },
     },
     {
-      AvailabilityZone: subnetAvailabilityZones[2].AvailabilityZone,
-      AvailabilityZoneId: `${subnetAvailabilityZones[2].AvailabilityZone}-id`,
+      AvailabilityZone: subnetAvailabilityZones[2].availabilityZone,
+      AvailabilityZoneId: `${subnetAvailabilityZones[2].availabilityZone}-id`,
       AvailableIpAddressCount: 16379,
       CidrBlock: '10.0.1.0/18',
       DefaultForAz: false,
       MapPublicIpOnLaunch: false,
       MapCustomerOwnedIpOnLaunch: false,
       State: 'available',
-      SubnetId: subnetAvailabilityZones[2].SubnetId,
+      SubnetId: subnetAvailabilityZones[2].subnetId,
       VpcId: vpcId,
       OwnerId: '123456789012',
       AssignIpv6AddressOnCreation: false,
       Ipv6CidrBlockAssociationSet: [],
       Tags: [],
-      SubnetArn: `arn:aws:ec2:us-west-2:123456789012:subnet/${subnetAvailabilityZones[2].SubnetId}`,
+      SubnetArn: `arn:aws:ec2:us-west-2:123456789012:subnet/${subnetAvailabilityZones[2].subnetId}`,
       EnableDns64: false,
       Ipv6Native: false,
       PrivateDnsNameOptionsOnLaunch: {

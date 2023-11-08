@@ -37,7 +37,7 @@ import type {
   IBackendOutputStorageStrategy,
   AddFunctionProps,
   ConflictResolution,
-  SqlModelDataSourceBinding,
+  SQLLambdaModelDataSourceDefinitionStrategy,
 } from './types';
 import {
   convertAuthorizationModesToTransformerAuthConfig,
@@ -50,7 +50,7 @@ import {
   addAmplifyMetadataToStackDescription,
   getAdditionalAuthenticationTypes,
 } from './internal';
-import { isSqlModelDataSourceBinding } from './sql-model-datasource-binding';
+import { isSqlModelDataSourceDefinition } from './sql-model-datasource-binding';
 import { parseDataSourceConfig } from './internal/data-source-config';
 import { getStackForScope, walkAndProcessNodes } from './internal/construct-tree';
 
@@ -198,7 +198,7 @@ export class AmplifyGraphqlApi extends Construct {
       ...parseDataSourceConfig(definition.dataSourceDefinition),
     };
 
-    if (isSqlModelDataSourceBinding(definition.modelDataSourceBinding)) {
+    if (isSqlModelDataSourceDefinition(definition.dataSourceDefinition)) {
       executeTransformConfig = this.extendTransformConfig(executeTransformConfig, definition.modelDataSourceBinding);
     }
 
