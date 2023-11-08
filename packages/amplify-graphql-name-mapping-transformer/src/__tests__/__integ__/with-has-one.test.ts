@@ -1,6 +1,10 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { BelongsToTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
+import { DDB_DB_TYPE, MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
+import { DBType } from '@aws-amplify/graphql-transformer-interfaces';
+import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { RefersToTransformer } from '../../graphql-refers-to-transformer';
 import { MapsToTransformer } from '../../graphql-maps-to-transformer';
 import {
   expectedResolversForModelWithRenamedField,
@@ -8,9 +12,6 @@ import {
   testTableNameMapping,
   testRelationalFieldMapping,
 } from './common';
-import { DDB_DB_TYPE, MYSQL_DB_TYPE, DBType } from '@aws-amplify/graphql-transformer-core';
-import { RefersToTransformer } from '../../graphql-refers-to-transformer';
-import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 
 const mappedHasOne = /* GraphQL */ `
   type Employee @model @mapsTo(name: "Person") {

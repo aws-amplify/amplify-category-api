@@ -1,7 +1,25 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { MYSQL_DB_TYPE, POSTGRES_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 import { SQLLambdaModelDataSourceDefinitionStrategy, SqlModelDataSourceDefinitionDbConnectionConfig } from './types';
+
+/**
+ * Type predicate that returns true if the object is a SQLLambdaModelDataSourceDefinitionStrategy.
+ * @param obj the object to inspect
+ * @returns true if the object is a ModelDataSourceDefinition with a SQLLambdaModelDataSourceDefinitionStrategy
+ */
+export const isSQLLambdaModelDataSourceDefinition = (
+  obj: any,
+): obj is {
+  name: string;
+  strategy: SQLLambdaModelDataSourceDefinitionStrategy;
+} => {
+  console.log(`obj: ${JSON.stringify(obj)}`);
+  return (
+    (typeof obj === 'object' || typeof obj === 'function') &&
+    typeof obj.name === 'string' &&
+    isSQLLambdaModelDataSourceDefinitionStrategy(obj.strategy)
+  );
+};
 
 /**
  * Type predicate that returns true if the object is a SQLLambdaModelDataSourceDefinitionStrategy.
@@ -9,25 +27,13 @@ import { SQLLambdaModelDataSourceDefinitionStrategy, SqlModelDataSourceDefinitio
  * @returns true if the object is shaped like a SQLLambdaModelDataSourceDefinitionStrategy
  */
 export const isSQLLambdaModelDataSourceDefinitionStrategy = (obj: any): obj is SQLLambdaModelDataSourceDefinitionStrategy => {
+  console.log(`obj: ${JSON.stringify(obj)}`);
   return (
     (typeof obj === 'object' || typeof obj === 'function') &&
-    typeof obj.strategy === 'string' &&
     typeof obj.dbType === 'string' &&
-    [MYSQL_DB_TYPE, POSTGRES_DB_TYPE].includes(obj.dbType) &&
+    // TODO: Use canonical SQL DB type strings
+    ['MYSQL', 'POSTGRES'].includes(obj.dbType) &&
     isSqlModelDataSourceDefinitionDbConnectionConfig(obj.dbConnectionConfig)
-  );
-};
-
-export const isSQLLambdaModelDataSourceDefinition = (
-  obj: any,
-): obj is {
-  name: string;
-  strategy: SQLLambdaModelDataSourceDefinitionStrategy;
-} => {
-  return (
-    (typeof obj === 'object' || typeof obj === 'function') &&
-    typeof obj.name === 'string' &&
-    isSQLLambdaModelDataSourceDefinitionStrategy(obj.strategy)
   );
 };
 
@@ -37,6 +43,7 @@ export const isSQLLambdaModelDataSourceDefinition = (
  * @returns true if the object is shaped like a SqlModelDataSourceDefinitionDbConnectionConfig
  */
 export const isSqlModelDataSourceDefinitionDbConnectionConfig = (obj: any): obj is SqlModelDataSourceDefinitionDbConnectionConfig => {
+  console.log(`obj: ${JSON.stringify(obj)}`);
   return (
     (typeof obj === 'object' || typeof obj === 'function') &&
     typeof obj.hostnameSsmPath === 'string' &&
@@ -50,7 +57,7 @@ export const isSqlModelDataSourceDefinitionDbConnectionConfig = (obj: any): obj 
 /**
  * Class exposing utilities to produce SQLLambdaModelDataSourceDefinitionStrategy objects given various inputs.
  */
-export class SqlModelDataSourceBindingFactory {
+export class SQLLambdaModelDataSourceDefinitionStrategyFactory {
   /**
    * Creates a SQLLambdaModelDataSourceDefinitionStrategy where the binding's `customSqlStatements` are populated from `sqlFiles`. The key
    * of the `customSqlStatements` record is the file's base name (that is, the name of the file minus the directory and extension).

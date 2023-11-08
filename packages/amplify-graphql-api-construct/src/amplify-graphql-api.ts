@@ -50,7 +50,7 @@ import {
   addAmplifyMetadataToStackDescription,
   getAdditionalAuthenticationTypes,
 } from './internal';
-import { isSQLLambdaModelDataSourceDefinition } from './sql-model-datasource-binding';
+import { isSQLLambdaModelDataSourceDefinition } from './sql-model-datasource-def';
 import { parseDataSourceConfig } from './internal/data-source-config';
 import { getStackForScope, walkAndProcessNodes } from './internal/construct-tree';
 
@@ -201,8 +201,11 @@ export class AmplifyGraphqlApi extends Construct {
     };
 
     // TODO: Update this to support multiple definitions; right now we assume only one SQL data source type
-    if (isSQLLambdaModelDataSourceDefinition(definition.dataSourceDefinition)) {
-      executeTransformConfig = this.extendTransformConfig(executeTransformConfig, definition.dataSourceDefinition);
+    for (const def of Object.values(definition.dataSourceDefinition)) {
+      if (isSQLLambdaModelDataSourceDefinition(def)) {
+        executeTransformConfig = this.extendTransformConfig(executeTransformConfig, def);
+        break;
+      }
     }
 
     executeTransform(executeTransformConfig);
