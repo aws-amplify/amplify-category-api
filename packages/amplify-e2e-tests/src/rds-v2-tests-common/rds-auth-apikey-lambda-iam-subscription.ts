@@ -58,7 +58,6 @@ export const testApiKeyLambdaIamAuthSubscription = (engine: ImportedRDSType, que
     let host = 'localhost';
     const identifier = `integtest${db_identifier}`;
     const engineSuffix = engine === ImportedRDSType.MYSQL ? 'mysql' : 'pg';
-    const engineName = engine === ImportedRDSType.MYSQL ? 'mysql' : 'postgres';
     const projName = `${engineSuffix}modelauth1`;
     const apiName = projName;
 

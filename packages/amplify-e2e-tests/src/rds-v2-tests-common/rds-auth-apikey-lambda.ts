@@ -37,7 +37,6 @@ export const testRdsApiKeyAndLambdaAuth = (engine: ImportedRDSType, queries: str
     let host = 'localhost';
     const identifier = `integtest${db_identifier}`;
     const engineSuffix = engine === ImportedRDSType.MYSQL ? 'mysql' : 'pg';
-    const engineName = engine === ImportedRDSType.MYSQL ? 'mysql' : 'postgres';
     const projName = `${engineSuffix}modelauth2`;
     const apiName = projName;
 

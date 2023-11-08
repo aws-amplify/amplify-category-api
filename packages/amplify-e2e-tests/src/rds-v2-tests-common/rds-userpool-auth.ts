@@ -473,7 +473,9 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
       };
       await expect(async () => {
         await todoHelperNonOwner.update(`update${modelName}`, todoUpdated);
-      }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access updateTodoOwnerFieldString on type Mutation"`);
+      }).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"GraphQL error: Not Authorized to access updateTodoOwnerFieldString on type Mutation"`,
+      );
 
       const getResult = await todoHelperNonOwner.get({
         id: todo['id'],
@@ -487,7 +489,9 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
         await todoHelperNonOwner.delete(`delete${modelName}`, {
           id: todo['id'],
         });
-      }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access deleteTodoOwnerFieldString on type Mutation"`);
+      }).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"GraphQL error: Not Authorized to access deleteTodoOwnerFieldString on type Mutation"`,
+      );
 
       const todoRandom = {
         id: Date.now().toString(),
@@ -951,7 +955,9 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
 
       await expect(async () => {
         await todoHelperNonAdmin.create(resultSetName, todo);
-      }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access createTodoGroupFieldString on type Mutation"`);
+      }).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"GraphQL error: Not Authorized to access createTodoGroupFieldString on type Mutation"`,
+      );
 
       const todoUpdated = {
         id: todo['id'],
@@ -960,7 +966,9 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
       };
       await expect(async () => {
         await todoHelperNonAdmin.update(`update${modelName}`, todoUpdated);
-      }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access updateTodoGroupFieldString on type Mutation"`);
+      }).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"GraphQL error: Not Authorized to access updateTodoGroupFieldString on type Mutation"`,
+      );
 
       const getResult = await todoHelperNonAdmin.get({
         id: todo['id'],
@@ -974,7 +982,9 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
         await todoHelperNonAdmin.delete(`delete${modelName}`, {
           id: todo['id'],
         });
-      }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access deleteTodoGroupFieldString on type Mutation"`);
+      }).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"GraphQL error: Not Authorized to access deleteTodoGroupFieldString on type Mutation"`,
+      );
     });
 
     test('users in groups stored as list can perform CRUD operations', async () => {

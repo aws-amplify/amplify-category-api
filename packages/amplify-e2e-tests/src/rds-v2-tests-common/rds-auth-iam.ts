@@ -47,7 +47,6 @@ export const testRdsIamAuth = (engine: ImportedRDSType, queries: string[]): void
     let host = 'localhost';
     const identifier = `integtest${db_identifier}`;
     const engineSuffix = engine === ImportedRDSType.MYSQL ? 'mysql' : 'pg';
-    const engineName = engine === ImportedRDSType.MYSQL ? 'mysql' : 'postgres';
     const projName = `${engineSuffix}modelauth3`;
     const apiName = projName;
 
