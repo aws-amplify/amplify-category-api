@@ -211,6 +211,8 @@ function _setupCDKTestsLinux {
     _installCLIFromLocalRegistry
     cd packages/amplify-graphql-api-construct
     yarn package
+    cd ../amplify-data-construct
+    yarn package
     cd ../..
     _loadTestAccountCredentials
     _setShell
