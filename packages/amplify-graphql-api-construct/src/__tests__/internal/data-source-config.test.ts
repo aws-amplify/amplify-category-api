@@ -28,9 +28,9 @@ describe('datasource config', () => {
             portSsmPath: 'portSsmPath',
             usernameSsmPath: 'usernameSsmPath',
             passwordSsmPath: 'passwordSsmPath',
-            databaseNameSsmPath: 'databaseNameSsmPath'
-          }
-        }
+            databaseNameSsmPath: 'databaseNameSsmPath',
+          },
+        },
       },
       Comment: {
         name: 'pgTable',
@@ -41,11 +41,10 @@ describe('datasource config', () => {
             portSsmPath: 'portSsmPath',
             usernameSsmPath: 'usernameSsmPath',
             passwordSsmPath: 'passwordSsmPath',
-            databaseNameSsmPath: 'databaseNameSsmPath'
-          }
-        }
-      }
-
+            databaseNameSsmPath: 'databaseNameSsmPath',
+          },
+        },
+      },
     };
     const datasourceConfig = parseDataSourceConfig(input);
     expect(datasourceConfig).toEqual({
@@ -71,17 +70,17 @@ describe('datasource config', () => {
           {
             dbType: 'MySQL',
             provisionDB: false,
-            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT
-          }
+            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
+          },
         ],
         [
           'Comment',
           {
             dbType: 'Postgres',
             provisionDB: false,
-            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT
-          }
-        ]
+            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
+          },
+        ],
       ]),
     });
   });

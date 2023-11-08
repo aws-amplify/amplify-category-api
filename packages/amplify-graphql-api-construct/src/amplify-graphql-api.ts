@@ -228,9 +228,8 @@ export class AmplifyGraphqlApi extends Construct {
    */
   private extendTransformConfig(
     executeTransformConfig: ExecuteTransformConfig,
-    dataSourceDefinition: {name: string, strategy: SQLLambdaModelDataSourceDefinitionStrategy},
+    dataSourceDefinition: { name: string; strategy: SQLLambdaModelDataSourceDefinitionStrategy },
   ): ExecuteTransformConfig {
-
     const { strategy } = dataSourceDefinition;
 
     const extendedConfig = { ...executeTransformConfig };

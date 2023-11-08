@@ -17,7 +17,6 @@ import { IRole, CfnRole } from 'aws-cdk-lib/aws-iam';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { IFunction, CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
-import { RDSLayerMapping, VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { AmplifyDynamoDbTableWrapper } from './amplify-dynamodb-table-wrapper';
 
 /**
@@ -788,6 +787,7 @@ export type ModelDataSourceDefinitionStrategy =
   | AmplifyDynamoDbModelDataSourceDefinitionStrategy
   | SQLLambdaModelDataSourceDefinitionStrategy;
 
+// TODO: Make this the source of truth for database type definitions used throughout the construct & transformer
 export type ModelDataSourceDefinitionDbType = 'DYNAMODB';
 
 /**
@@ -838,7 +838,26 @@ export interface SQLLambdaModelDataSourceDefinitionStrategy {
   /**
    * An optional override for the default SQL Lambda Layer
    */
-  readonly sqlLambdaLayerMapping?: RDSLayerMapping;
+  readonly sqlLambdaLayerMapping?: SQLLambdaLayerMapping;
+}
+
+/**
+ * Configuration of the VPC in which to install a Lambda to resolve queries against a SQL-based data source. The SQL Lambda will be deployed
+ * into the specified VPC, subnets, and security groups. The specified subnets and security groups must be in the same VPC. The VPC must
+ * have at least one subnet. The construct will also create VPC service endpoints in the specified subnets, as well as inbound security
+ * rules, to allow traffic on port 443 within each security group. This allows the Lambda to read database connection information from
+ * Secure Systems Manager.
+ * @experimental
+ */
+export interface VpcConfig {
+  /** The VPC to install the Lambda data source in. */
+  readonly vpcId: string;
+
+  /** The security groups to install the Lambda data source in. */
+  readonly securityGroupIds: string[];
+
+  /** The subnets to install the Lambda data source in, one per availability zone. */
+  readonly subnetAvailabilityZoneConfig: SubnetAvailabilityZone[];
 }
 
 /**
@@ -854,6 +873,12 @@ export interface SubnetAvailabilityZone {
   /** The availability zone of the subnet. */
   readonly availabilityZone: string;
 }
+
+/**
+ * Maps a given AWS region to the SQL Lambda layer version ARN for that region. `key` is the region; the `value` is the Lambda Layer version
+ * ARN
+ */
+export type SQLLambdaLayerMapping = Record<string, string>;
 
 /**
  * The Secure Systems Manager parameter paths the Lambda data source will use to connect to the database.

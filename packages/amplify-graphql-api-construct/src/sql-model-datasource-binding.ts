@@ -18,16 +18,18 @@ export const isSQLLambdaModelDataSourceDefinitionStrategy = (obj: any): obj is S
   );
 };
 
-export const isSQLLambdaModelDataSourceDefinition = (obj: any): obj is {
-  name: string,
-  strategy: SQLLambdaModelDataSourceDefinitionStrategy
+export const isSQLLambdaModelDataSourceDefinition = (
+  obj: any,
+): obj is {
+  name: string;
+  strategy: SQLLambdaModelDataSourceDefinitionStrategy;
 } => {
   return (
     (typeof obj === 'object' || typeof obj === 'function') &&
     typeof obj.name === 'string' &&
     isSQLLambdaModelDataSourceDefinitionStrategy(obj.strategy)
   );
-}
+};
 
 /**
  * Type predicate that returns true if the object is a SqlModelDataSourceDefinitionDbConnectionConfig.
@@ -43,7 +45,7 @@ export const isSqlModelDataSourceDefinitionDbConnectionConfig = (obj: any): obj 
     typeof obj.passwordSsmPath === 'string' &&
     typeof obj.databaseNameSsmPath === 'string'
   );
-}
+};
 
 /**
  * Class exposing utilities to produce SQLLambdaModelDataSourceDefinitionStrategy objects given various inputs.

@@ -91,7 +91,7 @@ export interface VpcConfig {
 
   /** The subnets to install the Lambda data source in, one per availability zone. */
   readonly subnetAvailabilityZoneConfig: SubnetAvailabilityZone[];
-};
+}
 
 /**
  * Although it is possible to create multiple subnets in a single availability zone, VPC Endpoints may only be deployed to a single subnet
@@ -100,7 +100,7 @@ export interface VpcConfig {
 export interface SubnetAvailabilityZone {
   readonly subnetId: string;
   readonly availabilityZone: string;
-};
+}
 
 /**
  * Maps a given AWS region to the SQL Lambda layer version ARN for that region. TODO: Rename to SQLLambdaLayerMapping
@@ -109,7 +109,7 @@ export interface RDSLayerMapping {
   readonly [key: string]: {
     layerRegion: string;
   };
-};
+}
 
 export interface AppSyncFunctionConfigurationProvider extends IConstruct {
   readonly arn: string;

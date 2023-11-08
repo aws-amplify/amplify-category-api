@@ -1,4 +1,9 @@
-import { DataSourceType, DynamoDBProvisionStrategy, SQLDBType, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  DataSourceType,
+  DynamoDBProvisionStrategy,
+  SQLDBType,
+  SQLLambdaModelProvisionStrategy,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelDataSourceDefinition } from '../types';
 
 type DataSourceConfig = {
@@ -6,7 +11,7 @@ type DataSourceConfig = {
 };
 
 // TODO: Do away with this after we normalize database types throughout the internals
-const convertSQLDBType = (definitionDBType: 'MYSQL' | 'POSTGRES'): SQLDBType => definitionDBType === 'MYSQL' ? 'MySQL' : 'Postgres';
+const convertSQLDBType = (definitionDBType: 'MYSQL' | 'POSTGRES'): SQLDBType => (definitionDBType === 'MYSQL' ? 'MySQL' : 'Postgres');
 
 const convertToDataSourceType = (modelDataSourceDefinition: ModelDataSourceDefinition): DataSourceType => {
   const { strategy } = modelDataSourceDefinition;
@@ -31,7 +36,7 @@ const convertToDataSourceType = (modelDataSourceDefinition: ModelDataSourceDefin
     return {
       dbType: convertSQLDBType(strategy.dbType),
       provisionDB: false,
-      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT
+      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
     };
   }
   throw new Error(`Encountered unexpected database type ${strategy.dbType}`);

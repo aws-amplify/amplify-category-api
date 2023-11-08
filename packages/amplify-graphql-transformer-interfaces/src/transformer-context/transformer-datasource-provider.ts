@@ -58,9 +58,9 @@ export const enum DynamoDBProvisionStrategy {
 // TODO: Remove this type in favor of fully-specified SQLLambdaModelDataSourceDefinitionStrategy from amplify-graphql-api-construct
 export const enum SQLLambdaModelProvisionStrategy {
   /**
-   * A strategy that creates a Lambda to connect to a pre-existing SQL table to resolve model data. 
+   * A strategy that creates a Lambda to connect to a pre-existing SQL table to resolve model data.
    */
-  DEFAULT = 'DEFAULT'
+  DEFAULT = 'DEFAULT',
 }
 
 // TODO: Replace usages of this type with ModelDataSourceDefinitions
