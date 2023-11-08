@@ -15,6 +15,8 @@
     "check-version-conflicts:beta": "yarn ts-node ./scripts/check-version.ts beta",
     "check-version-conflicts:release": "yarn ts-node ./scripts/check-version.ts",
     "build": "lerna run build",
+    "package": "lerna run package",
+    "update-readme": "lerna run update-readme",
     "build-tests-changed": "lerna run build-tests --since main",
     "build-tests": "lerna run build-tests",
     "production-build": "yarn --frozen-lockfile --cache-folder ~/.cache/yarn && lerna run build --concurrency 3 --stream",
@@ -166,7 +168,9 @@
       "@aws-amplify/data-construct/jsonfile",
       "@aws-amplify/data-construct/libphonenumber-js",
       "@aws-amplify/data-construct/pluralize",
-      "@aws-amplify/data-construct/universalify"
+      "@aws-amplify/data-construct/universalify",
+      "@aws-amplify/data-construct/@aws-amplify/platform-core",
+      "@aws-amplify/data-construct/@aws-amplify/plugin-types"
     ]
   },
   "devDependencies": {
