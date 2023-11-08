@@ -5,3 +5,4 @@ export * from './conflict-resolution';
 export * from './asset-manager';
 export * from './codegen-assets';
 export * from './amplify-metadata';
+export * from './model-type-name';

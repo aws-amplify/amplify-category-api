@@ -1,12 +1,11 @@
 import path from 'path';
 import {
-  RDSConnectionSecrets,
-  DataSourceType,
-  UserDefinedSlot,
-  isImportedRDSType,
   DBType,
   getEngineFromDBType,
   getImportedRDSType,
+  isImportedRDSType,
+  RDSConnectionSecrets,
+  UserDefinedSlot,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncAuthConfiguration,
@@ -14,6 +13,7 @@ import {
   TransformerLogLevel,
   VpcConfig,
   RDSLayerMapping,
+  DataSourceType,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import * as fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
@@ -206,8 +206,8 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
   checkForUnsupportedDirectives(schema, opts.projectConfig.modelToDatasourceMap);
 
   const { modelToDatasourceMap } = opts.projectConfig;
+  const datasourceSecretMap = await getDatasourceSecretMap(context);
   const datasourceMapValues: Array<DataSourceType> = modelToDatasourceMap ? Array.from(modelToDatasourceMap.values()) : [];
-  const datasourceSecretMap = new Map<string, RDSConnectionSecrets>();
   let sqlLambdaVpcConfig: VpcConfig | undefined;
   if (datasourceMapValues.some((value) => isImportedRDSType(value))) {
     const dbType = getImportedRDSType(modelToDatasourceMap);

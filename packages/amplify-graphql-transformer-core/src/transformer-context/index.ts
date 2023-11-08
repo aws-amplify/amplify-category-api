@@ -11,6 +11,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type {
   AssetProvider,
+  DataSourceType,
   NestedStackProvider,
   TransformParameterProvider,
   TransformParameters,
@@ -19,7 +20,6 @@ import type {
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
 import { DocumentNode } from 'graphql';
 import { Construct } from 'constructs';
-import { DataSourceType } from '../config/project-config';
 import { ResolverConfig } from '../config/transformer-config';
 import { RDSConnectionSecrets } from '../types';
 import { TransformerDataSourceManager } from './datasource';

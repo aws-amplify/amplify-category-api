@@ -1,9 +1,8 @@
-import { attributeTypeFromType } from '@aws-amplify/graphql-index-transformer';
+import { attributeTypeFromType, overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
 import { getTable } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider, TransformerPrepareStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from 'aws-cdk-lib';
 import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import { ref } from 'graphql-mapping-template';
 import { ModelResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { getSortKeyFields } from './schema';
 import { HasManyDirectiveConfiguration } from './types';
@@ -12,11 +11,11 @@ import { getConnectionAttributeName, getObjectPrimaryKey } from './utils';
 /**
  * adds GSI to the table if it doesn't already exists for connection
  */
-export function updateTableForConnection(config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider) {
-  let { fields, indexName } = config;
+export const updateTableForConnection = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
+  const { fields, indexName: incomingIndexName } = config;
 
   // If an index name or list of fields was specified, then we don't need to create a GSI here.
-  if (indexName || fields.length > 0) {
+  if (incomingIndexName || fields.length > 0) {
     return;
   }
 
@@ -25,7 +24,7 @@ export function updateTableForConnection(config: HasManyDirectiveConfiguration, 
   const table = getTable(ctx, relatedType) as any;
   const gsis = table.globalSecondaryIndexes;
 
-  indexName = `gsi-${mappedObjectName}.${field.name.value}`;
+  const indexName = `gsi-${mappedObjectName}.${field.name.value}`;
   config.indexName = indexName;
 
   // Check if the GSI already exists.
@@ -66,10 +65,9 @@ export function updateTableForConnection(config: HasManyDirectiveConfiguration, 
   // At the L2 level, the CDK does not handle the way Amplify sets GSI read and write capacity
   // very well. At the L1 level, the CDK does not create the correct IAM policy for accessing the
   // GSI. To get around these issues, keep the L1 and L2 GSI list in sync.
-  const cfnTable = table.table;
-  const gsi = gsis.find((gsi: any) => gsi.indexName === indexName);
+  const gsi = gsis.find((g: any) => g.indexName === indexName);
 
-  cfnTable.globalSecondaryIndexes = appendIndex(cfnTable.globalSecondaryIndexes, {
+  const newIndex = {
     indexName,
     keySchema: gsi.keySchema,
     projection: { projectionType: 'ALL' },
@@ -77,28 +75,21 @@ export function updateTableForConnection(config: HasManyDirectiveConfiguration, 
       ReadCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
       WriteCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
     }),
-  });
-}
+  };
 
-function appendIndex(list: any, newIndex: any): any[] {
-  if (Array.isArray(list)) {
-    list.push(newIndex);
-    return list;
-  }
-
-  return [newIndex];
-}
+  overrideIndexAtCfnLevel(ctx, relatedType.name.value, table, newIndex);
+};
 
 type SortKeyAttributeDefinitions = {
   sortKeyName: string;
   sortKeyType: 'S' | 'N';
 };
 
-function getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject(
+const getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject = (
   ctx: TransformerContextProvider,
   object: ObjectTypeDefinitionNode,
   hasManyField: FieldDefinitionNode,
-): SortKeyAttributeDefinitions | undefined {
+): SortKeyAttributeDefinitions | undefined => {
   const sortKeyFields = getSortKeyFields(ctx, object);
   if (!sortKeyFields.length) {
     return undefined;
@@ -118,7 +109,8 @@ function getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject(
       sortKeyType: 'S',
     };
   }
-}
+  return undefined;
+};
 
 export const condenseRangeKey = (fields: string[]): string => {
   return fields.join(ModelResourceIDs.ModelCompositeKeySeparator());
@@ -129,8 +121,8 @@ export const setFieldMappingResolverReference = (
   mappedModelName: string,
   typeName: string,
   fieldName: string,
-  isList: boolean = false,
-) => {
+  isList = false,
+): void => {
   const modelFieldMap = context.resourceHelper.getModelFieldMap(mappedModelName);
   if (!modelFieldMap.getMappedFields().length) {
     return;

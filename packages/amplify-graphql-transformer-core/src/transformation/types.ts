@@ -1,5 +1,4 @@
-import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
-import { DataSourceType } from '../config';
+import { DataSourceType, RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSConnectionSecrets } from '../types';
 
 export type UserDefinedSlot = {

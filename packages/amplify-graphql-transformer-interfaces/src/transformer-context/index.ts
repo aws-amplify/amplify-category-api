@@ -3,8 +3,10 @@ export {
   TransformerDataSourceManagerProvider,
   AppSyncDataSourceType,
   DataSourceInstance,
-  DBType,
   DataSourceType,
+  DBType,
+  DataSourceProvisionStrategy,
+  DynamoDBProvisionStrategy,
 } from './transformer-datasource-provider';
 export { TransformerContextOutputProvider } from './transformer-context-output-provider';
 export { TransformerProviderRegistry } from './transformer-provider-registry';

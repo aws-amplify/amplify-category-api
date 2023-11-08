@@ -25,15 +25,10 @@ import {
   AssetProvider,
   SynthParameters,
   TransformParameterProvider,
+  DataSourceType,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
-import {
-  DataSourceType,
-  GraphQLTransform,
-  RDSConnectionSecrets,
-  ResolverConfig,
-  UserDefinedSlot,
-} from '@aws-amplify/graphql-transformer-core';
+import { GraphQLTransform, RDSConnectionSecrets, ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 import { Construct } from 'constructs';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 

@@ -155,20 +155,33 @@ export interface DataSourceProvider extends BackedDataSource {
 }
 
 // @public (undocumented)
+export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy;
+
+// @public (undocumented)
 export interface DataSourceType {
     // (undocumented)
     dbType: DBType;
     // (undocumented)
     provisionDB: boolean;
+    // (undocumented)
+    provisionStrategy: DataSourceProvisionStrategy;
 }
 
 // @public (undocumented)
-export type DBType = 'DDB' | 'MySQL' | 'Postgres';
+export type DBType = 'MySQL' | 'DDB';
 
 // @public (undocumented)
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {
     // (undocumented)
     readonly serviceRole: IRole;
+}
+
+// @public (undocumented)
+export const enum DynamoDBProvisionStrategy {
+    // (undocumented)
+    AMPLIFY_TABLE = "AMPLIFY_TABLE",
+    // (undocumented)
+    DEFAULT = "DEFAULT"
 }
 
 // @public (undocumented)

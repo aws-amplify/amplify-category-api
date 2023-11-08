@@ -20,9 +20,9 @@ export interface NoneDataSourceProvider {
 export type DataSourceInstance = ITable | CfnDomain | HttpDataSource | IFunction | NoneDataSourceProvider;
 
 export interface TransformerDataSourceManagerProvider {
-  add(type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, dataSourceInstance: DataSourceInstance): void;
-  get(type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode): DataSourceInstance;
-  has(name: string): boolean;
+  add: (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, dataSourceInstance: DataSourceInstance) => void;
+  get: (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode) => DataSourceInstance;
+  has: (name: string) => boolean;
 }
 
 export interface DataSourceProvider extends BackedDataSource {}
@@ -36,7 +36,22 @@ export type DBType = 'DDB' | 'MySQL' | 'Postgres';
  * Configuration for a datasource. Defines the underlying database engine, and instructs the tranformer whether to provision the database
  * storage or whether it already exists.
  */
+export const enum DynamoDBProvisionStrategy {
+  /**
+   * Use default cloud formation resource of `AWS::DynamoDB::Table`
+   */
+  DEFAULT = 'DEFAULT',
+  /**
+   * Use custom resource type `Custom::AmplifyDynamoDBTable`
+   */
+  AMPLIFY_TABLE = 'AMPLIFY_TABLE',
+}
+
+// TODO: add strategy for the RDS
+export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy;
+
 export interface DataSourceType {
   dbType: DBType;
   provisionDB: boolean;
+  provisionStrategy: DataSourceProvisionStrategy;
 }
