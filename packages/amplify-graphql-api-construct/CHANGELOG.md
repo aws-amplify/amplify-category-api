@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0-construct-publish-test.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.3.0...@aws-amplify/graphql-api-construct@1.4.0-construct-publish-test.0) (2023-11-08)
+
+### Bug Fixes
+
+- construct hub link image ([dbc8ea3](https://github.com/aws-amplify/amplify-category-api/commit/dbc8ea3f2861c4a4e7cd81f70bf8840773b5e5e3))
+- fix api extract ([1f5aa54](https://github.com/aws-amplify/amplify-category-api/commit/1f5aa542150d62df0bd71df7c4586df44cfc3349))
+
+### Features
+
+- add managed table support in API construct ([#2024](https://github.com/aws-amplify/amplify-category-api/issues/2024)) ([96a0d94](https://github.com/aws-amplify/amplify-category-api/commit/96a0d94fa872a5329da120f53be139833449b815)), closes [#1849](https://github.com/aws-amplify/amplify-category-api/issues/1849) [#1903](https://github.com/aws-amplify/amplify-category-api/issues/1903) [#1940](https://github.com/aws-amplify/amplify-category-api/issues/1940) [#1971](https://github.com/aws-amplify/amplify-category-api/issues/1971) [#1973](https://github.com/aws-amplify/amplify-category-api/issues/1973)
+
 # [1.3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.2.1...@aws-amplify/graphql-api-construct@1.3.0) (2023-11-06)
 
 ### Features

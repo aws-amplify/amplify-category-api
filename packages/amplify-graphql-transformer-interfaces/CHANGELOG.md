@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.3.0-construct-publish-test.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.2.2...@aws-amplify/graphql-transformer-interfaces@3.3.0-construct-publish-test.0) (2023-11-08)
+
+### Features
+
+- add managed table support in API construct ([#2024](https://github.com/aws-amplify/amplify-category-api/issues/2024)) ([96a0d94](https://github.com/aws-amplify/amplify-category-api/commit/96a0d94fa872a5329da120f53be139833449b815)), closes [#1849](https://github.com/aws-amplify/amplify-category-api/issues/1849) [#1903](https://github.com/aws-amplify/amplify-category-api/issues/1903) [#1940](https://github.com/aws-amplify/amplify-category-api/issues/1940) [#1971](https://github.com/aws-amplify/amplify-category-api/issues/1971) [#1973](https://github.com/aws-amplify/amplify-category-api/issues/1973)
+
 ## [3.2.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.2.1...@aws-amplify/graphql-transformer-interfaces@3.2.2) (2023-11-02)
 
 ### Bug Fixes
