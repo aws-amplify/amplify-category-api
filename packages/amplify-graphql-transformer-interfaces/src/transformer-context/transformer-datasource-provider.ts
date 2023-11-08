@@ -33,12 +33,11 @@ export interface DataSourceProvider extends BackedDataSource {}
 export type DBType = 'DDB' | 'MySQL' | 'Postgres';
 
 /**
- * Configuration for a datasource. Defines the underlying database engine, and instructs the tranformer whether to provision the database
- * storage or whether it already exists.
+ * Provisioning configuration for a DynamoDB datasource
  */
 export const enum DynamoDBProvisionStrategy {
   /**
-   * Use default cloud formation resource of `AWS::DynamoDB::Table`
+   * Use default CloudFormation resource of `AWS::DynamoDB::Table`
    */
   DEFAULT = 'DEFAULT',
   /**
