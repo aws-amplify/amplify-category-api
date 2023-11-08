@@ -812,6 +812,47 @@ The functions runtime.
 
 ---
 
+### AmplifyDynamoDbModelDataSourceDefinitionStrategy <a name="AmplifyDynamoDbModelDataSourceDefinitionStrategy" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceDefinitionStrategy"></a>
+
+Use custom resource type 'Custom::AmplifyDynamoDBTable' to provision table.
+
+#### Initializer <a name="Initializer" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceDefinitionStrategy.Initializer"></a>
+
+```typescript
+import { AmplifyDynamoDbModelDataSourceDefinitionStrategy } from '@aws-amplify/graphql-api-construct'
+
+const amplifyDynamoDbModelDataSourceDefinitionStrategy: AmplifyDynamoDbModelDataSourceDefinitionStrategy = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceDefinitionStrategy.property.dbType">dbType</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceDefinitionStrategy.property.provisionStrategy">provisionStrategy</a></code> | <code>string</code> | *No description.* |
+
+---
+
+##### `dbType`<sup>Required</sup> <a name="dbType" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceDefinitionStrategy.property.dbType"></a>
+
+```typescript
+public readonly dbType: string;
+```
+
+- *Type:* string
+
+---
+
+##### `provisionStrategy`<sup>Required</sup> <a name="provisionStrategy" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceDefinitionStrategy.property.provisionStrategy"></a>
+
+```typescript
+public readonly provisionStrategy: string;
+```
+
+- *Type:* string
+
+---
+
 ### AmplifyGraphqlApiCfnResources <a name="AmplifyGraphqlApiCfnResources" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlApiCfnResources"></a>
 
 L1 CDK resources from the Api which were generated as part of the transform.
@@ -1618,6 +1659,47 @@ For more information, refer to https://docs.aws.amazon.com/appsync/latest/devgui
 
 ---
 
+### DefaultDynamoDbModelDataSourceDefinitionStrategy <a name="DefaultDynamoDbModelDataSourceDefinitionStrategy" id="@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceDefinitionStrategy"></a>
+
+Use default CloudFormation type 'AWS::DynamoDB::Table' to provision table.
+
+#### Initializer <a name="Initializer" id="@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceDefinitionStrategy.Initializer"></a>
+
+```typescript
+import { DefaultDynamoDbModelDataSourceDefinitionStrategy } from '@aws-amplify/graphql-api-construct'
+
+const defaultDynamoDbModelDataSourceDefinitionStrategy: DefaultDynamoDbModelDataSourceDefinitionStrategy = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceDefinitionStrategy.property.dbType">dbType</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceDefinitionStrategy.property.provisionStrategy">provisionStrategy</a></code> | <code>string</code> | *No description.* |
+
+---
+
+##### `dbType`<sup>Required</sup> <a name="dbType" id="@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceDefinitionStrategy.property.dbType"></a>
+
+```typescript
+public readonly dbType: string;
+```
+
+- *Type:* string
+
+---
+
+##### `provisionStrategy`<sup>Required</sup> <a name="provisionStrategy" id="@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceDefinitionStrategy.property.provisionStrategy"></a>
+
+```typescript
+public readonly provisionStrategy: string;
+```
+
+- *Type:* string
+
+---
+
 ### FunctionSlotBase <a name="FunctionSlotBase" id="@aws-amplify/graphql-api-construct.FunctionSlotBase"></a>
 
 Common slot parameters.
@@ -1848,6 +1930,54 @@ public readonly ttl: Duration;
 - *Type:* aws-cdk-lib.Duration
 
 How long the results are cached.
+
+---
+
+### ModelDataSourceDefinition <a name="ModelDataSourceDefinition" id="@aws-amplify/graphql-api-construct.ModelDataSourceDefinition"></a>
+
+Defines a datasource for resolving GraphQL operations against `@model` types in a GraphQL schema.
+
+#### Initializer <a name="Initializer" id="@aws-amplify/graphql-api-construct.ModelDataSourceDefinition.Initializer"></a>
+
+```typescript
+import { ModelDataSourceDefinition } from '@aws-amplify/graphql-api-construct'
+
+const modelDataSourceDefinition: ModelDataSourceDefinition = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@aws-amplify/graphql-api-construct.ModelDataSourceDefinition.property.name">name</a></code> | <code>string</code> | The name of the ModelDataSource. |
+| <code><a href="#@aws-amplify/graphql-api-construct.ModelDataSourceDefinition.property.strategy">strategy</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceDefinitionStrategy">DefaultDynamoDbModelDataSourceDefinitionStrategy</a> \| <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceDefinitionStrategy">AmplifyDynamoDbModelDataSourceDefinitionStrategy</a></code> | The ModelDataSourceDefinitionStrategy. |
+
+---
+
+##### `name`<sup>Required</sup> <a name="name" id="@aws-amplify/graphql-api-construct.ModelDataSourceDefinition.property.name"></a>
+
+```typescript
+public readonly name: string;
+```
+
+- *Type:* string
+
+The name of the ModelDataSource.
+
+This will be used to name the AppSynce DataSource itself, plus any associated resources like resolver
+Lambdas, custom CDK resources. This name must be unique across all schema definitions in a GraphQL API.
+
+---
+
+##### `strategy`<sup>Required</sup> <a name="strategy" id="@aws-amplify/graphql-api-construct.ModelDataSourceDefinition.property.strategy"></a>
+
+```typescript
+public readonly strategy: DefaultDynamoDbModelDataSourceDefinitionStrategy | AmplifyDynamoDbModelDataSourceDefinitionStrategy;
+```
+
+- *Type:* <a href="#@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceDefinitionStrategy">DefaultDynamoDbModelDataSourceDefinitionStrategy</a> | <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceDefinitionStrategy">AmplifyDynamoDbModelDataSourceDefinitionStrategy</a>
+
+The ModelDataSourceDefinitionStrategy.
 
 ---
 
@@ -2102,7 +2232,6 @@ const partialTranslationBehavior: PartialTranslationBehavior = { ... }
 | <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.secondaryKeyAsGSI">secondaryKeyAsGSI</a></code> | <code>boolean</code> | If disabled, generated. |
 | <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.shouldDeepMergeDirectiveConfigDefaults">shouldDeepMergeDirectiveConfigDefaults</a></code> | <code>boolean</code> | Restore parity w/ GQLv1. |
 | <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.suppressApiKeyGeneration">suppressApiKeyGeneration</a></code> | <code>boolean</code> | If enabled, disable api key resource generation even if specified as an auth rule on the construct. |
-| <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.useAmplifyManagedTableResources">useAmplifyManagedTableResources</a></code> | <code>boolean</code> | When enabled, amplify DynamoDB table will be generated instead of CFN pre-defined DynamoDB table. |
 | <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.useSubUsernameForDefaultIdentityClaim">useSubUsernameForDefaultIdentityClaim</a></code> | <code>boolean</code> | Ensure that oidc and userPool auth use the `sub` field in the for the username field, which disallows new users with the same id to access data from a deleted user in the pool. |
 
 ---
@@ -2243,19 +2372,6 @@ public readonly suppressApiKeyGeneration: boolean;
 If enabled, disable api key resource generation even if specified as an auth rule on the construct.
 
 This is a legacy parameter from the Graphql Transformer existing in Amplify CLI, not recommended to change.
-
----
-
-##### `useAmplifyManagedTableResources`<sup>Optional</sup> <a name="useAmplifyManagedTableResources" id="@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.useAmplifyManagedTableResources"></a>
-
-```typescript
-public readonly useAmplifyManagedTableResources: boolean;
-```
-
-- *Type:* boolean
-- *Default:* false
-
-When enabled, amplify DynamoDB table will be generated instead of CFN pre-defined DynamoDB table.
 
 ---
 
@@ -2674,7 +2790,6 @@ const translationBehavior: TranslationBehavior = { ... }
 | <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.secondaryKeyAsGSI">secondaryKeyAsGSI</a></code> | <code>boolean</code> | If disabled, generated. |
 | <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.shouldDeepMergeDirectiveConfigDefaults">shouldDeepMergeDirectiveConfigDefaults</a></code> | <code>boolean</code> | Restore parity w/ GQLv1. |
 | <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.suppressApiKeyGeneration">suppressApiKeyGeneration</a></code> | <code>boolean</code> | If enabled, disable api key resource generation even if specified as an auth rule on the construct. |
-| <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.useAmplifyManagedTableResources">useAmplifyManagedTableResources</a></code> | <code>boolean</code> | Used for AmplifyGrapqhlApi construct ONLY If enabled, the table resources will be generated under custom resource provider, which enables the multiple GSI updates within one deployment phase. |
 | <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.useSubUsernameForDefaultIdentityClaim">useSubUsernameForDefaultIdentityClaim</a></code> | <code>boolean</code> | Ensure that oidc and userPool auth use the `sub` field in the for the username field, which disallows new users with the same id to access data from a deleted user in the pool. |
 
 ---
@@ -2807,19 +2922,6 @@ public readonly suppressApiKeyGeneration: boolean;
 If enabled, disable api key resource generation even if specified as an auth rule on the construct.
 
 This is a legacy parameter from the Graphql Transformer existing in Amplify CLI, not recommended to change.
-
----
-
-##### `useAmplifyManagedTableResources`<sup>Required</sup> <a name="useAmplifyManagedTableResources" id="@aws-amplify/graphql-api-construct.TranslationBehavior.property.useAmplifyManagedTableResources"></a>
-
-```typescript
-public readonly useAmplifyManagedTableResources: boolean;
-```
-
-- *Type:* boolean
-- *Default:* false
-
-Used for AmplifyGrapqhlApi construct ONLY If enabled, the table resources will be generated under custom resource provider, which enables the multiple GSI updates within one deployment phase.
 
 ---
 
@@ -3081,8 +3183,28 @@ new AmplifyGraphqlDefinition()
 
 | **Name** | **Description** |
 | --- | --- |
+| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.combine">combine</a></code> | Combines multiple IAmplifyGraphqlDefinitions into a single definition. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromFiles">fromFiles</a></code> | Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema. |
+| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromFilesAndDefinition">fromFilesAndDefinition</a></code> | Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromString">fromString</a></code> | Produce a schema definition from a string input. |
+
+---
+
+##### `combine` <a name="combine" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.combine"></a>
+
+```typescript
+import { AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct'
+
+AmplifyGraphqlDefinition.combine(definitions: IAmplifyGraphqlDefinition[])
+```
+
+Combines multiple IAmplifyGraphqlDefinitions into a single definition.
+
+###### `definitions`<sup>Required</sup> <a name="definitions" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.combine.parameter.definitions"></a>
+
+- *Type:* <a href="#@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition">IAmplifyGraphqlDefinition</a>[]
+
+the definitions to combine.
 
 ---
 
@@ -3104,12 +3226,40 @@ one or more paths to the graphql files to process.
 
 ---
 
+##### `fromFilesAndDefinition` <a name="fromFilesAndDefinition" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromFilesAndDefinition"></a>
+
+```typescript
+import { AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct'
+
+AmplifyGraphqlDefinition.fromFilesAndDefinition(filePaths: string | string[], modelDataSourceDefinition?: ModelDataSourceDefinition)
+```
+
+Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema.
+
+###### `filePaths`<sup>Required</sup> <a name="filePaths" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromFilesAndDefinition.parameter.filePaths"></a>
+
+- *Type:* string | string[]
+
+one or more paths to the graphql files to process.
+
+---
+
+###### `modelDataSourceDefinition`<sup>Optional</sup> <a name="modelDataSourceDefinition" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromFilesAndDefinition.parameter.modelDataSourceDefinition"></a>
+
+- *Type:* <a href="#@aws-amplify/graphql-api-construct.ModelDataSourceDefinition">ModelDataSourceDefinition</a>
+
+the provision definition for `@model` datasource.
+
+The DynamoDB from CloudFormation will be used by default.
+
+---
+
 ##### `fromString` <a name="fromString" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromString"></a>
 
 ```typescript
 import { AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct'
 
-AmplifyGraphqlDefinition.fromString(schema: string)
+AmplifyGraphqlDefinition.fromString(schema: string, modelDataSourceDefinition?: ModelDataSourceDefinition)
 ```
 
 Produce a schema definition from a string input.
@@ -3119,6 +3269,16 @@ Produce a schema definition from a string input.
 - *Type:* string
 
 the graphql input as a string.
+
+---
+
+###### `modelDataSourceDefinition`<sup>Optional</sup> <a name="modelDataSourceDefinition" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromString.parameter.modelDataSourceDefinition"></a>
+
+- *Type:* <a href="#@aws-amplify/graphql-api-construct.ModelDataSourceDefinition">ModelDataSourceDefinition</a>
+
+the provision definition for `@model` datasource.
+
+The DynamoDB from CloudFormation will be used by default.
 
 ---
 
@@ -3137,8 +3297,23 @@ Graphql Api definition, which can be implemented in multiple ways.
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
+| <code><a href="#@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.dataSourceDefinition">dataSourceDefinition</a></code> | <code>{[ key: string ]: <a href="#@aws-amplify/graphql-api-construct.ModelDataSourceDefinition">ModelDataSourceDefinition</a>}</code> | Retrieve the datasource definition mapping. |
 | <code><a href="#@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.functionSlots">functionSlots</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.MutationFunctionSlot">MutationFunctionSlot</a> \| <a href="#@aws-amplify/graphql-api-construct.QueryFunctionSlot">QueryFunctionSlot</a> \| <a href="#@aws-amplify/graphql-api-construct.SubscriptionFunctionSlot">SubscriptionFunctionSlot</a>[]</code> | Retrieve any function slots defined explicitly in the Api definition. |
 | <code><a href="#@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.schema">schema</a></code> | <code>string</code> | Return the schema definition as a graphql string, with amplify directives allowed. |
+
+---
+
+##### `dataSourceDefinition`<sup>Required</sup> <a name="dataSourceDefinition" id="@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.dataSourceDefinition"></a>
+
+```typescript
+public readonly dataSourceDefinition: {[ key: string ]: ModelDataSourceDefinition};
+```
+
+- *Type:* {[ key: string ]: <a href="#@aws-amplify/graphql-api-construct.ModelDataSourceDefinition">ModelDataSourceDefinition</a>}
+
+Retrieve the datasource definition mapping.
+
+The default strategy is to use DynamoDB from CloudFormation.
 
 ---
 

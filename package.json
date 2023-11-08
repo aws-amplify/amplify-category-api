@@ -113,6 +113,8 @@
       "@aws-amplify/graphql-api-construct/@aws-amplify/graphql-searchable-transformer",
       "@aws-amplify/graphql-api-construct/@aws-amplify/backend-output-schemas",
       "@aws-amplify/graphql-api-construct/@aws-amplify/backend-output-storage",
+      "@aws-amplify/graphql-api-construct/@aws-amplify/platform-core",
+      "@aws-amplify/graphql-api-construct/@aws-amplify/plugin-types",
       "@aws-amplify/graphql-api-construct/fs-extra",
       "@aws-amplify/graphql-api-construct/graphql",
       "@aws-amplify/graphql-api-construct/graphql-transformer-common",
