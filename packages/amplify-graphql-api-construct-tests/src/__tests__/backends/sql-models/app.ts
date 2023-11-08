@@ -2,11 +2,7 @@
 import 'source-map-support/register';
 import { App, Stack, Duration } from 'aws-cdk-lib';
 // @ts-ignore
-import {
-  AmplifyGraphqlApi,
-  AmplifyGraphqlDefinition,
-  SqlModelDataSourceDefinitionDbConnectionConfig,
-} from '@aws-amplify/graphql-api-construct';
+import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
 
 interface DBDetails {
   endpoint: string;
@@ -52,14 +48,17 @@ new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
       }
     `,
     {
-      bindingType: 'MySQL',
-      vpcConfiguration: {
-        vpcId: dbDetails.vpcConfig.vpcId,
-        securityGroupIds: dbDetails.vpcConfig.securityGroupIds,
-        subnetAvailabilityZones: dbDetails.vpcConfig.subnetAvailabilityZones,
-      },
-      dbConnectionConfig: {
-        ...dbDetails.ssmPaths,
+      name: 'MySqlDB',
+      strategy: {
+        dbType: 'MYSQL',
+        vpcConfiguration: {
+          vpcId: dbDetails.vpcConfig.vpcId,
+          securityGroupIds: dbDetails.vpcConfig.securityGroupIds,
+          subnetAvailabilityZoneConfig: dbDetails.vpcConfig.subnetAvailabilityZones,
+        },
+        dbConnectionConfig: {
+          ...dbDetails.ssmPaths,
+        },
       },
     },
   ),
