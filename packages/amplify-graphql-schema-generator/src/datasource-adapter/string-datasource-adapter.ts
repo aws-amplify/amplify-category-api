@@ -33,6 +33,9 @@ export abstract class StringDataSourceAdapter {
   protected parseSchema(schema: string): any[] {
     return parse(schema, {
       columns: true,
+      // allows quotes to appear in fields
+      // example: CREATE UNIQUE INDEX "todo_pkey"
+      relax_quotes: true,
     });
   }
 
