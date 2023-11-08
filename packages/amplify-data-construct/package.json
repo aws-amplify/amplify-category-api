@@ -2,7 +2,6 @@
   "name": "@aws-amplify/data-construct",
   "version": "1.3.0",
   "description": "AppSync GraphQL Api Construct using Amplify GraphQL Transformer - Aliased to use `Data` name scheme.",
-  "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",
