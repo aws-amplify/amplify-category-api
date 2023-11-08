@@ -4,8 +4,49 @@
 
 ```ts
 
+import type { AddFunctionProps } from '@aws-amplify/graphql-api-construct';
+import type { AmplifyDynamoDbModelDataSourceDefinitionStrategy } from '@aws-amplify/graphql-api-construct';
+import { AmplifyDynamoDbTableWrapper } from '@aws-amplify/graphql-api-construct';
 import { AmplifyGraphqlApi } from '@aws-amplify/graphql-api-construct';
+import type { AmplifyGraphqlApiCfnResources } from '@aws-amplify/graphql-api-construct';
+import type { AmplifyGraphqlApiProps } from '@aws-amplify/graphql-api-construct';
+import type { AmplifyGraphqlApiResources } from '@aws-amplify/graphql-api-construct';
 import { AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
+import type { ApiKeyAuthorizationConfig } from '@aws-amplify/graphql-api-construct';
+import type { AuthorizationModes } from '@aws-amplify/graphql-api-construct';
+import type { AutomergeConflictResolutionStrategy } from '@aws-amplify/graphql-api-construct';
+import type { ConflictDetectionType } from '@aws-amplify/graphql-api-construct';
+import type { ConflictResolution } from '@aws-amplify/graphql-api-construct';
+import type { ConflictResolutionStrategy } from '@aws-amplify/graphql-api-construct';
+import type { ConflictResolutionStrategyBase } from '@aws-amplify/graphql-api-construct';
+import type { CustomConflictResolutionStrategy } from '@aws-amplify/graphql-api-construct';
+import type { DefaultDynamoDbModelDataSourceDefinitionStrategy } from '@aws-amplify/graphql-api-construct';
+import type { FunctionSlot } from '@aws-amplify/graphql-api-construct';
+import type { FunctionSlotBase } from '@aws-amplify/graphql-api-construct';
+import type { FunctionSlotOverride } from '@aws-amplify/graphql-api-construct';
+import type { IAMAuthorizationConfig } from '@aws-amplify/graphql-api-construct';
+import type { IAmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
+import type { IBackendOutputEntry } from '@aws-amplify/graphql-api-construct';
+import type { IBackendOutputStorageStrategy } from '@aws-amplify/graphql-api-construct';
+import type { LambdaAuthorizationConfig } from '@aws-amplify/graphql-api-construct';
+import type { ModelDataSourceDefinition } from '@aws-amplify/graphql-api-construct';
+import type { ModelDataSourceDefinitionDbType } from '@aws-amplify/graphql-api-construct';
+import type { ModelDataSourceDefinitionStrategy } from '@aws-amplify/graphql-api-construct';
+import type { MutationFunctionSlot } from '@aws-amplify/graphql-api-construct';
+import type { OIDCAuthorizationConfig } from '@aws-amplify/graphql-api-construct';
+import type { OptimisticConflictResolutionStrategy } from '@aws-amplify/graphql-api-construct';
+import type { PartialTranslationBehavior } from '@aws-amplify/graphql-api-construct';
+import { ProvisionedThroughput } from '@aws-amplify/graphql-api-construct';
+import type { QueryFunctionSlot } from '@aws-amplify/graphql-api-construct';
+import { SSESpecification } from '@aws-amplify/graphql-api-construct';
+import { SSEType } from '@aws-amplify/graphql-api-construct';
+import { StreamSpecification } from '@aws-amplify/graphql-api-construct';
+import type { SubscriptionFunctionSlot } from '@aws-amplify/graphql-api-construct';
+import { TimeToLiveSpecification } from '@aws-amplify/graphql-api-construct';
+import type { TranslationBehavior } from '@aws-amplify/graphql-api-construct';
+import type { UserPoolAuthorizationConfig } from '@aws-amplify/graphql-api-construct';
+
+export { AddFunctionProps }
 
 // @public
 export class AmplifyData extends AmplifyGraphqlApi {
@@ -14,6 +55,82 @@ export class AmplifyData extends AmplifyGraphqlApi {
 // @public (undocumented)
 export class AmplifyDataDefinition extends AmplifyGraphqlDefinition {
 }
+
+export { AmplifyDynamoDbModelDataSourceDefinitionStrategy }
+
+export { AmplifyDynamoDbTableWrapper }
+
+export { AmplifyGraphqlApiCfnResources }
+
+export { AmplifyGraphqlApiProps }
+
+export { AmplifyGraphqlApiResources }
+
+export { ApiKeyAuthorizationConfig }
+
+export { AuthorizationModes }
+
+export { AutomergeConflictResolutionStrategy }
+
+export { ConflictDetectionType }
+
+export { ConflictResolution }
+
+export { ConflictResolutionStrategy }
+
+export { ConflictResolutionStrategyBase }
+
+export { CustomConflictResolutionStrategy }
+
+export { DefaultDynamoDbModelDataSourceDefinitionStrategy }
+
+export { FunctionSlot }
+
+export { FunctionSlotBase }
+
+export { FunctionSlotOverride }
+
+export { IAMAuthorizationConfig }
+
+export { IAmplifyGraphqlDefinition }
+
+export { IBackendOutputEntry }
+
+export { IBackendOutputStorageStrategy }
+
+export { LambdaAuthorizationConfig }
+
+export { ModelDataSourceDefinition }
+
+export { ModelDataSourceDefinitionDbType }
+
+export { ModelDataSourceDefinitionStrategy }
+
+export { MutationFunctionSlot }
+
+export { OIDCAuthorizationConfig }
+
+export { OptimisticConflictResolutionStrategy }
+
+export { PartialTranslationBehavior }
+
+export { ProvisionedThroughput }
+
+export { QueryFunctionSlot }
+
+export { SSESpecification }
+
+export { SSEType }
+
+export { StreamSpecification }
+
+export { SubscriptionFunctionSlot }
+
+export { TimeToLiveSpecification }
+
+export { TranslationBehavior }
+
+export { UserPoolAuthorizationConfig }
 
 // (No @packageDocumentation comment for this package)
 
