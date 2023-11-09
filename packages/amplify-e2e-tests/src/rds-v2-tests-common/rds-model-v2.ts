@@ -1,3 +1,4 @@
+import path from 'path';
 import {
   addApiWithoutSchema,
   amplifyPush,
@@ -16,7 +17,6 @@ import {
 import { existsSync, readFileSync } from 'fs-extra';
 import generator from 'generate-password';
 import { ObjectTypeDefinitionNode, parse } from 'graphql';
-import path from 'path';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
@@ -24,7 +24,7 @@ import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 
-export const testRDSModel = (engine: ImportedRDSType, queries: string[]) => {
+export const testRDSModel = (engine: ImportedRDSType, queries: string[]): void => {
   const CDK_FUNCTION_TYPE = 'AWS::Lambda::Function';
   const CDK_VPC_ENDPOINT_TYPE = 'AWS::EC2::VPCEndpoint';
 

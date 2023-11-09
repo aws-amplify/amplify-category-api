@@ -111,6 +111,7 @@ export const setupRDSInstanceAndData = async (
   config: RDSConfig,
   queries?: string[],
 ): Promise<{ endpoint: string; port: number; dbName: string; dbInstance: DBInstance }> => {
+  console.log(`Creating RDS ${config.engine} instance with identifier ${config.identifier}`);
   const dbConfig = await createRDSInstance(config);
 
   if (queries && queries.length > 0) {
@@ -136,6 +137,7 @@ export const setupRDSInstanceAndData = async (
       database: config.dbname,
     });
 
+    console.log('Running initial queries');
     await dbAdapter.runQuery(queries);
     dbAdapter.cleanup();
 
