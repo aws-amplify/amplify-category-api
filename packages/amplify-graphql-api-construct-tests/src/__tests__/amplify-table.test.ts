@@ -46,7 +46,7 @@ describe('CDK amplify table', () => {
     expect(updatedTable.Table.StreamSpecification.StreamViewType).toBe('KEYS_ONLY');
   });
 
-  test.only('cannot replace table when destructive updates are not allowed', async () => {
+  test('cannot replace table when destructive updates are not allowed', async () => {
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table'));
     const name = await initCDKProject(projRoot, templatePath);
     const outputs = await cdkDeploy(projRoot, '--all');
