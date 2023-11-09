@@ -152,6 +152,8 @@ export const setupRDSInstanceAndData = async (
     );
   }
 
+  await sleep(1 * 60 * 1000); // Delay for the security rules to be removed
+
   return dbConfig;
 };
 
