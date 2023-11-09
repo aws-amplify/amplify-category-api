@@ -1,5 +1,11 @@
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
-import { MappingTemplate, MYSQL_DB_TYPE, DDB_DB_TYPE, getDatasourceProvisionStrategy } from '@aws-amplify/graphql-transformer-core';
+import {
+  DDB_DB_TYPE,
+  getDatasourceProvisionStrategy,
+  MappingTemplate,
+  MYSQL_DB_TYPE,
+  POSTGRES_DB_TYPE,
+} from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
   TransformerContextProvider,
@@ -924,12 +930,14 @@ export const getDBType = (ctx: TransformerContextProvider, modelName: string): D
 
 export const getVTLGenerator = (dbInfo: DataSourceType | undefined): RDSIndexVTLGenerator | DynamoDBIndexVTLGenerator => {
   const dbType = dbInfo ? dbInfo.dbType : DDB_DB_TYPE;
-  if (dbType === DDB_DB_TYPE) {
-    return new DynamoDBIndexVTLGenerator();
+  switch (dbType) {
+    case DDB_DB_TYPE:
+      return new DynamoDBIndexVTLGenerator();
+    case MYSQL_DB_TYPE:
+      return new RDSIndexVTLGenerator();
+    case POSTGRES_DB_TYPE:
+      return new RDSIndexVTLGenerator();
+    default:
+      throw new Error(`Unknown database type ${dbType}`);
   }
-
-  if (dbType === 'MySQL') {
-    return new RDSIndexVTLGenerator();
-  }
-  return new RDSIndexVTLGenerator();
 };
