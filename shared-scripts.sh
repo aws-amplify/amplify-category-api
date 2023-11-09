@@ -214,11 +214,7 @@ function _setupCDKTestsLinux {
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
     _installCLIFromLocalRegistry
-    cd packages/amplify-graphql-api-construct
     yarn package
-    cd ../amplify-data-construct
-    yarn package
-    cd ../..
     _loadTestAccountCredentials
     _setShell
 }

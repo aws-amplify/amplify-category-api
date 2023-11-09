@@ -13,9 +13,6 @@ In order to test locally, you must first package the construct, this is done by 
 ```sh
 # If building from scratch
 yarn build
-cd packages/amplify-graphql-api-construct
-yarn package
-cd ..//amplify-data-construct
 yarn package
 
 # If only rebuilding construct code (much faster)

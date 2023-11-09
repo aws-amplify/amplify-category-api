@@ -1,6 +1,6 @@
 # Amplify Graphql API Construct
 
-[![View on Construct Hub](https://constructs.dev/badge?package=%40aws-amplify%2Fgraphql-construct-alpha)](https://constructs.dev/packages/@aws-amplify/graphql-api-construct)
+[![View on Construct Hub](https://constructs.dev/badge?package=%40aws-amplify%2Fgraphql-api-construct)](https://constructs.dev/packages/@aws-amplify/graphql-api-construct)
 
 This package vends an L3 CDK Construct wrapping the behavior of the Amplify GraphQL Transformer. This enables quick development and interation of AppSync APIs which support the Amplify GraphQL Directives. For more information on schema modeling in GraphQL, please refer to the [amplify developer docs](https://docs.amplify.aws/cli/graphql/overview/).
 
@@ -2222,6 +2222,7 @@ const partialTranslationBehavior: PartialTranslationBehavior = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
+| <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.allowDestructiveGraphqlSchemaUpdates">allowDestructiveGraphqlSchemaUpdates</a></code> | <code>boolean</code> | The following schema updates require replacement of the underlying DynamoDB table:. |
 | <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.disableResolverDeduping">disableResolverDeduping</a></code> | <code>boolean</code> | Disable resolver deduping, this can sometimes cause problems because dedupe ordering isn't stable today, which can lead to circular dependencies across stacks if models are reordered. |
 | <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.enableAutoIndexQueryNames">enableAutoIndexQueryNames</a></code> | <code>boolean</code> | Automate generation of query names, and as a result attaching all indexes as queries to the generated Api. |
 | <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.enableSearchNodeToNodeEncryption">enableSearchNodeToNodeEncryption</a></code> | <code>boolean</code> | If enabled, set nodeToNodeEncryption on the searchable domain (if one exists). |
@@ -2233,6 +2234,26 @@ const partialTranslationBehavior: PartialTranslationBehavior = { ... }
 | <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.shouldDeepMergeDirectiveConfigDefaults">shouldDeepMergeDirectiveConfigDefaults</a></code> | <code>boolean</code> | Restore parity w/ GQLv1. |
 | <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.suppressApiKeyGeneration">suppressApiKeyGeneration</a></code> | <code>boolean</code> | If enabled, disable api key resource generation even if specified as an auth rule on the construct. |
 | <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.useSubUsernameForDefaultIdentityClaim">useSubUsernameForDefaultIdentityClaim</a></code> | <code>boolean</code> | Ensure that oidc and userPool auth use the `sub` field in the for the username field, which disallows new users with the same id to access data from a deleted user in the pool. |
+
+---
+
+##### `allowDestructiveGraphqlSchemaUpdates`<sup>Optional</sup> <a name="allowDestructiveGraphqlSchemaUpdates" id="@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.allowDestructiveGraphqlSchemaUpdates"></a>
+
+```typescript
+public readonly allowDestructiveGraphqlSchemaUpdates: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+The following schema updates require replacement of the underlying DynamoDB table:.
+
+Removing or renaming a model
+ - Modifying the primary key of a model
+ - Modifying a Local Secondary Index of a model (only applies to projects with secondaryKeyAsGSI turned off)
+
+ALL DATA WILL BE LOST when the table replacement happens. When enabled, destructive updates are allowed.
+This will only affect DynamoDB tables with provision strategy "AMPLIFY_TABLE".
 
 ---
 
@@ -2780,6 +2801,7 @@ const translationBehavior: TranslationBehavior = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
+| <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.allowDestructiveGraphqlSchemaUpdates">allowDestructiveGraphqlSchemaUpdates</a></code> | <code>boolean</code> | The following schema updates require replacement of the underlying DynamoDB table:. |
 | <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.disableResolverDeduping">disableResolverDeduping</a></code> | <code>boolean</code> | Disable resolver deduping, this can sometimes cause problems because dedupe ordering isn't stable today, which can lead to circular dependencies across stacks if models are reordered. |
 | <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.enableAutoIndexQueryNames">enableAutoIndexQueryNames</a></code> | <code>boolean</code> | Automate generation of query names, and as a result attaching all indexes as queries to the generated Api. |
 | <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.enableSearchNodeToNodeEncryption">enableSearchNodeToNodeEncryption</a></code> | <code>boolean</code> | *No description.* |
@@ -2791,6 +2813,26 @@ const translationBehavior: TranslationBehavior = { ... }
 | <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.shouldDeepMergeDirectiveConfigDefaults">shouldDeepMergeDirectiveConfigDefaults</a></code> | <code>boolean</code> | Restore parity w/ GQLv1. |
 | <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.suppressApiKeyGeneration">suppressApiKeyGeneration</a></code> | <code>boolean</code> | If enabled, disable api key resource generation even if specified as an auth rule on the construct. |
 | <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.useSubUsernameForDefaultIdentityClaim">useSubUsernameForDefaultIdentityClaim</a></code> | <code>boolean</code> | Ensure that oidc and userPool auth use the `sub` field in the for the username field, which disallows new users with the same id to access data from a deleted user in the pool. |
+
+---
+
+##### `allowDestructiveGraphqlSchemaUpdates`<sup>Required</sup> <a name="allowDestructiveGraphqlSchemaUpdates" id="@aws-amplify/graphql-api-construct.TranslationBehavior.property.allowDestructiveGraphqlSchemaUpdates"></a>
+
+```typescript
+public readonly allowDestructiveGraphqlSchemaUpdates: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+The following schema updates require replacement of the underlying DynamoDB table:.
+
+Removing or renaming a model
+ - Modifying the primary key of a model
+ - Modifying a Local Secondary Index of a model (only applies to projects with secondaryKeyAsGSI turned off)
+
+ALL DATA WILL BE LOST when the table replacement happens. When enabled, destructive updates are allowed.
+This will only affect DynamoDB tables with provision strategy "AMPLIFY_TABLE".
 
 ---
 

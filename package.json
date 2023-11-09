@@ -63,7 +63,8 @@
     "authenticate-e2e-profile": "source scripts/cloud-utils.sh && authenticateWithE2EProfile",
     "verify-construct-dependencies": "ts-node ./scripts/verify-construct-dependencies.ts",
     "extract-dependency-licenses": "./scripts/extract-dependency-licenses.sh",
-    "verify-dependency-licenses-extract": "yarn extract-dependency-licenses && ./scripts/verify-dependency-licenses.sh"
+    "verify-dependency-licenses-extract": "yarn extract-dependency-licenses && ./scripts/verify-dependency-licenses.sh",
+    "update-readme": "lerna run update-readme"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-category-api/issues"
