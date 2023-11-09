@@ -1,5 +1,5 @@
 import {
-  addApiWithCognitoUserPoolAuthTypeWhenAuthExists,
+  addApi,
   amplifyPush,
   createNewProjectDir,
   deleteDBInstance,
@@ -23,6 +23,7 @@ import {
   checkOperationResult,
   checkListItemExistence,
   updatePreAuthTrigger,
+  appendAmplifyInput,
 } from '../rds-v2-test-utils';
 import { setupUser, getUserPoolId, signInUser, configureAmplify } from '../schema-api-directives';
 
@@ -35,7 +36,7 @@ describe('RDS userpool provider with custom Auth claims tests', () => {
   // Generate settings for RDS instance
   const username = db_user;
   const password = db_password;
-  let region = 'us-east-1';
+  let region = 'ap-northeast-2';
   let port = 3306;
   const database = 'default_db';
   let host = 'localhost';
@@ -99,7 +100,12 @@ describe('RDS userpool provider with custom Auth claims tests', () => {
     await addAuthWithPreTokenGenerationTrigger(projRoot);
     updatePreAuthTrigger(projRoot, 'user_id');
 
-    await addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projRoot, { transformerVersion: 2 });
+    await addApi(projRoot, {
+      'Amazon Cognito User Pool': {},
+      'API key': {},
+      transformerVersion: 2,
+      authTypesToSkipSetup: ['Amazon Cognito User Pool'],
+    });
     const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
     const ddbSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.graphql');
     removeSync(ddbSchemaFilePath);
@@ -114,7 +120,7 @@ describe('RDS userpool provider with custom Auth claims tests', () => {
       useVpc: true,
       apiExists: true,
     });
-    writeFileSync(rdsSchemaFilePath, schema, 'utf8');
+    writeFileSync(rdsSchemaFilePath, appendAmplifyInput(schema, 'mysql'), 'utf8');
 
     await updateAuthAddUserGroups(projRoot, [adminGroupName, devGroupName]);
     await amplifyPush(projRoot);
