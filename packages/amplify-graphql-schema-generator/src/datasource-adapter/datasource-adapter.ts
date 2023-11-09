@@ -59,7 +59,7 @@ export abstract class DataSourceAdapter {
     }
     const headers = Object.keys(queryResult[0]);
     const headerIndices = Object.fromEntries(headers.map((key, index) => [index, key]));
-    const rows = queryResult.slice(1).map((row) =>
+    const rows = queryResult.map((row) =>
       [...Array(headers.length).keys()]
         .map((index) => {
           const value = row[headerIndices[index]];

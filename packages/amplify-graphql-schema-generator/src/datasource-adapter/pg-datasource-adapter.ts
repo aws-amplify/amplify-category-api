@@ -4,7 +4,7 @@ import { invokeSchemaInspectorLambda } from '../utils/vpc-helper';
 import ora from 'ora';
 import { EnumType, Field, FieldDataType, FieldType, Index } from '../schema-representation';
 import { DataSourceAdapter } from './datasource-adapter';
-import { PostgresStringDataSourceAdapter } from './pg-string-datasource-adapter';
+import { PostgresStringDataSourceAdapter, expectedColumns } from './pg-string-datasource-adapter';
 
 const spinner = ora();
 
@@ -88,13 +88,13 @@ export class PostgresDataSourceAdapter extends DataSourceAdapter {
   protected async querySchema(): Promise<string> {
     const schemaQuery = `
     SELECT
-      *,
-      SUBSTRING(indexdef from '\\((.*)\\)') as index_columns
+      ${expectedColumns.filter((column) => column != 'index_columns').join(',')},
+      REPLACE(SUBSTRING(indexdef from '\\((.*)\\)'), '"', '') as index_columns
     FROM INFORMATION_SCHEMA.COLUMNS
     LEFT JOIN pg_indexes
     ON
       INFORMATION_SCHEMA.COLUMNS.table_name = pg_indexes.tablename
-      AND INFORMATION_SCHEMA.COLUMNS.column_name = ANY(STRING_TO_ARRAY(SUBSTRING(indexdef from '\\((.*)\\)'), ', '))
+      AND INFORMATION_SCHEMA.COLUMNS.column_name = ANY(STRING_TO_ARRAY(REPLACE(SUBSTRING(indexdef from '\\((.*)\\)'), '"', ''), ', '))
       LEFT JOIN (
         SELECT
           t.typname AS enum_name,
