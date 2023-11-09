@@ -77,7 +77,7 @@ export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
       // determine if table needs replacement
       if (isKeySchemaModified(describeTableResult.Table.KeySchema!, tableDef.keySchema)) {
         console.log('Update requires replacement');
-        if (tableDef.allowDestructiveGraphQLSchemaUpdates) {
+        if (tableDef.allowDestructiveGraphqlSchemaUpdates) {
           if (describeTableResult.Table.DeletionProtectionEnabled === true) {
             throw new Error('Table cannot be replaced when the deletion protection is enabled.');
           }
@@ -104,7 +104,7 @@ export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
           return result;
         } else {
           throw new Error(
-            "Editing key schema of table requires replacement which will cause ALL EXISITING DATA TO BE LOST. If this is intended, set the 'allowDestructiveGraphQLSchemaUpdates' to true and deploy again.",
+            "Editing key schema of table requires replacement which will cause ALL EXISITING DATA TO BE LOST. If this is intended, set the 'allowDestructiveGraphqlSchemaUpdates' to true and deploy again.",
           );
         }
       }
@@ -736,7 +736,7 @@ const convertStringToBooleanOrNumber = (obj: Record<string, any>): Record<string
     'enabled',
     'sseEnabled',
     'pointInTimeRecoveryEnabled',
-    'allowDestructiveGraphQLSchemaUpdates',
+    'allowDestructiveGraphqlSchemaUpdates',
   ];
   const fieldsToBeConvertedToNumber = ['readCapacityUnits', 'writeCapacityUnits'];
   for (const key in obj) {

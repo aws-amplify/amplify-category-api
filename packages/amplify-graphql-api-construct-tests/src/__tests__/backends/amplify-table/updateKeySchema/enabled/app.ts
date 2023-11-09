@@ -33,6 +33,6 @@ new AmplifyGraphqlApi(stack, 'GraphqlApi', {
     apiKeyConfig: { expires: Duration.days(7) },
   },
   translationBehavior: {
-    allowDestructiveGraphQLSchemaUpdates: true,
+    allowDestructiveGraphqlSchemaUpdates: true,
   },
 });

@@ -10,7 +10,7 @@ export type Input = CfnTableProps & {
   /**
    * Determines if a table is allowed for destructive updates. When enabled, the table will be replaced when key schema is changed. This setting is disabled by default.
    */
-  allowDestructiveGraphQLSchemaUpdates?: boolean;
+  allowDestructiveGraphqlSchemaUpdates?: boolean;
 };
 
 /**

@@ -6551,7 +6551,7 @@
             "filename": "src/types.ts",
             "line": 516
           },
-          "name": "allowDestructiveGraphQLSchemaUpdates",
+          "name": "allowDestructiveGraphqlSchemaUpdates",
           "optional": true,
           "type": {
             "primitive": "boolean"
@@ -7138,7 +7138,7 @@
             "filename": "src/types.ts",
             "line": 424
           },
-          "name": "allowDestructiveGraphQLSchemaUpdates",
+          "name": "allowDestructiveGraphqlSchemaUpdates",
           "type": {
             "primitive": "boolean"
           }
@@ -7378,5 +7378,5 @@
     }
   },
   "version": "1.3.0",
-  "fingerprint": "SjttJooI6xr2VAIGVoiWT9/Wxzh3emq1dfMXylQYofA="
+  "fingerprint": "JKPrf0YUGj+O7N97AYWcUkbu2hcSgE+X8/Uth1Mkjw8="
 }

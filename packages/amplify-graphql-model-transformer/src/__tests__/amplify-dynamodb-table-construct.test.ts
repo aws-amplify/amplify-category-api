@@ -119,7 +119,7 @@ describe('Amplify DynamoDB Table Construct Tests', () => {
     const stack = new cdk.Stack();
     new AmplifyDynamoDBTable(stack, 'MockTable', {
       customResourceServiceToken: 'mockResourceServiceToken',
-      allowDestructiveGraphQLSchemaUpdates: true,
+      allowDestructiveGraphqlSchemaUpdates: true,
       tableName: 'mockTableName',
       partitionKey: {
         name: 'id',
@@ -128,7 +128,7 @@ describe('Amplify DynamoDB Table Construct Tests', () => {
     });
     const template = Template.fromStack(stack);
     template.hasResourceProperties(CUSTOM_DDB_CFN_TYPE, {
-      allowDestructiveGraphQLSchemaUpdates: true,
+      allowDestructiveGraphqlSchemaUpdates: true,
     });
   });
 });

@@ -421,7 +421,7 @@ export interface TranslationBehavior {
    * @default false
    * @experimental
    */
-  readonly allowDestructiveGraphQLSchemaUpdates: boolean;
+  readonly allowDestructiveGraphqlSchemaUpdates: boolean;
 }
 
 /**
@@ -513,7 +513,7 @@ export interface PartialTranslationBehavior {
    * @default false
    * @experimental
    */
-  readonly allowDestructiveGraphQLSchemaUpdates?: boolean;
+  readonly allowDestructiveGraphqlSchemaUpdates?: boolean;
 }
 
 /**
