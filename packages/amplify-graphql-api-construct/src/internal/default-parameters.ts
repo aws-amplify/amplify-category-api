@@ -17,4 +17,5 @@ export const defaultTranslationBehavior: TranslationBehavior = {
   respectPrimaryKeyAttributesOnConnectionField: true,
   enableSearchNodeToNodeEncryption: false,
   enableTransformerCfnOutputs: false,
+  allowDestructiveGraphQLSchemaUpdates: false,
 };

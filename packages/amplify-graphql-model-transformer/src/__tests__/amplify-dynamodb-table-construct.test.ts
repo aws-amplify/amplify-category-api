@@ -115,4 +115,20 @@ describe('Amplify DynamoDB Table Construct Tests', () => {
     // Error will be thrown when index does not exist
     expect(() => table.schema('notExist')).toThrow();
   });
+  it('render the correct template when destructive updates are allowed', () => {
+    const stack = new cdk.Stack();
+    new AmplifyDynamoDBTable(stack, 'MockTable', {
+      customResourceServiceToken: 'mockResourceServiceToken',
+      allowDestructiveGraphQLSchemaUpdates: true,
+      tableName: 'mockTableName',
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+    });
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties(CUSTOM_DDB_CFN_TYPE, {
+      allowDestructiveGraphQLSchemaUpdates: true,
+    });
+  });
 });

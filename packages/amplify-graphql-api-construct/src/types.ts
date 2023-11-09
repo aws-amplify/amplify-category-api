@@ -408,6 +408,20 @@ export interface TranslationBehavior {
    * @default false
    */
   readonly enableTransformerCfnOutputs: boolean;
+
+  /**
+   * The following schema updates require replacement of the underlying DynamoDB table:
+   *
+   *  - Removing or renaming a model
+   *  - Modifying the primary key of a model
+   *  - Modifying a Local Secondary Index of a model (only applies to projects with secondaryKeyAsGSI turned off)
+   *
+   * ALL DATA WILL BE LOST when the table replacement happens. When enabled, destructive updates are allowed.
+   * This will only affect DynamoDB tables with provision strategy "AMPLIFY_TABLE".
+   * @default false
+   * @experimental
+   */
+  readonly allowDestructiveGraphQLSchemaUpdates: boolean;
 }
 
 /**
@@ -486,6 +500,20 @@ export interface PartialTranslationBehavior {
    * @default false
    */
   readonly enableTransformerCfnOutputs?: boolean;
+
+  /**
+   * The following schema updates require replacement of the underlying DynamoDB table:
+   *
+   *  - Removing or renaming a model
+   *  - Modifying the primary key of a model
+   *  - Modifying a Local Secondary Index of a model (only applies to projects with secondaryKeyAsGSI turned off)
+   *
+   * ALL DATA WILL BE LOST when the table replacement happens. When enabled, destructive updates are allowed.
+   * This will only affect DynamoDB tables with provision strategy "AMPLIFY_TABLE".
+   * @default false
+   * @experimental
+   */
+  readonly allowDestructiveGraphQLSchemaUpdates?: boolean;
 }
 
 /**

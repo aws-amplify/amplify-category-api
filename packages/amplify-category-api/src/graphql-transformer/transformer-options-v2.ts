@@ -284,6 +284,7 @@ const generateTransformParameters = (
     ),
     sandboxModeEnabled,
     enableTransformerCfnOutputs: true,
+    allowDestructiveGraphQLSchemaUpdates: false,
   };
 };
 

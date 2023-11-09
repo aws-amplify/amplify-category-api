@@ -12,6 +12,7 @@ export type TransformParameters = {
   shouldDeepMergeDirectiveConfigDefaults: boolean;
   disableResolverDeduping: boolean;
   sandboxModeEnabled: boolean;
+  allowDestructiveGraphQLSchemaUpdates: boolean;
 
   // Auth Params
   useSubUsernameForDefaultIdentityClaim: boolean;

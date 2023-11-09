@@ -130,6 +130,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
     // TODO: The attribute of encryption and TTL should be added
     const table = new AmplifyDynamoDBTable(scope, `${tableLogicalName}`, {
       customResourceServiceToken: this.customResourceServiceToken,
+      allowDestructiveGraphQLSchemaUpdates: context.transformParameters.allowDestructiveGraphQLSchemaUpdates,
       tableName,
       partitionKey: {
         name: 'id',

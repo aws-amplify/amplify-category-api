@@ -12,6 +12,7 @@ import {
   UpdateContinuousBackupsCommandInput,
   UpdateTableCommandInput,
   UpdateTimeToLiveCommandInput,
+  ResourceNotFoundException,
 } from '@aws-sdk/client-dynamodb';
 
 const ddbClient = new DynamoDB();
@@ -76,28 +77,36 @@ export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
       // determine if table needs replacement
       if (isKeySchemaModified(describeTableResult.Table.KeySchema!, tableDef.keySchema)) {
         console.log('Update requires replacement');
+        if (tableDef.allowDestructiveGraphQLSchemaUpdates) {
+          if (describeTableResult.Table.DeletionProtectionEnabled === true) {
+            throw new Error('Table cannot be replaced when the deletion protection is enabled.');
+          }
+          console.log('Deleting the old table');
+          await ddbClient.deleteTable({ TableName: event.PhysicalResourceId });
+          await retry(
+            async () => await doesTableExist(event.PhysicalResourceId!),
+            (res) => res === false,
+          );
+          console.log(`Table '${event.PhysicalResourceId}' does not exist. Deletion is finished.`);
 
-        console.log('Deleting the old table');
-        await ddbClient.deleteTable({ TableName: event.PhysicalResourceId });
-        await retry(
-          async () => await doesTableExist(event.PhysicalResourceId!),
-          (res) => res === false,
-        );
-        console.log(`Table '${event.PhysicalResourceId}' does not exist. Deletion is finished.`);
-
-        const createTableInput = toCreateTableInput(tableDef);
-        const response = await createNewTable(createTableInput);
-        result = {
-          PhysicalResourceId: response.tableName,
-          Data: {
-            TableArn: response.tableArn,
-            TableStreamArn: response.streamArn,
-            TableName: response.tableName,
-            IsTableReplaced: true, // This value will be consumed by isComplete handler
-          },
-        };
-        log('Returning result', result);
-        return result;
+          const createTableInput = toCreateTableInput(tableDef);
+          const response = await createNewTable(createTableInput);
+          result = {
+            PhysicalResourceId: response.tableName,
+            Data: {
+              TableArn: response.tableArn,
+              TableStreamArn: response.streamArn,
+              TableName: response.tableName,
+              IsTableReplaced: true, // This value will be consumed by isComplete handler
+            },
+          };
+          log('Returning result', result);
+          return result;
+        } else {
+          throw new Error(
+            "Editing key schema of table requires replacement which will cause ALL EXISITING DATA TO BE LOST. If this is intended, set the 'allowDestructiveGraphQLSchemaUpdates' to true and deploy again.",
+          );
+        }
       }
 
       // determine if point in time recovery is changed -> describeContinuousBackups & updateContinuousBackups
@@ -197,18 +206,19 @@ export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
       result = {
         PhysicalResourceId: event.PhysicalResourceId,
       };
-      console.log('Fetching current table state');
-      const describeTableResultBeforeDeletion = await ddbClient.describeTable({ TableName: event.PhysicalResourceId });
-      if (describeTableResultBeforeDeletion.Table?.DeletionProtectionEnabled) {
-        // Skip the deletion when protection is enabled
-        return result;
-      }
       try {
+        console.log('Fetching current table state');
+        const describeTableResultBeforeDeletion = await ddbClient.describeTable({ TableName: event.PhysicalResourceId });
+        if (describeTableResultBeforeDeletion.Table?.DeletionProtectionEnabled) {
+          // Skip the deletion when protection is enabled
+          return result;
+        }
         console.log('Initiating table deletion');
         await ddbClient.deleteTable({ TableName: event.PhysicalResourceId });
         return result;
       } catch (err) {
-        if (err.code === 'ResourceNotFoundException') {
+        if (err instanceof ResourceNotFoundException) {
+          console.log('Table to be deleted is not found. Deletion complete.');
           return result;
         }
         throw err;
@@ -721,7 +731,13 @@ const usePascalCaseForObjectKeys = (obj: { [key: string]: any }): { [key: string
  * @returns Object with its values converted to the correct form of boolean or number
  */
 const convertStringToBooleanOrNumber = (obj: Record<string, any>): Record<string, any> => {
-  const fieldsToBeConvertedToBoolean = ['deletionProtectionEnabled', 'enabled', 'sseEnabled', 'pointInTimeRecoveryEnabled'];
+  const fieldsToBeConvertedToBoolean = [
+    'deletionProtectionEnabled',
+    'enabled',
+    'sseEnabled',
+    'pointInTimeRecoveryEnabled',
+    'allowDestructiveGraphQLSchemaUpdates',
+  ];
   const fieldsToBeConvertedToNumber = ['readCapacityUnits', 'writeCapacityUnits'];
   for (const key in obj) {
     if (Array.isArray(obj[key])) {
@@ -806,7 +822,7 @@ const doesTableExist = async (tableName: string): Promise<boolean> => {
     await ddbClient.describeTable({ TableName: tableName });
     return true; // Table exists
   } catch (error) {
-    if (error.code === 'ResourceNotFoundException') {
+    if (error instanceof ResourceNotFoundException) {
       return false; // Table does not exist
     }
     throw error; // Handle other errors
