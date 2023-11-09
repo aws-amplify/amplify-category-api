@@ -760,6 +760,7 @@ export type TransformParameters = {
     shouldDeepMergeDirectiveConfigDefaults: boolean;
     disableResolverDeduping: boolean;
     sandboxModeEnabled: boolean;
+    allowDestructiveGraphqlSchemaUpdates: boolean;
     useSubUsernameForDefaultIdentityClaim: boolean;
     populateOwnerFieldForStaticGroupAuth: boolean;
     suppressApiKeyGeneration: boolean;
