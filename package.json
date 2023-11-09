@@ -61,7 +61,9 @@
     "depcheck": "eslint --no-eslintrc --config depcheck.config.js",
     "cloud-e2e-debug": "source scripts/cloud-utils.sh && cloudE2EDebug",
     "authenticate-e2e-profile": "source scripts/cloud-utils.sh && authenticateWithE2EProfile",
-    "verify-construct-dependencies": "ts-node ./scripts/verify-construct-dependencies.ts"
+    "verify-construct-dependencies": "ts-node ./scripts/verify-construct-dependencies.ts",
+    "extract-dependency-licenses": "./scripts/extract-dependency-licenses.sh",
+    "verify-dependency-licenses-extract": "yarn extract-dependency-licenses && ./scripts/verify-dependency-licenses.sh"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-category-api/issues"
@@ -76,7 +78,7 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "yarn verify-commit && yarn split-e2e-tests && lint-staged && yarn verify-construct-dependencies"
+      "pre-commit": "yarn verify-commit && yarn split-e2e-tests && lint-staged && yarn verify-construct-dependencies && yarn extract-dependency-licenses"
     }
   },
   "lint-staged": {
