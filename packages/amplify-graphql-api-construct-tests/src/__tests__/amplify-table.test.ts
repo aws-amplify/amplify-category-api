@@ -46,7 +46,7 @@ describe('CDK amplify table', () => {
     expect(updatedTable.Table.StreamSpecification.StreamViewType).toBe('KEYS_ONLY');
   });
 
-  test('cannot replace table when destructive updates are not allowed', async () => {
+  test.only('cannot replace table when destructive updates are not allowed', async () => {
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table'));
     const name = await initCDKProject(projRoot, templatePath);
     const outputs = await cdkDeploy(projRoot, '--all');
@@ -62,6 +62,11 @@ describe('CDK amplify table', () => {
     updateTemplatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', 'updateKeySchema', 'disabled'));
     updateCDKAppWithTemplate(projRoot, updateTemplatePath);
     await expect(() => cdkDeploy(projRoot, '--all')).rejects.toThrow();
+    const tableAfterFailure = await getDDBTable(tableName, region);
+    expect(tableAfterFailure.Table.KeySchema[0]).toEqual({
+      AttributeName: 'id',
+      KeyType: 'HASH',
+    });
     // deploy with destructive update enabled
     updateTemplatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', 'updateKeySchema', 'enabled'));
     updateCDKAppWithTemplate(projRoot, updateTemplatePath);
