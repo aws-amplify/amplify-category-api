@@ -729,6 +729,8 @@ const allAuthTypes = ['API key', 'Amazon Cognito User Pool', 'IAM', 'OpenID Conn
 export function addApi(projectDir: string, settings?: any) {
   const transformerVersion = settings?.transformerVersion ?? 2;
   delete settings?.transformerVersion;
+  const authTypesToSkipSetup = settings?.authTypesToSkipSetup ?? [];
+  delete settings?.authTypesToSkipSetup;
 
   let authTypesToSelectFrom = allAuthTypes.slice();
   return new Promise<void>((resolve, reject) => {
@@ -746,7 +748,7 @@ export function addApi(projectDir: string, settings?: any) {
         .sendCarriageReturn();
 
       singleSelect(chain.wait('Choose the default authorization type for the API'), defaultType, authTypesToSelectFrom);
-      setupAuthType(defaultType, chain, settings);
+      setupAuthType(defaultType, chain, { ...settings, authTypesToSkipSetup });
 
       if (authTypesToAdd.length > 1) {
         authTypesToAdd.shift();
@@ -762,7 +764,7 @@ export function addApi(projectDir: string, settings?: any) {
         );
 
         authTypesToAdd.forEach((authType) => {
-          setupAuthType(authType, chain, settings);
+          setupAuthType(authType, chain, { ...settings, authTypesToSkipSetup });
         });
       } else {
         chain.wait('Configure additional auth types?').sendLine('n');
@@ -813,6 +815,9 @@ export function addV1RDSDataSource(projectDir: string) {
 }
 
 function setupAuthType(authType: string, chain: any, settings?: any) {
+  if (settings?.authTypesToSkipSetup?.includes(authType)) {
+    return;
+  }
   switch (authType) {
     case 'API key':
       setupAPIKey(chain);
