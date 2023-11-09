@@ -1,9 +1,10 @@
+import * as path from 'path';
 import { Construct } from 'constructs';
 import { executeTransform } from '@aws-amplify/graphql-transformer';
 import { NestedStack, Stack } from 'aws-cdk-lib';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { AssetProps } from '@aws-amplify/graphql-transformer-interfaces';
-import { StackMetadataBackendOutputStorageStrategy } from '@aws-amplify/backend-output-storage';
+import { AttributionMetadataStorage, StackMetadataBackendOutputStorageStrategy } from '@aws-amplify/backend-output-storage';
 import { graphqlOutputKey } from '@aws-amplify/backend-output-schemas';
 import type { GraphqlOutput, AwsAppsyncAuthenticationType } from '@aws-amplify/backend-output-schemas';
 import {
@@ -45,7 +46,6 @@ import {
   getGeneratedResources,
   getGeneratedFunctionSlots,
   CodegenAssets,
-  addAmplifyMetadataToStackDescription,
   getAdditionalAuthenticationTypes,
 } from './internal';
 import { parseDataSourceConfig } from './internal/data-source-config';
@@ -124,6 +124,11 @@ export class AmplifyGraphqlApi extends Construct {
   private readonly conflictResolution: ConflictResolution | undefined;
 
   /**
+   * Be very careful editing this value. This is the string that is used to identify graphql stacks in BI metrics
+   */
+  private readonly stackType = 'api-AppSync';
+
+  /**
    * New AmplifyGraphqlApi construct, this will create an appsync api with authorization, a schema, and all necessary resolvers, functions,
    * and datasources.
    * @param scope the scope to create this construct within.
@@ -148,7 +153,7 @@ export class AmplifyGraphqlApi extends Construct {
       outputStorageStrategy,
     } = props;
 
-    addAmplifyMetadataToStackDescription(scope);
+    new AttributionMetadataStorage().storeAttributionMetadata(Stack.of(scope), this.stackType, path.join(__dirname, '..', 'package.json'));
 
     const { authConfig, authSynthParameters } = convertAuthorizationModesToTransformerAuthConfig(authorizationModes);
 
