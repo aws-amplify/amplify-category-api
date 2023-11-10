@@ -81,9 +81,9 @@ new AmplifyGraphqlApi(stack, 'BlogApp', {
 });
 ```
 
-### Import GraphQL Schema from files, instead of inline.
+### Import GraphQL Schema from files, instead of inline
 
-In this example, we import the schema definition itself from one or more local file, rather than an inline graphql string.
+In this example, we import the schema definition itself from one or more local files, rather than an inline graphql string.
 
 ```graphql
 # todo.graphql
@@ -131,3 +131,5 @@ new AmplifyGraphqlApi(stack, 'MultiFileDefinition', {
   },
 });
 ```
+
+> **NOTE** The 'modelDataSourceDefinition' configuration option is in preview and is not recommended to use with production systems.
