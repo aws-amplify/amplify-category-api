@@ -8,7 +8,6 @@ import { SQLLambdaModelDataSourceStrategy, SqlModelDataSourceDbConnectionConfig 
  * @returns true if the object is shaped like a SQLLambdaModelDataSourceStrategy
  */
 export const isSQLLambdaModelDataSourceStrategy = (obj: any): obj is SQLLambdaModelDataSourceStrategy => {
-  console.log(`obj: ${JSON.stringify(obj)}`);
   return (
     (typeof obj === 'object' || typeof obj === 'function') &&
     typeof obj.name === 'string' &&
@@ -25,7 +24,6 @@ export const isSQLLambdaModelDataSourceStrategy = (obj: any): obj is SQLLambdaMo
  * @returns true if the object is shaped like a SqlModelDataSourceDbConnectionConfig
  */
 export const isSqlModelDataSourceDbConnectionConfig = (obj: any): obj is SqlModelDataSourceDbConnectionConfig => {
-  console.log(`obj: ${JSON.stringify(obj)}`);
   return (
     (typeof obj === 'object' || typeof obj === 'function') &&
     typeof obj.hostnameSsmPath === 'string' &&
