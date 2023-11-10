@@ -67,6 +67,9 @@ export abstract class DataSourceAdapter {
           if (typeof value === 'string' && value.includes(',')) {
             return `"${value}"`;
           }
+          if (value === null) {
+            return 'NULL';
+          }
           return value;
         })
         .join(','),
