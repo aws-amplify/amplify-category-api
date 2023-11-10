@@ -1,17 +1,28 @@
 import * as path from 'path';
 import { Template } from 'cloudform-types';
 import _ from 'lodash';
-import { parse, Kind, ObjectTypeDefinitionNode, print, InputObjectTypeDefinitionNode, StringValueNode } from 'graphql';
+import { parse, Kind, print, InputObjectTypeDefinitionNode, StringValueNode } from 'graphql';
+import {
+  constructCustomSqlDataSourceStrategies,
+  constructDataSourceStrategies,
+  CustomSqlDataSourceStrategy,
+  DefaultDynamoDbModelDataSourceStrategy,
+  DYNAMODB_DEFAULT_TABLE_STRATEGY,
+  IMPORTED_SQL_API_STRATEGY_NAME,
+  ModelDataSourceSqlDbType,
+  MYSQL_DB_TYPE,
+  PartialSQLLambdaModelDataSourceStrategy,
+  POSTGRES_DB_TYPE,
+} from 'graphql-transformer-common';
 import { ApiCategorySchemaNotFoundError } from '../errors';
 import { throwIfNotJSONExt } from './fileUtils';
 import { ProjectOptions } from './amplifyUtils';
 
 const fs = require('fs-extra');
 
-export const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
+export const TRANSFORM_CONFIG_FILE_NAME = 'transform.conf.json';
 export const TRANSFORM_BASE_VERSION = 4;
 export const TRANSFORM_CURRENT_VERSION = 5;
-const MODEL_DIRECTIVE_NAME = 'model';
 
 export interface TransformMigrationConfig {
   V1?: {
@@ -122,7 +133,7 @@ export interface TransformConfig {
  * if it does not exist then we return a blank object
  *  */
 
-export async function loadConfig(projectDir: string): Promise<TransformConfig> {
+export const loadConfig = async (projectDir: string): Promise<TransformConfig> => {
   // Initialize the config always with the latest version, other members are optional for now.
   let config = {
     Version: TRANSFORM_CURRENT_VERSION,
@@ -138,13 +149,13 @@ export async function loadConfig(projectDir: string): Promise<TransformConfig> {
   } catch (err) {
     return config;
   }
-}
+};
 
-export async function writeConfig(projectDir: string, config: TransformConfig): Promise<TransformConfig> {
+export const writeConfig = async (projectDir: string, config: TransformConfig): Promise<TransformConfig> => {
   const configFilePath = path.join(projectDir, TRANSFORM_CONFIG_FILE_NAME);
   await fs.writeFile(configFilePath, JSON.stringify(config, null, 4));
   return config;
-}
+};
 
 export const isDataStoreEnabled = async (projectDir: string): Promise<boolean> => {
   const transformerConfig = await loadConfig(projectDir);
@@ -170,13 +181,10 @@ interface ProjectConfiguration {
     [k: string]: Template;
   };
   config: TransformConfig;
-  modelToDatasourceMap: Map<string, DataSourceType>;
-  customQueries: Map<string, string>;
+  partialDataSourceStrategies: Record<string, DefaultDynamoDbModelDataSourceStrategy | PartialSQLLambdaModelDataSourceStrategy>;
+  partialCustomSqlDataSourceStrategies: CustomSqlDataSourceStrategy[];
 }
 export const loadProject = async (projectDirectory: string, opts?: ProjectOptions): Promise<ProjectConfiguration> => {
-  // Schema
-  const { schema, modelToDatasourceMap } = await readSchema(projectDirectory);
-
   // Load functions
   const functions = {};
   if (!(opts && opts.disableFunctionOverrides === true)) {
@@ -212,7 +220,7 @@ export const loadProject = async (projectDirectory: string, opts?: ProjectOption
   }
 
   // Load Custom Queries
-  const customQueries = new Map<string, string>();
+  const customQueries: Record<string, string> = {};
   const customQueriesDirectoryName = 'sql-statements';
   const customQueriesDirectory = path.join(projectDirectory, customQueriesDirectoryName);
   const customQueriesDirExists = await fs.exists(customQueriesDirectory);
@@ -224,7 +232,7 @@ export const loadProject = async (projectDirectory: string, opts?: ProjectOption
       }
       const queryFileName = path.parse(queryFile).name;
       const queryFilePath = path.join(customQueriesDirectory, queryFile);
-      customQueries.set(queryFileName, await fs.readFile(queryFilePath, 'utf8'));
+      customQueries[queryFileName] = await fs.readFile(queryFilePath, 'utf8');
     }
   }
 
@@ -267,6 +275,9 @@ export const loadProject = async (projectDirectory: string, opts?: ProjectOption
     }
   }
 
+  // Schema
+  const { schema, partialDataSourceStrategies, partialCustomSqlDataSourceStrategies } = await readSchema(projectDirectory, customQueries);
+
   const config = await loadConfig(projectDirectory);
   return {
     functions,
@@ -275,9 +286,21 @@ export const loadProject = async (projectDirectory: string, opts?: ProjectOption
     resolvers,
     schema,
     config,
-    modelToDatasourceMap,
-    customQueries,
+    partialDataSourceStrategies,
+    partialCustomSqlDataSourceStrategies,
   };
+};
+
+const createPartialStrategyForImportedSqlSchema = (
+  dbType: ModelDataSourceSqlDbType,
+  customSqlStatements?: Record<string, string>,
+): PartialSQLLambdaModelDataSourceStrategy => {
+  const strategy: PartialSQLLambdaModelDataSourceStrategy = {
+    name: IMPORTED_SQL_API_STRATEGY_NAME,
+    dbType,
+    customSqlStatements,
+  };
+  return strategy;
 };
 
 /**
@@ -285,11 +308,19 @@ export const loadProject = async (projectDirectory: string, opts?: ProjectOption
  * single schema.graphql or a set of .graphql files in a directory named `schema`.
  * Preference is given to the `schema.graphql` if provided.
  * @param projectDirectory The project directory.
+ * @param customSqlStatements Custom SQL statements to be used by the datasource.
  */
 export const readSchema = async (
   projectDirectory: string,
-): Promise<{ schema: string; modelToDatasourceMap: Map<string, DataSourceType> }> => {
-  let modelToDatasourceMap = new Map<string, DataSourceType>();
+  customSqlStatements?: Record<string, string>,
+): Promise<{
+  schema: string;
+  partialDataSourceStrategies: Record<string, DefaultDynamoDbModelDataSourceStrategy | PartialSQLLambdaModelDataSourceStrategy>;
+  partialCustomSqlDataSourceStrategies: CustomSqlDataSourceStrategy[];
+}> => {
+  let partialDataSourceStrategies: Record<string, DefaultDynamoDbModelDataSourceStrategy | PartialSQLLambdaModelDataSourceStrategy> = {};
+  const partialCustomSqlDataSourceStrategies: CustomSqlDataSourceStrategy[] = [];
+
   const schemaFilePaths = [path.join(projectDirectory, 'schema.graphql'), path.join(projectDirectory, 'schema.rds.graphql')];
 
   const existingSchemaFiles = schemaFilePaths.filter((p) => fs.existsSync(p));
@@ -298,15 +329,26 @@ export const readSchema = async (
   let schema = '';
   if (!_.isEmpty(existingSchemaFiles)) {
     // Schema.graphql contains the models for DynamoDB datasource.
-    // Schema.rds.graphql contains the models for imported 'MySQL' datasource.
+    // Schema.rds.graphql contains the models for an imported SQL datasource.
     // Intentionally using 'for ... of ...' instead of 'object.foreach' to process this in sequence.
     for (const file of existingSchemaFiles) {
+      let strategy: DefaultDynamoDbModelDataSourceStrategy | PartialSQLLambdaModelDataSourceStrategy;
       const fileSchema = (await fs.readFile(file)).toString();
       const { amplifyType, schema: fileSchemaWithoutAmplifyInput } = removeAmplifyInput(fileSchema);
-      const datasourceType = file.endsWith('.rds.graphql')
-        ? constructDataSourceType(getRDSDBTypeFromInput(amplifyType), false)
-        : constructDataSourceType('DDB');
-      modelToDatasourceMap = new Map([...modelToDatasourceMap.entries(), ...constructDataSourceMap(fileSchema, datasourceType).entries()]);
+      if (file.endsWith('.rds.graphql') || file.endsWith('.sql.graphql')) {
+        strategy = createPartialStrategyForImportedSqlSchema(getSqlDbTypeFromInput(amplifyType), customSqlStatements);
+
+        const customSqlStrategies = constructCustomSqlDataSourceStrategies(schema, strategy);
+        partialCustomSqlDataSourceStrategies.push(...customSqlStrategies);
+      } else {
+        strategy = DYNAMODB_DEFAULT_TABLE_STRATEGY;
+      }
+
+      partialDataSourceStrategies = {
+        ...partialDataSourceStrategies,
+        ...constructDataSourceStrategies(schema, strategy),
+      };
+
       if (amplifyType) {
         amplifyInputType = mergeTypeFields(amplifyInputType, amplifyType);
       }
@@ -317,23 +359,20 @@ export const readSchema = async (
     }
   } else if (fs.existsSync(schemaDirectoryPath)) {
     // Schema folder is used only for DynamoDB datasource
-    const datasourceType = constructDataSourceType('DDB');
     const schemaInDirectory = (await readSchemaDocuments(schemaDirectoryPath)).join('\n');
-    modelToDatasourceMap = new Map([
-      ...modelToDatasourceMap.entries(),
-      ...constructDataSourceMap(schemaInDirectory, datasourceType).entries(),
-    ]);
     schema += schemaInDirectory;
+    partialDataSourceStrategies = constructDataSourceStrategies(schema, DYNAMODB_DEFAULT_TABLE_STRATEGY);
   } else {
     throw new ApiCategorySchemaNotFoundError(schemaFilePaths[0]);
   }
   return {
     schema,
-    modelToDatasourceMap,
+    partialDataSourceStrategies,
+    partialCustomSqlDataSourceStrategies,
   };
 };
 
-const getRDSDBTypeFromInput = (amplifyType: InputObjectTypeDefinitionNode): DBType => {
+const getSqlDbTypeFromInput = (amplifyType: InputObjectTypeDefinitionNode): ModelDataSourceSqlDbType => {
   const engineInput = amplifyType.fields.find((f) => f.name.value === 'engine');
   if (!engineInput) {
     throw new Error('engine is not defined in the RDS schema file');
@@ -341,9 +380,9 @@ const getRDSDBTypeFromInput = (amplifyType: InputObjectTypeDefinitionNode): DBTy
   const engine = (engineInput?.defaultValue as StringValueNode)?.value;
   switch (engine) {
     case 'mysql':
-      return 'MySQL';
+      return MYSQL_DB_TYPE;
     case 'postgres':
-      return 'Postgres';
+      return POSTGRES_DB_TYPE;
     default:
       throw new Error(`engine ${engine} specified in the RDS schema file is not supported`);
   }
@@ -400,62 +439,3 @@ async function readSchemaDocuments(schemaDirectoryPath: string): Promise<string[
   }
   return schemaDocuments;
 }
-
-/**
- * Supported transformable database types.
- */
-export type DBType = 'DDB' | 'MySQL' | 'Postgres';
-
-/**
- * Configuration for a datasource. Defines the underlying database engine, and instructs the tranformer whether to provision the database
- * storage or whether it already exists.
- */
-export interface DataSourceType {
-  dbType: DBType;
-  provisionDB: boolean;
-  provisionStrategy: DataSourceProvisionStrategy;
-}
-
-export const enum DynamoDBProvisionStrategy {
-  /**
-   * Use default cloud formation resource of `AWS::DynamoDB::Table`
-   */
-  DEFAULT = 'DEFAULT',
-  /**
-   * Use custom resource type `Custom::AmplifyDynamoDBTable`
-   */
-  AMPLIFY_TABLE = 'AMPLIFY_TABLE',
-}
-
-// TODO: add strategy for the RDS
-export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy;
-
-const constructDataSourceType = (
-  dbType: DBType,
-  provisionDB = true,
-  provisionStrategy = DynamoDBProvisionStrategy.DEFAULT,
-): DataSourceType => {
-  return {
-    dbType,
-    provisionDB,
-    provisionStrategy,
-  };
-};
-
-/**
- * Constructs a map of model names to datasource types for the specified schema. Used by the transformer to auto-generate a model mapping if
- * the customer has not provided an explicit one.
- * @param schema the annotated GraphQL schema
- * @param datasourceType the datasource type for each model to be associated with
- * @returns a map of model names to datasource types
- */
-export const constructDataSourceMap = (schema: string, datasourceType: DataSourceType): Map<string, DataSourceType> => {
-  const parsedSchema = parse(schema);
-  const result = new Map<string, DataSourceType>();
-  parsedSchema.definitions
-    .filter((obj) => obj.kind === Kind.OBJECT_TYPE_DEFINITION && obj.directives.some((dir) => dir.name.value === MODEL_DIRECTIVE_NAME))
-    .forEach((type) => {
-      result.set((type as ObjectTypeDefinitionNode).name.value, datasourceType);
-    });
-  return result;
-};

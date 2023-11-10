@@ -1,10 +1,10 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { validateModelSchema, DYNAMODB_DEFAULT_TABLE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Kind, parse } from 'graphql';
 import _ from 'lodash';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { DataSourceType, DynamoDBProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { CustomSqlDataSourceStrategy, ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { PrimaryKeyTransformer } from '..';
 
 test('throws if multiple primary keys are defined on an object', () => {
@@ -18,6 +18,8 @@ test('throws if multiple primary keys are defined on an object', () => {
     testTransform({
       schema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: { Test: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+      customSqlDataSourceStrategies: [],
     }),
   ).toThrow("You may only supply one primary key on type 'Test'.");
 });
@@ -33,6 +35,8 @@ test('throws if partition key is nullable', () => {
     testTransform({
       schema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: { Test: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+      customSqlDataSourceStrategies: [],
     }),
   ).toThrow("The primary key on type 'Test' must reference non-null fields.");
 });
@@ -48,6 +52,8 @@ test('throws if sort key is nullable', () => {
     testTransform({
       schema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: { Test: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+      customSqlDataSourceStrategies: [],
     }),
   ).toThrow("The primary key on type 'Test' must reference non-null fields.");
 });
@@ -63,6 +69,8 @@ test('throws if @primaryKey is used in a non-@model type', () => {
     testTransform({
       schema,
       transformers: [new PrimaryKeyTransformer()],
+      dataSourceStrategies: { Test: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+      customSqlDataSourceStrategies: [],
     }),
   ).toThrow('The @primaryKey directive may only be added to object definitions annotated with @model.');
 });
@@ -82,6 +90,8 @@ test('throws if @primaryKey is used on a non-scalar field', () => {
     testTransform({
       schema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: { Test: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+      customSqlDataSourceStrategies: [],
     }),
   ).toThrow("The primary key on type 'Test.id' cannot be a non-scalar.");
 });
@@ -97,6 +107,8 @@ test('throws if @primaryKey uses a sort key field that does not exist', () => {
     testTransform({
       schema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: { Test: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+      customSqlDataSourceStrategies: [],
     }),
   ).toThrow("Can't find field 'doesnotexist' in Test, but it was specified in the primary key.");
 });
@@ -116,6 +128,8 @@ test('throws if @primaryKey uses a sort key field that is a non-scalar', () => {
     testTransform({
       schema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: { Test: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+      customSqlDataSourceStrategies: [],
     }),
   ).toThrow("The primary key's sort key on type 'Test.email' cannot be a non-scalar.");
 });
@@ -131,6 +145,8 @@ test('throws if @primaryKey refers to itself', () => {
     testTransform({
       schema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: { Test: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+      customSqlDataSourceStrategies: [],
     }),
   ).toThrow("@primaryKey field 'id' cannot reference itself.");
 });
@@ -146,6 +162,8 @@ test('throws if @primaryKey is specified on a list', () => {
     testTransform({
       schema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: { Test: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+      customSqlDataSourceStrategies: [],
     }),
   ).toThrow("The primary key on type 'Test.strings' cannot be a non-scalar.");
 });
@@ -162,6 +180,8 @@ test('throws if @primaryKey sort key fields are a list', () => {
     testTransform({
       schema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: { Test: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+      customSqlDataSourceStrategies: [],
     }),
   ).toThrow("The primary key's sort key on type 'Test.strings' cannot be a non-scalar.");
 });
@@ -181,6 +201,8 @@ test('handles sortKeyFields being a string instead of an array', () => {
     testTransform({
       schema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: { Test: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+      customSqlDataSourceStrategies: [],
     }),
   ).toThrow("The primary key's sort key on type 'Test.email' cannot be a non-scalar.");
 });
@@ -194,6 +216,8 @@ test('a primary key with no sort key is properly configured', () => {
   const out = testTransform({
     schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+    dataSourceStrategies: { Test: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+    customSqlDataSourceStrategies: [],
   });
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
@@ -236,6 +260,8 @@ test('a primary key with a single sort key field is properly configured', () => 
   const out = testTransform({
     schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+    dataSourceStrategies: { Test: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+    customSqlDataSourceStrategies: [],
   });
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
@@ -274,6 +300,8 @@ test('a primary key with a composite sort key is properly configured', () => {
   const out = testTransform({
     schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+    dataSourceStrategies: { Test: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+    customSqlDataSourceStrategies: [],
   });
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
@@ -348,6 +376,8 @@ test('enums are supported in keys', () => {
   const out = testTransform({
     schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+    dataSourceStrategies: { Test: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+    customSqlDataSourceStrategies: [],
   });
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
@@ -383,6 +413,8 @@ test('user provided id fields are not removed', () => {
   const out = testTransform({
     schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+    dataSourceStrategies: { Test: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+    customSqlDataSourceStrategies: [],
   });
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
@@ -410,6 +442,8 @@ test('null resolvers on @model are supported', () => {
   const out = testTransform({
     schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+    dataSourceStrategies: { Test: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+    customSqlDataSourceStrategies: [],
   });
   const schema = parse(out.schema);
 
@@ -447,6 +481,8 @@ test('@model null resolvers can be overridden', () => {
   const out = testTransform({
     schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+    dataSourceStrategies: { Test: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+    customSqlDataSourceStrategies: [],
   });
   const schema = parse(out.schema);
 
@@ -478,6 +514,8 @@ test('resolvers can be renamed by @model', () => {
   const out = testTransform({
     schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+    dataSourceStrategies: { Test: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+    customSqlDataSourceStrategies: [],
   });
   const schema = parse(out.schema);
 
@@ -521,6 +559,8 @@ test('individual resolvers can be made null by @model', () => {
   const out = testTransform({
     schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+    dataSourceStrategies: { Test: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+    customSqlDataSourceStrategies: [],
   });
   const schema = parse(out.schema);
 
@@ -546,6 +586,8 @@ it('id field should be optional in updateInputObjects when it is not a primary k
   const out = testTransform({
     schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+    dataSourceStrategies: { Review: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+    customSqlDataSourceStrategies: [],
   });
   const schema = parse(out.schema);
 
@@ -570,6 +612,8 @@ test('primary key with id as partition key is not required on createInput', () =
   const out = testTransform({
     schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+    dataSourceStrategies: { Test: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+    customSqlDataSourceStrategies: [],
   });
   const schema = parse(out.schema);
 
@@ -603,6 +647,8 @@ test('primary key with id and createdAt is not required on createInput', () => {
   const out = testTransform({
     schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+    dataSourceStrategies: { Test: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+    customSqlDataSourceStrategies: [],
   });
   const schema = parse(out.schema);
 
@@ -635,6 +681,8 @@ test('key with complex fields updates the input objects', () => {
   const out = testTransform({
     schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+    dataSourceStrategies: { Test: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+    customSqlDataSourceStrategies: [],
   });
 
   const schema = parse(out.schema);
@@ -679,6 +727,8 @@ test('list queries use correct pluralization', () => {
   const out = testTransform({
     schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+    dataSourceStrategies: { Boss: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+    customSqlDataSourceStrategies: [],
   });
   const schema = parse(out.schema);
   const query: any = schema.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === 'Query');
@@ -701,6 +751,8 @@ test('lowercase model names generate the correct get/list query arguments', () =
   const out = testTransform({
     schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+    dataSourceStrategies: { test: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+    customSqlDataSourceStrategies: [],
   });
 
   const schema = parse(out.schema);
@@ -727,12 +779,8 @@ test('lowercase model names generate the correct get/list query arguments', () =
 });
 
 describe('RDS primary key transformer tests', () => {
-  const modelToDatasourceMap = new Map<string, DataSourceType>();
-  modelToDatasourceMap.set('Test', {
-    dbType: 'MySQL',
-    provisionDB: false,
-    provisionStrategy: DynamoDBProvisionStrategy.DEFAULT, // TODO: change this once the RDS stratety is added
-  });
+  const dataSourceStrategies: Record<string, ModelDataSourceStrategy> = { Test: DYNAMODB_DEFAULT_TABLE_STRATEGY };
+  const customSqlDataSourceStrategies: CustomSqlDataSourceStrategy[] = [];
 
   it('a primary key with a single sort key field is properly configured', () => {
     const inputSchema = `
@@ -744,7 +792,8 @@ describe('RDS primary key transformer tests', () => {
     const out = testTransform({
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-      modelToDatasourceMap,
+      dataSourceStrategies,
+      customSqlDataSourceStrategies,
     });
     const schema = parse(out.schema);
     const stack = out.stacks.Test;
@@ -772,7 +821,8 @@ describe('RDS primary key transformer tests', () => {
     const out = testTransform({
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-      modelToDatasourceMap,
+      dataSourceStrategies,
+      customSqlDataSourceStrategies,
     });
     const schema = parse(out.schema);
     const stack = out.stacks.Test;
@@ -815,7 +865,8 @@ describe('RDS primary key transformer tests', () => {
     const out = testTransform({
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-      modelToDatasourceMap,
+      dataSourceStrategies,
+      customSqlDataSourceStrategies,
     });
     const schema = parse(out.schema);
     const stack = out.stacks.Test;
@@ -880,7 +931,8 @@ describe('RDS primary key transformer tests', () => {
     const out = testTransform({
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-      modelToDatasourceMap,
+      dataSourceStrategies,
+      customSqlDataSourceStrategies,
     });
     const schema = parse(out.schema);
 
@@ -918,7 +970,8 @@ describe('RDS primary key transformer tests', () => {
     const out = testTransform({
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-      modelToDatasourceMap,
+      dataSourceStrategies,
+      customSqlDataSourceStrategies,
     });
     const schema = parse(out.schema);
 
@@ -950,7 +1003,8 @@ describe('RDS primary key transformer tests', () => {
     const out = testTransform({
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-      modelToDatasourceMap,
+      dataSourceStrategies,
+      customSqlDataSourceStrategies,
     });
     const schema = parse(out.schema);
 
@@ -994,7 +1048,8 @@ describe('RDS primary key transformer tests', () => {
     const out = testTransform({
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-      modelToDatasourceMap,
+      dataSourceStrategies,
+      customSqlDataSourceStrategies,
     });
     const schema = parse(out.schema);
 

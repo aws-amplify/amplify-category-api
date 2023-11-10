@@ -1,8 +1,16 @@
-import { MYSQL_DB_TYPE, RDSConnectionSecrets, getImportedRDSType, getEngineFromDBType } from '@aws-amplify/graphql-transformer-core';
 import { QueryFieldType, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Topic, SubscriptionFilter } from 'aws-cdk-lib/aws-sns';
 import { LambdaSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
-import { ResourceConstants } from 'graphql-transformer-common';
+import {
+  getSqlResourceNameForStrategy,
+  isSqlStrategy,
+  ModelDataSourceSqlDbType,
+  MYSQL_DB_TYPE,
+  POSTGRES_DB_TYPE,
+  ResourceConstants,
+  SQLLambdaModelDataSourceStrategy,
+} from 'graphql-transformer-common';
+import { Fn } from 'aws-cdk-lib';
 import { ModelVTLGenerator, RDSModelVTLGenerator } from '../resolvers';
 import {
   createRdsLambda,
@@ -12,12 +20,12 @@ import {
   setRDSLayerMappings,
 } from '../resolvers/rds';
 import { ModelResourceGenerator } from './model-resource-generator';
-import { Fn } from 'aws-cdk-lib';
 
 export const RDS_STACK_NAME = 'RdsApiStack';
 // Beta SNS topic - 'arn:aws:sns:us-east-1:956468067974:AmplifyRDSLayerNotification'
 // PROD SNS topic - 'arn:aws:sns:us-east-1:582037449441:AmplifyRDSLayerNotification'
 const RDS_PATCHING_SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:582037449441:AmplifyRDSLayerNotification';
+
 /**
  * An implementation of ModelResourceGenerator responsible for generated CloudFormation resources
  * for models backed by an RDS data source
@@ -25,59 +33,78 @@ const RDS_PATCHING_SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:582037449441:AmplifyRD
 export class RdsModelResourceGenerator extends ModelResourceGenerator {
   protected readonly generatorType = 'RdsModelResourceGenerator';
 
+  /**
+   * Generates CloudFormation resources for all SQL-backed models.
+   * @param context The context provider
+   */
   generateResources(context: TransformerContextProvider): void {
+    if (!this.isEnabled()) {
+      return;
+    }
+
+    Object.values(context.dataSourceStrategies)
+      .filter((strategy) => isSqlStrategy(strategy))
+      // Force cast is safe because of the filter
+      .forEach((strategy) => this.generateResourcesForModelDataSourceStrategy(context, strategy as SQLLambdaModelDataSourceStrategy));
+  }
+
+  private generateResourcesForModelDataSourceStrategy(
+    context: TransformerContextProvider,
+    strategy: SQLLambdaModelDataSourceStrategy,
+  ): void {
     if (this.isEnabled()) {
-      const dbType = getImportedRDSType(context.modelToDatasourceMap);
-      const engine = getEngineFromDBType(dbType);
-      const secretEntry = context.datasourceSecretParameterLocations.get(dbType);
       const {
-        RDSLambdaIAMRoleLogicalID,
-        RDSPatchingLambdaIAMRoleLogicalID,
-        RDSLambdaLogicalID,
-        RDSPatchingLambdaLogicalID,
-        RDSLambdaDataSourceLogicalID,
-        RDSPatchingSubscriptionLogicalID,
+        SQLLambdaLogicalIDPrefix,
+        SQLLambdaIAMRoleLogicalIDPrefix,
+
+        SQLPatchingLambdaLogicalIDPrefix,
+        SQLPatchingLambdaIAMRoleLogicalIDPrefix,
+        SQLPatchingSubscriptionLogicalIDPrefix,
+        SQLPatchingTopicNameLogicalIdPrefix,
+
+        SQLLambdaDataSourceLogicalIDPrefix,
       } = ResourceConstants.RESOURCES;
-      const lambdaRoleScope = context.stackManager.getScopeFor(RDSLambdaIAMRoleLogicalID, RDS_STACK_NAME);
-      const lambdaScope = context.stackManager.getScopeFor(RDSLambdaLogicalID, RDS_STACK_NAME);
-      setRDSLayerMappings(lambdaScope, context.rdsLayerMapping);
-      const role = createRdsLambdaRole(
-        context.resourceHelper.generateIAMRoleName(RDSLambdaIAMRoleLogicalID),
-        lambdaRoleScope,
-        secretEntry as RDSConnectionSecrets,
-      );
+      const lambdaRoleResourceId = getSqlResourceNameForStrategy(SQLLambdaIAMRoleLogicalIDPrefix, strategy);
+      const lambdaRoleScope = context.stackManager.getScopeFor(lambdaRoleResourceId, RDS_STACK_NAME);
 
-      const lambda = createRdsLambda(
-        lambdaScope,
-        context.api,
-        role,
-        {
-          engine: engine,
-          username: secretEntry?.username ?? '',
-          password: secretEntry?.password ?? '',
-          host: secretEntry?.host ?? '',
-          port: secretEntry?.port ?? '',
-          database: secretEntry?.database ?? '',
-        },
-        context.sqlLambdaVpcConfig,
-      );
+      const lambdaResourceId = getSqlResourceNameForStrategy(SQLLambdaLogicalIDPrefix, strategy);
+      const lambdaScope = context.stackManager.getScopeFor(lambdaResourceId, RDS_STACK_NAME);
+      setRDSLayerMappings(lambdaScope, strategy.sqlLambdaLayerMapping);
 
-      const patchingLambdaRoleScope = context.stackManager.getScopeFor(RDSPatchingLambdaIAMRoleLogicalID, RDS_STACK_NAME);
-      const patchingLambdaScope = context.stackManager.getScopeFor(RDSPatchingLambdaLogicalID, RDS_STACK_NAME);
+      const role = createRdsLambdaRole(context.resourceHelper.generateIAMRoleName(lambdaRoleResourceId), lambdaRoleScope, strategy);
+
+      const lambda = createRdsLambda(lambdaScope, context.api, role, strategy, {
+        engine: getEngineEnvVariableFromDbType(strategy.dbType),
+        username: strategy.dbConnectionConfig.usernameSsmPath,
+        password: strategy.dbConnectionConfig.passwordSsmPath,
+        host: strategy.dbConnectionConfig.hostnameSsmPath,
+        port: strategy.dbConnectionConfig.portSsmPath,
+        database: strategy.dbConnectionConfig.databaseNameSsmPath,
+      });
+
+      const patchingLambdaResourceId = getSqlResourceNameForStrategy(SQLPatchingLambdaLogicalIDPrefix, strategy);
+      const patchingLambdaScope = context.stackManager.getScopeFor(patchingLambdaResourceId, RDS_STACK_NAME);
+
+      const patchingLambdaRoleResourceId = getSqlResourceNameForStrategy(SQLPatchingLambdaIAMRoleLogicalIDPrefix, strategy);
+      const patchingLambdaRoleScope = context.stackManager.getScopeFor(patchingLambdaRoleResourceId, RDS_STACK_NAME);
+
       const patchingLambdaRole = createRdsPatchingLambdaRole(
-        context.resourceHelper.generateIAMRoleName(RDSPatchingLambdaIAMRoleLogicalID),
+        context.resourceHelper.generateIAMRoleName(patchingLambdaRoleResourceId),
         patchingLambdaRoleScope,
         lambda.functionArn,
+        strategy,
       );
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const patchingLambda = createRdsPatchingLambda(patchingLambdaScope, context.api, patchingLambdaRole, {
+      const patchingLambda = createRdsPatchingLambda(patchingLambdaScope, context.api, patchingLambdaRole, strategy, {
         LAMBDA_FUNCTION_ARN: lambda.functionArn,
       });
 
       // Add SNS subscription for patching notifications
-      const patchingSubscriptionScope = context.stackManager.getScopeFor(RDSPatchingSubscriptionLogicalID, RDS_STACK_NAME);
-      const snsTopic = Topic.fromTopicArn(patchingSubscriptionScope, 'RDSPatchingTopic', RDS_PATCHING_SNS_TOPIC_ARN);
+      const patchingSubscriptionResourceId = getSqlResourceNameForStrategy(SQLPatchingSubscriptionLogicalIDPrefix, strategy);
+      const patchingSubscriptionScope = context.stackManager.getScopeFor(patchingSubscriptionResourceId, RDS_STACK_NAME);
+      const patchingTopicResourceId = getSqlResourceNameForStrategy(SQLPatchingTopicNameLogicalIdPrefix, strategy);
+      const snsTopic = Topic.fromTopicArn(patchingSubscriptionScope, patchingTopicResourceId, RDS_PATCHING_SNS_TOPIC_ARN);
       const subscription = new LambdaSubscription(patchingLambda, {
         filterPolicy: {
           Region: SubscriptionFilter.stringFilter({
@@ -87,8 +114,9 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       });
       snsTopic.addSubscription(subscription);
 
-      const lambdaDataSourceScope = context.stackManager.getScopeFor(RDSLambdaDataSourceLogicalID, RDS_STACK_NAME);
-      const rdsDatasource = context.api.host.addLambdaDataSource(`${RDSLambdaDataSourceLogicalID}`, lambda, {}, lambdaDataSourceScope);
+      const lambdaDataSourceResourceId = getSqlResourceNameForStrategy(SQLLambdaDataSourceLogicalIDPrefix, strategy);
+      const lambdaDataSourceScope = context.stackManager.getScopeFor(lambdaDataSourceResourceId, RDS_STACK_NAME);
+      const rdsDatasource = context.api.host.addLambdaDataSource(lambdaDataSourceResourceId, lambda, {}, lambdaDataSourceScope);
       this.models.forEach((model) => {
         context.dataSources.add(model, rdsDatasource);
         this.datasourceMap[model.name.value] = rdsDatasource;
@@ -125,3 +153,20 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
     });
   }
 }
+
+/**
+ * Maps the dbType to the `engine` environment variable of the SQL Lambda. This must be kept in sync with the engine expected by the Lambda
+ * Layer code.
+
+ * @param dbType the dbType
+ */
+const getEngineEnvVariableFromDbType = (dbType: ModelDataSourceSqlDbType): string => {
+  switch (dbType) {
+    case MYSQL_DB_TYPE:
+      return 'mysql';
+    case POSTGRES_DB_TYPE:
+      return 'postgres';
+    default:
+      throw new Error(`Unsupported dbType: ${dbType}`);
+  }
+};

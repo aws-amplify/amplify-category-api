@@ -32,7 +32,7 @@ export enum SubscriptionFieldType {
  * TransformerModelProvider
  */
 export interface TransformerModelProvider extends TransformerPluginProvider {
-  getDataSourceType: () => AppSyncDataSourceType;
+  getModelDataSourceStrategyForType: () => AppSyncDataSourceType;
   generateGetResolver: (
     ctx: TransformerContextProvider,
     type: ObjectTypeDefinitionNode,

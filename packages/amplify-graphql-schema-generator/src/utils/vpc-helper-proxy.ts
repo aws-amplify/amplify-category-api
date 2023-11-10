@@ -1,6 +1,6 @@
 import { RDSClient, DescribeDBProxiesCommand, DescribeDBProxiesCommandOutput, DescribeDBProxiesCommandInput } from '@aws-sdk/client-rds';
 import { DescribeSubnetsCommand, DescribeSubnetsCommandInput, DescribeSubnetsCommandOutput, EC2Client } from '@aws-sdk/client-ec2';
-import { VpcConfig, SubnetAvailabilityZone } from '@aws-amplify/graphql-transformer-interfaces';
+import { VpcConfig, SubnetAvailabilityZone } from 'graphql-transformer-common';
 import { DB_ENGINES } from './supported-db-engines';
 import { filterSubnetAvailabilityZones } from './filter-subnet-availability-zones';
 

@@ -12,3 +12,8 @@ export * from './dynamodbUtils';
 export * from './SyncResourceIDs';
 export * from './PredictionsResourceIDs';
 export * from './transformedArgs';
+export * from './import-appsync-api-types';
+export * from './model-datasource-resource-name-utils';
+export * from './model-datasource-strategy-constants';
+export * from './model-datasource-strategy-types';
+export * from './model-datasource-strategy-utils';

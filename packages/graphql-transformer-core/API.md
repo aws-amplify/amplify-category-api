@@ -8,8 +8,10 @@
 
 import { Condition } from 'cloudform-types/types/dataTypes';
 import { ConditionIntrinsicFunction } from 'cloudform-types';
+import { CustomSqlDataSourceStrategy } from 'graphql-transformer-common';
 import { default as default_2 } from 'cloudform-types/types/dynamoDb/table';
 import { default as default_3 } from 'cloudform-types/types/iam/role';
+import { DefaultDynamoDbModelDataSourceStrategy } from 'graphql-transformer-common';
 import { Diff as Diff_2 } from 'deep-diff';
 import { DirectiveDefinitionNode } from 'graphql';
 import { DirectiveNode } from 'graphql';
@@ -28,6 +30,7 @@ import { ObjectTypeDefinitionNode } from 'graphql';
 import { ObjectTypeExtensionNode } from 'graphql';
 import Output from 'cloudform-types/types/output';
 import Parameter from 'cloudform-types/types/parameter';
+import { PartialSQLLambdaModelDataSourceStrategy } from 'graphql-transformer-common';
 import { Policy } from 'cloudform-types/types/iam/role';
 import { Readable } from 'stream';
 import Resource from 'cloudform-types/types/resource';
@@ -111,25 +114,6 @@ export const enum ConflictHandlerType {
     OPTIMISTIC = "OPTIMISTIC_CONCURRENCY"
 }
 
-// @public (undocumented)
-export const constructDataSourceMap: (schema: string, datasourceType: DataSourceType) => Map<string, DataSourceType>;
-
-// @public (undocumented)
-export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy;
-
-// @public (undocumented)
-export interface DataSourceType {
-    // (undocumented)
-    dbType: DBType;
-    // (undocumented)
-    provisionDB: boolean;
-    // (undocumented)
-    provisionStrategy: DataSourceProvisionStrategy;
-}
-
-// @public (undocumented)
-export type DBType = 'DDB' | 'MySQL' | 'Postgres';
-
 // Warning: (ae-forgotten-export) The symbol "ResolversFunctionsAndSchema" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "NestedStacks" needs to be exported by the entry point index.d.ts
 //
@@ -146,14 +130,6 @@ export class DestructiveMigrationError extends Error {
 
 // @public (undocumented)
 export type DiffRule = (diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject) => void;
-
-// @public (undocumented)
-export const enum DynamoDBProvisionStrategy {
-    // (undocumented)
-    AMPLIFY_TABLE = "AMPLIFY_TABLE",
-    // (undocumented)
-    DEFAULT = "DEFAULT"
-}
 
 // @public (undocumented)
 export interface FeatureFlagProvider {
@@ -274,7 +250,7 @@ export interface ITransformer {
 }
 
 // @public (undocumented)
-function loadConfig(projectDir: string): Promise<TransformConfig>;
+const loadConfig: (projectDir: string) => Promise<TransformConfig>;
 export { loadConfig }
 export { loadConfig as readTransformerConfiguration }
 
@@ -310,9 +286,10 @@ export const PARAMETERS_FILE_NAME = "parameters.json";
 export type ProjectRule = (diffs: Diff[], currentBuild: DiffableProject, nextBuild: DiffableProject) => void;
 
 // @public (undocumented)
-const readSchema: (projectDirectory: string) => Promise<{
+const readSchema: (projectDirectory: string, customSqlStatements?: Record<string, string>) => Promise<{
     schema: string;
-    modelToDatasourceMap: Map<string, DataSourceType>;
+    partialDataSourceStrategies: Record<string, DefaultDynamoDbModelDataSourceStrategy | PartialSQLLambdaModelDataSourceStrategy>;
+    partialCustomSqlDataSourceStrategies: CustomSqlDataSourceStrategy[];
 }>;
 export { readSchema as readProjectSchema }
 export { readSchema }
@@ -621,7 +598,7 @@ export class UnknownDirectiveError extends Error {
 export function uploadAPIProject(opts: UploadOptions): Promise<void>;
 
 // @public (undocumented)
-function writeConfig(projectDir: string, config: TransformConfig): Promise<TransformConfig>;
+const writeConfig: (projectDir: string, config: TransformConfig) => Promise<TransformConfig>;
 export { writeConfig }
 export { writeConfig as writeTransformerConfiguration }
 

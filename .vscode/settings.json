@@ -15,6 +15,9 @@
     "**/coverage": true
   },
   "jest.showCoverageOnLoad": true,
+  // Note: This will change to 'runMode' in 6.1.0
+  // https://marketplace.visualstudio.com/items?itemName=Orta.vscode-jest#runmode
+  "jest.autoRun": "off",
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },

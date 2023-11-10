@@ -30,7 +30,8 @@
   },
   "dependencies": {
     "@aws-amplify/graphql-transformer-core": "2.2.4",
-    "@aws-amplify/graphql-transformer-interfaces": "3.2.2"
+    "@aws-amplify/graphql-transformer-interfaces": "3.2.2",
+    "graphql-transformer-common": "4.25.1"
   },
   "devDependencies": {
     "@types/node": "^12.12.6",

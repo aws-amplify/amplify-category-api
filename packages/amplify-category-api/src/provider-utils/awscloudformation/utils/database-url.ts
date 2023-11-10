@@ -1,8 +1,8 @@
 import { URL } from 'url';
-import { ImportedRDSType, RDSDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { ImportedRDSType, ImportedDataSourceConfig } from 'graphql-transformer-common';
 
-export const parseDatabaseUrl = (databaseUrl: string): Partial<RDSDataSourceConfig> => {
+export const parseDatabaseUrl = (databaseUrl: string): Partial<ImportedDataSourceConfig> => {
   const allowedProtocols = ['mysql', 'mysql2'];
   try {
     const parsedDatabaseUrl = new URL(databaseUrl);

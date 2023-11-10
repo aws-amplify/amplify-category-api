@@ -7,7 +7,6 @@ import {
   TransformerResolver,
   getSortKeyFieldNames,
   generateGetArgumentsInput,
-  isRDSModel,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
@@ -46,6 +45,11 @@ import {
   ResolverResourceIDs,
   toUpper,
   isListType,
+  getDynamoDbTableName,
+  getModelDataSourceStrategy,
+  getSqlLambdaDataSourceNameForStrategy,
+  isSqlModel,
+  isSqlStrategy,
 } from 'graphql-transformer-common';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
@@ -936,12 +940,9 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
 
       return roleDefinition;
     });
-    const { RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
-    const dataSource = (
-      isRDSModel(ctx, def.name.value)
-        ? ctx.api.host.getDataSource(RDSLambdaDataSourceLogicalID)
-        : ctx.api.host.getDataSource(`${def.name.value}Table`)
-    ) as DataSourceProvider;
+    const strategy = getModelDataSourceStrategy(ctx, def.name.value);
+    const dataSourceId = isSqlStrategy(strategy) ? getSqlLambdaDataSourceNameForStrategy(strategy) : getDynamoDbTableName(def.name.value);
+    const dataSource = ctx.api.host.getDataSource(dataSourceId) as DataSourceProvider;
     const requestExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthRequestExpression(ctx, def);
     const authExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForUpdate(
       this.configuredAuthProviders,
@@ -973,12 +974,9 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       roleDefinition.allowedFields = allowedFields;
       return roleDefinition;
     });
-    const { RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
-    const dataSource = (
-      isRDSModel(ctx, def.name.value)
-        ? ctx.api.host.getDataSource(RDSLambdaDataSourceLogicalID)
-        : ctx.api.host.getDataSource(`${def.name.value}Table`)
-    ) as DataSourceProvider;
+    const strategy = getModelDataSourceStrategy(ctx, def.name.value);
+    const dataSourceId = isSqlStrategy(strategy) ? getSqlLambdaDataSourceNameForStrategy(strategy) : getDynamoDbTableName(def.name.value);
+    const dataSource = ctx.api.host.getDataSource(dataSourceId) as DataSourceProvider;
     const requestExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthRequestExpression(ctx, def);
     const authExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForDelete(
       this.configuredAuthProviders,
@@ -1475,7 +1473,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
           (directive.name.value === 'belongsTo' &&
             relatedType.fields.some((f) => getBaseType(f.type) === def.name.value && f.directives?.some((d) => d.name.value === 'hasOne')))
         ) {
-          if (!isRDSModel(ctx, def.name.value)) {
+          if (!isSqlModel(ctx, def.name.value)) {
             allowedFields.add(
               getConnectionAttributeName(ctx.transformParameters, def.name.value, field, getObjectPrimaryKey(relatedType).name.value),
             );
@@ -1500,7 +1498,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     }
 
     // Check based on schema file
-    if (isRDSModel(ctx, typename)) {
+    if (isSqlModel(ctx, typename)) {
       return new RDSAuthVTLGenerator();
     }
     return new DDBAuthVTLGenerator();

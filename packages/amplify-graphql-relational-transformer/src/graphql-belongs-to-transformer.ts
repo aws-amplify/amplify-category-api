@@ -1,13 +1,10 @@
 /* eslint-disable no-param-reassign */
 import {
-  DDB_DB_TYPE,
   DirectiveWrapper,
   generateGetArgumentsInput,
-  getDataSourceType,
+  getModelDataSourceStrategyForType,
   InvalidDirectiveError,
   TransformerPluginBase,
-  isRDSModel,
-  isRDSDBType,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
@@ -17,7 +14,18 @@ import {
   TransformerPreProcessContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveNode, DocumentNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
+import {
+  getBaseType,
+  getModelDataSourceStrategy,
+  isDynamoDbStrategy,
+  isListType,
+  isNonNullType,
+  isSqlModel,
+  isSqlStrategy,
+  makeField,
+  makeNamedType,
+  makeNonNullType,
+} from 'graphql-transformer-common';
 import produce from 'immer';
 import { WritableDraft } from 'immer/dist/types/types-external';
 import { ensureBelongsToConnectionField } from './schema';
@@ -135,7 +143,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
       .filter((config) => config.relationType === 'hasOne')
       .forEach((config) => {
         const modelName = config.object.name.value;
-        if (isRDSModel(context as TransformerContextProvider, modelName)) {
+        if (isSqlModel(context as TransformerContextProvider, modelName)) {
           return;
         }
         // a belongsTo with hasOne behaves the same as hasOne
@@ -154,22 +162,26 @@ export class BelongsToTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      const dbType = getDataSourceType(config.field.type, context);
-      if (dbType === DDB_DB_TYPE) {
+      const strategy = getModelDataSourceStrategyForType(config.field.type, context);
+      if (isDynamoDbStrategy(strategy)) {
         config.relatedTypeIndex = getRelatedTypeIndex(config, context);
-      } else if (isRDSDBType(dbType)) {
+      } else if (isSqlStrategy(strategy)) {
         validateChildReferencesFields(config, context);
       }
       ensureBelongsToConnectionField(config, context);
     }
   };
 
+  /**
+   * Generates a resolver for the RELATED types of directives in the list.
+   */
   generateResolvers = (ctx: TransformerContextProvider): void => {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      const dbType = getDataSourceType(config.field.type, context);
-      const generator = getGenerator(dbType);
+      const relatedType = getRelatedType(config, ctx);
+      const strategyOfRelatedType = getModelDataSourceStrategy(ctx, relatedType.name.value);
+      const generator = getGenerator(strategyOfRelatedType.dbType);
       generator.makeBelongsToGetItemConnectionWithKeyResolver(config, context);
     }
   };
@@ -178,15 +190,15 @@ export class BelongsToTransformer extends TransformerPluginBase {
 const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field, object } = config;
 
-  const dbType = getDataSourceType(field.type, ctx);
+  const strategy = getModelDataSourceStrategyForType(field.type, ctx);
   config.relatedType = getRelatedType(config, ctx);
 
-  if (dbType === DDB_DB_TYPE) {
+  if (isDynamoDbStrategy(strategy)) {
     ensureFieldsArray(config);
     config.fieldNodes = getFieldsNodes(config, ctx);
   }
 
-  if (isRDSDBType(dbType)) {
+  if (isSqlStrategy(strategy)) {
     ensureReferencesArray(config);
     getBelongsToReferencesNodes(config, ctx);
   }
@@ -215,17 +227,20 @@ const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerConte
     });
   });
 
-  if (!isBiRelation && dbType === DDB_DB_TYPE) {
+  if (!isBiRelation && isDynamoDbStrategy(strategy)) {
     throw new InvalidDirectiveError(
       `${config.relatedType.name.value} must have a relationship with ${object.name.value} in order to use @${directiveName}.`,
     );
   }
 };
 
-const setFieldMappingReferences = (context: TransformerPrepareStepContextProvider, directiveList: BelongsToDirectiveConfiguration[]) => {
+const setFieldMappingReferences = (
+  context: TransformerPrepareStepContextProvider,
+  directiveList: BelongsToDirectiveConfiguration[],
+): void => {
   directiveList.forEach((config) => {
     const modelName = config.object.name.value;
-    const areFieldMappingsSupported = isRDSModel(context as TransformerContextProvider, modelName);
+    const areFieldMappingsSupported = isSqlModel(context as TransformerContextProvider, modelName);
     if (!areFieldMappingsSupported) {
       return;
     }

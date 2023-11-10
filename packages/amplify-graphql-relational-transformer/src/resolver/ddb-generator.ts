@@ -38,8 +38,8 @@ import {
 } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from '../types';
-import { RelationalResolverGenerator } from './generator';
 import { condenseRangeKey } from '../resolvers';
+import { RelationalResolverGenerator } from './generator';
 
 const SORT_KEY_VALUE = 'sortKeyValue';
 const CONNECTION_STACK = 'ConnectionStack';

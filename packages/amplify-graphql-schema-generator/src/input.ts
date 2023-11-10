@@ -1,5 +1,9 @@
 import { print, InputObjectTypeDefinitionNode, DocumentNode } from 'graphql';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+
+enum ImportedRDSType {
+  MYSQL = 'mysql',
+  POSTGRESQL = 'postgres',
+}
 
 type AmplifyInputEntry = {
   name: string;

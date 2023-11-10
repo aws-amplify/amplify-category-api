@@ -4,7 +4,7 @@ import {
   DescribeDBInstancesCommandOutput,
   DescribeDBInstancesCommandInput,
 } from '@aws-sdk/client-rds';
-import { SubnetAvailabilityZone, VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { SubnetAvailabilityZone, VpcConfig } from 'graphql-transformer-common';
 import { DB_ENGINES } from './supported-db-engines';
 import { filterSubnetAvailabilityZones } from './filter-subnet-availability-zones';
 

@@ -22,7 +22,7 @@ import {
   notEquals,
   not,
 } from 'graphql-mapping-template';
-import { ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
+import { getSqlResourceNameForStrategy, ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { DirectiveNode, ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
 
 type SqlDirectiveConfiguration = {
@@ -32,7 +32,8 @@ type SqlDirectiveConfiguration = {
   resolverFieldName: string;
 };
 
-const SQL_DIRECTIVE_STACK = 'CustomSQLStack';
+const SQL_DIRECTIVE_STACK_PREFIX = 'CustomSQLStack';
+
 const directiveDefinition = /* GraphQL */ `
   directive @sql(statement: String, reference: String) on FIELD_DEFINITION
 `;
@@ -50,25 +51,26 @@ export class SqlTransformer extends TransformerPluginBase {
     directive: DirectiveNode,
     ctx: TransformerSchemaVisitStepContextProvider,
   ): void => {
-    if (parent.name.value !== 'Query' && parent.name.value !== 'Mutation') {
+    const parentName = parent.name.value;
+    if (parentName !== 'Query' && parentName !== 'Mutation') {
       throw new InvalidDirectiveError(
-        `@sql directive can only be used on Query or Mutation types. Check type "${parent.name.value}" and field "${definition.name.value}".`,
+        `@sql directive can only be used on Query or Mutation types. Check type "${parentName}" and field "${definition.name.value}".`,
       );
     }
 
-    const directiveWrapped = new DirectiveWrapper(directive);
     if (
       !directive?.arguments?.find((arg) => arg.name.value === 'statement') &&
       !directive?.arguments?.find((arg) => arg.name.value === 'reference')
     ) {
       throw new InvalidDirectiveError(
-        `@sql directive must have either a 'statement' or 'reference' argument. Check type "${parent.name.value}" and field "${definition.name.value}".`,
+        `@sql directive must have either a 'statement' or 'reference' argument. Check type "${parentName}" and field "${definition.name.value}".`,
       );
     }
 
+    const directiveWrapped = new DirectiveWrapper(directive);
     const args = directiveWrapped.getArguments(
       {
-        resolverTypeName: parent.name.value,
+        resolverTypeName: parentName,
         resolverFieldName: definition.name.value,
       } as SqlDirectiveConfiguration,
       generateGetArgumentsInput(ctx.transformParameters),
@@ -87,22 +89,35 @@ export class SqlTransformer extends TransformerPluginBase {
     if (this.sqlDirectiveFields.size === 0) {
       return;
     }
-
-    const stack: cdk.Stack = context.stackManager.createStack(SQL_DIRECTIVE_STACK);
-    const env = context.synthParameters.amplifyEnvironmentName;
-
-    stack.templateOptions.templateFormatVersion = '2010-09-09';
-    stack.templateOptions.description = 'An auto-generated nested stack for the @sql directive.';
-
-    new cdk.CfnCondition(stack, ResourceConstants.CONDITIONS.HasEnvironmentParameter, {
-      expression: cdk.Fn.conditionNot(cdk.Fn.conditionEquals(env, ResourceConstants.NONE)),
-    });
-
     this.sqlDirectiveFields.forEach((resolverFns) => {
       resolverFns.forEach((config) => {
-        const { RDSLambdaDataSourceLogicalID: dataSourceId } = ResourceConstants.RESOURCES;
+        const { resolverTypeName, resolverFieldName } = config;
+        const customSqlDataSourceStrategy = context.customSqlDataSourceStrategies.find((customSqlStrategy) => {
+          customSqlStrategy.typeName === resolverTypeName && customSqlStrategy.fieldName === resolverFieldName;
+        });
+
+        if (!customSqlDataSourceStrategy) {
+          throw new Error(`Could not find a CustomSqlDataSourceStrategy for ${resolverTypeName}.${resolverFieldName}`);
+        }
+
+        const { SQLLambdaDataSourceLogicalIDPrefix } = ResourceConstants.RESOURCES;
+        const dataSourceId = getSqlResourceNameForStrategy(SQLLambdaDataSourceLogicalIDPrefix, customSqlDataSourceStrategy.strategy);
+
+        const stackName = getSqlResourceNameForStrategy(SQL_DIRECTIVE_STACK_PREFIX, customSqlDataSourceStrategy.strategy);
+        const stack: cdk.Stack = context.stackManager.createStack(stackName);
+        const env = context.synthParameters.amplifyEnvironmentName;
+
+        stack.templateOptions.templateFormatVersion = '2010-09-09';
+        stack.templateOptions.description = `An auto-generated nested stack for @sql directives resolved by ${dataSourceId} data source.`;
+
+        new cdk.CfnCondition(stack, ResourceConstants.CONDITIONS.HasEnvironmentParameter, {
+          expression: cdk.Fn.conditionNot(cdk.Fn.conditionEquals(env, ResourceConstants.NONE)),
+        });
+
+        // TODO: Support schemas with no models, only custom SQL. As a workaround in the meantime, customers can create a small model
+        // pointing to the data source they want to use for their custom SQL statements.
         const dataSource = context.api.host.getDataSource(dataSourceId);
-        const statement = getStatement(config, context.customQueries);
+        const statement = getStatement(config, customSqlDataSourceStrategy.strategy.customSqlStatements ?? {});
         const resolverResourceId = ResolverResourceIDs.ResolverResourceID(config.resolverTypeName, config.resolverFieldName);
         const resolver = context.resolvers.generateQueryResolver(
           config.resolverTypeName,
@@ -126,7 +141,7 @@ export class SqlTransformer extends TransformerPluginBase {
             `${config.resolverTypeName}.${config.resolverFieldName}.{slotName}.{slotIndex}.req.vtl`,
           ),
         );
-        resolver.setScope(context.stackManager.getScopeFor(resolverResourceId, SQL_DIRECTIVE_STACK));
+        resolver.setScope(context.stackManager.getScopeFor(resolverResourceId, stackName));
         context.resolvers.addResolver(config.resolverTypeName, config.resolverFieldName, resolver);
       });
     });
@@ -145,8 +160,8 @@ const generateAuthExpressionForSandboxMode = (enabled: boolean): string => {
   );
 };
 
-const getStatement = (config: SqlDirectiveConfiguration, customQueries: Map<string, string>): string => {
-  if (config.reference && !customQueries.has(config.reference)) {
+const getStatement = (config: SqlDirectiveConfiguration, customQueries: Record<string, string>): string => {
+  if (config.reference && !customQueries[config.reference]) {
     throw new InvalidDirectiveError(
       `@sql directive 'reference' argument must be a valid custom query name. Check type "${config.resolverTypeName}" and field "${config.resolverFieldName}". The custom query "${config.reference}" does not exist in "sql-statements" directory.`,
     );
@@ -164,7 +179,7 @@ const getStatement = (config: SqlDirectiveConfiguration, customQueries: Map<stri
     );
   }
 
-  const statement = config.statement ?? customQueries.get(config.reference!);
+  const statement = config.statement ?? customQueries[config.reference!];
   return statement!;
 };
 

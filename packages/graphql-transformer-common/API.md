@@ -29,6 +29,14 @@ import { UnionTypeDefinitionNode } from 'graphql';
 import { ValueNode } from 'graphql';
 
 // @public (undocumented)
+export interface AmplifyDynamoDbModelDataSourceStrategy extends ModelDataSourceStrategyBase {
+    // (undocumented)
+    readonly dbType: 'DYNAMODB';
+    // (undocumented)
+    readonly provisionStrategy: 'AMPLIFY_TABLE';
+}
+
+// @public (undocumented)
 export function applyCompositeKeyConditionExpression(keyNames: string[], queryExprReference: string, sortKeyArgumentName: string, sortKeyAttributeName: string): CompoundExpressionNode;
 
 // @public (undocumented)
@@ -52,13 +60,54 @@ export function blankObject(name: string): ObjectTypeDefinitionNode;
 export function blankObjectExtension(name: string): ObjectTypeExtensionNode;
 
 // @public (undocumented)
+export const constructCustomSqlDataSourceStrategies: (schema: string, dataSourceStrategy: SQLLambdaModelDataSourceStrategy | PartialSQLLambdaModelDataSourceStrategy) => CustomSqlDataSourceStrategy[];
+
+// @public (undocumented)
+export const constructDataSourceStrategies: <T extends ModelDataSourceStrategy | PartialSQLLambdaModelDataSourceStrategy>(schema: string, strategy: T) => Record<string, T>;
+
+// @public (undocumented)
+export interface CustomSqlDataSourceStrategy {
+    // (undocumented)
+    fieldName: string;
+    // (undocumented)
+    strategy: SQLLambdaModelDataSourceStrategy | PartialSQLLambdaModelDataSourceStrategy;
+    // (undocumented)
+    typeName: 'Query' | 'Mutation';
+}
+
+// @public (undocumented)
+export interface DataSourceStrategiesProvider {
+    // (undocumented)
+    customSqlDataSourceStrategies: CustomSqlDataSourceStrategy[];
+    // (undocumented)
+    dataSourceStrategies: Record<string, ModelDataSourceStrategy>;
+}
+
+// @public (undocumented)
+export const DDB_DB_TYPE: ModelDataSourceDbType;
+
+// @public (undocumented)
 export const DEFAULT_SCALARS: ScalarMap;
+
+// @public (undocumented)
+export interface DefaultDynamoDbModelDataSourceStrategy extends ModelDataSourceStrategyBase {
+    // (undocumented)
+    readonly dbType: 'DYNAMODB';
+    // (undocumented)
+    readonly provisionStrategy: 'DEFAULT';
+}
 
 // @public (undocumented)
 export function defineUnionType(name: string, types?: NamedTypeNode[]): UnionTypeDefinitionNode;
 
 // @public (undocumented)
 export const directiveExists: (definition: ObjectTypeDefinitionNode, name: string) => DirectiveNode;
+
+// @public (undocumented)
+export const DYNAMODB_AMPLIFY_TABLE_STRATEGY: AmplifyDynamoDbModelDataSourceStrategy;
+
+// @public (undocumented)
+export const DYNAMODB_DEFAULT_TABLE_STRATEGY: DefaultDynamoDbModelDataSourceStrategy;
 
 // @public (undocumented)
 export function extendFieldWithDirectives(field: FieldDefinitionNode, directives: DirectiveNode[]): FieldDefinitionNode;
@@ -91,7 +140,28 @@ export function getBaseType(type: TypeNode): string;
 export function getDirectiveArgument(directive: DirectiveNode, arg: string, dflt?: any): any;
 
 // @public (undocumented)
+export const getDynamoDbTableName: (typeName: string) => string;
+
+// @public (undocumented)
+export const getModelDataSourceStrategy: (dataSourceStrategiesProvider: DataSourceStrategiesProvider, typeName: string) => ModelDataSourceStrategy;
+
+// @public (undocumented)
 export const getNonModelTypes: (document: DocumentNode) => DefinitionNode[];
+
+// @public (undocumented)
+export const getSqlLambdaDataSourceNameForStrategy: (strategy: SQLLambdaModelDataSourceStrategy | PartialSQLLambdaModelDataSourceStrategy) => string;
+
+// @public (undocumented)
+export const getSqlLambdaFunctionNameForStrategy: (strategy: SQLLambdaModelDataSourceStrategy | PartialSQLLambdaModelDataSourceStrategy) => string;
+
+// @public (undocumented)
+export const getSqlModelDataSourceStrategy: (dataSourceStrategiesProvider: DataSourceStrategiesProvider, typeName: string) => SQLLambdaModelDataSourceStrategy;
+
+// @public (undocumented)
+export const getSqlResourceNameForStrategy: (prefix: string, strategy: SQLLambdaModelDataSourceStrategy | PartialSQLLambdaModelDataSourceStrategy) => string;
+
+// @public (undocumented)
+export const getSqlResourceNameForStrategyName: (prefix: string, strategyName: string) => string;
 
 // @public (undocumented)
 export function graphqlName(val: string): string;
@@ -103,7 +173,49 @@ export class HttpResourceIDs {
 }
 
 // @public (undocumented)
+export type ImportAppSyncAPIInputs = {
+    apiName: string;
+    dataSourceConfig?: ImportedDataSourceConfig;
+};
+
+// @public (undocumented)
+export const IMPORTED_SQL_API_STRATEGY_NAME = "ImportedSQLAPI";
+
+// @public (undocumented)
+export type ImportedDataSourceConfig = {
+    database: string;
+    engine: ImportedRDSType;
+    host: string;
+    password: string;
+    port: number;
+    username: string;
+};
+
+// @public (undocumented)
+export enum ImportedRDSType {
+    // (undocumented)
+    MYSQL = "mysql",
+    // (undocumented)
+    POSTGRESQL = "postgres"
+}
+
+// @public (undocumented)
+export const isAmplifyDynamoDbModelDataSourceStrategy: (strategy: ModelDataSourceStrategy | PartialSQLLambdaModelDataSourceStrategy) => strategy is AmplifyDynamoDbModelDataSourceStrategy;
+
+// @public (undocumented)
 export const isArrayOrObject: (type: TypeNode, enums: EnumTypeDefinitionNode[]) => boolean;
+
+// @public (undocumented)
+export const isDefaultDynamoDbModelDataSourceStrategy: (strategy: ModelDataSourceStrategy | PartialSQLLambdaModelDataSourceStrategy) => strategy is DefaultDynamoDbModelDataSourceStrategy;
+
+// @public (undocumented)
+export const isDynamoDBModel: (dataSourceStrategiesProvider: DataSourceStrategiesProvider, typeName: string) => boolean;
+
+// @public (undocumented)
+export const isDynamoDbStrategy: (strategy: ModelDataSourceStrategy | PartialSQLLambdaModelDataSourceStrategy) => strategy is DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy;
+
+// @public (undocumented)
+export const isDynamoDbType: (dbType: ModelDataSourceDbType) => dbType is "DYNAMODB";
 
 // @public (undocumented)
 export function isEnum(type: TypeNode, document: DocumentNode): DefinitionNode;
@@ -124,10 +236,22 @@ export function isNonNullType(type: TypeNode): boolean;
 export const isOfType: (type: TypeNode, name: string) => boolean;
 
 // @public (undocumented)
+export const isPartialSqlStrategy: (strategy: ModelDataSourceStrategy | PartialSQLLambdaModelDataSourceStrategy) => strategy is PartialSQLLambdaModelDataSourceStrategy;
+
+// @public (undocumented)
 export function isScalar(type: TypeNode): any;
 
 // @public (undocumented)
 export function isScalarOrEnum(type: TypeNode, enums: EnumTypeDefinitionNode[]): any;
+
+// @public (undocumented)
+export const isSqlDbType: (dbType: ModelDataSourceDbType) => dbType is ModelDataSourceSqlDbType;
+
+// @public (undocumented)
+export const isSqlModel: (dataSourceStrategiesProvider: DataSourceStrategiesProvider, typeName: string) => boolean;
+
+// @public (undocumented)
+export const isSqlStrategy: (strategy: ModelDataSourceStrategy | PartialSQLLambdaModelDataSourceStrategy) => strategy is SQLLambdaModelDataSourceStrategy;
 
 // @public (undocumented)
 export function makeArgument(name: string, value: ValueNode): ArgumentNode;
@@ -187,6 +311,21 @@ export function makeValueNode(value: any): ValueNode;
 export const MAP_SCALARS: {
     [k: string]: boolean;
 };
+
+// @public (undocumented)
+export type ModelDataSourceDbType = 'DYNAMODB' | ModelDataSourceSqlDbType;
+
+// @public (undocumented)
+export type ModelDataSourceSqlDbType = 'MYSQL' | 'POSTGRES';
+
+// @public (undocumented)
+export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
+
+// @public (undocumented)
+export interface ModelDataSourceStrategyBase {
+    // (undocumented)
+    readonly dbType: ModelDataSourceDbType;
+}
 
 // @public (undocumented)
 export class ModelResourceIDs {
@@ -255,10 +394,16 @@ export class ModelResourceIDs {
 }
 
 // @public (undocumented)
+export const MYSQL_DB_TYPE: ModelDataSourceSqlDbType;
+
+// @public (undocumented)
 export const NONE_INT_VALUE = -2147483648;
 
 // @public (undocumented)
 export const NONE_VALUE = "___xamznone____";
+
+// @public (undocumented)
+export const normalizeDbType: (candidate: string) => ModelDataSourceDbType;
 
 // @public (undocumented)
 export const NUMERIC_SCALARS: {
@@ -266,7 +411,20 @@ export const NUMERIC_SCALARS: {
 };
 
 // @public (undocumented)
+export interface PartialSQLLambdaModelDataSourceStrategy extends ModelDataSourceStrategyBase {
+    // (undocumented)
+    readonly customSqlStatements?: Record<string, string>;
+    // (undocumented)
+    readonly dbType: ModelDataSourceSqlDbType;
+    // (undocumented)
+    readonly name: string;
+}
+
+// @public (undocumented)
 export function plurality(val: string, improvePluralization: boolean): string;
+
+// @public (undocumented)
+export const POSTGRES_DB_TYPE: ModelDataSourceSqlDbType;
 
 // @public (undocumented)
 export class PredictionsResourceIDs {
@@ -288,6 +446,14 @@ export class PredictionsResourceIDs {
     static lambdaRuntime: string;
     // (undocumented)
     static lambdaTimeout: number;
+}
+
+// @public (undocumented)
+export interface RDSLayerMapping {
+    // (undocumented)
+    readonly [key: string]: {
+        layerRegion: string;
+    };
 }
 
 // @public (undocumented)
@@ -407,15 +573,16 @@ export class ResourceConstants {
         OpenSearchStreamingLambdaIAMRoleLogicalID: string;
         OpenSearchStreamingLambdaFunctionLogicalID: string;
         OpenSearchDataSourceLogicalID: string;
-        RDSLambdaIAMRoleLogicalID: string;
-        RDSLambdaLogAccessPolicy: string;
-        RDSPatchingLambdaIAMRoleLogicalID: string;
-        RDSLambdaLogicalID: string;
-        RDSPatchingLambdaLogAccessPolicy: string;
-        RDSPatchingLambdaLogicalID: string;
-        RDSLambdaDataSourceLogicalID: string;
-        RDSLambdaDataSourceLogicalName: string;
-        RDSPatchingSubscriptionLogicalID: string;
+        SQLLambdaLogicalIDPrefix: string;
+        SQLLambdaIAMRoleLogicalIDPrefix: string;
+        SQLLambdaLogAccessPolicyPrefix: string;
+        SQLPatchingLambdaLogicalIDPrefix: string;
+        SQLPatchingLambdaIAMRoleLogicalIDPrefix: string;
+        SQLPatchingLambdaLogAccessPolicyPrefix: string;
+        SQLPatchingSubscriptionLogicalIDPrefix: string;
+        SQLPatchingTopicNameLogicalIdPrefix: string;
+        SQLLambdaDataSourceLogicalIDPrefix: string;
+        SQLVpcEndpointLogicalIdPrefix: string;
         NoneDataSource: string;
         AuthCognitoUserPoolLogicalID: string;
         AuthCognitoUserPoolNativeClientLogicalID: string;
@@ -423,6 +590,7 @@ export class ResourceConstants {
         TableManagerOnEventHandlerLogicalID: string;
         TableManagerIsCompleteHandlerLogicalID: string;
         TableManagerCustomProviderLogicalID: string;
+        DynamoDbTableDataSourceSuffix: string;
     };
     // (undocumented)
     static readonly SNIPPETS: {
@@ -467,7 +635,51 @@ export function setupHashKeyExpression(hashKeyName: string, hashKeyAttributeType
 export function simplifyName(val: string): string;
 
 // @public (undocumented)
+export const SQL_SCHEMA_FILE_NAME = "schema.sql.graphql";
+
+// @public (undocumented)
+export type SQLLambdaLayerMapping = Record<string, string>;
+
+// @public (undocumented)
+export interface SQLLambdaModelDataSourceStrategy extends ModelDataSourceStrategyBase {
+    // (undocumented)
+    readonly customSqlStatements?: Record<string, string>;
+    // (undocumented)
+    readonly dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
+    // (undocumented)
+    readonly dbType: ModelDataSourceSqlDbType;
+    // (undocumented)
+    readonly name: string;
+    // (undocumented)
+    readonly sqlLambdaLayerMapping?: SQLLambdaLayerMapping;
+    // (undocumented)
+    readonly vpcConfiguration?: VpcConfig;
+}
+
+// @public (undocumented)
+export interface SqlModelDataSourceDbConnectionConfig {
+    // (undocumented)
+    readonly databaseNameSsmPath: string;
+    // (undocumented)
+    readonly hostnameSsmPath: string;
+    // (undocumented)
+    readonly passwordSsmPath: string;
+    // (undocumented)
+    readonly portSsmPath: string;
+    // (undocumented)
+    readonly usernameSsmPath: string;
+}
+
+// @public (undocumented)
 export const STANDARD_SCALARS: ScalarMap;
+
+// @public (undocumented)
+export interface SubnetAvailabilityZone {
+    // (undocumented)
+    readonly availabilityZone: string;
+    // (undocumented)
+    readonly subnetId: string;
+}
 
 // @public (undocumented)
 export class SyncResourceIDs {
@@ -506,6 +718,16 @@ export const transformedArgsRef: ReferenceNode;
 
 // @public (undocumented)
 export function unwrapNonNull(type: TypeNode): any;
+
+// @public (undocumented)
+export interface VpcConfig {
+    // (undocumented)
+    readonly securityGroupIds: string[];
+    // (undocumented)
+    readonly subnetAvailabilityZoneConfig: SubnetAvailabilityZone[];
+    // (undocumented)
+    readonly vpcId: string;
+}
 
 // @public (undocumented)
 export function withNamedNodeNamed(t: TypeNode, n: string): TypeNode;

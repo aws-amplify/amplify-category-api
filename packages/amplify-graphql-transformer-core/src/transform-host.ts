@@ -3,13 +3,13 @@ import {
   MappingTemplateProvider,
   SearchableDataSourceOptions,
   TransformHostProvider,
-  VpcConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   BaseDataSource,
   CfnDataSource,
   DataSourceOptions,
   DynamoDbDataSource,
+  GraphqlApiBase,
   HttpDataSource,
   HttpDataSourceOptions,
   LambdaDataSource,
@@ -20,7 +20,7 @@ import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { CfnFunction, Code, Function, IFunction, ILayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Duration, Token } from 'aws-cdk-lib';
-import { ResolverResourceIDs, resourceName, toCamelCase } from 'graphql-transformer-common';
+import { ResolverResourceIDs, VpcConfig, resourceName, toCamelCase } from 'graphql-transformer-common';
 import hash from 'object-hash';
 import { Construct } from 'constructs';
 import { AppSyncFunctionConfiguration } from './appsync-function';
@@ -52,7 +52,14 @@ export class DefaultTransformHost implements TransformHostProvider {
     this.api = options.api;
   }
 
-  public setAPI(api: GraphQLApi): void {
+  /**
+   * Although the method signature allows for a GraphqlApiBase, to conform to the TransformHostProvider interface, the class expects the
+   * argument to be an instance of GraphQLApi, and will throw a runtime error if it is not.
+   */
+  public setAPI(api: GraphqlApiBase): void {
+    if (!(api instanceof GraphQLApi)) {
+      throw new Error('The api argument must be an instance of GraphQLApi');
+    }
     this.api = api;
   }
 

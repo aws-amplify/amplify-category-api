@@ -1,6 +1,7 @@
 import { DocumentNode } from 'graphql';
-import { AppSyncAuthConfiguration, GraphQLAPIProvider, RDSLayerMapping, VpcConfig } from '../graphql-api-provider';
-import { TransformerDataSourceManagerProvider, DataSourceType } from './transformer-datasource-provider';
+import { DataSourceStrategiesProvider } from 'graphql-transformer-common';
+import { AppSyncAuthConfiguration, GraphQLAPIProvider } from '../graphql-api-provider';
+import { TransformerDataSourceManagerProvider } from './transformer-datasource-provider';
 import { TransformerProviderRegistry } from './transformer-provider-registry';
 import { TransformerContextOutputProvider } from './transformer-context-output-provider';
 import { StackManagerProvider } from './stack-manager-provider';
@@ -10,22 +11,20 @@ import { TransformerResolversManagerProvider } from './transformer-resolver-prov
 import { SynthParameters } from './synth-parameters';
 
 export interface TransformerContextMetadataProvider {
-  set<T>(key: string, value: T): void;
-  get<T>(key: string): T | undefined;
-  has(key: string): boolean;
+  set: <T>(key: string, value: T) => void;
+  get: <T>(key: string) => T | undefined;
+  has: (key: string) => boolean;
 }
 
 export type TransformerSecrets = { [key: string]: any };
 
-export interface TransformerContextProvider {
+export interface TransformerContextProvider extends DataSourceStrategiesProvider {
   metadata: TransformerContextMetadataProvider;
   resolvers: TransformerResolversManagerProvider;
   dataSources: TransformerDataSourceManagerProvider;
   providerRegistry: TransformerProviderRegistry;
 
   inputDocument: DocumentNode;
-  modelToDatasourceMap: Map<string, DataSourceType>;
-  datasourceSecretParameterLocations: Map<string, TransformerSecrets>;
   output: TransformerContextOutputProvider;
   stackManager: StackManagerProvider;
   api: GraphQLAPIProvider;
@@ -33,18 +32,16 @@ export interface TransformerContextProvider {
   authConfig: AppSyncAuthConfiguration;
   transformParameters: TransformParameters;
   synthParameters: SynthParameters;
-  customQueries: Map<string, string>;
 
-  isProjectUsingDataStore(): boolean;
-  getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
-  readonly sqlLambdaVpcConfig?: VpcConfig;
-  readonly rdsLayerMapping?: RDSLayerMapping;
+  isProjectUsingDataStore: () => boolean;
+  getResolverConfig: <ResolverConfig>() => ResolverConfig | undefined;
 }
 
 export type TransformerBeforeStepContextProvider = Pick<
   TransformerContextProvider,
   | 'inputDocument'
-  | 'modelToDatasourceMap'
+  | 'dataSourceStrategies'
+  | 'customSqlDataSourceStrategies'
   | 'transformParameters'
   | 'isProjectUsingDataStore'
   | 'getResolverConfig'
@@ -56,7 +53,8 @@ export type TransformerBeforeStepContextProvider = Pick<
 export type TransformerSchemaVisitStepContextProvider = Pick<
   TransformerContextProvider,
   | 'inputDocument'
-  | 'modelToDatasourceMap'
+  | 'dataSourceStrategies'
+  | 'customSqlDataSourceStrategies'
   | 'output'
   | 'providerRegistry'
   | 'transformParameters'
@@ -70,7 +68,8 @@ export type TransformerSchemaVisitStepContextProvider = Pick<
 export type TransformerValidationStepContextProvider = Pick<
   TransformerContextProvider,
   | 'inputDocument'
-  | 'modelToDatasourceMap'
+  | 'dataSourceStrategies'
+  | 'customSqlDataSourceStrategies'
   | 'output'
   | 'providerRegistry'
   | 'dataSources'

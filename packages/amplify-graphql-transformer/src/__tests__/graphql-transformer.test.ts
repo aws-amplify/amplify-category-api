@@ -12,6 +12,7 @@ import { NestedStack, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import * as fs from 'fs-extra';
+import { DYNAMODB_DEFAULT_TABLE_STRATEGY } from 'graphql-transformer-common';
 import {
   constructTransformerChain,
   constructTransform,
@@ -55,6 +56,8 @@ const defaultTransformConfig: TransformConfig = {
     enableTransformerCfnOutputs: true,
     allowDestructiveGraphqlSchemaUpdates: false,
   },
+  dataSourceStrategies: {},
+  customSqlDataSourceStrategies: [],
 };
 
 describe('constructTransform', () => {
@@ -99,6 +102,8 @@ describe('executeTransform', () => {
           content: String!
         }
       `,
+      dataSourceStrategies: { Todo: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+      customSqlDataSourceStrategies: [],
     });
   });
 
@@ -149,6 +154,8 @@ describe('executeTransform', () => {
       printTransformerLog: (): void => {
         didLog = true;
       },
+      dataSourceStrategies: { Todo: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+      customSqlDataSourceStrategies: [],
     });
     expect(didLog).toEqual(true);
   });
@@ -188,6 +195,8 @@ describe('executeTransform', () => {
       printTransformerLog: ({ message }: TransformerLog): void => {
         throw new Error(`Transformer logging not expected, received ${message}`);
       },
+      dataSourceStrategies: { Todo: DYNAMODB_DEFAULT_TABLE_STRATEGY },
+      customSqlDataSourceStrategies: [],
     });
   });
 });

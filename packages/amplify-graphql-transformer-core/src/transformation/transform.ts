@@ -5,16 +5,13 @@ import {
   TransformHostProvider,
   TransformerLog,
   NestedStackProvider,
-  RDSLayerMapping,
   SynthParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type {
   AssetProvider,
-  DataSourceType,
   StackManagerProvider,
   TransformParameterProvider,
   TransformParameters,
-  VpcConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { Aws, CfnOutput, Fn, Stack } from 'aws-cdk-lib';
@@ -36,6 +33,7 @@ import {
 import _ from 'lodash';
 import { DocumentNode } from 'graphql/language';
 import { Construct } from 'constructs';
+import { CustomSqlDataSourceStrategy, ModelDataSourceStrategy } from 'graphql-transformer-common';
 import { ResolverConfig } from '../config/transformer-config';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
@@ -46,7 +44,7 @@ import { MappingTemplate } from '../cdk-compat';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
 import { defaultTransformParameters } from '../transformer-context/transform-parameters';
 import * as SyncUtils from './sync-utils';
-import { UserDefinedSlot, DatasourceTransformationConfig } from './types';
+import { UserDefinedSlot } from './types';
 import {
   makeSeenTransformationKey,
   matchArgumentDirective,
@@ -86,8 +84,8 @@ export interface GraphQLTransformOptions {
   readonly host?: TransformHostProvider;
   readonly userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   readonly resolverConfig?: ResolverConfig;
-  readonly sqlLambdaVpcConfig?: VpcConfig;
-  readonly rdsLayerMapping?: RDSLayerMapping;
+  readonly dataSourceStrategies: Record<string, ModelDataSourceStrategy>;
+  readonly customSqlDataSourceStrategies: CustomSqlDataSourceStrategy[];
 }
 
 export type TransformOption = {
@@ -97,7 +95,8 @@ export type TransformOption = {
   assetProvider: AssetProvider;
   synthParameters: SynthParameters;
   schema: string;
-  datasourceConfig?: DatasourceTransformationConfig;
+  dataSourceStrategies: Record<string, ModelDataSourceStrategy>;
+  customSqlDataSourceStrategies: CustomSqlDataSourceStrategy[];
 };
 
 export type StackMapping = { [resourceId: string]: string };
@@ -113,13 +112,16 @@ export class GraphQLTransform {
 
   private readonly userDefinedSlots: Record<string, UserDefinedSlot[]>;
 
-  private readonly sqlLambdaVpcConfig?: VpcConfig;
   private readonly transformParameters: TransformParameters;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
   // that specifies we have run already run a directive at a given location.
   // Only run a transformer function once per pair. This is refreshed each call to transform().
   private seenTransformations: { [k: string]: boolean } = {};
+
+  private readonly dataSourceStrategies: Record<string, ModelDataSourceStrategy>;
+
+  private readonly customSqlDataSourceStrategies: CustomSqlDataSourceStrategy[];
 
   private logs: TransformerLog[];
 
@@ -146,7 +148,8 @@ export class GraphQLTransform {
     this.stackMappingOverrides = options.stackMapping || {};
     this.userDefinedSlots = options.userDefinedSlots || ({} as Record<string, UserDefinedSlot[]>);
     this.resolverConfig = options.resolverConfig || {};
-    this.sqlLambdaVpcConfig = options.sqlLambdaVpcConfig;
+    this.dataSourceStrategies = options.dataSourceStrategies;
+    this.customSqlDataSourceStrategies = options.customSqlDataSourceStrategies;
     this.transformParameters = {
       ...defaultTransformParameters,
       ...(options.transformParameters ?? {}),
@@ -196,7 +199,8 @@ export class GraphQLTransform {
     assetProvider,
     synthParameters,
     schema,
-    datasourceConfig,
+    dataSourceStrategies,
+    customSqlDataSourceStrategies,
   }: TransformOption): void {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
@@ -207,15 +211,12 @@ export class GraphQLTransform {
       assetProvider,
       synthParameters,
       parsedDocument,
-      datasourceConfig?.modelToDatasourceMap ?? new Map<string, DataSourceType>(),
-      datasourceConfig?.customQueries ?? new Map<string, string>(),
+      dataSourceStrategies,
+      customSqlDataSourceStrategies,
       this.stackMappingOverrides,
       this.authConfig,
       this.transformParameters,
       this.resolverConfig,
-      datasourceConfig?.datasourceSecretParameterLocations,
-      this.sqlLambdaVpcConfig,
-      datasourceConfig?.rdsLayerMapping,
     );
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),

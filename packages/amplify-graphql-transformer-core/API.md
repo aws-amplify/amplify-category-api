@@ -17,11 +17,9 @@ import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
 import { CfnParameter } from 'aws-cdk-lib';
 import { CfnResource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import { CustomSqlDataSourceStrategy } from 'graphql-transformer-common';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { DataSourceProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
-import { DataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
-import { DBType } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveDefinitionNode } from 'graphql';
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql/language';
@@ -45,6 +43,7 @@ import { InterfaceTypeExtensionNode } from 'graphql';
 import { Location as Location_2 } from 'graphql';
 import { LogConfig } from 'aws-cdk-lib/aws-appsync';
 import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { ModelDataSourceStrategy } from 'graphql-transformer-common';
 import { ModelFieldMap } from '@aws-amplify/graphql-transformer-interfaces';
 import { MutationFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { NamedTypeNode } from 'graphql';
@@ -53,7 +52,6 @@ import { ObjectTypeDefinitionNode } from 'graphql';
 import { ObjectTypeExtensionNode } from 'graphql';
 import { OperationTypeDefinitionNode } from 'graphql';
 import { QueryFieldType } from '@aws-amplify/graphql-transformer-interfaces';
-import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { S3MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { SchemaDefinitionNode } from 'graphql';
 import { Stack } from 'aws-cdk-lib';
@@ -62,7 +60,6 @@ import { StringValueNode } from 'graphql';
 import { SubscriptionFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerAuthProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { TransformerBeforeStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
 import { TransformerContextOutputProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -77,7 +74,6 @@ import { TransformerResolverProvider } from '@aws-amplify/graphql-transformer-in
 import { TransformerResolversManagerProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerResourceHelperProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { TransformerSecrets } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformParameterProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -87,7 +83,6 @@ import { TypeNode } from 'graphql';
 import { TypeSystemDefinitionNode } from 'graphql';
 import { UnionTypeDefinitionNode } from 'graphql';
 import { UnionTypeExtensionNode } from 'graphql';
-import type { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
 export const APICategory = "api";
@@ -115,18 +110,12 @@ export const enum ConflictHandlerType {
 }
 
 // @public (undocumented)
-export function constructDataSourceMap(schema: string, datasourceType: DataSourceType): Map<string, DataSourceType>;
-
-// @public (undocumented)
 function createSyncLambdaIAMPolicy(context: TransformerContextProvider, scope: Construct, name: string, region?: string): iam.Policy;
 
 // Warning: (ae-forgotten-export) The symbol "TransformerContext" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 function createSyncTable(context: TransformerContext): void;
-
-// @public (undocumented)
-export const DDB_DB_TYPE: DBType;
 
 // @public (undocumented)
 export class DirectiveWrapper {
@@ -182,28 +171,19 @@ export type GetArgumentsOptions = {
     deepMergeArguments?: boolean;
 };
 
-// @public (undocumented)
-export function getDatasourceProvisionStrategy(ctx: TransformerBeforeStepContextProvider, typeName?: string): DataSourceProvisionStrategy;
-
-// @public (undocumented)
-export const getDataSourceType: (type: TypeNode, ctx: TransformerContextProvider) => DBType;
-
-// @public (undocumented)
-export const getEngineFromDBType: (dbType: DBType) => ImportedRDSType;
-
 // Warning: (ae-forgotten-export) The symbol "Operation" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export const getFieldNameFor: (op: Operation, typeName: string) => string;
 
 // @public (undocumented)
-export const getImportedRDSType: (modelToDatasourceMap: Map<string, DataSourceType>) => DBType;
-
-// @public (undocumented)
 export const getKeySchema: (table: any, indexName?: string) => any;
 
 // @public (undocumented)
-export const getParameterStoreSecretPath: (secret: string, secretsKey: string, apiName: string, environmentName: string, appId: string) => string;
+export const getModelDataSourceStrategyForType: (type: TypeNode, ctx: TransformerContextProvider) => ModelDataSourceStrategy;
+
+// @public (undocumented)
+export const getParameterStoreSecretPath: (secretName: string, secretsKey: string, apiName: string, environmentName: string, appId: string, sqlDataSourceName: string) => string;
 
 // @public (undocumented)
 export const getPrimaryKeyFields: (type: ObjectTypeDefinitionNode) => string[];
@@ -235,7 +215,7 @@ export class GraphQLTransform {
     // Warning: (ae-forgotten-export) The symbol "TransformOption" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    transform({ scope, nestedStackProvider, parameterProvider, assetProvider, synthParameters, schema, datasourceConfig, }: TransformOption): void;
+    transform({ scope, nestedStackProvider, parameterProvider, assetProvider, synthParameters, schema, dataSourceStrategies, customSqlDataSourceStrategies, }: TransformOption): void;
 }
 
 // @public (undocumented)
@@ -243,13 +223,13 @@ export interface GraphQLTransformOptions {
     // (undocumented)
     readonly authConfig?: AppSyncAuthConfiguration;
     // (undocumented)
+    readonly customSqlDataSourceStrategies: CustomSqlDataSourceStrategy[];
+    // (undocumented)
+    readonly dataSourceStrategies: Record<string, ModelDataSourceStrategy>;
+    // (undocumented)
     readonly host?: TransformHostProvider;
     // (undocumented)
-    readonly rdsLayerMapping?: RDSLayerMapping;
-    // (undocumented)
     readonly resolverConfig?: ResolverConfig;
-    // (undocumented)
-    readonly sqlLambdaVpcConfig?: VpcConfig;
     // Warning: (ae-forgotten-export) The symbol "StackMapping" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -260,26 +240,6 @@ export interface GraphQLTransformOptions {
     readonly transformParameters?: Partial<TransformParameters>;
     // (undocumented)
     readonly userDefinedSlots?: Record<string, UserDefinedSlot[]>;
-}
-
-// @public (undocumented)
-export type ImportAppSyncAPIInputs = {
-    apiName: string;
-    dataSourceConfig?: ImportedDataSourceConfig;
-};
-
-// @public (undocumented)
-export type ImportedDataSourceConfig = RDSDataSourceConfig;
-
-// @public (undocumented)
-export type ImportedDataSourceType = ImportedRDSType;
-
-// @public (undocumented)
-export enum ImportedRDSType {
-    // (undocumented)
-    MYSQL = "mysql",
-    // (undocumented)
-    POSTGRESQL = "postgres"
 }
 
 // @public (undocumented)
@@ -350,16 +310,7 @@ export class InvalidTransformerError extends Error {
 }
 
 // @public (undocumented)
-export const isImportedRDSType: (dbInfo: DataSourceType) => boolean;
-
-// @public (undocumented)
 function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncConfigLambda;
-
-// @public (undocumented)
-export const isRDSDBType: (dbType: DBType) => boolean;
-
-// @public (undocumented)
-export const isRDSModel: (ctx: TransformerContextProvider, typename: string) => boolean;
 
 // @public (undocumented)
 export class MappingTemplate {
@@ -372,9 +323,6 @@ export class MappingTemplate {
     // (undocumented)
     static s3MappingTemplateFromString(template: string, templateName: string): S3MappingTemplate;
 }
-
-// @public (undocumented)
-export const MYSQL_DB_TYPE: DBType;
 
 // @public (undocumented)
 export class ObjectDefinitionWrapper {
@@ -398,26 +346,6 @@ export class ObjectDefinitionWrapper {
     // (undocumented)
     serialize: () => ObjectTypeDefinitionNode;
 }
-
-// @public (undocumented)
-export const POSTGRES_DB_TYPE: DBType;
-
-// @public (undocumented)
-export const RDS_SCHEMA_FILE_NAME = "schema.rds.graphql";
-
-// @public (undocumented)
-export type RDSConnectionSecrets = TransformerSecrets & {
-    username: string;
-    password: string;
-    host: string;
-    database: string;
-    port: number;
-};
-
-// @public (undocumented)
-export type RDSDataSourceConfig = RDSConnectionSecrets & {
-    engine: ImportedRDSType;
-};
 
 // @public (undocumented)
 export type ResolverConfig = {
@@ -552,13 +480,13 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     // (undocumented)
     abstract getDataSourceResource: (type: ObjectTypeDefinitionNode) => DataSourceInstance;
     // (undocumented)
-    abstract getDataSourceType: () => AppSyncDataSourceType;
-    // (undocumented)
     abstract getInputs: (ctx: TransformerContextProvider, type: ObjectTypeDefinitionNode, operation: {
         fieldName: string;
         typeName: string;
         type: QueryFieldType | MutationFieldType | SubscriptionFieldType;
     }) => InputValueDefinitionNode[];
+    // (undocumented)
+    abstract getModelDataSourceStrategyForType: () => AppSyncDataSourceType;
     // (undocumented)
     abstract getMutationFieldNames: (type: ObjectTypeDefinitionNode, directive?: DirectiveDefinitionNode) => Set<{
         fieldName: string;

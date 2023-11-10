@@ -4,7 +4,6 @@ import {
   InvalidDirectiveError,
   MappingTemplate,
   TransformerPluginBase,
-  isRDSModel,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
@@ -38,6 +37,7 @@ import {
   toUpper,
   ResolverResourceIDs,
   makeDirective,
+  isSqlModel,
 } from 'graphql-transformer-common';
 import { createParametersStack as createParametersInStack } from './cdk/create-cfnParameters';
 import { requestTemplate, responseTemplate, sandboxMappingTemplate } from './generate-resolver-vtl';
@@ -450,8 +450,8 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     // but if mappings are defined this will ensure the mapping is also applied to the search results
     for (const def of this.searchableObjectTypeDefinitions) {
       const modelName = def.node.name.value;
-      if (isRDSModel(ctx as TransformerContextProvider, modelName)) {
-        throw new InvalidDirectiveError(`@searchable is not supported on "${modelName}" model as it uses RDS datasource.`);
+      if (isSqlModel(ctx, modelName)) {
+        throw new InvalidDirectiveError(`@searchable is not supported on "${modelName}" model as it uses a SQL datasource.`);
       }
       ctx.resourceHelper.getModelFieldMap(modelName).addResolverReference({ typeName: 'Query', fieldName: def.fieldName, isList: true });
     }

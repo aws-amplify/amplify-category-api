@@ -1,22 +1,19 @@
 import path from 'path';
-import {
-  getEngineFromDBType,
-  getImportedRDSType,
-  isImportedRDSType,
-  RDSConnectionSecrets,
-  UserDefinedSlot,
-} from '@aws-amplify/graphql-transformer-core';
-import {
-  AppSyncAuthConfiguration,
-  DBType,
-  TransformerLog,
-  TransformerLogLevel,
-  VpcConfig,
-  RDSLayerMapping,
-  DataSourceType,
-} from '@aws-amplify/graphql-transformer-interfaces';
+import { UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
+import { AppSyncAuthConfiguration, TransformerLog, TransformerLogLevel } from '@aws-amplify/graphql-transformer-interfaces';
 import * as fs from 'fs-extra';
-import { ResourceConstants } from 'graphql-transformer-common';
+import {
+  CustomSqlDataSourceStrategy,
+  ModelDataSourceStrategy,
+  PartialSQLLambdaModelDataSourceStrategy,
+  RDSLayerMapping,
+  ResourceConstants,
+  SQLLambdaLayerMapping,
+  SQLLambdaModelDataSourceStrategy,
+  SqlModelDataSourceDbConnectionConfig,
+  VpcConfig,
+  isDynamoDbStrategy,
+} from 'graphql-transformer-common';
 import { sanityCheckProject } from 'graphql-transformer-core';
 import _ from 'lodash';
 import { executeTransform } from '@aws-amplify/graphql-transformer';
@@ -31,6 +28,7 @@ import {
 } from '../provider-utils/awscloudformation/utils/rds-resources/database-resources';
 import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { checkForUnsupportedDirectives } from '../provider-utils/awscloudformation/utils/rds-resources/utils';
+import { dbTypeToImportedRDSType } from '../provider-utils/awscloudformation/utils/rds-resources/imported-rds-type';
 import { isAuthModeUpdated } from './auth-mode-compare';
 import { getAdminRoles, getIdentityPoolId, mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
 import { generateTransformerOptions } from './transformer-options-v2';
@@ -203,19 +201,47 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
     return undefined;
   }
 
-  checkForUnsupportedDirectives(schema, opts.projectConfig.modelToDatasourceMap);
+  const { partialDataSourceStrategies, partialCustomSqlDataSourceStrategies } = opts.projectConfig;
 
-  const { modelToDatasourceMap } = opts.projectConfig;
-  const datasourceMapValues: Array<DataSourceType> = modelToDatasourceMap ? Array.from(modelToDatasourceMap.values()) : [];
-  let datasourceSecretMap: Map<string, RDSConnectionSecrets> | undefined = undefined;
-  let sqlLambdaVpcConfig: VpcConfig | undefined;
-  if (datasourceMapValues.some((value) => isImportedRDSType(value))) {
-    const dbType = getImportedRDSType(modelToDatasourceMap);
-    datasourceSecretMap = new Map();
-    datasourceSecretMap.set(dbType, await getRDSConnectionSecrets(context));
-    sqlLambdaVpcConfig = await isSqlLambdaVpcConfigRequired(context, dbType);
+  // We'll use this to keep track of the data sources we've resolved during the partialDataSourceStrategy resolution, so we can reuse those
+  // already resolved strategies when building customSqlDataSourceStrategies
+  const resolvedDataSourceStrategiesByStrategyName: Record<string, SQLLambdaModelDataSourceStrategy> = {};
+
+  // These will hold the fully-resolved model-to-DataSourceStrategy mapping and the custom SQL statement to DataSourceStrategy mapping that
+  // gets passed into the transformer execution
+  const resolvedDataSourceStrategies: Record<string, ModelDataSourceStrategy> = {};
+  const resolvedCustomSqlDataSourceStrategies: CustomSqlDataSourceStrategy[] = [];
+
+  // Build the fully-specified dataSourceStrategies map. Intentionally using a for/of loop for readability
+  for (const [modelName, partialStrategy] of Object.entries(partialDataSourceStrategies)) {
+    if (isDynamoDbStrategy(partialStrategy)) {
+      resolvedDataSourceStrategies[modelName] = partialStrategy;
+      continue;
+    }
+
+    if (resolvedDataSourceStrategiesByStrategyName[partialStrategy.name]) {
+      resolvedDataSourceStrategies[modelName] = resolvedDataSourceStrategiesByStrategyName[partialStrategy.name];
+      continue;
+    }
+
+    const resolvedStrategy = await resolvePartialDataSourceStrategy(context, partialStrategy);
+    resolvedDataSourceStrategies[modelName] = resolvedStrategy;
+    resolvedDataSourceStrategiesByStrategyName[partialStrategy.name] = resolvedStrategy;
   }
-  const rdsLayerMapping = await getRDSLayerMapping();
+
+  // Build the fully-specified customSqlDataSourceStrategies map
+  for (const partialCustomSqlStrategy of partialCustomSqlDataSourceStrategies) {
+    if (resolvedDataSourceStrategiesByStrategyName[partialCustomSqlStrategy.strategy.name]) {
+      const resolvedStrategy = resolvedDataSourceStrategiesByStrategyName[partialCustomSqlStrategy.strategy.name];
+      resolvedCustomSqlDataSourceStrategies.push({
+        ...partialCustomSqlStrategy,
+        strategy: resolvedStrategy,
+      });
+      continue;
+    }
+  }
+
+  checkForUnsupportedDirectives(schema, resolvedDataSourceStrategies);
 
   const transformManager = new TransformManager(
     opts.overrideConfig,
@@ -233,12 +259,9 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
     parameterProvider: transformManager.getParameterProvider(),
     synthParameters: transformManager.getSynthParameters(),
     schema,
-    modelToDatasourceMap: opts.projectConfig.modelToDatasourceMap,
-    customQueries: opts.projectConfig.customQueries,
-    datasourceSecretParameterLocations: datasourceSecretMap,
     printTransformerLog,
-    sqlLambdaVpcConfig,
-    rdsLayerMapping,
+    dataSourceStrategies: resolvedDataSourceStrategies,
+    customSqlDataSourceStrategies: resolvedCustomSqlDataSourceStrategies,
   });
 
   const transformOutput: DeploymentResources = {
@@ -272,6 +295,30 @@ export const getUserOverridenSlots = (userDefinedSlots: Record<string, UserDefin
     .flat()
     .filter((slotName) => slotName !== undefined);
 
+/**
+ * Given a partial SQL data source strategy, resolve the missing VPC configuration, secrets, and RDS layer mapping
+ * @param context the Amplify context
+ * @param partialStrategy the partial strategy to finish resolving
+ */
+const resolvePartialDataSourceStrategy = async (
+  context: $TSContext,
+  partialStrategy: PartialSQLLambdaModelDataSourceStrategy,
+): Promise<SQLLambdaModelDataSourceStrategy> => {
+  const rdsLayerMapping = await getRDSLayerMapping();
+  const sqlLambdaLayerMapping = rdsLayerMappingToSQLLambdaLayerMapping(rdsLayerMapping);
+  const dbConnectionConfig = await getRDSConnectionSecrets(context);
+  const vpcConfiguration = await fetchSqlLambdaVpcConfigIfRequired(context, partialStrategy);
+
+  return {
+    name: partialStrategy.name,
+    dbType: partialStrategy.dbType,
+    customSqlStatements: partialStrategy.customSqlStatements,
+    dbConnectionConfig,
+    vpcConfiguration,
+    sqlLambdaLayerMapping,
+  };
+};
+
 const getRDSLayerMapping = async (): Promise<RDSLayerMapping> => {
   try {
     const response = await fetch(LAYER_MAPPING_URL);
@@ -286,24 +333,42 @@ const getRDSLayerMapping = async (): Promise<RDSLayerMapping> => {
   return {};
 };
 
-const isSqlLambdaVpcConfigRequired = async (context: $TSContext, dbType: DBType): Promise<VpcConfig | undefined> => {
-  // If the database is in VPC, we will use the same VPC configuration for the SQL lambda.
-  // Customers are required to add inbound rule for port 443 from the private subnet in the Security Group.
-  // https://docs.aws.amazon.com/systems-manager/latest/userguide/setup-create-vpc.html#vpc-requirements-and-limitations
-  const vpcSubnetConfig = await getSQLLambdaVpcConfig(context, dbType);
+const rdsLayerMappingToSQLLambdaLayerMapping = (rdsLayerMapping: RDSLayerMapping): SQLLambdaLayerMapping => {
+  const sqlLambdaLayerMapping: SQLLambdaLayerMapping = Object.entries(rdsLayerMapping).reduce((sqlLayerMapping, rdsLayerMap) => {
+    return {
+      ...sqlLayerMapping,
+      [rdsLayerMap[0]]: rdsLayerMap[1].layerRegion,
+    };
+  }, {} as SQLLambdaLayerMapping);
+  return sqlLambdaLayerMapping;
+};
 
+/**
+ * If the database is in VPC, we will use the same VPC configuration for the SQL lambda. Customers are required to add inbound rule for port
+ * 443 from the private subnet in the Security Group, and to ensure that there is an inbound rule allowing traffic on the database port
+ * (3306 for MySQL, or 5432 for Postgres) from within the security group into which the Lambda is installed.
+ * https://docs.aws.amazon.com/systems-manager/latest/userguide/setup-create-vpc.html#vpc-requirements-and-limitations
+ * @param context the CLI context
+ * @param partialStrategy the partial SQL ModelDataSourceStrategy derived by reading the schema and constructing the model to data source
+ * mappings
+ */
+const fetchSqlLambdaVpcConfigIfRequired = async (
+  context: $TSContext,
+  partialStrategy: PartialSQLLambdaModelDataSourceStrategy,
+): Promise<VpcConfig | undefined> => {
+  const vpcSubnetConfig = await getSQLLambdaVpcConfig(context, partialStrategy);
   return vpcSubnetConfig;
 };
 
-const getRDSConnectionSecrets = async (context: $TSContext): Promise<RDSConnectionSecrets> => {
+const getRDSConnectionSecrets = async (context: $TSContext): Promise<SqlModelDataSourceDbConnectionConfig> => {
   const apiName = getAppSyncAPIName();
-  const secretsKey = await getSecretsKey();
+  const secretsKey = getSecretsKey();
   const rdsSecretPaths = await getExistingConnectionSecretNames(context, apiName, secretsKey);
   return rdsSecretPaths;
 };
 
-const getSQLLambdaVpcConfig = async (context: $TSContext, dbType: DBType): Promise<VpcConfig> => {
-  const [secretsKey, engine] = [getSecretsKey(), getEngineFromDBType(dbType)];
+const getSQLLambdaVpcConfig = async (context: $TSContext, partialStrategy: PartialSQLLambdaModelDataSourceStrategy): Promise<VpcConfig> => {
+  const [secretsKey, engine] = [getSecretsKey(), dbTypeToImportedRDSType(partialStrategy.dbType)];
   const { secrets } = await getConnectionSecrets(context, secretsKey, engine);
   const region = context.amplify.getProjectMeta().providers.awscloudformation.Region;
   const vpcConfig = await getHostVpc(secrets.host, region);

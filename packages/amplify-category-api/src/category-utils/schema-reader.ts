@@ -76,7 +76,15 @@ export class SchemaReader {
 
     if (preProcessSchema && !this.preProcessedSchemaDocument) {
       const transformerOptions = await generateTransformerOptions(context, options);
-      const transform = constructTransform(transformerOptions);
+
+      // TODO: Is the SchemaReader class even used anywhere? I can't find a reference to it in the project, and it doesn't appear to be
+      // exported. For now, setting empty dataSourceStrategies & customSqlDataSourceStrategy objects on the options object.
+      const transform = constructTransform({
+        ...transformerOptions,
+        dataSourceStrategies: {},
+        customSqlDataSourceStrategies: [],
+      });
+
       this.preProcessedSchemaDocument = transform.preProcessSchema(this.schemaDocument);
     }
 

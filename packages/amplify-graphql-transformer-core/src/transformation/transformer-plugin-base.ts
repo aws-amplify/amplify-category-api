@@ -92,7 +92,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     super(name, document, type);
   }
 
-  abstract getDataSourceType: () => AppSyncDataSourceType;
+  abstract getModelDataSourceStrategyForType: () => AppSyncDataSourceType;
 
   abstract generateGetResolver: (
     ctx: TransformerContextProvider,

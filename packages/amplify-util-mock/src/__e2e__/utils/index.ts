@@ -47,7 +47,10 @@ export const transformAndSynth = (
   return transformManager.generateDeploymentResources();
 };
 
-export const defaultTransformParams: Pick<ExecuteTransformConfig, 'transformersFactoryArgs' | 'transformParameters'> = {
+export const defaultTransformParams: Pick<
+  ExecuteTransformConfig,
+  'transformersFactoryArgs' | 'transformParameters' | 'dataSourceStrategies' | 'customSqlDataSourceStrategies'
+> = {
   transformersFactoryArgs: {},
   transformParameters: {
     shouldDeepMergeDirectiveConfigDefaults: true,
@@ -63,6 +66,8 @@ export const defaultTransformParams: Pick<ExecuteTransformConfig, 'transformersF
     enableTransformerCfnOutputs: true,
     allowDestructiveGraphqlSchemaUpdates: false,
   },
+  dataSourceStrategies: {},
+  customSqlDataSourceStrategies: [],
 };
 
 export async function launchDDBLocal() {

@@ -1,19 +1,6 @@
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
-import {
-  DDB_DB_TYPE,
-  getDatasourceProvisionStrategy,
-  MappingTemplate,
-  MYSQL_DB_TYPE,
-  POSTGRES_DB_TYPE,
-} from '@aws-amplify/graphql-transformer-core';
-import {
-  DataSourceProvider,
-  TransformerContextProvider,
-  TransformerResolverProvider,
-  DynamoDBProvisionStrategy,
-  DBType,
-  DataSourceType,
-} from '@aws-amplify/graphql-transformer-interfaces';
+import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
+import { DataSourceProvider, TransformerContextProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import * as cdk from 'aws-cdk-lib';
@@ -48,15 +35,25 @@ import {
 import {
   applyKeyExpressionForCompositeKey,
   attributeTypeFromScalar,
+  DDB_DB_TYPE,
   getBaseType,
+  getDynamoDbTableName,
+  getModelDataSourceStrategy,
+  getSqlLambdaDataSourceNameForStrategy,
   graphqlName,
+  isAmplifyDynamoDbModelDataSourceStrategy,
+  isDynamoDbStrategy,
+  isSqlModel,
+  ModelDataSourceDbType,
+  ModelDataSourceStrategy,
   ModelResourceIDs,
+  MYSQL_DB_TYPE,
+  POSTGRES_DB_TYPE,
   ResolverResourceIDs,
   ResourceConstants,
   toCamelCase,
 } from 'graphql-transformer-common';
 import _ from 'lodash';
-import { isRDSModel } from '@aws-amplify/graphql-transformer-core';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../types';
 import { lookupResolverName } from '../utils';
 import { RDSIndexVTLGenerator, DynamoDBIndexVTLGenerator } from './generators';
@@ -69,10 +66,8 @@ const API_KEY = 'API Key Authorization';
 export const replaceDdbPrimaryKey = (config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   // Replace the table's primary key with the value from @primaryKey
   const { field, object } = config;
-  const tableProvisionStrategy = getDatasourceProvisionStrategy(ctx, object.name.value);
-  const useAmplifyManagedTableResources: boolean = tableProvisionStrategy
-    ? tableProvisionStrategy === DynamoDBProvisionStrategy.AMPLIFY_TABLE
-    : false;
+  const tableProvisionStrategy = getModelDataSourceStrategy(ctx, object.name.value);
+  const useAmplifyManagedTableResources = isAmplifyDynamoDbModelDataSourceStrategy(tableProvisionStrategy);
   const table = getTable(ctx, object) as any;
   const cfnTable = useAmplifyManagedTableResources ? table.node.defaultChild.node.defaultChild : table.table;
   const tableAttrDefs = table.attributeDefinitions;
@@ -369,7 +364,7 @@ export const validateSortDirectionInput = (config: PrimaryKeyDirectiveConfigurat
  */
 export const appendSecondaryIndex = (config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { name, object, primaryKeyField } = config;
-  if (isRDSModel(ctx, object.name.value)) {
+  if (isSqlModel(ctx, object.name.value)) {
     return;
   }
 
@@ -439,10 +434,8 @@ export const appendSecondaryIndex = (config: IndexDirectiveConfiguration, ctx: T
  * @param indexInfo global secondary index properties
  */
 export const overrideIndexAtCfnLevel = (ctx: TransformerContextProvider, typeName: string, table: any, indexInfo: any): void => {
-  const tableProvisionStrategy = getDatasourceProvisionStrategy(ctx, typeName);
-  const useAmplifyManagedTableResources: boolean = tableProvisionStrategy
-    ? tableProvisionStrategy === DynamoDBProvisionStrategy.AMPLIFY_TABLE
-    : false;
+  const tableProvisionStrategy = getModelDataSourceStrategy(ctx, typeName);
+  const useAmplifyManagedTableResources = isAmplifyDynamoDbModelDataSourceStrategy(tableProvisionStrategy);
 
   if (!useAmplifyManagedTableResources) {
     const cfnTable = table.table;
@@ -480,8 +473,8 @@ export const updateResolversForIndex = (
   const deleteResolver = getResolverObject(config, ctx, 'delete');
   const syncResolver = getResolverObject(config, ctx, 'sync');
 
-  const dbType = getDBType(ctx, object.name.value);
-  const isDynamoDB = dbType === 'DDB';
+  const strategy = getModelDataSourceStrategy(ctx, object.name.value);
+  const isDynamoDB = isDynamoDbStrategy(strategy);
 
   // Ensure any composite sort key values and validate update operations to
   // protect the integrity of composite sort keys.
@@ -510,7 +503,7 @@ export const updateResolversForIndex = (
   }
 
   if (queryField) {
-    makeQueryResolver(config, ctx, dbType);
+    makeQueryResolver(config, ctx, strategy);
   }
 
   if (isDynamoDB && syncResolver) {
@@ -518,19 +511,19 @@ export const updateResolversForIndex = (
   }
 };
 
-export const makeQueryResolver = (config: IndexDirectiveConfiguration, ctx: TransformerContextProvider, dbType: DBType): void => {
-  const { RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
-  const isDynamoDB = dbType === DDB_DB_TYPE;
+export const makeQueryResolver = (
+  config: IndexDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+  strategy: ModelDataSourceStrategy,
+): void => {
+  const isDynamoDB = isDynamoDbStrategy(strategy);
   const { name, object, queryField } = config;
   if (!(name && queryField)) {
     throw new Error('Expected name and queryField to be defined while generating resolver.');
   }
   const modelName = object.name.value;
-  const dbInfo = getDBInfo(ctx, modelName);
-  let dataSourceName = `${object.name.value}Table`;
-  if (!isDynamoDB) {
-    dataSourceName = RDSLambdaDataSourceLogicalID;
-  }
+  const dbInfo = getModelDataSourceStrategy(ctx, modelName);
+  const dataSourceName = isDynamoDB ? getDynamoDbTableName(object.name.value) : getSqlLambdaDataSourceNameForStrategy(strategy);
   const dataSource = ctx.api.host.getDataSource(dataSourceName);
   const queryTypeName = ctx.output.getQueryTypeName() as string;
 
@@ -916,20 +909,13 @@ export const generateAuthExpressionForSandboxMode = (enabled: boolean): string =
   );
 };
 
-export const getDBInfo = (ctx: TransformerContextProvider, modelName: string): DataSourceType => {
-  const dbInfo = ctx.modelToDatasourceMap.get(modelName);
-  const result = dbInfo ?? { dbType: DDB_DB_TYPE, provisionDB: true, provisionStrategy: DynamoDBProvisionStrategy.DEFAULT };
-  return result;
+export const getDBType = (ctx: TransformerContextProvider, modelName: string): ModelDataSourceDbType => {
+  const strategy = getModelDataSourceStrategy(ctx, modelName);
+  return strategy.dbType;
 };
 
-export const getDBType = (ctx: TransformerContextProvider, modelName: string): DBType => {
-  const dbInfo = getDBInfo(ctx, modelName);
-  const dbType = dbInfo ? dbInfo.dbType : DDB_DB_TYPE;
-  return dbType;
-};
-
-export const getVTLGenerator = (dbInfo: DataSourceType | undefined): RDSIndexVTLGenerator | DynamoDBIndexVTLGenerator => {
-  const dbType = dbInfo ? dbInfo.dbType : DDB_DB_TYPE;
+export const getVTLGenerator = (strategy: ModelDataSourceStrategy): RDSIndexVTLGenerator | DynamoDBIndexVTLGenerator => {
+  const dbType = strategy.dbType;
   switch (dbType) {
     case DDB_DB_TYPE:
       return new DynamoDBIndexVTLGenerator();

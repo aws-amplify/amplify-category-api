@@ -1,23 +1,31 @@
 /* eslint-disable no-param-reassign */
 import {
-  DDB_DB_TYPE,
   DirectiveWrapper,
   generateGetArgumentsInput,
-  getDataSourceType,
+  getModelDataSourceStrategyForType,
   InvalidDirectiveError,
-  isRDSDBType,
   TransformerPluginBase,
-  isRDSModel,
 } from '@aws-amplify/graphql-transformer-core';
 import {
-  DBType,
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
   TransformerPreProcessContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
+import {
+  getBaseType,
+  getModelDataSourceStrategy,
+  isDynamoDbStrategy,
+  isListType,
+  isNonNullType,
+  isSqlModel,
+  isSqlStrategy,
+  makeField,
+  makeNamedType,
+  makeNonNullType,
+  ModelDataSourceStrategy,
+} from 'graphql-transformer-common';
 import {
   DirectiveNode,
   DocumentNode,
@@ -143,7 +151,7 @@ export class HasManyTransformer extends TransformerPluginBase {
   prepare = (context: TransformerPrepareStepContextProvider): void => {
     this.directiveList.forEach((config) => {
       const modelName = config.object.name.value;
-      if (isRDSModel(context as TransformerContextProvider, modelName)) {
+      if (isSqlModel(context as TransformerContextProvider, modelName)) {
         setFieldMappingResolverReference(context, config.relatedType?.name?.value, modelName, config.field.name.value, true);
         return;
       }
@@ -161,10 +169,10 @@ export class HasManyTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      const dbType = getDataSourceType(config.field.type, context);
-      if (dbType === DDB_DB_TYPE) {
+      const strategy = getModelDataSourceStrategyForType(config.field.type, context);
+      if (isDynamoDbStrategy(strategy)) {
         config.relatedTypeIndex = getRelatedTypeIndex(config, context, config.indexName);
-      } else if (isRDSDBType(dbType)) {
+      } else if (isSqlStrategy(strategy)) {
         validateParentReferencesFields(config, context);
       }
       ensureHasManyConnectionField(config, context);
@@ -172,36 +180,44 @@ export class HasManyTransformer extends TransformerPluginBase {
     }
   };
 
+  /**
+   * Generates a resolver for the RELATED types of directives in the list.
+   */
   generateResolvers = (ctx: TransformerContextProvider): void => {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      const dbType = getDataSourceType(config.field.type, context);
-      if (dbType === DDB_DB_TYPE) {
+      const relatedType = getRelatedType(config, ctx);
+      const strategyOfRelatedType = getModelDataSourceStrategy(context, relatedType.name.value);
+      if (isDynamoDbStrategy(strategyOfRelatedType)) {
         updateTableForConnection(config, context);
       }
-      makeQueryResolver(config, context, dbType);
+      makeQueryResolver(config, context, strategyOfRelatedType);
     }
   };
 }
 
-const makeQueryResolver = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider, dbType: DBType): void => {
-  const generator = getGenerator(dbType);
+const makeQueryResolver = (
+  config: HasManyDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+  strategy: ModelDataSourceStrategy,
+): void => {
+  const generator = getGenerator(strategy.dbType);
   generator.makeHasManyGetItemsConnectionWithKeyResolver(config, ctx);
 };
 
 const validate = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field } = config;
 
-  const dbType = getDataSourceType(field.type, ctx);
+  const strategy = getModelDataSourceStrategyForType(field.type, ctx);
   config.relatedType = getRelatedType(config, ctx);
 
-  if (dbType === DDB_DB_TYPE) {
+  if (isDynamoDbStrategy(strategy)) {
     ensureFieldsArray(config);
     config.fieldNodes = getFieldsNodes(config, ctx);
   }
 
-  if (isRDSDBType(dbType)) {
+  if (isSqlStrategy(strategy)) {
     ensureReferencesArray(config);
     getReferencesNodes(config, ctx);
   }

@@ -30,7 +30,7 @@ import {
 import * as fs from 'fs-extra';
 import ora from 'ora';
 import { printer } from '@aws-amplify/amplify-prompts';
-import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { VpcConfig } from 'graphql-transformer-common';
 import { checkHostInDBClusters } from './vpc-helper-cluster';
 import { checkHostInDBProxies } from './vpc-helper-proxy';
 import { checkHostInDBInstances } from './vpc-helper-instance';

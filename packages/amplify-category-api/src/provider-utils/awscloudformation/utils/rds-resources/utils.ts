@@ -1,17 +1,19 @@
 import { parse, FieldDefinitionNode, ObjectTypeDefinitionNode, visit } from 'graphql';
 import _ from 'lodash';
-import { isImportedRDSType } from '@aws-amplify/graphql-transformer-core';
-import { DataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
+import { isSqlStrategy, ModelDataSourceStrategy, PartialSQLLambdaModelDataSourceStrategy } from 'graphql-transformer-common';
 
-export const checkForUnsupportedDirectives = (schema: string, modelToDatasourceMap: Map<string, DataSourceType>): void => {
+export const checkForUnsupportedDirectives = (
+  schema: string,
+  dataSourceStrategies: Record<string, ModelDataSourceStrategy | PartialSQLLambdaModelDataSourceStrategy>,
+): void => {
   const unsupportedRDSDirectives = ['searchable', 'predictions', 'function', 'manyToMany', 'http', 'mapsTo'];
-  if (_.isEmpty(schema) || _.isEmpty(modelToDatasourceMap)) {
+  if (_.isEmpty(schema) || _.isEmpty(dataSourceStrategies)) {
     return;
   }
 
   // get all the models in the modelToDatasourceMap that are backed by RDS whose value is present in the db_type property inside the map
-  const rdsModels = Array.from(modelToDatasourceMap?.entries())
-    .filter(([key, value]) => isImportedRDSType(value))
+  const rdsModels = Object.entries(dataSourceStrategies)
+    .filter(([key, value]) => isSqlStrategy(value))
     .map(([key, value]) => key);
 
   if (_.isEmpty(rdsModels)) {
@@ -21,7 +23,7 @@ export const checkForUnsupportedDirectives = (schema: string, modelToDatasourceM
   const document = parse(schema);
   const schemaVisitor = {
     FieldDefinition: {
-      enter(node: FieldDefinitionNode, key, parent, path, ancestors): any {
+      enter: (node: FieldDefinitionNode, key, parent, path, ancestors): any => {
         const parentName = getParentName(ancestors);
         if (!(parentName === 'Query') && !rdsModels?.includes(parentName)) {
           return;
@@ -34,7 +36,7 @@ export const checkForUnsupportedDirectives = (schema: string, modelToDatasourceM
       },
     },
     ObjectTypeDefinition: {
-      enter(node: ObjectTypeDefinitionNode): any {
+      enter: (node: ObjectTypeDefinitionNode): any => {
         const typeName = node?.name?.value;
         if (!(typeName === 'Query') && !rdsModels?.includes(typeName)) {
           return;
@@ -68,4 +70,5 @@ const getParentName = (ancestors: any[]): string | undefined => {
   if (ancestors && ancestors?.length > 0) {
     return (ancestors[ancestors.length - 1] as ObjectTypeDefinitionNode)?.name?.value;
   }
+  return undefined;
 };

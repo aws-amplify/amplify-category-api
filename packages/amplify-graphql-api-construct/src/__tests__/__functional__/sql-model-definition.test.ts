@@ -3,28 +3,7 @@ import * as cognito from 'aws-cdk-lib/aws-cognito';
 import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
-import { SqlModelDataSourceDbConnectionConfig, VpcConfig } from '../../types';
-
-const defaultSchema = /* GraphQL */ `
-  type Todo @model @auth(rules: [{ allow: owner }]) {
-    id: ID! @primaryKey
-    description: String!
-  }
-`;
-
-const vpcConfiguration: VpcConfig = {
-  vpcId: 'vpc-123abc',
-  securityGroupIds: ['sg-123abc'],
-  subnetAvailabilityZoneConfig: [{ subnetId: 'subnet-123abc', availabilityZone: 'us-east-1a' }],
-};
-
-const dbConnectionConfig: SqlModelDataSourceDbConnectionConfig = {
-  hostnameSsmPath: '/ssm/path/hostnameSsmPath',
-  usernameSsmPath: '/ssm/path/usernameSsmPath',
-  passwordSsmPath: '/ssm/path/passwordSsmPath',
-  databaseNameSsmPath: '/ssm/path/databaseNameSsmPath',
-  portSsmPath: '/ssm/path/portSsmPath',
-};
+import { MOCK_SCHEMA, makeSqlDataSourceStrategy } from '../mock-definitions';
 
 describe('sql-bound API generated resource access', () => {
   describe('l1 resources', () => {
@@ -33,12 +12,7 @@ describe('sql-bound API generated resource access', () => {
         const stack = new cdk.Stack();
         const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
         const api = new AmplifyGraphqlApi(stack, 'TestSqlBoundApi', {
-          definition: AmplifyGraphqlDefinition.fromString(defaultSchema, {
-            name: 'MySQLDefinition',
-            dbType: 'MYSQL',
-            vpcConfiguration,
-            dbConnectionConfig,
-          }),
+          definition: AmplifyGraphqlDefinition.fromString(MOCK_SCHEMA.todo.auth.owner.sql, makeSqlDataSourceStrategy('MySQLDefinition')),
           authorizationModes: {
             userPoolConfig: { userPool },
           },
@@ -81,12 +55,7 @@ describe('sql-bound API generated resource access', () => {
         const stack = new cdk.Stack();
         const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
         const api = new AmplifyGraphqlApi(stack, 'TestSqlBoundApi', {
-          definition: AmplifyGraphqlDefinition.fromString(defaultSchema, {
-            name: 'MySQLDefinition',
-            dbType: 'MYSQL',
-            vpcConfiguration,
-            dbConnectionConfig,
-          }),
+          definition: AmplifyGraphqlDefinition.fromString(MOCK_SCHEMA.todo.auth.owner.sql, makeSqlDataSourceStrategy('MySQLDefinition')),
           authorizationModes: {
             userPoolConfig: { userPool },
           },
@@ -108,12 +77,9 @@ describe('sql-bound API generated resource access', () => {
       it('provides the generated SQL Lambda function as an L1 construct without a VPC configuration', () => {
         const stack = new cdk.Stack();
         const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
+        const strategy = makeSqlDataSourceStrategy('MySQLDefinition', { vpcConfiguration: undefined });
         const api = new AmplifyGraphqlApi(stack, 'TestSqlBoundApi', {
-          definition: AmplifyGraphqlDefinition.fromString(defaultSchema, {
-            name: 'MySQLDefinition',
-            dbType: 'MYSQL',
-            dbConnectionConfig,
-          }),
+          definition: AmplifyGraphqlDefinition.fromString(MOCK_SCHEMA.todo.auth.owner.sql, strategy),
           authorizationModes: {
             userPoolConfig: { userPool },
           },
@@ -142,6 +108,32 @@ describe('sql-bound API generated resource access', () => {
         const cfnFn = sqlLambda.node.defaultChild as CfnFunction;
         const cfnFnVpcConfig = cfnFn.vpcConfig as CfnFunction.VpcConfigProperty | undefined;
         expect(cfnFnVpcConfig).toBeUndefined();
+      });
+    });
+
+    describe('Custom SQL support', () => {
+      it('provides SQL Lambda functions for schemas with both models and custom SQL inline queries', () => {
+        throw new Error('Not yet implemented');
+      });
+
+      it('provides SQL Lambda functions for schemas with both models and custom SQL referenced queries', () => {
+        throw new Error('Not yet implemented');
+      });
+
+      it('provides SQL Lambda functions for schemas with both models and custom SQL with a mix of inline and referenced queries', () => {
+        throw new Error('Not yet implemented');
+      });
+
+      it('provides SQL Lambda functions for schemas with only custom SQL inline queries', () => {
+        throw new Error('Not yet implemented');
+      });
+
+      it('provides SQL Lambda functions for schemas with only custom SQL referenced queries', () => {
+        throw new Error('Not yet implemented');
+      });
+
+      it('provides SQL Lambda functions for schemas with only custom SQL with a mix of inline and referenced queries', () => {
+        throw new Error('Not yet implemented');
       });
     });
   });

@@ -3,7 +3,6 @@ import {
   generateGetArgumentsInput,
   InvalidDirectiveError,
   TransformerPluginBase,
-  isImportedRDSType,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
@@ -19,7 +18,15 @@ import {
   Kind,
   ObjectTypeDefinitionNode,
 } from 'graphql';
-import { isListType, isNonNullType, isScalarOrEnum, makeInputValueDefinition, makeNamedType } from 'graphql-transformer-common';
+import {
+  getModelDataSourceStrategy,
+  isListType,
+  isNonNullType,
+  isScalarOrEnum,
+  isSqlStrategy,
+  makeInputValueDefinition,
+  makeNamedType,
+} from 'graphql-transformer-common';
 import { constructSyncVTL, getVTLGenerator } from './resolvers/resolvers';
 import {
   addKeyConditionInputs,
@@ -102,8 +109,8 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
 
   generateResolvers = (ctx: TransformerContextProvider): void => {
     for (const config of this.directiveList) {
-      const dbInfo = ctx.modelToDatasourceMap.get(config.object.name.value);
-      const vtlGenerator = getVTLGenerator(dbInfo);
+      const strategy = getModelDataSourceStrategy(ctx, config.object.name.value);
+      const vtlGenerator = getVTLGenerator(strategy);
       vtlGenerator.generatePrimaryKeyVTL(config, ctx, this.resolverMap);
     }
   };
@@ -190,9 +197,9 @@ export const updateListField = (config: PrimaryKeyDirectiveConfiguration, ctx: T
   let listField = query.fields!.find((field: FieldDefinitionNode) => field.name.value === resolverName) as FieldDefinitionNode;
   if (listField) {
     const args = [createHashField(config)];
-    const dbType = ctx.modelToDatasourceMap.get(config.object.name.value);
+    const strategy = getModelDataSourceStrategy(ctx, config.object.name.value);
 
-    if (!dbType || !isImportedRDSType(dbType)) {
+    if (!isSqlStrategy(strategy)) {
       const sortField = tryAndCreateSortField(config, ctx);
       if (sortField) {
         args.push(sortField);

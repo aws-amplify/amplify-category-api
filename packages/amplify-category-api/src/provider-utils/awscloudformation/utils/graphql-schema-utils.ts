@@ -1,9 +1,7 @@
-import * as os from 'os';
-import { ImportedRDSType, ImportedDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
+import { ImportedRDSType, ImportedDataSourceConfig } from 'graphql-transformer-common';
 import * as fs from 'fs-extra';
 import {
   MySQLDataSourceAdapter,
-  generateGraphQLSchema,
   Schema,
   Engine,
   DataSourceAdapter,
@@ -12,14 +10,13 @@ import {
   provisionSchemaInspectorLambda,
   PostgresDataSourceAdapter,
   PostgresDataSourceConfig,
-  constructRDSGlobalAmplifyInput,
   renderSchema,
 } from '@aws-amplify/graphql-schema-generator';
-import { readRDSSchema } from './rds-input-utils';
-import { $TSContext, AmplifyError, stateManager, ApiCategoryFacade } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
 import { prompter } from '@aws-amplify/amplify-prompts';
-import { getVpcMetadataLambdaName } from './rds-resources/database-resources';
 import { DocumentNode, parse } from 'graphql';
+import { getVpcMetadataLambdaName } from './rds-resources/database-resources';
+import { readRDSSchema } from './rds-input-utils';
 
 export const writeSchemaFile = (pathToSchemaFile: string, schemaString: string) => {
   fs.ensureFileSync(pathToSchemaFile);
@@ -65,13 +62,13 @@ const retryWithVpcLambda = async (envName: string, databaseConfig, adapter: Data
 
 const parseSchema = (schemaContent: string | undefined, pathToSchemaFile: string): DocumentNode | undefined => {
   if (!schemaContent) {
-    return;
+    return undefined;
   }
 
   try {
     const document = parse(schemaContent);
     if (!document) {
-      return;
+      return undefined;
     }
     return document;
   } catch (err) {

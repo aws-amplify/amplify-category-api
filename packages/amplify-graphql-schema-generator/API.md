@@ -7,10 +7,10 @@
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql';
 import { FieldDefinitionNode } from 'graphql';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { InputObjectTypeDefinitionNode } from 'graphql';
+import { ModelDataSourceSqlDbType } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode } from 'graphql';
-import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { VpcConfig } from 'graphql-transformer-common';
 
 // @public (undocumented)
 export const applyFieldNameOverrides: (field: FieldDefinitionNode, existingField: FieldDefinitionNode) => Partial<FieldDefinitionNode>;
@@ -36,6 +36,8 @@ export const applySchemaOverrides: (document: DocumentNode, existingDocument?: D
 // @public (undocumented)
 export const checkDestructiveNullabilityChange: (field: FieldDefinitionNode, existingField: FieldDefinitionNode) => void;
 
+// Warning: (ae-forgotten-export) The symbol "ImportedRDSType" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
 export const constructDefaultGlobalAmplifyInput: (dataSourceType: ImportedRDSType, includeAuthRule?: boolean, authDocLink?: string) => string;
 
@@ -166,7 +168,7 @@ export const getParentNode: (ancestors: any[]) => ObjectTypeDefinitionNode | und
 export const getRefersToDirective: (name: string) => DirectiveNode;
 
 // @public (undocumented)
-export const graphqlSchemaFromRDSSchema: (sqlSchema: string, engineType: ImportedRDSType) => string;
+export const graphqlSchemaFromRDSSchema: (sqlSchema: string, engineType: ModelDataSourceSqlDbType) => string;
 
 // @public (undocumented)
 export class Index {

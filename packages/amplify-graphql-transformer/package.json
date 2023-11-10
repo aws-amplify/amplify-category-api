@@ -40,7 +40,8 @@
     "@aws-amplify/graphql-searchable-transformer": "2.2.4",
     "@aws-amplify/graphql-sql-transformer": "0.0.1",
     "@aws-amplify/graphql-transformer-core": "2.2.4",
-    "@aws-amplify/graphql-transformer-interfaces": "3.2.2"
+    "@aws-amplify/graphql-transformer-interfaces": "3.2.2",
+    "graphql-transformer-common": "4.25.1"
   },
   "devDependencies": {
     "@types/node": "^12.12.6",

@@ -27,15 +27,6 @@ export type {
   IBackendOutputStorageStrategy,
   IBackendOutputEntry,
   AddFunctionProps,
-  ModelDataSourceStrategy,
-  DefaultDynamoDbModelDataSourceStrategy,
-  AmplifyDynamoDbModelDataSourceStrategy,
-  SQLLambdaModelDataSourceStrategy,
-  ModelDataSourceStrategyDbType,
-  VpcConfig,
-  SubnetAvailabilityZone,
-  SQLLambdaLayerMapping,
-  SqlModelDataSourceDbConnectionConfig,
 } from './types';
 export { AmplifyGraphqlApi } from './amplify-graphql-api';
 export { AmplifyGraphqlDefinition } from './amplify-graphql-definition';
@@ -47,3 +38,4 @@ export {
   SSEType,
   StreamSpecification,
 } from './amplify-dynamodb-table-wrapper';
+export * from './model-datasource-strategy';

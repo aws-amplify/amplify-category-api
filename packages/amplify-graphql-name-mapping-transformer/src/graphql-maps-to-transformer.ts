@@ -1,4 +1,4 @@
-import { TransformerPluginBase, DDB_DB_TYPE, isRDSModel } from '@aws-amplify/graphql-transformer-core';
+import { TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
   TransformerPluginType,
@@ -6,6 +6,7 @@ import {
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode, DirectiveNode, ObjectTypeExtensionNode } from 'graphql';
+import { isDynamoDBModel, isSqlModel } from 'graphql-transformer-common';
 import { createMappingLambda } from './field-mapping-lambda';
 import { attachFilterAndConditionInputMappingSlot, attachInputMappingSlot, attachResponseMappingSlot } from './field-mapping-resolvers';
 import { shouldBeAppliedToModel, getMappedName, updateTypeMapping, setTypeMappingInSchema } from './graphql-name-mapping';
@@ -18,13 +19,13 @@ const directiveDefinition = `
 
 export class MapsToTransformer extends TransformerPluginBase {
   constructor() {
-    super(`amplify-maps-to-transformer`, directiveDefinition, TransformerPluginType.GENERIC);
+    super('amplify-maps-to-transformer', directiveDefinition, TransformerPluginType.GENERIC);
   }
 
   /**
    * During the AST tree walking, the mapsTo transformer registers any renamed models with the ctx.resourceHelper.
    */
-  object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider) => {
+  object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider): void => {
     shouldBeAppliedToModel(definition, directiveName);
     shouldBeAppliedToDDBModels(definition, ctx as TransformerContextProvider);
     const modelName = definition.name.value;
@@ -36,7 +37,7 @@ export class MapsToTransformer extends TransformerPluginBase {
    * Run pre-mutation steps on the schema to support mapsTo
    * @param context The pre-processing context for the transformer, used to store type mappings
    */
-  preMutateSchema = (context: TransformerPreProcessContextProvider) => {
+  preMutateSchema = (context: TransformerPreProcessContextProvider): void => {
     setTypeMappingInSchema(context, directiveName);
   };
 
@@ -44,9 +45,9 @@ export class MapsToTransformer extends TransformerPluginBase {
    * During the generateResolvers step, the mapsTo transformer reads all of the model field mappings from the resourceHelper and generates
    * VTL to map the current field names to the original field names
    */
-  after = (context: TransformerContextProvider) => {
+  after = (context: TransformerContextProvider): void => {
     context.resourceHelper.getModelFieldMapKeys().forEach((modelName) => {
-      if (isRDSModel(context, modelName)) {
+      if (isSqlModel(context, modelName)) {
         return;
       }
       const modelFieldMap = context.resourceHelper.getModelFieldMap(modelName);
@@ -108,10 +109,9 @@ export class MapsToTransformer extends TransformerPluginBase {
 export const shouldBeAppliedToDDBModels = (
   definition: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
   ctx: TransformerContextProvider,
-) => {
+): void => {
   const modelName = definition.name.value;
-  const dbInfo = ctx.modelToDatasourceMap.get(modelName);
-  if (!(dbInfo?.dbType === DDB_DB_TYPE)) {
+  if (!isDynamoDBModel(ctx, modelName)) {
     throw new Error(`${directiveName} is only supported on DynamoDB models. ${modelName} is not a DDB model.`);
   }
 };

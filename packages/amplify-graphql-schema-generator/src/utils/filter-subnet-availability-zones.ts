@@ -1,4 +1,4 @@
-import { SubnetAvailabilityZone } from '@aws-amplify/graphql-transformer-interfaces';
+import { SubnetAvailabilityZone } from 'graphql-transformer-common';
 
 export const filterSubnetAvailabilityZones = (subnetAvailabilityZones: SubnetAvailabilityZone[]): SubnetAvailabilityZone[] => {
   const visitedAvailabilityZones = new Set<string>();

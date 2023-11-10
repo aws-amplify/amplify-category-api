@@ -1,5 +1,5 @@
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
+import { ResolverResourceIDs, getSqlLambdaDataSourceNameForStrategy, getSqlModelDataSourceStrategy } from 'graphql-transformer-common';
 import { MappingTemplate, getPrimaryKeyFields } from '@aws-amplify/graphql-transformer-core';
 import {
   compoundExpression,
@@ -25,14 +25,16 @@ const CONNECTION_STACK = 'ConnectionStack';
 
 export class RDSRelationalResolverGenerator extends RelationalResolverGenerator {
   /**
-   * Create a resolver that queries an item in RDS.
+   * Create a resolver that queries multiple items in a SQL database, using the data source of the related type.
    * @param config The connection directive configuration.
    * @param ctx The transformer context provider.
    */
   makeHasManyGetItemsConnectionWithKeyResolver = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
     const { field, references, object, relatedType } = config;
-    const { RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
-    const dataSource = ctx.api.host.getDataSource(RDSLambdaDataSourceLogicalID);
+    const strategyForRelatedType = getSqlModelDataSourceStrategy(ctx, relatedType.name.value);
+    const dataSourceId = getSqlLambdaDataSourceNameForStrategy(strategyForRelatedType);
+    const dataSource = ctx.api.host.getDataSource(dataSourceId);
+
     const mappedTableName = ctx.resourceHelper.getModelNameMapping(relatedType.name.value);
 
     const connectionCondition: Expression[] = [];
@@ -148,7 +150,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
   };
 
   /**
-   * Create a get item resolver for singular connections.
+   * Create a get item resolver for singular connections, using the data source of the related type.
    * @param config The connection directive configuration.
    * @param ctx The transformer context provider.
    */
@@ -157,8 +159,9 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     ctx: TransformerContextProvider,
   ): void => {
     const { field, references, object, relatedType } = config;
-    const { RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
-    const dataSource = ctx.api.host.getDataSource(RDSLambdaDataSourceLogicalID);
+    const strategyForRelatedType = getSqlModelDataSourceStrategy(ctx, relatedType.name.value);
+    const dataSourceId = getSqlLambdaDataSourceNameForStrategy(strategyForRelatedType);
+    const dataSource = ctx.api.host.getDataSource(dataSourceId);
     const mappedTableName = ctx.resourceHelper.getModelNameMapping(relatedType.name.value);
 
     const connectionCondition: Expression[] = [];
@@ -201,10 +204,16 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     ctx.resolvers.addResolver(object.name.value, field.name.value, resolver);
   };
 
+  /**
+   * Create a get item resolver for the belongs to connection, using the data source of the related type.
+   * @param config The connection directive configuration.
+   * @param ctx The transformer context provider.
+   */
   makeBelongsToGetItemConnectionWithKeyResolver = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
     const { field, references, object, relatedType } = config;
-    const { RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
-    const dataSource = ctx.api.host.getDataSource(RDSLambdaDataSourceLogicalID);
+    const strategyForRelatedType = getSqlModelDataSourceStrategy(ctx, relatedType.name.value);
+    const dataSourceId = getSqlLambdaDataSourceNameForStrategy(strategyForRelatedType);
+    const dataSource = ctx.api.host.getDataSource(dataSourceId);
     const mappedTableName = ctx.resourceHelper.getModelNameMapping(relatedType.name.value);
 
     const connectionCondition: Expression[] = [];

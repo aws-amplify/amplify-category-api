@@ -221,13 +221,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     // (undocumented)
     getDataSourceResource: (type: ObjectTypeDefinitionNode) => DataSourceInstance;
     // (undocumented)
-    getDataSourceType: () => AppSyncDataSourceType;
-    // (undocumented)
     getInputs: (ctx: TransformerTransformSchemaStepContextProvider, type: ObjectTypeDefinitionNode, operation: {
         fieldName: string;
         typeName: string;
         type: QueryFieldType | MutationFieldType | SubscriptionFieldType;
     }) => InputValueDefinitionNode[];
+    // (undocumented)
+    getModelDataSourceStrategyForType: () => AppSyncDataSourceType;
     // (undocumented)
     getMutationFieldNames: (type: ObjectTypeDefinitionNode) => Set<{
         fieldName: string;

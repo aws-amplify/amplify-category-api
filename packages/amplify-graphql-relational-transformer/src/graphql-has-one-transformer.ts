@@ -1,12 +1,9 @@
 /* eslint-disable no-param-reassign */
 import {
-  DDB_DB_TYPE,
   DirectiveWrapper,
   generateGetArgumentsInput,
-  getDataSourceType,
+  getModelDataSourceStrategyForType,
   InvalidDirectiveError,
-  isRDSModel,
-  isRDSDBType,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
 import {
@@ -26,8 +23,12 @@ import {
 } from 'graphql';
 import {
   getBaseType,
+  getModelDataSourceStrategy,
+  isDynamoDbStrategy,
   isListType,
   isNonNullType,
+  isSqlModel,
+  isSqlStrategy,
   makeArgument,
   makeField,
   makeNamedType,
@@ -167,7 +168,7 @@ export class HasOneTransformer extends TransformerPluginBase {
   prepare = (context: TransformerPrepareStepContextProvider): void => {
     this.directiveList.forEach((config) => {
       const modelName = config.object.name.value;
-      if (isRDSModel(context as TransformerContextProvider, modelName)) {
+      if (isSqlModel(context as TransformerContextProvider, modelName)) {
         setFieldMappingResolverReference(context, config.relatedType?.name?.value, modelName, config.field.name.value);
         return;
       }
@@ -185,22 +186,26 @@ export class HasOneTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      const dbType = getDataSourceType(config.field.type, context);
-      if (dbType === DDB_DB_TYPE) {
+      const strategy = getModelDataSourceStrategyForType(config.field.type, context);
+      if (isDynamoDbStrategy(strategy)) {
         config.relatedTypeIndex = getRelatedTypeIndex(config, context);
-      } else if (isRDSDBType(dbType)) {
+      } else if (isSqlStrategy(strategy)) {
         validateParentReferencesFields(config, context);
       }
       ensureHasOneConnectionField(config, context);
     }
   };
 
+  /**
+   * Generates a resolver for the RELATED types of directives in the list.
+   */
   generateResolvers = (ctx: TransformerContextProvider): void => {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      const dbType = getDataSourceType(config.field.type, context);
-      const generator = getGenerator(dbType);
+      const relatedType = getRelatedType(config, ctx);
+      const strategyOfRelatedType = getModelDataSourceStrategy(ctx, relatedType.name.value);
+      const generator = getGenerator(strategyOfRelatedType.dbType);
       generator.makeHasOneGetItemConnectionWithKeyResolver(config, context);
     }
   };
@@ -209,15 +214,15 @@ export class HasOneTransformer extends TransformerPluginBase {
 const validate = (config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field } = config;
 
-  const dbType = getDataSourceType(field.type, ctx);
+  const strategy = getModelDataSourceStrategyForType(field.type, ctx);
   config.relatedType = getRelatedType(config, ctx);
 
-  if (dbType === DDB_DB_TYPE) {
+  if (isDynamoDbStrategy(strategy)) {
     ensureFieldsArray(config);
     config.fieldNodes = getFieldsNodes(config, ctx);
   }
 
-  if (isRDSDBType(dbType)) {
+  if (isSqlStrategy(strategy)) {
     ensureReferencesArray(config);
     getReferencesNodes(config, ctx);
   }

@@ -29,16 +29,26 @@ export class ResourceConstants {
     OpenSearchStreamingLambdaFunctionLogicalID: 'OpenSearchStreamingLambdaFunction',
     OpenSearchDataSourceLogicalID: 'OpenSearchDataSource',
 
-    // RDS
-    RDSLambdaIAMRoleLogicalID: 'RDSLambdaIAMRole',
-    RDSLambdaLogAccessPolicy: 'RDSLambdaLogAccessPolicy',
-    RDSPatchingLambdaIAMRoleLogicalID: 'RDSPatchingLambdaIAMRole',
-    RDSLambdaLogicalID: 'RDSLambdaLogicalID',
-    RDSPatchingLambdaLogAccessPolicy: 'RDSPatchingLambdaLogAccessPolicy',
-    RDSPatchingLambdaLogicalID: 'RDSPatchingLambdaLogicalID',
-    RDSLambdaDataSourceLogicalID: 'RDSLambdaDataSource',
-    RDSLambdaDataSourceLogicalName: 'RDSLambdaDatabase',
-    RDSPatchingSubscriptionLogicalID: 'RDSPatchingSubscriptionLogicalID',
+    // SQL - These are prefixes; the actual resource names/logical IDs will be of the form: `${prefix}${strategyName}`, to disambiguate the
+    // resources created for different SQL Lambda DataSources.
+
+    // SQL Lambda
+    SQLLambdaLogicalIDPrefix: 'SQLLambdaFunction',
+    SQLLambdaIAMRoleLogicalIDPrefix: 'SQLLambdaIAMRole',
+    SQLLambdaLogAccessPolicyPrefix: 'SQLLambdaLogAccessPolicy',
+
+    // SQL Lambda Layer patching
+    SQLPatchingLambdaLogicalIDPrefix: 'SQLPatchingLambda',
+    SQLPatchingLambdaIAMRoleLogicalIDPrefix: 'SQLPatchingLambdaIAMRole',
+    SQLPatchingLambdaLogAccessPolicyPrefix: 'SQLPatchingLambdaLogAccessPolicy',
+    SQLPatchingSubscriptionLogicalIDPrefix: 'SQLPatchingSubscription',
+    SQLPatchingTopicNameLogicalIdPrefix: 'SQLPatchingTopic',
+
+    // SQL Lambda DataSource
+    SQLLambdaDataSourceLogicalIDPrefix: 'SQLLambdaDataSource',
+
+    /** VPC endpoints, if present, will be named slightly differently: `${prefix}${serviceName}${strategyName}` */
+    SQLVpcEndpointLogicalIdPrefix: 'SQLVpcEndpoint',
 
     // Local. Try not to collide with model data sources.
     NoneDataSource: 'NoneDataSource',
@@ -52,6 +62,8 @@ export class ResourceConstants {
     TableManagerOnEventHandlerLogicalID: 'TableManagerOnEventHandler',
     TableManagerIsCompleteHandlerLogicalID: 'TableManagerIsCompleteHandler',
     TableManagerCustomProviderLogicalID: 'TableManagerCustomProvider',
+
+    DynamoDbTableDataSourceSuffix: 'Table',
   };
 
   public static PARAMETERS = {

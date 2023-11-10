@@ -21,17 +21,16 @@ import { CfnRole } from 'aws-cdk-lib/aws-iam';
 import { CfnStack } from 'aws-cdk-lib';
 import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
-import type { DataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
+import { CustomSqlDataSourceStrategy } from 'graphql-transformer-common';
 import { ISynthesisSession } from 'aws-cdk-lib';
+import { ModelDataSourceStrategy } from 'graphql-transformer-common';
 import type { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
 import { Stack } from 'aws-cdk-lib';
 import type { SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
-import type { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
 export interface AmplifyApiGraphQlResourceStackTemplate {
@@ -138,11 +137,9 @@ export type TestTransformParameters = {
     authConfig?: AppSyncAuthConfiguration;
     userDefinedSlots?: Record<string, UserDefinedSlot[]>;
     stackMapping?: Record<string, string>;
-    modelToDatasourceMap?: Map<string, DataSourceType>;
-    datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
-    customQueries?: Map<string, string>;
+    dataSourceStrategies?: Record<string, ModelDataSourceStrategy>;
+    customSqlDataSourceStrategies?: CustomSqlDataSourceStrategy[];
     overrideConfig?: OverrideConfig;
-    sqlLambdaVpcConfig?: VpcConfig;
     synthParameters?: Partial<SynthParameters>;
 };
 

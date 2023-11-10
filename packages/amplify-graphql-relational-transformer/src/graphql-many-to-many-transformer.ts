@@ -3,7 +3,6 @@ import {
   InvalidDirectiveError,
   TransformerPluginBase,
   generateGetArgumentsInput,
-  isRDSModel,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   FieldMapEntry,
@@ -27,8 +26,10 @@ import {
 import {
   blankObject,
   getBaseType,
+  getSqlModelDataSourceStrategy,
   graphqlName,
   isListType,
+  isSqlModel,
   makeArgument,
   makeDirective,
   makeField,
@@ -132,7 +133,8 @@ export class ManyToManyTransformer extends TransformerPluginBase {
    * so that it represents any schema modifications the plugin needs
    */
   mutateSchema = (context: TransformerPreProcessContextProvider): DocumentNode => {
-    const manyToManyMap = new Map<string, ManyToManyPreProcessContext[]>(); // Relation name is the key, each array should be length 2 (two models being connected)
+    // Relation name is the key, each array should be length 2 (two models being connected)
+    const manyToManyMap = new Map<string, ManyToManyPreProcessContext[]>();
     const newDocument: DocumentNode = produce(context.inputDocument, (draftDoc) => {
       const filteredDefs = draftDoc?.definitions?.filter(
         (def) => def.kind === 'ObjectTypeExtension' || def.kind === 'ObjectTypeDefinition',
@@ -302,6 +304,15 @@ export class ManyToManyTransformer extends TransformerPluginBase {
         );
       }
 
+      // TODO: Support cross-data source many-to-many queries
+      const d1TypeStrategy = getSqlModelDataSourceStrategy(ctx, directive1.object.name.value);
+      const d2TypeStrategy = getSqlModelDataSourceStrategy(ctx, directive2.object.name.value);
+      if (d1TypeStrategy.name !== d2TypeStrategy.name) {
+        throw new InvalidDirectiveError(
+          `@${directiveName} relation '${name}': both '${d1ExpectedType}' and '${d2ExpectedType}' must be in the same data source.`,
+        );
+      }
+
       if (ctx.output.hasType(name)) {
         throw new InvalidDirectiveError(
           `@${directiveName} relation name '${name}' (derived from '${directive1.relationName}') already exists as a type in the schema.`,
@@ -463,7 +474,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
         renamedFields.push({ originalFieldName: d2FieldNameIdOrig, currentFieldName: d2FieldNameId });
       }
 
-      if (renamedFields.length && !isRDSModel(context as TransformerContextProvider, name)) {
+      if (renamedFields.length && !isSqlModel(context as TransformerContextProvider, name)) {
         registerManyToManyForeignKeyMappings({
           resourceHelper: ctx.resourceHelper,
           typeName: name,

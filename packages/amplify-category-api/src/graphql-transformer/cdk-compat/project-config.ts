@@ -1,4 +1,8 @@
-import { DataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  CustomSqlDataSourceStrategy,
+  DefaultDynamoDbModelDataSourceStrategy,
+  PartialSQLLambdaModelDataSourceStrategy,
+} from 'graphql-transformer-common';
 import { TransformConfig } from 'graphql-transformer-core';
 
 export type Template = {
@@ -15,6 +19,6 @@ export interface TransformerProjectConfig {
   resolvers: Record<string, string>;
   stacks: Record<string, Template>;
   config: TransformConfig;
-  modelToDatasourceMap: Map<string, DataSourceType>;
-  customQueries: Map<string, string>;
+  partialDataSourceStrategies: Record<string, DefaultDynamoDbModelDataSourceStrategy | PartialSQLLambdaModelDataSourceStrategy>;
+  partialCustomSqlDataSourceStrategies: CustomSqlDataSourceStrategy[];
 }

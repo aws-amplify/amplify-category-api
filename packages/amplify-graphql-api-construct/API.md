@@ -196,6 +196,16 @@ export interface CustomConflictResolutionStrategy extends ConflictResolutionStra
     readonly handlerType: 'LAMBDA';
 }
 
+// @public (undocumented)
+export interface CustomSqlDataSourceStrategy {
+    // (undocumented)
+    readonly fieldName: string;
+    // (undocumented)
+    readonly strategy: SQLLambdaModelDataSourceStrategy;
+    // (undocumented)
+    readonly typeName: 'Query' | 'Mutation';
+}
+
 // @public
 export interface DefaultDynamoDbModelDataSourceStrategy {
     // (undocumented)
@@ -230,6 +240,7 @@ export interface IAMAuthorizationConfig {
 
 // @public
 export interface IAmplifyGraphqlDefinition {
+    readonly customSqlDataSourceStrategies?: CustomSqlDataSourceStrategy[];
     readonly dataSourceStrategies: Record<string, ModelDataSourceStrategy>;
     readonly functionSlots: FunctionSlot[];
     readonly schema: string;
@@ -253,10 +264,13 @@ export interface LambdaAuthorizationConfig {
 }
 
 // @public
-export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
+export type ModelDataSourceDbType = 'DYNAMODB' | ModelDataSourceSqlDbType;
 
-// @public (undocumented)
-export type ModelDataSourceStrategyDbType = 'DYNAMODB';
+// @public
+export type ModelDataSourceSqlDbType = 'MYSQL' | 'POSTGRES';
+
+// @public
+export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
 
 // @public
 export interface MutationFunctionSlot extends FunctionSlotBase {
@@ -313,7 +327,7 @@ export type SQLLambdaLayerMapping = Record<string, string>;
 export interface SQLLambdaModelDataSourceStrategy {
     readonly customSqlStatements?: Record<string, string>;
     readonly dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
-    readonly dbType: 'MYSQL' | 'POSTGRES';
+    readonly dbType: ModelDataSourceSqlDbType;
     readonly name: string;
     readonly sqlLambdaLayerMapping?: SQLLambdaLayerMapping;
     readonly vpcConfiguration?: VpcConfig;

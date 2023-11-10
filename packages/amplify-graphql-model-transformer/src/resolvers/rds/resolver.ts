@@ -1,3 +1,4 @@
+import path from 'path';
 import { CfnMapping, Duration, Fn } from 'aws-cdk-lib';
 import {
   Expression,
@@ -15,19 +16,21 @@ import {
   str,
   toJson,
 } from 'graphql-mapping-template';
-import { ResourceConstants, isArrayOrObject, isListType } from 'graphql-transformer-common';
-import { RDSConnectionSecrets, setResourceName } from '@aws-amplify/graphql-transformer-core';
 import {
-  GraphQLAPIProvider,
   RDSLayerMapping,
+  ResourceConstants,
+  SQLLambdaLayerMapping,
+  SQLLambdaModelDataSourceStrategy,
   SubnetAvailabilityZone,
-  TransformerContextProvider,
-  VpcConfig,
-} from '@aws-amplify/graphql-transformer-interfaces';
+  getSqlResourceNameForStrategy,
+  isArrayOrObject,
+  isListType,
+} from 'graphql-transformer-common';
+import { setResourceName } from '@aws-amplify/graphql-transformer-core';
+import { GraphQLAPIProvider, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
-import path from 'path';
 import { EnumTypeDefinitionNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
 import { CfnVPCEndpoint } from 'aws-cdk-lib/aws-ec2';
 
@@ -44,22 +47,36 @@ const RDSLayerMappingID = 'RDSLayerResourceMapping';
  * Define RDS Lambda Layer region mappings
  * @param scope Construct
  */
-export const setRDSLayerMappings = (scope: Construct, mapping?: RDSLayerMapping): CfnMapping =>
+export const setRDSLayerMappings = (scope: Construct, mapping?: SQLLambdaLayerMapping): CfnMapping =>
   new CfnMapping(scope, RDSLayerMappingID, {
     mapping: getLatestLayers(mapping),
   });
 
-const getLatestLayers = (latestLayers?: RDSLayerMapping): RDSLayerMapping => {
+const getLatestLayers = (latestLayers?: SQLLambdaLayerMapping): RDSLayerMapping => {
   if (latestLayers && Object.keys(latestLayers).length > 0) {
-    return latestLayers;
+    return sqlLambdaLayerMappingToRDSLayerMapping(latestLayers);
   }
   console.warn('Unable to load the latest RDS layer configuration, using local configuration.');
   const defaultLayerMapping = getDefaultLayerMapping();
   return defaultLayerMapping;
 };
 
-// For beta use account '956468067974', layer name 'AmplifyRDSLayerBeta' and layer version '12' as of 2023-06-20
-// For prod use account '582037449441', layer name 'AmplifyRDSLayer' and layer version '3' as of 2023-06-20
+/**
+ * Convert the SQLLambdaLayerMapping shape that the exported CDK Construct Interface requires to the RDSLayerMapping expected by the
+ * patching infrastructure
+ */
+const sqlLambdaLayerMappingToRDSLayerMapping = (sqlLambdaLayerMapping: SQLLambdaLayerMapping): RDSLayerMapping => {
+  const rdsLayerMapping: RDSLayerMapping = Object.entries(sqlLambdaLayerMapping)
+    .map(([key, value]) => ({ [key]: { layerRegion: value } }))
+    .reduce((acc, curr) => ({
+      ...acc,
+      ...curr,
+    }));
+  return rdsLayerMapping;
+};
+
+// For beta use account '956468067974', layer name 'AmplifyRDSLayerBeta'
+// For prod use account '582037449441', layer name 'AmplifyRDSLayer'
 const getDefaultLayerMapping = (): RDSLayerMapping => ({
   'ap-northeast-1': {
     layerRegion: 'arn:aws:lambda:ap-northeast-1:582037449441:layer:AmplifyRDSLayer:22',
@@ -142,14 +159,15 @@ export const createRdsLambda = (
   scope: Construct,
   apiGraphql: GraphQLAPIProvider,
   lambdaRole: IRole,
+  strategy: SQLLambdaModelDataSourceStrategy,
   environment?: { [key: string]: string },
-  sqlLambdaVpcConfig?: VpcConfig,
 ): IFunction => {
-  const { RDSLambdaLogicalID } = ResourceConstants.RESOURCES;
+  const { SQLLambdaLogicalIDPrefix } = ResourceConstants.RESOURCES;
+  const resourceId = getSqlResourceNameForStrategy(SQLLambdaLogicalIDPrefix, strategy);
 
   let ssmEndpoint = Fn.join('', ['ssm.', Fn.ref('AWS::Region'), '.amazonaws.com']); // Default SSM endpoint
-  if (sqlLambdaVpcConfig) {
-    const endpoints = addVpcEndpointForSecretsManager(scope, sqlLambdaVpcConfig);
+  if (strategy.vpcConfiguration) {
+    const endpoints = addVpcEndpointForSecretsManager(scope, strategy);
     const ssmEndpointEntries = endpoints.find((endpoint) => endpoint.service === 'ssm')?.endpoint.attrDnsEntries;
     if (ssmEndpointEntries) {
       ssmEndpoint = Fn.select(0, ssmEndpointEntries);
@@ -157,8 +175,8 @@ export const createRdsLambda = (
   }
 
   return apiGraphql.host.addLambdaFunction(
-    RDSLambdaLogicalID,
-    `functions/${RDSLambdaLogicalID}.zip`,
+    resourceId,
+    `functions/${resourceId}.zip`,
     'handler.run',
     path.resolve(__dirname, '..', '..', '..', 'lib', 'rds-lambda.zip'),
     Runtime.NODEJS_18_X,
@@ -176,18 +194,25 @@ export const createRdsLambda = (
     },
     Duration.seconds(30),
     scope,
-    sqlLambdaVpcConfig,
+    strategy.vpcConfiguration,
   );
 };
 
-const addVpcEndpoint = (scope: Construct, sqlLambdaVpcConfig: VpcConfig, serviceSuffix: string): CfnVPCEndpoint => {
+const addVpcEndpoint = (scope: Construct, serviceSuffix: string, strategy: SQLLambdaModelDataSourceStrategy): CfnVPCEndpoint => {
+  const { vpcConfiguration } = strategy;
+  if (!vpcConfiguration) {
+    throw new Error('VPC configuration is required to create VPC Endpoint.');
+  }
   const serviceEndpointPrefix = 'com.amazonaws';
-  const endpoint = new CfnVPCEndpoint(scope, `RDSVpcEndpoint${serviceSuffix}`, {
-    serviceName: Fn.join('', [serviceEndpointPrefix, '.', Fn.ref('AWS::Region'), '.', serviceSuffix]), // Sample: com.amazonaws.us-east-1.ssmmessages
+  const resourceIdPrefix = ResourceConstants.RESOURCES.SQLVpcEndpointLogicalIdPrefix + serviceSuffix;
+  const resourceId = getSqlResourceNameForStrategy(resourceIdPrefix, strategy);
+  const endpoint = new CfnVPCEndpoint(scope, resourceId, {
+    // Sample: com.amazonaws.us-east-1.ssmmessages
+    serviceName: Fn.join('', [serviceEndpointPrefix, '.', Fn.ref('AWS::Region'), '.', serviceSuffix]),
     vpcEndpointType: 'Interface',
-    vpcId: sqlLambdaVpcConfig.vpcId,
-    subnetIds: extractSubnetForVpcEndpoint(sqlLambdaVpcConfig.subnetAvailabilityZoneConfig),
-    securityGroupIds: sqlLambdaVpcConfig.securityGroupIds,
+    vpcId: vpcConfiguration.vpcId,
+    subnetIds: extractSubnetForVpcEndpoint(vpcConfiguration.subnetAvailabilityZoneConfig),
+    securityGroupIds: vpcConfiguration.securityGroupIds,
     privateDnsEnabled: false,
   });
   setResourceName(endpoint, { name: endpoint.logicalId, setOnDefaultChild: true });
@@ -197,13 +222,13 @@ const addVpcEndpoint = (scope: Construct, sqlLambdaVpcConfig: VpcConfig, service
 
 const addVpcEndpointForSecretsManager = (
   scope: Construct,
-  sqlLambdaVpcConfig: VpcConfig,
+  strategy: SQLLambdaModelDataSourceStrategy,
 ): { service: string; endpoint: CfnVPCEndpoint }[] => {
   const services = ['ssm', 'ssmmessages', 'ec2', 'ec2messages', 'kms'];
   return services.map((service) => {
     return {
       service,
-      endpoint: addVpcEndpoint(scope, sqlLambdaVpcConfig, service),
+      endpoint: addVpcEndpoint(scope, service, strategy),
     };
   });
 };
@@ -237,13 +262,14 @@ export const createRdsPatchingLambda = (
   scope: Construct,
   apiGraphql: GraphQLAPIProvider,
   lambdaRole: IRole,
+  strategy: SQLLambdaModelDataSourceStrategy,
   environment?: { [key: string]: string },
-  sqlLambdaVpcConfig?: VpcConfig,
 ): IFunction => {
-  const { RDSPatchingLambdaLogicalID } = ResourceConstants.RESOURCES;
+  const { SQLPatchingLambdaLogicalIDPrefix } = ResourceConstants.RESOURCES;
+  const resourceId = getSqlResourceNameForStrategy(SQLPatchingLambdaLogicalIDPrefix, strategy);
   return apiGraphql.host.addLambdaFunction(
-    RDSPatchingLambdaLogicalID,
-    `functions/${RDSPatchingLambdaLogicalID}.zip`,
+    resourceId,
+    `functions/${resourceId}.zip`,
     'index.handler',
     path.resolve(__dirname, '..', '..', '..', 'lib', 'rds-patching-lambda.zip'),
     Runtime.NODEJS_18_X,
@@ -252,23 +278,19 @@ export const createRdsPatchingLambda = (
     environment,
     Duration.minutes(6), // We have an arbituary wait time of up to 5 minutes in the lambda function to avoid throttling errors
     scope,
-    sqlLambdaVpcConfig,
+    strategy.vpcConfiguration,
   );
 };
 
-/**
- * Create RDS Lambda IAM role
- * @param roleName string
- * @param scope Construct
- * @param secretEntry RDSConnectionSecrets
- */
-export const createRdsLambdaRole = (roleName: string, scope: Construct, secretEntry: RDSConnectionSecrets): IRole => {
-  const { RDSLambdaIAMRoleLogicalID, RDSLambdaLogAccessPolicy } = ResourceConstants.RESOURCES;
-  const role = new Role(scope, RDSLambdaIAMRoleLogicalID, {
+export const createRdsLambdaRole = (roleName: string, scope: Construct, strategy: SQLLambdaModelDataSourceStrategy): IRole => {
+  const { SQLLambdaIAMRoleLogicalIDPrefix, SQLLambdaLogAccessPolicyPrefix } = ResourceConstants.RESOURCES;
+  const iamRoleResourceId = getSqlResourceNameForStrategy(SQLLambdaIAMRoleLogicalIDPrefix, strategy);
+  const logAccessPolicyResourceId = getSqlResourceNameForStrategy(SQLLambdaLogAccessPolicyPrefix, strategy);
+  const role = new Role(scope, iamRoleResourceId, {
     assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
     roleName,
   });
-  setResourceName(role, { name: RDSLambdaIAMRoleLogicalID, setOnDefaultChild: true });
+  setResourceName(role, { name: iamRoleResourceId, setOnDefaultChild: true });
   const policyStatements = [
     new PolicyStatement({
       actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
@@ -276,24 +298,23 @@ export const createRdsLambdaRole = (roleName: string, scope: Construct, secretEn
       resources: ['arn:aws:logs:*:*:*'],
     }),
   ];
-  if (secretEntry) {
-    policyStatements.push(
-      new PolicyStatement({
-        actions: ['ssm:GetParameter', 'ssm:GetParameters'],
-        effect: Effect.ALLOW,
-        resources: [
-          `arn:aws:ssm:*:*:parameter${secretEntry.username}`,
-          `arn:aws:ssm:*:*:parameter${secretEntry.password}`,
-          `arn:aws:ssm:*:*:parameter${secretEntry.host}`,
-          `arn:aws:ssm:*:*:parameter${secretEntry.database}`,
-          `arn:aws:ssm:*:*:parameter${secretEntry.port}`,
-        ],
-      }),
-    );
-  }
+
+  policyStatements.push(
+    new PolicyStatement({
+      actions: ['ssm:GetParameter', 'ssm:GetParameters'],
+      effect: Effect.ALLOW,
+      resources: [
+        `arn:aws:ssm:*:*:parameter${strategy.dbConnectionConfig.usernameSsmPath}`,
+        `arn:aws:ssm:*:*:parameter${strategy.dbConnectionConfig.passwordSsmPath}`,
+        `arn:aws:ssm:*:*:parameter${strategy.dbConnectionConfig.hostnameSsmPath}`,
+        `arn:aws:ssm:*:*:parameter${strategy.dbConnectionConfig.databaseNameSsmPath}`,
+        `arn:aws:ssm:*:*:parameter${strategy.dbConnectionConfig.portSsmPath}`,
+      ],
+    }),
+  );
 
   role.attachInlinePolicy(
-    new Policy(scope, RDSLambdaLogAccessPolicy, {
+    new Policy(scope, logAccessPolicyResourceId, {
       statements: policyStatements,
       policyName: `${roleName}Policy`,
     }),
@@ -316,13 +337,21 @@ export const createRdsLambdaRole = (roleName: string, scope: Construct, secretEn
  * @param scope Construct
  * @param functionArn FunctionArn
  */
-export const createRdsPatchingLambdaRole = (roleName: string, scope: Construct, functionArn: string): IRole => {
-  const { RDSPatchingLambdaIAMRoleLogicalID, RDSPatchingLambdaLogAccessPolicy } = ResourceConstants.RESOURCES;
-  const role = new Role(scope, RDSPatchingLambdaIAMRoleLogicalID, {
+export const createRdsPatchingLambdaRole = (
+  roleName: string,
+  scope: Construct,
+  functionArn: string,
+  strategy: SQLLambdaModelDataSourceStrategy,
+): IRole => {
+  const { SQLPatchingLambdaIAMRoleLogicalIDPrefix, SQLPatchingLambdaLogAccessPolicyPrefix } = ResourceConstants.RESOURCES;
+  const iamRoleResourceId = getSqlResourceNameForStrategy(SQLPatchingLambdaIAMRoleLogicalIDPrefix, strategy);
+  const logAccessPolicyResourceId = getSqlResourceNameForStrategy(SQLPatchingLambdaLogAccessPolicyPrefix, strategy);
+
+  const role = new Role(scope, iamRoleResourceId, {
     assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
     roleName,
   });
-  setResourceName(role, { name: RDSPatchingLambdaIAMRoleLogicalID, setOnDefaultChild: true });
+  setResourceName(role, { name: iamRoleResourceId, setOnDefaultChild: true });
   const policyStatements = [
     new PolicyStatement({
       actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
@@ -342,7 +371,7 @@ export const createRdsPatchingLambdaRole = (roleName: string, scope: Construct, 
   ];
 
   role.attachInlinePolicy(
-    new Policy(scope, RDSPatchingLambdaLogAccessPolicy, {
+    new Policy(scope, logAccessPolicyResourceId, {
       statements: policyStatements,
       policyName: `${roleName}Policy`,
     }),

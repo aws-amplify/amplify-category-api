@@ -32,6 +32,8 @@ describe('@function transformer', () => {
       const out = transformAndSynth({
         ...defaultTransformParams,
         schema: validSchema,
+        dataSourceStrategies: {},
+        customSqlDataSourceStrategies: [],
       });
       const result = await deploy(out);
       server = result.simulator;

@@ -28,10 +28,7 @@ export {
   AppSyncAuthConfigurationUserPoolEntry,
   AppSyncAuthMode,
   UserPoolConfig,
-  VpcConfig,
-  SubnetAvailabilityZone,
   SearchableDataSourceOptions,
-  RDSLayerMapping,
 } from './graphql-api-provider';
 export { TransformHostProvider, DynamoDbDataSourceOptions } from './transform-host-provider';
 export { TransformerLog, TransformerLogLevel } from './transformer-log';

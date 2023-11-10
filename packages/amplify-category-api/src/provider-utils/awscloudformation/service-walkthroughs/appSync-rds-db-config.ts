@@ -1,6 +1,5 @@
 import { prompter, printer, minLength, integer } from '@aws-amplify/amplify-prompts';
-import { ImportedDataSourceType, ImportedDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { ImportedRDSType, ImportedDataSourceConfig } from 'graphql-transformer-common';
 import { parseDatabaseUrl } from '../utils/database-url';
 
 /**
@@ -8,7 +7,7 @@ import { parseDatabaseUrl } from '../utils/database-url';
  * @param engine the database engine
  * @returns a promise resolving to the database configuration to be used as an AppSync Data Source
  */
-export const databaseConfigurationInputWalkthrough = async (engine: ImportedDataSourceType): Promise<ImportedDataSourceConfig> => {
+export const databaseConfigurationInputWalkthrough = async (engine: ImportedRDSType): Promise<ImportedDataSourceConfig> => {
   const defaultPorts = {
     [ImportedRDSType.MYSQL]: 3306,
     [ImportedRDSType.POSTGRESQL]: 5432,

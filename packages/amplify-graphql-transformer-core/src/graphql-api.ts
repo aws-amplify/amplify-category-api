@@ -15,11 +15,14 @@ import {
 } from 'aws-cdk-lib/aws-appsync';
 import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
-import { ArnFormat, CfnResource, Duration, Stack } from 'aws-cdk-lib';
+import { CfnResource, Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+// eslint-disable-next-line import/no-cycle
 import { TransformerSchema } from './cdk-compat/schema-asset';
+// eslint-disable-next-line import/no-cycle
 import { DefaultTransformHost } from './transform-host';
 import { setResourceName } from './utils';
+import { IamResource } from './iam-resource';
 
 export interface GraphqlApiProps {
   /**
@@ -55,64 +58,6 @@ export interface GraphqlApiProps {
   readonly xrayEnabled?: boolean;
 }
 
-export class IamResource implements APIIAMResourceProvider {
-  /**
-   * Generate the resource names given custom arns
-   *
-   * @param arns The custom arns that need to be permissioned
-   *
-   * Example: custom('/types/Query/fields/getExample')
-   */
-  public static custom(...arns: string[]): IamResource {
-    if (arns.length === 0) {
-      throw new Error('At least 1 custom ARN must be provided.');
-    }
-    return new IamResource(arns);
-  }
-
-  /**
-   * Generate the resource names given a type and fields
-   *
-   * @param type The type that needs to be allowed
-   * @param fields The fields that need to be allowed, if empty grant permissions to ALL fields
-   *
-   * Example: ofType('Query', 'GetExample')
-   */
-  public static ofType(type: string, ...fields: string[]): IamResource {
-    const arns = fields.length ? fields.map((field) => `types/${type}/fields/${field}`) : [`types/${type}/*`];
-    return new IamResource(arns);
-  }
-
-  /**
-   * Generate the resource names that accepts all types: `*`
-   */
-  public static all(): IamResource {
-    return new IamResource(['*']);
-  }
-
-  private arns: string[];
-
-  private constructor(arns: string[]) {
-    this.arns = arns;
-  }
-
-  /**
-   * Return the Resource ARN
-   *
-   * @param api The GraphQL API to give permissions
-   */
-  public resourceArns(api: GraphQLAPIProvider): string[] {
-    return this.arns.map((arn) =>
-      Stack.of(api).formatArn({
-        service: 'appsync',
-        resource: `apis/${api.apiId}`,
-        arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
-        resourceName: `${arn}`,
-      }),
-    );
-  }
-}
-
 export type TransformerAPIProps = GraphqlApiProps & {
   readonly createApiKey?: boolean;
   readonly host?: TransformHostProvider;
@@ -120,6 +65,7 @@ export type TransformerAPIProps = GraphqlApiProps & {
   readonly environmentName?: string;
   readonly disableResolverDeduping?: boolean;
 };
+
 export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   /**
    * an unique AWS AppSync GraphQL API identifier

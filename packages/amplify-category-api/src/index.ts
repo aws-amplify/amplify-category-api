@@ -12,8 +12,8 @@ import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-paramete
 import { printer } from '@aws-amplify/amplify-prompts';
 import { validateAddApiRequest, validateUpdateApiRequest } from 'amplify-util-headless-input';
 import * as fs from 'fs-extra';
-import { RDS_SCHEMA_FILE_NAME, ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import _ from 'lodash';
+import { SQL_SCHEMA_FILE_NAME } from 'graphql-transformer-common';
 import { run } from './commands/api/console';
 import {
   getAppSyncAuthConfig,
@@ -31,7 +31,6 @@ import { configureMultiEnvDBSecrets } from './provider-utils/awscloudformation/u
 import {
   deleteConnectionSecrets,
   getSecretsKey,
-  getDatabaseName,
   removeVpcSchemaInspectorLambda,
 } from './provider-utils/awscloudformation/utils/rds-resources/database-resources';
 import { AmplifyGraphQLTransformerErrorConverter } from './errors/amplify-error-converter';
@@ -155,7 +154,7 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
 
   // proceed if there are any existing imported Relational Data Sources
   const apiResourceDir = getAPIResourceDir(resourceName);
-  const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
+  const pathToSchemaFile = path.join(apiResourceDir, SQL_SCHEMA_FILE_NAME);
   if (fs.existsSync(pathToSchemaFile)) {
     // read and validate the RDS connection parameters
     const secretsKey = await getSecretsKey();

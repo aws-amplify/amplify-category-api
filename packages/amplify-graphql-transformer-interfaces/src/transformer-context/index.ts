@@ -1,19 +1,13 @@
+export * from './resource-resource-provider';
 export {
   DataSourceProvider,
   TransformerDataSourceManagerProvider,
   AppSyncDataSourceType,
   DataSourceInstance,
-  DataSourceType,
-  DBType,
-  DataSourceProvisionStrategy,
-  DynamoDBProvisionStrategy,
-  SQLLambdaModelProvisionStrategy,
-  SQLDBType,
 } from './transformer-datasource-provider';
 export { TransformerContextOutputProvider } from './transformer-context-output-provider';
 export { TransformerProviderRegistry } from './transformer-provider-registry';
 export { TransformerResolverProvider, TransformerResolversManagerProvider } from './transformer-resolver-provider';
-export * from './resource-resource-provider';
 export {
   TransformerContextProvider,
   TransformerTransformSchemaStepContextProvider,

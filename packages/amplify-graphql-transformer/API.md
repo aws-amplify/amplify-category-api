@@ -7,12 +7,11 @@
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AssetProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct } from 'constructs';
-import { DataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
+import { CustomSqlDataSourceStrategy } from 'graphql-transformer-common';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { ModelDataSourceStrategy } from 'graphql-transformer-common';
 import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
-import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
 import { SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces';
@@ -20,7 +19,6 @@ import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-inte
 import { TransformParameterProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
 import { UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
-import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
 export const constructTransform: (config: TransformConfig) => GraphQLTransform;
@@ -34,17 +32,14 @@ export const executeTransform: (config: ExecuteTransformConfig) => void;
 // @public (undocumented)
 export type ExecuteTransformConfig = TransformConfig & {
     schema: string;
-    modelToDatasourceMap?: Map<string, DataSourceType>;
-    customQueries?: Map<string, string>;
-    datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
     printTransformerLog?: (log: TransformerLog) => void;
-    sqlLambdaVpcConfig?: VpcConfig;
-    rdsLayerMapping?: RDSLayerMapping;
     scope: Construct;
     nestedStackProvider: NestedStackProvider;
     parameterProvider?: TransformParameterProvider;
     assetProvider: AssetProvider;
     synthParameters: SynthParameters;
+    dataSourceStrategies: Record<string, ModelDataSourceStrategy>;
+    customSqlDataSourceStrategies: CustomSqlDataSourceStrategy[];
 };
 
 // @public (undocumented)
@@ -55,8 +50,8 @@ export type TransformConfig = {
     userDefinedSlots?: Record<string, UserDefinedSlot[]>;
     stackMapping?: Record<string, string>;
     transformParameters: TransformParameters;
-    sqlLambdaVpcConfig?: VpcConfig;
-    rdsLayerMapping?: RDSLayerMapping;
+    dataSourceStrategies: Record<string, ModelDataSourceStrategy>;
+    customSqlDataSourceStrategies: CustomSqlDataSourceStrategy[];
 };
 
 // @public (undocumented)
