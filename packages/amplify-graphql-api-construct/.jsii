@@ -6761,25 +6761,28 @@
       "assembly": "@aws-amplify/graphql-api-construct",
       "datatype": true,
       "docs": {
-        "stability": "stable"
+        "stability": "experimental",
+        "summary": "The configuration for the provisioned concurrency of the Lambda."
       },
       "fqn": "@aws-amplify/graphql-api-construct.ProvisionedConcurrencyConfig",
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 865
+        "line": 872
       },
       "name": "ProvisionedConcurrencyConfig",
       "properties": [
         {
           "abstract": true,
           "docs": {
-            "stability": "stable"
+            "remarks": "*",
+            "stability": "experimental",
+            "summary": "The maximum value to use to scale during a scaling activity."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 866
+            "line": 874
           },
           "name": "maxCapacity",
           "type": {
@@ -6789,12 +6792,14 @@
         {
           "abstract": true,
           "docs": {
-            "stability": "stable"
+            "remarks": "*",
+            "stability": "experimental",
+            "summary": "The minimum value to use to scale during a scaling activity."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 867
+            "line": 877
           },
           "name": "minCapacity",
           "type": {
@@ -6804,12 +6809,14 @@
         {
           "abstract": true,
           "docs": {
-            "stability": "stable"
+            "remarks": "*",
+            "stability": "experimental",
+            "summary": "The amount of provisioned concurrency to allocate."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 871
+            "line": 889
           },
           "name": "provisionedConcurrentExecutions",
           "type": {
@@ -6819,12 +6826,14 @@
         {
           "abstract": true,
           "docs": {
-            "stability": "stable"
+            "remarks": "*",
+            "stability": "experimental",
+            "summary": "The amount of time, in seconds, after a scale-in activity completes before another scale-in activity can start."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 869
+            "line": 883
           },
           "name": "scaleInCooldown",
           "type": {
@@ -6834,12 +6843,14 @@
         {
           "abstract": true,
           "docs": {
-            "stability": "stable"
+            "remarks": "*",
+            "stability": "experimental",
+            "summary": "The amount of time, in seconds, to wait for a previous scale-out activity to take effect."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 870
+            "line": 886
           },
           "name": "scaleOutCooldown",
           "type": {
@@ -6849,12 +6860,14 @@
         {
           "abstract": true,
           "docs": {
-            "stability": "stable"
+            "remarks": "*",
+            "stability": "experimental",
+            "summary": "Target value for provisioned concurrency."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 868
+            "line": 880
           },
           "name": "targetValue",
           "type": {
@@ -7018,21 +7031,6 @@
         {
           "abstract": true,
           "docs": {
-            "stability": "experimental"
-          },
-          "immutable": true,
-          "locationInModule": {
-            "filename": "src/types.ts",
-            "line": 843
-          },
-          "name": "sqlLambdaProvisionedConcurrencyConfig",
-          "type": {
-            "fqn": "@aws-amplify/graphql-api-construct.ProvisionedConcurrencyConfig"
-          }
-        },
-        {
-          "abstract": true,
-          "docs": {
             "remarks": "The key is the value of the `references` attribute of the `@sql` directive in the `schema`; the value is the SQL\nto be executed.",
             "stability": "experimental",
             "summary": "Custom SQL statements."
@@ -7073,6 +7071,23 @@
               },
               "kind": "map"
             }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "experimental",
+            "summary": "The configuration for the provisioned concurrency of the Lambda."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 846
+          },
+          "name": "sqlLambdaProvisionedConcurrencyConfig",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-amplify/graphql-api-construct.ProvisionedConcurrencyConfig"
           }
         },
         {
@@ -7202,7 +7217,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 900
+        "line": 918
       },
       "name": "SqlModelDataSourceDefinitionDbConnectionConfig",
       "properties": [
@@ -7215,7 +7230,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 916
+            "line": 934
           },
           "name": "databaseNameSsmPath",
           "type": {
@@ -7232,7 +7247,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 904
+            "line": 922
           },
           "name": "hostnameSsmPath",
           "type": {
@@ -7248,7 +7263,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 913
+            "line": 931
           },
           "name": "passwordSsmPath",
           "type": {
@@ -7264,7 +7279,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 907
+            "line": 925
           },
           "name": "portSsmPath",
           "type": {
@@ -7280,7 +7295,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 910
+            "line": 928
           },
           "name": "usernameSsmPath",
           "type": {
@@ -7337,7 +7352,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 880
+        "line": 898
       },
       "name": "SubnetAvailabilityZone",
       "properties": [
@@ -7350,7 +7365,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 885
+            "line": 903
           },
           "name": "availabilityZone",
           "type": {
@@ -7366,7 +7381,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 882
+            "line": 900
           },
           "name": "subnetId",
           "type": {
@@ -7742,7 +7757,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 854
+        "line": 857
       },
       "name": "VpcConfig",
       "properties": [
@@ -7755,7 +7770,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 859
+            "line": 862
           },
           "name": "securityGroupIds",
           "type": {
@@ -7776,7 +7791,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 862
+            "line": 865
           },
           "name": "subnetAvailabilityZoneConfig",
           "type": {
@@ -7797,7 +7812,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 856
+            "line": 859
           },
           "name": "vpcId",
           "type": {
@@ -7809,5 +7824,5 @@
     }
   },
   "version": "1.3.0",
-  "fingerprint": "B0noGS7e6qxH4+FNCV4ZiSwRci43N0uVxJP4csX3mdk="
+  "fingerprint": "kb9+Mrdr4Z06ogJMIN4+84gvuR/SaQyeX99idNWCRSA="
 }

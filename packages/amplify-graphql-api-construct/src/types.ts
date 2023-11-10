@@ -840,7 +840,10 @@ export interface SQLLambdaModelDataSourceDefinitionStrategy {
    */
   readonly sqlLambdaLayerMapping?: SQLLambdaLayerMapping;
 
-  readonly sqlLambdaProvisionedConcurrencyConfig: ProvisionedConcurrencyConfig;
+  /**
+   * The configuration for the provisioned concurrency of the Lambda.
+   */
+  readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
 }
 
 /**
@@ -862,12 +865,27 @@ export interface VpcConfig {
   readonly subnetAvailabilityZoneConfig: SubnetAvailabilityZone[];
 }
 
+/**
+ * The configuration for the provisioned concurrency of the Lambda.
+ * @experimental
+ */
 export interface ProvisionedConcurrencyConfig {
+  /** The maximum value to use to scale during a scaling activity. **/
   readonly maxCapacity: number;
+
+  /** The minimum value to use to scale during a scaling activity. **/
   readonly minCapacity: number;
+
+  /** Target value for provisioned concurrency. **/
   readonly targetValue: number;
+
+  /** The amount of time, in seconds, after a scale-in activity completes before another scale-in activity can start. **/
   readonly scaleInCooldown: Duration;
+
+  /** The amount of time, in seconds, to wait for a previous scale-out activity to take effect. **/
   readonly scaleOutCooldown: Duration;
+
+  /** The amount of provisioned concurrency to allocate. **/
   readonly provisionedConcurrentExecutions: number;
 }
 
