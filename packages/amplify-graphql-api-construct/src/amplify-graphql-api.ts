@@ -277,6 +277,10 @@ export class AmplifyGraphqlApi extends Construct {
       };
     }
 
+    if (strategy.sqlLambdaProvisionedConcurrencyConfig) {
+      extendedConfig.sqlLambdaProvisionedConcurrencyConfig = strategy.sqlLambdaProvisionedConcurrencyConfig;
+    }
+
     return extendedConfig;
   }
 

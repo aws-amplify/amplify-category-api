@@ -839,6 +839,8 @@ export interface SQLLambdaModelDataSourceDefinitionStrategy {
    * An optional override for the default SQL Lambda Layer
    */
   readonly sqlLambdaLayerMapping?: SQLLambdaLayerMapping;
+
+  readonly sqlLambdaProvisionedConcurrencyConfig: ProvisionedConcurrencyConfig;
 }
 
 /**
@@ -858,6 +860,15 @@ export interface VpcConfig {
 
   /** The subnets to install the Lambda data source in, one per availability zone. */
   readonly subnetAvailabilityZoneConfig: SubnetAvailabilityZone[];
+}
+
+export interface ProvisionedConcurrencyConfig {
+  readonly maxCapacity: number;
+  readonly minCapacity: number;
+  readonly targetValue: number;
+  readonly scaleInCooldown: Duration;
+  readonly scaleOutCooldown: Duration;
+  readonly provisionedConcurrentExecutions: number;
 }
 
 /**

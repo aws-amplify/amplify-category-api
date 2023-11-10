@@ -23,9 +23,11 @@ import {
   SubnetAvailabilityZone,
   TransformerContextProvider,
   VpcConfig,
+  ProvisionedConcurrencyConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { IFunction, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { IFunction, LayerVersion, Runtime, Alias, Function } from 'aws-cdk-lib/aws-lambda';
+import { ScalableTarget, ServiceNamespace, PredefinedMetric } from 'aws-cdk-lib/aws-applicationautoscaling';
 import { Construct } from 'constructs';
 import path from 'path';
 import { EnumTypeDefinitionNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
@@ -144,8 +146,9 @@ export const createRdsLambda = (
   lambdaRole: IRole,
   environment?: { [key: string]: string },
   sqlLambdaVpcConfig?: VpcConfig,
+  sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig,
 ): IFunction => {
-  const { RDSLambdaLogicalID } = ResourceConstants.RESOURCES;
+  const { RDSLambdaLogicalID, RDSLambdaAliasLogicalID, RDSLambdaScalableTargetLogicalID } = ResourceConstants.RESOURCES;
 
   let ssmEndpoint = Fn.join('', ['ssm.', Fn.ref('AWS::Region'), '.amazonaws.com']); // Default SSM endpoint
   if (sqlLambdaVpcConfig) {
@@ -156,7 +159,7 @@ export const createRdsLambda = (
     }
   }
 
-  return apiGraphql.host.addLambdaFunction(
+  const fn = apiGraphql.host.addLambdaFunction(
     RDSLambdaLogicalID,
     `functions/${RDSLambdaLogicalID}.zip`,
     'handler.run',
@@ -178,6 +181,36 @@ export const createRdsLambda = (
     scope,
     sqlLambdaVpcConfig,
   );
+
+  if (sqlLambdaProvisionedConcurrencyConfig) {
+    const { maxCapacity, minCapacity, targetValue, scaleInCooldown, scaleOutCooldown, provisionedConcurrentExecutions } =
+      sqlLambdaProvisionedConcurrencyConfig;
+    const alias = new Alias(scope, RDSLambdaAliasLogicalID, {
+      aliasName: `${RDSLambdaLogicalID}Alias`,
+      version: (fn as Function).currentVersion,
+      provisionedConcurrentExecutions,
+    });
+
+    const target = new ScalableTarget(scope, RDSLambdaScalableTargetLogicalID, {
+      serviceNamespace: ServiceNamespace.LAMBDA,
+      maxCapacity,
+      minCapacity,
+      resourceId: `function:${alias.lambda.functionName}:${alias.aliasName}`,
+      scalableDimension: 'lambda:function:ProvisionedConcurrency',
+    });
+
+    target.node.addDependency(alias);
+
+    // TODO: what id to use
+    target.scaleToTrackMetric('PceTracking', {
+      targetValue,
+      scaleInCooldown,
+      scaleOutCooldown,
+      predefinedMetric: PredefinedMetric.LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION,
+    });
+  }
+
+  return fn;
 };
 
 const addVpcEndpoint = (scope: Construct, sqlLambdaVpcConfig: VpcConfig, serviceSuffix: string): CfnVPCEndpoint => {

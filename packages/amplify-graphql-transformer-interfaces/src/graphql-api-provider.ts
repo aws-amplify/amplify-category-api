@@ -1,4 +1,4 @@
-import { CfnResource, IAsset } from 'aws-cdk-lib';
+import { CfnResource, IAsset, Duration } from 'aws-cdk-lib';
 import { Construct, IConstruct } from 'constructs';
 import { Grant, IGrantable, IRole } from 'aws-cdk-lib/aws-iam';
 // eslint-disable-next-line import/no-cycle
@@ -91,6 +91,15 @@ export interface VpcConfig {
 
   /** The subnets to install the Lambda data source in, one per availability zone. */
   readonly subnetAvailabilityZoneConfig: SubnetAvailabilityZone[];
+}
+
+export interface ProvisionedConcurrencyConfig {
+  readonly maxCapacity: number;
+  readonly minCapacity: number;
+  readonly targetValue: number;
+  readonly scaleInCooldown: Duration;
+  readonly scaleOutCooldown: Duration;
+  readonly provisionedConcurrentExecutions: number;
 }
 
 /**

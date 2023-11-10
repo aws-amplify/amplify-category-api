@@ -15,6 +15,7 @@ import type {
   TransformParameterProvider,
   TransformParameters,
   VpcConfig,
+  ProvisionedConcurrencyConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { Aws, CfnOutput, Fn, Stack } from 'aws-cdk-lib';
@@ -88,6 +89,7 @@ export interface GraphQLTransformOptions {
   readonly resolverConfig?: ResolverConfig;
   readonly sqlLambdaVpcConfig?: VpcConfig;
   readonly rdsLayerMapping?: RDSLayerMapping;
+  readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
 }
 
 export type TransformOption = {
