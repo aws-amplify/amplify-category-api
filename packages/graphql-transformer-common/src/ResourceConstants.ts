@@ -47,6 +47,11 @@ export class ResourceConstants {
     AuthCognitoUserPoolLogicalID: 'AuthCognitoUserPool',
     AuthCognitoUserPoolNativeClientLogicalID: 'AuthCognitoUserPoolNativeClient',
     AuthCognitoUserPoolJSClientLogicalID: 'AuthCognitoUserPoolJSClient',
+
+    // Amplify Table Manager
+    TableManagerOnEventHandlerLogicalID: 'TableManagerOnEventHandler',
+    TableManagerIsCompleteHandlerLogicalID: 'TableManagerIsCompleteHandler',
+    TableManagerCustomProviderLogicalID: 'TableManagerCustomProvider',
   };
 
   public static PARAMETERS = {

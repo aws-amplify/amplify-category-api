@@ -1,4 +1,5 @@
 import { ConflictHandlerType, MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
+import { SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { parse } from 'graphql';
@@ -43,6 +44,7 @@ test('Throws error for Searchable RDS Models', () => {
           Post: {
             dbType: MYSQL_DB_TYPE,
             provisionDB: false,
+            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },
         }),
       ),

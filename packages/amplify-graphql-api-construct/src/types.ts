@@ -17,7 +17,7 @@ import { IRole, CfnRole } from 'aws-cdk-lib/aws-iam';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { IFunction, CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
-import { SQLDBType } from '@aws-amplify/graphql-transformer-core';
+import { AmplifyDynamoDbTableWrapper } from './amplify-dynamodb-table-wrapper';
 
 /**
  * Configuration for IAM Authorization on the Graphql Api.
@@ -39,6 +39,13 @@ export interface IAMAuthorizationConfig {
    * Unauthenticated user role, applies to { provider: iam, allow: public } access.
    */
   readonly unauthenticatedUserRole: IRole;
+
+  /**
+   * A list of IAM roles which will be granted full read/write access to the generated model if IAM auth is enabled.
+   * If an IRole is provided, the role `name` will be used for matching.
+   * If a string is provided, the raw value will be used for matching.
+   */
+  readonly allowListedRoles?: (IRole | string)[];
 }
 
 /**
@@ -157,6 +164,7 @@ export interface AuthorizationModes {
 
   /**
    * A list of roles granted full R/W access to the Api.
+   * @deprecated, use iamConfig.allowListedRoles instead.
    */
   readonly adminRoles?: IRole[];
 }
@@ -393,13 +401,6 @@ export interface TranslationBehavior {
    */
   readonly respectPrimaryKeyAttributesOnConnectionField: boolean;
 
-  /**
-   * If enabled, set nodeToNodeEncryption on the searchable domain (if one exists). Not recommended for use, prefer
-   * to use `Object.values(resources.additionalResources['AWS::Elasticsearch::Domain']).forEach((domain: CfnDomain) => {
-   *   domain.NodeToNodeEncryptionOptions = { Enabled: True };
-   * });
-   * @default false
-   */
   readonly enableSearchNodeToNodeEncryption: boolean;
 
   /**
@@ -504,9 +505,10 @@ export interface IAmplifyGraphqlDefinition {
   readonly functionSlots: FunctionSlot[];
 
   /**
-   * Return the DataSource binding information for models defined in `schema`.
+   * Retrieve the datasource definition mapping. The default strategy is to use DynamoDB from CloudFormation.
+   * @returns datasource definition mapping
    */
-  readonly modelDataSourceBinding: ModelDataSourceBinding;
+  readonly dataSourceDefinition: Record<string, ModelDataSourceDefinition>;
 }
 
 /**
@@ -685,6 +687,11 @@ export interface AmplifyGraphqlApiResources {
   readonly tables: Record<string, ITable>;
 
   /**
+   * The Generated Amplify DynamoDb Table wrapped if produced, keyed by name.
+   */
+  readonly amplifyDynamoDbTables: Record<string, AmplifyDynamoDbTableWrapper>;
+
+  /**
    * The Generated IAM Role L2 Resources, keyed by logicalId.
    */
   readonly roles: Record<string, IRole>;
@@ -757,42 +764,70 @@ export interface AddFunctionProps {
 }
 
 /**
- * Additional binding configurations used to resolve models in an AmplifyGraphqlDefinition with a data source. AmplifyGraphqlApiDefinitions
- * created with one of these data sources can use the `@model` directive to provision storage (DynamoDB only), define fine-grained
- * authorization rules, re-map GraphQL field names, define model-to-model relationships, and more. See
- * https://docs.amplify.aws/cli/graphql/directives-reference/.
+ * Defines a datasource for resolving GraphQL operations against `@model` types in a GraphQL schema.
  * @experimental
  */
-export type ModelDataSourceBinding = DynamoModelDataSourceBinding | SqlModelDataSourceBinding;
+export interface ModelDataSourceDefinition {
+  /**
+   * The name of the ModelDataSourceDefinition. This will be used to name the AppSync DataSource itself, plus any associated resources like
+   * resolver Lambdas and custom CDK resources. This name must be unique across all schema definitions in a GraphQL API.
+   */
+  readonly name: string;
+  /**
+   * The ModelDataSourceDefinitionStrategy.
+   */
+  readonly strategy: ModelDataSourceDefinitionStrategy;
+}
+/**
+ * All known ModelDataSourceDefinitionStrategies. Concrete strategies vary widely in their requirements and implementations.
+ * @experimental
+ */
+export type ModelDataSourceDefinitionStrategy =
+  | DefaultDynamoDbModelDataSourceDefinitionStrategy
+  | AmplifyDynamoDbModelDataSourceDefinitionStrategy
+  | SQLLambdaModelDataSourceDefinitionStrategy;
+
+// TODO: Make this the source of truth for database type definitions used throughout the construct & transformer
+export type ModelDataSourceDefinitionDbType = 'DYNAMODB';
 
 /**
- * Binding type to specify a DyanamoDB data source.
+ * Use default CloudFormation type 'AWS::DynamoDB::Table' to provision table.
  * @experimental
  */
-export interface DynamoModelDataSourceBinding {
-  /**
-   * The type of the data source used to process model operations for this definition.
-   * @default 'DynamoDB'
-   */
-  readonly bindingType: 'DynamoDB';
+export interface DefaultDynamoDbModelDataSourceDefinitionStrategy {
+  readonly dbType: 'DYNAMODB';
+  readonly provisionStrategy: 'DEFAULT';
 }
 
 /**
- * Additional binding configurations used to connect an AmplifyGraphqlApi to a SQL-based data source using a Lambda.
- *
- * The `bindingType` of this data source must be one of the values defined by `SqlModelDataSourceBindingType`.
+ * Use custom resource type 'Custom::AmplifyDynamoDBTable' to provision table.
  * @experimental
  */
-export interface SqlModelDataSourceBinding {
+export interface AmplifyDynamoDbModelDataSourceDefinitionStrategy {
+  readonly dbType: 'DYNAMODB';
+  readonly provisionStrategy: 'AMPLIFY_TABLE';
+}
+
+/**
+ * A strategy that creates a Lambda to connect to a pre-existing SQL table to resolve model data.
+ *
+ * @experimental
+ */
+export interface SQLLambdaModelDataSourceDefinitionStrategy {
   /**
    * The type of the SQL database used to process model operations for this definition.
    */
-  readonly bindingType: SQLDBType;
+  readonly dbType: 'MYSQL' | 'POSTGRES';
+
+  /**
+   * The parameters the Lambda data source will use to connect to the database.
+   */
+  readonly dbConnectionConfig: SqlModelDataSourceDefinitionDbConnectionConfig;
 
   /**
    * The configuration of the VPC into which to install the Lambda.
    */
-  readonly vpcConfiguration?: SqlModelDataSourceBindingVpcConfig;
+  readonly vpcConfiguration?: VpcConfig;
 
   /**
    * Custom SQL statements. The key is the value of the `references` attribute of the `@sql` directive in the `schema`; the value is the SQL
@@ -801,9 +836,9 @@ export interface SqlModelDataSourceBinding {
   readonly customSqlStatements?: Record<string, string>;
 
   /**
-   * The parameters the Lambda data source will use to connect to the database.
+   * An optional override for the default SQL Lambda Layer
    */
-  readonly dbConnectionConfig: SqlModelDataSourceBindingDbConnectionConfig;
+  readonly sqlLambdaLayerMapping?: SQLLambdaLayerMapping;
 }
 
 /**
@@ -814,7 +849,7 @@ export interface SqlModelDataSourceBinding {
  * Secure Systems Manager.
  * @experimental
  */
-export interface SqlModelDataSourceBindingVpcConfig {
+export interface VpcConfig {
   /** The VPC to install the Lambda data source in. */
   readonly vpcId: string;
 
@@ -822,7 +857,7 @@ export interface SqlModelDataSourceBindingVpcConfig {
   readonly securityGroupIds: string[];
 
   /** The subnets to install the Lambda data source in, one per availability zone. */
-  readonly subnetAvailabilityZones: SubnetAvailabilityZone[];
+  readonly subnetAvailabilityZoneConfig: SubnetAvailabilityZone[];
 }
 
 /**
@@ -840,12 +875,18 @@ export interface SubnetAvailabilityZone {
 }
 
 /**
+ * Maps a given AWS region to the SQL Lambda layer version ARN for that region. `key` is the region; the `value` is the Lambda Layer version
+ * ARN
+ */
+export type SQLLambdaLayerMapping = Record<string, string>;
+
+/**
  * The Secure Systems Manager parameter paths the Lambda data source will use to connect to the database.
  *
  * These parameters are retrieved from Secure Systems Manager in the same region as the Lambda.
  * @experimental
  */
-export interface SqlModelDataSourceBindingDbConnectionConfig {
+export interface SqlModelDataSourceDefinitionDbConnectionConfig {
   /** The Secure Systems Manager parameter containing the hostname of the database. For RDS-based SQL data sources, this can be the hostname
    * of a database proxy, cluster, or instance.
    */

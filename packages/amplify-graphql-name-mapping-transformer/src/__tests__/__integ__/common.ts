@@ -1,8 +1,8 @@
-import { DBType } from '@aws-amplify/graphql-transformer-core';
+import { DataSourceType, DBType, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DeploymentResources } from '@aws-amplify/graphql-transformer-test-utils';
 
 // indexes next to each resolver can help to match the resolver to the snapshot files
-export const expectedResolversForModelWithRenamedField = (modelName: string) => [
+export const expectedResolversForModelWithRenamedField = (modelName: string): string[] => [
   // create resolver sequence
   `Mutation.create${modelName}.preUpdate.1.req.vtl`, // 1
   `Mutation.create${modelName}.preUpdate.2.req.vtl`, // 2
@@ -31,7 +31,7 @@ export const expectedResolversForModelWithRenamedField = (modelName: string) => 
   `Query.list${modelName}s.postDataLoad.1.res.vtl`, // 16
 ];
 
-export const expectedResolversForModelWithRefersTo = (modelName: string) => [
+export const expectedResolversForModelWithRefersTo = (modelName: string): string[] => [
   `Mutation.create${modelName}.req.vtl`,
   `Mutation.update${modelName}.req.vtl`,
   `Mutation.delete${modelName}.req.vtl`,
@@ -39,7 +39,7 @@ export const expectedResolversForModelWithRefersTo = (modelName: string) => [
   `Query.list${modelName}s.req.vtl`,
 ];
 
-export const expectedResolversForFieldWithRefersTo = (modelName: string) => [
+export const expectedResolversForFieldWithRefersTo = (modelName: string): string[] => [
   `Mutation.create${modelName}.preAuth.2.req.vtl`,
   `Mutation.update${modelName}.preAuth.2.req.vtl`,
   `Mutation.delete${modelName}.preAuth.2.req.vtl`,
@@ -47,7 +47,7 @@ export const expectedResolversForFieldWithRefersTo = (modelName: string) => [
   `Query.list${modelName}s.preAuth.2.req.vtl`,
 ];
 
-export const testTableNameMapping = (modelName: string, tableName: string, out: DeploymentResources) => {
+export const testTableNameMapping = (modelName: string, tableName: string, out: DeploymentResources): void => {
   const expectedResolvers: string[] = expectedResolversForModelWithRefersTo(modelName);
   expectedResolvers.forEach((resolver) => {
     expect(out.resolvers[resolver]).toContain(`lambdaInput.table = "${tableName}"`);
@@ -55,25 +55,26 @@ export const testTableNameMapping = (modelName: string, tableName: string, out: 
   });
 };
 
-export const testColumnNameMapping = (modelName: string, out: DeploymentResources) => {
+export const testColumnNameMapping = (modelName: string, out: DeploymentResources): void => {
   const expectedResolvers: string[] = expectedResolversForFieldWithRefersTo(modelName);
   expectedResolvers.forEach((resolver) => {
     expect(out.resolvers[resolver]).toMatchSnapshot();
   });
 };
 
-export const testRelationalFieldMapping = (resolverName: string, tableName: string, out: DeploymentResources) => {
+export const testRelationalFieldMapping = (resolverName: string, tableName: string, out: DeploymentResources): void => {
   expect(out.resolvers[resolverName]).toContain(`lambdaInput.table = "${tableName}"`);
   expect(out.resolvers[resolverName]).toMatchSnapshot();
 };
 
-export const constructModelToDataSourceMap = (modelNames: string[], dbType: DBType) => {
+export const constructModelToDataSourceMap = (modelNames: string[], dbType: DBType): Map<string, DataSourceType> => {
   return new Map(
     modelNames.map((modelName) => [
       modelName,
       {
         dbType,
         provisionDB: true,
+        provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
       },
     ]),
   );

@@ -70,7 +70,10 @@ export const defaultOptions: AddApiOptions = {
   transformerVersion: 2,
 };
 
-export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
+export const addApiWithoutSchema = async (
+  cwd: string,
+  opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {},
+): Promise<void> => {
   const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(options.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
@@ -100,7 +103,7 @@ export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions & {
 
     setTransformerVersionFlag(cwd, options.transformerVersion);
   });
-}
+};
 
 export function addApiWithOneModel(cwd: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
   const options = _.assign(defaultOptions, opts);
@@ -1061,7 +1064,6 @@ export const removeTransformConfigValue = (projRoot: string, apiName: string, ke
 
 export const importRDSDatabase = (cwd: string, opts: ImportApiOptions & { apiExists?: boolean }): Promise<void> => {
   const options = _.assign(defaultOptions, opts);
-  const vpcLambdaDeploymentDelayMS = 1000 * 60 * 12; // 12 minutes;
 
   return new Promise<void>((resolve, reject) => {
     const importCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['import', 'api', '--debug'], {

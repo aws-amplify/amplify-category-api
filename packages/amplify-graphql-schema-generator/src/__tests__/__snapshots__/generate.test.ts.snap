@@ -55,28 +55,27 @@ exports[`generate graphqlSchemaFromRDSSchema creates graphql schema from "postgr
 
 
 type Article @refersTo(name: \\"articles\\") @model {
-  pubId: Int! @refersTo(name: \\"pub_id\\") @default(value: \\"NULL\\") @primaryKey(sortKeyFields: [\\"pubType\\"])
+  pubId: Int! @refersTo(name: \\"pub_id\\") @primaryKey(sortKeyFields: [\\"pubType\\"])
   pubType: String! @refersTo(name: \\"pub_type\\") @default(value: \\"'A'::bpchar\\")
-  placeholder: String @default(value: \\"NULL\\")
+  placeholder: String!
 }
 
 type Comment @refersTo(name: \\"comments\\") @model {
-  pubId: Int! @refersTo(name: \\"pub_id\\") @default(value: \\"NULL\\") @primaryKey(sortKeyFields: [\\"commentTimestamp\\", \\"commenterEmail\\"])
+  pubId: Int! @refersTo(name: \\"pub_id\\") @primaryKey(sortKeyFields: [\\"commentTimestamp\\", \\"commenterEmail\\"])
   commentTimestamp: AWSDateTime! @refersTo(name: \\"comment_timestamp\\")
-  commenterEmail: String! @refersTo(name: \\"commenter_email\\") @default(value: \\"NULL\\")
-  commentText: String @refersTo(name: \\"comment_text\\") @default(value: \\"NULL\\")
+  commenterEmail: String! @refersTo(name: \\"commenter_email\\")
 }
 
 type Publication @refersTo(name: \\"publications\\") @model {
-  pubId: Int! @refersTo(name: \\"pub_id\\") @default(value: \\"NULL\\") @primaryKey @index(name: \\"publications_superkey\\", sortKeyFields: [\\"pubType\\"])
-  pubType: String @refersTo(name: \\"pub_type\\") @default(value: \\"NULL\\")
-  pubUrl: String @refersTo(name: \\"pub_url\\") @default(value: \\"NULL\\") @index(name: \\"publications_pub_url_key\\")
+  pubId: Int! @refersTo(name: \\"pub_id\\") @primaryKey @index(name: \\"publications_superkey\\", sortKeyFields: [\\"pubType\\"])
+  pubType: String @refersTo(name: \\"pub_type\\")
+  pubUrl: String! @refersTo(name: \\"pub_url\\") @index(name: \\"publications_pub_url_key\\")
 }
 
 type Story @refersTo(name: \\"stories\\") @model {
-  pubId: Int! @refersTo(name: \\"pub_id\\") @default(value: \\"NULL\\") @primaryKey(sortKeyFields: [\\"pubType\\"])
+  pubId: Int! @refersTo(name: \\"pub_id\\") @primaryKey(sortKeyFields: [\\"pubType\\"])
   pubType: String! @refersTo(name: \\"pub_type\\") @default(value: \\"'S'::bpchar\\")
-  placeholder: String @default(value: \\"NULL\\")
+  placeholder: String!
 }
 "
 `;
@@ -88,10 +87,10 @@ exports[`generate graphqlSchemaFromRDSSchema creates graphql schema from "postgr
 
 
 type Todo @refersTo(name: \\"todo\\") @model {
-  id: Int! @default(value: \\"NULL\\") @primaryKey
-  title: String @default(value: \\"NULL\\")
-  startDate: AWSDate @refersTo(name: \\"start_date\\") @default(value: \\"NULL\\")
-  dueDate: AWSDate @refersTo(name: \\"due_date\\") @default(value: \\"NULL\\")
+  id: Int! @primaryKey
+  title: String!
+  startDate: AWSDate @refersTo(name: \\"start_date\\")
+  dueDate: AWSDate @refersTo(name: \\"due_date\\")
 }
 "
 `;

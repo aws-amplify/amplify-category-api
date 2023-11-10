@@ -1,7 +1,7 @@
 import { print } from 'graphql';
 import { EXTRA_DIRECTIVES_DOCUMENT } from './transformation/validation';
 
-export { GraphQLTransform, GraphQLTransformOptions, SyncUtils } from './transformation';
+export { GraphQLTransform, GraphQLTransformOptions, SyncUtils, constructDataSourceMap } from './transformation';
 export { UserDefinedSlot, UserDefinedResolver } from './transformation/types';
 export { validateModelSchema } from './transformation/validation';
 export {
@@ -13,8 +13,6 @@ export {
   SyncConfigServer,
   SyncConfigLambda,
   TransformConfig,
-  DataSourceType,
-  DBType,
 } from './config/index';
 export {
   GetArgumentsOptions,
@@ -32,11 +30,11 @@ export {
   setResourceName,
   getResourceName,
   isRDSModel,
-  constructDataSourceMap,
   isImportedRDSType,
   isRDSDBType,
   getEngineFromDBType,
   getImportedRDSType,
+  getDatasourceProvisionStrategy,
 } from './utils';
 export type { SetResourceNameProps } from './utils';
 export * from './utils/operation-names';
@@ -59,7 +57,6 @@ export {
   RDSConnectionSecrets,
   ImportedDataSourceConfig,
   RDSDataSourceConfig,
-  SQLDBType,
 } from './types';
 /**
  * Returns the extra set of directives that are supported by AppSync service.

@@ -1,10 +1,11 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
-import { DDB_DB_TYPE, MYSQL_DB_TYPE, DBType } from '@aws-amplify/graphql-transformer-core';
-import { constructModelToDataSourceMap, testTableNameMapping, testColumnNameMapping } from './common';
-import { RefersToTransformer } from '../../graphql-refers-to-transformer';
+import { DDB_DB_TYPE, MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
+import { DBType } from '@aws-amplify/graphql-transformer-interfaces';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { RefersToTransformer } from '../../graphql-refers-to-transformer';
+import { constructModelToDataSourceMap, testTableNameMapping, testColumnNameMapping } from './common';
 
 const transformSchema = (schema: string, dbType: DBType) => {
   return testTransform({

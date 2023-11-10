@@ -420,6 +420,9 @@ export class ResourceConstants {
         AuthCognitoUserPoolLogicalID: string;
         AuthCognitoUserPoolNativeClientLogicalID: string;
         AuthCognitoUserPoolJSClientLogicalID: string;
+        TableManagerOnEventHandlerLogicalID: string;
+        TableManagerIsCompleteHandlerLogicalID: string;
+        TableManagerCustomProviderLogicalID: string;
     };
     // (undocumented)
     static readonly SNIPPETS: {

@@ -1,17 +1,11 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import {
-  ConflictHandlerType,
-  DataSourceType,
-  validateModelSchema,
-  MYSQL_DB_TYPE,
-  POSTGRES_DB_TYPE,
-} from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType, validateModelSchema, MYSQL_DB_TYPE, POSTGRES_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, NamedTypeNode, parse } from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
 import { Template } from 'aws-cdk-lib/assertions';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { VpcConfig, DBType } from '@aws-amplify/graphql-transformer-interfaces';
+import { DataSourceType, VpcConfig, DBType, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   doNotExpectFields,
   expectFields,
@@ -23,6 +17,7 @@ import {
   verifyInputCount,
   verifyMatchingTypes,
 } from './test-utils/helpers';
+import { DynamoDBProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 
 describe('ModelTransformer:', () => {
   const rdsDatasources: DBType[] = [MYSQL_DB_TYPE, POSTGRES_DB_TYPE];
@@ -1538,6 +1533,7 @@ describe('ModelTransformer:', () => {
             Post: {
               dbType: dbType,
               provisionDB: false,
+              provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
             },
           }),
         ),
@@ -1567,6 +1563,7 @@ describe('ModelTransformer:', () => {
       modelToDatasourceMap.set('Note', {
         dbType: dbType,
         provisionDB: false,
+        provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
       });
       const out = testTransform({
         schema: validSchema,
@@ -1593,18 +1590,19 @@ describe('ModelTransformer:', () => {
       modelToDatasourceMap.set('Note', {
         dbType: dbType,
         provisionDB: false,
+        provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
       });
       const sqlLambdaVpcConfig: VpcConfig = {
         vpcId: 'vpc-123',
         securityGroupIds: ['sg-123'],
         subnetAvailabilityZoneConfig: [
           {
-            SubnetId: 'sub-123',
-            AvailabilityZone: 'az-123',
+            subnetId: 'sub-123',
+            availabilityZone: 'az-123',
           },
           {
-            SubnetId: 'sub-456',
-            AvailabilityZone: 'az-456',
+            subnetId: 'sub-456',
+            availabilityZone: 'az-456',
           },
         ],
       };
@@ -1643,6 +1641,7 @@ describe('ModelTransformer:', () => {
       modelToDatasourceMap.set('Note', {
         dbType: dbType,
         provisionDB: false,
+        provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
       });
       expect(() =>
         testTransform({
@@ -1668,6 +1667,7 @@ describe('ModelTransformer:', () => {
       modelToDatasourceMap.set('Post', {
         dbType: dbType,
         provisionDB: false,
+        provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
       });
       const out = testTransform({
         schema: validSchema,
@@ -1705,10 +1705,12 @@ describe('ModelTransformer:', () => {
     modelToDatasourceMap.set('Note', {
       dbType: rdsDatasources[0],
       provisionDB: false,
+      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
     });
     modelToDatasourceMap.set('Post', {
       dbType: rdsDatasources[1],
       provisionDB: false,
+      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
     });
     expect(() =>
       testTransform({

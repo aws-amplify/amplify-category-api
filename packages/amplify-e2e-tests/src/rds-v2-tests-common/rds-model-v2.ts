@@ -1,3 +1,4 @@
+import path from 'path';
 import {
   addApiWithoutSchema,
   amplifyPush,
@@ -16,7 +17,6 @@ import {
 import { existsSync, readFileSync } from 'fs-extra';
 import generator from 'generate-password';
 import { ObjectTypeDefinitionNode, parse } from 'graphql';
-import path from 'path';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
@@ -24,11 +24,11 @@ import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 
-export const testRDSModel = (engine: ImportedRDSType, queries: string[]) => {
+export const testRDSModel = (engine: ImportedRDSType, queries: string[]): void => {
   const CDK_FUNCTION_TYPE = 'AWS::Lambda::Function';
   const CDK_VPC_ENDPOINT_TYPE = 'AWS::EC2::VPCEndpoint';
 
-  describe('RDS Model Directive', () => {
+  describe(`RDS Model Directive - ${engine}`, () => {
     const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
 
     // Generate settings for RDS instance
@@ -190,7 +190,7 @@ export const testRDSModel = (engine: ImportedRDSType, queries: string[]) => {
       expect(contactsIdFieldType.directives.find((d) => d.name.value === 'primaryKey')).toBeDefined();
     };
 
-    test('check CRUDL on contact table with default primary key', async () => {
+    test(`check CRUDL on contact table with default primary key - ${engine}`, async () => {
       const contact1 = await createContact('David', 'Smith');
       const contact2 = await createContact('Chris', 'Sundersingh');
 
@@ -240,7 +240,7 @@ export const testRDSModel = (engine: ImportedRDSType, queries: string[]) => {
       );
     });
 
-    test('check CRUDL, filter, limit and nextToken on student table with composite key', async () => {
+    test(`check CRUDL, filter, limit and nextToken on student table with composite key - ${engine}`, async () => {
       const student1A = await createStudent(1, 'A', 'David', 'Smith');
       const student1B = await createStudent(1, 'B', 'Chris', 'Sundersingh');
       const student2A = await createStudent(2, 'A', 'John', 'Doe');
@@ -341,7 +341,7 @@ export const testRDSModel = (engine: ImportedRDSType, queries: string[]) => {
       );
     });
 
-    test('check invalid CRUD operation returns generic error message', async () => {
+    test(`check invalid CRUD operation returns generic error message - ${engine}`, async () => {
       const contact1 = await createContact('David', 'Smith');
       expect(contact1.data.createContact.id).toBeDefined();
 

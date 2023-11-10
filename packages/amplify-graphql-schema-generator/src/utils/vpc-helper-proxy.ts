@@ -51,8 +51,8 @@ export const getSubnetAvailabilityZones = async (subnetIds: string[], region: st
   const response: DescribeSubnetsCommandOutput = await client.send(new DescribeSubnetsCommand(params));
   const subnetAvailabilityZones: SubnetAvailabilityZone[] = (response.Subnets ?? []).map((subnet): SubnetAvailabilityZone => {
     return {
-      SubnetId: subnet.SubnetId,
-      AvailabilityZone: subnet.AvailabilityZone,
+      subnetId: subnet.SubnetId,
+      availabilityZone: subnet.AvailabilityZone,
     };
   });
   return filterSubnetAvailabilityZones(subnetAvailabilityZones);

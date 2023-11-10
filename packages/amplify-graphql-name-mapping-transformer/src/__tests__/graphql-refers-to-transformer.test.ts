@@ -1,13 +1,14 @@
 import { DirectiveNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode, parse } from 'graphql';
 import {
+  DynamoDBProvisionStrategy,
   TransformerContextProvider,
   TransformerPreProcessContextProvider,
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { constructModelToDataSourceMap } from './__integ__/common';
 import { MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 import { RefersToTransformer } from '../graphql-refers-to-transformer';
 import { attachFieldMappingSlot } from '../field-mapping-resolvers';
+import { constructModelToDataSourceMap } from './__integ__/common';
 
 jest.mock('../field-mapping-resolvers');
 
@@ -97,7 +98,7 @@ describe('@refersTo directive on models', () => {
     stubDirective.arguments = [];
     expect(() =>
       refersToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
-    ).toThrowErrorMatchingInlineSnapshot(`"@refersTo is not supported on type TestName. It can only be used on a @model type."`);
+    ).toThrowErrorMatchingInlineSnapshot('"@refersTo is not supported on type TestName. It can only be used on a @model type."');
   });
 
   it('can be applied only on RDS models', () => {
@@ -107,11 +108,15 @@ describe('@refersTo directive on models', () => {
       }
     `;
     const [stubDefinition, stubDirective, stubTransformerContext] = getTransformerInputsFromSchema(schema, 'DDBModel');
-    stubTransformerContext.modelToDatasourceMap.set('DDBModel', { dbType: 'DDB', provisionDB: false });
+    stubTransformerContext.modelToDatasourceMap.set('DDBModel', {
+      dbType: 'DDB',
+      provisionDB: false,
+      provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
+    });
     stubDirective.arguments = [];
     expect(() =>
       refersToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
-    ).toThrowErrorMatchingInlineSnapshot(`"@refersTo is only supported on RDS models. DDBModel is not an RDS model."`);
+    ).toThrowErrorMatchingInlineSnapshot('"@refersTo is only supported on RDS models. DDBModel is not an RDS model."');
   });
 
   it('requires a name to be specified', () => {
@@ -119,7 +124,7 @@ describe('@refersTo directive on models', () => {
     stubDirective.arguments = [];
     expect(() =>
       refersToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
-    ).toThrowErrorMatchingInlineSnapshot(`"name is required in @refersTo directive."`);
+    ).toThrowErrorMatchingInlineSnapshot('"name is required in @refersTo directive."');
   });
 
   it('requires a string value for name', () => {
@@ -127,7 +132,7 @@ describe('@refersTo directive on models', () => {
     stubDirective.arguments![0].value.kind = 'ListValue';
     expect(() =>
       refersToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
-    ).toThrowErrorMatchingInlineSnapshot(`"A single string must be provided for \\"name\\" in @refersTo directive"`);
+    ).toThrowErrorMatchingInlineSnapshot('"A single string must be provided for \\"name\\" in @refersTo directive"');
   });
 
   it('registers the rename mapping', () => {
@@ -141,7 +146,7 @@ describe('@refersTo directive on models', () => {
     expect(() =>
       refersToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Cannot apply @refersTo with name \\"OriginalName\\" on type \\"TestName\\" because \\"OriginalName\\" model already exists in the schema."`,
+      '"Cannot apply @refersTo with name \\"OriginalName\\" on type \\"TestName\\" because \\"OriginalName\\" model already exists in the schema."',
     );
   });
 
@@ -153,7 +158,7 @@ describe('@refersTo directive on models', () => {
     expect(() =>
       refersToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Cannot apply @refersTo with name \\"OriginalName\\" on type \\"TestName\\" because \\"DuplicateName\\" model already has the same name mapping."`,
+      '"Cannot apply @refersTo with name \\"OriginalName\\" on type \\"TestName\\" because \\"DuplicateName\\" model already has the same name mapping."',
     );
   });
 
@@ -253,7 +258,7 @@ describe('@refersTo directive on fields', () => {
     const [parent, field, directive, context] = getTransformerInputsFromSchema(schema, modelName);
     expect(() =>
       refersToTransformer.field(parent as ObjectTypeDefinitionNode, field as FieldDefinitionNode, directive as DirectiveNode, context),
-    ).toThrowErrorMatchingInlineSnapshot(`"@refersTo is not supported on type Todo. It can only be used on a @model type."`);
+    ).toThrowErrorMatchingInlineSnapshot('"@refersTo is not supported on type Todo. It can only be used on a @model type."');
   });
 
   it('can be applied only on RDS model types', () => {
@@ -265,10 +270,14 @@ describe('@refersTo directive on fields', () => {
       }
     `;
     const [parent, field, directive, context] = getTransformerInputsFromSchema(schema, modelName);
-    context.modelToDatasourceMap.set(modelName, { dbType: 'DDB', provisionDB: false });
+    context.modelToDatasourceMap.set(modelName, {
+      dbType: 'DDB',
+      provisionDB: false,
+      provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
+    });
     expect(() =>
       refersToTransformer.field(parent as ObjectTypeDefinitionNode, field as FieldDefinitionNode, directive as DirectiveNode, context),
-    ).toThrowErrorMatchingInlineSnapshot(`"@refersTo is only supported on RDS models. DDBModel is not an RDS model."`);
+    ).toThrowErrorMatchingInlineSnapshot('"@refersTo is only supported on RDS models. DDBModel is not an RDS model."');
   });
 
   it('cannot be applied on relational fields in a model', () => {
@@ -281,7 +290,7 @@ describe('@refersTo directive on fields', () => {
     const [parent, field, directive, context] = getTransformerInputsFromSchema(schema, modelName);
     expect(() =>
       refersToTransformer.field(parent as ObjectTypeDefinitionNode, field as FieldDefinitionNode, directive as DirectiveNode, context),
-    ).toThrowErrorMatchingInlineSnapshot(`"@refersTo is not supported on \\"details\\" relational field in \\"Todo\\" model."`);
+    ).toThrowErrorMatchingInlineSnapshot('"@refersTo is not supported on \\"details\\" relational field in \\"Todo\\" model."');
   });
 
   it('requires a name to be specified', () => {
@@ -294,7 +303,7 @@ describe('@refersTo directive on fields', () => {
     const [parent, field, directive, context] = getTransformerInputsFromSchema(schema, modelName);
     expect(() =>
       refersToTransformer.field(parent as ObjectTypeDefinitionNode, field as FieldDefinitionNode, directive as DirectiveNode, context),
-    ).toThrowErrorMatchingInlineSnapshot(`"name is required in @refersTo directive."`);
+    ).toThrowErrorMatchingInlineSnapshot('"name is required in @refersTo directive."');
   });
 
   it('requires a string value for name', () => {
@@ -307,7 +316,7 @@ describe('@refersTo directive on fields', () => {
     const [parent, field, directive, context] = getTransformerInputsFromSchema(schema, modelName);
     expect(() =>
       refersToTransformer.field(parent as ObjectTypeDefinitionNode, field as FieldDefinitionNode, directive as DirectiveNode, context),
-    ).toThrowErrorMatchingInlineSnapshot(`"A single string must be provided for \\"name\\" in @refersTo directive"`);
+    ).toThrowErrorMatchingInlineSnapshot('"A single string must be provided for \\"name\\" in @refersTo directive"');
   });
 
   it('throws if a duplicate field name mapping is present in the schema', () => {
@@ -315,7 +324,7 @@ describe('@refersTo directive on fields', () => {
     expect(() =>
       refersToTransformer.field(parent as ObjectTypeDefinitionNode, field as FieldDefinitionNode, directive as DirectiveNode, context),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Cannot apply @refersTo with name \\"Description\\" on field \\"details\\" in type \\"Todo\\" because \\"description\\" field already has the same name mapping."`,
+      '"Cannot apply @refersTo with name \\"Description\\" on field \\"details\\" in type \\"Todo\\" because \\"description\\" field already has the same name mapping."',
     );
   });
 
@@ -324,7 +333,7 @@ describe('@refersTo directive on fields', () => {
     expect(() =>
       refersToTransformer.field(parent as ObjectTypeDefinitionNode, field as FieldDefinitionNode, directive as DirectiveNode, context),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Cannot apply @refersTo with name \\"description\\" on field \\"details\\" in type \\"Todo\\" because \\"description\\" field already exists in the model."`,
+      '"Cannot apply @refersTo with name \\"description\\" on field \\"details\\" in type \\"Todo\\" because \\"description\\" field already exists in the model."',
     );
   });
 
@@ -360,7 +369,11 @@ describe('@refersTo directive on fields', () => {
 
   it('does not attache resolver slot even if field mapping exists for DDB Model', () => {
     const [parent, field, directive, context] = getTransformerInputsFromSchema(simpleSchema, modelName);
-    context.modelToDatasourceMap.set(modelName, { dbType: 'DDB', provisionDB: false });
+    context.modelToDatasourceMap.set(modelName, {
+      dbType: 'DDB',
+      provisionDB: false,
+      provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
+    });
     expect(attachFieldMappingSlot_mock).toBeCalledTimes(0);
   });
 
