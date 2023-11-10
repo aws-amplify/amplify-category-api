@@ -49,16 +49,14 @@ new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
     `,
     {
       name: 'MySqlDB',
-      strategy: {
-        dbType: 'MYSQL',
-        vpcConfiguration: {
-          vpcId: dbDetails.vpcConfig.vpcId,
-          securityGroupIds: dbDetails.vpcConfig.securityGroupIds,
-          subnetAvailabilityZoneConfig: dbDetails.vpcConfig.subnetAvailabilityZones,
-        },
-        dbConnectionConfig: {
-          ...dbDetails.ssmPaths,
-        },
+      dbType: 'MYSQL',
+      vpcConfiguration: {
+        vpcId: dbDetails.vpcConfig.vpcId,
+        securityGroupIds: dbDetails.vpcConfig.securityGroupIds,
+        subnetAvailabilityZoneConfig: dbDetails.vpcConfig.subnetAvailabilityZones,
+      },
+      dbConnectionConfig: {
+        ...dbDetails.ssmPaths,
       },
     },
   ),
