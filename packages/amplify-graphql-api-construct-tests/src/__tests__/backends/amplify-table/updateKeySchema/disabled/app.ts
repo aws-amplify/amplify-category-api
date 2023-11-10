@@ -22,11 +22,8 @@ new AmplifyGraphqlApi(stack, 'GraphqlApi', {
       }
     `,
     {
-      name: 'customDDB',
-      strategy: {
-        dbType: 'DYNAMODB',
-        provisionStrategy: 'AMPLIFY_TABLE',
-      },
+      dbType: 'DYNAMODB',
+      provisionStrategy: 'AMPLIFY_TABLE',
     },
   ),
   authorizationModes: {
