@@ -10,7 +10,6 @@ import { AmplifyGraphqlApiCfnResources as AmplifyDataCfnResources } from '@aws-a
 import { AmplifyGraphqlDefinition as AmplifyDataDefinition } from '@aws-amplify/graphql-api-construct';
 import { AmplifyGraphqlApiProps as AmplifyDataProps } from '@aws-amplify/graphql-api-construct';
 import { AmplifyGraphqlApiResources as AmplifyDataResources } from '@aws-amplify/graphql-api-construct';
-import { AmplifyDynamoDbModelDataSourceDefinitionStrategy } from '@aws-amplify/graphql-api-construct';
 import { AmplifyDynamoDbTableWrapper } from '@aws-amplify/graphql-api-construct';
 import { ApiKeyAuthorizationConfig } from '@aws-amplify/graphql-api-construct';
 import { AuthorizationModes } from '@aws-amplify/graphql-api-construct';
@@ -20,7 +19,6 @@ import { ConflictResolution } from '@aws-amplify/graphql-api-construct';
 import { ConflictResolutionStrategy } from '@aws-amplify/graphql-api-construct';
 import { ConflictResolutionStrategyBase } from '@aws-amplify/graphql-api-construct';
 import { CustomConflictResolutionStrategy } from '@aws-amplify/graphql-api-construct';
-import { DefaultDynamoDbModelDataSourceDefinitionStrategy } from '@aws-amplify/graphql-api-construct';
 import { FunctionSlot } from '@aws-amplify/graphql-api-construct';
 import { FunctionSlotBase } from '@aws-amplify/graphql-api-construct';
 import { FunctionSlotOverride } from '@aws-amplify/graphql-api-construct';
@@ -29,9 +27,6 @@ import { IAmplifyGraphqlDefinition as IAmplifyDataDefinition } from '@aws-amplif
 import { IBackendOutputEntry } from '@aws-amplify/graphql-api-construct';
 import { IBackendOutputStorageStrategy } from '@aws-amplify/graphql-api-construct';
 import { LambdaAuthorizationConfig } from '@aws-amplify/graphql-api-construct';
-import { ModelDataSourceDefinition } from '@aws-amplify/graphql-api-construct';
-import { ModelDataSourceDefinitionDbType } from '@aws-amplify/graphql-api-construct';
-import { ModelDataSourceDefinitionStrategy } from '@aws-amplify/graphql-api-construct';
 import { MutationFunctionSlot } from '@aws-amplify/graphql-api-construct';
 import { OIDCAuthorizationConfig } from '@aws-amplify/graphql-api-construct';
 import { OptimisticConflictResolutionStrategy } from '@aws-amplify/graphql-api-construct';
@@ -39,8 +34,6 @@ import { PartialTranslationBehavior } from '@aws-amplify/graphql-api-construct';
 import { ProvisionedThroughput } from '@aws-amplify/graphql-api-construct';
 import { QueryFunctionSlot } from '@aws-amplify/graphql-api-construct';
 import { SQLLambdaLayerMapping } from '@aws-amplify/graphql-api-construct';
-import { SQLLambdaModelDataSourceDefinitionStrategy } from '@aws-amplify/graphql-api-construct';
-import { SqlModelDataSourceDefinitionDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
 import { SSESpecification } from '@aws-amplify/graphql-api-construct';
 import { SSEType } from '@aws-amplify/graphql-api-construct';
 import { StreamSpecification } from '@aws-amplify/graphql-api-construct';
@@ -63,8 +56,6 @@ export { AmplifyDataProps }
 
 export { AmplifyDataResources }
 
-export { AmplifyDynamoDbModelDataSourceDefinitionStrategy }
-
 export { AmplifyDynamoDbTableWrapper }
 
 export { ApiKeyAuthorizationConfig }
@@ -83,8 +74,6 @@ export { ConflictResolutionStrategyBase }
 
 export { CustomConflictResolutionStrategy }
 
-export { DefaultDynamoDbModelDataSourceDefinitionStrategy }
-
 export { FunctionSlot }
 
 export { FunctionSlotBase }
@@ -101,12 +90,6 @@ export { IBackendOutputStorageStrategy }
 
 export { LambdaAuthorizationConfig }
 
-export { ModelDataSourceDefinition }
-
-export { ModelDataSourceDefinitionDbType }
-
-export { ModelDataSourceDefinitionStrategy }
-
 export { MutationFunctionSlot }
 
 export { OIDCAuthorizationConfig }
@@ -120,10 +103,6 @@ export { ProvisionedThroughput }
 export { QueryFunctionSlot }
 
 export { SQLLambdaLayerMapping }
-
-export { SQLLambdaModelDataSourceDefinitionStrategy }
-
-export { SqlModelDataSourceDefinitionDbConnectionConfig }
 
 export { SSESpecification }
 
