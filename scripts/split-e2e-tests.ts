@@ -60,7 +60,6 @@ const AWS_REGIONS_TO_RUN_TESTS = [
 const FORCE_REGION_MAP = {
   interactions: 'us-west-2',
   containers: 'us-east-1',
-  rds: 'ap-northeast-2',
 };
 
 // some tests require additional time, the parent account can handle longer tests (up to 90 minutes)
