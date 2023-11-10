@@ -86,7 +86,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/transformer-migrations/predictions-migration.test.ts|src/__tests__/api_10.test.ts|src/__tests__/function_10.test.ts|src/__tests__/rds-v2.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: schema_predictions_api_7_http_migration_global_sandbox
@@ -149,7 +149,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/api_3.test.ts|src/__tests__/rds-import-vpc.test.ts|src/__tests__/rds-mysql-model-v2.test.ts|src/__tests__/rds-mysql-refers-to-fields.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
@@ -160,7 +160,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/rds-mysql-refers-to.test.ts|src/__tests__/rds-mysql-v2-generate-schema.test.ts|src/__tests__/rds-pg-array-objects.test.ts|src/__tests__/rds-pg-import.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
@@ -171,7 +171,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/rds-pg-model-v2.test.ts|src/__tests__/rds-pg-refers-to-fields.test.ts|src/__tests__/rds-pg-refers-to.test.ts|src/__tests__/rds-pg-relational-directives.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: >-
@@ -182,7 +182,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/rds-pg-v2-generate-schema.test.ts|src/__tests__/rds-relational-directives.test.ts|src/__tests__/rds-v2-test-utils.test.ts|src/__tests__/api_1.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: resolvers_sync_query_datastore_api_6_api_lambda_auth
@@ -421,7 +421,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/rds-mysql-auth-apikey-lambda.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_auth_iam_apikey_lambda_subscription
@@ -430,7 +430,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/rds-mysql-auth-iam-apikey-lambda-subscription.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_auth_iam
@@ -439,7 +439,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/rds-mysql-auth-iam.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_multi_auth_1
@@ -448,7 +448,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/rds-mysql-multi-auth-1.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_oidc_auth
@@ -457,7 +457,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/rds-mysql-oidc-auth.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_userpool_auth
@@ -466,7 +466,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/rds-mysql-userpool-auth.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: schema_model

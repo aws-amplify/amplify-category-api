@@ -19,7 +19,7 @@
     "cypress": "^10.4.0",
     "hjson": "^3.2.2",
     "ini": "^3.0.1",
-    "jest-dev-server": "~7.0.1",
+    "jest-dev-server": "~9.0.1",
     "jest-junit": "^14.0.1",
     "lodash": "^4.17.21",
     "node-pty": "^0.10.1",
