@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import { AmplifyGraphqlDefinition, DEFAULT_MODEL_DATA_SOURCE_DEFINITION } from '../amplify-graphql-definition';
-import { ModelDataSourceDefinition, SQLLambdaModelDataSourceDefinitionStrategy } from '../types';
+import { AmplifyGraphqlDefinition, DEFAULT_MODEL_DATA_SOURCE_STRATEGY } from '../amplify-graphql-definition';
+import { ModelDataSourceStrategy, SQLLambdaModelDataSourceStrategy } from '../types';
 
 const TEST_SCHEMA = /* GraphQL */ `
   type Todo @model {
@@ -11,20 +11,14 @@ const TEST_SCHEMA = /* GraphQL */ `
   }
 `;
 
-const DEFAULT_TABLE_DS_DEFINITION: ModelDataSourceDefinition = {
-  name: 'DefaultDynamoDB',
-  strategy: {
-    dbType: 'DYNAMODB',
-    provisionStrategy: 'DEFAULT',
-  },
+const DEFAULT_TABLE_DS_DEFINITION: ModelDataSourceStrategy = {
+  dbType: 'DYNAMODB',
+  provisionStrategy: 'DEFAULT',
 };
 
-const AMPLIFY_TABLE_DS_DEFINITION: ModelDataSourceDefinition = {
-  name: 'customDDB',
-  strategy: {
-    dbType: 'DYNAMODB',
-    provisionStrategy: 'AMPLIFY_TABLE',
-  },
+const AMPLIFY_TABLE_DS_DEFINITION: ModelDataSourceStrategy = {
+  dbType: 'DYNAMODB',
+  provisionStrategy: 'AMPLIFY_TABLE',
 };
 
 describe('AmplifyGraphqlDefinition', () => {
@@ -33,12 +27,12 @@ describe('AmplifyGraphqlDefinition', () => {
       const definition = AmplifyGraphqlDefinition.fromString(TEST_SCHEMA);
       expect(definition.schema).toEqual(TEST_SCHEMA);
       expect(definition.functionSlots.length).toEqual(0);
-      expect(definition.dataSourceDefinition).toEqual({ Todo: DEFAULT_MODEL_DATA_SOURCE_DEFINITION });
+      expect(definition.dataSourceStrategies).toEqual({ Todo: DEFAULT_MODEL_DATA_SOURCE_STRATEGY });
     });
 
     it('returns amplify table strategy when explicitly defined', () => {
       const definition = AmplifyGraphqlDefinition.fromString(TEST_SCHEMA, AMPLIFY_TABLE_DS_DEFINITION);
-      expect(definition.dataSourceDefinition).toEqual({ Todo: AMPLIFY_TABLE_DS_DEFINITION });
+      expect(definition.dataSourceStrategies).toEqual({ Todo: AMPLIFY_TABLE_DS_DEFINITION });
     });
   });
 
@@ -59,7 +53,7 @@ describe('AmplifyGraphqlDefinition', () => {
       const definition = AmplifyGraphqlDefinition.fromFiles(schemaFilePath);
       expect(definition.schema).toEqual(TEST_SCHEMA);
       expect(definition.functionSlots.length).toEqual(0);
-      expect(definition.dataSourceDefinition).toEqual({ Todo: DEFAULT_MODEL_DATA_SOURCE_DEFINITION });
+      expect(definition.dataSourceStrategies).toEqual({ Todo: DEFAULT_MODEL_DATA_SOURCE_STRATEGY });
     });
 
     it('extracts the definition from the schema files, appended in-order', () => {
@@ -87,13 +81,13 @@ describe('AmplifyGraphqlDefinition', () => {
       const schemaFilePath = path.join(tmpDir, 'schema.graphql');
       fs.writeFileSync(schemaFilePath, TEST_SCHEMA);
       const definition = AmplifyGraphqlDefinition.fromFiles(schemaFilePath);
-      expect(definition.dataSourceDefinition).toEqual({
-        Todo: DEFAULT_MODEL_DATA_SOURCE_DEFINITION,
+      expect(definition.dataSourceStrategies).toEqual({
+        Todo: DEFAULT_MODEL_DATA_SOURCE_STRATEGY,
       });
     });
   });
 
-  describe('fromFilesAndDefinition', () => {
+  describe('fromFilesAndStrategy', () => {
     let tmpDir: string;
 
     beforeEach(() => {
@@ -107,10 +101,10 @@ describe('AmplifyGraphqlDefinition', () => {
     it('extracts the definition from a single schema file', () => {
       const schemaFilePath = path.join(tmpDir, 'schema.graphql');
       fs.writeFileSync(schemaFilePath, TEST_SCHEMA);
-      const definition = AmplifyGraphqlDefinition.fromFilesAndDefinition([schemaFilePath], DEFAULT_TABLE_DS_DEFINITION);
+      const definition = AmplifyGraphqlDefinition.fromFilesAndStrategy([schemaFilePath], DEFAULT_TABLE_DS_DEFINITION);
       expect(definition.schema).toEqual(TEST_SCHEMA);
       expect(definition.functionSlots.length).toEqual(0);
-      expect(definition.dataSourceDefinition).toEqual({ Todo: DEFAULT_TABLE_DS_DEFINITION });
+      expect(definition.dataSourceStrategies).toEqual({ Todo: DEFAULT_TABLE_DS_DEFINITION });
     });
 
     it('extracts the definition from the schema files, appended in-order', () => {
@@ -129,7 +123,7 @@ describe('AmplifyGraphqlDefinition', () => {
       const rdsSchemaFilePath = path.join(tmpDir, 'schema.rds.graphql');
       fs.writeFileSync(schemaFilePath, TEST_SCHEMA);
       fs.writeFileSync(rdsSchemaFilePath, rdsTestSchema);
-      const definition = AmplifyGraphqlDefinition.fromFilesAndDefinition([schemaFilePath, rdsSchemaFilePath], DEFAULT_TABLE_DS_DEFINITION);
+      const definition = AmplifyGraphqlDefinition.fromFilesAndStrategy([schemaFilePath, rdsSchemaFilePath], DEFAULT_TABLE_DS_DEFINITION);
       expect(definition.schema).toEqual(`${TEST_SCHEMA}${os.EOL}${rdsTestSchema}`);
       expect(definition.functionSlots.length).toEqual(0);
     });
@@ -137,13 +131,14 @@ describe('AmplifyGraphqlDefinition', () => {
     it('binds to a dynamo data source', () => {
       const schemaFilePath = path.join(tmpDir, 'schema.graphql');
       fs.writeFileSync(schemaFilePath, TEST_SCHEMA);
-      const definition = AmplifyGraphqlDefinition.fromFilesAndDefinition([schemaFilePath], DEFAULT_TABLE_DS_DEFINITION);
-      expect(definition.dataSourceDefinition).toEqual({ Todo: DEFAULT_TABLE_DS_DEFINITION });
+      const definition = AmplifyGraphqlDefinition.fromFilesAndStrategy([schemaFilePath], DEFAULT_TABLE_DS_DEFINITION);
+      expect(definition.dataSourceStrategies).toEqual({ Todo: DEFAULT_TABLE_DS_DEFINITION });
     });
 
     it('binds to a sql data source with a VPC configuration', () => {
       const schemaFilePath = path.join(tmpDir, 'schema.graphql');
-      const strategy: SQLLambdaModelDataSourceDefinitionStrategy = {
+      const strategy: SQLLambdaModelDataSourceStrategy = {
+        name: 'MySqlLambda',
         dbType: 'MYSQL',
         vpcConfiguration: {
           vpcId: 'vpc-1234abcd',
@@ -158,18 +153,15 @@ describe('AmplifyGraphqlDefinition', () => {
           databaseNameSsmPath: '/ssm/path/databaseNameSsmPath',
         },
       };
-      const modelDefinition: ModelDataSourceDefinition = {
-        name: 'MySqlLambda',
-        strategy,
-      };
       fs.writeFileSync(schemaFilePath, TEST_SCHEMA);
-      const definition = AmplifyGraphqlDefinition.fromFilesAndDefinition([schemaFilePath], modelDefinition);
-      expect(definition.dataSourceDefinition).toEqual({ Todo: modelDefinition });
+      const definition = AmplifyGraphqlDefinition.fromFilesAndStrategy([schemaFilePath], strategy);
+      expect(definition.dataSourceStrategies).toEqual({ Todo: strategy });
     });
 
     it('binds to a sql data source with no VPC configuration', () => {
       const schemaFilePath = path.join(tmpDir, 'schema.graphql');
-      const strategy: SQLLambdaModelDataSourceDefinitionStrategy = {
+      const strategy: SQLLambdaModelDataSourceStrategy = {
+        name: 'MySqlLambda',
         dbType: 'MYSQL',
         dbConnectionConfig: {
           hostnameSsmPath: '/ssm/path/hostnameSsmPath',
@@ -179,13 +171,9 @@ describe('AmplifyGraphqlDefinition', () => {
           databaseNameSsmPath: '/ssm/path/databaseNameSsmPath',
         },
       };
-      const modelDefinition: ModelDataSourceDefinition = {
-        name: 'MySqlLambda',
-        strategy,
-      };
       fs.writeFileSync(schemaFilePath, TEST_SCHEMA);
-      const definition = AmplifyGraphqlDefinition.fromFilesAndDefinition([schemaFilePath], modelDefinition);
-      expect(definition.dataSourceDefinition).toEqual({ Todo: modelDefinition });
+      const definition = AmplifyGraphqlDefinition.fromFilesAndStrategy([schemaFilePath], strategy);
+      expect(definition.dataSourceStrategies).toEqual({ Todo: strategy });
     });
   });
 
@@ -207,8 +195,8 @@ describe('AmplifyGraphqlDefinition', () => {
       const combinedDefinition = AmplifyGraphqlDefinition.combine([definition1, definition2]);
       expect(combinedDefinition.schema).toEqual(`${TEST_SCHEMA}${os.EOL}${amplifyTableSchema}`);
       expect(combinedDefinition.functionSlots.length).toEqual(0);
-      expect(combinedDefinition.dataSourceDefinition).toEqual({
-        Todo: DEFAULT_MODEL_DATA_SOURCE_DEFINITION,
+      expect(combinedDefinition.dataSourceStrategies).toEqual({
+        Todo: DEFAULT_MODEL_DATA_SOURCE_STRATEGY,
         Blog: AMPLIFY_TABLE_DS_DEFINITION,
         Post: AMPLIFY_TABLE_DS_DEFINITION,
       });

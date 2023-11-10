@@ -147,25 +147,23 @@ describe('supports different props configurations', () => {
           `,
           {
             name: 'MySqlTable',
-            strategy: {
-              dbType: 'MYSQL',
-              dbConnectionConfig: {
-                hostnameSsmPath: '/path/to/hostname',
-                usernameSsmPath: '/path/to/username',
-                passwordSsmPath: '/path/to/password',
-                portSsmPath: '/path/to/port',
-                databaseNameSsmPath: '/path/to/databaseName',
-              },
-              vpcConfiguration: {
-                vpcId: 'vpc-123',
-                securityGroupIds: ['sg-123'],
-                subnetAvailabilityZoneConfig: [
-                  {
-                    subnetId: 'subnet-123',
-                    availabilityZone: 'us-east-1a',
-                  },
-                ],
-              },
+            dbType: 'MYSQL',
+            dbConnectionConfig: {
+              hostnameSsmPath: '/path/to/hostname',
+              usernameSsmPath: '/path/to/username',
+              passwordSsmPath: '/path/to/password',
+              portSsmPath: '/path/to/port',
+              databaseNameSsmPath: '/path/to/databaseName',
+            },
+            vpcConfiguration: {
+              vpcId: 'vpc-123',
+              securityGroupIds: ['sg-123'],
+              subnetAvailabilityZoneConfig: [
+                {
+                  subnetId: 'subnet-123',
+                  availabilityZone: 'us-east-1a',
+                },
+              ],
             },
           },
         ),
@@ -188,15 +186,13 @@ describe('supports different props configurations', () => {
           `,
           {
             name: 'MySqlTable',
-            strategy: {
-              dbType: 'MYSQL',
-              dbConnectionConfig: {
-                hostnameSsmPath: '/path/to/hostname',
-                usernameSsmPath: '/path/to/username',
-                passwordSsmPath: '/path/to/password',
-                portSsmPath: '/path/to/port',
-                databaseNameSsmPath: '/path/to/databaseName',
-              },
+            dbType: 'MYSQL',
+            dbConnectionConfig: {
+              hostnameSsmPath: '/path/to/hostname',
+              usernameSsmPath: '/path/to/username',
+              passwordSsmPath: '/path/to/password',
+              portSsmPath: '/path/to/port',
+              databaseNameSsmPath: '/path/to/databaseName',
             },
           },
         ),

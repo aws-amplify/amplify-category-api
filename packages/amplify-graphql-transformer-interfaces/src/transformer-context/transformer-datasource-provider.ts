@@ -55,7 +55,7 @@ export const enum DynamoDBProvisionStrategy {
   AMPLIFY_TABLE = 'AMPLIFY_TABLE',
 }
 
-// TODO: Remove this type in favor of fully-specified SQLLambdaModelDataSourceDefinitionStrategy from amplify-graphql-api-construct
+// TODO: Remove this type in favor of fully-specified SQLLambdaModelDataSourceStrategy from amplify-graphql-api-construct
 export const enum SQLLambdaModelProvisionStrategy {
   /**
    * A strategy that creates a Lambda to connect to a pre-existing SQL table to resolve model data.
@@ -63,7 +63,7 @@ export const enum SQLLambdaModelProvisionStrategy {
   DEFAULT = 'DEFAULT',
 }
 
-// TODO: Replace usages of this type with ModelDataSourceDefinitions
+// TODO: Replace usages of this type with ModelDataSourceStrategy
 export interface DataSourceType {
   dbType: DBType;
   provisionDB: boolean;

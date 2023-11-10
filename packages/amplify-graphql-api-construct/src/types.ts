@@ -505,10 +505,14 @@ export interface IAmplifyGraphqlDefinition {
   readonly functionSlots: FunctionSlot[];
 
   /**
-   * Retrieve the datasource definition mapping. The default strategy is to use DynamoDB from CloudFormation.
-   * @returns datasource definition mapping
+   * Retrieve the datasource strategy mapping. The default strategy is to use DynamoDB from CloudFormation.
+   *
+   * **NOTE** Explicitly specifying the 'dataSourceStrategies' configuration option is in preview and is not recommended to use with
+   * production systems. For production, use the static factory methods `fromString` or `fromFiles`.
+   * @experimental
+   * @returns datasource strategy mapping
    */
-  readonly dataSourceDefinition: Record<string, ModelDataSourceDefinition>;
+  readonly dataSourceStrategies: Record<string, ModelDataSourceStrategy>;
 }
 
 /**
@@ -764,37 +768,22 @@ export interface AddFunctionProps {
 }
 
 /**
- * Defines a datasource for resolving GraphQL operations against `@model` types in a GraphQL schema.
+ * All known ModelDataSourceStrategies. Concrete strategies vary widely in their requirements and implementations.
  * @experimental
  */
-export interface ModelDataSourceDefinition {
-  /**
-   * The name of the ModelDataSourceDefinition. This will be used to name the AppSync DataSource itself, plus any associated resources like
-   * resolver Lambdas and custom CDK resources. This name must be unique across all schema definitions in a GraphQL API.
-   */
-  readonly name: string;
-  /**
-   * The ModelDataSourceDefinitionStrategy.
-   */
-  readonly strategy: ModelDataSourceDefinitionStrategy;
-}
-/**
- * All known ModelDataSourceDefinitionStrategies. Concrete strategies vary widely in their requirements and implementations.
- * @experimental
- */
-export type ModelDataSourceDefinitionStrategy =
-  | DefaultDynamoDbModelDataSourceDefinitionStrategy
-  | AmplifyDynamoDbModelDataSourceDefinitionStrategy
-  | SQLLambdaModelDataSourceDefinitionStrategy;
+export type ModelDataSourceStrategy =
+  | DefaultDynamoDbModelDataSourceStrategy
+  | AmplifyDynamoDbModelDataSourceStrategy
+  | SQLLambdaModelDataSourceStrategy;
 
 // TODO: Make this the source of truth for database type definitions used throughout the construct & transformer
-export type ModelDataSourceDefinitionDbType = 'DYNAMODB';
+export type ModelDataSourceStrategyDbType = 'DYNAMODB';
 
 /**
  * Use default CloudFormation type 'AWS::DynamoDB::Table' to provision table.
  * @experimental
  */
-export interface DefaultDynamoDbModelDataSourceDefinitionStrategy {
+export interface DefaultDynamoDbModelDataSourceStrategy {
   readonly dbType: 'DYNAMODB';
   readonly provisionStrategy: 'DEFAULT';
 }
@@ -803,7 +792,7 @@ export interface DefaultDynamoDbModelDataSourceDefinitionStrategy {
  * Use custom resource type 'Custom::AmplifyDynamoDBTable' to provision table.
  * @experimental
  */
-export interface AmplifyDynamoDbModelDataSourceDefinitionStrategy {
+export interface AmplifyDynamoDbModelDataSourceStrategy {
   readonly dbType: 'DYNAMODB';
   readonly provisionStrategy: 'AMPLIFY_TABLE';
 }
@@ -813,7 +802,13 @@ export interface AmplifyDynamoDbModelDataSourceDefinitionStrategy {
  *
  * @experimental
  */
-export interface SQLLambdaModelDataSourceDefinitionStrategy {
+export interface SQLLambdaModelDataSourceStrategy {
+  /**
+   * The name of the strategy. This will be used to name the AppSync DataSource itself, plus any associated resources like resolver Lambdas.
+   * This name must be unique across all schema definitions in a GraphQL API.
+   */
+  readonly name: string;
+
   /**
    * The type of the SQL database used to process model operations for this definition.
    */
@@ -822,7 +817,7 @@ export interface SQLLambdaModelDataSourceDefinitionStrategy {
   /**
    * The parameters the Lambda data source will use to connect to the database.
    */
-  readonly dbConnectionConfig: SqlModelDataSourceDefinitionDbConnectionConfig;
+  readonly dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
 
   /**
    * The configuration of the VPC into which to install the Lambda.
@@ -886,7 +881,7 @@ export type SQLLambdaLayerMapping = Record<string, string>;
  * These parameters are retrieved from Secure Systems Manager in the same region as the Lambda.
  * @experimental
  */
-export interface SqlModelDataSourceDefinitionDbConnectionConfig {
+export interface SqlModelDataSourceDbConnectionConfig {
   /** The Secure Systems Manager parameter containing the hostname of the database. For RDS-based SQL data sources, this can be the hostname
    * of a database proxy, cluster, or instance.
    */
