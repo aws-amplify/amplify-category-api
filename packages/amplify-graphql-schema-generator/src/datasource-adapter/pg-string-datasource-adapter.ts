@@ -33,9 +33,10 @@ type PostgresSchemaField = {
   is_nullable: string;
   character_maximum_length: string;
   index_columns: string;
+  indexname: string;
 };
 
-const expectedColumns = [
+export const expectedColumns = [
   'enum_name',
   'enum_values',
   'table_name',
@@ -47,6 +48,7 @@ const expectedColumns = [
   'is_nullable',
   'character_maximum_length',
   'index_columns',
+  'indexname',
 ];
 
 export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
@@ -181,7 +183,7 @@ export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
     this.indexes = indexes
       .filter(({ index_columns }) => !!index_columns)
       .map((item: any) => ({
-        tableName: item.tablename,
+        tableName: item.table_name,
         columns: item.index_columns.split(', '),
         indexName: item.indexname,
       }));

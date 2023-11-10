@@ -115,11 +115,16 @@ export const enum ConflictHandlerType {
 export const constructDataSourceMap: (schema: string, datasourceType: DataSourceType) => Map<string, DataSourceType>;
 
 // @public (undocumented)
+export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy;
+
+// @public (undocumented)
 export interface DataSourceType {
     // (undocumented)
     dbType: DBType;
     // (undocumented)
     provisionDB: boolean;
+    // (undocumented)
+    provisionStrategy: DataSourceProvisionStrategy;
 }
 
 // @public (undocumented)
@@ -141,6 +146,14 @@ export class DestructiveMigrationError extends Error {
 
 // @public (undocumented)
 export type DiffRule = (diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject) => void;
+
+// @public (undocumented)
+export const enum DynamoDBProvisionStrategy {
+    // (undocumented)
+    AMPLIFY_TABLE = "AMPLIFY_TABLE",
+    // (undocumented)
+    DEFAULT = "DEFAULT"
+}
 
 // @public (undocumented)
 export interface FeatureFlagProvider {

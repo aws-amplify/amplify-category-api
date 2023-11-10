@@ -1,8 +1,9 @@
 import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { SqlTransformer } from '../graphql-sql-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { SqlTransformer } from '../graphql-sql-transformer';
 
 describe('sql directive tests', () => {
   it('should compile happy case with statement argument', () => {
@@ -20,6 +21,7 @@ describe('sql directive tests', () => {
           Post: {
             dbType: 'MySQL',
             provisionDB: false,
+            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },
         }),
       ),
@@ -58,6 +60,7 @@ describe('sql directive tests', () => {
           Post: {
             dbType: 'MySQL',
             provisionDB: false,
+            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },
         }),
       ),
@@ -96,6 +99,7 @@ describe('sql directive tests', () => {
           Post: {
             dbType: 'MySQL' as const,
             provisionDB: false,
+            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },
         }),
       ),
@@ -125,6 +129,7 @@ describe('sql directive tests', () => {
           Post: {
             dbType: 'MySQL' as const,
             provisionDB: false,
+            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },
         }),
       ),
@@ -150,6 +155,7 @@ describe('sql directive tests', () => {
           Post: {
             dbType: 'MySQL' as const,
             provisionDB: false,
+            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },
         }),
       ),

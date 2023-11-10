@@ -111,6 +111,7 @@ export const setupRDSInstanceAndData = async (
   config: RDSConfig,
   queries?: string[],
 ): Promise<{ endpoint: string; port: number; dbName: string; dbInstance: DBInstance }> => {
+  console.log(`Creating RDS ${config.engine} instance with identifier ${config.identifier}`);
   const dbConfig = await createRDSInstance(config);
 
   if (queries && queries.length > 0) {
@@ -125,7 +126,8 @@ export const setupRDSInstanceAndData = async (
       ),
     );
 
-    await sleep(1 * 60 * 1000); // Delay for the security rules to take effect
+    console.log('Waiting for the security rules to take effect');
+    await sleep(1 * 60 * 1000);
 
     const dbAdapter = new RDSTestDataProvider({
       engine: config.engine,
@@ -136,6 +138,7 @@ export const setupRDSInstanceAndData = async (
       database: config.dbname,
     });
 
+    console.log('Running initial queries');
     await dbAdapter.runQuery(queries);
     dbAdapter.cleanup();
 
@@ -148,6 +151,9 @@ export const setupRDSInstanceAndData = async (
         }),
       ),
     );
+
+    console.log('Waiting for the security rules to be disabled');
+    await sleep(1 * 60 * 1000);
   }
 
   return dbConfig;

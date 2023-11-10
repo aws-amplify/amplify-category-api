@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { SqlModelDataSourceBindingFactory } from '../../sql-model-datasource-binding';
-import { SqlModelDataSourceBinding } from '../../types';
+import { SQLLambdaModelDataSourceDefinitionStrategyFactory } from '../../sql-model-datasource-def';
+import { SQLLambdaModelDataSourceDefinitionStrategy } from '../../types';
 
 describe('SQL bound API definitions', () => {
   let tmpDir: string;
@@ -28,12 +28,12 @@ describe('SQL bound API definitions', () => {
       return filePath;
     });
 
-    const otherOptions: Exclude<SqlModelDataSourceBinding, 'customSqlStatements'> = {
-      bindingType: 'MySQL',
+    const otherOptions: Exclude<SQLLambdaModelDataSourceDefinitionStrategy, 'customSqlStatements'> = {
+      dbType: 'MYSQL',
       vpcConfiguration: {
         vpcId: 'vpc-1234abcd',
         securityGroupIds: ['sg-123'],
-        subnetAvailabilityZones: [{ subnetId: 'subnet-123', availabilityZone: 'us-east-1a' }],
+        subnetAvailabilityZoneConfig: [{ subnetId: 'subnet-123', availabilityZone: 'us-east-1a' }],
       },
       dbConnectionConfig: {
         hostnameSsmPath: '/ssm/path/hostnameSsmPath',
@@ -44,12 +44,12 @@ describe('SQL bound API definitions', () => {
       },
     };
 
-    const binding = SqlModelDataSourceBindingFactory.fromCustomSqlFiles(sqlFiles, otherOptions);
+    const strategy = SQLLambdaModelDataSourceDefinitionStrategyFactory.fromCustomSqlFiles(sqlFiles, otherOptions);
 
-    expect(binding.customSqlStatements?.['hello']).toEqual(customSql['hello']);
-    expect(binding.customSqlStatements?.['hello.2']).toEqual(customSql['hello.2']);
-    expect(binding.bindingType).toEqual(otherOptions.bindingType);
-    expect(binding.vpcConfiguration).toEqual(otherOptions.vpcConfiguration);
-    expect(binding.dbConnectionConfig).toEqual(otherOptions.dbConnectionConfig);
+    expect(strategy.customSqlStatements?.['hello']).toEqual(customSql['hello']);
+    expect(strategy.customSqlStatements?.['hello.2']).toEqual(customSql['hello.2']);
+    expect(strategy.dbType).toEqual(otherOptions.dbType);
+    expect(strategy.vpcConfiguration).toEqual(otherOptions.vpcConfiguration);
+    expect(strategy.dbConnectionConfig).toEqual(otherOptions.dbConnectionConfig);
   });
 });

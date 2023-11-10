@@ -19,6 +19,9 @@ import { CfnResource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { DataSourceProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { DataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
+import { DBType } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveDefinitionNode } from 'graphql';
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql/language';
@@ -59,6 +62,7 @@ import { StringValueNode } from 'graphql';
 import { SubscriptionFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerAuthProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerBeforeStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
 import { TransformerContextOutputProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -111,7 +115,7 @@ export const enum ConflictHandlerType {
 }
 
 // @public (undocumented)
-export const constructDataSourceMap: (schema: string, datasourceType: DataSourceType) => Map<string, DataSourceType>;
+export function constructDataSourceMap(schema: string, datasourceType: DataSourceType): Map<string, DataSourceType>;
 
 // @public (undocumented)
 function createSyncLambdaIAMPolicy(context: TransformerContextProvider, scope: Construct, name: string, region?: string): iam.Policy;
@@ -122,18 +126,7 @@ function createSyncLambdaIAMPolicy(context: TransformerContextProvider, scope: C
 function createSyncTable(context: TransformerContext): void;
 
 // @public (undocumented)
-export interface DataSourceType {
-    // (undocumented)
-    dbType: DBType;
-    // (undocumented)
-    provisionDB: boolean;
-}
-
-// @public (undocumented)
-export type DBType = 'MySQL' | 'DDB' | 'Postgres';
-
-// @public (undocumented)
-export const DDB_DB_TYPE = "DDB";
+export const DDB_DB_TYPE: DBType;
 
 // @public (undocumented)
 export class DirectiveWrapper {
@@ -188,6 +181,9 @@ export const getAppSyncServiceExtraDirectives: () => string;
 export type GetArgumentsOptions = {
     deepMergeArguments?: boolean;
 };
+
+// @public (undocumented)
+export function getDatasourceProvisionStrategy(ctx: TransformerBeforeStepContextProvider, typeName?: string): DataSourceProvisionStrategy;
 
 // @public (undocumented)
 export const getDataSourceType: (type: TypeNode, ctx: TransformerContextProvider) => DBType;
@@ -378,7 +374,7 @@ export class MappingTemplate {
 }
 
 // @public (undocumented)
-export const MYSQL_DB_TYPE = "MySQL";
+export const MYSQL_DB_TYPE: DBType;
 
 // @public (undocumented)
 export class ObjectDefinitionWrapper {
@@ -404,7 +400,7 @@ export class ObjectDefinitionWrapper {
 }
 
 // @public (undocumented)
-export const POSTGRES_DB_TYPE = "Postgres";
+export const POSTGRES_DB_TYPE: DBType;
 
 // @public (undocumented)
 export const RDS_SCHEMA_FILE_NAME = "schema.rds.graphql";
@@ -442,9 +438,6 @@ export type SetResourceNameProps = {
     name: string;
     setOnDefaultChild?: boolean;
 };
-
-// @public (undocumented)
-export type SQLDBType = 'MySQL' | 'Postgres';
 
 // @public (undocumented)
 export class StackManager implements StackManagerProvider {

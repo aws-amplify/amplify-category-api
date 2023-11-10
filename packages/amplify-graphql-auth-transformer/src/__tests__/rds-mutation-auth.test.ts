@@ -2,7 +2,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { parse } from 'graphql';
-import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncAuthConfiguration, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { AuthTransformer } from '../graphql-auth-transformer';
 import { expectStashValueLike } from './test-helpers';
@@ -29,6 +29,7 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
           Post: {
             dbType: 'MySQL',
             provisionDB: false,
+            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },
         }),
       ),
@@ -125,6 +126,7 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
       modelToDatasourceMap.set(model, {
         dbType: 'MySQL',
         provisionDB: false,
+        provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
       });
     });
 
@@ -276,6 +278,7 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
       modelToDatasourceMap.set(model, {
         dbType: 'MySQL',
         provisionDB: false,
+        provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
       });
     });
 
@@ -384,6 +387,7 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
           Post: {
             dbType: 'MySQL',
             provisionDB: false,
+            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },
         }),
       ),
@@ -442,6 +446,7 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
       modelToDatasourceMap.set(model, {
         dbType: 'MySQL',
         provisionDB: false,
+        provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
       });
     });
 
@@ -513,6 +518,7 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
       modelToDatasourceMap.set(model, {
         dbType: 'MySQL',
         provisionDB: false,
+        provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
       });
     });
 
@@ -556,6 +562,7 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
       modelToDatasourceMap.set(model, {
         dbType: 'MySQL',
         provisionDB: false,
+        provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
       });
     });
 
@@ -585,6 +592,7 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
       modelToDatasourceMap.set(model, {
         dbType: 'MySQL',
         provisionDB: false,
+        provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
       });
     });
     const out = testTransform({

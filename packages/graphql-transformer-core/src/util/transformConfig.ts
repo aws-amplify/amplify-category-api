@@ -413,14 +413,34 @@ export type DBType = 'DDB' | 'MySQL' | 'Postgres';
 export interface DataSourceType {
   dbType: DBType;
   provisionDB: boolean;
+  provisionStrategy: DataSourceProvisionStrategy;
 }
 
-function constructDataSourceType(dbType: DBType, provisionDB: boolean = true): DataSourceType {
+export const enum DynamoDBProvisionStrategy {
+  /**
+   * Use default cloud formation resource of `AWS::DynamoDB::Table`
+   */
+  DEFAULT = 'DEFAULT',
+  /**
+   * Use custom resource type `Custom::AmplifyDynamoDBTable`
+   */
+  AMPLIFY_TABLE = 'AMPLIFY_TABLE',
+}
+
+// TODO: add strategy for the RDS
+export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy;
+
+const constructDataSourceType = (
+  dbType: DBType,
+  provisionDB = true,
+  provisionStrategy = DynamoDBProvisionStrategy.DEFAULT,
+): DataSourceType => {
   return {
     dbType,
     provisionDB,
+    provisionStrategy,
   };
-}
+};
 
 /**
  * Constructs a map of model names to datasource types for the specified schema. Used by the transformer to auto-generate a model mapping if

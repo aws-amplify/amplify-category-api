@@ -1,6 +1,7 @@
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { ConflictHandlerType, DataSourceType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { DataSourceType, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, Kind, parse } from 'graphql';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { HasManyTransformer, HasOneTransformer } from '..';
@@ -751,10 +752,12 @@ describe('@hasOne directive with RDS datasource', () => {
     modelToDatasourceMap.set('User', {
       dbType: 'MySQL',
       provisionDB: false,
+      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
     });
     modelToDatasourceMap.set('Profile', {
       dbType: 'MySQL',
       provisionDB: false,
+      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
     });
 
     const inputSchema = `
@@ -790,10 +793,12 @@ describe('@hasOne directive with RDS datasource', () => {
     modelToDatasourceMap.set('User', {
       dbType: 'MySQL',
       provisionDB: false,
+      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
     });
     modelToDatasourceMap.set('Profile', {
       dbType: 'MySQL',
       provisionDB: false,
+      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
     });
 
     const inputSchema = `

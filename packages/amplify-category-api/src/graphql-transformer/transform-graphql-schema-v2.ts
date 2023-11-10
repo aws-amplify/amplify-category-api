@@ -1,19 +1,19 @@
 import path from 'path';
 import {
-  RDSConnectionSecrets,
-  DataSourceType,
-  UserDefinedSlot,
-  isImportedRDSType,
-  DBType,
   getEngineFromDBType,
   getImportedRDSType,
+  isImportedRDSType,
+  RDSConnectionSecrets,
+  UserDefinedSlot,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncAuthConfiguration,
+  DBType,
   TransformerLog,
   TransformerLogLevel,
   VpcConfig,
   RDSLayerMapping,
+  DataSourceType,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import * as fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
@@ -207,11 +207,12 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
 
   const { modelToDatasourceMap } = opts.projectConfig;
   const datasourceMapValues: Array<DataSourceType> = modelToDatasourceMap ? Array.from(modelToDatasourceMap.values()) : [];
-  const datasourceSecretMap = new Map<string, RDSConnectionSecrets>();
+  let datasourceSecretMap: Map<string, RDSConnectionSecrets> | undefined = undefined;
   let sqlLambdaVpcConfig: VpcConfig | undefined;
   if (datasourceMapValues.some((value) => isImportedRDSType(value))) {
     const dbType = getImportedRDSType(modelToDatasourceMap);
-    datasourceSecretMap.set(dbType, await getDatasourceSecretMap(context));
+    datasourceSecretMap = new Map();
+    datasourceSecretMap.set(dbType, await getRDSConnectionSecrets(context));
     sqlLambdaVpcConfig = await isSqlLambdaVpcConfigRequired(context, dbType);
   }
   const rdsLayerMapping = await getRDSLayerMapping();
@@ -294,8 +295,7 @@ const isSqlLambdaVpcConfigRequired = async (context: $TSContext, dbType: DBType)
   return vpcSubnetConfig;
 };
 
-const getDatasourceSecretMap = async (context: $TSContext): Promise<RDSConnectionSecrets> => {
-  const outputMap = new Map<string, RDSConnectionSecrets>();
+const getRDSConnectionSecrets = async (context: $TSContext): Promise<RDSConnectionSecrets> => {
   const apiName = getAppSyncAPIName();
   const secretsKey = await getSecretsKey();
   const rdsSecretPaths = await getExistingConnectionSecretNames(context, apiName, secretsKey);

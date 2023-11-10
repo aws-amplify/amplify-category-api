@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.2.1...@aws-amplify/graphql-api-construct@1.3.0) (2023-11-06)
+
+### Features
+
+- enable allowListedRoles as string ([#2016](https://github.com/aws-amplify/amplify-category-api/issues/2016)) ([02b9cc0](https://github.com/aws-amplify/amplify-category-api/commit/02b9cc0308d591f9caa21729ce5236c4611c31b3))
+
 ## [1.2.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.2.0...@aws-amplify/graphql-api-construct@1.2.1) (2023-11-02)
 
 ### Bug Fixes

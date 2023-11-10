@@ -58,8 +58,8 @@ const getSubnetAvailabilityZonesFromSubnetGroup = async (
 
   const subnetAvailabilityZones = subnetGroup?.Subnets.map((subnet): SubnetAvailabilityZone => {
     return {
-      SubnetId: subnet.SubnetIdentifier,
-      AvailabilityZone: subnet.SubnetAvailabilityZone?.Name,
+      subnetId: subnet.SubnetIdentifier,
+      availabilityZone: subnet.SubnetAvailabilityZone?.Name,
     };
   });
 

@@ -1,11 +1,10 @@
 import path from 'path';
 import _ from 'lodash';
 import { parse, Kind, ObjectTypeDefinitionNode } from 'graphql';
-import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { DDB_DB_TYPE, MYSQL_DB_TYPE, ModelDataSourceType, POSTGRES_DB_TYPE } from '../types';
-import { DataSourceType, DBType } from '../config';
-import { APICategory } from './api-category';
+import { DataSourceType, DBType, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { DDB_DB_TYPE, MYSQL_DB_TYPE, POSTGRES_DB_TYPE } from '../types';
 import { ImportedRDSType } from '../types';
+import { APICategory } from './api-category';
 
 const getParameterNameForDBSecret = (secret: string, secretsKey: string): string => {
   return `${secretsKey}_${secret}`;
@@ -40,7 +39,7 @@ export const getParameterStoreSecretPath = (
  * @param typename Model name
  * @returns datasource type
  */
-export const getModelDataSourceType = (ctx: TransformerContextProvider, typename: string): ModelDataSourceType => {
+export const getModelDataSourceType = (ctx: TransformerContextProvider, typename: string): DBType => {
   const config = ctx.modelToDatasourceMap.get(typename);
   return config?.dbType || DDB_DB_TYPE;
 };

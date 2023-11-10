@@ -1,9 +1,9 @@
 import * as cdk from 'aws-cdk-lib';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
+import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
-import { SqlModelDataSourceBindingDbConnectionConfig, SqlModelDataSourceBindingVpcConfig } from '../../types';
-import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
+import { SqlModelDataSourceDefinitionDbConnectionConfig, VpcConfig } from '../../types';
 
 const defaultSchema = /* GraphQL */ `
   type Todo @model @auth(rules: [{ allow: owner }]) {
@@ -12,13 +12,13 @@ const defaultSchema = /* GraphQL */ `
   }
 `;
 
-const vpcConfiguration: SqlModelDataSourceBindingVpcConfig = {
+const vpcConfiguration: VpcConfig = {
   vpcId: 'vpc-123abc',
   securityGroupIds: ['sg-123abc'],
-  subnetAvailabilityZones: [{ subnetId: 'subnet-123abc', availabilityZone: 'us-east-1a' }],
+  subnetAvailabilityZoneConfig: [{ subnetId: 'subnet-123abc', availabilityZone: 'us-east-1a' }],
 };
 
-const dbConnectionConfig: SqlModelDataSourceBindingDbConnectionConfig = {
+const dbConnectionConfig: SqlModelDataSourceDefinitionDbConnectionConfig = {
   hostnameSsmPath: '/ssm/path/hostnameSsmPath',
   usernameSsmPath: '/ssm/path/usernameSsmPath',
   passwordSsmPath: '/ssm/path/passwordSsmPath',
@@ -34,9 +34,12 @@ describe('sql-bound API generated resource access', () => {
         const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
         const api = new AmplifyGraphqlApi(stack, 'TestSqlBoundApi', {
           definition: AmplifyGraphqlDefinition.fromString(defaultSchema, {
-            bindingType: 'MySQL',
-            vpcConfiguration,
-            dbConnectionConfig,
+            name: 'MySQLDefinition',
+            strategy: {
+              dbType: 'MYSQL',
+              vpcConfiguration,
+              dbConnectionConfig,
+            },
           }),
           authorizationModes: {
             userPoolConfig: { userPool },
@@ -81,9 +84,12 @@ describe('sql-bound API generated resource access', () => {
         const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
         const api = new AmplifyGraphqlApi(stack, 'TestSqlBoundApi', {
           definition: AmplifyGraphqlDefinition.fromString(defaultSchema, {
-            bindingType: 'MySQL',
-            vpcConfiguration,
-            dbConnectionConfig,
+            name: 'MySQLDefinition',
+            strategy: {
+              dbType: 'MYSQL',
+              vpcConfiguration,
+              dbConnectionConfig,
+            },
           }),
           authorizationModes: {
             userPoolConfig: { userPool },
@@ -108,8 +114,11 @@ describe('sql-bound API generated resource access', () => {
         const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
         const api = new AmplifyGraphqlApi(stack, 'TestSqlBoundApi', {
           definition: AmplifyGraphqlDefinition.fromString(defaultSchema, {
-            bindingType: 'MySQL',
-            dbConnectionConfig,
+            name: 'MySQLDefinition',
+            strategy: {
+              dbType: 'MYSQL',
+              dbConnectionConfig,
+            },
           }),
           authorizationModes: {
             userPoolConfig: { userPool },

@@ -80,6 +80,30 @@ describe('auth modes', () => {
     });
   });
 
+  it('renders with iam auth and allow listed roles', () => {
+    verifySynth((stack) => {
+      const appsync = new iam.ServicePrincipal('appsync.amazonaws.com');
+      const authenticatedUserRole = new iam.Role(stack, 'AuthRole', { assumedBy: appsync });
+      const unauthenticatedUserRole = new iam.Role(stack, 'UnauthRole', { assumedBy: appsync });
+
+      new AmplifyGraphqlApi(stack, 'TestApi', {
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+          type Todo @model {
+            description: String!
+          }
+        `),
+        authorizationModes: {
+          iamConfig: {
+            identityPoolId: 'identityPool123',
+            authenticatedUserRole,
+            unauthenticatedUserRole,
+            allowListedRoles: [authenticatedUserRole, 'admin2'],
+          },
+        },
+      });
+    });
+  });
+
   it('renders with user pool auth', () => {
     verifySynth((stack) => {
       const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');

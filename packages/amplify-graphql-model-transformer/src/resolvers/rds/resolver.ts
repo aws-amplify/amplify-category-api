@@ -219,9 +219,9 @@ const extractSubnetForVpcEndpoint = (avaliabilityZoneMappings: SubnetAvailabilit
   const avaliabilityZones = [] as string[];
   const result = [];
   for (const subnet of avaliabilityZoneMappings) {
-    if (!avaliabilityZones.includes(subnet.AvailabilityZone)) {
-      avaliabilityZones.push(subnet.AvailabilityZone);
-      result.push(subnet.SubnetId);
+    if (!avaliabilityZones.includes(subnet.availabilityZone)) {
+      avaliabilityZones.push(subnet.availabilityZone);
+      result.push(subnet.subnetId);
     }
   }
   return result;

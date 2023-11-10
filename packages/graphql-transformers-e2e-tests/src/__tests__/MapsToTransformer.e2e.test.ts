@@ -2,14 +2,16 @@ import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { DDB_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
+import { DataSourceType, DynamoDBProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { getSchemaDeployer, SchemaDeployer } from '../deploySchema';
-import { DDB_DB_TYPE, DataSourceType } from '@aws-amplify/graphql-transformer-core';
 
 describe('@mapsTo transformer', () => {
   jest.setTimeout(1000 * 60 * 15); // 15 minutes
   const ddbInfo: DataSourceType = {
     dbType: DDB_DB_TYPE,
     provisionDB: true,
+    provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
   };
   const transform = (schema: string) =>
     testTransform({

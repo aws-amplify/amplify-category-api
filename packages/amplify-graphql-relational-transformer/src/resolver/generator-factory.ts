@@ -1,4 +1,5 @@
-import { DBType, MYSQL_DB_TYPE, POSTGRES_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
+import { MYSQL_DB_TYPE, POSTGRES_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
+import { DBType } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSRelationalResolverGenerator } from './rds-generator';
 import { DDBRelationalResolverGenerator } from './ddb-generator';
 import { RelationalResolverGenerator } from './generator';

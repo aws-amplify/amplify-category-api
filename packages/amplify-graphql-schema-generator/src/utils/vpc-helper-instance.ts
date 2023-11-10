@@ -33,8 +33,8 @@ export const checkHostInDBInstances = async (hostname: string, region: string): 
 
   const subnetAvailabilityZones = instance?.DBSubnetGroup.Subnets.map((subnet): SubnetAvailabilityZone => {
     return {
-      SubnetId: subnet.SubnetIdentifier,
-      AvailabilityZone: subnet.SubnetAvailabilityZone?.Name,
+      subnetId: subnet.SubnetIdentifier,
+      availabilityZone: subnet.SubnetAvailabilityZone?.Name,
     };
   });
 

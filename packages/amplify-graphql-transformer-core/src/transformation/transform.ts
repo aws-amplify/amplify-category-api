@@ -10,6 +10,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type {
   AssetProvider,
+  DataSourceType,
   StackManagerProvider,
   TransformParameterProvider,
   TransformParameters,
@@ -43,7 +44,6 @@ import { TransformerOutput } from '../transformer-context/output';
 import { adoptAuthModes } from '../utils/authType';
 import { MappingTemplate } from '../cdk-compat';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
-import { DataSourceType } from '../config/project-config';
 import { defaultTransformParameters } from '../transformer-context/transform-parameters';
 import * as SyncUtils from './sync-utils';
 import { UserDefinedSlot, DatasourceTransformationConfig } from './types';
