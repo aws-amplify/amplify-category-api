@@ -76,6 +76,7 @@ describe('graphql transformer utils', () => {
           stacks: {},
           modelToDatasourceMap: new Map<string, DataSourceType>(),
           config: { Version: 5, ElasticsearchWarning: true },
+          customQueries: new Map<string, string>(),
         } as TransformerProjectConfig;
       });
 
@@ -98,6 +99,7 @@ describe('graphql transformer utils', () => {
           stacks: {},
           modelToDatasourceMap: new Map<string, DataSourceType>(),
           config: { Version: 5, ElasticsearchWarning: true },
+          customQueries: new Map<string, string>(),
         } as TransformerProjectConfig;
       });
 
@@ -120,6 +122,7 @@ describe('graphql transformer utils', () => {
           stacks: {},
           modelToDatasourceMap: new Map<string, DataSourceType>(),
           config: { Version: 5, ElasticsearchWarning: true },
+          customQueries: new Map<string, string>(),
         } as TransformerProjectConfig;
       });
 

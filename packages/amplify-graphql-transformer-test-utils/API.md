@@ -31,6 +31,7 @@ import type { SynthParameters } from '@aws-amplify/graphql-transformer-interface
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
+import type { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
 export interface AmplifyApiGraphQlResourceStackTemplate {
@@ -139,7 +140,9 @@ export type TestTransformParameters = {
     stackMapping?: Record<string, string>;
     modelToDatasourceMap?: Map<string, DataSourceType>;
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
+    customQueries?: Map<string, string>;
     overrideConfig?: OverrideConfig;
+    sqlLambdaVpcConfig?: VpcConfig;
     synthParameters?: Partial<SynthParameters>;
 };
 
@@ -164,7 +167,7 @@ export class TransformManager {
 
 // Warnings were encountered during analysis:
 //
-// src/test-transform.ts:17:3 - (ae-forgotten-export) The symbol "OverrideConfig" needs to be exported by the entry point index.d.ts
+// src/test-transform.ts:18:3 - (ae-forgotten-export) The symbol "OverrideConfig" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

@@ -1,6 +1,7 @@
 import { CfnResource, IAsset } from 'aws-cdk-lib';
 import { Construct, IConstruct } from 'constructs';
 import { Grant, IGrantable, IRole } from 'aws-cdk-lib/aws-iam';
+// eslint-disable-next-line import/no-cycle
 import { TransformHostProvider } from './transform-host-provider';
 
 // Auth Config Modes
@@ -62,8 +63,8 @@ export interface LambdaConfig {
   lambdaFunction: string;
 
   /**
-   * The ARN of an existing Lambda function. If provided, this will circumvent the ARN construction when building the API auth mode config. The ARN must refer to the same function
-   * named in `lambdaFunction`.
+   * The ARN of an existing Lambda function. If provided, this will circumvent the ARN construction when building the API auth mode config.
+   * The ARN must refer to the same function named in `lambdaFunction`.
    */
   lambdaArn?: string;
 
@@ -74,19 +75,41 @@ export interface LambdaConfig {
 }
 
 /**
- * VpcConfig required to deploy a lambda in a VPC
+ * Configuration of the VPC in which to install a Lambda to resolve queries against a SQL-based data source. The SQL Lambda will be deployed
+ * into the specified VPC, subnets, and security groups. The specified subnets and security groups must be in the same VPC. The VPC must
+ * have at least one subnet. The construct will also create VPC service endpoints in the specified subnets, as well as inbound security
+ * rules, to allow traffic on port 443 within each security group. This allows the Lambda to read database connection information from
+ * Secure Systems Manager.
+ * @experimental
  */
-export type VpcConfig = {
-  vpcId: string;
-  subnetIds: string[];
-  securityGroupIds: string[];
-};
+export interface VpcConfig {
+  /** The VPC to install the Lambda data source in. */
+  readonly vpcId: string;
 
-export type RDSLayerMapping = {
-  [key: string]: {
+  /** The security groups to install the Lambda data source in. */
+  readonly securityGroupIds: string[];
+
+  /** The subnets to install the Lambda data source in, one per availability zone. */
+  readonly subnetAvailabilityZoneConfig: SubnetAvailabilityZone[];
+}
+
+/**
+ * Although it is possible to create multiple subnets in a single availability zone, VPC Endpoints may only be deployed to a single subnet
+ * in a given availability zone. We use this structure to ensure that the Lambda function and VPC endpoints are mutually consistent.
+ */
+export interface SubnetAvailabilityZone {
+  readonly subnetId: string;
+  readonly availabilityZone: string;
+}
+
+/**
+ * Maps a given AWS region to the SQL Lambda layer version ARN for that region. TODO: Rename to SQLLambdaLayerMapping
+ */
+export interface RDSLayerMapping {
+  readonly [key: string]: {
     layerRegion: string;
   };
-};
+}
 
 export interface AppSyncFunctionConfigurationProvider extends IConstruct {
   readonly arn: string;

@@ -1,6 +1,7 @@
 import {
   DDB_DB_TYPE,
   MYSQL_DB_TYPE,
+  POSTGRES_DB_TYPE,
   DirectiveWrapper,
   FieldWrapper,
   generateGetArgumentsInput,
@@ -147,9 +148,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   constructor(options: ModelTransformerOptions = {}) {
     super('amplify-model-transformer', directiveDefinition);
     this.options = this.getOptions(options);
-    const rdsGenerator = new RdsModelResourceGenerator();
     this.resourceGeneratorMap.set(DDB_DB_TYPE, new DynamoModelResourceGenerator());
-    this.resourceGeneratorMap.set(MYSQL_DB_TYPE, rdsGenerator);
+    this.resourceGeneratorMap.set(MYSQL_DB_TYPE, new RdsModelResourceGenerator());
+    this.resourceGeneratorMap.set(POSTGRES_DB_TYPE, new RdsModelResourceGenerator());
     this.resourceGeneratorMap.set(CUSTOM_DDB_DB_TYPE, new AmplifyDynamoModelResourceGenerator());
   }
 
@@ -171,6 +172,10 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       this.resourceGeneratorMap.get(MYSQL_DB_TYPE)?.enableGenerator();
       this.resourceGeneratorMap.get(MYSQL_DB_TYPE)?.enableUnprovisioned();
     }
+    if (datasourceMapValues.some((value) => value.dbType === POSTGRES_DB_TYPE && !value.provisionDB)) {
+      this.resourceGeneratorMap.get(POSTGRES_DB_TYPE)?.enableGenerator();
+      this.resourceGeneratorMap.get(POSTGRES_DB_TYPE)?.enableUnprovisioned();
+    }
     if (
       datasourceMapValues.some(
         (value) => value.dbType === DDB_DB_TYPE && value.provisionDB && value.provisionStrategy === DynamoDBProvisionStrategy.AMPLIFY_TABLE,
@@ -179,9 +184,11 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       this.resourceGeneratorMap.get(CUSTOM_DDB_DB_TYPE)?.enableGenerator();
       this.resourceGeneratorMap.get(CUSTOM_DDB_DB_TYPE)?.enableProvisioned();
     }
-
-    this.resourceGeneratorMap.get(DDB_DB_TYPE)?.enableGenerator();
-    this.resourceGeneratorMap.get(DDB_DB_TYPE)?.enableProvisioned();
+    if (datasourceMapValues.length === 0) {
+      // Just enable DynamoDB provisioned, legacy use
+      this.resourceGeneratorMap.get(DDB_DB_TYPE)?.enableGenerator();
+      this.resourceGeneratorMap.get(DDB_DB_TYPE)?.enableProvisioned();
+    }
   };
 
   object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider): void => {
@@ -196,6 +203,16 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         `'${definition.name.value}' is a reserved type name and currently in use within the default schema element.`,
       );
     }
+
+    if (!isDynamoDB) {
+      const containsPrimaryKey = definition.fields?.some((field) => {
+        return field?.directives?.some((dir) => dir.name.value === 'primaryKey');
+      });
+      if (!containsPrimaryKey) {
+        throw new InvalidDirectiveError(`RDS model "${definition.name.value}" must contain a primary key field`);
+      }
+    }
+
     // todo: get model configuration with default values and store it in the map
     const typeName = definition.name.value;
 

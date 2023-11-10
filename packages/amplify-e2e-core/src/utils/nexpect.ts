@@ -1,3 +1,10 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable no-empty */
+/* eslint-disable quotes */
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable prefer-const */
+/* eslint-disable func-style */
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
 /*
  * nexpect.js: Top-level include for the `nexpect` module.
  *
@@ -681,7 +688,7 @@ function createExpectationError(expected: string | RegExp, actual: string) {
   return err;
 }
 
-export function nspawn(command: string | string[], params: string[] = [], options: SpawnOptions = {}) {
+export const nspawn = (command: string | string[], params: string[] = [], options: SpawnOptions = {}): ExecutionContext => {
   if (Array.isArray(command)) {
     params = command;
     command = params.shift();
@@ -738,7 +745,7 @@ export function nspawn(command: string | string[], params: string[] = [], option
     }
   }
 
-  let context: Context = {
+  const context: Context = {
     command: command,
     cwd: options.cwd || undefined,
     env: childEnv || undefined,
@@ -752,8 +759,9 @@ export function nspawn(command: string | string[], params: string[] = [], option
       if (context.process) {
         return context.process.getRecording();
       }
+      return undefined;
     },
   };
 
   return chain(context);
-}
+};

@@ -5,7 +5,6 @@ import {
   TransformHostProvider,
   TransformerLog,
   NestedStackProvider,
-  VpcConfig,
   RDSLayerMapping,
   SynthParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
@@ -15,6 +14,7 @@ import type {
   StackManagerProvider,
   TransformParameterProvider,
   TransformParameters,
+  VpcConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { Aws, CfnOutput, Fn, Stack } from 'aws-cdk-lib';
@@ -115,7 +115,6 @@ export class GraphQLTransform {
 
   private readonly sqlLambdaVpcConfig?: VpcConfig;
   private readonly transformParameters: TransformParameters;
-  private readonly rdsLayerMapping?: RDSLayerMapping;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
   // that specifies we have run already run a directive at a given location.
@@ -147,7 +146,6 @@ export class GraphQLTransform {
     this.stackMappingOverrides = options.stackMapping || {};
     this.userDefinedSlots = options.userDefinedSlots || ({} as Record<string, UserDefinedSlot[]>);
     this.resolverConfig = options.resolverConfig || {};
-    this.sqlLambdaVpcConfig = options.sqlLambdaVpcConfig;
     this.sqlLambdaVpcConfig = options.sqlLambdaVpcConfig;
     this.transformParameters = {
       ...defaultTransformParameters,
@@ -210,13 +208,14 @@ export class GraphQLTransform {
       synthParameters,
       parsedDocument,
       datasourceConfig?.modelToDatasourceMap ?? new Map<string, DataSourceType>(),
+      datasourceConfig?.customQueries ?? new Map<string, string>(),
       this.stackMappingOverrides,
       this.authConfig,
       this.transformParameters,
       this.resolverConfig,
       datasourceConfig?.datasourceSecretParameterLocations,
       this.sqlLambdaVpcConfig,
-      this.rdsLayerMapping,
+      datasourceConfig?.rdsLayerMapping,
     );
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),

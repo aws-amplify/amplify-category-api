@@ -672,3 +672,46 @@ export function updateAuthAddAdminQueries(projectDir: string, groupName: string 
       });
   });
 }
+
+export const enableUserPoolUnauthenticatedAccess = async (cwd: string, settings: any = {}): Promise<void> => {
+  return spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'auth'], { cwd, stripColors: true })
+    .wait('What do you want to do')
+    .sendKeyDown()
+    .sendCarriageReturn() // Walkthrough all the auth configurations
+    .wait('Select the authentication/authorization services that you want to use')
+    .sendCarriageReturn()
+    .wait('Allow unauthenticated logins')
+    .sendKeyUp()
+    .sendCarriageReturn() // Yes
+    .wait('Do you want to enable 3rd party authentication providers in your identity pool')
+    .sendKeyDown() // No
+    .sendCarriageReturn()
+    .wait('Do you want to add User Pool Groups')
+    .sendKeyDown() // No
+    .sendCarriageReturn()
+    .wait('Do you want to add an admin queries API')
+    .sendKeyDown() // No
+    .sendCarriageReturn()
+    .wait('Multifactor authentication (MFA) user login options')
+    .sendCarriageReturn() // OFF
+    .wait('Email based user registration/forgot password')
+    .sendCarriageReturn() // Enabled
+    .wait('Specify an email verification subject')
+    .sendCarriageReturn()
+    .wait('Specify an email verification message')
+    .sendCarriageReturn()
+    .wait('Do you want to override the default password policy for this User Pool')
+    .sendCarriageReturn()
+    .wait("Specify the app's refresh token expiration period (in days)")
+    .sendCarriageReturn()
+    .wait('Do you want to specify the user attributes this app can read and write')
+    .sendCarriageReturn()
+    .wait('Do you want to enable any of the following capabilities')
+    .sendCarriageReturn()
+    .wait('Do you want to use an OAuth flow')
+    .sendKeyDown() // No
+    .sendCarriageReturn()
+    .wait('Do you want to configure Lambda Triggers for Cognito')
+    .sendConfirmNo()
+    .runAsync();
+};

@@ -262,7 +262,7 @@ export interface ModelDataSourceDefinition {
 export type ModelDataSourceDefinitionDbType = 'DYNAMODB';
 
 // @public
-export type ModelDataSourceDefinitionStrategy = DefaultDynamoDbModelDataSourceDefinitionStrategy | AmplifyDynamoDbModelDataSourceDefinitionStrategy;
+export type ModelDataSourceDefinitionStrategy = DefaultDynamoDbModelDataSourceDefinitionStrategy | AmplifyDynamoDbModelDataSourceDefinitionStrategy | SQLLambdaModelDataSourceDefinitionStrategy;
 
 // @public
 export interface MutationFunctionSlot extends FunctionSlotBase {
@@ -312,6 +312,27 @@ export interface QueryFunctionSlot extends FunctionSlotBase {
 }
 
 // @public
+export type SQLLambdaLayerMapping = Record<string, string>;
+
+// @public
+export interface SQLLambdaModelDataSourceDefinitionStrategy {
+    readonly customSqlStatements?: Record<string, string>;
+    readonly dbConnectionConfig: SqlModelDataSourceDefinitionDbConnectionConfig;
+    readonly dbType: 'MYSQL' | 'POSTGRES';
+    readonly sqlLambdaLayerMapping?: SQLLambdaLayerMapping;
+    readonly vpcConfiguration?: VpcConfig;
+}
+
+// @public
+export interface SqlModelDataSourceDefinitionDbConnectionConfig {
+    readonly databaseNameSsmPath: string;
+    readonly hostnameSsmPath: string;
+    readonly passwordSsmPath: string;
+    readonly portSsmPath: string;
+    readonly usernameSsmPath: string;
+}
+
+// @public
 export interface SSESpecification {
     readonly kmsMasterKeyId?: string;
     readonly sseEnabled: boolean;
@@ -327,6 +348,12 @@ export enum SSEType {
 // @public
 export interface StreamSpecification {
     readonly streamViewType: StreamViewType;
+}
+
+// @public
+export interface SubnetAvailabilityZone {
+    readonly availabilityZone: string;
+    readonly subnetId: string;
 }
 
 // @public
@@ -360,6 +387,13 @@ export interface TranslationBehavior {
 // @public
 export interface UserPoolAuthorizationConfig {
     readonly userPool: IUserPool;
+}
+
+// @public
+export interface VpcConfig {
+    readonly securityGroupIds: string[];
+    readonly subnetAvailabilityZoneConfig: SubnetAvailabilityZone[];
+    readonly vpcId: string;
 }
 
 // (No @packageDocumentation comment for this package)

@@ -18,13 +18,25 @@ import { multiSelect, singleSelect } from '../utils/selectors';
 import { selectRuntime, selectTemplate } from './function';
 import { modifiedApi } from './resources/modified-api-index';
 
+const VPC_DEPLOYMENT_WAIT_TIME = 1000 * 60 * 12; // 12 minutes;
+
 export function getSchemaPath(schemaName: string): string {
   return path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'schemas', schemaName);
 }
 
-export function apiGqlCompile(cwd: string, testingWithLatestCodebase: boolean = false) {
+export const apiGqlCompile = (
+  cwd: string,
+  testingWithLatestCodebase = false,
+  settings?: {
+    forceCompile?: boolean;
+  },
+): Promise<void> => {
+  const params = ['api', 'gql-compile'];
+  if (settings?.forceCompile) {
+    params.push('--force');
+  }
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['api', 'gql-compile'], { cwd, stripColors: true })
+    spawn(getCLIPath(testingWithLatestCodebase), params, { cwd, stripColors: true })
       .wait('GraphQL schema compiled successfully.')
       .run((err: Error) => {
         if (!err) {
@@ -34,7 +46,7 @@ export function apiGqlCompile(cwd: string, testingWithLatestCodebase: boolean = 
         }
       });
   });
-}
+};
 
 export interface AddApiOptions {
   apiName: string;
@@ -48,6 +60,7 @@ export interface ImportApiOptions {
   port: number;
   username: string;
   password: string;
+  engine?: string;
   useVpc?: boolean;
 }
 
@@ -57,7 +70,10 @@ export const defaultOptions: AddApiOptions = {
   transformerVersion: 2,
 };
 
-export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
+export const addApiWithoutSchema = async (
+  cwd: string,
+  opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {},
+): Promise<void> => {
   const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(options.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
@@ -87,7 +103,7 @@ export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions & {
 
     setTransformerVersionFlag(cwd, options.transformerVersion);
   });
-}
+};
 
 export function addApiWithOneModel(cwd: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
   const options = _.assign(defaultOptions, opts);
@@ -1048,13 +1064,12 @@ export const removeTransformConfigValue = (projRoot: string, apiName: string, ke
 
 export const importRDSDatabase = (cwd: string, opts: ImportApiOptions & { apiExists?: boolean }): Promise<void> => {
   const options = _.assign(defaultOptions, opts);
-  const vpcLambdaDeploymentDelayMS = 1000 * 60 * 12; // 12 minutes;
 
   return new Promise<void>((resolve, reject) => {
     const importCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['import', 'api', '--debug'], {
       cwd,
       stripColors: true,
-      noOutputTimeout: vpcLambdaDeploymentDelayMS,
+      noOutputTimeout: VPC_DEPLOYMENT_WAIT_TIME,
     });
     if (!options.apiExists) {
       importCommands
@@ -1067,10 +1082,16 @@ export const importRDSDatabase = (cwd: string, opts: ImportApiOptions & { apiExi
         .sendCarriageReturn();
     }
 
+    importCommands.wait('Select the database type:');
+    if (options.engine === 'postgres') {
+      importCommands.sendKeyDown(1);
+    }
+    importCommands.sendCarriageReturn();
+
     promptDBInformation(importCommands, options);
 
     if (options.useVpc) {
-      importCommands.wait(/.*Unable to connect to the database from this machine. Would you like to try from VPC.*/).sendConfirmYes();
+      importCommands.wait(/.*Unable to connect to the database from this machine. Would you like to try from VPC.*/).sendYes();
     }
 
     importCommands.wait(/.*Successfully imported the database schema into.*/).run((err: Error) => {
@@ -1108,10 +1129,39 @@ export function apiGenerateSchema(cwd: string, opts: ImportApiOptions & { validC
     const generateSchemaCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['generate-schema', 'api'], {
       cwd,
       stripColors: true,
+      noOutputTimeout: VPC_DEPLOYMENT_WAIT_TIME,
     });
     if (!options?.validCredentials) {
       promptDBInformation(generateSchemaCommands, options);
     }
+    if (options.useVpc) {
+      generateSchemaCommands.wait(/.*Unable to connect to the database from this machine. Would you like to try from VPC.*/).sendYes();
+    }
+    generateSchemaCommands.run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
+  });
+}
+
+export function apiGenerateSchemaWithError(cwd: string, opts: ImportApiOptions & { validCredentials: boolean; errMessage: string }) {
+  const options = _.assign(defaultOptions, opts);
+  return new Promise<void>((resolve, reject) => {
+    const generateSchemaCommands = spawn(getCLIPath(options.testingWithLatestCodebase), ['generate-schema', 'api'], {
+      cwd,
+      stripColors: true,
+      noOutputTimeout: VPC_DEPLOYMENT_WAIT_TIME,
+    });
+    if (!options?.validCredentials) {
+      promptDBInformation(generateSchemaCommands, options);
+    }
+    if (options.useVpc) {
+      generateSchemaCommands.wait(/.*Unable to connect to the database from this machine. Would you like to try from VPC.*/).sendYes();
+    }
+    generateSchemaCommands.wait(options.errMessage);
     generateSchemaCommands.run((err: Error) => {
       if (!err) {
         resolve();

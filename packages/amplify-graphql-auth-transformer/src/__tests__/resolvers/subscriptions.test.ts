@@ -1,4 +1,4 @@
-import { generateAuthExpressionForSubscriptions } from '../../resolvers/subscriptions';
+import { generateAuthExpressionForSubscriptions } from '../../vtl-generator/ddb/resolvers/subscriptions';
 import { AuthProvider, ConfiguredAuthProviders, RoleDefinition } from '../../utils';
 
 const configFromPartial = (partialConfig: Partial<ConfiguredAuthProviders>): ConfiguredAuthProviders =>

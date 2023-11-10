@@ -7,6 +7,8 @@ export {
   DBType,
   DataSourceProvisionStrategy,
   DynamoDBProvisionStrategy,
+  SQLLambdaModelProvisionStrategy,
+  SQLDBType,
 } from './transformer-datasource-provider';
 export { TransformerContextOutputProvider } from './transformer-context-output-provider';
 export { TransformerProviderRegistry } from './transformer-provider-registry';

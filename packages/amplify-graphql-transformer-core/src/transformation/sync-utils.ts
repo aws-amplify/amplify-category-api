@@ -9,6 +9,7 @@ import {
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct } from 'constructs';
+// eslint-disable-next-line import/no-cycle
 import { TransformerContext } from '../transformer-context';
 import { ResolverConfig, SyncConfig, SyncConfigLambda } from '../config/transformer-config';
 import { setResourceName } from '../utils';

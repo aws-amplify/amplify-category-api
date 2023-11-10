@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { executeTransform } from '@aws-amplify/graphql-transformer';
+import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
 import { NestedStack, Stack } from 'aws-cdk-lib';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { AssetProps } from '@aws-amplify/graphql-transformer-interfaces';
@@ -28,6 +28,7 @@ import { IEventBus } from 'aws-cdk-lib/aws-events';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { IServerlessCluster } from 'aws-cdk-lib/aws-rds';
 import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
+import { MYSQL_DB_TYPE, POSTGRES_DB_TYPE, RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
 import type {
   AmplifyGraphqlApiResources,
@@ -36,6 +37,7 @@ import type {
   IBackendOutputStorageStrategy,
   AddFunctionProps,
   ConflictResolution,
+  SQLLambdaModelDataSourceDefinitionStrategy,
 } from './types';
 import {
   convertAuthorizationModesToTransformerAuthConfig,
@@ -48,6 +50,7 @@ import {
   addAmplifyMetadataToStackDescription,
   getAdditionalAuthenticationTypes,
 } from './internal';
+import { isSQLLambdaModelDataSourceDefinition } from './sql-model-datasource-def';
 import { parseDataSourceConfig } from './internal/data-source-config';
 import { getStackForScope, walkAndProcessNodes } from './internal/construct-tree';
 
@@ -147,7 +150,6 @@ export class AmplifyGraphqlApi extends Construct {
       functionNameMap,
       outputStorageStrategy,
     } = props;
-
     addAmplifyMetadataToStackDescription(scope);
 
     const { authConfig, authSynthParameters } = convertAuthorizationModesToTransformerAuthConfig(authorizationModes);
@@ -165,7 +167,7 @@ export class AmplifyGraphqlApi extends Construct {
 
     const assetManager = new AssetManager();
 
-    executeTransform({
+    let executeTransformConfig: ExecuteTransformConfig = {
       scope: this,
       nestedStackProvider: {
         provide: (nestedStackScope: Construct, name: string) => new NestedStack(nestedStackScope, name),
@@ -193,8 +195,20 @@ export class AmplifyGraphqlApi extends Construct {
         ...defaultTranslationBehavior,
         ...(translationBehavior ?? {}),
       },
+
+      // Adds a modelToDataSourceMap field/value
       ...parseDataSourceConfig(definition.dataSourceDefinition),
-    });
+    };
+
+    // TODO: Update this to support multiple definitions; right now we assume only one SQL data source type
+    for (const def of Object.values(definition.dataSourceDefinition)) {
+      if (isSQLLambdaModelDataSourceDefinition(def)) {
+        executeTransformConfig = this.extendTransformConfig(executeTransformConfig, def);
+        break;
+      }
+    }
+
+    executeTransform(executeTransformConfig);
 
     this.codegenAssets = new CodegenAssets(this, 'AmplifyCodegenAssets', { modelSchema: definition.schema });
 
@@ -207,6 +221,63 @@ export class AmplifyGraphqlApi extends Construct {
     this.graphqlUrl = this.resources.cfnResources.cfnGraphqlApi.attrGraphQlUrl;
     this.realtimeUrl = this.resources.cfnResources.cfnGraphqlApi.attrRealtimeUrl;
     this.apiKey = this.resources.cfnResources.cfnApiKey?.attrApiKey;
+  }
+
+  /**
+   * Extends executeTransformConfig with fields for provisioning a SQL Lambda
+   * @param executeTransformConfig the executeTransformConfig to extend
+   * @param dataSourceDefinition the ModelDataSourceDefinition containing the SQL connection values to add to the transform config
+   * @returns the extended configuration that includes SQL DB connection information
+   */
+  private extendTransformConfig(
+    executeTransformConfig: ExecuteTransformConfig,
+    dataSourceDefinition: { name: string; strategy: SQLLambdaModelDataSourceDefinitionStrategy },
+  ): ExecuteTransformConfig {
+    const { strategy } = dataSourceDefinition;
+
+    const extendedConfig = { ...executeTransformConfig };
+    if (strategy.customSqlStatements) {
+      extendedConfig.customQueries = new Map(Object.entries(strategy.customSqlStatements));
+    }
+
+    const dbSecrets: Map<string, RDSConnectionSecrets> = new Map();
+    let dbSecretDbTypeKey: string;
+    switch (strategy.dbType) {
+      case 'MYSQL':
+        dbSecretDbTypeKey = MYSQL_DB_TYPE;
+        break;
+      case 'POSTGRES':
+        dbSecretDbTypeKey = POSTGRES_DB_TYPE;
+        break;
+      default:
+        throw new Error(`Unsupported binding type ${strategy.dbType}`);
+    }
+    dbSecrets.set(dbSecretDbTypeKey, {
+      username: strategy.dbConnectionConfig.usernameSsmPath,
+      password: strategy.dbConnectionConfig.passwordSsmPath,
+      host: strategy.dbConnectionConfig.hostnameSsmPath,
+      // Cast through `any` to allow the SSM Path string to be used on a type expecting a number. This flow expects the incoming value to be
+      // a string containing the SSM path.
+      port: strategy.dbConnectionConfig.portSsmPath as any,
+      database: strategy.dbConnectionConfig.databaseNameSsmPath,
+    });
+    extendedConfig.datasourceSecretParameterLocations = dbSecrets;
+
+    if (strategy.vpcConfiguration) {
+      const subnetAvailabilityZoneConfig = strategy.vpcConfiguration.subnetAvailabilityZoneConfig.map(
+        (saz): { subnetId: string; availabilityZone: string } => ({
+          subnetId: saz.subnetId,
+          availabilityZone: saz.availabilityZone,
+        }),
+      );
+      extendedConfig.sqlLambdaVpcConfig = {
+        vpcId: strategy.vpcConfiguration.vpcId,
+        securityGroupIds: strategy.vpcConfiguration.securityGroupIds,
+        subnetAvailabilityZoneConfig,
+      };
+    }
+
+    return extendedConfig;
   }
 
   /**
