@@ -70,6 +70,7 @@ test('ModelXConnection type is getting the directives added, when a field has @h
     postUserId: ID! @index(name: "byUser")
     message: String
   }`;
+
   const transformer = getTransformer(withAuthModes(iamDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
   const out = transformer.transform(validSchema);
   const schemaDoc = parse(out.schema);

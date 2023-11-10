@@ -20,21 +20,22 @@ import {
   defaultPrintTransformerLog,
 } from '../graphql-transformer';
 
+const numOfTransformers = 16;
 describe('constructTransformerChain', () => {
-  it('returns 14 transformers when no custom transformers are provided', () => {
-    expect(constructTransformerChain().length).toEqual(14);
+  it(`returns ${numOfTransformers} transformers when no custom transformers are provided`, () => {
+    expect(constructTransformerChain().length).toEqual(numOfTransformers);
   });
 
-  it('returns 16 transformers when 2 custom transformers are provided', () => {
+  it(`returns ${numOfTransformers + 2} transformers when 2 custom transformers are provided`, () => {
     expect(
       constructTransformerChain({
         customTransformers: [{} as unknown as TransformerPluginProvider, {} as unknown as TransformerPluginProvider],
       }).length,
-    ).toEqual(16);
+    ).toEqual(numOfTransformers + 2);
   });
 
   it('succeeds on admin roles', () => {
-    expect(constructTransformerChain().length).toEqual(14);
+    expect(constructTransformerChain().length).toEqual(numOfTransformers);
   });
 });
 

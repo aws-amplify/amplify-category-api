@@ -3,8 +3,9 @@ import { DefaultValueTransformer } from '@aws-amplify/graphql-default-value-tran
 import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
 import { HttpTransformer } from '@aws-amplify/graphql-http-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
+import { MapsToTransformer, RefersToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { SqlTransformer } from '@aws-amplify/graphql-sql-transformer';
 import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
 import {
   BelongsToTransformer,
@@ -75,6 +76,8 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
     new DefaultValueTransformer(),
     authTransformer,
     new MapsToTransformer(),
+    new SqlTransformer(),
+    new RefersToTransformer(),
     new SearchableModelTransformer(),
     ...(options?.customTransformers ?? []),
   ];
@@ -114,6 +117,7 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
 export type ExecuteTransformConfig = TransformConfig & {
   schema: string;
   modelToDatasourceMap?: Map<string, DataSourceType>;
+  customQueries?: Map<string, string>;
   datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
   printTransformerLog?: (log: TransformerLog) => void;
   sqlLambdaVpcConfig?: VpcConfig;
@@ -164,12 +168,12 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
     nestedStackProvider,
     assetProvider,
     synthParameters,
+    customQueries,
     parameterProvider,
   } = config;
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
   const transform = constructTransform(config);
-
   try {
     transform.transform({
       scope,
@@ -182,6 +186,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
         modelToDatasourceMap,
         datasourceSecretParameterLocations,
         rdsLayerMapping,
+        customQueries,
       },
     });
   } finally {

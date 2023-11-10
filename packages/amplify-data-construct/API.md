@@ -38,13 +38,18 @@ import { OptimisticConflictResolutionStrategy } from '@aws-amplify/graphql-api-c
 import { PartialTranslationBehavior } from '@aws-amplify/graphql-api-construct';
 import { ProvisionedThroughput } from '@aws-amplify/graphql-api-construct';
 import { QueryFunctionSlot } from '@aws-amplify/graphql-api-construct';
+import { SQLLambdaLayerMapping } from '@aws-amplify/graphql-api-construct';
+import { SQLLambdaModelDataSourceDefinitionStrategy } from '@aws-amplify/graphql-api-construct';
+import { SqlModelDataSourceDefinitionDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
 import { SSESpecification } from '@aws-amplify/graphql-api-construct';
 import { SSEType } from '@aws-amplify/graphql-api-construct';
 import { StreamSpecification } from '@aws-amplify/graphql-api-construct';
+import { SubnetAvailabilityZone } from '@aws-amplify/graphql-api-construct';
 import { SubscriptionFunctionSlot } from '@aws-amplify/graphql-api-construct';
 import { TimeToLiveSpecification } from '@aws-amplify/graphql-api-construct';
 import { TranslationBehavior } from '@aws-amplify/graphql-api-construct';
 import { UserPoolAuthorizationConfig } from '@aws-amplify/graphql-api-construct';
+import { VpcConfig } from '@aws-amplify/graphql-api-construct';
 
 export { AddFunctionProps }
 
@@ -114,11 +119,19 @@ export { ProvisionedThroughput }
 
 export { QueryFunctionSlot }
 
+export { SQLLambdaLayerMapping }
+
+export { SQLLambdaModelDataSourceDefinitionStrategy }
+
+export { SqlModelDataSourceDefinitionDbConnectionConfig }
+
 export { SSESpecification }
 
 export { SSEType }
 
 export { StreamSpecification }
+
+export { SubnetAvailabilityZone }
 
 export { SubscriptionFunctionSlot }
 
@@ -127,6 +140,8 @@ export { TimeToLiveSpecification }
 export { TranslationBehavior }
 
 export { UserPoolAuthorizationConfig }
+
+export { VpcConfig }
 
 // (No @packageDocumentation comment for this package)
 

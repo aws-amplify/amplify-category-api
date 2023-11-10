@@ -269,9 +269,11 @@ export class DefaultTransformHost implements TransformHostProvider {
       s3Bucket: functionCode.s3BucketName,
     };
 
+    const subnetIds = vpc?.subnetAvailabilityZoneConfig.map((sn) => sn.subnetId);
+
     if (vpc?.vpcId) {
       cfnFn.vpcConfig = {
-        subnetIds: vpc?.subnetIds,
+        subnetIds: subnetIds,
         securityGroupIds: vpc?.securityGroupIds,
       };
     }

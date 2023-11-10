@@ -27,7 +27,7 @@ import {
 import { DirectiveWrapper } from '../utils/directive-wrapper';
 
 export class GenericFieldWrapper {
-  protected type: TypeNode;
+  public type: TypeNode;
 
   public readonly directives: DirectiveWrapper[];
 

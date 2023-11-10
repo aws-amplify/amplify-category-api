@@ -1,4 +1,4 @@
-import { getFieldNameFor, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
+import { getFieldNameFor, getPrimaryKeyFields, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import {
   FieldMapEntry,
   ResolverReferenceEntry,
@@ -22,6 +22,57 @@ import {
   HasOneDirectiveConfiguration,
   ManyToManyDirectiveConfiguration,
 } from './types';
+
+export const validateParentReferencesFields = (
+  config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+): void => {
+  const { directiveName, object, references, relatedType } = config;
+  const enums = ctx.output.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[];
+
+  const primaryKeys = getPrimaryKeyFields(object);
+  if (primaryKeys.length !== references.length) {
+    throw new InvalidDirectiveError(
+      `The number of references provided to @${directiveName} must match the number of primary keys on ${object.name.value}.`,
+    );
+  }
+
+  for (const reference of references) {
+    const fieldNode = relatedType.fields!.find((field) => field.name.value === reference);
+
+    if (!fieldNode) {
+      throw new InvalidDirectiveError(`${reference} is not a field in ${relatedType.name.value}`);
+    }
+
+    if (!isScalarOrEnum(fieldNode.type, enums)) {
+      throw new InvalidDirectiveError(`All reference fields provided to @${directiveName} must be scalar or enum fields.`);
+    }
+  }
+};
+
+export const validateChildReferencesFields = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
+  const { directiveName, object, references, relatedType } = config;
+  const enums = ctx.output.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[];
+
+  const primaryKeys = getPrimaryKeyFields(relatedType);
+  if (primaryKeys.length !== references.length) {
+    throw new InvalidDirectiveError(
+      `The number of references provided to @${directiveName} must match the number of primary keys on ${relatedType.name.value}.`,
+    );
+  }
+
+  for (const reference of references) {
+    const fieldNode = object.fields!.find((field) => field.name.value === reference);
+
+    if (!fieldNode) {
+      throw new InvalidDirectiveError(`${reference} is not a field in ${object.name.value}`);
+    }
+
+    if (!isScalarOrEnum(fieldNode.type, enums)) {
+      throw new InvalidDirectiveError(`All reference fields provided to @${directiveName} must be scalar or enum fields.`);
+    }
+  }
+};
 
 export function getRelatedTypeIndex(
   config: HasOneDirectiveConfiguration,
@@ -110,12 +161,32 @@ export function getRelatedTypeIndex(
 }
 
 export function ensureFieldsArray(config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration) {
+  if (config.references) {
+    throw new InvalidDirectiveError(`DynamoDB models do not support 'references' on @${config.directiveName} directive.`);
+  }
+
   if (!config.fields) {
     config.fields = [];
   } else if (!Array.isArray(config.fields)) {
     config.fields = [config.fields];
   } else if (config.fields.length === 0) {
     throw new InvalidDirectiveError(`No fields passed to @${config.directiveName} directive.`);
+  }
+}
+
+export function ensureReferencesArray(
+  config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration,
+) {
+  if (config.fields) {
+    throw new InvalidDirectiveError(`Relational database models do not support 'fields' on @${config.directiveName} directive.`);
+  }
+
+  if (!config.references) {
+    throw new InvalidDirectiveError(`Reference fields must be passed to @${config.directiveName} directive for RDS models.`);
+  } else if (!Array.isArray(config.references)) {
+    config.references = [config.references];
+  } else if (config.references.length === 0) {
+    throw new InvalidDirectiveError(`No reference fields passed to @${config.directiveName} directive.`);
   }
 }
 
@@ -163,6 +234,44 @@ export function getFieldsNodes(
 
     if (!isScalarOrEnum(fieldNode.type, enums)) {
       throw new InvalidDirectiveError(`All fields provided to @${directiveName} must be scalar or enum fields.`);
+    }
+
+    return fieldNode;
+  });
+}
+
+export function getReferencesNodes(config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration, ctx: TransformerContextProvider) {
+  const { directiveName, references, relatedType } = config;
+  const enums = ctx.output.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[];
+
+  return references.map((fieldName) => {
+    const fieldNode = relatedType.fields!.find((field) => field.name.value === fieldName);
+
+    if (!fieldNode) {
+      throw new InvalidDirectiveError(`${fieldName} is not a field in ${relatedType.name.value}`);
+    }
+
+    if (!isScalarOrEnum(fieldNode.type, enums)) {
+      throw new InvalidDirectiveError(`All references provided to @${directiveName} must be scalar or enum fields.`);
+    }
+
+    return fieldNode;
+  });
+}
+
+export function getBelongsToReferencesNodes(config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider) {
+  const { directiveName, references, object } = config;
+  const enums = ctx.output.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[];
+
+  return references.map((fieldName) => {
+    const fieldNode = object.fields!.find((field) => field.name.value === fieldName);
+
+    if (!fieldNode) {
+      throw new InvalidDirectiveError(`${fieldName} is not a field in ${object.name.value}`);
+    }
+
+    if (!isScalarOrEnum(fieldNode.type, enums)) {
+      throw new InvalidDirectiveError(`All references provided to @${directiveName} must be scalar or enum fields.`);
     }
 
     return fieldNode;

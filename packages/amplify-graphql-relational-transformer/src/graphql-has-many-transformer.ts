@@ -1,11 +1,16 @@
 /* eslint-disable no-param-reassign */
 import {
+  DDB_DB_TYPE,
   DirectiveWrapper,
   generateGetArgumentsInput,
+  getDataSourceType,
   InvalidDirectiveError,
+  isRDSDBType,
   TransformerPluginBase,
+  isRDSModel,
 } from '@aws-amplify/graphql-transformer-core';
 import {
+  DBType,
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
@@ -23,7 +28,7 @@ import {
 } from 'graphql';
 import produce from 'immer';
 import { WritableDraft } from 'immer/dist/types/types-external';
-import { makeQueryConnectionWithKeyResolver, updateTableForConnection } from './resolvers';
+import { updateTableForConnection, setFieldMappingResolverReference } from './resolvers';
 import {
   addFieldsToDefinition,
   convertSortKeyFieldsToSortKeyConnectionFields,
@@ -34,21 +39,25 @@ import {
 import { HasManyDirectiveConfiguration } from './types';
 import {
   ensureFieldsArray,
+  ensureReferencesArray,
   getConnectionAttributeName,
   getFieldsNodes,
   getObjectPrimaryKey,
+  getReferencesNodes,
   getRelatedType,
   getRelatedTypeIndex,
   registerHasManyForeignKeyMappings,
   validateDisallowedDataStoreRelationships,
   validateModelDirective,
+  validateParentReferencesFields,
   validateRelatedModelDirective,
 } from './utils';
+import { getGenerator } from './resolver/generator-factory';
 
 const directiveName = 'hasMany';
 const defaultLimit = 100;
 const directiveDefinition = `
-  directive @${directiveName}(indexName: String, fields: [String!], limit: Int = ${defaultLimit}) on FIELD_DEFINITION
+  directive @${directiveName}(indexName: String, fields: [String!], references: [String!], limit: Int = ${defaultLimit}) on FIELD_DEFINITION
 `;
 
 /**
@@ -133,10 +142,15 @@ export class HasManyTransformer extends TransformerPluginBase {
    */
   prepare = (context: TransformerPrepareStepContextProvider): void => {
     this.directiveList.forEach((config) => {
+      const modelName = config.object.name.value;
+      if (isRDSModel(context as TransformerContextProvider, modelName)) {
+        setFieldMappingResolverReference(context, config.relatedType?.name?.value, modelName, config.field.name.value, true);
+        return;
+      }
       registerHasManyForeignKeyMappings({
         transformParameters: context.transformParameters,
         resourceHelper: context.resourceHelper,
-        thisTypeName: config.object.name.value,
+        thisTypeName: modelName,
         thisFieldName: config.field.name.value,
         relatedType: config.relatedType,
       });
@@ -147,7 +161,12 @@ export class HasManyTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      config.relatedTypeIndex = getRelatedTypeIndex(config, context, config.indexName);
+      const dbType = getDataSourceType(config.field.type, context);
+      if (dbType === DDB_DB_TYPE) {
+        config.relatedTypeIndex = getRelatedTypeIndex(config, context, config.indexName);
+      } else if (isRDSDBType(dbType)) {
+        validateParentReferencesFields(config, context);
+      }
       ensureHasManyConnectionField(config, context);
       extendTypeWithConnection(config, context);
     }
@@ -157,24 +176,42 @@ export class HasManyTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      updateTableForConnection(config, context);
-      makeQueryConnectionWithKeyResolver(config, context);
+      const dbType = getDataSourceType(config.field.type, context);
+      if (dbType === DDB_DB_TYPE) {
+        updateTableForConnection(config, context);
+      }
+      makeQueryResolver(config, context, dbType);
     }
   };
 }
 
+const makeQueryResolver = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider, dbType: DBType): void => {
+  const generator = getGenerator(dbType);
+  generator.makeHasManyGetItemsConnectionWithKeyResolver(config, ctx);
+};
+
 const validate = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field } = config;
 
-  ensureFieldsArray(config);
+  const dbType = getDataSourceType(field.type, ctx);
+  config.relatedType = getRelatedType(config, ctx);
+
+  if (dbType === DDB_DB_TYPE) {
+    ensureFieldsArray(config);
+    config.fieldNodes = getFieldsNodes(config, ctx);
+  }
+
+  if (isRDSDBType(dbType)) {
+    ensureReferencesArray(config);
+    getReferencesNodes(config, ctx);
+  }
+
   validateModelDirective(config);
 
   if (!isListType(field.type)) {
     throw new InvalidDirectiveError(`@${directiveName} must be used with a list. Use @hasOne for non-list types.`);
   }
 
-  config.fieldNodes = getFieldsNodes(config, ctx);
-  config.relatedType = getRelatedType(config, ctx);
   config.connectionFields = [];
   validateRelatedModelDirective(config);
   validateDisallowedDataStoreRelationships(config, ctx);

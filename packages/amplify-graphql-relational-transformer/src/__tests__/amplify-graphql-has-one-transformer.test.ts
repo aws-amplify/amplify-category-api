@@ -1,6 +1,7 @@
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ConflictHandlerType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { DataSourceType, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, Kind, parse } from 'graphql';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { HasManyTransformer, HasOneTransformer } from '..';
@@ -742,5 +743,89 @@ describe('@hasOne connection field nullability tests', () => {
     expect(updateInputConnectedField2).toBeDefined();
     expect(updateInputConnectedField2.type.kind).toBe(Kind.NAMED_TYPE);
     expect(updateInputConnectedField2.type.name.value).toBe('String');
+  });
+});
+
+describe('@hasOne directive with RDS datasource', () => {
+  test('happy case should generate correct resolvers', () => {
+    const modelToDatasourceMap = new Map<string, DataSourceType>();
+    modelToDatasourceMap.set('User', {
+      dbType: 'MySQL',
+      provisionDB: false,
+      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
+    });
+    modelToDatasourceMap.set('Profile', {
+      dbType: 'MySQL',
+      provisionDB: false,
+      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
+    });
+
+    const inputSchema = `
+      type User @model {
+        id: String! @primaryKey
+        name: String
+        profile: Profile @hasOne(references: ["userId"])
+      }
+      type Profile @model {
+        id: String! @primaryKey
+        createdAt: AWSDateTime
+        userId: String!
+      }
+    `;
+
+    const out = testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
+      modelToDatasourceMap,
+    });
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['User.profile.req.vtl']).toBeDefined();
+    expect(out.resolvers['User.profile.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['User.profile.res.vtl']).toBeDefined();
+    expect(out.resolvers['User.profile.res.vtl']).toMatchSnapshot();
+  });
+
+  test('composite key should generate correct resolvers', () => {
+    const modelToDatasourceMap = new Map<string, DataSourceType>();
+    modelToDatasourceMap.set('User', {
+      dbType: 'MySQL',
+      provisionDB: false,
+      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
+    });
+    modelToDatasourceMap.set('Profile', {
+      dbType: 'MySQL',
+      provisionDB: false,
+      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
+    });
+
+    const inputSchema = `
+      type User @model {
+        firstName: String! @primaryKey(sortKeyFields: ["lastName"])
+        lastName: String!
+        profile: Profile @hasOne(references: ["userFirstName", "userLastName"])
+      }
+      type Profile @model {
+        profileId: String! @primaryKey
+        userFirstName: String
+        userLastName: String!
+      }
+    `;
+
+    const out = testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
+      modelToDatasourceMap,
+    });
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['User.profile.req.vtl']).toBeDefined();
+    expect(out.resolvers['User.profile.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['User.profile.res.vtl']).toBeDefined();
+    expect(out.resolvers['User.profile.res.vtl']).toMatchSnapshot();
   });
 });

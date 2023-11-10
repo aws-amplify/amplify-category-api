@@ -3,8 +3,10 @@ import {
   Expression,
   compoundExpression,
   ifElse,
+  iff,
   list,
   methodCall,
+  not,
   obj,
   printBlock,
   qref,
@@ -13,14 +15,21 @@ import {
   str,
   toJson,
 } from 'graphql-mapping-template';
-import { ResourceConstants } from 'graphql-transformer-common';
+import { ResourceConstants, isArrayOrObject, isListType } from 'graphql-transformer-common';
 import { RDSConnectionSecrets, setResourceName } from '@aws-amplify/graphql-transformer-core';
-import { GraphQLAPIProvider, RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  GraphQLAPIProvider,
+  RDSLayerMapping,
+  SubnetAvailabilityZone,
+  TransformerContextProvider,
+  VpcConfig,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import path from 'path';
-import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces/src';
+import { EnumTypeDefinitionNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
+import { CfnVPCEndpoint } from 'aws-cdk-lib/aws-ec2';
 
 /**
  * Define RDS Lambda operations
@@ -44,6 +53,7 @@ const getLatestLayers = (latestLayers?: RDSLayerMapping): RDSLayerMapping => {
   if (latestLayers && Object.keys(latestLayers).length > 0) {
     return latestLayers;
   }
+  console.warn('Unable to load the latest RDS layer configuration, using local configuration.');
   const defaultLayerMapping = getDefaultLayerMapping();
   return defaultLayerMapping;
 };
@@ -52,73 +62,73 @@ const getLatestLayers = (latestLayers?: RDSLayerMapping): RDSLayerMapping => {
 // For prod use account '582037449441', layer name 'AmplifyRDSLayer' and layer version '3' as of 2023-06-20
 const getDefaultLayerMapping = (): RDSLayerMapping => ({
   'ap-northeast-1': {
-    layerRegion: 'arn:aws:lambda:ap-northeast-1:582037449441:layer:AmplifyRDSLayer:5',
+    layerRegion: 'arn:aws:lambda:ap-northeast-1:582037449441:layer:AmplifyRDSLayer:22',
   },
   'us-east-1': {
-    layerRegion: 'arn:aws:lambda:us-east-1:582037449441:layer:AmplifyRDSLayer:5',
+    layerRegion: 'arn:aws:lambda:us-east-1:582037449441:layer:AmplifyRDSLayer:22',
   },
   'ap-southeast-1': {
-    layerRegion: 'arn:aws:lambda:ap-southeast-1:582037449441:layer:AmplifyRDSLayer:5',
+    layerRegion: 'arn:aws:lambda:ap-southeast-1:582037449441:layer:AmplifyRDSLayer:22',
   },
   'eu-west-1': {
-    layerRegion: 'arn:aws:lambda:eu-west-1:582037449441:layer:AmplifyRDSLayer:5',
+    layerRegion: 'arn:aws:lambda:eu-west-1:582037449441:layer:AmplifyRDSLayer:22',
   },
   'us-west-1': {
-    layerRegion: 'arn:aws:lambda:us-west-1:582037449441:layer:AmplifyRDSLayer:5',
+    layerRegion: 'arn:aws:lambda:us-west-1:582037449441:layer:AmplifyRDSLayer:22',
   },
   'ap-east-1': {
-    layerRegion: 'arn:aws:lambda:ap-east-1:582037449441:layer:AmplifyRDSLayer:5',
+    layerRegion: 'arn:aws:lambda:ap-east-1:582037449441:layer:AmplifyRDSLayer:22',
   },
   'ap-northeast-2': {
-    layerRegion: 'arn:aws:lambda:ap-northeast-2:582037449441:layer:AmplifyRDSLayer:5',
+    layerRegion: 'arn:aws:lambda:ap-northeast-2:582037449441:layer:AmplifyRDSLayer:22',
   },
   'ap-northeast-3': {
-    layerRegion: 'arn:aws:lambda:ap-northeast-3:582037449441:layer:AmplifyRDSLayer:5',
+    layerRegion: 'arn:aws:lambda:ap-northeast-3:582037449441:layer:AmplifyRDSLayer:22',
   },
   'ap-south-1': {
-    layerRegion: 'arn:aws:lambda:ap-south-1:582037449441:layer:AmplifyRDSLayer:5',
+    layerRegion: 'arn:aws:lambda:ap-south-1:582037449441:layer:AmplifyRDSLayer:22',
   },
   'ap-southeast-2': {
-    layerRegion: 'arn:aws:lambda:ap-southeast-2:582037449441:layer:AmplifyRDSLayer:5',
+    layerRegion: 'arn:aws:lambda:ap-southeast-2:582037449441:layer:AmplifyRDSLayer:22',
   },
   'ca-central-1': {
-    layerRegion: 'arn:aws:lambda:ca-central-1:582037449441:layer:AmplifyRDSLayer:5',
+    layerRegion: 'arn:aws:lambda:ca-central-1:582037449441:layer:AmplifyRDSLayer:22',
   },
   'eu-central-1': {
-    layerRegion: 'arn:aws:lambda:eu-central-1:582037449441:layer:AmplifyRDSLayer:5',
+    layerRegion: 'arn:aws:lambda:eu-central-1:582037449441:layer:AmplifyRDSLayer:22',
   },
   'eu-north-1': {
-    layerRegion: 'arn:aws:lambda:eu-north-1:582037449441:layer:AmplifyRDSLayer:5',
+    layerRegion: 'arn:aws:lambda:eu-north-1:582037449441:layer:AmplifyRDSLayer:22',
   },
   'eu-west-2': {
-    layerRegion: 'arn:aws:lambda:eu-west-2:582037449441:layer:AmplifyRDSLayer:5',
+    layerRegion: 'arn:aws:lambda:eu-west-2:582037449441:layer:AmplifyRDSLayer:22',
   },
   'eu-west-3': {
-    layerRegion: 'arn:aws:lambda:eu-west-3:582037449441:layer:AmplifyRDSLayer:5',
+    layerRegion: 'arn:aws:lambda:eu-west-3:582037449441:layer:AmplifyRDSLayer:22',
   },
   'sa-east-1': {
-    layerRegion: 'arn:aws:lambda:sa-east-1:582037449441:layer:AmplifyRDSLayer:5',
+    layerRegion: 'arn:aws:lambda:sa-east-1:582037449441:layer:AmplifyRDSLayer:22',
   },
   'us-east-2': {
-    layerRegion: 'arn:aws:lambda:us-east-2:582037449441:layer:AmplifyRDSLayer:5',
+    layerRegion: 'arn:aws:lambda:us-east-2:582037449441:layer:AmplifyRDSLayer:22',
   },
   'us-west-2': {
-    layerRegion: 'arn:aws:lambda:us-west-2:582037449441:layer:AmplifyRDSLayer:5',
+    layerRegion: 'arn:aws:lambda:us-west-2:582037449441:layer:AmplifyRDSLayer:22',
   },
   'cn-north-1': {
-    layerRegion: 'arn:aws:lambda:cn-north-1:582037449441:layer:AmplifyRDSLayer:5',
+    layerRegion: 'arn:aws:lambda:cn-north-1:582037449441:layer:AmplifyRDSLayer:22',
   },
   'cn-northwest-1': {
-    layerRegion: 'arn:aws:lambda:cn-northwest-1:582037449441:layer:AmplifyRDSLayer:5',
+    layerRegion: 'arn:aws:lambda:cn-northwest-1:582037449441:layer:AmplifyRDSLayer:22',
   },
   'us-gov-west-1': {
-    layerRegion: 'arn:aws:lambda:us-gov-west-1:582037449441:layer:AmplifyRDSLayer:5',
+    layerRegion: 'arn:aws:lambda:us-gov-west-1:582037449441:layer:AmplifyRDSLayer:22',
   },
   'us-gov-east-1': {
-    layerRegion: 'arn:aws:lambda:us-gov-east-1:582037449441:layer:AmplifyRDSLayer:5',
+    layerRegion: 'arn:aws:lambda:us-gov-east-1:582037449441:layer:AmplifyRDSLayer:22',
   },
   'me-south-1': {
-    layerRegion: 'arn:aws:lambda:me-south-1:582037449441:layer:AmplifyRDSLayer:5',
+    layerRegion: 'arn:aws:lambda:me-south-1:582037449441:layer:AmplifyRDSLayer:22',
   },
 });
 
@@ -136,6 +146,16 @@ export const createRdsLambda = (
   sqlLambdaVpcConfig?: VpcConfig,
 ): IFunction => {
   const { RDSLambdaLogicalID } = ResourceConstants.RESOURCES;
+
+  let ssmEndpoint = Fn.join('', ['ssm.', Fn.ref('AWS::Region'), '.amazonaws.com']); // Default SSM endpoint
+  if (sqlLambdaVpcConfig) {
+    const endpoints = addVpcEndpointForSecretsManager(scope, sqlLambdaVpcConfig);
+    const ssmEndpointEntries = endpoints.find((endpoint) => endpoint.service === 'ssm')?.endpoint.attrDnsEntries;
+    if (ssmEndpointEntries) {
+      ssmEndpoint = Fn.select(0, ssmEndpointEntries);
+    }
+  }
+
   return apiGraphql.host.addLambdaFunction(
     RDSLambdaLogicalID,
     `functions/${RDSLambdaLogicalID}.zip`,
@@ -150,11 +170,61 @@ export const createRdsLambda = (
       ),
     ],
     lambdaRole,
-    environment,
+    {
+      ...environment,
+      SSM_ENDPOINT: ssmEndpoint,
+    },
     Duration.seconds(30),
     scope,
     sqlLambdaVpcConfig,
   );
+};
+
+const addVpcEndpoint = (scope: Construct, sqlLambdaVpcConfig: VpcConfig, serviceSuffix: string): CfnVPCEndpoint => {
+  const serviceEndpointPrefix = 'com.amazonaws';
+  const endpoint = new CfnVPCEndpoint(scope, `RDSVpcEndpoint${serviceSuffix}`, {
+    serviceName: Fn.join('', [serviceEndpointPrefix, '.', Fn.ref('AWS::Region'), '.', serviceSuffix]), // Sample: com.amazonaws.us-east-1.ssmmessages
+    vpcEndpointType: 'Interface',
+    vpcId: sqlLambdaVpcConfig.vpcId,
+    subnetIds: extractSubnetForVpcEndpoint(sqlLambdaVpcConfig.subnetAvailabilityZoneConfig),
+    securityGroupIds: sqlLambdaVpcConfig.securityGroupIds,
+    privateDnsEnabled: false,
+  });
+  setResourceName(endpoint, { name: endpoint.logicalId, setOnDefaultChild: true });
+
+  return endpoint;
+};
+
+const addVpcEndpointForSecretsManager = (
+  scope: Construct,
+  sqlLambdaVpcConfig: VpcConfig,
+): { service: string; endpoint: CfnVPCEndpoint }[] => {
+  const services = ['ssm', 'ssmmessages', 'ec2', 'ec2messages', 'kms'];
+  return services.map((service) => {
+    return {
+      service,
+      endpoint: addVpcEndpoint(scope, sqlLambdaVpcConfig, service),
+    };
+  });
+};
+
+/**
+ * Extract subnet ids for VPC endpoint - We only need one subnet per AZ.
+ * This is mandatory requirement for creating VPC endpoint.
+ * CDK Deployment will fail if you provide more than one subnet per AZ.
+ * @param avaliabilityZoneMappings SubnetAvailabilityZone[]
+ * @returns string[]
+ */
+const extractSubnetForVpcEndpoint = (avaliabilityZoneMappings: SubnetAvailabilityZone[]): string[] => {
+  const avaliabilityZones = [] as string[];
+  const result = [];
+  for (const subnet of avaliabilityZoneMappings) {
+    if (!avaliabilityZones.includes(subnet.availabilityZone)) {
+      avaliabilityZones.push(subnet.availabilityZone);
+      result.push(subnet.subnetId);
+    }
+  }
+  return result;
 };
 
 /**
@@ -295,16 +365,26 @@ export const createRdsPatchingLambdaRole = (roleName: string, scope: Construct, 
  * @param operation string
  * @param operationName string
  */
-export const generateLambdaRequestTemplate = (tableName: string, operation: string, operationName: string): string =>
-  printBlock('Invoke RDS Lambda data source')(
+export const generateLambdaRequestTemplate = (
+  tableName: string,
+  operation: string,
+  operationName: string,
+  ctx: TransformerContextProvider,
+): string => {
+  const mappedTableName = ctx.resourceHelper.getModelNameMapping(tableName);
+  return printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
       set(ref('lambdaInput'), obj({})),
       set(ref('lambdaInput.args'), obj({})),
-      set(ref('lambdaInput.table'), str(tableName)),
+      set(ref('lambdaInput.table'), str(mappedTableName)),
       set(ref('lambdaInput.operation'), str(operation)),
       set(ref('lambdaInput.operationName'), str(operationName)),
       set(ref('lambdaInput.args.metadata'), obj({})),
       set(ref('lambdaInput.args.metadata.keys'), list([])),
+      constructAuthFilterStatement('lambdaInput.args.metadata.authFilter'),
+      constructNonScalarFieldsStatement(tableName, ctx),
+      constructArrayFieldsStatement(tableName, ctx),
+      constructFieldMappingInput(),
       qref(
         methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
       ),
@@ -317,6 +397,7 @@ export const generateLambdaRequestTemplate = (tableName: string, operation: stri
       }),
     ]),
   );
+};
 
 /**
  * Generate RDS Lambda response template
@@ -366,3 +447,39 @@ export const generateDefaultLambdaResponseMappingTemplate = (isSyncEnabled: bool
 
   return printBlock('ResponseTemplate')(compoundExpression(statements));
 };
+
+export const getNonScalarFields = (object: ObjectTypeDefinitionNode | undefined, ctx: TransformerContextProvider): string[] => {
+  if (!object) {
+    return [];
+  }
+  const enums = ctx.output.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[];
+  return object.fields?.filter((f: FieldDefinitionNode) => isArrayOrObject(f.type, enums)).map((f) => f.name.value) || [];
+};
+
+export const getArrayFields = (object: ObjectTypeDefinitionNode | undefined, ctx: TransformerContextProvider): string[] => {
+  if (!object) {
+    return [];
+  }
+  return object.fields?.filter((f: FieldDefinitionNode) => isListType(f.type)).map((f) => f.name.value) || [];
+};
+
+export const constructNonScalarFieldsStatement = (tableName: string, ctx: TransformerContextProvider): Expression =>
+  set(ref('lambdaInput.args.metadata.nonScalarFields'), list(getNonScalarFields(ctx.output.getObject(tableName), ctx).map(str)));
+
+export const constructArrayFieldsStatement = (tableName: string, ctx: TransformerContextProvider): Expression =>
+  set(ref('lambdaInput.args.metadata.arrayFields'), list(getArrayFields(ctx.output.getObject(tableName), ctx).map(str)));
+
+export const constructFieldMappingInput = (): Expression => {
+  return compoundExpression([
+    set(ref('lambdaInput.args.metadata.fieldMap'), obj({})),
+    qref(
+      methodCall(
+        ref('lambdaInput.args.metadata.fieldMap.putAll'),
+        methodCall(ref('util.defaultIfNull'), ref('context.stash.fieldMap'), obj({})),
+      ),
+    ),
+  ]);
+};
+
+export const constructAuthFilterStatement = (keyName: string): Expression =>
+  iff(not(methodCall(ref('util.isNullOrEmpty'), ref('ctx.stash.authFilter'))), set(ref(keyName), ref('ctx.stash.authFilter')));

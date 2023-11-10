@@ -31,7 +31,12 @@ export type {
   ModelDataSourceDefinitionStrategy,
   DefaultDynamoDbModelDataSourceDefinitionStrategy,
   AmplifyDynamoDbModelDataSourceDefinitionStrategy,
+  SQLLambdaModelDataSourceDefinitionStrategy,
   ModelDataSourceDefinitionDbType,
+  VpcConfig,
+  SubnetAvailabilityZone,
+  SQLLambdaLayerMapping,
+  SqlModelDataSourceDefinitionDbConnectionConfig,
 } from './types';
 export { AmplifyGraphqlApi } from './amplify-graphql-api';
 export { AmplifyGraphqlDefinition } from './amplify-graphql-definition';

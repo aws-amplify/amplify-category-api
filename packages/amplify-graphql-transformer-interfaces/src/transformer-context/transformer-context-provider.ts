@@ -33,6 +33,7 @@ export interface TransformerContextProvider {
   authConfig: AppSyncAuthConfiguration;
   transformParameters: TransformParameters;
   synthParameters: SynthParameters;
+  customQueries: Map<string, string>;
 
   isProjectUsingDataStore(): boolean;
   getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;

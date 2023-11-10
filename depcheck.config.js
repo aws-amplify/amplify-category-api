@@ -13,7 +13,7 @@ const GQL_V2_TRANSFORMER_PACKAGES = [
   'amplify-graphql-function-transformer',
   'amplify-graphql-http-transformer',
   'amplify-graphql-index-transformer',
-  'amplify-graphql-maps-to-transformer',
+  'amplify-graphql-name-mapping-transformer',
   'amplify-graphql-model-transformer',
   'amplify-graphql-predictions-transformer',
   'amplify-graphql-relational-transformer',

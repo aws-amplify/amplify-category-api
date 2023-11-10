@@ -18,4 +18,5 @@ export type DatasourceTransformationConfig = {
   modelToDatasourceMap?: Map<string, DataSourceType>;
   datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
   rdsLayerMapping?: RDSLayerMapping;
+  customQueries?: Map<string, string>;
 };

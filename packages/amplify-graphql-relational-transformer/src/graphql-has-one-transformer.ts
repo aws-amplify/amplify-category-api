@@ -1,8 +1,12 @@
 /* eslint-disable no-param-reassign */
 import {
+  DDB_DB_TYPE,
   DirectiveWrapper,
   generateGetArgumentsInput,
+  getDataSourceType,
   InvalidDirectiveError,
+  isRDSModel,
+  isRDSDBType,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
 import {
@@ -32,7 +36,6 @@ import {
 } from 'graphql-transformer-common';
 import { produce } from 'immer';
 import { WritableDraft } from 'immer/dist/types/types-external';
-import { makeGetItemConnectionWithKeyResolver } from './resolvers';
 import {
   addFieldsToDefinition,
   convertSortKeyFieldsToSortKeyConnectionFields,
@@ -42,20 +45,25 @@ import {
 import { HasOneDirectiveConfiguration, ObjectDefinition } from './types';
 import {
   ensureFieldsArray,
+  ensureReferencesArray,
   getConnectionAttributeName,
   getFieldsNodes,
   getObjectPrimaryKey,
+  getReferencesNodes,
   getRelatedType,
   getRelatedTypeIndex,
   registerHasOneForeignKeyMappings,
   validateDisallowedDataStoreRelationships,
   validateModelDirective,
+  validateParentReferencesFields,
   validateRelatedModelDirective,
 } from './utils';
+import { getGenerator } from './resolver/generator-factory';
+import { setFieldMappingResolverReference } from './resolvers';
 
 const directiveName = 'hasOne';
 const directiveDefinition = `
-  directive @${directiveName}(fields: [String!]) on FIELD_DEFINITION
+  directive @${directiveName}(fields: [String!], references: [String!]) on FIELD_DEFINITION
 `;
 
 /**
@@ -158,10 +166,15 @@ export class HasOneTransformer extends TransformerPluginBase {
    */
   prepare = (context: TransformerPrepareStepContextProvider): void => {
     this.directiveList.forEach((config) => {
+      const modelName = config.object.name.value;
+      if (isRDSModel(context as TransformerContextProvider, modelName)) {
+        setFieldMappingResolverReference(context, config.relatedType?.name?.value, modelName, config.field.name.value);
+        return;
+      }
       registerHasOneForeignKeyMappings({
         transformParameters: context.transformParameters,
         resourceHelper: context.resourceHelper,
-        thisTypeName: config.object.name.value,
+        thisTypeName: modelName,
         thisFieldName: config.field.name.value,
         relatedType: config.relatedType,
       });
@@ -172,7 +185,12 @@ export class HasOneTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      config.relatedTypeIndex = getRelatedTypeIndex(config, context);
+      const dbType = getDataSourceType(config.field.type, context);
+      if (dbType === DDB_DB_TYPE) {
+        config.relatedTypeIndex = getRelatedTypeIndex(config, context);
+      } else if (isRDSDBType(dbType)) {
+        validateParentReferencesFields(config, context);
+      }
       ensureHasOneConnectionField(config, context);
     }
   };
@@ -181,7 +199,9 @@ export class HasOneTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      makeGetItemConnectionWithKeyResolver(config, context);
+      const dbType = getDataSourceType(config.field.type, context);
+      const generator = getGenerator(dbType);
+      generator.makeHasOneGetItemConnectionWithKeyResolver(config, context);
     }
   };
 }
@@ -189,15 +209,25 @@ export class HasOneTransformer extends TransformerPluginBase {
 const validate = (config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field } = config;
 
-  ensureFieldsArray(config);
+  const dbType = getDataSourceType(field.type, ctx);
+  config.relatedType = getRelatedType(config, ctx);
+
+  if (dbType === DDB_DB_TYPE) {
+    ensureFieldsArray(config);
+    config.fieldNodes = getFieldsNodes(config, ctx);
+  }
+
+  if (isRDSDBType(dbType)) {
+    ensureReferencesArray(config);
+    getReferencesNodes(config, ctx);
+  }
+
   validateModelDirective(config);
 
   if (isListType(field.type)) {
     throw new InvalidDirectiveError(`@${directiveName} cannot be used with lists. Use @hasMany instead.`);
   }
 
-  config.fieldNodes = getFieldsNodes(config, ctx);
-  config.relatedType = getRelatedType(config, ctx);
   config.connectionFields = [];
   validateRelatedModelDirective(config);
   validateDisallowedDataStoreRelationships(config, ctx);

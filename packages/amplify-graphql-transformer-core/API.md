@@ -21,6 +21,7 @@ import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces'
 import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
+import { DBType } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveDefinitionNode } from 'graphql';
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql/language';
@@ -86,7 +87,7 @@ import { TypeNode } from 'graphql';
 import { TypeSystemDefinitionNode } from 'graphql';
 import { UnionTypeDefinitionNode } from 'graphql';
 import { UnionTypeExtensionNode } from 'graphql';
-import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import type { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
 export const APICategory = "api";
@@ -125,7 +126,7 @@ function createSyncLambdaIAMPolicy(context: TransformerContextProvider, scope: C
 function createSyncTable(context: TransformerContext): void;
 
 // @public (undocumented)
-export const DDB_DB_TYPE = "DDB";
+export const DDB_DB_TYPE: DBType;
 
 // @public (undocumented)
 export class DirectiveWrapper {
@@ -184,16 +185,28 @@ export type GetArgumentsOptions = {
 // @public (undocumented)
 export function getDatasourceProvisionStrategy(ctx: TransformerBeforeStepContextProvider, typeName?: string): DataSourceProvisionStrategy;
 
+// @public (undocumented)
+export const getDataSourceType: (type: TypeNode, ctx: TransformerContextProvider) => DBType;
+
+// @public (undocumented)
+export const getEngineFromDBType: (dbType: DBType) => ImportedRDSType;
+
 // Warning: (ae-forgotten-export) The symbol "Operation" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export const getFieldNameFor: (op: Operation, typeName: string) => string;
 
 // @public (undocumented)
+export const getImportedRDSType: (modelToDatasourceMap: Map<string, DataSourceType>) => DBType;
+
+// @public (undocumented)
 export const getKeySchema: (table: any, indexName?: string) => any;
 
 // @public (undocumented)
 export const getParameterStoreSecretPath: (secret: string, secretsKey: string, apiName: string, environmentName: string, appId: string) => string;
+
+// @public (undocumented)
+export const getPrimaryKeyFields: (type: ObjectTypeDefinitionNode) => string[];
 
 // @public (undocumented)
 export const getResourceName: (scope: Construct) => string | undefined;
@@ -266,7 +279,7 @@ export enum ImportedRDSType {
     // (undocumented)
     MYSQL = "mysql",
     // (undocumented)
-    POSTGRESQL = "postgresql"
+    POSTGRESQL = "postgres"
 }
 
 // @public (undocumented)
@@ -337,7 +350,16 @@ export class InvalidTransformerError extends Error {
 }
 
 // @public (undocumented)
+export const isImportedRDSType: (dbInfo: DataSourceType) => boolean;
+
+// @public (undocumented)
 function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncConfigLambda;
+
+// @public (undocumented)
+export const isRDSDBType: (dbType: DBType) => boolean;
+
+// @public (undocumented)
+export const isRDSModel: (ctx: TransformerContextProvider, typename: string) => boolean;
 
 // @public (undocumented)
 export class MappingTemplate {
@@ -352,7 +374,7 @@ export class MappingTemplate {
 }
 
 // @public (undocumented)
-export const MYSQL_DB_TYPE = "MySQL";
+export const MYSQL_DB_TYPE: DBType;
 
 // @public (undocumented)
 export class ObjectDefinitionWrapper {
@@ -376,6 +398,9 @@ export class ObjectDefinitionWrapper {
     // (undocumented)
     serialize: () => ObjectTypeDefinitionNode;
 }
+
+// @public (undocumented)
+export const POSTGRES_DB_TYPE: DBType;
 
 // @public (undocumented)
 export const RDS_SCHEMA_FILE_NAME = "schema.rds.graphql";

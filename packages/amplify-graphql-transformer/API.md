@@ -35,6 +35,7 @@ export const executeTransform: (config: ExecuteTransformConfig) => void;
 export type ExecuteTransformConfig = TransformConfig & {
     schema: string;
     modelToDatasourceMap?: Map<string, DataSourceType>;
+    customQueries?: Map<string, string>;
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
     printTransformerLog?: (log: TransformerLog) => void;
     sqlLambdaVpcConfig?: VpcConfig;

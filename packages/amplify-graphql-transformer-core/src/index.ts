@@ -25,8 +25,15 @@ export {
   collectDirectivesByTypeNames,
   DirectiveWrapper,
   APICategory,
+  getPrimaryKeyFields,
+  getDataSourceType,
   setResourceName,
   getResourceName,
+  isRDSModel,
+  isImportedRDSType,
+  isRDSDBType,
+  getEngineFromDBType,
+  getImportedRDSType,
   getDatasourceProvisionStrategy,
 } from './utils';
 export type { SetResourceNameProps } from './utils';
@@ -45,6 +52,7 @@ export {
   ImportedDataSourceType,
   ImportedRDSType,
   MYSQL_DB_TYPE,
+  POSTGRES_DB_TYPE,
   RDS_SCHEMA_FILE_NAME,
   RDSConnectionSecrets,
   ImportedDataSourceConfig,

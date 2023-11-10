@@ -155,7 +155,7 @@ export interface DataSourceProvider extends BackedDataSource {
 }
 
 // @public (undocumented)
-export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy;
+export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy | SQLLambdaModelProvisionStrategy;
 
 // @public (undocumented)
 export interface DataSourceType {
@@ -168,7 +168,7 @@ export interface DataSourceType {
 }
 
 // @public (undocumented)
-export type DBType = 'MySQL' | 'DDB';
+export type DBType = 'DDB' | SQLDBType;
 
 // @public (undocumented)
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {
@@ -267,11 +267,12 @@ export enum QueryFieldType {
 }
 
 // @public (undocumented)
-export type RDSLayerMapping = {
-    [key: string]: {
+export interface RDSLayerMapping {
+    // (undocumented)
+    readonly [key: string]: {
         layerRegion: string;
     };
-};
+}
 
 // @public (undocumented)
 type ReadonlyArray_2<T> = Readonly<Array<Readonly<T>>>;
@@ -318,6 +319,15 @@ export interface SearchableDataSourceOptions extends DataSourceOptions {
 }
 
 // @public (undocumented)
+export type SQLDBType = 'MySQL' | 'Postgres';
+
+// @public (undocumented)
+export const enum SQLLambdaModelProvisionStrategy {
+    // (undocumented)
+    DEFAULT = "DEFAULT"
+}
+
+// @public (undocumented)
 export interface StackManagerProvider {
     // (undocumented)
     createStack: (stackName: string) => Stack;
@@ -333,6 +343,14 @@ export interface StackManagerProvider {
     hasStack: (stackName: string) => boolean;
     // (undocumented)
     readonly scope: Construct;
+}
+
+// @public (undocumented)
+export interface SubnetAvailabilityZone {
+    // (undocumented)
+    readonly availabilityZone: string;
+    // (undocumented)
+    readonly subnetId: string;
 }
 
 // @public (undocumented)
@@ -427,6 +445,8 @@ export interface TransformerContextProvider {
     // (undocumented)
     authConfig: AppSyncAuthConfiguration;
     // (undocumented)
+    customQueries: Map<string, string>;
+    // (undocumented)
     dataSources: TransformerDataSourceManagerProvider;
     // (undocumented)
     datasourceSecretParameterLocations: Map<string, TransformerSecrets>;
@@ -465,11 +485,11 @@ export interface TransformerContextProvider {
 // @public (undocumented)
 export interface TransformerDataSourceManagerProvider {
     // (undocumented)
-    add(type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, dataSourceInstance: DataSourceInstance): void;
+    add: (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, dataSourceInstance: DataSourceInstance) => void;
     // (undocumented)
-    get(type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode): DataSourceInstance;
+    get: (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode) => DataSourceInstance;
     // (undocumented)
-    has(name: string): boolean;
+    has: (name: string) => boolean;
 }
 
 // @public (undocumented)
@@ -777,15 +797,18 @@ export interface UserPoolConfig {
 }
 
 // @public (undocumented)
-export type VpcConfig = {
-    vpcId: string;
-    subnetIds: string[];
-    securityGroupIds: string[];
-};
+export interface VpcConfig {
+    // (undocumented)
+    readonly securityGroupIds: string[];
+    // (undocumented)
+    readonly subnetAvailabilityZoneConfig: SubnetAvailabilityZone[];
+    // (undocumented)
+    readonly vpcId: string;
+}
 
 // Warnings were encountered during analysis:
 //
-// src/graphql-api-provider.ts:34:3 - (ae-forgotten-export) The symbol "OpenIDConnectConfig" needs to be exported by the entry point index.d.ts
+// src/graphql-api-provider.ts:35:3 - (ae-forgotten-export) The symbol "OpenIDConnectConfig" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
