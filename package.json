@@ -27,6 +27,7 @@
     "link-dev": "cd node_modules/amplify-cli-internal && ln -s \"$(pwd)/bin/amplify\" \"$(yarn global bin)/amplify-dev\" && cd -",
     "link-win": "node ./scripts/link-bin.js node_modules/amplify-cli-internal/bin/amplify amplify-dev",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "package": "lerna run package",
     "postpublish:release": "git fetch . release:main && git push origin main",
     "prettier-check": "yarn prettier --check .",
     "prettier-write": "yarn prettier --write .",
