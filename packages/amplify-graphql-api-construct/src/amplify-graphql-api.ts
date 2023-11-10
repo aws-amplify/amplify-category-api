@@ -37,7 +37,7 @@ import type {
   IBackendOutputStorageStrategy,
   AddFunctionProps,
   ConflictResolution,
-  SQLLambdaModelDataSourceDefinitionStrategy,
+  SQLLambdaModelDataSourceStrategy,
 } from './types';
 import {
   convertAuthorizationModesToTransformerAuthConfig,
@@ -50,7 +50,7 @@ import {
   addAmplifyMetadataToStackDescription,
   getAdditionalAuthenticationTypes,
 } from './internal';
-import { isSQLLambdaModelDataSourceDefinition } from './sql-model-datasource-def';
+import { isSQLLambdaModelDataSourceStrategy } from './sql-model-datasource-strategy';
 import { parseDataSourceConfig } from './internal/data-source-config';
 import { getStackForScope, walkAndProcessNodes } from './internal/construct-tree';
 
@@ -197,13 +197,13 @@ export class AmplifyGraphqlApi extends Construct {
       },
 
       // Adds a modelToDataSourceMap field/value
-      ...parseDataSourceConfig(definition.dataSourceDefinition),
+      ...parseDataSourceConfig(definition.dataSourceStrategies),
     };
 
     // TODO: Update this to support multiple definitions; right now we assume only one SQL data source type
-    for (const def of Object.values(definition.dataSourceDefinition)) {
-      if (isSQLLambdaModelDataSourceDefinition(def)) {
-        executeTransformConfig = this.extendTransformConfig(executeTransformConfig, def);
+    for (const strategy of Object.values(definition.dataSourceStrategies)) {
+      if (isSQLLambdaModelDataSourceStrategy(strategy)) {
+        executeTransformConfig = this.extendTransformConfig(executeTransformConfig, strategy);
         break;
       }
     }
@@ -226,15 +226,13 @@ export class AmplifyGraphqlApi extends Construct {
   /**
    * Extends executeTransformConfig with fields for provisioning a SQL Lambda
    * @param executeTransformConfig the executeTransformConfig to extend
-   * @param dataSourceDefinition the ModelDataSourceDefinition containing the SQL connection values to add to the transform config
+   * @param dataSourceDefinition the SQLLambdaModelDataSourceStrategy containing the SQL connection values to add to the transform config
    * @returns the extended configuration that includes SQL DB connection information
    */
   private extendTransformConfig(
     executeTransformConfig: ExecuteTransformConfig,
-    dataSourceDefinition: { name: string; strategy: SQLLambdaModelDataSourceDefinitionStrategy },
+    strategy: SQLLambdaModelDataSourceStrategy,
   ): ExecuteTransformConfig {
-    const { strategy } = dataSourceDefinition;
-
     const extendedConfig = { ...executeTransformConfig };
     if (strategy.customSqlStatements) {
       extendedConfig.customQueries = new Map(Object.entries(strategy.customSqlStatements));
