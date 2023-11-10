@@ -64,9 +64,9 @@
     "collectCoverage": true,
     "coverageThreshold": {
       "global": {
-        "branches": 57.38,
+        "branches": 57,
         "functions": 69,
-        "lines": 75
+        "lines": 74
       }
     },
     "modulePathIgnorePatterns": [

@@ -1,6 +1,6 @@
 # Amplify Graphql API Construct
 
-[![View on Construct Hub](https://constructs.dev/badge?package=%40aws-amplify%2Fgraphql-construct-alpha)](https://constructs.dev/packages/@aws-amplify/graphql-api-construct)
+[![View on Construct Hub](https://constructs.dev/badge?package=%40aws-amplify%2Fgraphql-api-construct)](https://constructs.dev/packages/@aws-amplify/graphql-api-construct)
 
 This package vends an L3 CDK Construct wrapping the behavior of the Amplify GraphQL Transformer. This enables quick development and interation of AppSync APIs which support the Amplify GraphQL Directives. For more information on schema modeling in GraphQL, please refer to the [amplify developer docs](https://docs.amplify.aws/cli/graphql/overview/).
 
@@ -1935,54 +1935,6 @@ How long the results are cached.
 
 ---
 
-### ModelDataSourceDefinition <a name="ModelDataSourceDefinition" id="@aws-amplify/graphql-api-construct.ModelDataSourceDefinition"></a>
-
-Defines a datasource for resolving GraphQL operations against `@model` types in a GraphQL schema.
-
-#### Initializer <a name="Initializer" id="@aws-amplify/graphql-api-construct.ModelDataSourceDefinition.Initializer"></a>
-
-```typescript
-import { ModelDataSourceDefinition } from '@aws-amplify/graphql-api-construct'
-
-const dataSourceStrategies: ModelDataSourceDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@aws-amplify/graphql-api-construct.ModelDataSourceDefinition.property.name">name</a></code> | <code>string</code> | The name of the ModelDataSourceDefinition. |
-| <code><a href="#@aws-amplify/graphql-api-construct.ModelDataSourceDefinition.property.strategy">strategy</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy">DefaultDynamoDbModelDataSourceStrategy</a> \| <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy">AmplifyDynamoDbModelDataSourceStrategy</a> \| <a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy">SQLLambdaModelDataSourceStrategy</a></code> | The ModelDataSourceStrategy. |
-
----
-
-##### `name`<sup>Required</sup> <a name="name" id="@aws-amplify/graphql-api-construct.ModelDataSourceDefinition.property.name"></a>
-
-```typescript
-public readonly name: string;
-```
-
-- *Type:* string
-
-The name of the ModelDataSourceDefinition.
-
-This will be used to name the AppSync DataSource itself, plus any associated resources like
-resolver Lambdas and custom CDK resources. This name must be unique across all schema definitions in a GraphQL API.
-
----
-
-##### `strategy`<sup>Required</sup> <a name="strategy" id="@aws-amplify/graphql-api-construct.ModelDataSourceDefinition.property.strategy"></a>
-
-```typescript
-public readonly strategy: DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
-```
-
-- *Type:* <a href="#@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy">DefaultDynamoDbModelDataSourceStrategy</a> | <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy">AmplifyDynamoDbModelDataSourceStrategy</a> | <a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy">SQLLambdaModelDataSourceStrategy</a>
-
-The ModelDataSourceStrategy.
-
----
-
 ### MutationFunctionSlot <a name="MutationFunctionSlot" id="@aws-amplify/graphql-api-construct.MutationFunctionSlot"></a>
 
 Slot types for Mutation Resolvers.
@@ -2224,6 +2176,7 @@ const partialTranslationBehavior: PartialTranslationBehavior = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
+| <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.allowDestructiveGraphqlSchemaUpdates">allowDestructiveGraphqlSchemaUpdates</a></code> | <code>boolean</code> | The following schema updates require replacement of the underlying DynamoDB table:. |
 | <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.disableResolverDeduping">disableResolverDeduping</a></code> | <code>boolean</code> | Disable resolver deduping, this can sometimes cause problems because dedupe ordering isn't stable today, which can lead to circular dependencies across stacks if models are reordered. |
 | <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.enableAutoIndexQueryNames">enableAutoIndexQueryNames</a></code> | <code>boolean</code> | Automate generation of query names, and as a result attaching all indexes as queries to the generated Api. |
 | <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.enableSearchNodeToNodeEncryption">enableSearchNodeToNodeEncryption</a></code> | <code>boolean</code> | If enabled, set nodeToNodeEncryption on the searchable domain (if one exists). |
@@ -2235,6 +2188,26 @@ const partialTranslationBehavior: PartialTranslationBehavior = { ... }
 | <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.shouldDeepMergeDirectiveConfigDefaults">shouldDeepMergeDirectiveConfigDefaults</a></code> | <code>boolean</code> | Restore parity w/ GQLv1. |
 | <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.suppressApiKeyGeneration">suppressApiKeyGeneration</a></code> | <code>boolean</code> | If enabled, disable api key resource generation even if specified as an auth rule on the construct. |
 | <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.useSubUsernameForDefaultIdentityClaim">useSubUsernameForDefaultIdentityClaim</a></code> | <code>boolean</code> | Ensure that oidc and userPool auth use the `sub` field in the for the username field, which disallows new users with the same id to access data from a deleted user in the pool. |
+
+---
+
+##### `allowDestructiveGraphqlSchemaUpdates`<sup>Optional</sup> <a name="allowDestructiveGraphqlSchemaUpdates" id="@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.allowDestructiveGraphqlSchemaUpdates"></a>
+
+```typescript
+public readonly allowDestructiveGraphqlSchemaUpdates: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+The following schema updates require replacement of the underlying DynamoDB table:.
+
+Removing or renaming a model
+ - Modifying the primary key of a model
+ - Modifying a Local Secondary Index of a model (only applies to projects with secondaryKeyAsGSI turned off)
+
+ALL DATA WILL BE LOST when the table replacement happens. When enabled, destructive updates are allowed.
+This will only affect DynamoDB tables with provision strategy "AMPLIFY_TABLE".
 
 ---
 
@@ -2541,6 +2514,7 @@ const sQLLambdaModelDataSourceStrategy: SQLLambdaModelDataSourceStrategy = { ...
 | --- | --- | --- |
 | <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.dbConnectionConfig">dbConnectionConfig</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig">SqlModelDataSourceDbConnectionConfig</a></code> | The parameters the Lambda data source will use to connect to the database. |
 | <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.dbType">dbType</a></code> | <code>string</code> | The type of the SQL database used to process model operations for this definition. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.name">name</a></code> | <code>string</code> | The name of the strategy. |
 | <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.customSqlStatements">customSqlStatements</a></code> | <code>{[ key: string ]: string}</code> | Custom SQL statements. |
 | <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.sqlLambdaLayerMapping">sqlLambdaLayerMapping</a></code> | <code>{[ key: string ]: string}</code> | An optional override for the default SQL Lambda Layer. |
 | <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.vpcConfiguration">vpcConfiguration</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.VpcConfig">VpcConfig</a></code> | The configuration of the VPC into which to install the Lambda. |
@@ -2568,6 +2542,21 @@ public readonly dbType: string;
 - *Type:* string
 
 The type of the SQL database used to process model operations for this definition.
+
+---
+
+##### `name`<sup>Required</sup> <a name="name" id="@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.name"></a>
+
+```typescript
+public readonly name: string;
+```
+
+- *Type:* string
+
+The name of the strategy.
+
+This will be used to name the AppSync DataSource itself, plus any associated resources like resolver Lambdas.
+This name must be unique across all schema definitions in a GraphQL API.
 
 ---
 
@@ -2621,7 +2610,7 @@ These parameters are retrieved from Secure Systems Manager in the same region as
 ```typescript
 import { SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-api-construct'
 
-const SqlModelDataSourceDbConnectionConfig: SqlModelDataSourceDbConnectionConfig = { ... }
+const sqlModelDataSourceDbConnectionConfig: SqlModelDataSourceDbConnectionConfig = { ... }
 ```
 
 #### Properties <a name="Properties" id="Properties"></a>
@@ -3007,6 +2996,7 @@ const translationBehavior: TranslationBehavior = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
+| <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.allowDestructiveGraphqlSchemaUpdates">allowDestructiveGraphqlSchemaUpdates</a></code> | <code>boolean</code> | The following schema updates require replacement of the underlying DynamoDB table:. |
 | <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.disableResolverDeduping">disableResolverDeduping</a></code> | <code>boolean</code> | Disable resolver deduping, this can sometimes cause problems because dedupe ordering isn't stable today, which can lead to circular dependencies across stacks if models are reordered. |
 | <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.enableAutoIndexQueryNames">enableAutoIndexQueryNames</a></code> | <code>boolean</code> | Automate generation of query names, and as a result attaching all indexes as queries to the generated Api. |
 | <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.enableSearchNodeToNodeEncryption">enableSearchNodeToNodeEncryption</a></code> | <code>boolean</code> | *No description.* |
@@ -3018,6 +3008,26 @@ const translationBehavior: TranslationBehavior = { ... }
 | <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.shouldDeepMergeDirectiveConfigDefaults">shouldDeepMergeDirectiveConfigDefaults</a></code> | <code>boolean</code> | Restore parity w/ GQLv1. |
 | <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.suppressApiKeyGeneration">suppressApiKeyGeneration</a></code> | <code>boolean</code> | If enabled, disable api key resource generation even if specified as an auth rule on the construct. |
 | <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.useSubUsernameForDefaultIdentityClaim">useSubUsernameForDefaultIdentityClaim</a></code> | <code>boolean</code> | Ensure that oidc and userPool auth use the `sub` field in the for the username field, which disallows new users with the same id to access data from a deleted user in the pool. |
+
+---
+
+##### `allowDestructiveGraphqlSchemaUpdates`<sup>Required</sup> <a name="allowDestructiveGraphqlSchemaUpdates" id="@aws-amplify/graphql-api-construct.TranslationBehavior.property.allowDestructiveGraphqlSchemaUpdates"></a>
+
+```typescript
+public readonly allowDestructiveGraphqlSchemaUpdates: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+The following schema updates require replacement of the underlying DynamoDB table:.
+
+Removing or renaming a model
+ - Modifying the primary key of a model
+ - Modifying a Local Secondary Index of a model (only applies to projects with secondaryKeyAsGSI turned off)
+
+ALL DATA WILL BE LOST when the table replacement happens. When enabled, destructive updates are allowed.
+This will only affect DynamoDB tables with provision strategy "AMPLIFY_TABLE".
 
 ---
 
@@ -3491,6 +3501,8 @@ AmplifyGraphqlDefinition.combine(definitions: IAmplifyGraphqlDefinition[])
 
 Combines multiple IAmplifyGraphqlDefinitions into a single definition.
 
+**NOTE** This API is in preview and is not recommended to use with production systems.
+
 ###### `definitions`<sup>Required</sup> <a name="definitions" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.combine.parameter.definitions"></a>
 
 - *Type:* <a href="#@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition">IAmplifyGraphqlDefinition</a>[]
@@ -3522,7 +3534,7 @@ one or more paths to the graphql files to process.
 ```typescript
 import { AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct'
 
-AmplifyGraphqlDefinition.fromFilesAndStrategy(filePaths: string | string[], dataSourceStrategies?: ModelDataSourceDefinition)
+AmplifyGraphqlDefinition.fromFilesAndStrategy(filePaths: string | string[], dataSourceStrategy?: DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy)
 ```
 
 Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema.
@@ -3537,14 +3549,14 @@ one or more paths to the graphql files to process.
 
 ---
 
-###### `dataSourceStrategies`<sup>Optional</sup> <a name="dataSourceStrategies" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromFilesAndStrategy.parameter.dataSourceStrategies"></a>
+###### `dataSourceStrategy`<sup>Optional</sup> <a name="dataSourceStrategy" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromFilesAndStrategy.parameter.dataSourceStrategy"></a>
 
-- *Type:* <a href="#@aws-amplify/graphql-api-construct.ModelDataSourceDefinition">ModelDataSourceDefinition</a>
+- *Type:* <a href="#@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy">DefaultDynamoDbModelDataSourceStrategy</a> | <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy">AmplifyDynamoDbModelDataSourceStrategy</a> | <a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy">SQLLambdaModelDataSourceStrategy</a>
 
-the provision definition for `@model` datasource.
+the provisioning definition for datasources that resolve `@model`s in this schema.
 
-The DynamoDB from CloudFormation will be used by
-default.
+The DynamoDB from
+CloudFormation will be used by default.
 
 ---
 
@@ -3553,12 +3565,12 @@ default.
 ```typescript
 import { AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct'
 
-AmplifyGraphqlDefinition.fromString(schema: string, dataSourceStrategies?: ModelDataSourceDefinition)
+AmplifyGraphqlDefinition.fromString(schema: string, dataSourceStrategy?: DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy)
 ```
 
 Produce a schema definition from a string input.
 
-**NOTE** The 'dataSourceStrategies' configuration option is in preview and is not recommended to use with production systems.
+**NOTE** The 'dataSourceStrategy' configuration option is in preview and is not recommended to use with production systems.
 
 ###### `schema`<sup>Required</sup> <a name="schema" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromString.parameter.schema"></a>
 
@@ -3568,14 +3580,14 @@ the graphql input as a string.
 
 ---
 
-###### `dataSourceStrategies`<sup>Optional</sup> <a name="dataSourceStrategies" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromString.parameter.dataSourceStrategies"></a>
+###### `dataSourceStrategy`<sup>Optional</sup> <a name="dataSourceStrategy" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromString.parameter.dataSourceStrategy"></a>
 
-- *Type:* <a href="#@aws-amplify/graphql-api-construct.ModelDataSourceDefinition">ModelDataSourceDefinition</a>
+- *Type:* <a href="#@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy">DefaultDynamoDbModelDataSourceStrategy</a> | <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy">AmplifyDynamoDbModelDataSourceStrategy</a> | <a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy">SQLLambdaModelDataSourceStrategy</a>
 
-the provision definition for `@model` datasource.
+the provisioning definition for datasources that resolve `@model`s in this schema.
 
-The DynamoDB from CloudFormation will be used by
-default.
+The DynamoDB from
+CloudFormation will be used by default.
 
 ---
 
@@ -3594,23 +3606,24 @@ Graphql Api definition, which can be implemented in multiple ways.
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.dataSourceDefinition">dataSourceDefinition</a></code> | <code>{[ key: string ]: <a href="#@aws-amplify/graphql-api-construct.ModelDataSourceDefinition">ModelDataSourceDefinition</a>}</code> | Retrieve the datasource definition mapping. |
+| <code><a href="#@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.dataSourceStrategies">dataSourceStrategies</a></code> | <code>{[ key: string ]: <a href="#@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy">DefaultDynamoDbModelDataSourceStrategy</a> \| <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy">AmplifyDynamoDbModelDataSourceStrategy</a> \| <a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy">SQLLambdaModelDataSourceStrategy</a>}</code> | Retrieve the datasource strategy mapping. The default strategy is to use DynamoDB from CloudFormation. |
 | <code><a href="#@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.functionSlots">functionSlots</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.MutationFunctionSlot">MutationFunctionSlot</a> \| <a href="#@aws-amplify/graphql-api-construct.QueryFunctionSlot">QueryFunctionSlot</a> \| <a href="#@aws-amplify/graphql-api-construct.SubscriptionFunctionSlot">SubscriptionFunctionSlot</a>[]</code> | Retrieve any function slots defined explicitly in the Api definition. |
 | <code><a href="#@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.schema">schema</a></code> | <code>string</code> | Return the schema definition as a graphql string, with amplify directives allowed. |
 
 ---
 
-##### `dataSourceDefinition`<sup>Required</sup> <a name="dataSourceDefinition" id="@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.dataSourceDefinition"></a>
+##### `dataSourceStrategies`<sup>Required</sup> <a name="dataSourceStrategies" id="@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.dataSourceStrategies"></a>
 
 ```typescript
-public readonly dataSourceDefinition: {[ key: string ]: ModelDataSourceDefinition};
+public readonly dataSourceStrategies: {[ key: string ]: DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy};
 ```
 
-- *Type:* {[ key: string ]: <a href="#@aws-amplify/graphql-api-construct.ModelDataSourceDefinition">ModelDataSourceDefinition</a>}
+- *Type:* {[ key: string ]: <a href="#@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy">DefaultDynamoDbModelDataSourceStrategy</a> | <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy">AmplifyDynamoDbModelDataSourceStrategy</a> | <a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy">SQLLambdaModelDataSourceStrategy</a>}
 
-Retrieve the datasource definition mapping.
+Retrieve the datasource strategy mapping. The default strategy is to use DynamoDB from CloudFormation.
 
-The default strategy is to use DynamoDB from CloudFormation.
+**NOTE** Explicitly specifying the 'dataSourceStrategies' configuration option is in preview and is not recommended to use with
+production systems. For production, use the static factory methods `fromString` or `fromFiles`.
 
 ---
 
