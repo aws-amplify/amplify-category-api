@@ -104,7 +104,7 @@ const generateFilterAndKeyConditionInputs = (config: HasManyDirectiveConfigurati
     ctx.output.addInput(tableXQueryFilterInput);
   }
 
-  if (relatedTypeIndex.length === 2) {
+  if (relatedTypeIndex && relatedTypeIndex.length === 2) {
     const sortKeyType = relatedTypeIndex[1].type;
     const baseType = getBaseType(sortKeyType);
     const namedType = makeNamedType(baseType);
@@ -127,10 +127,14 @@ const ensureModelSortDirectionEnum = (ctx: TransformerContextProvider): void => 
  * ensureHasOneConnectionField
  */
 export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-  const { field, fieldNodes, object, relatedType } = config;
+  const { field, fieldNodes, references, object, relatedType } = config;
 
   // If fields were explicitly provided to the directive, there is nothing else to do here.
-  if (fieldNodes.length > 0) {
+  if (fieldNodes?.length > 0) {
+    return;
+  }
+
+  if (references && references.length > 0) {
     return;
   }
 
@@ -235,8 +239,8 @@ export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration
  *    but does not add additional fields as this will be handled by the hasMany directive
  */
 export const ensureBelongsToConnectionField = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-  const { relationType, relatedType, relatedField } = config;
-  if (relationType === 'hasOne') {
+  const { relationType, relatedType, references, relatedField } = config;
+  if (relationType === 'hasOne' || (references && references.length > 0)) {
     ensureHasOneConnectionField(config, ctx);
   } else {
     // hasMany
@@ -259,10 +263,14 @@ export const ensureHasManyConnectionField = (
   config: HasManyDirectiveConfiguration | ManyToManyDirectiveConfiguration,
   ctx: TransformerContextProvider,
 ): void => {
-  const { field, fieldNodes, object, relatedType } = config;
+  const { field, fieldNodes, object, relatedType, references } = config;
 
   // If fields were explicitly provided to the directive, there is nothing else to do here.
-  if (fieldNodes.length > 0) {
+  if (fieldNodes?.length > 0) {
+    return;
+  }
+
+  if (references && references.length > 0) {
     return;
   }
 
@@ -417,7 +425,7 @@ const makeModelConnectionField = (config: HasManyDirectiveConfiguration): FieldD
   ];
 
   // Add sort key input if necessary.
-  if (fields.length < 2 && relatedTypeIndex.length > 1) {
+  if (fields && fields.length < 2 && relatedTypeIndex.length > 1) {
     let fieldName;
     let namedType;
 

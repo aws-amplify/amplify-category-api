@@ -6,7 +6,6 @@ import {
   TransformerContextProvider,
   TransformerDataSourceManagerProvider,
   AppSyncAuthConfiguration,
-  VpcConfig,
   RDSLayerMapping,
   SynthParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
@@ -16,6 +15,7 @@ import type {
   NestedStackProvider,
   TransformParameterProvider,
   TransformParameters,
+  VpcConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
 import { DocumentNode } from 'graphql';
@@ -75,8 +75,12 @@ export class TransformerContext implements TransformerContextProvider {
   public readonly modelToDatasourceMap: Map<string, DataSourceType>;
 
   public readonly datasourceSecretParameterLocations: Map<string, RDSConnectionSecrets>;
+
   public readonly sqlLambdaVpcConfig?: VpcConfig;
+
   public readonly rdsLayerMapping?: RDSLayerMapping;
+
+  public readonly customQueries: Map<string, string>;
 
   public metadata: TransformerContextMetadata;
 
@@ -88,6 +92,7 @@ export class TransformerContext implements TransformerContextProvider {
     public readonly synthParameters: SynthParameters,
     public readonly inputDocument: DocumentNode,
     modelToDatasourceMap: Map<string, DataSourceType>,
+    customQueries: Map<string, string>,
     stackMapping: Record<string, string>,
     authConfig: AppSyncAuthConfiguration,
     transformParameters: TransformParameters,
@@ -111,6 +116,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.datasourceSecretParameterLocations = datasourceSecretParameterLocations ?? new Map<string, RDSConnectionSecrets>();
     this.sqlLambdaVpcConfig = sqlLambdaVpcConfig;
     this.rdsLayerMapping = rdsLayerMapping;
+    this.customQueries = customQueries;
   }
 
   /**

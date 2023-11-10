@@ -129,10 +129,10 @@ test("'groups' @auth with dynamic groups and custom claim on index query", () =>
   expect(out.resolvers['Query.listPosts.auth.1.req.vtl']).toContain('#set( $role0 = $util.parseJson($role0) )');
   expect(out.resolvers['Query.listPosts.auth.1.req.vtl']).toContain('#set( $role0 = [$role0] )');
 
-  expect(out.resolvers['Post.postsByUser.auth.1.req.vtl']).toContain('#if( $util.isString($role0) )');
-  expect(out.resolvers['Post.postsByUser.auth.1.req.vtl']).toContain('#if( $util.isList($util.parseJson($role0)) )');
-  expect(out.resolvers['Post.postsByUser.auth.1.req.vtl']).toContain('#set( $role0 = $util.parseJson($role0) )');
-  expect(out.resolvers['Post.postsByUser.auth.1.req.vtl']).toContain('#set( $role0 = [$role0] )');
+  expect(out.resolvers['Query.postsByUser.auth.1.req.vtl']).toContain('#if( $util.isString($role0) )');
+  expect(out.resolvers['Query.postsByUser.auth.1.req.vtl']).toContain('#if( $util.isList($util.parseJson($role0)) )');
+  expect(out.resolvers['Query.postsByUser.auth.1.req.vtl']).toContain('#set( $role0 = $util.parseJson($role0) )');
+  expect(out.resolvers['Query.postsByUser.auth.1.req.vtl']).toContain('#set( $role0 = [$role0] )');
 });
 
 test('validation on @auth on a non-@model type', () => {
@@ -421,7 +421,7 @@ describe('Group field as part of secondary index', () => {
     });
 
     expect(out).toBeDefined();
-    expect(out.resolvers['Note.notesByNoteTypeAndGroup.auth.1.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Query.notesByNoteTypeAndGroup.auth.1.req.vtl']).toMatchSnapshot();
   });
   test('group field as GSI field', () => {
     const authConfig: AppSyncAuthConfiguration = {
@@ -446,6 +446,6 @@ describe('Group field as part of secondary index', () => {
     });
 
     expect(out).toBeDefined();
-    expect(out.resolvers['Note.notesByGroup.auth.1.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Query.notesByGroup.auth.1.req.vtl']).toMatchSnapshot();
   });
 });

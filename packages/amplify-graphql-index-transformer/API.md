@@ -15,7 +15,7 @@ import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/grap
 import { TypeNode } from 'graphql';
 
 // @public (undocumented)
-export function attributeTypeFromType(type: TypeNode, ctx: TransformerContextProvider): "S" | "N";
+export const attributeTypeFromType: (type: TypeNode, ctx: TransformerContextProvider) => 'S' | 'N';
 
 // @public (undocumented)
 export class IndexTransformer extends TransformerPluginBase {
@@ -31,7 +31,7 @@ export class IndexTransformer extends TransformerPluginBase {
 }
 
 // @public (undocumented)
-export function overrideIndexAtCfnLevel(ctx: TransformerContextProvider, typeName: string, table: any, indexInfo: any): void;
+export const overrideIndexAtCfnLevel: (ctx: TransformerContextProvider, typeName: string, table: any, indexInfo: any) => void;
 
 // @public (undocumented)
 export class PrimaryKeyTransformer extends TransformerPluginBase {

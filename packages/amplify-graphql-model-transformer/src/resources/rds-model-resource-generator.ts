@@ -1,5 +1,5 @@
-import { MYSQL_DB_TYPE, RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
-import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { MYSQL_DB_TYPE, RDSConnectionSecrets, getImportedRDSType, getEngineFromDBType } from '@aws-amplify/graphql-transformer-core';
+import { QueryFieldType, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Topic, SubscriptionFilter } from 'aws-cdk-lib/aws-sns';
 import { LambdaSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
 import { ResourceConstants } from 'graphql-transformer-common';
@@ -27,7 +27,9 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
 
   generateResources(context: TransformerContextProvider): void {
     if (this.isEnabled()) {
-      const secretEntry = context.datasourceSecretParameterLocations.get(MYSQL_DB_TYPE);
+      const dbType = getImportedRDSType(context.modelToDatasourceMap);
+      const engine = getEngineFromDBType(dbType);
+      const secretEntry = context.datasourceSecretParameterLocations.get(dbType);
       const {
         RDSLambdaIAMRoleLogicalID,
         RDSPatchingLambdaIAMRoleLogicalID,
@@ -50,6 +52,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
         context.api,
         role,
         {
+          engine: engine,
           username: secretEntry?.username ?? '',
           password: secretEntry?.password ?? '',
           host: secretEntry?.host ?? '',
@@ -92,10 +95,33 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       });
     }
     this.generateResolvers(context);
+    this.setFieldMappingResolverReferences(context);
   }
 
   // eslint-disable-next-line class-methods-use-this
   getVTLGenerator(): ModelVTLGenerator {
     return new RDSModelVTLGenerator();
+  }
+
+  setFieldMappingResolverReferences(context: TransformerContextProvider): void {
+    this.models.forEach((def) => {
+      const modelName = def?.name?.value;
+      const modelFieldMap = context.resourceHelper.getModelFieldMap(modelName);
+      if (!modelFieldMap.getMappedFields().length) {
+        return;
+      }
+      const queryFields = this.getQueryFieldNames(def);
+      const mutationFields = this.getMutationFieldNames(def);
+      queryFields.forEach((query) => {
+        modelFieldMap.addResolverReference({
+          typeName: query.typeName,
+          fieldName: query.fieldName,
+          isList: [QueryFieldType.LIST, QueryFieldType.SYNC].includes(query.type),
+        });
+      });
+      mutationFields.forEach((mutation) => {
+        modelFieldMap.addResolverReference({ typeName: mutation.typeName, fieldName: mutation.fieldName, isList: false });
+      });
+    });
   }
 }

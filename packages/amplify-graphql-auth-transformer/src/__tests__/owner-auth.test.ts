@@ -983,7 +983,7 @@ describe('owner based @auth', () => {
           transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer(), new IndexTransformer()],
         });
 
-        expect(out.resolvers['Note.notesByNoteTypeAndOwner.auth.1.req.vtl']).toMatchSnapshot();
+        expect(out.resolvers['Query.notesByNoteTypeAndOwner.auth.1.req.vtl']).toMatchSnapshot();
       });
       test('handles ownerfield as part of sortKeyFields of GSI with username identity claim', () => {
         const schema = `
@@ -1001,7 +1001,7 @@ describe('owner based @auth', () => {
           authConfig,
           transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer(), new IndexTransformer()],
         });
-        expect(out.resolvers['Note.notesByNoteTypeAndOwner.auth.1.req.vtl']).toMatchSnapshot();
+        expect(out.resolvers['Query.notesByNoteTypeAndOwner.auth.1.req.vtl']).toMatchSnapshot();
       });
       test('handles ownerfield as GSI field with default identity claim', () => {
         const schema = `
@@ -1019,7 +1019,7 @@ describe('owner based @auth', () => {
           authConfig,
           transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer(), new IndexTransformer()],
         });
-        expect(out.resolvers['Note.notesByOwner.auth.1.req.vtl']).toMatchSnapshot();
+        expect(out.resolvers['Query.notesByOwner.auth.1.req.vtl']).toMatchSnapshot();
       });
       test('handles ownerfield as GSI field with username identity claim', () => {
         const schema = `
@@ -1037,7 +1037,7 @@ describe('owner based @auth', () => {
           authConfig,
           transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer(), new IndexTransformer()],
         });
-        expect(out.resolvers['Note.notesByOwner.auth.1.req.vtl']).toMatchSnapshot();
+        expect(out.resolvers['Query.notesByOwner.auth.1.req.vtl']).toMatchSnapshot();
       });
     });
   });

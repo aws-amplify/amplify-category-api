@@ -15,9 +15,13 @@ export const DEFAULT_MODEL_DATA_SOURCE_DEFINITION: ModelDataSourceDefinition = {
  */
 export class AmplifyGraphqlDefinition {
   /**
-   * Produce a schema definition from a string input
+   * Produce a schema definition from a string input.
+   *
+   * **NOTE** The 'modelDataSourceDefinition' configuration option is in preview and is not recommended to use with production systems.
+   *
    * @param schema the graphql input as a string
-   * @param modelDataSourceDefinition the provision definition for `@model` datasource. The DynamoDB from CloudFormation will be used by default.
+   * @param modelDataSourceDefinition the provision definition for `@model` datasource. The DynamoDB from CloudFormation will be used by
+   * default.
    * @experimental modelDataSourceDefinition
    * @returns a fully formed amplify graphql definition
    */
@@ -33,9 +37,9 @@ export class AmplifyGraphqlDefinition {
   }
 
   /**
-   * Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema
+   * Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema, binding them to a DynamoDB data source.
    * @param filePaths one or more paths to the graphql files to process
-   * @returns a fully formed amplify graphql definition
+   * @returns a fully formed amplify graphql definition, whose models will be resolved by DynamoDB tables created during deployment.
    */
   static fromFiles(...filePaths: string[]): IAmplifyGraphqlDefinition {
     if (!Array.isArray(filePaths)) {
@@ -51,9 +55,13 @@ export class AmplifyGraphqlDefinition {
 
   /**
    * Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema
+   *
+   * **NOTE** This API is in preview and is not recommended to use with production systems.
+   *
    * @experimental
    * @param filePaths one or more paths to the graphql files to process
-   * @param modelDataSourceDefinition the provision definition for `@model` datasource. The DynamoDB from CloudFormation will be used by default.
+   * @param modelDataSourceDefinition the provision definition for `@model` datasource. The DynamoDB from CloudFormation will be used by
+   * default.
    * @returns a fully formed amplify graphql definition
    */
   static fromFilesAndDefinition(

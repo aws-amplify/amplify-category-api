@@ -153,7 +153,9 @@ const validateNohoistsAreConfigured = (constructPackageName: string, deps: strin
  */
 const validateConstructDependenciesAreConfigured = (constructPackageDir: string, deps: string[]): string[] => {
   const dependencyKeys = new Set(Object.keys(getCdkConstructPackageJson(constructPackageDir).dependencies));
-  return deps.filter((depName) => !dependencyKeys.has(depName)).map((depName) => `${depName} not found in construct dependencies`);
+  return deps
+    .filter((depName) => !dependencyKeys.has(depName))
+    .map((depName) => `${depName} not found in construct dependencies in ${constructPackageDir}`);
 };
 
 /**
@@ -162,7 +164,9 @@ const validateConstructDependenciesAreConfigured = (constructPackageDir: string,
  */
 const validateConstructDevDependenciesAreConfigured = (constructPackageDir: string, deps: string[]): string[] => {
   const devDependencyKeys = new Set(Object.keys(getCdkConstructPackageJson(constructPackageDir).devDependencies));
-  return deps.filter((depName) => devDependencyKeys.has(depName)).map((depName) => `${depName} found in construct devDependencies`);
+  return deps
+    .filter((depName) => devDependencyKeys.has(depName))
+    .map((depName) => `${depName} found in construct devDependencies in ${constructPackageDir}`);
 };
 
 /**
@@ -170,7 +174,9 @@ const validateConstructDevDependenciesAreConfigured = (constructPackageDir: stri
  */
 const validateConstructBundledDependenciesAreConfigured = (constructPackageDir: string, deps: string[]): string[] => {
   const dependencyKeys = new Set(getCdkConstructPackageJson(constructPackageDir).bundledDependencies);
-  return deps.filter((depName) => !dependencyKeys.has(depName)).map((depName) => `${depName} not found in construct bundledDependencies`);
+  return deps
+    .filter((depName) => !dependencyKeys.has(depName))
+    .map((depName) => `${depName} not found in construct bundledDependencies in ${constructPackageDir}`);
 };
 
 /**
