@@ -3511,7 +3511,7 @@
   },
   "name": "@aws-amplify/graphql-api-construct",
   "readme": {
-    "markdown": "# Amplify Graphql API Construct\n\n[![View on Construct Hub](https://constructs.dev/badge?package=%40aws-amplify%2Fgraphql-api-construct)](https://constructs.dev/packages/@aws-amplify/graphql-api-construct)\n\nThis package vends an L3 CDK Construct wrapping the behavior of the Amplify GraphQL Transformer. This enables quick development and interation of AppSync APIs which support the Amplify GraphQL Directives. For more information on schema modeling in GraphQL, please refer to the [amplify developer docs](https://docs.amplify.aws/cli/graphql/overview/).\n\nThe primary way to use this construct is to invoke it with a provided schema (either as an inline graphql string, or as one or more `appsync.SchemaFile`) objects, and with authorization config provided. There are 5 supported methods for authorization of an AppSync API, all of which are supported by this construct. For more information on authorization rule definitions in Amplify, refer to the [authorization docs](https://docs.amplify.aws/cli/graphql/authorization-rules/). Note: currently at least one authorization rule is required, and if multiple are specified, a `defaultAuthorizationMode` must be specified on the api as well. Specified authorization modes must be a superset of those configured in the graphql schema.\n\nNote: only a single instance of the `AmplifyGraphqlApi` construct can be invoked within a CDK synthesis at this point in time.\n\n## Examples\n\n### Simple Todo List With Cognito Userpool-based Owner Authorization\n\nIn this example, we create a single model, which will use `user pool` auth in order to allow logged in users to create and manage their own `todos` privately.\n\nWe create a cdk App and Stack, though you may be deploying this to a custom stack, this is purely illustrative for a concise demo.\n\nWe then wire this through to import a user pool which was already deployed (creating and deploying is out of scope for this example).\n\n```ts\nimport { App, Stack } from 'aws-cdk-lib';\nimport { UserPool } from 'aws-cdk-lib/aws-cognito';\nimport { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';\n\nconst app = new App();\nconst stack = new Stack(app, 'TodoStack');\n\nnew AmplifyGraphqlApi(stack, 'TodoApp', {\n  definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `\n    type Todo @model @auth(rules: [{ allow: owner }]) {\n      description: String!\n      completed: Boolean\n    }\n  `),\n  authorizationModes: {\n    userPoolConfig: {\n      userPool: UserPool.fromUserPoolId(stack, 'ImportedUserPool', '<YOUR_USER_POOL_ID>'),\n    },\n  },\n});\n```\n\n### Multiple related models, with public read access, and admin read/write access\n\nIn this example, we create a two related models, which will use which logged in users in the 'Author' and 'Admin' user groups will have\nfull access to, and customers requesting with api key will only have read permissions on.\n\n```ts\nimport { App, Stack } from 'aws-cdk-lib';\nimport { UserPool } from 'aws-cdk-lib/aws-cognito';\nimport { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';\n\nconst app = new App();\nconst stack = new Stack(app, 'BlogStack');\n\nnew AmplifyGraphqlApi(stack, 'BlogApp', {\n  definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `\n    type Blog @model @auth(rules: [{ allow: public, operations: [read] }, { allow: groups, groups: [\"Author\", \"Admin\"] }]) {\n      title: String!\n      description: String\n      posts: [Post] @hasMany\n    }\n\n    type Post @model @auth(rules: [{ allow: public, operations: [read] }, { allow: groups, groups: [\"Author\", \"Admin\"] }]) {\n      title: String!\n      content: [String]\n      blog: Blog @belongsTo\n    }\n  `),\n  authorizationModes: {\n    defaultAuthorizationMode: 'API_KEY',\n    apiKeyConfig: {\n      description: 'Api Key for public access',\n      expires: cdk.Duration.days(7),\n    },\n    userPoolConfig: {\n      userPool: UserPool.fromUserPoolId(stack, 'ImportedUserPool', '<YOUR_USER_POOL_ID>'),\n    },\n  },\n});\n```\n\n### Import GraphQL Schema from files, instead of inline\n\nIn this example, we import the schema definition itself from one or more local files, rather than an inline graphql string.\n\n```graphql\n# todo.graphql\ntype Todo @model @auth(rules: [{ allow: owner }]) {\n  content: String!\n  done: Boolean\n}\n```\n\n```graphql\n# blog.graphql\ntype Blog @model @auth(rules: [{ allow: owner }, { allow: public, operations: [read] }]) {\n  title: String!\n  description: String\n  posts: [Post] @hasMany\n}\n\ntype Post @model @auth(rules: [{ allow: owner }, { allow: public, operations: [read] }]) {\n  title: String!\n  content: [String]\n  blog: Blog @belongsTo\n}\n```\n\n```ts\n// app.ts\nimport { App, Stack } from 'aws-cdk-lib';\nimport { UserPool } from 'aws-cdk-lib/aws-cognito';\nimport { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';\n\nconst app = new App();\nconst stack = new Stack(app, 'MultiFileStack');\n\nnew AmplifyGraphqlApi(stack, 'MultiFileDefinition', {\n  definition: AmplifyGraphqlDefinition.fromFiles(path.join(__dirname, 'todo.graphql'), path.join(__dirname, 'blog.graphql')),\n  authorizationModes: {\n    defaultAuthorizationMode: 'API_KEY',\n    apiKeyConfig: {\n      description: 'Api Key for public access',\n      expires: cdk.Duration.days(7),\n    },\n    userPoolConfig: {\n      userPool: UserPool.fromUserPoolId(stack, 'ImportedUserPool', '<YOUR_USER_POOL_ID>'),\n    },\n  },\n});\n```\n\n> **NOTE** The 'modelDataSourceDefinition' configuration option is in preview and is not recommended to use with production systems.\n"
+    "markdown": "# Amplify Graphql API Construct\n\n[![View on Construct Hub](https://constructs.dev/badge?package=%40aws-amplify%2Fgraphql-api-construct)](https://constructs.dev/packages/@aws-amplify/graphql-api-construct)\n\nThis package vends an L3 CDK Construct wrapping the behavior of the Amplify GraphQL Transformer. This enables quick development and interation of AppSync APIs which support the Amplify GraphQL Directives. For more information on schema modeling in GraphQL, please refer to the [amplify developer docs](https://docs.amplify.aws/cli/graphql/overview/).\n\nThe primary way to use this construct is to invoke it with a provided schema (either as an inline graphql string, or as one or more `appsync.SchemaFile`) objects, and with authorization config provided. There are 5 supported methods for authorization of an AppSync API, all of which are supported by this construct. For more information on authorization rule definitions in Amplify, refer to the [authorization docs](https://docs.amplify.aws/cli/graphql/authorization-rules/). Note: currently at least one authorization rule is required, and if multiple are specified, a `defaultAuthorizationMode` must be specified on the api as well. Specified authorization modes must be a superset of those configured in the graphql schema.\n\nNote: only a single instance of the `AmplifyGraphqlApi` construct can be invoked within a CDK synthesis at this point in time.\n\n## Examples\n\n### Simple Todo List With Cognito Userpool-based Owner Authorization\n\nIn this example, we create a single model, which will use `user pool` auth in order to allow logged in users to create and manage their own `todos` privately.\n\nWe create a cdk App and Stack, though you may be deploying this to a custom stack, this is purely illustrative for a concise demo.\n\nWe then wire this through to import a user pool which was already deployed (creating and deploying is out of scope for this example).\n\n```ts\nimport { App, Stack } from 'aws-cdk-lib';\nimport { UserPool } from 'aws-cdk-lib/aws-cognito';\nimport { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';\n\nconst app = new App();\nconst stack = new Stack(app, 'TodoStack');\n\nnew AmplifyGraphqlApi(stack, 'TodoApp', {\n  definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `\n    type Todo @model @auth(rules: [{ allow: owner }]) {\n      description: String!\n      completed: Boolean\n    }\n  `),\n  authorizationModes: {\n    userPoolConfig: {\n      userPool: UserPool.fromUserPoolId(stack, 'ImportedUserPool', '<YOUR_USER_POOL_ID>'),\n    },\n  },\n});\n```\n\n### Multiple related models, with public read access, and admin read/write access\n\nIn this example, we create a two related models, which will use which logged in users in the 'Author' and 'Admin' user groups will have\nfull access to, and customers requesting with api key will only have read permissions on.\n\n```ts\nimport { App, Stack } from 'aws-cdk-lib';\nimport { UserPool } from 'aws-cdk-lib/aws-cognito';\nimport { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';\n\nconst app = new App();\nconst stack = new Stack(app, 'BlogStack');\n\nnew AmplifyGraphqlApi(stack, 'BlogApp', {\n  definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `\n    type Blog @model @auth(rules: [{ allow: public, operations: [read] }, { allow: groups, groups: [\"Author\", \"Admin\"] }]) {\n      title: String!\n      description: String\n      posts: [Post] @hasMany\n    }\n\n    type Post @model @auth(rules: [{ allow: public, operations: [read] }, { allow: groups, groups: [\"Author\", \"Admin\"] }]) {\n      title: String!\n      content: [String]\n      blog: Blog @belongsTo\n    }\n  `),\n  authorizationModes: {\n    defaultAuthorizationMode: 'API_KEY',\n    apiKeyConfig: {\n      description: 'Api Key for public access',\n      expires: cdk.Duration.days(7),\n    },\n    userPoolConfig: {\n      userPool: UserPool.fromUserPoolId(stack, 'ImportedUserPool', '<YOUR_USER_POOL_ID>'),\n    },\n  },\n});\n```\n\n### Import GraphQL Schema from files, instead of inline\n\nIn this example, we import the schema definition itself from one or more local files, rather than an inline graphql string.\n\n```graphql\n# todo.graphql\ntype Todo @model @auth(rules: [{ allow: owner }]) {\n  content: String!\n  done: Boolean\n}\n```\n\n```graphql\n# blog.graphql\ntype Blog @model @auth(rules: [{ allow: owner }, { allow: public, operations: [read] }]) {\n  title: String!\n  description: String\n  posts: [Post] @hasMany\n}\n\ntype Post @model @auth(rules: [{ allow: owner }, { allow: public, operations: [read] }]) {\n  title: String!\n  content: [String]\n  blog: Blog @belongsTo\n}\n```\n\n```ts\n// app.ts\nimport { App, Stack } from 'aws-cdk-lib';\nimport { UserPool } from 'aws-cdk-lib/aws-cognito';\nimport { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';\n\nconst app = new App();\nconst stack = new Stack(app, 'MultiFileStack');\n\nnew AmplifyGraphqlApi(stack, 'MultiFileDefinition', {\n  definition: AmplifyGraphqlDefinition.fromFiles(path.join(__dirname, 'todo.graphql'), path.join(__dirname, 'blog.graphql')),\n  authorizationModes: {\n    defaultAuthorizationMode: 'API_KEY',\n    apiKeyConfig: {\n      description: 'Api Key for public access',\n      expires: cdk.Duration.days(7),\n    },\n    userPoolConfig: {\n      userPool: UserPool.fromUserPoolId(stack, 'ImportedUserPool', '<YOUR_USER_POOL_ID>'),\n    },\n  },\n});\n```\n\n> **NOTE** The 'dataSourceStrategies' configuration option is in preview and is not recommended to use with production systems.\n"
   },
   "repository": {
     "directory": "packages/amplify-graphql-api-construct",
@@ -3536,7 +3536,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 747
+        "line": 751
       },
       "name": "AddFunctionProps",
       "properties": [
@@ -3549,7 +3549,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 751
+            "line": 755
           },
           "name": "dataSource",
           "type": {
@@ -3565,7 +3565,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 756
+            "line": 760
           },
           "name": "name",
           "type": {
@@ -3582,7 +3582,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 791
+            "line": 795
           },
           "name": "code",
           "optional": true,
@@ -3600,7 +3600,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 763
+            "line": 767
           },
           "name": "description",
           "optional": true,
@@ -3618,7 +3618,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 770
+            "line": 774
           },
           "name": "requestMappingTemplate",
           "optional": true,
@@ -3636,7 +3636,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 777
+            "line": 781
           },
           "name": "responseMappingTemplate",
           "optional": true,
@@ -3654,7 +3654,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 784
+            "line": 788
           },
           "name": "runtime",
           "optional": true,
@@ -3665,20 +3665,20 @@
       ],
       "symbolId": "src/types:AddFunctionProps"
     },
-    "@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceDefinitionStrategy": {
+    "@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy": {
       "assembly": "@aws-amplify/graphql-api-construct",
       "datatype": true,
       "docs": {
         "stability": "experimental",
         "summary": "Use custom resource type 'Custom::AmplifyDynamoDBTable' to provision table."
       },
-      "fqn": "@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceDefinitionStrategy",
+      "fqn": "@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy",
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 834
+        "line": 823
       },
-      "name": "AmplifyDynamoDbModelDataSourceDefinitionStrategy",
+      "name": "AmplifyDynamoDbModelDataSourceStrategy",
       "properties": [
         {
           "abstract": true,
@@ -3688,7 +3688,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 835
+            "line": 824
           },
           "name": "dbType",
           "type": {
@@ -3703,7 +3703,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 836
+            "line": 825
           },
           "name": "provisionStrategy",
           "type": {
@@ -3711,7 +3711,7 @@
           }
         }
       ],
-      "symbolId": "src/types:AmplifyDynamoDbModelDataSourceDefinitionStrategy"
+      "symbolId": "src/types:AmplifyDynamoDbModelDataSourceStrategy"
     },
     "@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper": {
       "assembly": "@aws-amplify/graphql-api-construct",
@@ -3975,7 +3975,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 336
+            "line": 334
           },
           "name": "addDynamoDbDataSource",
           "parameters": [
@@ -4024,7 +4024,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 348
+            "line": 346
           },
           "name": "addElasticsearchDataSource",
           "parameters": [
@@ -4071,7 +4071,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 358
+            "line": 356
           },
           "name": "addEventBridgeDataSource",
           "parameters": [
@@ -4118,7 +4118,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 440
+            "line": 438
           },
           "name": "addFunction",
           "parameters": [
@@ -4153,7 +4153,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 369
+            "line": 367
           },
           "name": "addHttpDataSource",
           "parameters": [
@@ -4201,7 +4201,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 380
+            "line": 378
           },
           "name": "addLambdaDataSource",
           "parameters": [
@@ -4249,7 +4249,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 391
+            "line": 389
           },
           "name": "addNoneDataSource",
           "parameters": [
@@ -4288,7 +4288,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 402
+            "line": 400
           },
           "name": "addOpenSearchDataSource",
           "parameters": [
@@ -4336,7 +4336,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 415
+            "line": 413
           },
           "name": "addRdsDataSource",
           "parameters": [
@@ -4403,7 +4403,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 431
+            "line": 429
           },
           "name": "addResolver",
           "parameters": [
@@ -4562,7 +4562,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 650
+        "line": 654
       },
       "name": "AmplifyGraphqlApiCfnResources",
       "properties": [
@@ -4575,7 +4575,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 699
+            "line": 703
           },
           "name": "additionalCfnResources",
           "type": {
@@ -4596,7 +4596,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 679
+            "line": 683
           },
           "name": "cfnDataSources",
           "type": {
@@ -4617,7 +4617,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 674
+            "line": 678
           },
           "name": "cfnFunctionConfigurations",
           "type": {
@@ -4638,7 +4638,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 694
+            "line": 698
           },
           "name": "cfnFunctions",
           "type": {
@@ -4659,7 +4659,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 654
+            "line": 658
           },
           "name": "cfnGraphqlApi",
           "type": {
@@ -4675,7 +4675,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 659
+            "line": 663
           },
           "name": "cfnGraphqlSchema",
           "type": {
@@ -4691,7 +4691,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 669
+            "line": 673
           },
           "name": "cfnResolvers",
           "type": {
@@ -4712,7 +4712,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 689
+            "line": 693
           },
           "name": "cfnRoles",
           "type": {
@@ -4733,7 +4733,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 684
+            "line": 688
           },
           "name": "cfnTables",
           "type": {
@@ -4754,7 +4754,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 664
+            "line": 668
           },
           "name": "cfnApiKey",
           "optional": true,
@@ -4777,7 +4777,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 574
+        "line": 578
       },
       "name": "AmplifyGraphqlApiProps",
       "properties": [
@@ -4791,7 +4791,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 591
+            "line": 595
           },
           "name": "authorizationModes",
           "type": {
@@ -4808,7 +4808,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 579
+            "line": 583
           },
           "name": "definition",
           "type": {
@@ -4825,7 +4825,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 585
+            "line": 589
           },
           "name": "apiName",
           "optional": true,
@@ -4843,7 +4843,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 605
+            "line": 609
           },
           "name": "conflictResolution",
           "optional": true,
@@ -4863,7 +4863,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 599
+            "line": 603
           },
           "name": "functionNameMap",
           "optional": true,
@@ -4886,7 +4886,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 620
+            "line": 624
           },
           "name": "functionSlots",
           "optional": true,
@@ -4921,7 +4921,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 643
+            "line": 647
           },
           "name": "outputStorageStrategy",
           "optional": true,
@@ -4938,7 +4938,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 632
+            "line": 636
           },
           "name": "predictionsBucket",
           "optional": true,
@@ -4956,7 +4956,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 614
+            "line": 618
           },
           "name": "stackMappings",
           "optional": true,
@@ -4982,7 +4982,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 627
+            "line": 631
           },
           "name": "transformerPlugins",
           "optional": true,
@@ -5004,7 +5004,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 638
+            "line": 642
           },
           "name": "translationBehavior",
           "optional": true,
@@ -5027,7 +5027,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 706
+        "line": 710
       },
       "name": "AmplifyGraphqlApiResources",
       "properties": [
@@ -5040,7 +5040,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 720
+            "line": 724
           },
           "name": "amplifyDynamoDbTables",
           "type": {
@@ -5061,7 +5061,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 735
+            "line": 739
           },
           "name": "cfnResources",
           "type": {
@@ -5077,7 +5077,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 730
+            "line": 734
           },
           "name": "functions",
           "type": {
@@ -5098,7 +5098,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 710
+            "line": 714
           },
           "name": "graphqlApi",
           "type": {
@@ -5114,7 +5114,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 740
+            "line": 744
           },
           "name": "nestedStacks",
           "type": {
@@ -5135,7 +5135,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 725
+            "line": 729
           },
           "name": "roles",
           "type": {
@@ -5156,7 +5156,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 715
+            "line": 719
           },
           "name": "tables",
           "type": {
@@ -5186,17 +5186,18 @@
       "kind": "class",
       "locationInModule": {
         "filename": "src/amplify-graphql-definition.ts",
-        "line": 16
+        "line": 14
       },
       "methods": [
         {
           "docs": {
+            "remarks": "**NOTE** This API is in preview and is not recommended to use with production systems.",
             "stability": "experimental",
             "summary": "Combines multiple IAmplifyGraphqlDefinitions into a single definition."
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-definition.ts",
-            "line": 87
+            "line": 88
           },
           "name": "combine",
           "parameters": [
@@ -5230,7 +5231,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-definition.ts",
-            "line": 44
+            "line": 42
           },
           "name": "fromFiles",
           "parameters": [
@@ -5262,9 +5263,9 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-definition.ts",
-            "line": 67
+            "line": 65
           },
-          "name": "fromFilesAndDefinition",
+          "name": "fromFilesAndStrategy",
           "parameters": [
             {
               "docs": {
@@ -5291,13 +5292,25 @@
             },
             {
               "docs": {
-                "remarks": "The DynamoDB from CloudFormation will be used by\ndefault.",
-                "summary": "the provision definition for `@model` datasource."
+                "remarks": "The DynamoDB from\nCloudFormation will be used by default.",
+                "summary": "the provisioning definition for datasources that resolve `@model`s in this schema."
               },
-              "name": "modelDataSourceDefinition",
+              "name": "dataSourceStrategy",
               "optional": true,
               "type": {
-                "fqn": "@aws-amplify/graphql-api-construct.ModelDataSourceDefinition"
+                "union": {
+                  "types": [
+                    {
+                      "fqn": "@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy"
+                    },
+                    {
+                      "fqn": "@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy"
+                    },
+                    {
+                      "fqn": "@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy"
+                    }
+                  ]
+                }
               }
             }
           ],
@@ -5310,14 +5323,14 @@
         },
         {
           "docs": {
-            "remarks": "**NOTE** The 'modelDataSourceDefinition' configuration option is in preview and is not recommended to use with production systems.",
+            "remarks": "**NOTE** The 'dataSourceStrategy' configuration option is in preview and is not recommended to use with production systems.",
             "returns": "a fully formed amplify graphql definition",
             "stability": "experimental",
             "summary": "Produce a schema definition from a string input."
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-definition.ts",
-            "line": 28
+            "line": 26
           },
           "name": "fromString",
           "parameters": [
@@ -5332,13 +5345,25 @@
             },
             {
               "docs": {
-                "remarks": "The DynamoDB from CloudFormation will be used by\ndefault.",
-                "summary": "the provision definition for `@model` datasource."
+                "remarks": "The DynamoDB from\nCloudFormation will be used by default.",
+                "summary": "the provisioning definition for datasources that resolve `@model`s in this schema."
               },
-              "name": "modelDataSourceDefinition",
+              "name": "dataSourceStrategy",
               "optional": true,
               "type": {
-                "fqn": "@aws-amplify/graphql-api-construct.ModelDataSourceDefinition"
+                "union": {
+                  "types": [
+                    {
+                      "fqn": "@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy"
+                    },
+                    {
+                      "fqn": "@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy"
+                    },
+                    {
+                      "fqn": "@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy"
+                    }
+                  ]
+                }
               }
             }
           ],
@@ -5761,20 +5786,20 @@
       ],
       "symbolId": "src/types:CustomConflictResolutionStrategy"
     },
-    "@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceDefinitionStrategy": {
+    "@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy": {
       "assembly": "@aws-amplify/graphql-api-construct",
       "datatype": true,
       "docs": {
         "stability": "experimental",
         "summary": "Use default CloudFormation type 'AWS::DynamoDB::Table' to provision table."
       },
-      "fqn": "@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceDefinitionStrategy",
+      "fqn": "@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy",
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 825
+        "line": 814
       },
-      "name": "DefaultDynamoDbModelDataSourceDefinitionStrategy",
+      "name": "DefaultDynamoDbModelDataSourceStrategy",
       "properties": [
         {
           "abstract": true,
@@ -5784,7 +5809,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 826
+            "line": 815
           },
           "name": "dbType",
           "type": {
@@ -5799,7 +5824,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 827
+            "line": 816
           },
           "name": "provisionStrategy",
           "type": {
@@ -5807,7 +5832,7 @@
           }
         }
       ],
-      "symbolId": "src/types:DefaultDynamoDbModelDataSourceDefinitionStrategy"
+      "symbolId": "src/types:DefaultDynamoDbModelDataSourceStrategy"
     },
     "@aws-amplify/graphql-api-construct.FunctionSlotBase": {
       "assembly": "@aws-amplify/graphql-api-construct",
@@ -6047,21 +6072,33 @@
         {
           "abstract": true,
           "docs": {
-            "remarks": "The default strategy is to use DynamoDB from CloudFormation.",
-            "returns": "datasource definition mapping",
-            "stability": "stable",
-            "summary": "Retrieve the datasource definition mapping."
+            "remarks": "**NOTE** Explicitly specifying the 'dataSourceStrategies' configuration option is in preview and is not recommended to use with\nproduction systems. For production, use the static factory methods `fromString` or `fromFiles`.",
+            "returns": "datasource strategy mapping",
+            "stability": "experimental",
+            "summary": "Retrieve the datasource strategy mapping. The default strategy is to use DynamoDB from CloudFormation."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 539
+            "line": 543
           },
-          "name": "dataSourceDefinition",
+          "name": "dataSourceStrategies",
           "type": {
             "collection": {
               "elementtype": {
-                "fqn": "@aws-amplify/graphql-api-construct.ModelDataSourceDefinition"
+                "union": {
+                  "types": [
+                    {
+                      "fqn": "@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy"
+                    },
+                    {
+                      "fqn": "@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy"
+                    },
+                    {
+                      "fqn": "@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy"
+                    }
+                  ]
+                }
               },
               "kind": "map"
             }
@@ -6131,7 +6168,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 545
+        "line": 549
       },
       "name": "IBackendOutputEntry",
       "properties": [
@@ -6144,7 +6181,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 554
+            "line": 558
           },
           "name": "payload",
           "type": {
@@ -6165,7 +6202,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 549
+            "line": 553
           },
           "name": "version",
           "type": {
@@ -6185,7 +6222,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 560
+        "line": 564
       },
       "methods": [
         {
@@ -6196,7 +6233,7 @@
           },
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 567
+            "line": 571
           },
           "name": "addBackendOutputEntry",
           "parameters": [
@@ -6273,69 +6310,6 @@
         }
       ],
       "symbolId": "src/types:LambdaAuthorizationConfig"
-    },
-    "@aws-amplify/graphql-api-construct.ModelDataSourceDefinition": {
-      "assembly": "@aws-amplify/graphql-api-construct",
-      "datatype": true,
-      "docs": {
-        "stability": "experimental",
-        "summary": "Defines a datasource for resolving GraphQL operations against `@model` types in a GraphQL schema."
-      },
-      "fqn": "@aws-amplify/graphql-api-construct.ModelDataSourceDefinition",
-      "kind": "interface",
-      "locationInModule": {
-        "filename": "src/types.ts",
-        "line": 798
-      },
-      "name": "ModelDataSourceDefinition",
-      "properties": [
-        {
-          "abstract": true,
-          "docs": {
-            "remarks": "This will be used to name the AppSync DataSource itself, plus any associated resources like\nresolver Lambdas and custom CDK resources. This name must be unique across all schema definitions in a GraphQL API.",
-            "stability": "experimental",
-            "summary": "The name of the ModelDataSourceDefinition."
-          },
-          "immutable": true,
-          "locationInModule": {
-            "filename": "src/types.ts",
-            "line": 803
-          },
-          "name": "name",
-          "type": {
-            "primitive": "string"
-          }
-        },
-        {
-          "abstract": true,
-          "docs": {
-            "stability": "experimental",
-            "summary": "The ModelDataSourceDefinitionStrategy."
-          },
-          "immutable": true,
-          "locationInModule": {
-            "filename": "src/types.ts",
-            "line": 807
-          },
-          "name": "strategy",
-          "type": {
-            "union": {
-              "types": [
-                {
-                  "fqn": "@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceDefinitionStrategy"
-                },
-                {
-                  "fqn": "@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceDefinitionStrategy"
-                },
-                {
-                  "fqn": "@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceDefinitionStrategy"
-                }
-              ]
-            }
-          }
-        }
-      ],
-      "symbolId": "src/types:ModelDataSourceDefinition"
     },
     "@aws-amplify/graphql-api-construct.MutationFunctionSlot": {
       "assembly": "@aws-amplify/graphql-api-construct",
@@ -6882,20 +6856,20 @@
       ],
       "symbolId": "src/types:QueryFunctionSlot"
     },
-    "@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceDefinitionStrategy": {
+    "@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy": {
       "assembly": "@aws-amplify/graphql-api-construct",
       "datatype": true,
       "docs": {
         "stability": "experimental",
         "summary": "A strategy that creates a Lambda to connect to a pre-existing SQL table to resolve model data."
       },
-      "fqn": "@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceDefinitionStrategy",
+      "fqn": "@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy",
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 844
+        "line": 833
       },
-      "name": "SQLLambdaModelDataSourceDefinitionStrategy",
+      "name": "SQLLambdaModelDataSourceStrategy",
       "properties": [
         {
           "abstract": true,
@@ -6906,11 +6880,11 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 853
+            "line": 848
           },
           "name": "dbConnectionConfig",
           "type": {
-            "fqn": "@aws-amplify/graphql-api-construct.SqlModelDataSourceDefinitionDbConnectionConfig"
+            "fqn": "@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig"
           }
         },
         {
@@ -6922,9 +6896,26 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 848
+            "line": 843
           },
           "name": "dbType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "This will be used to name the AppSync DataSource itself, plus any associated resources like resolver Lambdas.\nThis name must be unique across all schema definitions in a GraphQL API.",
+            "stability": "experimental",
+            "summary": "The name of the strategy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 838
+          },
+          "name": "name",
           "type": {
             "primitive": "string"
           }
@@ -6939,7 +6930,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 864
+            "line": 859
           },
           "name": "customSqlStatements",
           "optional": true,
@@ -6961,7 +6952,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 869
+            "line": 864
           },
           "name": "sqlLambdaLayerMapping",
           "optional": true,
@@ -6983,7 +6974,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 858
+            "line": 853
           },
           "name": "vpcConfiguration",
           "optional": true,
@@ -6992,7 +6983,7 @@
           }
         }
       ],
-      "symbolId": "src/types:SQLLambdaModelDataSourceDefinitionStrategy"
+      "symbolId": "src/types:SQLLambdaModelDataSourceStrategy"
     },
     "@aws-amplify/graphql-api-construct.SSESpecification": {
       "assembly": "@aws-amplify/graphql-api-construct",
@@ -7089,7 +7080,7 @@
       "name": "SSEType",
       "symbolId": "src/amplify-dynamodb-table-wrapper:SSEType"
     },
-    "@aws-amplify/graphql-api-construct.SqlModelDataSourceDefinitionDbConnectionConfig": {
+    "@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig": {
       "assembly": "@aws-amplify/graphql-api-construct",
       "datatype": true,
       "docs": {
@@ -7097,13 +7088,13 @@
         "stability": "experimental",
         "summary": "The Secure Systems Manager parameter paths the Lambda data source will use to connect to the database."
       },
-      "fqn": "@aws-amplify/graphql-api-construct.SqlModelDataSourceDefinitionDbConnectionConfig",
+      "fqn": "@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig",
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 917
+        "line": 912
       },
-      "name": "SqlModelDataSourceDefinitionDbConnectionConfig",
+      "name": "SqlModelDataSourceDbConnectionConfig",
       "properties": [
         {
           "abstract": true,
@@ -7114,7 +7105,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 933
+            "line": 928
           },
           "name": "databaseNameSsmPath",
           "type": {
@@ -7131,7 +7122,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 921
+            "line": 916
           },
           "name": "hostnameSsmPath",
           "type": {
@@ -7147,7 +7138,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 930
+            "line": 925
           },
           "name": "passwordSsmPath",
           "type": {
@@ -7163,7 +7154,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 924
+            "line": 919
           },
           "name": "portSsmPath",
           "type": {
@@ -7179,7 +7170,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 927
+            "line": 922
           },
           "name": "usernameSsmPath",
           "type": {
@@ -7187,7 +7178,7 @@
           }
         }
       ],
-      "symbolId": "src/types:SqlModelDataSourceDefinitionDbConnectionConfig"
+      "symbolId": "src/types:SqlModelDataSourceDbConnectionConfig"
     },
     "@aws-amplify/graphql-api-construct.StreamSpecification": {
       "assembly": "@aws-amplify/graphql-api-construct",
@@ -7236,7 +7227,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 897
+        "line": 892
       },
       "name": "SubnetAvailabilityZone",
       "properties": [
@@ -7249,7 +7240,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 902
+            "line": 897
           },
           "name": "availabilityZone",
           "type": {
@@ -7265,7 +7256,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 899
+            "line": 894
           },
           "name": "subnetId",
           "type": {
@@ -7659,7 +7650,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 880
+        "line": 875
       },
       "name": "VpcConfig",
       "properties": [
@@ -7672,7 +7663,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 885
+            "line": 880
           },
           "name": "securityGroupIds",
           "type": {
@@ -7693,7 +7684,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 888
+            "line": 883
           },
           "name": "subnetAvailabilityZoneConfig",
           "type": {
@@ -7714,7 +7705,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 882
+            "line": 877
           },
           "name": "vpcId",
           "type": {
@@ -7726,5 +7717,5 @@
     }
   },
   "version": "1.3.0",
-  "fingerprint": "RI2/wQMl6M/zpiB2sXQU00Rd8UiYhDeGSTK7o9Ndb6U="
+  "fingerprint": "R9IHtrTnur1/+OXwKlB28ZF2PeG5ApWBLwnD+mJrEPw="
 }

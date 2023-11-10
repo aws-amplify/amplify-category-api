@@ -132,7 +132,7 @@ new AmplifyGraphqlApi(stack, 'MultiFileDefinition', {
 });
 ```
 
-> **NOTE** The 'modelDataSourceDefinition' configuration option is in preview and is not recommended to use with production systems.
+> **NOTE** The 'dataSourceStrategies' configuration option is in preview and is not recommended to use with production systems.
 
 # API Reference <a name="API Reference" id="api-reference"></a>
 
@@ -814,28 +814,28 @@ The functions runtime.
 
 ---
 
-### AmplifyDynamoDbModelDataSourceDefinitionStrategy <a name="AmplifyDynamoDbModelDataSourceDefinitionStrategy" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceDefinitionStrategy"></a>
+### AmplifyDynamoDbModelDataSourceStrategy <a name="AmplifyDynamoDbModelDataSourceStrategy" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy"></a>
 
 Use custom resource type 'Custom::AmplifyDynamoDBTable' to provision table.
 
-#### Initializer <a name="Initializer" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceDefinitionStrategy.Initializer"></a>
+#### Initializer <a name="Initializer" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy.Initializer"></a>
 
 ```typescript
-import { AmplifyDynamoDbModelDataSourceDefinitionStrategy } from '@aws-amplify/graphql-api-construct'
+import { AmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-api-construct'
 
-const amplifyDynamoDbModelDataSourceDefinitionStrategy: AmplifyDynamoDbModelDataSourceDefinitionStrategy = { ... }
+const amplifyDynamoDbModelDataSourceStrategy: AmplifyDynamoDbModelDataSourceStrategy = { ... }
 ```
 
 #### Properties <a name="Properties" id="Properties"></a>
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceDefinitionStrategy.property.dbType">dbType</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceDefinitionStrategy.property.provisionStrategy">provisionStrategy</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy.property.dbType">dbType</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy.property.provisionStrategy">provisionStrategy</a></code> | <code>string</code> | *No description.* |
 
 ---
 
-##### `dbType`<sup>Required</sup> <a name="dbType" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceDefinitionStrategy.property.dbType"></a>
+##### `dbType`<sup>Required</sup> <a name="dbType" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy.property.dbType"></a>
 
 ```typescript
 public readonly dbType: string;
@@ -845,7 +845,7 @@ public readonly dbType: string;
 
 ---
 
-##### `provisionStrategy`<sup>Required</sup> <a name="provisionStrategy" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceDefinitionStrategy.property.provisionStrategy"></a>
+##### `provisionStrategy`<sup>Required</sup> <a name="provisionStrategy" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy.property.provisionStrategy"></a>
 
 ```typescript
 public readonly provisionStrategy: string;
@@ -1661,28 +1661,28 @@ For more information, refer to https://docs.aws.amazon.com/appsync/latest/devgui
 
 ---
 
-### DefaultDynamoDbModelDataSourceDefinitionStrategy <a name="DefaultDynamoDbModelDataSourceDefinitionStrategy" id="@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceDefinitionStrategy"></a>
+### DefaultDynamoDbModelDataSourceStrategy <a name="DefaultDynamoDbModelDataSourceStrategy" id="@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy"></a>
 
 Use default CloudFormation type 'AWS::DynamoDB::Table' to provision table.
 
-#### Initializer <a name="Initializer" id="@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceDefinitionStrategy.Initializer"></a>
+#### Initializer <a name="Initializer" id="@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy.Initializer"></a>
 
 ```typescript
-import { DefaultDynamoDbModelDataSourceDefinitionStrategy } from '@aws-amplify/graphql-api-construct'
+import { DefaultDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-api-construct'
 
-const defaultDynamoDbModelDataSourceDefinitionStrategy: DefaultDynamoDbModelDataSourceDefinitionStrategy = { ... }
+const defaultDynamoDbModelDataSourceStrategy: DefaultDynamoDbModelDataSourceStrategy = { ... }
 ```
 
 #### Properties <a name="Properties" id="Properties"></a>
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceDefinitionStrategy.property.dbType">dbType</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceDefinitionStrategy.property.provisionStrategy">provisionStrategy</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy.property.dbType">dbType</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy.property.provisionStrategy">provisionStrategy</a></code> | <code>string</code> | *No description.* |
 
 ---
 
-##### `dbType`<sup>Required</sup> <a name="dbType" id="@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceDefinitionStrategy.property.dbType"></a>
+##### `dbType`<sup>Required</sup> <a name="dbType" id="@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy.property.dbType"></a>
 
 ```typescript
 public readonly dbType: string;
@@ -1692,7 +1692,7 @@ public readonly dbType: string;
 
 ---
 
-##### `provisionStrategy`<sup>Required</sup> <a name="provisionStrategy" id="@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceDefinitionStrategy.property.provisionStrategy"></a>
+##### `provisionStrategy`<sup>Required</sup> <a name="provisionStrategy" id="@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy.property.provisionStrategy"></a>
 
 ```typescript
 public readonly provisionStrategy: string;
@@ -1932,54 +1932,6 @@ public readonly ttl: Duration;
 - *Type:* aws-cdk-lib.Duration
 
 How long the results are cached.
-
----
-
-### ModelDataSourceDefinition <a name="ModelDataSourceDefinition" id="@aws-amplify/graphql-api-construct.ModelDataSourceDefinition"></a>
-
-Defines a datasource for resolving GraphQL operations against `@model` types in a GraphQL schema.
-
-#### Initializer <a name="Initializer" id="@aws-amplify/graphql-api-construct.ModelDataSourceDefinition.Initializer"></a>
-
-```typescript
-import { ModelDataSourceDefinition } from '@aws-amplify/graphql-api-construct'
-
-const modelDataSourceDefinition: ModelDataSourceDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@aws-amplify/graphql-api-construct.ModelDataSourceDefinition.property.name">name</a></code> | <code>string</code> | The name of the ModelDataSourceDefinition. |
-| <code><a href="#@aws-amplify/graphql-api-construct.ModelDataSourceDefinition.property.strategy">strategy</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceDefinitionStrategy">DefaultDynamoDbModelDataSourceDefinitionStrategy</a> \| <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceDefinitionStrategy">AmplifyDynamoDbModelDataSourceDefinitionStrategy</a> \| <a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceDefinitionStrategy">SQLLambdaModelDataSourceDefinitionStrategy</a></code> | The ModelDataSourceDefinitionStrategy. |
-
----
-
-##### `name`<sup>Required</sup> <a name="name" id="@aws-amplify/graphql-api-construct.ModelDataSourceDefinition.property.name"></a>
-
-```typescript
-public readonly name: string;
-```
-
-- *Type:* string
-
-The name of the ModelDataSourceDefinition.
-
-This will be used to name the AppSync DataSource itself, plus any associated resources like
-resolver Lambdas and custom CDK resources. This name must be unique across all schema definitions in a GraphQL API.
-
----
-
-##### `strategy`<sup>Required</sup> <a name="strategy" id="@aws-amplify/graphql-api-construct.ModelDataSourceDefinition.property.strategy"></a>
-
-```typescript
-public readonly strategy: DefaultDynamoDbModelDataSourceDefinitionStrategy | AmplifyDynamoDbModelDataSourceDefinitionStrategy | SQLLambdaModelDataSourceDefinitionStrategy;
-```
-
-- *Type:* <a href="#@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceDefinitionStrategy">DefaultDynamoDbModelDataSourceDefinitionStrategy</a> | <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceDefinitionStrategy">AmplifyDynamoDbModelDataSourceDefinitionStrategy</a> | <a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceDefinitionStrategy">SQLLambdaModelDataSourceDefinitionStrategy</a>
-
-The ModelDataSourceDefinitionStrategy.
 
 ---
 
@@ -2544,43 +2496,44 @@ This slot type applies to the Query type on the Api definition.
 
 ---
 
-### SQLLambdaModelDataSourceDefinitionStrategy <a name="SQLLambdaModelDataSourceDefinitionStrategy" id="@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceDefinitionStrategy"></a>
+### SQLLambdaModelDataSourceStrategy <a name="SQLLambdaModelDataSourceStrategy" id="@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy"></a>
 
 A strategy that creates a Lambda to connect to a pre-existing SQL table to resolve model data.
 
-#### Initializer <a name="Initializer" id="@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceDefinitionStrategy.Initializer"></a>
+#### Initializer <a name="Initializer" id="@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.Initializer"></a>
 
 ```typescript
-import { SQLLambdaModelDataSourceDefinitionStrategy } from '@aws-amplify/graphql-api-construct'
+import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-api-construct'
 
-const sQLLambdaModelDataSourceDefinitionStrategy: SQLLambdaModelDataSourceDefinitionStrategy = { ... }
+const sQLLambdaModelDataSourceStrategy: SQLLambdaModelDataSourceStrategy = { ... }
 ```
 
 #### Properties <a name="Properties" id="Properties"></a>
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceDefinitionStrategy.property.dbConnectionConfig">dbConnectionConfig</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceDefinitionDbConnectionConfig">SqlModelDataSourceDefinitionDbConnectionConfig</a></code> | The parameters the Lambda data source will use to connect to the database. |
-| <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceDefinitionStrategy.property.dbType">dbType</a></code> | <code>string</code> | The type of the SQL database used to process model operations for this definition. |
-| <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceDefinitionStrategy.property.customSqlStatements">customSqlStatements</a></code> | <code>{[ key: string ]: string}</code> | Custom SQL statements. |
-| <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceDefinitionStrategy.property.sqlLambdaLayerMapping">sqlLambdaLayerMapping</a></code> | <code>{[ key: string ]: string}</code> | An optional override for the default SQL Lambda Layer. |
-| <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceDefinitionStrategy.property.vpcConfiguration">vpcConfiguration</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.VpcConfig">VpcConfig</a></code> | The configuration of the VPC into which to install the Lambda. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.dbConnectionConfig">dbConnectionConfig</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig">SqlModelDataSourceDbConnectionConfig</a></code> | The parameters the Lambda data source will use to connect to the database. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.dbType">dbType</a></code> | <code>string</code> | The type of the SQL database used to process model operations for this definition. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.name">name</a></code> | <code>string</code> | The name of the strategy. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.customSqlStatements">customSqlStatements</a></code> | <code>{[ key: string ]: string}</code> | Custom SQL statements. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.sqlLambdaLayerMapping">sqlLambdaLayerMapping</a></code> | <code>{[ key: string ]: string}</code> | An optional override for the default SQL Lambda Layer. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.vpcConfiguration">vpcConfiguration</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.VpcConfig">VpcConfig</a></code> | The configuration of the VPC into which to install the Lambda. |
 
 ---
 
-##### `dbConnectionConfig`<sup>Required</sup> <a name="dbConnectionConfig" id="@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceDefinitionStrategy.property.dbConnectionConfig"></a>
+##### `dbConnectionConfig`<sup>Required</sup> <a name="dbConnectionConfig" id="@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.dbConnectionConfig"></a>
 
 ```typescript
-public readonly dbConnectionConfig: SqlModelDataSourceDefinitionDbConnectionConfig;
+public readonly dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
 ```
 
-- *Type:* <a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceDefinitionDbConnectionConfig">SqlModelDataSourceDefinitionDbConnectionConfig</a>
+- *Type:* <a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig">SqlModelDataSourceDbConnectionConfig</a>
 
 The parameters the Lambda data source will use to connect to the database.
 
 ---
 
-##### `dbType`<sup>Required</sup> <a name="dbType" id="@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceDefinitionStrategy.property.dbType"></a>
+##### `dbType`<sup>Required</sup> <a name="dbType" id="@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.dbType"></a>
 
 ```typescript
 public readonly dbType: string;
@@ -2592,7 +2545,22 @@ The type of the SQL database used to process model operations for this definitio
 
 ---
 
-##### `customSqlStatements`<sup>Optional</sup> <a name="customSqlStatements" id="@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceDefinitionStrategy.property.customSqlStatements"></a>
+##### `name`<sup>Required</sup> <a name="name" id="@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.name"></a>
+
+```typescript
+public readonly name: string;
+```
+
+- *Type:* string
+
+The name of the strategy.
+
+This will be used to name the AppSync DataSource itself, plus any associated resources like resolver Lambdas.
+This name must be unique across all schema definitions in a GraphQL API.
+
+---
+
+##### `customSqlStatements`<sup>Optional</sup> <a name="customSqlStatements" id="@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.customSqlStatements"></a>
 
 ```typescript
 public readonly customSqlStatements: {[ key: string ]: string};
@@ -2607,7 +2575,7 @@ to be executed.
 
 ---
 
-##### `sqlLambdaLayerMapping`<sup>Optional</sup> <a name="sqlLambdaLayerMapping" id="@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceDefinitionStrategy.property.sqlLambdaLayerMapping"></a>
+##### `sqlLambdaLayerMapping`<sup>Optional</sup> <a name="sqlLambdaLayerMapping" id="@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.sqlLambdaLayerMapping"></a>
 
 ```typescript
 public readonly sqlLambdaLayerMapping: {[ key: string ]: string};
@@ -2619,7 +2587,7 @@ An optional override for the default SQL Lambda Layer.
 
 ---
 
-##### `vpcConfiguration`<sup>Optional</sup> <a name="vpcConfiguration" id="@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceDefinitionStrategy.property.vpcConfiguration"></a>
+##### `vpcConfiguration`<sup>Optional</sup> <a name="vpcConfiguration" id="@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.vpcConfiguration"></a>
 
 ```typescript
 public readonly vpcConfiguration: VpcConfig;
@@ -2631,33 +2599,33 @@ The configuration of the VPC into which to install the Lambda.
 
 ---
 
-### SqlModelDataSourceDefinitionDbConnectionConfig <a name="SqlModelDataSourceDefinitionDbConnectionConfig" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceDefinitionDbConnectionConfig"></a>
+### SqlModelDataSourceDbConnectionConfig <a name="SqlModelDataSourceDbConnectionConfig" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig"></a>
 
 The Secure Systems Manager parameter paths the Lambda data source will use to connect to the database.
 
 These parameters are retrieved from Secure Systems Manager in the same region as the Lambda.
 
-#### Initializer <a name="Initializer" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceDefinitionDbConnectionConfig.Initializer"></a>
+#### Initializer <a name="Initializer" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig.Initializer"></a>
 
 ```typescript
-import { SqlModelDataSourceDefinitionDbConnectionConfig } from '@aws-amplify/graphql-api-construct'
+import { SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-api-construct'
 
-const sqlModelDataSourceDefinitionDbConnectionConfig: SqlModelDataSourceDefinitionDbConnectionConfig = { ... }
+const sqlModelDataSourceDbConnectionConfig: SqlModelDataSourceDbConnectionConfig = { ... }
 ```
 
 #### Properties <a name="Properties" id="Properties"></a>
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceDefinitionDbConnectionConfig.property.databaseNameSsmPath">databaseNameSsmPath</a></code> | <code>string</code> | The Secure Systems Manager parameter containing the database name. |
-| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceDefinitionDbConnectionConfig.property.hostnameSsmPath">hostnameSsmPath</a></code> | <code>string</code> | The Secure Systems Manager parameter containing the hostname of the database. |
-| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceDefinitionDbConnectionConfig.property.passwordSsmPath">passwordSsmPath</a></code> | <code>string</code> | The Secure Systems Manager parameter containing the password to use when connecting to the database. |
-| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceDefinitionDbConnectionConfig.property.portSsmPath">portSsmPath</a></code> | <code>string</code> | The Secure Systems Manager parameter containing the port number of the database proxy, cluster, or instance. |
-| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceDefinitionDbConnectionConfig.property.usernameSsmPath">usernameSsmPath</a></code> | <code>string</code> | The Secure Systems Manager parameter containing the username to use when connecting to the database. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig.property.databaseNameSsmPath">databaseNameSsmPath</a></code> | <code>string</code> | The Secure Systems Manager parameter containing the database name. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig.property.hostnameSsmPath">hostnameSsmPath</a></code> | <code>string</code> | The Secure Systems Manager parameter containing the hostname of the database. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig.property.passwordSsmPath">passwordSsmPath</a></code> | <code>string</code> | The Secure Systems Manager parameter containing the password to use when connecting to the database. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig.property.portSsmPath">portSsmPath</a></code> | <code>string</code> | The Secure Systems Manager parameter containing the port number of the database proxy, cluster, or instance. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig.property.usernameSsmPath">usernameSsmPath</a></code> | <code>string</code> | The Secure Systems Manager parameter containing the username to use when connecting to the database. |
 
 ---
 
-##### `databaseNameSsmPath`<sup>Required</sup> <a name="databaseNameSsmPath" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceDefinitionDbConnectionConfig.property.databaseNameSsmPath"></a>
+##### `databaseNameSsmPath`<sup>Required</sup> <a name="databaseNameSsmPath" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig.property.databaseNameSsmPath"></a>
 
 ```typescript
 public readonly databaseNameSsmPath: string;
@@ -2669,7 +2637,7 @@ The Secure Systems Manager parameter containing the database name.
 
 ---
 
-##### `hostnameSsmPath`<sup>Required</sup> <a name="hostnameSsmPath" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceDefinitionDbConnectionConfig.property.hostnameSsmPath"></a>
+##### `hostnameSsmPath`<sup>Required</sup> <a name="hostnameSsmPath" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig.property.hostnameSsmPath"></a>
 
 ```typescript
 public readonly hostnameSsmPath: string;
@@ -2684,7 +2652,7 @@ of a database proxy, cluster, or instance.
 
 ---
 
-##### `passwordSsmPath`<sup>Required</sup> <a name="passwordSsmPath" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceDefinitionDbConnectionConfig.property.passwordSsmPath"></a>
+##### `passwordSsmPath`<sup>Required</sup> <a name="passwordSsmPath" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig.property.passwordSsmPath"></a>
 
 ```typescript
 public readonly passwordSsmPath: string;
@@ -2696,7 +2664,7 @@ The Secure Systems Manager parameter containing the password to use when connect
 
 ---
 
-##### `portSsmPath`<sup>Required</sup> <a name="portSsmPath" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceDefinitionDbConnectionConfig.property.portSsmPath"></a>
+##### `portSsmPath`<sup>Required</sup> <a name="portSsmPath" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig.property.portSsmPath"></a>
 
 ```typescript
 public readonly portSsmPath: string;
@@ -2708,7 +2676,7 @@ The Secure Systems Manager parameter containing the port number of the database 
 
 ---
 
-##### `usernameSsmPath`<sup>Required</sup> <a name="usernameSsmPath" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceDefinitionDbConnectionConfig.property.usernameSsmPath"></a>
+##### `usernameSsmPath`<sup>Required</sup> <a name="usernameSsmPath" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig.property.usernameSsmPath"></a>
 
 ```typescript
 public readonly usernameSsmPath: string;
@@ -3518,7 +3486,7 @@ new AmplifyGraphqlDefinition()
 | --- | --- |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.combine">combine</a></code> | Combines multiple IAmplifyGraphqlDefinitions into a single definition. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromFiles">fromFiles</a></code> | Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema, binding them to a DynamoDB data source. |
-| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromFilesAndDefinition">fromFilesAndDefinition</a></code> | Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema. |
+| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromFilesAndStrategy">fromFilesAndStrategy</a></code> | Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromString">fromString</a></code> | Produce a schema definition from a string input. |
 
 ---
@@ -3532,6 +3500,8 @@ AmplifyGraphqlDefinition.combine(definitions: IAmplifyGraphqlDefinition[])
 ```
 
 Combines multiple IAmplifyGraphqlDefinitions into a single definition.
+
+**NOTE** This API is in preview and is not recommended to use with production systems.
 
 ###### `definitions`<sup>Required</sup> <a name="definitions" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.combine.parameter.definitions"></a>
 
@@ -3559,19 +3529,19 @@ one or more paths to the graphql files to process.
 
 ---
 
-##### `fromFilesAndDefinition` <a name="fromFilesAndDefinition" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromFilesAndDefinition"></a>
+##### `fromFilesAndStrategy` <a name="fromFilesAndStrategy" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromFilesAndStrategy"></a>
 
 ```typescript
 import { AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct'
 
-AmplifyGraphqlDefinition.fromFilesAndDefinition(filePaths: string | string[], modelDataSourceDefinition?: ModelDataSourceDefinition)
+AmplifyGraphqlDefinition.fromFilesAndStrategy(filePaths: string | string[], dataSourceStrategy?: DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy)
 ```
 
 Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema.
 
 **NOTE** This API is in preview and is not recommended to use with production systems.
 
-###### `filePaths`<sup>Required</sup> <a name="filePaths" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromFilesAndDefinition.parameter.filePaths"></a>
+###### `filePaths`<sup>Required</sup> <a name="filePaths" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromFilesAndStrategy.parameter.filePaths"></a>
 
 - *Type:* string | string[]
 
@@ -3579,14 +3549,14 @@ one or more paths to the graphql files to process.
 
 ---
 
-###### `modelDataSourceDefinition`<sup>Optional</sup> <a name="modelDataSourceDefinition" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromFilesAndDefinition.parameter.modelDataSourceDefinition"></a>
+###### `dataSourceStrategy`<sup>Optional</sup> <a name="dataSourceStrategy" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromFilesAndStrategy.parameter.dataSourceStrategy"></a>
 
-- *Type:* <a href="#@aws-amplify/graphql-api-construct.ModelDataSourceDefinition">ModelDataSourceDefinition</a>
+- *Type:* <a href="#@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy">DefaultDynamoDbModelDataSourceStrategy</a> | <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy">AmplifyDynamoDbModelDataSourceStrategy</a> | <a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy">SQLLambdaModelDataSourceStrategy</a>
 
-the provision definition for `@model` datasource.
+the provisioning definition for datasources that resolve `@model`s in this schema.
 
-The DynamoDB from CloudFormation will be used by
-default.
+The DynamoDB from
+CloudFormation will be used by default.
 
 ---
 
@@ -3595,12 +3565,12 @@ default.
 ```typescript
 import { AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct'
 
-AmplifyGraphqlDefinition.fromString(schema: string, modelDataSourceDefinition?: ModelDataSourceDefinition)
+AmplifyGraphqlDefinition.fromString(schema: string, dataSourceStrategy?: DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy)
 ```
 
 Produce a schema definition from a string input.
 
-**NOTE** The 'modelDataSourceDefinition' configuration option is in preview and is not recommended to use with production systems.
+**NOTE** The 'dataSourceStrategy' configuration option is in preview and is not recommended to use with production systems.
 
 ###### `schema`<sup>Required</sup> <a name="schema" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromString.parameter.schema"></a>
 
@@ -3610,14 +3580,14 @@ the graphql input as a string.
 
 ---
 
-###### `modelDataSourceDefinition`<sup>Optional</sup> <a name="modelDataSourceDefinition" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromString.parameter.modelDataSourceDefinition"></a>
+###### `dataSourceStrategy`<sup>Optional</sup> <a name="dataSourceStrategy" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromString.parameter.dataSourceStrategy"></a>
 
-- *Type:* <a href="#@aws-amplify/graphql-api-construct.ModelDataSourceDefinition">ModelDataSourceDefinition</a>
+- *Type:* <a href="#@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy">DefaultDynamoDbModelDataSourceStrategy</a> | <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy">AmplifyDynamoDbModelDataSourceStrategy</a> | <a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy">SQLLambdaModelDataSourceStrategy</a>
 
-the provision definition for `@model` datasource.
+the provisioning definition for datasources that resolve `@model`s in this schema.
 
-The DynamoDB from CloudFormation will be used by
-default.
+The DynamoDB from
+CloudFormation will be used by default.
 
 ---
 
@@ -3636,23 +3606,24 @@ Graphql Api definition, which can be implemented in multiple ways.
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.dataSourceDefinition">dataSourceDefinition</a></code> | <code>{[ key: string ]: <a href="#@aws-amplify/graphql-api-construct.ModelDataSourceDefinition">ModelDataSourceDefinition</a>}</code> | Retrieve the datasource definition mapping. |
+| <code><a href="#@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.dataSourceStrategies">dataSourceStrategies</a></code> | <code>{[ key: string ]: <a href="#@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy">DefaultDynamoDbModelDataSourceStrategy</a> \| <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy">AmplifyDynamoDbModelDataSourceStrategy</a> \| <a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy">SQLLambdaModelDataSourceStrategy</a>}</code> | Retrieve the datasource strategy mapping. The default strategy is to use DynamoDB from CloudFormation. |
 | <code><a href="#@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.functionSlots">functionSlots</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.MutationFunctionSlot">MutationFunctionSlot</a> \| <a href="#@aws-amplify/graphql-api-construct.QueryFunctionSlot">QueryFunctionSlot</a> \| <a href="#@aws-amplify/graphql-api-construct.SubscriptionFunctionSlot">SubscriptionFunctionSlot</a>[]</code> | Retrieve any function slots defined explicitly in the Api definition. |
 | <code><a href="#@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.schema">schema</a></code> | <code>string</code> | Return the schema definition as a graphql string, with amplify directives allowed. |
 
 ---
 
-##### `dataSourceDefinition`<sup>Required</sup> <a name="dataSourceDefinition" id="@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.dataSourceDefinition"></a>
+##### `dataSourceStrategies`<sup>Required</sup> <a name="dataSourceStrategies" id="@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.dataSourceStrategies"></a>
 
 ```typescript
-public readonly dataSourceDefinition: {[ key: string ]: ModelDataSourceDefinition};
+public readonly dataSourceStrategies: {[ key: string ]: DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy};
 ```
 
-- *Type:* {[ key: string ]: <a href="#@aws-amplify/graphql-api-construct.ModelDataSourceDefinition">ModelDataSourceDefinition</a>}
+- *Type:* {[ key: string ]: <a href="#@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy">DefaultDynamoDbModelDataSourceStrategy</a> | <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy">AmplifyDynamoDbModelDataSourceStrategy</a> | <a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy">SQLLambdaModelDataSourceStrategy</a>}
 
-Retrieve the datasource definition mapping.
+Retrieve the datasource strategy mapping. The default strategy is to use DynamoDB from CloudFormation.
 
-The default strategy is to use DynamoDB from CloudFormation.
+**NOTE** Explicitly specifying the 'dataSourceStrategies' configuration option is in preview and is not recommended to use with
+production systems. For production, use the static factory methods `fromString` or `fromFiles`.
 
 ---
 
