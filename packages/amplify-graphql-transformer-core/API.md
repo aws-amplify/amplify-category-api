@@ -52,6 +52,7 @@ import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { ObjectTypeExtensionNode } from 'graphql';
 import { OperationTypeDefinitionNode } from 'graphql';
+import type { ProvisionedConcurrencyConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { QueryFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { S3MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -248,6 +249,8 @@ export interface GraphQLTransformOptions {
     readonly rdsLayerMapping?: RDSLayerMapping;
     // (undocumented)
     readonly resolverConfig?: ResolverConfig;
+    // (undocumented)
+    readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
     // (undocumented)
     readonly sqlLambdaVpcConfig?: VpcConfig;
     // Warning: (ae-forgotten-export) The symbol "StackMapping" needs to be exported by the entry point index.d.ts

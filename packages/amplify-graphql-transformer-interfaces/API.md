@@ -257,6 +257,22 @@ export type NestedStackProvider = {
 };
 
 // @public (undocumented)
+export interface ProvisionedConcurrencyConfig {
+    // (undocumented)
+    readonly maxCapacity: number;
+    // (undocumented)
+    readonly minCapacity: number;
+    // (undocumented)
+    readonly provisionedConcurrentExecutions: number;
+    // (undocumented)
+    readonly scaleInCooldown: Duration;
+    // (undocumented)
+    readonly scaleOutCooldown: Duration;
+    // (undocumented)
+    readonly targetValue: number;
+}
+
+// @public (undocumented)
 export enum QueryFieldType {
     // (undocumented)
     GET = "GET",
@@ -472,6 +488,8 @@ export interface TransformerContextProvider {
     resolvers: TransformerResolversManagerProvider;
     // (undocumented)
     resourceHelper: TransformerResourceHelperProvider;
+    // (undocumented)
+    readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
     // (undocumented)
     readonly sqlLambdaVpcConfig?: VpcConfig;
     // (undocumented)

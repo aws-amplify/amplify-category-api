@@ -299,6 +299,22 @@ export interface PartialTranslationBehavior {
     readonly useSubUsernameForDefaultIdentityClaim?: boolean;
 }
 
+// @public (undocumented)
+export interface ProvisionedConcurrencyConfig {
+    // (undocumented)
+    readonly maxCapacity: number;
+    // (undocumented)
+    readonly minCapacity: number;
+    // (undocumented)
+    readonly provisionedConcurrentExecutions: number;
+    // (undocumented)
+    readonly scaleInCooldown: Duration;
+    // (undocumented)
+    readonly scaleOutCooldown: Duration;
+    // (undocumented)
+    readonly targetValue: number;
+}
+
 // @public
 export interface ProvisionedThroughput {
     readonly readCapacityUnits: number;
@@ -320,6 +336,8 @@ export interface SQLLambdaModelDataSourceDefinitionStrategy {
     readonly dbConnectionConfig: SqlModelDataSourceDefinitionDbConnectionConfig;
     readonly dbType: 'MYSQL' | 'POSTGRES';
     readonly sqlLambdaLayerMapping?: SQLLambdaLayerMapping;
+    // (undocumented)
+    readonly sqlLambdaProvisionedConcurrencyConfig: ProvisionedConcurrencyConfig;
     readonly vpcConfiguration?: VpcConfig;
 }
 
