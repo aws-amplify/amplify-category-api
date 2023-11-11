@@ -164,7 +164,7 @@ batch:
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        rds_pg_model_v2_rds_pg_refers_to_fields_rds_pg_refers_to_rds_pg_relational_directives
+        rds_pg_model_v2_rds_pg_oidc_auth_rds_pg_refers_to_fields_rds_pg_refers_to
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
