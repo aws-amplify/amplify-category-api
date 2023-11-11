@@ -1,3 +1,4 @@
+import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { generateDDL } from '../../rds-v2-test-utils';
 
 export const schema = `
@@ -37,4 +38,4 @@ export const schema = `
   }
 `;
 
-export const sqlCreateStatements = generateDDL(schema);
+export const sqlCreateStatements = (engine: ImportedRDSType): string[] => generateDDL(schema, engine);
