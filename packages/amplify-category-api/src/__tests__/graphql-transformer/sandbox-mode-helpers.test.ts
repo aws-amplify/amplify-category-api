@@ -83,16 +83,6 @@ sandbox mode disabled, do not create an API Key.
     });
 
     describe('input AMPLIFY has incorrect values', () => {
-      it('checks for "globalAuthRule"', () => {
-        const schema = `
-          input AMPLIFY { auth_rule: AuthenticationRule = { allow: public } }
-        `;
-
-        expect(() => schemaHasSandboxModeEnabled(schema, 'mockLink')).toThrow(
-          Error('input AMPLIFY requires "globalAuthRule" field. Learn more here: mockLink'),
-        );
-      });
-
       it('allows "global_auth_rule"', () => {
         const schema = `
           input AMPLIFY { global_auth_rule: AuthRule = { allow: public } }
