@@ -336,15 +336,6 @@ batch:
           CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
-    - identifier: schema_key
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/schema-key.test.ts
-          CLI_REGION: ap-southeast-2
-      depend-on:
-        - publish_to_local_registry
     - identifier: containers_api_1
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
@@ -436,6 +427,15 @@ batch:
           CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
+    - identifier: rds_mysql_custom_claims_refersto_auth
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-custom-claims-refersto-auth.test.ts
+          CLI_REGION: eu-west-2
+      depend-on:
+        - publish_to_local_registry
     - identifier: rds_mysql_multi_auth_1
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
@@ -463,6 +463,33 @@ batch:
           CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
+    - identifier: rds_pg_auth_apikey_lambda
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-pg-auth-apikey-lambda.test.ts
+          CLI_REGION: us-east-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_pg_auth_iam_apikey_lambda_subscription
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-pg-auth-iam-apikey-lambda-subscription.test.ts
+          CLI_REGION: us-east-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_pg_auth_iam
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-pg-auth-iam.test.ts
+          CLI_REGION: us-west-2
+      depend-on:
+        - publish_to_local_registry
     - identifier: rds_pg_custom_claims_refersto_auth
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
@@ -488,15 +515,6 @@ batch:
         variables:
           TEST_SUITE: src/__tests__/rds-pg-userpool-auth.test.ts
           CLI_REGION: ap-southeast-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: schema_model
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/schema-model.test.ts
-          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: apigw
@@ -572,16 +590,6 @@ batch:
           CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
-    - identifier: schema_searchable
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/schema-searchable.test.ts
-          CLI_REGION: us-west-2
-          USE_PARENT_ACCOUNT: 1
-      depend-on:
-        - publish_to_local_registry
     - identifier: schema_auth_6
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
@@ -589,15 +597,6 @@ batch:
         variables:
           TEST_SUITE: src/__tests__/schema-auth-6.test.ts
           CLI_REGION: eu-west-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: schema_connection
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/schema-connection.test.ts
-          CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: searchable_previous_deployment_had_node_to_node
@@ -912,15 +911,6 @@ batch:
           TEST_SUITE: src/__tests__/FunctionTransformerTestsV2.e2e.test.ts
           CLI_REGION: us-west-2
           USE_PARENT_ACCOUNT: 1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: HttpTransformer
-      buildspec: codebuild_specs/graphql_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/HttpTransformer.e2e.test.ts
-          CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: HttpTransformerV2

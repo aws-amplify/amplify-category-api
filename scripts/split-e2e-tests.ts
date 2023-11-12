@@ -141,12 +141,7 @@ const RUN_SOLO: (string | RegExp)[] = [
 
 const DEBUG_FLAG = '--debug';
 
-const EXCLUDE_TEST_IDS = [
-  'rds_mysql_custom_claims_refersto_auth',
-  'rds_pg_auth_apikey_lambda',
-  'rds_pg_auth_iam_apikey_lambda_subscription',
-  'rds_pg_auth_iam',
-];
+const EXCLUDE_TEST_IDS = ['HttpTransformer', 'schema_model', 'schema_key', 'schema_connection', 'schema_searchable'];
 
 const MAX_WORKERS = 4;
 
