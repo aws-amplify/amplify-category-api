@@ -148,7 +148,7 @@ export class FunctionTransformer extends TransformerPluginBase {
 
           const identityPoolId = context.synthParameters.identityPoolId;
           if (identityPoolId) {
-            requestTemplate.push(qref(`$util.qr($ctx.stash.put("identityPoolId", "${identityPoolId}"))`));
+            requestTemplate.push(qref(`$ctx.stash.put("identityPoolId", "${identityPoolId}")`));
           }
           const adminRoles = context.synthParameters.adminRoles ?? [];
           requestTemplate.push(qref(`$ctx.stash.put("adminRoles", ${JSON.stringify(adminRoles)})`));
