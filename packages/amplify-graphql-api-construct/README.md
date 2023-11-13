@@ -3608,6 +3608,7 @@ Graphql Api definition, which can be implemented in multiple ways.
 | --- | --- | --- |
 | <code><a href="#@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.dataSourceStrategies">dataSourceStrategies</a></code> | <code>{[ key: string ]: <a href="#@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy">DefaultDynamoDbModelDataSourceStrategy</a> \| <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy">AmplifyDynamoDbModelDataSourceStrategy</a> \| <a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy">SQLLambdaModelDataSourceStrategy</a>}</code> | Retrieve the datasource strategy mapping. The default strategy is to use DynamoDB from CloudFormation. |
 | <code><a href="#@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.functionSlots">functionSlots</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.MutationFunctionSlot">MutationFunctionSlot</a> \| <a href="#@aws-amplify/graphql-api-construct.QueryFunctionSlot">QueryFunctionSlot</a> \| <a href="#@aws-amplify/graphql-api-construct.SubscriptionFunctionSlot">SubscriptionFunctionSlot</a>[]</code> | Retrieve any function slots defined explicitly in the Api definition. |
+| <code><a href="#@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.referencedLambdaFunctions">referencedLambdaFunctions</a></code> | <code>{[ key: string ]: aws-cdk-lib.aws_lambda.IFunction}</code> | Retrieve the references to any lambda functions used in the definition. |
 | <code><a href="#@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.schema">schema</a></code> | <code>string</code> | Return the schema definition as a graphql string, with amplify directives allowed. |
 
 ---
@@ -3636,6 +3637,21 @@ public readonly functionSlots: MutationFunctionSlot | QueryFunctionSlot | Subscr
 - *Type:* <a href="#@aws-amplify/graphql-api-construct.MutationFunctionSlot">MutationFunctionSlot</a> | <a href="#@aws-amplify/graphql-api-construct.QueryFunctionSlot">QueryFunctionSlot</a> | <a href="#@aws-amplify/graphql-api-construct.SubscriptionFunctionSlot">SubscriptionFunctionSlot</a>[]
 
 Retrieve any function slots defined explicitly in the Api definition.
+
+---
+
+##### `referencedLambdaFunctions`<sup>Required</sup> <a name="referencedLambdaFunctions" id="@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.referencedLambdaFunctions"></a>
+
+```typescript
+public readonly referencedLambdaFunctions: {[ key: string ]: IFunction};
+```
+
+- *Type:* {[ key: string ]: aws-cdk-lib.aws_lambda.IFunction}
+
+Retrieve the references to any lambda functions used in the definition.
+
+Useful for wiring through aws_lambda.Function constructs into the definition directly,
+and generated references to invoke them.
 
 ---
 
