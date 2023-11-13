@@ -3,6 +3,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
+import { IAmplifyGraphqlDefinition } from '../../types';
 
 describe('function directive', () => {
   it('references a function by name defined elsewhere', () => {
@@ -200,6 +201,68 @@ describe('function directive', () => {
       authorizationModes: {
         apiKeyConfig: { expires: cdk.Duration.days(7) },
       },
+    });
+
+    expect(api.resources.nestedStacks.FunctionDirectiveStack).toBeDefined();
+    const functionDirectiveTemplate = Template.fromStack(api.resources.nestedStacks.FunctionDirectiveStack);
+
+    functionDirectiveTemplate.resourceCountIs('AWS::AppSync::DataSource', 1);
+    functionDirectiveTemplate.hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'AWS_LAMBDA',
+      Name: 'RepeatLambdaDataSource',
+      LambdaConfig: {
+        LambdaFunctionArn: { Ref: Match.stringLikeRegexp('referencetoCreatedfunction.*Arn') },
+      },
+    });
+
+    functionDirectiveTemplate.resourceCountIs('AWS::IAM::Policy', 1);
+    functionDirectiveTemplate.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: [
+              { Ref: Match.stringLikeRegexp('referencetoCreatedfunction.*Arn') },
+              {
+                'Fn::Join': ['', [{ Ref: Match.stringLikeRegexp('referencetoCreatedfunction.*Arn') }, ':*']],
+              },
+            ],
+          },
+        ],
+      },
+    });
+  });
+
+  it('wires through a function from the definition', () => {
+    const stack = new cdk.Stack();
+    const referencedFunction = new lambda.Function(stack, 'Createdfunction', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      code: lambda.Code.fromInline('I am code'),
+      handler: 'index.main',
+    });
+
+    const definition: IAmplifyGraphqlDefinition = {
+      schema: /* GraphQL */ `
+        type Query {
+          repeat(message: String!): String! @function(name: "repeat")
+        }
+      `,
+      functionSlots: [],
+      referencedLambdaFunctions: {
+        repeat: referencedFunction,
+      },
+      dataSourceStrategies: {
+        ddb: {
+          dbType: 'DYNAMODB',
+          provisionStrategy: 'DEFAULT',
+        },
+      },
+    };
+
+    const api = new AmplifyGraphqlApi(stack, 'TestApi', {
+      definition,
+      authorizationModes: { apiKeyConfig: { expires: cdk.Duration.days(7) } },
     });
 
     expect(api.resources.nestedStacks.FunctionDirectiveStack).toBeDefined();
