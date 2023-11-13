@@ -1,5 +1,5 @@
 import { Kind, ObjectTypeDefinitionNode, parse } from 'graphql';
-import { ModelDataSourceDefinition } from '../types';
+import { ModelDataSourceStrategy } from '../types';
 
 const MODEL_DIRECTIVE_NAME = 'model';
 /**
@@ -18,13 +18,13 @@ export function getModelTypeNames(schema: string): string[] {
   return nodesWithModelDirective.map((node) => node.name.value);
 }
 
-export function constructDataSourceDefinitionMap(
+export const constructDataSourceStrategyMap = (
   schema: string,
-  dataSourceDefinition: ModelDataSourceDefinition,
-): Record<string, ModelDataSourceDefinition> {
+  dataSourceStrategy: ModelDataSourceStrategy,
+): Record<string, ModelDataSourceStrategy> => {
   const parsedSchema = parse(schema);
   return parsedSchema.definitions
     .filter((obj) => obj.kind === Kind.OBJECT_TYPE_DEFINITION && obj.directives?.some((dir) => dir.name.value === MODEL_DIRECTIVE_NAME))
     .map((type) => (type as ObjectTypeDefinitionNode).name.value)
-    .reduce((acc, cur) => ({ ...acc, [cur]: dataSourceDefinition }), {});
-}
+    .reduce((acc, cur) => ({ ...acc, [cur]: dataSourceStrategy }), {});
+};

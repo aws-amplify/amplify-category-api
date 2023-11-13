@@ -1,9 +1,10 @@
+import * as path from 'path';
 import { Construct } from 'constructs';
 import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
 import { NestedStack, Stack } from 'aws-cdk-lib';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { AssetProps } from '@aws-amplify/graphql-transformer-interfaces';
-import { StackMetadataBackendOutputStorageStrategy } from '@aws-amplify/backend-output-storage';
+import { AttributionMetadataStorage, StackMetadataBackendOutputStorageStrategy } from '@aws-amplify/backend-output-storage';
 import { graphqlOutputKey } from '@aws-amplify/backend-output-schemas';
 import type { GraphqlOutput, AwsAppsyncAuthenticationType } from '@aws-amplify/backend-output-schemas';
 import {
@@ -37,7 +38,7 @@ import type {
   IBackendOutputStorageStrategy,
   AddFunctionProps,
   ConflictResolution,
-  SQLLambdaModelDataSourceDefinitionStrategy,
+  SQLLambdaModelDataSourceStrategy,
 } from './types';
 import {
   convertAuthorizationModesToTransformerAuthConfig,
@@ -47,10 +48,9 @@ import {
   getGeneratedResources,
   getGeneratedFunctionSlots,
   CodegenAssets,
-  addAmplifyMetadataToStackDescription,
   getAdditionalAuthenticationTypes,
 } from './internal';
-import { isSQLLambdaModelDataSourceDefinition } from './sql-model-datasource-def';
+import { isSQLLambdaModelDataSourceStrategy } from './sql-model-datasource-strategy';
 import { parseDataSourceConfig } from './internal/data-source-config';
 import { getStackForScope, walkAndProcessNodes } from './internal/construct-tree';
 
@@ -127,6 +127,11 @@ export class AmplifyGraphqlApi extends Construct {
   private readonly conflictResolution: ConflictResolution | undefined;
 
   /**
+   * Be very careful editing this value. This is the string that is used to identify graphql stacks in BI metrics
+   */
+  private readonly stackType = 'api-AppSync';
+
+  /**
    * New AmplifyGraphqlApi construct, this will create an appsync api with authorization, a schema, and all necessary resolvers, functions,
    * and datasources.
    * @param scope the scope to create this construct within.
@@ -150,7 +155,8 @@ export class AmplifyGraphqlApi extends Construct {
       functionNameMap,
       outputStorageStrategy,
     } = props;
-    addAmplifyMetadataToStackDescription(scope);
+
+    new AttributionMetadataStorage().storeAttributionMetadata(Stack.of(scope), this.stackType, path.join(__dirname, '..', 'package.json'));
 
     const { authConfig, authSynthParameters } = convertAuthorizationModesToTransformerAuthConfig(authorizationModes);
 
@@ -197,13 +203,13 @@ export class AmplifyGraphqlApi extends Construct {
       },
 
       // Adds a modelToDataSourceMap field/value
-      ...parseDataSourceConfig(definition.dataSourceDefinition),
+      ...parseDataSourceConfig(definition.dataSourceStrategies),
     };
 
     // TODO: Update this to support multiple definitions; right now we assume only one SQL data source type
-    for (const def of Object.values(definition.dataSourceDefinition)) {
-      if (isSQLLambdaModelDataSourceDefinition(def)) {
-        executeTransformConfig = this.extendTransformConfig(executeTransformConfig, def);
+    for (const strategy of Object.values(definition.dataSourceStrategies)) {
+      if (isSQLLambdaModelDataSourceStrategy(strategy)) {
+        executeTransformConfig = this.extendTransformConfig(executeTransformConfig, strategy);
         break;
       }
     }
@@ -226,15 +232,13 @@ export class AmplifyGraphqlApi extends Construct {
   /**
    * Extends executeTransformConfig with fields for provisioning a SQL Lambda
    * @param executeTransformConfig the executeTransformConfig to extend
-   * @param dataSourceDefinition the ModelDataSourceDefinition containing the SQL connection values to add to the transform config
+   * @param dataSourceDefinition the SQLLambdaModelDataSourceStrategy containing the SQL connection values to add to the transform config
    * @returns the extended configuration that includes SQL DB connection information
    */
   private extendTransformConfig(
     executeTransformConfig: ExecuteTransformConfig,
-    dataSourceDefinition: { name: string; strategy: SQLLambdaModelDataSourceDefinitionStrategy },
+    strategy: SQLLambdaModelDataSourceStrategy,
   ): ExecuteTransformConfig {
-    const { strategy } = dataSourceDefinition;
-
     const extendedConfig = { ...executeTransformConfig };
     if (strategy.customSqlStatements) {
       extendedConfig.customQueries = new Map(Object.entries(strategy.customSqlStatements));

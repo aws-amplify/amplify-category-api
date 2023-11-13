@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { SQLLambdaModelDataSourceDefinitionStrategyFactory } from '../../sql-model-datasource-def';
-import { SQLLambdaModelDataSourceDefinitionStrategy } from '../../types';
+import { SQLLambdaModelDataSourceStrategyFactory } from '../../sql-model-datasource-strategy';
+import { SQLLambdaModelDataSourceStrategy } from '../../types';
 
 describe('SQL bound API definitions', () => {
   let tmpDir: string;
@@ -28,7 +28,8 @@ describe('SQL bound API definitions', () => {
       return filePath;
     });
 
-    const otherOptions: Exclude<SQLLambdaModelDataSourceDefinitionStrategy, 'customSqlStatements'> = {
+    const otherOptions: Exclude<SQLLambdaModelDataSourceStrategy, 'customSqlStatements'> = {
+      name: 'mystrategy',
       dbType: 'MYSQL',
       vpcConfiguration: {
         vpcId: 'vpc-1234abcd',
@@ -44,7 +45,7 @@ describe('SQL bound API definitions', () => {
       },
     };
 
-    const strategy = SQLLambdaModelDataSourceDefinitionStrategyFactory.fromCustomSqlFiles(sqlFiles, otherOptions);
+    const strategy = SQLLambdaModelDataSourceStrategyFactory.fromCustomSqlFiles(sqlFiles, otherOptions);
 
     expect(strategy.customSqlStatements?.['hello']).toEqual(customSql['hello']);
     expect(strategy.customSqlStatements?.['hello.2']).toEqual(customSql['hello.2']);
