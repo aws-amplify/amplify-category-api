@@ -296,12 +296,7 @@ export interface PartialTranslationBehavior {
 
 // @public
 export interface ProvisionedConcurrencyConfig {
-    readonly maxCapacity?: number;
-    readonly minCapacity?: number;
     readonly provisionedConcurrentExecutions: number;
-    readonly scaleInCooldown?: Duration;
-    readonly scaleOutCooldown?: Duration;
-    readonly targetValue?: number;
 }
 
 // @public

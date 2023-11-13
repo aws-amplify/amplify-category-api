@@ -183,38 +183,13 @@ export const createRdsLambda = (
   );
 
   if (sqlLambdaProvisionedConcurrencyConfig) {
-    const { maxCapacity, minCapacity, targetValue, scaleInCooldown, scaleOutCooldown, provisionedConcurrentExecutions } =
-      sqlLambdaProvisionedConcurrencyConfig;
+    const { provisionedConcurrentExecutions } = sqlLambdaProvisionedConcurrencyConfig;
 
     const alias = new Alias(scope, RDSLambdaAliasLogicalID, {
       aliasName: `${RDSLambdaLogicalID}Alias`,
       version: (fn as LambdaFunction).currentVersion,
       provisionedConcurrentExecutions,
     });
-
-    // setup auto scaling if targetValue, minCapacity, and maxCapacity are set
-    if (targetValue != null && minCapacity != null && maxCapacity != null) {
-      const target = new ScalableTarget(scope, RDSLambdaScalableTargetLogicalID, {
-        serviceNamespace: ServiceNamespace.LAMBDA,
-        maxCapacity,
-        minCapacity,
-        resourceId: `function:${alias.lambda.functionName}:${alias.aliasName}`,
-        scalableDimension: 'lambda:function:ProvisionedConcurrency',
-      });
-
-      target.node.addDependency(alias);
-
-      target.scaleToTrackMetric(`${RDSLambdaLogicalID}AutoScaling`, {
-        targetValue,
-        scaleInCooldown,
-        scaleOutCooldown,
-        predefinedMetric: PredefinedMetric.LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION,
-      });
-    } else if ([targetValue, minCapacity, maxCapacity].some((value) => value != null)) {
-      console.warn(
-        'Application auto scaling not enabled. targetValue, minCapacity, and maxCapacity must be set to enable application auto scaling.',
-      );
-    }
   }
 
   return fn;
