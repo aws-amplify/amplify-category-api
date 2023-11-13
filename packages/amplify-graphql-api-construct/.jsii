@@ -6772,46 +6772,12 @@
           "docs": {
             "remarks": "*",
             "stability": "experimental",
-            "summary": "The maximum value to use to scale during a scaling activity."
-          },
-          "immutable": true,
-          "locationInModule": {
-            "filename": "src/types.ts",
-            "line": 897
-          },
-          "name": "maxCapacity",
-          "type": {
-            "primitive": "number"
-          }
-        },
-        {
-          "abstract": true,
-          "docs": {
-            "remarks": "*",
-            "stability": "experimental",
-            "summary": "The minimum value to use to scale during a scaling activity."
-          },
-          "immutable": true,
-          "locationInModule": {
-            "filename": "src/types.ts",
-            "line": 900
-          },
-          "name": "minCapacity",
-          "type": {
-            "primitive": "number"
-          }
-        },
-        {
-          "abstract": true,
-          "docs": {
-            "remarks": "*",
-            "stability": "experimental",
             "summary": "The amount of provisioned concurrency to allocate."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 912
+            "line": 917
           },
           "name": "provisionedConcurrentExecutions",
           "type": {
@@ -6821,16 +6787,53 @@
         {
           "abstract": true,
           "docs": {
-            "remarks": "*",
+            "remarks": "Application auto scaling is enabled when targetValue, maxCapacity, and\nminCapacity are set. *",
+            "stability": "experimental",
+            "summary": "The maximum value to use to scale during a scaling activity."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 898
+          },
+          "name": "maxCapacity",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Application auto scaling is enabled when targetValue, maxCapacity, and\nminCapacity are set. *",
+            "stability": "experimental",
+            "summary": "The minimum value to use to scale during a scaling activity."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 902
+          },
+          "name": "minCapacity",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Only used wehn\napplication aut scaling is set. *",
             "stability": "experimental",
             "summary": "The amount of time, in seconds, after a scale-in activity completes before another scale-in activity can start."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 906
+            "line": 910
           },
           "name": "scaleInCooldown",
+          "optional": true,
           "type": {
             "fqn": "aws-cdk-lib.Duration"
           }
@@ -6838,16 +6841,17 @@
         {
           "abstract": true,
           "docs": {
-            "remarks": "*",
+            "remarks": "Only used when application auto scaling is\nset.  *",
             "stability": "experimental",
             "summary": "The amount of time, in seconds, to wait for a previous scale-out activity to take effect."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 909
+            "line": 914
           },
           "name": "scaleOutCooldown",
+          "optional": true,
           "type": {
             "fqn": "aws-cdk-lib.Duration"
           }
@@ -6855,16 +6859,17 @@
         {
           "abstract": true,
           "docs": {
-            "remarks": "*",
+            "remarks": "Application auto scaling is enabled when targetValue, maxCapacity,\nand minCapacity are set. *",
             "stability": "experimental",
-            "summary": "Target value for provisioned concurrency."
+            "summary": "Target percentage of provisionedConcurrentExecutions when scaling."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 903
+            "line": 906
           },
           "name": "targetValue",
+          "optional": true,
           "type": {
             "primitive": "number"
           }
@@ -7229,7 +7234,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 941
+        "line": 946
       },
       "name": "SqlModelDataSourceDbConnectionConfig",
       "properties": [
@@ -7242,7 +7247,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 957
+            "line": 962
           },
           "name": "databaseNameSsmPath",
           "type": {
@@ -7259,7 +7264,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 945
+            "line": 950
           },
           "name": "hostnameSsmPath",
           "type": {
@@ -7275,7 +7280,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 954
+            "line": 959
           },
           "name": "passwordSsmPath",
           "type": {
@@ -7291,7 +7296,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 948
+            "line": 953
           },
           "name": "portSsmPath",
           "type": {
@@ -7307,7 +7312,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 951
+            "line": 956
           },
           "name": "usernameSsmPath",
           "type": {
@@ -7364,7 +7369,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 921
+        "line": 926
       },
       "name": "SubnetAvailabilityZone",
       "properties": [
@@ -7377,7 +7382,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 926
+            "line": 931
           },
           "name": "availabilityZone",
           "type": {
@@ -7393,7 +7398,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 923
+            "line": 928
           },
           "name": "subnetId",
           "type": {
@@ -7854,5 +7859,5 @@
     }
   },
   "version": "1.3.0",
-  "fingerprint": "+EP0Q00uJqvndkFtQE+HKtMOGfmhTkh14XWoy6ghWOs="
+  "fingerprint": "j8lVbgHmEXl+U30LdFTa/XZTphhK44lu/sb07svzDTc="
 }

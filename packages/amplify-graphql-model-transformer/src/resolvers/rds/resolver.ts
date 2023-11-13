@@ -26,7 +26,7 @@ import {
   ProvisionedConcurrencyConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { IFunction, LayerVersion, Runtime, Alias, Function } from 'aws-cdk-lib/aws-lambda';
+import { IFunction, LayerVersion, Runtime, Alias, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
 import { ScalableTarget, ServiceNamespace, PredefinedMetric } from 'aws-cdk-lib/aws-applicationautoscaling';
 import { Construct } from 'constructs';
 import path from 'path';
@@ -185,29 +185,36 @@ export const createRdsLambda = (
   if (sqlLambdaProvisionedConcurrencyConfig) {
     const { maxCapacity, minCapacity, targetValue, scaleInCooldown, scaleOutCooldown, provisionedConcurrentExecutions } =
       sqlLambdaProvisionedConcurrencyConfig;
+
     const alias = new Alias(scope, RDSLambdaAliasLogicalID, {
       aliasName: `${RDSLambdaLogicalID}Alias`,
-      version: (fn as Function).currentVersion,
+      version: (fn as LambdaFunction).currentVersion,
       provisionedConcurrentExecutions,
     });
 
-    const target = new ScalableTarget(scope, RDSLambdaScalableTargetLogicalID, {
-      serviceNamespace: ServiceNamespace.LAMBDA,
-      maxCapacity,
-      minCapacity,
-      resourceId: `function:${alias.lambda.functionName}:${alias.aliasName}`,
-      scalableDimension: 'lambda:function:ProvisionedConcurrency',
-    });
+    // setup auto scaling if targetValue, minCapacity, and maxCapacity are set
+    if (targetValue != null && minCapacity != null && maxCapacity != null) {
+      const target = new ScalableTarget(scope, RDSLambdaScalableTargetLogicalID, {
+        serviceNamespace: ServiceNamespace.LAMBDA,
+        maxCapacity,
+        minCapacity,
+        resourceId: `function:${alias.lambda.functionName}:${alias.aliasName}`,
+        scalableDimension: 'lambda:function:ProvisionedConcurrency',
+      });
 
-    target.node.addDependency(alias);
+      target.node.addDependency(alias);
 
-    // TODO: what id to use
-    target.scaleToTrackMetric('PceTracking', {
-      targetValue,
-      scaleInCooldown,
-      scaleOutCooldown,
-      predefinedMetric: PredefinedMetric.LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION,
-    });
+      target.scaleToTrackMetric(`${RDSLambdaLogicalID}AutoScaling`, {
+        targetValue,
+        scaleInCooldown,
+        scaleOutCooldown,
+        predefinedMetric: PredefinedMetric.LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION,
+      });
+    } else if ([targetValue, minCapacity, maxCapacity].some((value) => value != null)) {
+      console.warn(
+        'Application auto scaling not enabled. targetValue, minCapacity, and maxCapacity must be set to enable application auto scaling.',
+      );
+    }
   }
 
   return fn;

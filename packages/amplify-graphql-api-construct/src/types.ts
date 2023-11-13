@@ -893,20 +893,25 @@ export interface VpcConfig {
  * @experimental
  */
 export interface ProvisionedConcurrencyConfig {
-  /** The maximum value to use to scale during a scaling activity. **/
-  readonly maxCapacity: number;
+  /** The maximum value to use to scale during a scaling activity. Application auto scaling is enabled when targetValue, maxCapacity, and
+   * minCapacity are set. **/
+  readonly maxCapacity?: number;
 
-  /** The minimum value to use to scale during a scaling activity. **/
-  readonly minCapacity: number;
+  /** The minimum value to use to scale during a scaling activity. Application auto scaling is enabled when targetValue, maxCapacity, and
+   * minCapacity are set. **/
+  readonly minCapacity?: number;
 
-  /** Target value for provisioned concurrency. **/
-  readonly targetValue: number;
+  /** Target percentage of provisionedConcurrentExecutions when scaling. Application auto scaling is enabled when targetValue, maxCapacity,
+   * and minCapacity are set. **/
+  readonly targetValue?: number;
 
-  /** The amount of time, in seconds, after a scale-in activity completes before another scale-in activity can start. **/
-  readonly scaleInCooldown: Duration;
+  /** The amount of time, in seconds, after a scale-in activity completes before another scale-in activity can start. Only used wehn
+   * application aut scaling is set. **/
+  readonly scaleInCooldown?: Duration;
 
-  /** The amount of time, in seconds, to wait for a previous scale-out activity to take effect. **/
-  readonly scaleOutCooldown: Duration;
+  /** The amount of time, in seconds, to wait for a previous scale-out activity to take effect. Only used when application auto scaling is
+   * set.  **/
+  readonly scaleOutCooldown?: Duration;
 
   /** The amount of provisioned concurrency to allocate. **/
   readonly provisionedConcurrentExecutions: number;

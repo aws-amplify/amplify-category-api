@@ -94,11 +94,11 @@ export interface VpcConfig {
 }
 
 export interface ProvisionedConcurrencyConfig {
-  readonly maxCapacity: number;
-  readonly minCapacity: number;
-  readonly targetValue: number;
-  readonly scaleInCooldown: Duration;
-  readonly scaleOutCooldown: Duration;
+  readonly maxCapacity?: number;
+  readonly minCapacity?: number;
+  readonly targetValue?: number;
+  readonly scaleInCooldown?: Duration;
+  readonly scaleOutCooldown?: Duration;
   readonly provisionedConcurrentExecutions: number;
 }
 
