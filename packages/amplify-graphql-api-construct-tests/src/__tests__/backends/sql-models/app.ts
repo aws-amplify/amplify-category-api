@@ -58,6 +58,9 @@ new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
       dbConnectionConfig: {
         ...dbDetails.ssmPaths,
       },
+      sqlLambdaProvisionedConcurrencyConfig: {
+        provisionedConcurrentExecutions: 2,
+      },
     },
   ),
   authorizationModes: {
