@@ -137,26 +137,22 @@ export class FunctionTransformer extends TransformerPluginBase {
         const authModes = [context.authConfig.defaultAuthentication, ...(context.authConfig.additionalAuthenticationProviders || [])].map(
           (mode) => mode?.authenticationType,
         );
-        const account = cdk.Stack.of(context.stackManager.scope).account;
-        const authRole = context.synthParameters.authenticatedUserRoleName;
-        if (authRole) {
+        if (authModes.includes(AuthorizationType.IAM)) {
+          const authRole = context.synthParameters.authenticatedUserRoleName;
+          const unauthRole = context.synthParameters.unauthenticatedUserRoleName;
+          const account = cdk.Stack.of(context.stackManager.scope).account;
           requestTemplate.push(
             qref(`$ctx.stash.put("authRole", "arn:aws:sts::${account}:assumed-role/${authRole}/CognitoIdentityCredentials")`),
-          );
-        }
-        const unauthRole = context.synthParameters.unauthenticatedUserRoleName;
-        if (unauthRole) {
-          requestTemplate.push(
             qref(`$ctx.stash.put("unauthRole", "arn:aws:sts::${account}:assumed-role/${unauthRole}/CognitoIdentityCredentials")`),
           );
-        }
-        const identityPoolId = context.synthParameters.identityPoolId;
-        if (identityPoolId) {
-          requestTemplate.push(qref(`$util.qr($ctx.stash.put("identityPoolId", "${identityPoolId}"))`));
-        }
-        const adminRoles = context.synthParameters.adminRoles ?? [];
-        requestTemplate.push(qref(`$ctx.stash.put("adminRoles", ${JSON.stringify(adminRoles)})`));
 
+          const identityPoolId = context.synthParameters.identityPoolId;
+          if (identityPoolId) {
+            requestTemplate.push(qref(`$util.qr($ctx.stash.put("identityPoolId", "${identityPoolId}"))`));
+          }
+          const adminRoles = context.synthParameters.adminRoles ?? [];
+          requestTemplate.push(qref(`$ctx.stash.put("adminRoles", ${JSON.stringify(adminRoles)})`));
+        }
         requestTemplate.push(obj({}));
 
         if (resolver === undefined) {
