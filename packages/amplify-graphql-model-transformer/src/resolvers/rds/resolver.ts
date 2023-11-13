@@ -148,7 +148,7 @@ export const createRdsLambda = (
   sqlLambdaVpcConfig?: VpcConfig,
   sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig,
 ): IFunction => {
-  const { RDSLambdaLogicalID, RDSLambdaAliasLogicalID, RDSLambdaScalableTargetLogicalID } = ResourceConstants.RESOURCES;
+  const { RDSLambdaLogicalID, RDSLambdaAliasLogicalID } = ResourceConstants.RESOURCES;
 
   let ssmEndpoint = Fn.join('', ['ssm.', Fn.ref('AWS::Region'), '.amazonaws.com']); // Default SSM endpoint
   if (sqlLambdaVpcConfig) {
@@ -185,7 +185,7 @@ export const createRdsLambda = (
   if (sqlLambdaProvisionedConcurrencyConfig) {
     const { provisionedConcurrentExecutions } = sqlLambdaProvisionedConcurrencyConfig;
 
-    const alias = new Alias(scope, RDSLambdaAliasLogicalID, {
+    new Alias(scope, RDSLambdaAliasLogicalID, {
       aliasName: `${RDSLambdaLogicalID}Alias`,
       version: (fn as LambdaFunction).currentVersion,
       provisionedConcurrentExecutions,

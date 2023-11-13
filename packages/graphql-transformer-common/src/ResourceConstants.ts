@@ -40,7 +40,6 @@ export class ResourceConstants {
     RDSLambdaDataSourceLogicalName: 'RDSLambdaDatabase',
     RDSPatchingSubscriptionLogicalID: 'RDSPatchingSubscriptionLogicalID',
     RDSLambdaAliasLogicalID: 'RDSLambdaAliasLogicalID',
-    RDSLambdaScalableTargetLogicalID: 'RDSLambdaScalableTargetLogicalID',
 
     // Local. Try not to collide with model data sources.
     NoneDataSource: 'NoneDataSource',
