@@ -83,6 +83,7 @@ describe('CDK GraphQL Transformer', () => {
     const name = await initCDKProject(projRoot, templatePath);
     writeDbDetails(dbDetails, projRoot);
     const outputs = await cdkDeploy(projRoot, '--all');
+    console.log(outputs);
     const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
 
     const description = 'todo description';
