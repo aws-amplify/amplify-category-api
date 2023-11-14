@@ -191,6 +191,7 @@ export const createRdsLambda = (
       provisionedConcurrentExecutions,
     });
     setResourceName(alias, { name: 'SQLLambdaFunctionAlias', setOnDefaultChild: true });
+    return alias;
   }
 
   return fn;
