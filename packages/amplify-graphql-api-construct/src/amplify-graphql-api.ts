@@ -192,7 +192,10 @@ export class AmplifyGraphqlApi extends Construct {
       transformersFactoryArgs: {
         customTransformers: transformerPlugins ?? [],
         ...(predictionsBucket ? { storageConfig: { bucketName: predictionsBucket.bucketName } } : {}),
-        functionNameMap,
+        functionNameMap: {
+          ...definition.referencedLambdaFunctions,
+          ...functionNameMap,
+        },
       },
       authConfig,
       stackMapping: stackMappings ?? {},

@@ -232,6 +232,7 @@ export interface IAMAuthorizationConfig {
 export interface IAmplifyGraphqlDefinition {
     readonly dataSourceStrategies: Record<string, ModelDataSourceStrategy>;
     readonly functionSlots: FunctionSlot[];
+    readonly referencedLambdaFunctions?: Record<string, IFunction>;
     readonly schema: string;
 }
 

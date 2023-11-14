@@ -973,6 +973,42 @@ describe('Custom Resource Lambda Tests', () => {
         nextUpdate = getNextGSIUpdate(currentState, endState);
         expect(nextUpdate).toMatchSnapshot();
       });
+      it('should assign the table provision throughput when billingMode is "PROVISIONED" and no throughput defined in the new GSI', () => {
+        currentState = {
+          ...currentStateBase,
+          BillingModeSummary: {
+            BillingMode: 'PROVISIONED',
+          },
+          ProvisionedThroughput: {
+            ReadCapacityUnits: 5,
+            WriteCapacityUnits: 5,
+          },
+        };
+        endState = {
+          ...baseTableDef,
+          billingMode: 'PROVISIONED',
+          provisionedThroughput: {
+            readCapacityUnits: 5,
+            writeCapacityUnits: 5,
+          },
+          globalSecondaryIndexes: [
+            {
+              indexName: 'bySk',
+              keySchema: [
+                {
+                  attributeName: 'sk',
+                  keyType: 'HASH',
+                },
+              ],
+              projection: {
+                projectionType: 'ALL',
+              },
+            },
+          ],
+        };
+        nextUpdate = getNextGSIUpdate(currentState, endState);
+        expect(nextUpdate).toMatchSnapshot();
+      });
     });
   });
 });
