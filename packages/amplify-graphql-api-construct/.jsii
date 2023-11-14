@@ -3975,7 +3975,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 337
+            "line": 341
           },
           "name": "addDynamoDbDataSource",
           "parameters": [
@@ -4024,7 +4024,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 349
+            "line": 353
           },
           "name": "addElasticsearchDataSource",
           "parameters": [
@@ -4071,7 +4071,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 359
+            "line": 363
           },
           "name": "addEventBridgeDataSource",
           "parameters": [
@@ -4118,7 +4118,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 441
+            "line": 445
           },
           "name": "addFunction",
           "parameters": [
@@ -4153,7 +4153,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 370
+            "line": 374
           },
           "name": "addHttpDataSource",
           "parameters": [
@@ -4201,7 +4201,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 381
+            "line": 385
           },
           "name": "addLambdaDataSource",
           "parameters": [
@@ -4249,7 +4249,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 392
+            "line": 396
           },
           "name": "addNoneDataSource",
           "parameters": [
@@ -4288,7 +4288,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 403
+            "line": 407
           },
           "name": "addOpenSearchDataSource",
           "parameters": [
@@ -4336,7 +4336,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 416
+            "line": 420
           },
           "name": "addRdsDataSource",
           "parameters": [
@@ -4403,7 +4403,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 432
+            "line": 436
           },
           "name": "addResolver",
           "parameters": [
@@ -6776,6 +6776,41 @@
       ],
       "symbolId": "src/types:PartialTranslationBehavior"
     },
+    "@aws-amplify/graphql-api-construct.ProvisionedConcurrencyConfig": {
+      "assembly": "@aws-amplify/graphql-api-construct",
+      "datatype": true,
+      "docs": {
+        "stability": "experimental",
+        "summary": "The configuration for the provisioned concurrency of the Lambda."
+      },
+      "fqn": "@aws-amplify/graphql-api-construct.ProvisionedConcurrencyConfig",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "src/types.ts",
+        "line": 903
+      },
+      "name": "ProvisionedConcurrencyConfig",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "*",
+            "stability": "experimental",
+            "summary": "The amount of provisioned concurrency to allocate."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 905
+          },
+          "name": "provisionedConcurrentExecutions",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "src/types:ProvisionedConcurrencyConfig"
+    },
     "@aws-amplify/graphql-api-construct.ProvisionedThroughput": {
       "assembly": "@aws-amplify/graphql-api-construct",
       "datatype": true,
@@ -6993,6 +7028,23 @@
           "abstract": true,
           "docs": {
             "stability": "experimental",
+            "summary": "The configuration for the provisioned concurrency of the Lambda."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 877
+          },
+          "name": "sqlLambdaProvisionedConcurrencyConfig",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-amplify/graphql-api-construct.ProvisionedConcurrencyConfig"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "experimental",
             "summary": "The configuration of the VPC into which to install the Lambda."
           },
           "immutable": true,
@@ -7116,7 +7168,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 920
+        "line": 934
       },
       "name": "SqlModelDataSourceDbConnectionConfig",
       "properties": [
@@ -7129,7 +7181,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 936
+            "line": 950
           },
           "name": "databaseNameSsmPath",
           "type": {
@@ -7146,7 +7198,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 924
+            "line": 938
           },
           "name": "hostnameSsmPath",
           "type": {
@@ -7162,7 +7214,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 933
+            "line": 947
           },
           "name": "passwordSsmPath",
           "type": {
@@ -7178,7 +7230,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 927
+            "line": 941
           },
           "name": "portSsmPath",
           "type": {
@@ -7194,7 +7246,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 930
+            "line": 944
           },
           "name": "usernameSsmPath",
           "type": {
@@ -7251,7 +7303,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 900
+        "line": 914
       },
       "name": "SubnetAvailabilityZone",
       "properties": [
@@ -7264,7 +7316,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 905
+            "line": 919
           },
           "name": "availabilityZone",
           "type": {
@@ -7280,7 +7332,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 902
+            "line": 916
           },
           "name": "subnetId",
           "type": {
@@ -7674,7 +7726,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 883
+        "line": 888
       },
       "name": "VpcConfig",
       "properties": [
@@ -7687,7 +7739,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 888
+            "line": 893
           },
           "name": "securityGroupIds",
           "type": {
@@ -7708,7 +7760,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 891
+            "line": 896
           },
           "name": "subnetAvailabilityZoneConfig",
           "type": {
@@ -7729,7 +7781,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 885
+            "line": 890
           },
           "name": "vpcId",
           "type": {
@@ -7741,5 +7793,5 @@
     }
   },
   "version": "1.3.0",
-  "fingerprint": "u1FbKj7Xk5bu8UKzrivmx5s2AbIxS1Ofk0yTInuG/0E="
+  "fingerprint": "BnAF3tdhaVlm5p7f6+sZwLdrepe25XyXG8q6kMJKmco="
 }

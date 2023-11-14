@@ -32,6 +32,7 @@ export {
   SubnetAvailabilityZone,
   SearchableDataSourceOptions,
   RDSLayerMapping,
+  ProvisionedConcurrencyConfig,
 } from './graphql-api-provider';
 export { TransformHostProvider, DynamoDbDataSourceOptions } from './transform-host-provider';
 export { TransformerLog, TransformerLogLevel } from './transformer-log';
