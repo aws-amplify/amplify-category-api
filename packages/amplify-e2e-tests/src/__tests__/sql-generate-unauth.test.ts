@@ -48,11 +48,11 @@ def,todo_database,Todo,title,2,NULL,NO,varchar,255,1020,NULL,NULL,NULL,utf8mb4,u
   });
 
   it('generate workflow of postgres relational db without connecting to db', async () => {
-    const schema = `"table_catalog","table_schema","table_name","column_name","ordinal_position","column_default","is_nullable","data_type","character_maximum_length","character_octet_length","numeric_precision","numeric_precision_radix","numeric_scale","datetime_precision","interval_type","interval_precision","character_set_catalog","character_set_schema","character_set_name","collation_catalog","collation_schema","collation_name","domain_catalog","domain_schema","domain_name","udt_catalog","udt_schema","udt_name","scope_catalog","scope_schema","scope_name","maximum_cardinality","dtd_identifier","is_self_referencing","is_identity","identity_generation","identity_start","identity_increment","identity_maximum","identity_minimum","identity_cycle","is_generated","generation_expression","is_updatable","schemaname","tablename","indexname","tablespace","indexdef","enum_name","enum_values","index_columns"
-"tododb","public","todo","id",1,NULL,"NO","integer",NULL,NULL,32,2,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,"tododb","pg_catalog","int4",NULL,NULL,NULL,NULL,"1","NO","NO",NULL,NULL,NULL,NULL,NULL,"NO","NEVER",NULL,"YES","public","todo","todo_pkey",NULL,"CREATE UNIQUE INDEX todo_pkey ON public.todo USING btree (id)",NULL,NULL,"id"
-"tododb","public","todo","title",2,NULL,"NO","character varying",255,1020,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,"tododb","pg_catalog","varchar",NULL,NULL,NULL,NULL,"2","NO","NO",NULL,NULL,NULL,NULL,NULL,"NO","NEVER",NULL,"YES",NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
-"tododb","public","todo","due_date",4,NULL,"YES","date",NULL,NULL,NULL,NULL,NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,"tododb","pg_catalog","date",NULL,NULL,NULL,NULL,"4","NO","NO",NULL,NULL,NULL,NULL,NULL,"NO","NEVER",NULL,"YES",NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
-"tododb","public","todo","start_date",3,NULL,"YES","date",NULL,NULL,NULL,NULL,NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,"tododb","pg_catalog","date",NULL,NULL,NULL,NULL,"3","NO","NO",NULL,NULL,NULL,NULL,NULL,"NO","NEVER",NULL,"YES",NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`;
+    const schema = `"enum_name","enum_values","table_name","column_name","column_default","ordinal_position","data_type","udt_name","is_nullable","character_maximum_length","indexname","index_columns"
+NULL,NULL,"todo","id",NULL,1,"integer","int4","NO",NULL,"todo_pkey","id"
+NULL,NULL,"todo","title",NULL,2,"character varying","varchar","NO",255,NULL,NULL
+NULL,NULL,"todo","due_date",NULL,4,"date","date","YES",NULL,NULL,NULL
+NULL,NULL,"todo","start_date",NULL,3,"date","date","YES",NULL,NULL,NULL`;
     await testUnauthGenerate('postgres', schema);
   });
 
