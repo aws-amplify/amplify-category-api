@@ -6804,7 +6804,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 903
+        "line": 921
       },
       "name": "ProvisionedConcurrencyConfig",
       "properties": [
@@ -6818,7 +6818,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 905
+            "line": 923
           },
           "name": "provisionedConcurrentExecutions",
           "type": {
@@ -7050,7 +7050,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 877
+            "line": 895
           },
           "name": "sqlLambdaProvisionedConcurrencyConfig",
           "optional": true,
@@ -7185,11 +7185,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-<<<<<<< HEAD
-        "line": 938
-=======
-        "line": 934
->>>>>>> main
+        "line": 952
       },
       "name": "SqlModelDataSourceDbConnectionConfig",
       "properties": [
@@ -7202,11 +7198,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-<<<<<<< HEAD
-            "line": 954
-=======
-            "line": 950
->>>>>>> main
+            "line": 968
           },
           "name": "databaseNameSsmPath",
           "type": {
@@ -7223,11 +7215,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-<<<<<<< HEAD
-            "line": 942
-=======
-            "line": 938
->>>>>>> main
+            "line": 956
           },
           "name": "hostnameSsmPath",
           "type": {
@@ -7243,11 +7231,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-<<<<<<< HEAD
-            "line": 951
-=======
-            "line": 947
->>>>>>> main
+            "line": 965
           },
           "name": "passwordSsmPath",
           "type": {
@@ -7263,11 +7247,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-<<<<<<< HEAD
-            "line": 945
-=======
-            "line": 941
->>>>>>> main
+            "line": 959
           },
           "name": "portSsmPath",
           "type": {
@@ -7283,11 +7263,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-<<<<<<< HEAD
-            "line": 948
-=======
-            "line": 944
->>>>>>> main
+            "line": 962
           },
           "name": "usernameSsmPath",
           "type": {
@@ -7344,11 +7320,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-<<<<<<< HEAD
-        "line": 918
-=======
-        "line": 914
->>>>>>> main
+        "line": 932
       },
       "name": "SubnetAvailabilityZone",
       "properties": [
@@ -7361,11 +7333,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-<<<<<<< HEAD
-            "line": 923
-=======
-            "line": 919
->>>>>>> main
+            "line": 937
           },
           "name": "availabilityZone",
           "type": {
@@ -7381,11 +7349,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-<<<<<<< HEAD
-            "line": 920
-=======
-            "line": 916
->>>>>>> main
+            "line": 934
           },
           "name": "subnetId",
           "type": {
@@ -7796,11 +7760,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-<<<<<<< HEAD
-        "line": 901
-=======
-        "line": 888
->>>>>>> main
+        "line": 906
       },
       "name": "VpcConfig",
       "properties": [
@@ -7813,11 +7773,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-<<<<<<< HEAD
-            "line": 906
-=======
-            "line": 893
->>>>>>> main
+            "line": 911
           },
           "name": "securityGroupIds",
           "type": {
@@ -7838,11 +7794,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-<<<<<<< HEAD
-            "line": 909
-=======
-            "line": 896
->>>>>>> main
+            "line": 914
           },
           "name": "subnetAvailabilityZoneConfig",
           "type": {
@@ -7863,11 +7815,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-<<<<<<< HEAD
-            "line": 903
-=======
-            "line": 890
->>>>>>> main
+            "line": 908
           },
           "name": "vpcId",
           "type": {
@@ -7879,9 +7827,5 @@
     }
   },
   "version": "1.3.0",
-<<<<<<< HEAD
-  "fingerprint": "d177DLjoQRxqOH5iPUbJj4aTsoEpoBi3Z5jBNfV8Qs8="
-=======
-  "fingerprint": "BnAF3tdhaVlm5p7f6+sZwLdrepe25XyXG8q6kMJKmco="
->>>>>>> main
+  "fingerprint": "ZR85N1XV4eAGXnxlp6nMPRL/tPwNy2MP9ncIgrW4afc="
 }
