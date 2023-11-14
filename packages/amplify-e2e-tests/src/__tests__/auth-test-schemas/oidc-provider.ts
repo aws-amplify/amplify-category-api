@@ -1,6 +1,7 @@
-import { generateDDL } from '../../rds-v2-test-utils';
+import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { convertToDBSpecificGraphQLString, generateDDL } from '../../rds-v2-test-utils';
 
-export const schema = `
+export const schema = (engine: ImportedRDSType): string => `
   type TodoPrivate @model @auth(rules: [{ allow: private, provider: oidc }]) {
     id: ID! @primaryKey
     content: String
@@ -47,14 +48,26 @@ export const schema = `
   }
 
   type Query {
-    customGetTodoPrivate(id: ID!): [TodoNonModel] @sql(statement: "SELECT * FROM TodoPrivate WHERE id = :id") @auth(rules: [{ allow: private, provider: oidc }])
-    customGetTodoStaticGroup(id: ID!): [TodoNonModel] @sql(statement: "SELECT * FROM TodoStaticGroup WHERE id = :id") @auth(rules: [{ allow: groups, groups: ["Admin"], provider: oidc, groupClaim: "cognito:groups" }])
+    customGetTodoPrivate(id: ID!): [TodoNonModel] @sql(statement: "SELECT * FROM ${convertToDBSpecificGraphQLString(
+      'TodoPrivate',
+      engine,
+    )} WHERE id = :id") @auth(rules: [{ allow: private, provider: oidc }])
+    customGetTodoStaticGroup(id: ID!): [TodoNonModel] @sql(statement: "SELECT * FROM ${convertToDBSpecificGraphQLString(
+      'TodoStaticGroup',
+      engine,
+    )} WHERE id = :id") @auth(rules: [{ allow: groups, groups: ["Admin"], provider: oidc, groupClaim: "cognito:groups" }])
   }
 
   type Mutation {
-    addTodoPrivate(id: ID!, content: String): TodoNonModel @sql(statement: "INSERT INTO TodoPrivate VALUES(:id, :content)") @auth(rules: [{ allow: private, provider: oidc }])
-    addTodoStaticGroup(id: ID!, content: String): TodoNonModel @sql(statement: "INSERT INTO TodoStaticGroup VALUES(:id, :content)") @auth(rules: [{ allow: groups, groups: ["Admin"], provider: oidc, groupClaim: "cognito:groups" }])
+    addTodoPrivate(id: ID!, content: String): TodoNonModel @sql(statement: "INSERT INTO ${convertToDBSpecificGraphQLString(
+      'TodoPrivate',
+      engine,
+    )} VALUES(:id, :content)") @auth(rules: [{ allow: private, provider: oidc }])
+    addTodoStaticGroup(id: ID!, content: String): TodoNonModel @sql(statement: "INSERT INTO ${convertToDBSpecificGraphQLString(
+      'TodoStaticGroup',
+      engine,
+    )} VALUES(:id, :content)") @auth(rules: [{ allow: groups, groups: ["Admin"], provider: oidc, groupClaim: "cognito:groups" }])
   }
 `;
 
-export const sqlCreateStatements = generateDDL(schema);
+export const sqlCreateStatements = (engine: ImportedRDSType): string[] => generateDDL(schema(engine), engine);
