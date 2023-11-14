@@ -710,6 +710,9 @@ export interface AmplifyGraphqlApiCfnResources {
    */
   readonly additionalCfnResources: Record<string, CfnResource>;
 
+  /**
+   * Remaining L1 resources that do not have resource name set.
+   */
   readonly additionalCfnResourcesWithoutResourceName: CfnResource[];
 }
 
