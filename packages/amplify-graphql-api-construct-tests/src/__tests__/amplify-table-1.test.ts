@@ -37,7 +37,7 @@ describe('CDK amplify table 1', () => {
     expect(table.Table.StreamSpecification.StreamViewType).toBe('NEW_AND_OLD_IMAGES');
     const updateTemplatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', '1', 'updateIndex'));
     updateCDKAppWithTemplate(projRoot, updateTemplatePath);
-    await cdkDeploy(projRoot, '--all');
+    await cdkDeploy(projRoot, '--all', { timeoutMs: 10 * 60 * 1000 /* 10m */ });
     const updatedTable = await getDDBTable(tableName, region);
     expect(updatedTable).toBeDefined();
     expect(updatedTable.Table.BillingModeSummary.BillingMode).toBe('PROVISIONED');
