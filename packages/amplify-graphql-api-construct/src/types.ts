@@ -533,6 +533,14 @@ export interface IAmplifyGraphqlDefinition {
   readonly functionSlots: FunctionSlot[];
 
   /**
+   * Retrieve the references to any lambda functions used in the definition.
+   * Useful for wiring through aws_lambda.Function constructs into the definition directly,
+   * and generated references to invoke them.
+   * @returns any lambda functions, keyed by their referenced 'name' in the generated schema.
+   */
+  readonly referencedLambdaFunctions?: Record<string, IFunction>;
+
+  /**
    * Retrieve the datasource strategy mapping. The default strategy is to use DynamoDB from CloudFormation.
    *
    * **NOTE** Explicitly specifying the 'dataSourceStrategies' configuration option is in preview and is not recommended to use with
