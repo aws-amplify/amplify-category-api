@@ -709,6 +709,8 @@ export interface AmplifyGraphqlApiCfnResources {
    * Remaining L1 resources generated, keyed by logicalId.
    */
   readonly additionalCfnResources: Record<string, CfnResource>;
+
+  readonly additionalCfnResourcesWithoutResourceName: CfnResource[];
 }
 
 /**
