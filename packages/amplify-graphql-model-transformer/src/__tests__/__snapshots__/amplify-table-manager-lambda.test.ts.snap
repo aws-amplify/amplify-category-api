@@ -253,6 +253,38 @@ Object {
 }
 `;
 
+exports[`Custom Resource Lambda Tests Non GSI update Get billing mode update should assign the table provision throughput when billingMode is "PROVISIONED" and no throughput defined in the new GSI 1`] = `
+Object {
+  "AttributeDefinitions": Array [
+    Object {
+      "AttributeName": "sk",
+      "AttributeType": "S",
+    },
+  ],
+  "GlobalSecondaryIndexUpdates": Array [
+    Object {
+      "Create": Object {
+        "IndexName": "bySk",
+        "KeySchema": Array [
+          Object {
+            "AttributeName": "sk",
+            "KeyType": "HASH",
+          },
+        ],
+        "Projection": Object {
+          "ProjectionType": "ALL",
+        },
+        "ProvisionedThroughput": Object {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5,
+        },
+      },
+    },
+  ],
+  "TableName": "test-table",
+}
+`;
+
 exports[`Custom Resource Lambda Tests Non GSI update Get billing mode update should compute the difference correctly when billingMode is changed to "PAY_PER_REQUEST" 1`] = `
 Object {
   "BillingMode": "PAY_PER_REQUEST",

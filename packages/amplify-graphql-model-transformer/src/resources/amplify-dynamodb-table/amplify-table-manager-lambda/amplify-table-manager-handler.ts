@@ -397,12 +397,20 @@ export const getNextGSIUpdate = (currentState: TableDescription, endState: Custo
 
   const gsiToAdd = endStateGSIs.find(gsiRequiresCreationPredicate);
   if (gsiToAdd) {
+    let gsiProvisionThroughput: any = gsiToAdd.provisionedThroughput;
+    // When table is billing at `PROVISIONED` and no throughput defined for gsi, the table's throughput will be used by default
+    if (endState.billingMode === 'PROVISIONED' && gsiToAdd.provisionedThroughput === undefined) {
+      gsiProvisionThroughput = {
+        readCapacityUnits: endState.provisionedThroughput?.readCapacityUnits,
+        writeCapacityUnits: endState.provisionedThroughput?.writeCapacityUnits,
+      };
+    }
     const attributeNamesToInclude = gsiToAdd.keySchema.map((schema) => schema.attributeName);
     const gsiToAddAction = {
       IndexName: gsiToAdd.indexName,
       KeySchema: gsiToAdd.keySchema,
       Projection: gsiToAdd.projection,
-      ProvisionedThroughput: gsiToAdd.provisionedThroughput,
+      ProvisionedThroughput: gsiProvisionThroughput,
     };
     return {
       TableName: currentState.TableName!,
@@ -796,6 +804,7 @@ export const toCreateTableInput = (props: CustomDDB.Input): CreateTableCommandIn
       : undefined,
     ProvisionedThroughput: props.provisionedThroughput,
     SSESpecification: props.sseSpecification ? { Enabled: props.sseSpecification.sseEnabled } : undefined,
+    DeletionProtectionEnabled: props.deletionProtectionEnabled,
   };
   return parsePropertiesToDynamoDBInput(createTableInput) as CreateTableCommandInput;
 };

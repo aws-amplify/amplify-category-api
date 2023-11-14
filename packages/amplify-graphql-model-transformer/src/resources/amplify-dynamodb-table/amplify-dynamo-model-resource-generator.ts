@@ -19,9 +19,7 @@ import { AmplifyDynamoDBTable } from './amplify-dynamodb-table-construct';
 export const ITERATIVE_TABLE_STACK_NAME = 'AmplifyTableManager';
 export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGenerator {
   private customResourceServiceToken: string = '';
-  private amplifyTableArns: string[] = [];
   private ddbManagerPolicy?: aws_iam.Policy;
-  private customResourceProvider?: custom_resources.Provider;
 
   generateResources(ctx: TransformerContextProvider): void {
     if (!this.isEnabled()) {
@@ -59,7 +57,12 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
             'dynamodb:UpdateContinuousBackups',
             'dynamodb:UpdateTimeToLive',
           ],
-          resources: this.amplifyTableArns,
+          resources: [
+            cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}', {
+              apiId: ctx.api.apiId,
+              envName: ctx.synthParameters.amplifyEnvironmentName,
+            }),
+          ],
         }),
       );
     }
@@ -145,13 +148,6 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
 
     // construct a wrapper around the custom table to allow normal CDK operations on top of it
     const tableRepresentative = table.tableFromAttr;
-
-    this.amplifyTableArns.push(
-      // eslint-disable-next-line no-template-curly-in-string
-      cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
-        tablename: tableName,
-      }),
-    );
 
     const cfnTable = table.node.defaultChild?.node.defaultChild as cdk.CfnCustomResource;
     setResourceName(cfnTable, { name: modelName, setOnDefaultChild: false });

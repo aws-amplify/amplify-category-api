@@ -30,6 +30,7 @@ export class AmplifyGraphqlDefinition {
     return {
       schema,
       functionSlots: [],
+      referencedLambdaFunctions: {},
       dataSourceStrategies: constructDataSourceStrategyMap(schema, dataSourceStrategy),
     };
   }
@@ -47,6 +48,7 @@ export class AmplifyGraphqlDefinition {
     return {
       schema,
       functionSlots: [],
+      referencedLambdaFunctions: {},
       dataSourceStrategies: constructDataSourceStrategyMap(schema, DEFAULT_MODEL_DATA_SOURCE_STRATEGY),
     };
   }
@@ -73,6 +75,7 @@ export class AmplifyGraphqlDefinition {
     return {
       schema,
       functionSlots: [],
+      referencedLambdaFunctions: {},
       dataSourceStrategies: constructDataSourceStrategyMap(schema, dataSourceStrategy),
     };
   }
@@ -95,6 +98,7 @@ export class AmplifyGraphqlDefinition {
     return {
       schema: definitions.map((def) => def.schema).join(os.EOL),
       functionSlots: [],
+      referencedLambdaFunctions: definitions.reduce((acc, cur) => ({ ...acc, ...cur.referencedLambdaFunctions }), {}),
       dataSourceStrategies: definitions.reduce((acc, cur) => ({ ...acc, ...cur.dataSourceStrategies }), {}),
     };
   }

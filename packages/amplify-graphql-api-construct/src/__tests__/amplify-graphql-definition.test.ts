@@ -1,8 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { AmplifyGraphqlDefinition, DEFAULT_MODEL_DATA_SOURCE_STRATEGY } from '../amplify-graphql-definition';
-import { ModelDataSourceStrategy, SQLLambdaModelDataSourceStrategy } from '../types';
+import { IAmplifyGraphqlDefinition, ModelDataSourceStrategy, SQLLambdaModelDataSourceStrategy } from '../types';
 
 const TEST_SCHEMA = /* GraphQL */ `
   type Todo @model {
@@ -53,6 +54,7 @@ describe('AmplifyGraphqlDefinition', () => {
       const definition = AmplifyGraphqlDefinition.fromFiles(schemaFilePath);
       expect(definition.schema).toEqual(TEST_SCHEMA);
       expect(definition.functionSlots.length).toEqual(0);
+      expect(Object.keys(definition.referencedLambdaFunctions ?? {}).length).toEqual(0);
       expect(definition.dataSourceStrategies).toEqual({ Todo: DEFAULT_MODEL_DATA_SOURCE_STRATEGY });
     });
 
@@ -75,6 +77,7 @@ describe('AmplifyGraphqlDefinition', () => {
       const definition = AmplifyGraphqlDefinition.fromFiles(schemaFilePath, rdsSchemaFilePath);
       expect(definition.schema).toEqual(`${TEST_SCHEMA}${os.EOL}${rdsTestSchema}`);
       expect(definition.functionSlots.length).toEqual(0);
+      expect(Object.keys(definition.referencedLambdaFunctions ?? {}).length).toEqual(0);
     });
 
     it('binds to a DynamoDB data source', () => {
@@ -104,6 +107,7 @@ describe('AmplifyGraphqlDefinition', () => {
       const definition = AmplifyGraphqlDefinition.fromFilesAndStrategy([schemaFilePath], DEFAULT_TABLE_DS_DEFINITION);
       expect(definition.schema).toEqual(TEST_SCHEMA);
       expect(definition.functionSlots.length).toEqual(0);
+      expect(Object.keys(definition.referencedLambdaFunctions ?? {}).length).toEqual(0);
       expect(definition.dataSourceStrategies).toEqual({ Todo: DEFAULT_TABLE_DS_DEFINITION });
     });
 
@@ -126,6 +130,7 @@ describe('AmplifyGraphqlDefinition', () => {
       const definition = AmplifyGraphqlDefinition.fromFilesAndStrategy([schemaFilePath, rdsSchemaFilePath], DEFAULT_TABLE_DS_DEFINITION);
       expect(definition.schema).toEqual(`${TEST_SCHEMA}${os.EOL}${rdsTestSchema}`);
       expect(definition.functionSlots.length).toEqual(0);
+      expect(Object.keys(definition.referencedLambdaFunctions ?? {}).length).toEqual(0);
     });
 
     it('binds to a dynamo data source', () => {
@@ -195,10 +200,43 @@ describe('AmplifyGraphqlDefinition', () => {
       const combinedDefinition = AmplifyGraphqlDefinition.combine([definition1, definition2]);
       expect(combinedDefinition.schema).toEqual(`${TEST_SCHEMA}${os.EOL}${amplifyTableSchema}`);
       expect(combinedDefinition.functionSlots.length).toEqual(0);
+      expect(Object.keys(combinedDefinition.referencedLambdaFunctions ?? {}).length).toEqual(0);
       expect(combinedDefinition.dataSourceStrategies).toEqual({
         Todo: DEFAULT_MODEL_DATA_SOURCE_STRATEGY,
         Blog: AMPLIFY_TABLE_DS_DEFINITION,
         Post: AMPLIFY_TABLE_DS_DEFINITION,
+      });
+    });
+
+    it('merges referencedLamdaFunctions', () => {
+      const func1 = { functionName: 'imfunc1' } as unknown as IFunction;
+      const func2 = { functionName: 'imfunc2' } as unknown as IFunction;
+
+      const definition1: IAmplifyGraphqlDefinition = {
+        schema: TEST_SCHEMA,
+        functionSlots: [],
+        referencedLambdaFunctions: {
+          definition1Func: func1,
+        },
+        dataSourceStrategies: {},
+      };
+      const definition2: IAmplifyGraphqlDefinition = {
+        schema: /* GraphQL */ `
+          type Blog @model {
+            id: ID!
+            posts: [Post] @hasMany
+          }
+        `,
+        functionSlots: [],
+        referencedLambdaFunctions: {
+          definition2Func: func2,
+        },
+        dataSourceStrategies: {},
+      };
+
+      expect(AmplifyGraphqlDefinition.combine([definition1, definition2]).referencedLambdaFunctions).toEqual({
+        definition1Func: func1,
+        definition2Func: func2,
       });
     });
   });

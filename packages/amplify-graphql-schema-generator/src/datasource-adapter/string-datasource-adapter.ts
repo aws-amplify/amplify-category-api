@@ -36,6 +36,12 @@ export abstract class StringDataSourceAdapter {
       // allows quotes to appear in fields
       // example: CREATE UNIQUE INDEX "todo_pkey"
       relax_quotes: true,
+      cast: (value, context) => {
+        if (value === 'NULL' || value === 'null') {
+          return null;
+        }
+        return value;
+      },
     });
   }
 
