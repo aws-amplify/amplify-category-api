@@ -16,6 +16,7 @@ import type {
   TransformParameterProvider,
   TransformParameters,
   VpcConfig,
+  ProvisionedConcurrencyConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
 import { DocumentNode } from 'graphql';
@@ -80,6 +81,8 @@ export class TransformerContext implements TransformerContextProvider {
 
   public readonly rdsLayerMapping?: RDSLayerMapping;
 
+  public readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
+
   public readonly customQueries: Map<string, string>;
 
   public metadata: TransformerContextMetadata;
@@ -100,6 +103,7 @@ export class TransformerContext implements TransformerContextProvider {
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>,
     sqlLambdaVpcConfig?: VpcConfig,
     rdsLayerMapping?: RDSLayerMapping,
+    sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig,
   ) {
     assetManager.setAssetProvider(assetProvider);
     this.output = new TransformerOutput(inputDocument);
@@ -116,6 +120,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.datasourceSecretParameterLocations = datasourceSecretParameterLocations ?? new Map<string, RDSConnectionSecrets>();
     this.sqlLambdaVpcConfig = sqlLambdaVpcConfig;
     this.rdsLayerMapping = rdsLayerMapping;
+    this.sqlLambdaProvisionedConcurrencyConfig = sqlLambdaProvisionedConcurrencyConfig;
     this.customQueries = customQueries;
   }
 

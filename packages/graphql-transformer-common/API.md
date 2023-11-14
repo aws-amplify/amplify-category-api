@@ -416,6 +416,7 @@ export class ResourceConstants {
         RDSLambdaDataSourceLogicalID: string;
         RDSLambdaDataSourceLogicalName: string;
         RDSPatchingSubscriptionLogicalID: string;
+        RDSLambdaAliasLogicalID: string;
         NoneDataSource: string;
         AuthCognitoUserPoolLogicalID: string;
         AuthCognitoUserPoolNativeClientLogicalID: string;

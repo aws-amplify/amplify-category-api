@@ -297,6 +297,11 @@ export interface PartialTranslationBehavior {
 }
 
 // @public
+export interface ProvisionedConcurrencyConfig {
+    readonly provisionedConcurrentExecutions: number;
+}
+
+// @public
 export interface ProvisionedThroughput {
     readonly readCapacityUnits: number;
     readonly writeCapacityUnits: number;
@@ -318,6 +323,7 @@ export interface SQLLambdaModelDataSourceStrategy {
     readonly dbType: 'MYSQL' | 'POSTGRES';
     readonly name: string;
     readonly sqlLambdaLayerMapping?: SQLLambdaLayerMapping;
+    readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
     readonly vpcConfiguration?: VpcConfig;
 }
 

@@ -93,6 +93,10 @@ export interface VpcConfig {
   readonly subnetAvailabilityZoneConfig: SubnetAvailabilityZone[];
 }
 
+export interface ProvisionedConcurrencyConfig {
+  readonly provisionedConcurrentExecutions: number;
+}
+
 /**
  * Although it is possible to create multiple subnets in a single availability zone, VPC Endpoints may only be deployed to a single subnet
  * in a given availability zone. We use this structure to ensure that the Lambda function and VPC endpoints are mutually consistent.

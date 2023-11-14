@@ -60,6 +60,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
           database: secretEntry?.database ?? '',
         },
         context.sqlLambdaVpcConfig,
+        context.sqlLambdaProvisionedConcurrencyConfig,
       );
 
       const patchingLambdaRoleScope = context.stackManager.getScopeFor(RDSPatchingLambdaIAMRoleLogicalID, RDS_STACK_NAME);
