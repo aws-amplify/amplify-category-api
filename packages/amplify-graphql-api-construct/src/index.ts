@@ -1,6 +1,6 @@
 /* ATTENTION
  *
- * If you modifiy this file your must also modify packages/amplify-data-construct/src/index.ts to have the same exports
+ * If you modify this file your must also modify packages/amplify-data-construct/src/index.ts to have the same exports
  */
 export type {
   IAMAuthorizationConfig,
