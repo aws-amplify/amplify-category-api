@@ -32,16 +32,13 @@ const RDS_PATCHING_SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:582037449441:AmplifyRD
  */
 export class RdsModelResourceGenerator extends ModelResourceGenerator {
   protected readonly generatorType = 'RdsModelResourceGenerator';
+  private completedStrategyNames = new Set<string>();
 
   /**
    * Generates CloudFormation resources for all SQL-backed models.
    * @param context The context provider
    */
   generateResources(context: TransformerContextProvider): void {
-    if (!this.isEnabled()) {
-      return;
-    }
-
     Object.values(context.dataSourceStrategies)
       .filter((strategy) => isSqlStrategy(strategy))
       // Force cast is safe because of the filter
@@ -52,6 +49,10 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
     context: TransformerContextProvider,
     strategy: SQLLambdaModelDataSourceStrategy,
   ): void {
+    if (this.completedStrategyNames.has(strategy.name)) {
+      return;
+    }
+    this.completedStrategyNames.add(strategy.name);
     if (this.isEnabled()) {
       const {
         SQLLambdaLogicalIDPrefix,
@@ -69,7 +70,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
 
       const lambdaResourceId = getSqlResourceNameForStrategy(SQLLambdaLogicalIDPrefix, strategy);
       const lambdaScope = context.stackManager.getScopeFor(lambdaResourceId, RDS_STACK_NAME);
-      setRDSLayerMappings(lambdaScope, strategy.sqlLambdaLayerMapping);
+      setRDSLayerMappings(lambdaScope, strategy.name, strategy.sqlLambdaLayerMapping);
 
       const role = createRdsLambdaRole(context.resourceHelper.generateIAMRoleName(lambdaRoleResourceId), lambdaRoleScope, strategy);
 

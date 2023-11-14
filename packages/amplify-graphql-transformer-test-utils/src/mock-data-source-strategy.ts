@@ -1,4 +1,4 @@
-import { SQLLambdaModelDataSourceStrategy } from '../model-datasource-strategy';
+import { ModelDataSourceStrategy, SQLLambdaModelDataSourceStrategy } from 'graphql-transformer-common';
 
 export const MOCK_SCHEMA = {
   todo: {
@@ -161,24 +161,37 @@ export const MOCK_SCHEMA = {
   },
 };
 
+export const makeSqlDataSourceStrategiesForModelList = (
+  strategyName: string,
+  modelNames: string[],
+  strategyOverrides: Partial<SQLLambdaModelDataSourceStrategy> = {},
+): Record<string, ModelDataSourceStrategy> => {
+  const strategy = makeSqlDataSourceStrategy(strategyName, strategyOverrides);
+  const dataSourceStrategies: Record<string, ModelDataSourceStrategy> = modelNames.reduce((acc, model) => {
+    acc[model] = strategy;
+    return acc;
+  }, {} as Record<string, ModelDataSourceStrategy>);
+  return dataSourceStrategies;
+};
+
 export const makeSqlDataSourceStrategy = (
-  name: string,
+  strategyName: string,
   strategyOverrides: Partial<SQLLambdaModelDataSourceStrategy> = {},
 ): SQLLambdaModelDataSourceStrategy => {
   const strategy: SQLLambdaModelDataSourceStrategy = {
-    name,
+    name: strategyName,
     dbType: 'MYSQL',
     dbConnectionConfig: {
-      hostnameSsmPath: `/ssm/path/to/${name}/hostname`,
-      portSsmPath: `/ssm/path/to/${name}/portSsmP`,
-      usernameSsmPath: `/ssm/path/to/${name}/username`,
-      passwordSsmPath: `/ssm/path/to/${name}/password`,
-      databaseNameSsmPath: `/ssm/path/to/${name}/database`,
+      hostnameSsmPath: `/ssm/path/to/${strategyName}/hostname`,
+      portSsmPath: `/ssm/path/to/${strategyName}/portSsmP`,
+      usernameSsmPath: `/ssm/path/to/${strategyName}/username`,
+      passwordSsmPath: `/ssm/path/to/${strategyName}/password`,
+      databaseNameSsmPath: `/ssm/path/to/${strategyName}/database`,
     },
     vpcConfiguration: {
-      vpcId: `vpc-${name}-12345`,
-      securityGroupIds: [`sg-${name}-12345`],
-      subnetAvailabilityZoneConfig: [{ subnetId: `subnet-${name}-12345`, availabilityZone: 'us-east-1a' }],
+      vpcId: `vpc-${strategyName}-12345`,
+      securityGroupIds: [`sg-${strategyName}-12345`],
+      subnetAvailabilityZoneConfig: [{ subnetId: `subnet-${strategyName}-12345`, availabilityZone: 'us-east-1a' }],
     },
     ...strategyOverrides,
   };

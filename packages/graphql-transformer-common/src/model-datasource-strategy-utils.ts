@@ -19,6 +19,10 @@ const isObjectTypeDefinitionNode = (obj: DefinitionNode): obj is ObjectTypeDefin
   return obj.kind === Kind.OBJECT_TYPE_DEFINITION || obj.kind === Kind.INTERFACE_TYPE_DEFINITION;
 };
 
+const isBuiltInTypeName = (typeName: string): typeName is 'Query' | 'Mutation' | 'Subscription' => {
+  return typeName === 'Query' || typeName === 'Mutation' || typeName === 'Subscription';
+};
+
 const isQueryNode = (
   obj: DefinitionNode,
 ): obj is ObjectTypeDefinitionNode | (InterfaceTypeDefinitionNode & { name: { value: 'Query' } }) => {
@@ -212,6 +216,9 @@ export const isSqlDbType = (dbType: ModelDataSourceDbType): dbType is ModelDataS
  * @returns boolean
  */
 export const isDynamoDBModel = (dataSourceStrategiesProvider: DataSourceStrategiesProvider, typeName: string): boolean => {
+  if (isBuiltInTypeName(typeName)) {
+    return false;
+  }
   const strategy = getModelDataSourceStrategy(dataSourceStrategiesProvider, typeName);
   return isDynamoDbStrategy(strategy);
 };
@@ -223,6 +230,9 @@ export const isDynamoDBModel = (dataSourceStrategiesProvider: DataSourceStrategi
  * @returns boolean
  */
 export const isSqlModel = (dataSourceStrategiesProvider: DataSourceStrategiesProvider, typeName: string): boolean => {
+  if (isBuiltInTypeName(typeName)) {
+    return false;
+  }
   const strategy = getModelDataSourceStrategy(dataSourceStrategiesProvider, typeName);
   return isSqlStrategy(strategy);
 };

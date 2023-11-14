@@ -1,5 +1,5 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { ConflictHandlerType, DDB_DB_TYPE, MYSQL_DB_TYPE, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { Template as AssertionTemplate } from 'aws-cdk-lib/assertions';
 import { DocumentNode, parse } from 'graphql';
 import { testTransform, Template, AmplifyApiGraphQlResourceStackTemplate } from '@aws-amplify/graphql-transformer-test-utils';

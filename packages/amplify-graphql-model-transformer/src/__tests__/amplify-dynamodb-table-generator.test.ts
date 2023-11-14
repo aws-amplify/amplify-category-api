@@ -1,10 +1,10 @@
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { ModelTransformer } from '../graphql-model-transformer';
-import { constructDataSourceMap, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
+import { DYNAMODB_AMPLIFY_TABLE_STRATEGY, DYNAMODB_DEFAULT_TABLE_STRATEGY } from 'graphql-transformer-common';
+import { ModelTransformer } from '../graphql-model-transformer';
 import { CUSTOM_DDB_CFN_TYPE } from '../resources/amplify-dynamodb-table/amplify-dynamodb-table-construct';
 import { ITERATIVE_TABLE_STACK_NAME } from '../resources/amplify-dynamodb-table/amplify-dynamo-model-resource-generator';
-import { DynamoDBProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 
 describe('ModelTransformer:', () => {
   it('should successfully transform simple valid schema', async () => {
@@ -18,16 +18,13 @@ describe('ModelTransformer:', () => {
         content: String
       }
     `;
-    const modelToDatasourceMap = constructDataSourceMap(validSchema, {
-      dbType: 'DDB',
-      provisionDB: true,
-      provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
-    });
-    modelToDatasourceMap.set('Post', { dbType: 'DDB', provisionDB: true, provisionStrategy: DynamoDBProvisionStrategy.AMPLIFY_TABLE });
     const out = testTransform({
       schema: validSchema,
       transformers: [new ModelTransformer()],
-      modelToDatasourceMap,
+      dataSourceStrategies: {
+        Post: DYNAMODB_AMPLIFY_TABLE_STRATEGY,
+        Comment: DYNAMODB_DEFAULT_TABLE_STRATEGY,
+      }
     });
     expect(out).toBeDefined();
     const amplifyTableManagerStack = out.stacks[ITERATIVE_TABLE_STACK_NAME];

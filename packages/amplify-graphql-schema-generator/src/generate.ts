@@ -1,20 +1,20 @@
 import * as os from 'os';
 import { DocumentNode } from 'graphql';
-import { ModelDataSourceSqlDbType, MYSQL_DB_TYPE, POSTGRES_DB_TYPE } from 'graphql-transformer-common';
+import { ImportedRDSType, MYSQL_DB_TYPE, POSTGRES_DB_TYPE } from 'graphql-transformer-common';
 import { Schema, Engine } from './schema-representation';
 import { generateGraphQLSchema } from './schema-generator';
 import { constructRDSGlobalAmplifyInput } from './input';
 import { MySQLStringDataSourceAdapter, PostgresStringDataSourceAdapter } from './datasource-adapter';
 
-const buildSchemaFromString = (stringSchema: string, dbType: ModelDataSourceSqlDbType): Schema => {
+const buildSchemaFromString = (stringSchema: string, dbType: ImportedRDSType): Schema => {
   let schema;
   let adapter;
   switch (dbType) {
-    case MYSQL_DB_TYPE:
+    case ImportedRDSType.MYSQL:
       adapter = new MySQLStringDataSourceAdapter(stringSchema);
       schema = new Schema(new Engine('MySQL'));
       break;
-    case POSTGRES_DB_TYPE:
+    case ImportedRDSType.POSTGRESQL:
       adapter = new PostgresStringDataSourceAdapter(stringSchema);
       schema = new Schema(new Engine('Postgres'));
       break;
@@ -36,7 +36,7 @@ export const renderSchema = (
   return constructRDSGlobalAmplifyInput(databaseConfig, existingSchema) + os.EOL + os.EOL + generateGraphQLSchema(schema, existingSchema);
 };
 
-export const graphqlSchemaFromRDSSchema = (sqlSchema: string, engineType: ModelDataSourceSqlDbType): string => {
+export const graphqlSchemaFromRDSSchema = (sqlSchema: string, engineType: ImportedRDSType): string => {
   const schema = buildSchemaFromString(sqlSchema, engineType);
 
   const databaseConfig = {

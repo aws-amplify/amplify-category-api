@@ -1,10 +1,10 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { makeSqlDataSourceStrategiesForModelList, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { parse } from 'graphql';
-import { AppSyncAuthConfiguration, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthTransformer } from '../graphql-auth-transformer';
+import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { AuthTransformer } from '../graphql-auth-transformer';
 
 describe('Verify RDS Model level Auth rules on subscriptions:', () => {
   it('should successfully transform apiKey auth rule', async () => {
@@ -16,18 +16,12 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
       }
     `;
 
+    const dataSourceStrategies = makeSqlDataSourceStrategiesForModelList('myteststrategy', ['Post']);
+
     const out = testTransform({
       schema: validSchema,
       transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
-      modelToDatasourceMap: new Map(
-        Object.entries({
-          Post: {
-            dbType: 'MySQL',
-            provisionDB: false,
-            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-          },
-        }),
-      ),
+      dataSourceStrategies,
       synthParameters: {
         identityPoolId: 'TEST_IDENTITY_POOL_ID',
       },
@@ -117,20 +111,20 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
       additionalAuthenticationProviders: [],
     };
 
-    const modelToDatasourceMap = new Map();
-    ['PostPrivate', 'PostSingleOwner', 'PostOwners', 'PostStaticGroups', 'PostSingleGroup', 'PostGroups'].forEach((model) => {
-      modelToDatasourceMap.set(model, {
-        dbType: 'MySQL',
-        provisionDB: false,
-        provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-      });
-    });
+    const dataSourceStrategies = makeSqlDataSourceStrategiesForModelList('myteststrategy', [
+      'PostPrivate',
+      'PostSingleOwner',
+      'PostOwners',
+      'PostStaticGroups',
+      'PostSingleGroup',
+      'PostGroups',
+    ]);
 
     const out = testTransform({
       schema: validSchema,
       transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
       authConfig,
-      modelToDatasourceMap,
+      dataSourceStrategies,
       synthParameters: {
         identityPoolId: 'TEST_IDENTITY_POOL_ID',
       },
@@ -275,20 +269,20 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
       additionalAuthenticationProviders: [],
     };
 
-    const modelToDatasourceMap = new Map();
-    ['PostPrivate', 'PostSingleOwner', 'PostOwners', 'PostStaticGroups', 'PostSingleGroup', 'PostGroups'].forEach((model) => {
-      modelToDatasourceMap.set(model, {
-        dbType: 'MySQL',
-        provisionDB: false,
-        provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-      });
-    });
+    const dataSourceStrategies = makeSqlDataSourceStrategiesForModelList('myteststrategy', [
+      'PostPrivate',
+      'PostSingleOwner',
+      'PostOwners',
+      'PostStaticGroups',
+      'PostSingleGroup',
+      'PostGroups',
+    ]);
 
     const out = testTransform({
       schema: validSchema,
       transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
       authConfig,
-      modelToDatasourceMap,
+      dataSourceStrategies,
       synthParameters: {
         identityPoolId: 'TEST_IDENTITY_POOL_ID',
       },
@@ -386,19 +380,13 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
       additionalAuthenticationProviders: [],
     };
 
+    const dataSourceStrategies = makeSqlDataSourceStrategiesForModelList('myteststrategy', ['Post']);
+
     const out = testTransform({
       schema: validSchema,
       transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
       authConfig,
-      modelToDatasourceMap: new Map(
-        Object.entries({
-          Post: {
-            dbType: 'MySQL',
-            provisionDB: false,
-            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-          },
-        }),
-      ),
+      dataSourceStrategies,
       synthParameters: {
         identityPoolId: 'TEST_IDENTITY_POOL_ID',
       },
@@ -450,20 +438,13 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
       additionalAuthenticationProviders: [],
     };
 
-    const modelToDatasourceMap = new Map();
-    ['PostPrivate', 'PostPublic'].forEach((model) => {
-      modelToDatasourceMap.set(model, {
-        dbType: 'MySQL',
-        provisionDB: false,
-        provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-      });
-    });
+    const dataSourceStrategies = makeSqlDataSourceStrategiesForModelList('myteststrategy', ['PostPrivate', 'PostPublic']);
 
     const out = testTransform({
       schema: validSchema,
       transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
       authConfig,
-      modelToDatasourceMap,
+      dataSourceStrategies,
       synthParameters: {
         identityPoolId: 'TEST_IDENTITY_POOL_ID',
       },
@@ -525,20 +506,13 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
       additionalAuthenticationProviders: [],
     };
 
-    const modelToDatasourceMap = new Map();
-    ['Post'].forEach((model) => {
-      modelToDatasourceMap.set(model, {
-        dbType: 'MySQL',
-        provisionDB: false,
-        provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-      });
-    });
+    const dataSourceStrategies = makeSqlDataSourceStrategiesForModelList('myteststrategy', ['Post']);
 
     const out = testTransform({
       schema: validSchema,
       transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
       authConfig,
-      modelToDatasourceMap,
+      dataSourceStrategies,
     });
 
     expect(out).toBeDefined();

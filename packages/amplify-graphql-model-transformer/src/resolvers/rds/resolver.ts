@@ -23,6 +23,7 @@ import {
   SQLLambdaModelDataSourceStrategy,
   SubnetAvailabilityZone,
   getSqlResourceNameForStrategy,
+  getSqlResourceNameForStrategyName,
   isArrayOrObject,
   isListType,
 } from 'graphql-transformer-common';
@@ -41,16 +42,19 @@ export type OPERATIONS = 'CREATE' | 'UPDATE' | 'DELETE' | 'GET' | 'LIST' | 'SYNC
 
 const OPERATION_KEY = '__operation';
 
-const RDSLayerMappingID = 'RDSLayerResourceMapping';
-// TODO: This is temporary state, we need to modify this to a production layer
+const getRdsLayerMappingResourceName = (strategyName: string): string =>
+  getSqlResourceNameForStrategyName(ResourceConstants.RESOURCES.SQLLayerMappingIdPrefix, strategyName);
+
 /**
  * Define RDS Lambda Layer region mappings
  * @param scope Construct
  */
-export const setRDSLayerMappings = (scope: Construct, mapping?: SQLLambdaLayerMapping): CfnMapping =>
-  new CfnMapping(scope, RDSLayerMappingID, {
+export const setRDSLayerMappings = (scope: Construct, strategyName: string, mapping?: SQLLambdaLayerMapping): CfnMapping => {
+  const resourceId = getRdsLayerMappingResourceName(strategyName);
+  return new CfnMapping(scope, resourceId, {
     mapping: getLatestLayers(mapping),
   });
+};
 
 const getLatestLayers = (latestLayers?: SQLLambdaLayerMapping): RDSLayerMapping => {
   if (latestLayers && Object.keys(latestLayers).length > 0) {
@@ -174,6 +178,8 @@ export const createRdsLambda = (
     }
   }
 
+  const rdsLayerMappingId = getRdsLayerMappingResourceName(strategy.name);
+
   return apiGraphql.host.addLambdaFunction(
     resourceId,
     `functions/${resourceId}.zip`,
@@ -184,7 +190,7 @@ export const createRdsLambda = (
       LayerVersion.fromLayerVersionArn(
         scope,
         'SQLLambdaLayerVersion',
-        Fn.findInMap(RDSLayerMappingID, Fn.ref('AWS::Region'), 'layerRegion'),
+        Fn.findInMap(rdsLayerMappingId, Fn.ref('AWS::Region'), 'layerRegion'),
       ),
     ],
     lambdaRole,

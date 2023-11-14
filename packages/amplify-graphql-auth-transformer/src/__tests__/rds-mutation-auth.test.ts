@@ -1,8 +1,12 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import {
+  makeSqlDataSourceStrategiesForModelList,
+  makeSqlDataSourceStrategy,
+  testTransform,
+} from '@aws-amplify/graphql-transformer-test-utils';
 import { parse } from 'graphql';
-import { AppSyncAuthConfiguration, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { AuthTransformer } from '../graphql-auth-transformer';
 import { expectStashValueLike } from './test-helpers';
@@ -24,17 +28,11 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
     const out = testTransform({
       schema: validSchema,
       transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
-      modelToDatasourceMap: new Map(
-        Object.entries({
-          Post: {
-            dbType: 'MySQL',
-            provisionDB: false,
-            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-          },
-        }),
-      ),
       synthParameters: {
         identityPoolId: 'TEST_IDENTITY_POOL_ID',
+      },
+      dataSourceStrategies: {
+        Post: makeSqlDataSourceStrategy('teststrategy'),
       },
     });
     expect(out).toBeDefined();
@@ -121,20 +119,20 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
       additionalAuthenticationProviders: [],
     };
 
-    const modelToDatasourceMap = new Map();
-    ['PostPrivate', 'PostSingleOwner', 'PostOwners', 'PostStaticGroups', 'PostSingleGroup', 'PostGroups'].forEach((model) => {
-      modelToDatasourceMap.set(model, {
-        dbType: 'MySQL',
-        provisionDB: false,
-        provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-      });
-    });
+    const dataSourceStrategies = makeSqlDataSourceStrategiesForModelList('myteststrategy', [
+      'PostPrivate',
+      'PostSingleOwner',
+      'PostOwners',
+      'PostStaticGroups',
+      'PostSingleGroup',
+      'PostGroups',
+    ]);
 
     const out = testTransform({
       schema: validSchema,
       transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
       authConfig,
-      modelToDatasourceMap,
+      dataSourceStrategies,
       synthParameters: {
         identityPoolId: 'TEST_IDENTITY_POOL_ID',
       },
@@ -273,20 +271,20 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
       additionalAuthenticationProviders: [],
     };
 
-    const modelToDatasourceMap = new Map();
-    ['PostPrivate', 'PostSingleOwner', 'PostOwners', 'PostStaticGroups', 'PostSingleGroup', 'PostGroups'].forEach((model) => {
-      modelToDatasourceMap.set(model, {
-        dbType: 'MySQL',
-        provisionDB: false,
-        provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-      });
-    });
+    const dataSourceStrategies = makeSqlDataSourceStrategiesForModelList('myteststrategy', [
+      'PostPrivate',
+      'PostSingleOwner',
+      'PostOwners',
+      'PostStaticGroups',
+      'PostSingleGroup',
+      'PostGroups',
+    ]);
 
     const out = testTransform({
       schema: validSchema,
       transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
       authConfig,
-      modelToDatasourceMap,
+      dataSourceStrategies,
       synthParameters: {
         identityPoolId: 'TEST_IDENTITY_POOL_ID',
       },
@@ -382,15 +380,9 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
       schema: validSchema,
       transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
       authConfig,
-      modelToDatasourceMap: new Map(
-        Object.entries({
-          Post: {
-            dbType: 'MySQL',
-            provisionDB: false,
-            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-          },
-        }),
-      ),
+      dataSourceStrategies: {
+        Post: makeSqlDataSourceStrategy('myteststrategy'),
+      },
       synthParameters: {
         identityPoolId: 'TEST_IDENTITY_POOL_ID',
       },
@@ -441,20 +433,13 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
       additionalAuthenticationProviders: [],
     };
 
-    const modelToDatasourceMap = new Map();
-    ['PostPrivate', 'PostPublic'].forEach((model) => {
-      modelToDatasourceMap.set(model, {
-        dbType: 'MySQL',
-        provisionDB: false,
-        provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-      });
-    });
+    const dataSourceStrategies = makeSqlDataSourceStrategiesForModelList('myteststrategy', ['PostPrivate', 'PostPublic']);
 
     const out = testTransform({
       schema: validSchema,
       transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
       authConfig,
-      modelToDatasourceMap,
+      dataSourceStrategies,
       synthParameters: {
         identityPoolId: 'TEST_IDENTITY_POOL_ID',
       },
@@ -513,21 +498,14 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
       additionalAuthenticationProviders: [],
     };
 
-    const modelToDatasourceMap = new Map();
-    ['Post'].forEach((model) => {
-      modelToDatasourceMap.set(model, {
-        dbType: 'MySQL',
-        provisionDB: false,
-        provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-      });
-    });
+    const dataSourceStrategies = makeSqlDataSourceStrategiesForModelList('myteststrategy', ['Post']);
 
     expect(() =>
       testTransform({
         schema: invalidSchema,
         transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
         authConfig,
-        modelToDatasourceMap,
+        dataSourceStrategies,
       }),
     ).toThrow(
       '@auth rules are not supported on fields on relational database models. Check field "title" on type "Post". Please use @auth on the type instead.',
@@ -557,20 +535,13 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
       additionalAuthenticationProviders: [],
     };
 
-    const modelToDatasourceMap = new Map();
-    ['Post'].forEach((model) => {
-      modelToDatasourceMap.set(model, {
-        dbType: 'MySQL',
-        provisionDB: false,
-        provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-      });
-    });
+    const dataSourceStrategies = makeSqlDataSourceStrategiesForModelList('myteststrategy', ['Post']);
 
     const out = testTransform({
       schema: validSchema,
       transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
       authConfig,
-      modelToDatasourceMap,
+      dataSourceStrategies,
     });
 
     expect(out).toBeDefined();
@@ -587,17 +558,10 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
       createdAt: String
       updatedAt: String
     }`;
-    const modelToDatasourceMap = new Map();
-    ['Post'].forEach((model) => {
-      modelToDatasourceMap.set(model, {
-        dbType: 'MySQL',
-        provisionDB: false,
-        provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-      });
-    });
+    const dataSourceStrategies = makeSqlDataSourceStrategiesForModelList('myteststrategy', ['Post']);
     const out = testTransform({
       schema: validSchema,
-      modelToDatasourceMap,
+      dataSourceStrategies,
       authConfig: {
         defaultAuthentication: {
           authenticationType: 'API_KEY',

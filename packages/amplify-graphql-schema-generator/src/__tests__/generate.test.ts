@@ -1,4 +1,4 @@
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { ImportedRDSType } from 'graphql-transformer-common';
 import { graphqlSchemaFromRDSSchema } from '..';
 import { schemas } from './__utils__/schemas';
 

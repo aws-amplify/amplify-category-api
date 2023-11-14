@@ -1,9 +1,8 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { makeSqlDataSourceStrategiesForModelList, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { DataSourceType, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DefaultValueTransformer } from '..';
 
 describe('DefaultValueModelTransformer:', () => {
@@ -323,16 +322,12 @@ describe('DefaultValueModelTransformer:', () => {
       }
     `;
 
-    const modelToDatasourceMap = new Map<string, DataSourceType>();
-    modelToDatasourceMap.set('Note', {
-      dbType: 'MySQL',
-      provisionDB: false,
-      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-    });
+    const dataSourceStrategies = makeSqlDataSourceStrategiesForModelList('myteststrategy', ['Note']);
+
     const out = testTransform({
       schema: validSchema,
       transformers: [new ModelTransformer(), new DefaultValueTransformer(), new PrimaryKeyTransformer()],
-      modelToDatasourceMap,
+      dataSourceStrategies,
     });
     expect(out).toBeDefined();
 

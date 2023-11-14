@@ -43,6 +43,7 @@ export class ResourceConstants {
     SQLPatchingLambdaLogAccessPolicyPrefix: 'SQLPatchingLambdaLogAccessPolicy',
     SQLPatchingSubscriptionLogicalIDPrefix: 'SQLPatchingSubscription',
     SQLPatchingTopicNameLogicalIdPrefix: 'SQLPatchingTopic',
+    SQLLayerMappingIdPrefix: 'SQLLayerResourceMapping',
 
     // SQL Lambda DataSource
     SQLLambdaDataSourceLogicalIDPrefix: 'SQLLambdaDataSource',
