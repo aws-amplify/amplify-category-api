@@ -117,6 +117,7 @@ export class GraphQLTransform {
 
   private readonly sqlLambdaVpcConfig?: VpcConfig;
   private readonly transformParameters: TransformParameters;
+  private readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
   // that specifies we have run already run a directive at a given location.
@@ -153,6 +154,7 @@ export class GraphQLTransform {
       ...defaultTransformParameters,
       ...(options.transformParameters ?? {}),
     };
+    this.sqlLambdaProvisionedConcurrencyConfig = options.sqlLambdaProvisionedConcurrencyConfig;
 
     this.logs = [];
   }
@@ -218,6 +220,7 @@ export class GraphQLTransform {
       datasourceConfig?.datasourceSecretParameterLocations,
       this.sqlLambdaVpcConfig,
       datasourceConfig?.rdsLayerMapping,
+      this.sqlLambdaProvisionedConcurrencyConfig,
     );
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),
