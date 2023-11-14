@@ -3536,7 +3536,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 759
+        "line": 761
       },
       "name": "AddFunctionProps",
       "properties": [
@@ -3549,7 +3549,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 763
+            "line": 765
           },
           "name": "dataSource",
           "type": {
@@ -3565,7 +3565,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 768
+            "line": 770
           },
           "name": "name",
           "type": {
@@ -3582,7 +3582,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 803
+            "line": 805
           },
           "name": "code",
           "optional": true,
@@ -3600,7 +3600,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 775
+            "line": 777
           },
           "name": "description",
           "optional": true,
@@ -3618,7 +3618,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 782
+            "line": 784
           },
           "name": "requestMappingTemplate",
           "optional": true,
@@ -3636,7 +3636,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 789
+            "line": 791
           },
           "name": "responseMappingTemplate",
           "optional": true,
@@ -3654,7 +3654,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 796
+            "line": 798
           },
           "name": "runtime",
           "optional": true,
@@ -3676,7 +3676,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 831
+        "line": 833
       },
       "name": "AmplifyDynamoDbModelDataSourceStrategy",
       "properties": [
@@ -3688,7 +3688,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 832
+            "line": 834
           },
           "name": "dbType",
           "type": {
@@ -3703,7 +3703,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 833
+            "line": 835
           },
           "name": "provisionStrategy",
           "type": {
@@ -4590,6 +4590,26 @@
         {
           "abstract": true,
           "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 713
+          },
+          "name": "additionalCfnResourcesWithoutResourceName",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "aws-cdk-lib.CfnResource"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
             "stability": "stable",
             "summary": "The Generated AppSync DataSource L1 Resources, keyed by logicalId."
           },
@@ -5027,7 +5047,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 718
+        "line": 720
       },
       "name": "AmplifyGraphqlApiResources",
       "properties": [
@@ -5040,7 +5060,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 732
+            "line": 734
           },
           "name": "amplifyDynamoDbTables",
           "type": {
@@ -5061,7 +5081,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 747
+            "line": 749
           },
           "name": "cfnResources",
           "type": {
@@ -5077,7 +5097,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 742
+            "line": 744
           },
           "name": "functions",
           "type": {
@@ -5098,7 +5118,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 722
+            "line": 724
           },
           "name": "graphqlApi",
           "type": {
@@ -5114,7 +5134,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 752
+            "line": 754
           },
           "name": "nestedStacks",
           "type": {
@@ -5135,7 +5155,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 737
+            "line": 739
           },
           "name": "roles",
           "type": {
@@ -5156,7 +5176,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 727
+            "line": 729
           },
           "name": "tables",
           "type": {
@@ -5797,7 +5817,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 822
+        "line": 824
       },
       "name": "DefaultDynamoDbModelDataSourceStrategy",
       "properties": [
@@ -5809,7 +5829,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 823
+            "line": 825
           },
           "name": "dbType",
           "type": {
@@ -5824,7 +5844,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 824
+            "line": 826
           },
           "name": "provisionStrategy",
           "type": {
@@ -6787,7 +6807,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 903
+        "line": 905
       },
       "name": "ProvisionedConcurrencyConfig",
       "properties": [
@@ -6801,7 +6821,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 905
+            "line": 907
           },
           "name": "provisionedConcurrentExecutions",
           "type": {
@@ -6926,7 +6946,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 841
+        "line": 843
       },
       "name": "SQLLambdaModelDataSourceStrategy",
       "properties": [
@@ -6939,7 +6959,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 856
+            "line": 858
           },
           "name": "dbConnectionConfig",
           "type": {
@@ -6955,7 +6975,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 851
+            "line": 853
           },
           "name": "dbType",
           "type": {
@@ -6972,7 +6992,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 846
+            "line": 848
           },
           "name": "name",
           "type": {
@@ -6989,7 +7009,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 867
+            "line": 869
           },
           "name": "customSqlStatements",
           "optional": true,
@@ -7011,7 +7031,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 872
+            "line": 874
           },
           "name": "sqlLambdaLayerMapping",
           "optional": true,
@@ -7033,7 +7053,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 877
+            "line": 879
           },
           "name": "sqlLambdaProvisionedConcurrencyConfig",
           "optional": true,
@@ -7050,7 +7070,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 861
+            "line": 863
           },
           "name": "vpcConfiguration",
           "optional": true,
@@ -7168,7 +7188,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 934
+        "line": 936
       },
       "name": "SqlModelDataSourceDbConnectionConfig",
       "properties": [
@@ -7181,7 +7201,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 950
+            "line": 952
           },
           "name": "databaseNameSsmPath",
           "type": {
@@ -7198,7 +7218,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 938
+            "line": 940
           },
           "name": "hostnameSsmPath",
           "type": {
@@ -7214,7 +7234,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 947
+            "line": 949
           },
           "name": "passwordSsmPath",
           "type": {
@@ -7230,7 +7250,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 941
+            "line": 943
           },
           "name": "portSsmPath",
           "type": {
@@ -7246,7 +7266,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 944
+            "line": 946
           },
           "name": "usernameSsmPath",
           "type": {
@@ -7303,7 +7323,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 914
+        "line": 916
       },
       "name": "SubnetAvailabilityZone",
       "properties": [
@@ -7316,7 +7336,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 919
+            "line": 921
           },
           "name": "availabilityZone",
           "type": {
@@ -7332,7 +7352,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 916
+            "line": 918
           },
           "name": "subnetId",
           "type": {
@@ -7726,7 +7746,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 888
+        "line": 890
       },
       "name": "VpcConfig",
       "properties": [
@@ -7739,7 +7759,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 893
+            "line": 895
           },
           "name": "securityGroupIds",
           "type": {
@@ -7760,7 +7780,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 896
+            "line": 898
           },
           "name": "subnetAvailabilityZoneConfig",
           "type": {
@@ -7781,7 +7801,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 890
+            "line": 892
           },
           "name": "vpcId",
           "type": {
@@ -7793,5 +7813,5 @@
     }
   },
   "version": "1.3.0",
-  "fingerprint": "BnAF3tdhaVlm5p7f6+sZwLdrepe25XyXG8q6kMJKmco="
+  "fingerprint": "+4J5zLpUMVlyMcE+6qG2SaPQhNq58jVcWbq4s1qRgck="
 }
