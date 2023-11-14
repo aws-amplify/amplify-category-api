@@ -14,7 +14,7 @@ export type Input = CfnTableProps & {
   /**
    * Determines if a table is in sandbox mode. When enabled along with 'allowDestructiveGraphqlSchemaUpdates' , the table will be replaced when GSI updates are detected. This setting is disabled by default.
    */
-  sandboxModeEnabled?: boolean;
+  replaceTableUponGsiUpdate?: boolean;
 };
 
 /**

@@ -62,6 +62,7 @@ export const defaultTransformParams: Pick<ExecuteTransformConfig, 'transformersF
     enableSearchNodeToNodeEncryption: false,
     enableTransformerCfnOutputs: true,
     allowDestructiveGraphqlSchemaUpdates: false,
+    replaceTableUponGsiUpdate: false,
   },
 };
 

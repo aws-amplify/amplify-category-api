@@ -120,7 +120,7 @@ describe('Amplify DynamoDB Table Construct Tests', () => {
     new AmplifyDynamoDBTable(stack, 'MockTable1', {
       customResourceServiceToken: 'mockResourceServiceToken',
       allowDestructiveGraphqlSchemaUpdates: true,
-      sandboxModeEnabled: true,
+      replaceTableUponGsiUpdate: true,
       tableName: 'mockTableName1',
       partitionKey: {
         name: 'id',
@@ -139,12 +139,12 @@ describe('Amplify DynamoDB Table Construct Tests', () => {
     template.hasResourceProperties(CUSTOM_DDB_CFN_TYPE, {
       tableName: 'mockTableName1',
       allowDestructiveGraphqlSchemaUpdates: true,
-      sandboxModeEnabled: true,
+      replaceTableUponGsiUpdate: true,
     });
     template.hasResourceProperties(CUSTOM_DDB_CFN_TYPE, {
       tableName: 'mockTableName2',
       allowDestructiveGraphqlSchemaUpdates: false,
-      sandboxModeEnabled: false,
+      replaceTableUponGsiUpdate: false,
     });
   });
 });

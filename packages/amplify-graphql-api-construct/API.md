@@ -287,6 +287,7 @@ export interface PartialTranslationBehavior {
     readonly enableSearchNodeToNodeEncryption?: boolean;
     readonly enableTransformerCfnOutputs?: boolean;
     readonly populateOwnerFieldForStaticGroupAuth?: boolean;
+    readonly replaceTableUponGsiUpdate: boolean;
     readonly respectPrimaryKeyAttributesOnConnectionField?: boolean;
     readonly sandboxModeEnabled?: boolean;
     readonly secondaryKeyAsGSI?: boolean;
@@ -374,6 +375,7 @@ export interface TranslationBehavior {
     readonly enableSearchNodeToNodeEncryption: boolean;
     readonly enableTransformerCfnOutputs: boolean;
     readonly populateOwnerFieldForStaticGroupAuth: boolean;
+    readonly replaceTableUponGsiUpdate: boolean;
     readonly respectPrimaryKeyAttributesOnConnectionField: boolean;
     readonly sandboxModeEnabled: boolean;
     readonly secondaryKeyAsGSI: boolean;

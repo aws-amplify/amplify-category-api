@@ -781,6 +781,7 @@ export type TransformParameters = {
     disableResolverDeduping: boolean;
     sandboxModeEnabled: boolean;
     allowDestructiveGraphqlSchemaUpdates: boolean;
+    replaceTableUponGsiUpdate: boolean;
     useSubUsernameForDefaultIdentityClaim: boolean;
     populateOwnerFieldForStaticGroupAuth: boolean;
     suppressApiKeyGeneration: boolean;

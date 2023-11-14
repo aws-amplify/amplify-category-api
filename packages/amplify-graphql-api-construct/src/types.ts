@@ -422,6 +422,15 @@ export interface TranslationBehavior {
    * @experimental
    */
   readonly allowDestructiveGraphqlSchemaUpdates: boolean;
+
+  /**
+   * This behavior will only come into effect when both "allowDestructiveGraphqlSchemaUpdates" and this value are set to true
+   * When enabled, any GSI update operation will replace the table instead of iterative deployment, which will WIPE ALL EXISTING DATA but cost much less time for deployment
+   * This will only affect DynamoDB tables with provision strategy "AMPLIFY_TABLE".
+   * @default false
+   * @experimental
+   */
+  readonly replaceTableUponGsiUpdate: boolean;
 }
 
 /**
@@ -514,6 +523,15 @@ export interface PartialTranslationBehavior {
    * @experimental
    */
   readonly allowDestructiveGraphqlSchemaUpdates?: boolean;
+
+  /**
+   * This behavior will only come into effect when both "allowDestructiveGraphqlSchemaUpdates" and this value are set to true
+   * When enabled, any global secondary index update operation will replace the table instead of iterative deployment, which will WIPE ALL EXISTING DATA but cost much less time for deployment
+   * This will only affect DynamoDB tables with provision strategy "AMPLIFY_TABLE".
+   * @default false
+   * @experimental
+   */
+  readonly replaceTableUponGsiUpdate: boolean;
 }
 
 /**

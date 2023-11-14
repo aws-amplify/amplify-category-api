@@ -31,6 +31,6 @@ new AmplifyGraphqlApi(stack, 'GraphqlApi', {
   },
   translationBehavior: {
     allowDestructiveGraphqlSchemaUpdates: true,
-    sandboxModeEnabled: true,
+    replaceTableUponGsiUpdate: true,
   },
 });

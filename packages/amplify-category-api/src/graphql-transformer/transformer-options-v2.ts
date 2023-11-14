@@ -285,6 +285,7 @@ const generateTransformParameters = (
     sandboxModeEnabled,
     enableTransformerCfnOutputs: true,
     allowDestructiveGraphqlSchemaUpdates: false,
+    replaceTableUponGsiUpdate: false,
   };
 };
 

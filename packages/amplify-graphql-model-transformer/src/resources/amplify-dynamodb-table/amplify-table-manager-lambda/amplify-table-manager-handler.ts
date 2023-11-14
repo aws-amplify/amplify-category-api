@@ -86,7 +86,7 @@ export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
         }
       }
       // when both sandbox and destructive updates are enabled, gsi update will trigger a table replacement
-      if (tableDef.sandboxModeEnabled && tableDef.allowDestructiveGraphqlSchemaUpdates) {
+      if (tableDef.replaceTableUponGsiUpdate && tableDef.allowDestructiveGraphqlSchemaUpdates) {
         const nextUpdate = getNextGSIUpdate(describeTableResult.Table, tableDef);
         if (nextUpdate !== undefined) {
           console.log(
@@ -776,7 +776,7 @@ const convertStringToBooleanOrNumber = (obj: Record<string, any>): Record<string
     'sseEnabled',
     'pointInTimeRecoveryEnabled',
     'allowDestructiveGraphqlSchemaUpdates',
-    'sandboxModeEnabled',
+    'replaceTableUponGsiUpdate',
   ];
   const fieldsToBeConvertedToNumber = ['readCapacityUnits', 'writeCapacityUnits'];
   for (const key in obj) {
