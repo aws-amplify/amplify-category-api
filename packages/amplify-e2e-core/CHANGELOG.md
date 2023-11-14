@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0-nov-14-cut.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.3.3...amplify-category-api-e2e-core@4.4.0-nov-14-cut.0) (2023-11-14)
+
+### Bug Fixes
+
+- preserve null value from mysql and pg schemas ([#2049](https://github.com/aws-amplify/amplify-category-api/issues/2049)) ([d96176e](https://github.com/aws-amplify/amplify-category-api/commit/d96176e9a94b25f6c169c38a79c7135645a8eab7))
+
+### Features
+
+- **api:** prompt changes to add postgres support ([9e4c41c](https://github.com/aws-amplify/amplify-category-api/commit/9e4c41c28b286e15a574eff9867f1f910a6f9ed3))
+
 ## [4.3.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.3.2...amplify-category-api-e2e-core@4.3.3) (2023-11-02)
 
 **Note:** Version bump only for package amplify-category-api-e2e-core
