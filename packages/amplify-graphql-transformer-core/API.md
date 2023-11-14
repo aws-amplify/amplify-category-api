@@ -406,9 +406,6 @@ export class ObjectDefinitionWrapper {
 export const POSTGRES_DB_TYPE: DBType;
 
 // @public (undocumented)
-export const RDS_SCHEMA_FILE_NAME = "schema.rds.graphql";
-
-// @public (undocumented)
 export type RDSConnectionSecrets = TransformerSecrets & {
     username: string;
     password: string;
@@ -441,6 +438,9 @@ export type SetResourceNameProps = {
     name: string;
     setOnDefaultChild?: boolean;
 };
+
+// @public (undocumented)
+export const SQL_SCHEMA_FILE_NAME = "schema.sql.graphql";
 
 // @public (undocumented)
 export class StackManager implements StackManagerProvider {

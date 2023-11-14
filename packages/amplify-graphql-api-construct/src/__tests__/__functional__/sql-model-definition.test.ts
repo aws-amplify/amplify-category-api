@@ -61,7 +61,7 @@ describe('sql-bound API generated resource access', () => {
         expect(lambdaDataSource?.lambdaConfig).toBeDefined();
 
         expect(functions).toBeDefined();
-        const sqlLambda = functions['RDSLambdaLogicalID'];
+        const sqlLambda = functions['SQLLambdaFunction'];
         expect(sqlLambda).toBeDefined();
 
         // TODO: Why does IFunction.isBoundToVpc return false even though VPC is configured?
@@ -136,7 +136,7 @@ describe('sql-bound API generated resource access', () => {
         expect(lambdaDataSource?.lambdaConfig).toBeDefined();
 
         expect(functions).toBeDefined();
-        const sqlLambda = functions['RDSLambdaLogicalID'];
+        const sqlLambda = functions['SQLLambdaFunction'];
         expect(sqlLambda).toBeDefined();
 
         const cfnFn = sqlLambda.node.defaultChild as CfnFunction;
@@ -178,7 +178,7 @@ describe('sql-bound API generated resource access', () => {
         expect(lambdaDataSource?.lambdaConfig).toBeDefined();
 
         expect(functions).toBeDefined();
-        const sqlLambda = functions['RDSLambdaLogicalID'];
+        const sqlLambda = functions['SQLLambdaFunction'];
         expect(sqlLambda).toBeDefined();
 
         const alias = additionalCfnResources['SQLLambdaFunctionAlias'] as CfnAlias;
@@ -219,7 +219,7 @@ describe('sql-bound API generated resource access', () => {
         expect(lambdaDataSource?.lambdaConfig).toBeDefined();
 
         expect(functions).toBeDefined();
-        const sqlLambda = functions['RDSLambdaLogicalID'];
+        const sqlLambda = functions['SQLLambdaFunction'];
         expect(sqlLambda).toBeDefined();
 
         const alias = additionalCfnResources['SQLLambdaFunctionAlias'] as CfnAlias;

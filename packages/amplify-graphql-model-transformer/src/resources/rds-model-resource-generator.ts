@@ -14,10 +14,10 @@ import {
 import { ModelResourceGenerator } from './model-resource-generator';
 import { Fn } from 'aws-cdk-lib';
 
-export const RDS_STACK_NAME = 'RdsApiStack';
-// Beta SNS topic - 'arn:aws:sns:us-east-1:956468067974:AmplifyRDSLayerNotification'
-// PROD SNS topic - 'arn:aws:sns:us-east-1:582037449441:AmplifyRDSLayerNotification'
-const RDS_PATCHING_SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:582037449441:AmplifyRDSLayerNotification';
+export const SQL_STACK_NAME = 'SqlApiStack';
+// Beta SNS topic - 'arn:aws:sns:us-east-1:956468067974:AmplifySQLLayerNotification'
+// PROD SNS topic - 'arn:aws:sns:us-east-1:582037449441:AmplifySQLLayerNotification'
+const SQL_PATCHING_SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:582037449441:AmplifySQLLayerNotification';
 /**
  * An implementation of ModelResourceGenerator responsible for generated CloudFormation resources
  * for models backed by an RDS data source
@@ -31,18 +31,18 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       const engine = getEngineFromDBType(dbType);
       const secretEntry = context.datasourceSecretParameterLocations.get(dbType);
       const {
-        RDSLambdaIAMRoleLogicalID,
-        RDSPatchingLambdaIAMRoleLogicalID,
-        RDSLambdaLogicalID,
-        RDSPatchingLambdaLogicalID,
-        RDSLambdaDataSourceLogicalID,
-        RDSPatchingSubscriptionLogicalID,
+        SQLLambdaIAMRoleLogicalID,
+        SQLPatchingLambdaIAMRoleLogicalID,
+        SQLLambdaLogicalID,
+        SQLPatchingLambdaLogicalID,
+        SQLLambdaDataSourceLogicalID,
+        SQLPatchingSubscriptionLogicalID,
       } = ResourceConstants.RESOURCES;
-      const lambdaRoleScope = context.stackManager.getScopeFor(RDSLambdaIAMRoleLogicalID, RDS_STACK_NAME);
-      const lambdaScope = context.stackManager.getScopeFor(RDSLambdaLogicalID, RDS_STACK_NAME);
+      const lambdaRoleScope = context.stackManager.getScopeFor(SQLLambdaIAMRoleLogicalID, SQL_STACK_NAME);
+      const lambdaScope = context.stackManager.getScopeFor(SQLLambdaLogicalID, SQL_STACK_NAME);
       setRDSLayerMappings(lambdaScope, context.rdsLayerMapping);
       const role = createRdsLambdaRole(
-        context.resourceHelper.generateIAMRoleName(RDSLambdaIAMRoleLogicalID),
+        context.resourceHelper.generateIAMRoleName(SQLLambdaIAMRoleLogicalID),
         lambdaRoleScope,
         secretEntry as RDSConnectionSecrets,
       );
@@ -63,10 +63,10 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
         context.sqlLambdaProvisionedConcurrencyConfig,
       );
 
-      const patchingLambdaRoleScope = context.stackManager.getScopeFor(RDSPatchingLambdaIAMRoleLogicalID, RDS_STACK_NAME);
-      const patchingLambdaScope = context.stackManager.getScopeFor(RDSPatchingLambdaLogicalID, RDS_STACK_NAME);
+      const patchingLambdaRoleScope = context.stackManager.getScopeFor(SQLPatchingLambdaIAMRoleLogicalID, SQL_STACK_NAME);
+      const patchingLambdaScope = context.stackManager.getScopeFor(SQLPatchingLambdaLogicalID, SQL_STACK_NAME);
       const patchingLambdaRole = createRdsPatchingLambdaRole(
-        context.resourceHelper.generateIAMRoleName(RDSPatchingLambdaIAMRoleLogicalID),
+        context.resourceHelper.generateIAMRoleName(SQLPatchingLambdaIAMRoleLogicalID),
         patchingLambdaRoleScope,
         lambda.functionArn,
       );
@@ -77,8 +77,12 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       });
 
       // Add SNS subscription for patching notifications
-      const patchingSubscriptionScope = context.stackManager.getScopeFor(RDSPatchingSubscriptionLogicalID, RDS_STACK_NAME);
-      const snsTopic = Topic.fromTopicArn(patchingSubscriptionScope, 'RDSPatchingTopic', RDS_PATCHING_SNS_TOPIC_ARN);
+      const patchingSubscriptionScope = context.stackManager.getScopeFor(SQLPatchingSubscriptionLogicalID, SQL_STACK_NAME);
+      const snsTopic = Topic.fromTopicArn(
+        patchingSubscriptionScope,
+        ResourceConstants.RESOURCES.SQLPatchingTopicLogicalID,
+        SQL_PATCHING_SNS_TOPIC_ARN,
+      );
       const subscription = new LambdaSubscription(patchingLambda, {
         filterPolicy: {
           Region: SubscriptionFilter.stringFilter({
@@ -88,8 +92,8 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       });
       snsTopic.addSubscription(subscription);
 
-      const lambdaDataSourceScope = context.stackManager.getScopeFor(RDSLambdaDataSourceLogicalID, RDS_STACK_NAME);
-      const rdsDatasource = context.api.host.addLambdaDataSource(`${RDSLambdaDataSourceLogicalID}`, lambda, {}, lambdaDataSourceScope);
+      const lambdaDataSourceScope = context.stackManager.getScopeFor(SQLLambdaDataSourceLogicalID, SQL_STACK_NAME);
+      const rdsDatasource = context.api.host.addLambdaDataSource(`${SQLLambdaDataSourceLogicalID}`, lambda, {}, lambdaDataSourceScope);
       this.models.forEach((model) => {
         context.dataSources.add(model, rdsDatasource);
         this.datasourceMap[model.name.value] = rdsDatasource;

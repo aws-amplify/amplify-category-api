@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`generate graphqlSchemaFromRDSSchema creates graphql schema from "mysql" "news" schema 1`] = `
+exports[`generate graphqlSchemaFromSQLSchema creates graphql schema from "mysql" "news" schema 1`] = `
 "input AMPLIFY {
  engine: String = \\"mysql\\"  
 }
@@ -33,7 +33,7 @@ type Story @refersTo(name: \\"stories\\") @model {
 "
 `;
 
-exports[`generate graphqlSchemaFromRDSSchema creates graphql schema from "mysql" "todo" schema 1`] = `
+exports[`generate graphqlSchemaFromSQLSchema creates graphql schema from "mysql" "todo" schema 1`] = `
 "input AMPLIFY {
  engine: String = \\"mysql\\"  
 }
@@ -48,7 +48,7 @@ type Todo @model {
 "
 `;
 
-exports[`generate graphqlSchemaFromRDSSchema creates graphql schema from "postgres" "news" schema 1`] = `
+exports[`generate graphqlSchemaFromSQLSchema creates graphql schema from "postgres" "news" schema 1`] = `
 "input AMPLIFY {
  engine: String = \\"postgres\\"  
 }
@@ -80,7 +80,7 @@ type Story @refersTo(name: \\"stories\\") @model {
 "
 `;
 
-exports[`generate graphqlSchemaFromRDSSchema creates graphql schema from "postgres" "todo" schema 1`] = `
+exports[`generate graphqlSchemaFromSQLSchema creates graphql schema from "postgres" "todo" schema 1`] = `
 "input AMPLIFY {
  engine: String = \\"postgres\\"  
 }

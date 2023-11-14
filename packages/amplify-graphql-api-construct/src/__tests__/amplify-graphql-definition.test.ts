@@ -71,7 +71,7 @@ describe('AmplifyGraphqlDefinition', () => {
         }
       `;
       const schemaFilePath = path.join(tmpDir, 'schema.graphql');
-      const rdsSchemaFilePath = path.join(tmpDir, 'schema.rds.graphql');
+      const rdsSchemaFilePath = path.join(tmpDir, 'schema.sql.graphql');
       fs.writeFileSync(schemaFilePath, TEST_SCHEMA);
       fs.writeFileSync(rdsSchemaFilePath, rdsTestSchema);
       const definition = AmplifyGraphqlDefinition.fromFiles(schemaFilePath, rdsSchemaFilePath);
@@ -124,7 +124,7 @@ describe('AmplifyGraphqlDefinition', () => {
         }
       `;
       const schemaFilePath = path.join(tmpDir, 'schema.graphql');
-      const rdsSchemaFilePath = path.join(tmpDir, 'schema.rds.graphql');
+      const rdsSchemaFilePath = path.join(tmpDir, 'schema.sql.graphql');
       fs.writeFileSync(schemaFilePath, TEST_SCHEMA);
       fs.writeFileSync(rdsSchemaFilePath, rdsTestSchema);
       const definition = AmplifyGraphqlDefinition.fromFilesAndStrategy([schemaFilePath, rdsSchemaFilePath], DEFAULT_TABLE_DS_DEFINITION);

@@ -90,7 +90,7 @@ export const testRDSGenerateSchema = (engine: ImportedRDSType, queries: string[]
     };
 
     it('preserves the schema edits for JSON field', async () => {
-      const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+      const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.sql.graphql');
       const schemaContent = readFileSync(rdsSchemaFilePath, 'utf8');
       const schema = parse(schemaContent);
 
@@ -167,7 +167,7 @@ export const testRDSGenerateSchema = (engine: ImportedRDSType, queries: string[]
     });
 
     it('infers and preserves the model name mapping edits', async () => {
-      const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+      const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.sql.graphql');
       const schemaContent = readFileSync(rdsSchemaFilePath, 'utf8');
       const schema = parse(schemaContent);
 
@@ -241,7 +241,7 @@ export const testRDSGenerateSchema = (engine: ImportedRDSType, queries: string[]
     });
 
     it('infers and preserves the field name mapping edits', async () => {
-      const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+      const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.sql.graphql');
       const schemaContent = readFileSync(rdsSchemaFilePath, 'utf8');
       const schema = parse(schemaContent);
 

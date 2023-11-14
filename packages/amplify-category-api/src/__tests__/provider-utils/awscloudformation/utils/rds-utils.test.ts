@@ -13,7 +13,7 @@ describe('check for unsupported RDS directives', () => {
             }
         `;
     expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
-      `"@searchable directive on type \\"Post\\"  is not supported on RDS datasource. Following directives are not supported on RDS datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
+      `"@searchable directive on type \\"Post\\"  is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
     );
   });
 
@@ -24,7 +24,7 @@ describe('check for unsupported RDS directives', () => {
             }
         `;
     expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
-      `"@predictions directive on type \\"Query\\" and field \\"recognizeTextFromImage\\" is not supported on RDS datasource. Following directives are not supported on RDS datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
+      `"@predictions directive on type \\"Query\\" and field \\"recognizeTextFromImage\\" is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
     );
   });
 
@@ -35,7 +35,7 @@ describe('check for unsupported RDS directives', () => {
             }
         `;
     expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
-      `"@function directive on type \\"Query\\" and field \\"echo\\" is not supported on RDS datasource. Following directives are not supported on RDS datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
+      `"@function directive on type \\"Query\\" and field \\"echo\\" is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
     );
   });
 
@@ -55,7 +55,7 @@ describe('check for unsupported RDS directives', () => {
             }
         `;
     expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
-      `"@manyToMany directive on type \\"Post\\" and field \\"tags\\" is not supported on RDS datasource. Following directives are not supported on RDS datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
+      `"@manyToMany directive on type \\"Post\\" and field \\"tags\\" is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
     );
   });
 
@@ -73,7 +73,7 @@ describe('check for unsupported RDS directives', () => {
             }
         `;
     expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
-      `"@http directive on type \\"Query\\" and field \\"listPosts\\" is not supported on RDS datasource. Following directives are not supported on RDS datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
+      `"@http directive on type \\"Query\\" and field \\"listPosts\\" is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
     );
   });
 
@@ -85,7 +85,7 @@ describe('check for unsupported RDS directives', () => {
             }
         `;
     expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
-      `"@mapsTo directive on type \\"Post\\"  is not supported on RDS datasource. Following directives are not supported on RDS datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
+      `"@mapsTo directive on type \\"Post\\"  is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
     );
   });
 

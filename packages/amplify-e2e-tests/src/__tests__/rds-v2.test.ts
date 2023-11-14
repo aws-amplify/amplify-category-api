@@ -92,7 +92,7 @@ describe('RDS Tests', () => {
   };
 
   it('import workflow of mysql relational database with public access', async () => {
-    const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+    const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.sql.graphql');
 
     const schemaContent = readFileSync(rdsSchemaFilePath, 'utf8');
     const schema = parse(schemaContent);
@@ -128,61 +128,61 @@ describe('RDS Tests', () => {
     expect(rdsMappingFile.data).toBeDefined();
     expect(rdsMappingFile.data).toMatchObject({
       'ap-northeast-1': {
-        layerRegion: 'arn:aws:lambda:ap-northeast-1:582037449441:layer:AmplifyRDSLayer:24',
+        layerRegion: 'arn:aws:lambda:ap-northeast-1:582037449441:layer:AmplifySQLLayer:24',
       },
       'us-east-1': {
-        layerRegion: 'arn:aws:lambda:us-east-1:582037449441:layer:AmplifyRDSLayer:24',
+        layerRegion: 'arn:aws:lambda:us-east-1:582037449441:layer:AmplifySQLLayer:24',
       },
       'ap-southeast-1': {
-        layerRegion: 'arn:aws:lambda:ap-southeast-1:582037449441:layer:AmplifyRDSLayer:24',
+        layerRegion: 'arn:aws:lambda:ap-southeast-1:582037449441:layer:AmplifySQLLayer:24',
       },
       'eu-west-1': {
-        layerRegion: 'arn:aws:lambda:eu-west-1:582037449441:layer:AmplifyRDSLayer:24',
+        layerRegion: 'arn:aws:lambda:eu-west-1:582037449441:layer:AmplifySQLLayer:24',
       },
       'us-west-1': {
-        layerRegion: 'arn:aws:lambda:us-west-1:582037449441:layer:AmplifyRDSLayer:24',
+        layerRegion: 'arn:aws:lambda:us-west-1:582037449441:layer:AmplifySQLLayer:24',
       },
       'ap-east-1': {
-        layerRegion: 'arn:aws:lambda:ap-east-1:582037449441:layer:AmplifyRDSLayer:24',
+        layerRegion: 'arn:aws:lambda:ap-east-1:582037449441:layer:AmplifySQLLayer:24',
       },
       'ap-northeast-2': {
-        layerRegion: 'arn:aws:lambda:ap-northeast-2:582037449441:layer:AmplifyRDSLayer:24',
+        layerRegion: 'arn:aws:lambda:ap-northeast-2:582037449441:layer:AmplifySQLLayer:24',
       },
       'ap-northeast-3': {
-        layerRegion: 'arn:aws:lambda:ap-northeast-3:582037449441:layer:AmplifyRDSLayer:24',
+        layerRegion: 'arn:aws:lambda:ap-northeast-3:582037449441:layer:AmplifySQLLayer:24',
       },
       'ap-south-1': {
-        layerRegion: 'arn:aws:lambda:ap-south-1:582037449441:layer:AmplifyRDSLayer:24',
+        layerRegion: 'arn:aws:lambda:ap-south-1:582037449441:layer:AmplifySQLLayer:24',
       },
       'ap-southeast-2': {
-        layerRegion: 'arn:aws:lambda:ap-southeast-2:582037449441:layer:AmplifyRDSLayer:24',
+        layerRegion: 'arn:aws:lambda:ap-southeast-2:582037449441:layer:AmplifySQLLayer:24',
       },
       'ca-central-1': {
-        layerRegion: 'arn:aws:lambda:ca-central-1:582037449441:layer:AmplifyRDSLayer:24',
+        layerRegion: 'arn:aws:lambda:ca-central-1:582037449441:layer:AmplifySQLLayer:24',
       },
       'eu-central-1': {
-        layerRegion: 'arn:aws:lambda:eu-central-1:582037449441:layer:AmplifyRDSLayer:24',
+        layerRegion: 'arn:aws:lambda:eu-central-1:582037449441:layer:AmplifySQLLayer:24',
       },
       'eu-north-1': {
-        layerRegion: 'arn:aws:lambda:eu-north-1:582037449441:layer:AmplifyRDSLayer:24',
+        layerRegion: 'arn:aws:lambda:eu-north-1:582037449441:layer:AmplifySQLLayer:24',
       },
       'eu-west-2': {
-        layerRegion: 'arn:aws:lambda:eu-west-2:582037449441:layer:AmplifyRDSLayer:24',
+        layerRegion: 'arn:aws:lambda:eu-west-2:582037449441:layer:AmplifySQLLayer:24',
       },
       'eu-west-3': {
-        layerRegion: 'arn:aws:lambda:eu-west-3:582037449441:layer:AmplifyRDSLayer:24',
+        layerRegion: 'arn:aws:lambda:eu-west-3:582037449441:layer:AmplifySQLLayer:24',
       },
       'sa-east-1': {
-        layerRegion: 'arn:aws:lambda:sa-east-1:582037449441:layer:AmplifyRDSLayer:24',
+        layerRegion: 'arn:aws:lambda:sa-east-1:582037449441:layer:AmplifySQLLayer:24',
       },
       'us-east-2': {
-        layerRegion: 'arn:aws:lambda:us-east-2:582037449441:layer:AmplifyRDSLayer:24',
+        layerRegion: 'arn:aws:lambda:us-east-2:582037449441:layer:AmplifySQLLayer:24',
       },
       'us-west-2': {
-        layerRegion: 'arn:aws:lambda:us-west-2:582037449441:layer:AmplifyRDSLayer:24',
+        layerRegion: 'arn:aws:lambda:us-west-2:582037449441:layer:AmplifySQLLayer:24',
       },
       'me-south-1': {
-        layerRegion: 'arn:aws:lambda:me-south-1:582037449441:layer:AmplifyRDSLayer:24',
+        layerRegion: 'arn:aws:lambda:me-south-1:582037449441:layer:AmplifySQLLayer:24',
       },
     });
   });

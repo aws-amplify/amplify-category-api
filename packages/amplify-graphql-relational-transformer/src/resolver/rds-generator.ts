@@ -31,8 +31,8 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
    */
   makeHasManyGetItemsConnectionWithKeyResolver = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
     const { field, references, object, relatedType } = config;
-    const { RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
-    const dataSource = ctx.api.host.getDataSource(RDSLambdaDataSourceLogicalID);
+    const { SQLLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
+    const dataSource = ctx.api.host.getDataSource(SQLLambdaDataSourceLogicalID);
     const mappedTableName = ctx.resourceHelper.getModelNameMapping(relatedType.name.value);
 
     const connectionCondition: Expression[] = [];
@@ -157,8 +157,8 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     ctx: TransformerContextProvider,
   ): void => {
     const { field, references, object, relatedType } = config;
-    const { RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
-    const dataSource = ctx.api.host.getDataSource(RDSLambdaDataSourceLogicalID);
+    const { SQLLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
+    const dataSource = ctx.api.host.getDataSource(SQLLambdaDataSourceLogicalID);
     const mappedTableName = ctx.resourceHelper.getModelNameMapping(relatedType.name.value);
 
     const connectionCondition: Expression[] = [];
@@ -203,8 +203,8 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
 
   makeBelongsToGetItemConnectionWithKeyResolver = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
     const { field, references, object, relatedType } = config;
-    const { RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
-    const dataSource = ctx.api.host.getDataSource(RDSLambdaDataSourceLogicalID);
+    const { SQLLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
+    const dataSource = ctx.api.host.getDataSource(SQLLambdaDataSourceLogicalID);
     const mappedTableName = ctx.resourceHelper.getModelNameMapping(relatedType.name.value);
 
     const connectionCondition: Expression[] = [];
