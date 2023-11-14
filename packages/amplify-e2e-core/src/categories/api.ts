@@ -1109,6 +1109,29 @@ export const importRDSDatabase = (cwd: string, opts: ImportApiOptions & { apiExi
   });
 };
 
+export const generateUnauthSQL = (
+  cwd: string,
+  opts: { sqlSchema: string; engineType: string; out: string; expectMessage?: string },
+): Promise<void> => {
+  const options = _.assign(defaultOptions, opts);
+
+  const generateCommand = spawn(
+    getCLIPath(options.testingWithLatestCodebase),
+    ['api', 'generate-schema', '--sql-schema', opts.sqlSchema, '--engine-type', opts.engineType, '--out', opts.out],
+    {
+      cwd,
+      stripColors: true,
+      noOutputTimeout: VPC_DEPLOYMENT_WAIT_TIME,
+    },
+  );
+  generateCommand.expect('This feature is in preview and is not recommended to use with production systems.');
+  if (opts.expectMessage) {
+    generateCommand.expect(opts.expectMessage);
+  }
+
+  return generateCommand.runAsync();
+};
+
 export function apiUpdateSecrets(cwd: string, opts: ImportApiOptions) {
   const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
