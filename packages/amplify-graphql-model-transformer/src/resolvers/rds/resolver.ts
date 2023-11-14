@@ -185,11 +185,12 @@ export const createRdsLambda = (
   if (sqlLambdaProvisionedConcurrencyConfig) {
     const { provisionedConcurrentExecutions } = sqlLambdaProvisionedConcurrencyConfig;
 
-    new Alias(scope, RDSLambdaAliasLogicalID, {
+    const alias = new Alias(scope, RDSLambdaAliasLogicalID, {
       aliasName: `${RDSLambdaLogicalID}Alias`,
       version: (fn as LambdaFunction).currentVersion,
       provisionedConcurrentExecutions,
     });
+    setResourceName(alias, { name: 'SQLLambdaFunctionAlias', setOnDefaultChild: true });
   }
 
   return fn;

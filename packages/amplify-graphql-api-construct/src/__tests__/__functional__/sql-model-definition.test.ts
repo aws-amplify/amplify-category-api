@@ -163,7 +163,7 @@ describe('sql-bound API generated resource access', () => {
 
         const {
           resources: {
-            cfnResources: { cfnGraphqlApi, cfnGraphqlSchema, cfnApiKey, cfnDataSources, additionalCfnResourcesWithoutResourceName },
+            cfnResources: { cfnGraphqlApi, cfnGraphqlSchema, cfnApiKey, cfnDataSources, additionalCfnResources },
             functions,
           },
         } = api;
@@ -181,9 +181,7 @@ describe('sql-bound API generated resource access', () => {
         const sqlLambda = functions['RDSLambdaLogicalID'];
         expect(sqlLambda).toBeDefined();
 
-        const alias = additionalCfnResourcesWithoutResourceName.find((resource) => {
-          return resource instanceof CfnAlias;
-        }) as CfnAlias;
+        const alias = additionalCfnResources['SQLLambdaFunctionAlias'] as CfnAlias;
 
         expect(alias).toBeDefined();
         expect(alias.provisionedConcurrencyConfig).toEqual({ provisionedConcurrentExecutions: 2 });
@@ -206,7 +204,7 @@ describe('sql-bound API generated resource access', () => {
 
         const {
           resources: {
-            cfnResources: { cfnGraphqlApi, cfnGraphqlSchema, cfnApiKey, cfnDataSources, additionalCfnResourcesWithoutResourceName },
+            cfnResources: { cfnGraphqlApi, cfnGraphqlSchema, cfnApiKey, cfnDataSources, additionalCfnResources },
             functions,
           },
         } = api;
@@ -224,9 +222,7 @@ describe('sql-bound API generated resource access', () => {
         const sqlLambda = functions['RDSLambdaLogicalID'];
         expect(sqlLambda).toBeDefined();
 
-        const alias = additionalCfnResourcesWithoutResourceName.find((resource) => {
-          return resource instanceof CfnAlias;
-        }) as CfnAlias;
+        const alias = additionalCfnResources['SQLLambdaFunctionAlias'] as CfnAlias;
 
         expect(alias).toBeUndefined();
       });

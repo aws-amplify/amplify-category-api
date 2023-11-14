@@ -106,7 +106,6 @@ export class AmplifyGraphqlApi extends Construct {
 // @public
 export interface AmplifyGraphqlApiCfnResources {
     readonly additionalCfnResources: Record<string, CfnResource>;
-    readonly additionalCfnResourcesWithoutResourceName: CfnResource[];
     readonly cfnApiKey?: CfnApiKey;
     readonly cfnDataSources: Record<string, CfnDataSource>;
     readonly cfnFunctionConfigurations: Record<string, CfnFunctionConfiguration>;

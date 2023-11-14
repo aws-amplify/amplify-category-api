@@ -41,7 +41,6 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
   const functions: Record<string, LambdaFunction> = {};
   const cfnFunctions: Record<string, CfnFunction> = {};
   const additionalCfnResources: Record<string, CfnResource> = {};
-  const additionalCfnResourcesWithoutResourceName: CfnResource[] = [];
 
   const classifyConstruct = (currentScope: Construct): void => {
     if (currentScope instanceof CfnGraphQLApi) {
@@ -57,14 +56,9 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
       return;
     }
 
-    // Retrieve reference name for indexed resources, store resources in fallback if name not found
+    // Retrieve reference name for indexed resources, and bail if none is found.
     const resourceName = getResourceName(currentScope);
-    if (!resourceName) {
-      if (currentScope instanceof CfnResource) {
-        additionalCfnResourcesWithoutResourceName.push(currentScope);
-      }
-      return;
-    }
+    if (!resourceName) return;
 
     if (currentScope instanceof CfnDataSource) {
       cfnDataSources[resourceName] = currentScope;
@@ -144,7 +138,6 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
       cfnRoles,
       cfnFunctions,
       additionalCfnResources,
-      additionalCfnResourcesWithoutResourceName,
     },
   };
 };
