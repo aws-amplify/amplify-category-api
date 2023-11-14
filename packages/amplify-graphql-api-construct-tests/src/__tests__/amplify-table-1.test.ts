@@ -24,7 +24,7 @@ describe('CDK amplify table 1', () => {
   });
 
   test('can update multiple GSIs along with other non-GSI updates', async () => {
-    const templatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', '1'));
+    const templatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', 'simple-todo'));
     const name = await initCDKProject(projRoot, templatePath);
     const outputs = await cdkDeploy(projRoot, '--all');
     const { awsAppsyncApiId: apiId, awsAppsyncRegion: region } = outputs[name];
@@ -35,7 +35,7 @@ describe('CDK amplify table 1', () => {
     expect(table.Table.GlobalSecondaryIndexes[0].IndexName).toBe('byName');
     expect(table.Table.SSEDescription.Status).toBe('ENABLED');
     expect(table.Table.StreamSpecification.StreamViewType).toBe('NEW_AND_OLD_IMAGES');
-    const updateTemplatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', '1', 'updateIndex'));
+    const updateTemplatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', 'simple-todo', 'updateIndex'));
     updateCDKAppWithTemplate(projRoot, updateTemplatePath);
     await cdkDeploy(projRoot, '--all', { timeoutMs: 10 * 60 * 1000 /* 10m */ });
     const updatedTable = await getDDBTable(tableName, region);
@@ -47,7 +47,7 @@ describe('CDK amplify table 1', () => {
   });
 
   test('cannot replace table when destructive updates are not allowed', async () => {
-    const templatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', '1'));
+    const templatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', 'simple-todo'));
     const name = await initCDKProject(projRoot, templatePath);
     const outputs = await cdkDeploy(projRoot, '--all');
     const { awsAppsyncApiId: apiId, awsAppsyncRegion: region } = outputs[name];
@@ -59,7 +59,7 @@ describe('CDK amplify table 1', () => {
     });
     // deploy with destructive update disabled
     let updateTemplatePath;
-    updateTemplatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', '1', 'updateKeySchema', 'disabled'));
+    updateTemplatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', 'simple-todo', 'updateKeySchema', 'disabled'));
     updateCDKAppWithTemplate(projRoot, updateTemplatePath);
     await expect(() => cdkDeploy(projRoot, '--all')).rejects.toThrow();
     const tableAfterFailure = await getDDBTable(tableName, region);
@@ -68,7 +68,7 @@ describe('CDK amplify table 1', () => {
       KeyType: 'HASH',
     });
     // deploy with destructive update enabled
-    updateTemplatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', '1', 'updateKeySchema', 'enabled'));
+    updateTemplatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', 'simple-todo', 'updateKeySchema', 'enabled'));
     updateCDKAppWithTemplate(projRoot, updateTemplatePath);
     await cdkDeploy(projRoot, '--all');
     const updatedTable = await getDDBTable(tableName, region);

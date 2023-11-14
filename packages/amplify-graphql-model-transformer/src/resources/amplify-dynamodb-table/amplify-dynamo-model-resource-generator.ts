@@ -134,6 +134,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
     const table = new AmplifyDynamoDBTable(scope, `${tableLogicalName}`, {
       customResourceServiceToken: this.customResourceServiceToken,
       allowDestructiveGraphqlSchemaUpdates: context.transformParameters.allowDestructiveGraphqlSchemaUpdates,
+      sandboxModeEnabled: context.transformParameters.sandboxModeEnabled,
       tableName,
       partitionKey: {
         name: 'id',
