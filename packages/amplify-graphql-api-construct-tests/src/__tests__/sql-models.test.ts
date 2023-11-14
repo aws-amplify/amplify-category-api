@@ -10,7 +10,6 @@ import {
   storeDbConnectionConfig,
 } from 'amplify-category-api-e2e-core';
 import generator from 'generate-password';
-import { LambdaClient, GetProvisionedConcurrencyConfigCommand } from '@aws-sdk/client-lambda';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { graphql } from '../graphql-request';
 
@@ -122,17 +121,6 @@ describe('CDK GraphQL Transformer', () => {
 
     expect(listResult.body.data.listTodos.items.length).toEqual(1);
     expect(todo.id).toEqual(listResult.body.data.listTodos.items[0].id);
-    /*
-    const client = new LambdaClient({ region });
-    const functionName = ''; // todo get function name
-    const functionAlias = 'RDSLambdaLogicalIDAlias';
-    const command = new GetProvisionedConcurrencyConfigCommand({
-      FunctionName: functionName,
-      Qualifier: functionAlias,
-    });
-    const response = await client.send(command);
-    expect(response.RequestedProvisionedConcurrentExecutions).toEqual(2);
-    */
   });
 });
 
