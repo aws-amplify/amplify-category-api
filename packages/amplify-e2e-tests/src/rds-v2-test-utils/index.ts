@@ -18,6 +18,7 @@ import {
   getConfiguredAppsyncClientOIDCAuth,
 } from '../schema-api-directives';
 import path from 'path';
+import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 
 const HAS_MANY_DIRECTIVE = 'hasMany';
 const HAS_ONE_DIRECTIVE = 'hasOne';
@@ -117,7 +118,7 @@ export const verifyRDSSchema = (projectRoot: string, apiName: string, expected: 
   expect(schema.trim()).toEqual(expected.trim());
 };
 
-export const generateDDL = (schema: string): string[] => {
+export const generateDDL = (schema: string, engine: ImportedRDSType = ImportedRDSType.MYSQL): string[] => {
   const document = parse(schema);
   const sqlStatements = [];
   const schemaVisitor = {
@@ -130,15 +131,48 @@ export const generateDDL = (schema: string): string[] => {
         const fieldStatements = [];
         const fieldsToAdd = node.fields.filter((field) => !isRelationalField(field));
         fieldsToAdd.forEach((field, index) => {
-          fieldStatements.push(getFieldStatement(field, index === 0));
+          fieldStatements.push(getFieldStatement(field, index === 0, engine));
         });
-        const sql = `CREATE TABLE ${tableName} (${fieldStatements.join(', ')});`;
+        const sql = `CREATE TABLE ${convertToDBSpecificName(tableName, engine)} (${fieldStatements.join(', ')});`;
         sqlStatements.push(sql);
       },
     },
   };
   visit(document, schemaVisitor);
   return sqlStatements;
+};
+
+export const convertToDBSpecificName = (name: string, engine: ImportedRDSType): string => {
+  switch (engine) {
+    case ImportedRDSType.MYSQL:
+      return name;
+    case ImportedRDSType.POSTGRESQL:
+      return `"${name}"`;
+    default:
+      return name;
+  }
+};
+
+export const convertToDBSpecificGraphQLString = (name: string, engine: ImportedRDSType): string => {
+  switch (engine) {
+    case ImportedRDSType.MYSQL:
+      return name;
+    case ImportedRDSType.POSTGRESQL:
+      return `\\"\\"${name}\\"\\"`;
+    default:
+      return name;
+  }
+};
+
+export const getDefaultDatabasePort = (engine: ImportedRDSType): number => {
+  switch (engine) {
+    case ImportedRDSType.MYSQL:
+      return 3306;
+    case ImportedRDSType.POSTGRESQL:
+      return 5432;
+    default:
+      return 3306;
+  }
 };
 
 const isRelationalField = (field: FieldDefinitionNode): boolean => {
@@ -158,14 +192,27 @@ const getMappedName = (definition: ObjectTypeDefinitionNode | FieldDefinitionNod
   return mappedName;
 };
 
-const getFieldStatement = (field: FieldDefinitionNode, isPrimaryKey: boolean) => {
+const getFieldStatement = (field: FieldDefinitionNode, isPrimaryKey: boolean, engine: ImportedRDSType): string => {
   const fieldName = getMappedName(field);
   const fieldType = field.type;
   const isNonNull = fieldType.kind === Kind.NON_NULL_TYPE;
   const baseType = getBaseType(fieldType);
-  const columnType = isArrayOrObject(fieldType, []) ? 'JSON' : convertToSQLType(baseType);
-  const sql = `${fieldName} ${columnType} ${isNonNull ? 'NOT NULL' : ''} ${isPrimaryKey ? 'PRIMARY KEY' : ''}`;
+  const columnType = isArrayOrObject(fieldType, []) ? getArrayStringFieldType(engine) : convertToSQLType(baseType);
+  const sql = `${convertToDBSpecificName(fieldName, engine)} ${columnType} ${isNonNull ? 'NOT NULL' : ''} ${
+    isPrimaryKey ? 'PRIMARY KEY' : ''
+  }`;
   return sql;
+};
+
+const getArrayStringFieldType = (engine: ImportedRDSType): string => {
+  switch (engine) {
+    case ImportedRDSType.MYSQL:
+      return 'JSON'; // MySQL does not support array types
+    case ImportedRDSType.POSTGRESQL:
+      return 'VARCHAR[]';
+    default:
+      return 'VARCHAR[]';
+  }
 };
 
 const convertToSQLType = (type: string): string => {
@@ -326,21 +373,16 @@ export const checkListItemExistence = (result: any, resultSetName: string, id: s
   expect(result.data[`${resultSetName}`].items?.filter((item: any) => item?.id === id)?.length).toEqual(shouldExist ? 1 : 0);
 };
 
-export const appendAmplifyInput = (schema: string, engine: string): string => {
-  const amplifyInput = (engine: string) => {
+export const appendAmplifyInput = (schema: string, engine: ImportedRDSType): string => {
+  const amplifyInput = (engineName: ImportedRDSType): string => {
     return `
       input AMPLIFY {
-        engine: String = "${engine}",
+        engine: String = "${engineName}",
         globalAuthRule: AuthRule = {allow: public}
       }
     `;
   };
-  switch (engine) {
-    case 'mysql':
-      return amplifyInput(engine) + '\n' + schema;
-    default:
-      return schema;
-  }
+  return amplifyInput(engine) + '\n' + schema;
 };
 
 export const updatePreAuthTrigger = (projRoot: string, usernameClaim: string) => {

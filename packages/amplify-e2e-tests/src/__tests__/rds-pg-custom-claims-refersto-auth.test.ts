@@ -4,6 +4,6 @@ import { testCustomClaimsRefersTo } from '../rds-v2-tests-common/rds-auth-custom
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 
-describe('RDS MySQL Custom Claims Auth With RefersTo', () => {
-  testCustomClaimsRefersTo(ImportedRDSType.MYSQL);
+describe('RDS Postgres Custom Claims Auth With RefersTo', () => {
+  testCustomClaimsRefersTo(ImportedRDSType.POSTGRESQL);
 });

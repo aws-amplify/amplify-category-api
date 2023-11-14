@@ -5,11 +5,8 @@ Array [
   Model {
     "fields": Array [
       Object {
-        "default": Object {
-          "kind": "DB_GENERATED",
-          "value": "NULL",
-        },
-        "length": "NULL",
+        "default": undefined,
+        "length": null,
         "name": "pub_id",
         "type": Object {
           "kind": "NonNull",
@@ -35,10 +32,7 @@ Array [
         },
       },
       Object {
-        "default": Object {
-          "kind": "DB_GENERATED",
-          "value": "NULL",
-        },
+        "default": undefined,
         "length": "1",
         "name": "placeholder",
         "type": Object {
@@ -50,14 +44,7 @@ Array [
         },
       },
     ],
-    "indexes": Array [
-      Index {
-        "fields": Array [
-          "placeholder",
-        ],
-        "name": "NULL",
-      },
-    ],
+    "indexes": Array [],
     "name": "articles",
     "primaryKey": Index {
       "fields": Array [
@@ -70,11 +57,8 @@ Array [
   Model {
     "fields": Array [
       Object {
-        "default": Object {
-          "kind": "DB_GENERATED",
-          "value": "NULL",
-        },
-        "length": "NULL",
+        "default": undefined,
+        "length": null,
         "name": "pub_id",
         "type": Object {
           "kind": "NonNull",
@@ -89,7 +73,7 @@ Array [
           "kind": "DB_GENERATED",
           "value": "CURRENT_TIMESTAMP",
         },
-        "length": "NULL",
+        "length": null,
         "name": "comment_timestamp",
         "type": Object {
           "kind": "NonNull",
@@ -100,10 +84,7 @@ Array [
         },
       },
       Object {
-        "default": Object {
-          "kind": "DB_GENERATED",
-          "value": "NULL",
-        },
+        "default": undefined,
         "length": "10",
         "name": "commenter_email",
         "type": Object {
@@ -115,10 +96,7 @@ Array [
         },
       },
       Object {
-        "default": Object {
-          "kind": "DB_GENERATED",
-          "value": "NULL",
-        },
+        "default": undefined,
         "length": "30",
         "name": "comment_text",
         "type": Object {
@@ -130,14 +108,7 @@ Array [
         },
       },
     ],
-    "indexes": Array [
-      Index {
-        "fields": Array [
-          "comment_text",
-        ],
-        "name": "NULL",
-      },
-    ],
+    "indexes": Array [],
     "name": "comments",
     "primaryKey": Index {
       "fields": Array [
@@ -151,11 +122,8 @@ Array [
   Model {
     "fields": Array [
       Object {
-        "default": Object {
-          "kind": "DB_GENERATED",
-          "value": "NULL",
-        },
-        "length": "NULL",
+        "default": undefined,
+        "length": null,
         "name": "pub_id",
         "type": Object {
           "kind": "NonNull",
@@ -166,10 +134,7 @@ Array [
         },
       },
       Object {
-        "default": Object {
-          "kind": "DB_GENERATED",
-          "value": "NULL",
-        },
+        "default": undefined,
         "length": "1",
         "name": "pub_type",
         "type": Object {
@@ -178,10 +143,7 @@ Array [
         },
       },
       Object {
-        "default": Object {
-          "kind": "DB_GENERATED",
-          "value": "NULL",
-        },
+        "default": undefined,
         "length": "64",
         "name": "pub_url",
         "type": Object {
@@ -219,11 +181,8 @@ Array [
   Model {
     "fields": Array [
       Object {
-        "default": Object {
-          "kind": "DB_GENERATED",
-          "value": "NULL",
-        },
-        "length": "NULL",
+        "default": undefined,
+        "length": null,
         "name": "pub_id",
         "type": Object {
           "kind": "NonNull",
@@ -249,10 +208,7 @@ Array [
         },
       },
       Object {
-        "default": Object {
-          "kind": "DB_GENERATED",
-          "value": "NULL",
-        },
+        "default": undefined,
         "length": "1",
         "name": "placeholder",
         "type": Object {
@@ -264,14 +220,7 @@ Array [
         },
       },
     ],
-    "indexes": Array [
-      Index {
-        "fields": Array [
-          "placeholder",
-        ],
-        "name": "NULL",
-      },
-    ],
+    "indexes": Array [],
     "name": "stories",
     "primaryKey": Index {
       "fields": Array [
@@ -289,11 +238,8 @@ Array [
   Model {
     "fields": Array [
       Object {
-        "default": Object {
-          "kind": "DB_GENERATED",
-          "value": "NULL",
-        },
-        "length": "NULL",
+        "default": undefined,
+        "length": null,
         "name": "id",
         "type": Object {
           "kind": "NonNull",
@@ -304,10 +250,7 @@ Array [
         },
       },
       Object {
-        "default": Object {
-          "kind": "DB_GENERATED",
-          "value": "NULL",
-        },
+        "default": undefined,
         "length": "255",
         "name": "title",
         "type": Object {
@@ -319,11 +262,8 @@ Array [
         },
       },
       Object {
-        "default": Object {
-          "kind": "DB_GENERATED",
-          "value": "NULL",
-        },
-        "length": "NULL",
+        "default": undefined,
+        "length": null,
         "name": "start_date",
         "type": Object {
           "kind": "Scalar",
@@ -331,11 +271,8 @@ Array [
         },
       },
       Object {
-        "default": Object {
-          "kind": "DB_GENERATED",
-          "value": "NULL",
-        },
-        "length": "NULL",
+        "default": undefined,
+        "length": null,
         "name": "due_date",
         "type": Object {
           "kind": "Scalar",
@@ -343,16 +280,7 @@ Array [
         },
       },
     ],
-    "indexes": Array [
-      Index {
-        "fields": Array [
-          "due_date",
-          "start_date",
-          "title",
-        ],
-        "name": "NULL",
-      },
-    ],
+    "indexes": Array [],
     "name": "Todo",
     "primaryKey": Index {
       "fields": Array [
