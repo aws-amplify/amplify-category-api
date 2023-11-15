@@ -9,6 +9,7 @@ export const defaultTransformParameters: TransformParameters = {
   disableResolverDeduping: false,
   sandboxModeEnabled: false,
   allowDestructiveGraphqlSchemaUpdates: false,
+  replaceTableUponGsiUpdate: false,
 
   // Auth Params
   useSubUsernameForDefaultIdentityClaim: true,

@@ -115,12 +115,21 @@ describe('Amplify DynamoDB Table Construct Tests', () => {
     // Error will be thrown when index does not exist
     expect(() => table.schema('notExist')).toThrow();
   });
-  it('render the correct template when destructive updates are allowed', () => {
+  it('render the correct template when destructive updates and sandbox mode are allowed/undefined', () => {
     const stack = new cdk.Stack();
-    new AmplifyDynamoDBTable(stack, 'MockTable', {
+    new AmplifyDynamoDBTable(stack, 'MockTable1', {
       customResourceServiceToken: 'mockResourceServiceToken',
       allowDestructiveGraphqlSchemaUpdates: true,
-      tableName: 'mockTableName',
+      replaceTableUponGsiUpdate: true,
+      tableName: 'mockTableName1',
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+    });
+    new AmplifyDynamoDBTable(stack, 'MockTable2', {
+      customResourceServiceToken: 'mockResourceServiceToken',
+      tableName: 'mockTableName2',
       partitionKey: {
         name: 'id',
         type: AttributeType.STRING,
@@ -128,7 +137,14 @@ describe('Amplify DynamoDB Table Construct Tests', () => {
     });
     const template = Template.fromStack(stack);
     template.hasResourceProperties(CUSTOM_DDB_CFN_TYPE, {
+      tableName: 'mockTableName1',
       allowDestructiveGraphqlSchemaUpdates: true,
+      replaceTableUponGsiUpdate: true,
+    });
+    template.hasResourceProperties(CUSTOM_DDB_CFN_TYPE, {
+      tableName: 'mockTableName2',
+      allowDestructiveGraphqlSchemaUpdates: false,
+      replaceTableUponGsiUpdate: false,
     });
   });
 });
