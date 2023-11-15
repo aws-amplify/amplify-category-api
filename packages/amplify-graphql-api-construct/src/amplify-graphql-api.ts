@@ -173,6 +173,16 @@ export class AmplifyGraphqlApi extends Construct {
 
     const assetManager = new AssetManager();
 
+    // The following override is used for samara command 'amplify sandbox` only
+    let transformeBehaviorRuntimeOverride;
+    const deployByAmplifySandbox = this.node.tryGetContext('amplifySandboxDeploy');
+    if (deployByAmplifySandbox && (deployByAmplifySandbox === 'true' || deployByAmplifySandbox === true)) {
+      transformeBehaviorRuntimeOverride = {
+        allowDestructiveGraphqlSchemaUpdates: true,
+        replaceTableUponGsiUpdate: true,
+      };
+    }
+
     let executeTransformConfig: ExecuteTransformConfig = {
       scope: this,
       nestedStackProvider: {
@@ -202,6 +212,7 @@ export class AmplifyGraphqlApi extends Construct {
       resolverConfig: conflictResolution ? convertToResolverConfig(conflictResolution) : undefined,
       transformParameters: {
         ...defaultTranslationBehavior,
+        ...(transformeBehaviorRuntimeOverride ?? {}),
         ...(translationBehavior ?? {}),
       },
 
