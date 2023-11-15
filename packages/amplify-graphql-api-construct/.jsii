@@ -6,8 +6,8 @@
     ]
   },
   "bundled": {
-    "@aws-amplify/backend-output-schemas": "^0.2.1",
-    "@aws-amplify/backend-output-storage": "^0.2.0",
+    "@aws-amplify/backend-output-schemas": "^0.4.0",
+    "@aws-amplify/backend-output-storage": "^0.2.2",
     "@aws-amplify/graphql-auth-transformer": "3.2.0",
     "@aws-amplify/graphql-default-value-transformer": "2.1.9",
     "@aws-amplify/graphql-function-transformer": "2.1.8",
@@ -22,8 +22,8 @@
     "@aws-amplify/graphql-transformer": "1.3.0",
     "@aws-amplify/graphql-transformer-core": "2.3.0",
     "@aws-amplify/graphql-transformer-interfaces": "3.3.0",
-    "@aws-amplify/platform-core": "^0.1.3",
-    "@aws-amplify/plugin-types": "^0.3.0",
+    "@aws-amplify/platform-core": "^0.2.0",
+    "@aws-amplify/plugin-types": "^0.4.1",
     "charenc": "^0.0.2",
     "crypt": "^0.0.2",
     "fs-extra": "^8.1.0",
@@ -7828,5 +7828,5 @@
     }
   },
   "version": "1.4.0",
-  "fingerprint": "bbHF71JtX99CaTgvkkfB8FUw6zPUGGBT+ij/aPEqeTA="
+  "fingerprint": "hmlKeaou2lY8Ca+maEUF3gvn7GlXomiiRaWAFJ9F2tc="
 }

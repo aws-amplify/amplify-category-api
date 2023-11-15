@@ -392,6 +392,11 @@
   resolved "https://registry.npmjs.org/@aws-amplify/backend-output-schemas/-/backend-output-schemas-0.2.1.tgz#de2052b2c4adb57983493d5de860b1b95a1ed920"
   integrity sha512-dYoPpCPYBu8kXtRHYObba1RCxKt6f4PR97zfWCrhBKDL3z9EdqKMIKWJJZ3kPne6XnYgrbz9ZzNSRiAq6cJdTA==
 
+"@aws-amplify/backend-output-schemas@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/backend-output-schemas/-/backend-output-schemas-0.4.0.tgz#835af830e1642d07c8f19bb3d96a76571606bf9a"
+  integrity sha512-/gxeCtjvbKW+OYP1CUv1dZy2tW3dxagNRGBJWrzaZgqqmQ6zTmyboOxgFdC2KO1WKLddsv+z/gciZNs46m3gBQ==
+
 "@aws-amplify/backend-output-storage@^0.2.0":
   version "0.2.0"
   resolved "https://registry.npmjs.org/@aws-amplify/backend-output-storage/-/backend-output-storage-0.2.0.tgz#128a0353d74f64acb0a504ca601c325bb5c4320c"
@@ -399,6 +404,14 @@
   dependencies:
     "@aws-amplify/backend-output-schemas" "^0.2.0"
     "@aws-amplify/platform-core" "^0.1.1"
+
+"@aws-amplify/backend-output-storage@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.npmjs.org/@aws-amplify/backend-output-storage/-/backend-output-storage-0.2.2.tgz#0985a4cc7025b4fb139b248cea0a7b74ecaeeecc"
+  integrity sha512-TqWXxG4qt8NZm0xjVc31WbAHERvMX7BqM7H4VF3NC5Lp42TbQLKyINjoE5MohfaHbIOADHoJtTMvtaTC0juVcw==
+  dependencies:
+    "@aws-amplify/backend-output-schemas" "^0.4.0"
+    "@aws-amplify/platform-core" "^0.2.0"
 
 "@aws-amplify/cache@4.0.66":
   version "4.0.66"
@@ -534,10 +547,22 @@
   dependencies:
     "@aws-amplify/plugin-types" "^0.3.0"
 
+"@aws-amplify/platform-core@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/platform-core/-/platform-core-0.2.0.tgz#cd5249406ca7fb71a775a055e260b14121c55ec8"
+  integrity sha512-pcrSUWL7FMt4UROSqhuiTWC8500IygP7yZ8iAs+5HxGXs3pOTC2wRbXcuTiohXVQOXy/3DoaJ4auigSnTclRDg==
+  dependencies:
+    "@aws-amplify/plugin-types" "^0.4.0"
+
 "@aws-amplify/plugin-types@^0.3.0":
   version "0.3.0"
   resolved "https://registry.npmjs.org/@aws-amplify/plugin-types/-/plugin-types-0.3.0.tgz#fb808cb252159cdd1e957fc77bb279a83e728cd9"
   integrity sha512-NF0q9lgpp6mYMEZV2Pzx9JeaHq+T8zQBiSIC9Cs0Bbjhtqmmt+wKNGhgp+rRDFzE54oB1ODit1Ye9fNZvTsOXA==
+
+"@aws-amplify/plugin-types@^0.4.0", "@aws-amplify/plugin-types@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.npmjs.org/@aws-amplify/plugin-types/-/plugin-types-0.4.1.tgz#bd2f7f8c42ec0f5b5bd1c7f67fe8b591463874bd"
+  integrity sha512-DzkvxXIBZSKIsd0z+ZqfCvXfJ+uuldmDSIsjTt1zmML9psu1CuzX66lcj5AsnIJZdKvTVWWS2Ex6Dr+8iK+FSg==
 
 "@aws-amplify/predictions@4.0.64":
   version "4.0.64"
