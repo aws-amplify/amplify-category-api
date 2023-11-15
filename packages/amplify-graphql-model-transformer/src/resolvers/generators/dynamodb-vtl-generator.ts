@@ -1,3 +1,4 @@
+import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   generateUpdateRequestTemplate,
   generateCreateRequestTemplate,
@@ -22,18 +23,19 @@ import {
 } from './vtl-generator';
 
 export class DynamoDBModelVTLGenerator implements ModelVTLGenerator {
-  generateUpdateRequestTemplate(config: ModelUpdateRequestConfig): string {
+  generateUpdateRequestTemplate(config: ModelUpdateRequestConfig, ctx: TransformerContextProvider): string {
     return generateUpdateRequestTemplate(config.modelName, config.isSyncEnabled);
   }
 
-  generateCreateRequestTemplate(config: ModelCreateRequestConfig): string {
+  generateCreateRequestTemplate(config: ModelCreateRequestConfig, ctx: TransformerContextProvider): string {
     return generateCreateRequestTemplate(config.modelName, config.modelIndexFields);
   }
+
   generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig, initializeIdField: boolean): string {
     return generateCreateInitSlotTemplate(config.modelConfig, initializeIdField);
   }
 
-  generateDeleteRequestTemplate(config: ModelUpdateRequestConfig): string {
+  generateDeleteRequestTemplate(config: ModelUpdateRequestConfig, ctx: TransformerContextProvider): string {
     return generateDeleteRequestTemplate(config.modelName, config.isSyncEnabled);
   }
 
@@ -41,7 +43,7 @@ export class DynamoDBModelVTLGenerator implements ModelVTLGenerator {
     return generateUpdateInitSlotTemplate(config.modelConfig);
   }
 
-  generateGetRequestTemplate(config: ModelRequestConfig): string {
+  generateGetRequestTemplate(config: ModelRequestConfig, ctx: TransformerContextProvider): string {
     return generateGetRequestTemplate();
   }
 
@@ -49,7 +51,7 @@ export class DynamoDBModelVTLGenerator implements ModelVTLGenerator {
     return generateGetResponseTemplate(config.isSyncEnabled);
   }
 
-  generateListRequestTemplate(config: ModelRequestConfig): string {
+  generateListRequestTemplate(config: ModelRequestConfig, ctx: TransformerContextProvider): string {
     return generateListRequestTemplate();
   }
 

@@ -20,16 +20,52 @@ export interface NoneDataSourceProvider {
 export type DataSourceInstance = ITable | CfnDomain | HttpDataSource | IFunction | NoneDataSourceProvider;
 
 export interface TransformerDataSourceManagerProvider {
-  add(type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, dataSourceInstance: DataSourceInstance): void;
-  get(type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode): DataSourceInstance;
-  has(name: string): boolean;
+  add: (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, dataSourceInstance: DataSourceInstance) => void;
+  get: (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode) => DataSourceInstance;
+  has: (name: string) => boolean;
 }
 
 export interface DataSourceProvider extends BackedDataSource {}
 
-export type DBType = 'MySQL' | 'DDB';
+/**
+ * Supported transformable database types. TODO: Move this to amplify-graphql-api-construct
+ */
+export type DBType = 'DDB' | SQLDBType;
 
-export interface DatasourceType {
+/**
+ * Supported transformable SQL database types. TODO: Move this to amplify-graphql-api-construct
+ */
+export type SQLDBType = 'MySQL' | 'Postgres';
+
+// TODO: add strategy for the RDS. TODO: Move this to amplify-graphql-api-construct
+export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy | SQLLambdaModelProvisionStrategy;
+
+/**
+ * Provisioning configuration for a DynamoDB datasource. TODO: Remove this type in favor of strategy definitions in
+ * amplify-graphql-api-construct
+ */
+export const enum DynamoDBProvisionStrategy {
+  /**
+   * Use default CloudFormation resource of `AWS::DynamoDB::Table`
+   */
+  DEFAULT = 'DEFAULT',
+  /**
+   * Use custom resource type `Custom::AmplifyDynamoDBTable`
+   */
+  AMPLIFY_TABLE = 'AMPLIFY_TABLE',
+}
+
+// TODO: Remove this type in favor of fully-specified SQLLambdaModelDataSourceStrategy from amplify-graphql-api-construct
+export const enum SQLLambdaModelProvisionStrategy {
+  /**
+   * A strategy that creates a Lambda to connect to a pre-existing SQL table to resolve model data.
+   */
+  DEFAULT = 'DEFAULT',
+}
+
+// TODO: Replace usages of this type with ModelDataSourceStrategy
+export interface DataSourceType {
   dbType: DBType;
   provisionDB: boolean;
+  provisionStrategy: DataSourceProvisionStrategy;
 }

@@ -7,10 +7,11 @@
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AssetProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct } from 'constructs';
-import { DatasourceType } from '@aws-amplify/graphql-transformer-core';
+import { DataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { ProvisionedConcurrencyConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
 import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
@@ -34,7 +35,8 @@ export const executeTransform: (config: ExecuteTransformConfig) => void;
 // @public (undocumented)
 export type ExecuteTransformConfig = TransformConfig & {
     schema: string;
-    modelToDatasourceMap?: Map<string, DatasourceType>;
+    modelToDatasourceMap?: Map<string, DataSourceType>;
+    customQueries?: Map<string, string>;
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
     printTransformerLog?: (log: TransformerLog) => void;
     sqlLambdaVpcConfig?: VpcConfig;
@@ -44,6 +46,7 @@ export type ExecuteTransformConfig = TransformConfig & {
     parameterProvider?: TransformParameterProvider;
     assetProvider: AssetProvider;
     synthParameters: SynthParameters;
+    sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
 };
 
 // @public (undocumented)
@@ -56,6 +59,7 @@ export type TransformConfig = {
     transformParameters: TransformParameters;
     sqlLambdaVpcConfig?: VpcConfig;
     rdsLayerMapping?: RDSLayerMapping;
+    sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
 };
 
 // @public (undocumented)

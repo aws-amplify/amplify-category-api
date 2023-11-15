@@ -1,6 +1,7 @@
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ConflictHandlerType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { DataSourceType, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { Kind, parse } from 'graphql';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
@@ -927,5 +928,91 @@ describe('@hasMany connection field nullability tests', () => {
     expect(updateInputConnectedField2).toBeDefined();
     expect(updateInputConnectedField2.type.kind).toBe(Kind.NAMED_TYPE);
     expect(updateInputConnectedField2.type.name.value).toBe('String');
+  });
+});
+
+describe('@hasMany directive with RDS datasource', () => {
+  test('happy case should generate correct resolvers', () => {
+    const modelToDatasourceMap = new Map<string, DataSourceType>();
+    modelToDatasourceMap.set('Blog', {
+      dbType: 'MySQL',
+      provisionDB: false,
+      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
+    });
+    modelToDatasourceMap.set('Post', {
+      dbType: 'MySQL',
+      provisionDB: false,
+      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
+    });
+
+    const inputSchema = `
+      type Blog @model {
+        id: String! @primaryKey
+        content: String
+        posts: [Post] @hasMany(references: ["blogId"])
+      }
+      type Post @model {
+        id: String! @primaryKey
+        content: String
+        blogId: String
+      }
+    `;
+
+    const out = testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
+      modelToDatasourceMap,
+    });
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['Blog.posts.req.vtl']).toBeDefined();
+    expect(out.resolvers['Blog.posts.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Blog.posts.res.vtl']).toBeDefined();
+    expect(out.resolvers['Blog.posts.res.vtl']).toMatchSnapshot();
+  });
+
+  test('composite key should generate correct resolvers', () => {
+    const modelToDatasourceMap = new Map<string, DataSourceType>();
+    modelToDatasourceMap.set('System', {
+      dbType: 'MySQL',
+      provisionDB: false,
+      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
+    });
+    modelToDatasourceMap.set('Part', {
+      dbType: 'MySQL',
+      provisionDB: false,
+      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
+    });
+
+    const inputSchema = `
+      type System @model {
+        systemId: String! @primaryKey(sortKeyFields: ["systemName"])
+        systemName: String!
+        details: String
+        parts: [Part] @hasMany(references: ["systemId", "systemName"])
+      }
+      type Part @model {
+        partId: String! @primaryKey
+        partName: String
+        systemId: String!
+        systemName: String!
+      }
+    `;
+
+    const out = testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
+      modelToDatasourceMap,
+    });
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['System.parts.req.vtl']).toBeDefined();
+    expect(out.resolvers['System.parts.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['System.parts.res.vtl']).toBeDefined();
+    expect(out.resolvers['System.parts.res.vtl']).toMatchSnapshot();
   });
 });

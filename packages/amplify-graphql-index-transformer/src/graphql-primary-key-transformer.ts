@@ -3,7 +3,7 @@ import {
   generateGetArgumentsInput,
   InvalidDirectiveError,
   TransformerPluginBase,
-  DatasourceType,
+  isImportedRDSType,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
@@ -109,7 +109,7 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
   };
 }
 
-function validate(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
+const validate = (config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { object, field, sortKeyFields } = config;
 
   validateNotSelfReferencing(config);
@@ -177,9 +177,9 @@ function validate(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerCont
 
     config.sortKey.push(sortField);
   }
-}
+};
 
-export function updateListField(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
+export const updateListField = (config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const resolverName = lookupResolverName(config, ctx, 'list');
   let query = ctx.output.getQuery();
 
@@ -190,9 +190,9 @@ export function updateListField(config: PrimaryKeyDirectiveConfiguration, ctx: T
   let listField = query.fields!.find((field: FieldDefinitionNode) => field.name.value === resolverName) as FieldDefinitionNode;
   if (listField) {
     const args = [createHashField(config)];
+    const dbType = ctx.modelToDatasourceMap.get(config.object.name.value);
 
-    const dbInfo = ctx.modelToDatasourceMap.get(config.object.name.value);
-    if (dbInfo?.dbType !== 'MySQL') {
+    if (!dbType || !isImportedRDSType(dbType)) {
       const sortField = tryAndCreateSortField(config, ctx);
       if (sortField) {
         args.push(sortField);
@@ -215,4 +215,4 @@ export function updateListField(config: PrimaryKeyDirectiveConfiguration, ctx: T
     };
     ctx.output.updateObject(query);
   }
-}
+};

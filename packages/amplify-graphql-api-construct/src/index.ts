@@ -1,3 +1,7 @@
+/* ATTENTION
+ *
+ * If you modify this file your must also modify packages/amplify-data-construct/src/index.ts to have the same exports
+ */
 export type {
   IAMAuthorizationConfig,
   UserPoolAuthorizationConfig,
@@ -27,6 +31,24 @@ export type {
   IBackendOutputStorageStrategy,
   IBackendOutputEntry,
   AddFunctionProps,
+  ModelDataSourceStrategy,
+  DefaultDynamoDbModelDataSourceStrategy,
+  AmplifyDynamoDbModelDataSourceStrategy,
+  SQLLambdaModelDataSourceStrategy,
+  ModelDataSourceStrategyDbType,
+  VpcConfig,
+  SubnetAvailabilityZone,
+  SQLLambdaLayerMapping,
+  SqlModelDataSourceDbConnectionConfig,
+  ProvisionedConcurrencyConfig,
 } from './types';
 export { AmplifyGraphqlApi } from './amplify-graphql-api';
 export { AmplifyGraphqlDefinition } from './amplify-graphql-definition';
+export {
+  AmplifyDynamoDbTableWrapper,
+  TimeToLiveSpecification,
+  ProvisionedThroughput,
+  SSESpecification,
+  SSEType,
+  StreamSpecification,
+} from './amplify-dynamodb-table-wrapper';

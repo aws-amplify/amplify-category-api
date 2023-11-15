@@ -1,6 +1,12 @@
 import { DocumentNode } from 'graphql';
-import { AppSyncAuthConfiguration, GraphQLAPIProvider, RDSLayerMapping, VpcConfig } from '../graphql-api-provider';
-import { TransformerDataSourceManagerProvider, DatasourceType } from './transformer-datasource-provider';
+import {
+  AppSyncAuthConfiguration,
+  GraphQLAPIProvider,
+  RDSLayerMapping,
+  VpcConfig,
+  ProvisionedConcurrencyConfig,
+} from '../graphql-api-provider';
+import { TransformerDataSourceManagerProvider, DataSourceType } from './transformer-datasource-provider';
 import { TransformerProviderRegistry } from './transformer-provider-registry';
 import { TransformerContextOutputProvider } from './transformer-context-output-provider';
 import { StackManagerProvider } from './stack-manager-provider';
@@ -24,7 +30,7 @@ export interface TransformerContextProvider {
   providerRegistry: TransformerProviderRegistry;
 
   inputDocument: DocumentNode;
-  modelToDatasourceMap: Map<string, DatasourceType>;
+  modelToDatasourceMap: Map<string, DataSourceType>;
   datasourceSecretParameterLocations: Map<string, TransformerSecrets>;
   output: TransformerContextOutputProvider;
   stackManager: StackManagerProvider;
@@ -33,11 +39,13 @@ export interface TransformerContextProvider {
   authConfig: AppSyncAuthConfiguration;
   transformParameters: TransformParameters;
   synthParameters: SynthParameters;
+  customQueries: Map<string, string>;
 
   isProjectUsingDataStore(): boolean;
   getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
   readonly sqlLambdaVpcConfig?: VpcConfig;
   readonly rdsLayerMapping?: RDSLayerMapping;
+  readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
 }
 
 export type TransformerBeforeStepContextProvider = Pick<

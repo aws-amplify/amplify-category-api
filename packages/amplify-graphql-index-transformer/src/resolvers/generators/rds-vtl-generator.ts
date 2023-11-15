@@ -12,15 +12,23 @@ export class RDSIndexVTLGenerator implements IndexVTLGenerator {
     tableName: string,
     operationName: string,
   ): string {
+    const mappedTableName = ctx.resourceHelper.getModelNameMapping(tableName);
     return printBlock('Invoke RDS Lambda data source')(
       compoundExpression([
         set(ref('lambdaInput'), obj({})),
         set(ref('lambdaInput.args'), obj({})),
-        set(ref('lambdaInput.table'), str(tableName)),
+        set(ref('lambdaInput.table'), str(mappedTableName)),
         set(ref('lambdaInput.operation'), str('INDEX')),
         set(ref('lambdaInput.operationName'), str(operationName)),
         set(ref('lambdaInput.args.metadata'), obj({})),
         set(ref('lambdaInput.args.metadata.keys'), list([])),
+        set(ref('lambdaInput.args.metadata.fieldMap'), obj({})),
+        qref(
+          methodCall(
+            ref('lambdaInput.args.metadata.fieldMap.putAll'),
+            methodCall(ref('util.defaultIfNull'), ref('context.stash.fieldMap'), obj({})),
+          ),
+        ),
         qref(
           methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
         ),

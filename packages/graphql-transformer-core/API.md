@@ -112,15 +112,23 @@ export const enum ConflictHandlerType {
 }
 
 // @public (undocumented)
-export interface DatasourceType {
+export const constructDataSourceMap: (schema: string, datasourceType: DataSourceType) => Map<string, DataSourceType>;
+
+// @public (undocumented)
+export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy;
+
+// @public (undocumented)
+export interface DataSourceType {
     // (undocumented)
     dbType: DBType;
     // (undocumented)
     provisionDB: boolean;
+    // (undocumented)
+    provisionStrategy: DataSourceProvisionStrategy;
 }
 
 // @public (undocumented)
-export type DBType = 'MySQL' | 'DDB';
+export type DBType = 'DDB' | 'MySQL' | 'Postgres';
 
 // Warning: (ae-forgotten-export) The symbol "ResolversFunctionsAndSchema" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "NestedStacks" needs to be exported by the entry point index.d.ts
@@ -138,6 +146,14 @@ export class DestructiveMigrationError extends Error {
 
 // @public (undocumented)
 export type DiffRule = (diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject) => void;
+
+// @public (undocumented)
+export const enum DynamoDBProvisionStrategy {
+    // (undocumented)
+    AMPLIFY_TABLE = "AMPLIFY_TABLE",
+    // (undocumented)
+    DEFAULT = "DEFAULT"
+}
 
 // @public (undocumented)
 export interface FeatureFlagProvider {
@@ -265,7 +281,7 @@ export { loadConfig as readTransformerConfiguration }
 // Warning: (ae-forgotten-export) The symbol "ProjectConfiguration" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-function loadProject(projectDirectory: string, opts?: ProjectOptions): Promise<ProjectConfiguration>;
+const loadProject: (projectDirectory: string, opts?: ProjectOptions) => Promise<ProjectConfiguration>;
 export { loadProject }
 export { loadProject as readProjectConfiguration }
 
@@ -296,7 +312,7 @@ export type ProjectRule = (diffs: Diff[], currentBuild: DiffableProject, nextBui
 // @public (undocumented)
 const readSchema: (projectDirectory: string) => Promise<{
     schema: string;
-    modelToDatasourceMap: Map<string, DatasourceType>;
+    modelToDatasourceMap: Map<string, DataSourceType>;
 }>;
 export { readSchema as readProjectSchema }
 export { readSchema }

@@ -1,9 +1,13 @@
 /* eslint-disable no-param-reassign */
 import {
+  DDB_DB_TYPE,
   DirectiveWrapper,
   generateGetArgumentsInput,
+  getDataSourceType,
   InvalidDirectiveError,
   TransformerPluginBase,
+  isRDSModel,
+  isRDSDBType,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
@@ -16,24 +20,28 @@ import { DirectiveNode, DocumentNode, FieldDefinitionNode, InterfaceTypeDefiniti
 import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 import produce from 'immer';
 import { WritableDraft } from 'immer/dist/types/types-external';
-import { makeGetItemConnectionWithKeyResolver } from './resolvers';
 import { ensureBelongsToConnectionField } from './schema';
 import { BelongsToDirectiveConfiguration, ObjectDefinition } from './types';
 import {
   ensureFieldsArray,
+  ensureReferencesArray,
+  getBelongsToReferencesNodes,
   getConnectionAttributeName,
   getFieldsNodes,
   getObjectPrimaryKey,
   getRelatedType,
   getRelatedTypeIndex,
   registerHasOneForeignKeyMappings,
+  validateChildReferencesFields,
   validateModelDirective,
   validateRelatedModelDirective,
 } from './utils';
+import { getGenerator } from './resolver/generator-factory';
+import { setFieldMappingResolverReference } from './resolvers';
 
 const directiveName = 'belongsTo';
 const directiveDefinition = `
-  directive @${directiveName}(fields: [String!]) on FIELD_DEFINITION
+  directive @${directiveName}(fields: [String!], references: [String!]) on FIELD_DEFINITION
 `;
 
 /**
@@ -126,22 +134,32 @@ export class BelongsToTransformer extends TransformerPluginBase {
     this.directiveList
       .filter((config) => config.relationType === 'hasOne')
       .forEach((config) => {
+        const modelName = config.object.name.value;
+        if (isRDSModel(context as TransformerContextProvider, modelName)) {
+          return;
+        }
         // a belongsTo with hasOne behaves the same as hasOne
         registerHasOneForeignKeyMappings({
           transformParameters: context.transformParameters,
           resourceHelper: context.resourceHelper,
-          thisTypeName: config.object.name.value,
+          thisTypeName: modelName,
           thisFieldName: config.field.name.value,
           relatedType: config.relatedType,
         });
       });
+    setFieldMappingReferences(context, this.directiveList);
   };
 
   transformSchema = (ctx: TransformerTransformSchemaStepContextProvider): void => {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      config.relatedTypeIndex = getRelatedTypeIndex(config, context);
+      const dbType = getDataSourceType(config.field.type, context);
+      if (dbType === DDB_DB_TYPE) {
+        config.relatedTypeIndex = getRelatedTypeIndex(config, context);
+      } else if (isRDSDBType(dbType)) {
+        validateChildReferencesFields(config, context);
+      }
       ensureBelongsToConnectionField(config, context);
     }
   };
@@ -150,7 +168,9 @@ export class BelongsToTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      makeGetItemConnectionWithKeyResolver(config, context);
+      const dbType = getDataSourceType(config.field.type, context);
+      const generator = getGenerator(dbType);
+      generator.makeBelongsToGetItemConnectionWithKeyResolver(config, context);
     }
   };
 }
@@ -158,15 +178,25 @@ export class BelongsToTransformer extends TransformerPluginBase {
 const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field, object } = config;
 
-  ensureFieldsArray(config);
+  const dbType = getDataSourceType(field.type, ctx);
+  config.relatedType = getRelatedType(config, ctx);
+
+  if (dbType === DDB_DB_TYPE) {
+    ensureFieldsArray(config);
+    config.fieldNodes = getFieldsNodes(config, ctx);
+  }
+
+  if (isRDSDBType(dbType)) {
+    ensureReferencesArray(config);
+    getBelongsToReferencesNodes(config, ctx);
+  }
+
   validateModelDirective(config);
 
   if (isListType(field.type)) {
     throw new InvalidDirectiveError(`@${directiveName} cannot be used with lists.`);
   }
 
-  config.fieldNodes = getFieldsNodes(config, ctx);
-  config.relatedType = getRelatedType(config, ctx);
   config.connectionFields = [];
   validateRelatedModelDirective(config);
 
@@ -185,9 +215,20 @@ const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerConte
     });
   });
 
-  if (!isBiRelation) {
+  if (!isBiRelation && dbType === DDB_DB_TYPE) {
     throw new InvalidDirectiveError(
       `${config.relatedType.name.value} must have a relationship with ${object.name.value} in order to use @${directiveName}.`,
     );
   }
+};
+
+const setFieldMappingReferences = (context: TransformerPrepareStepContextProvider, directiveList: BelongsToDirectiveConfiguration[]) => {
+  directiveList.forEach((config) => {
+    const modelName = config.object.name.value;
+    const areFieldMappingsSupported = isRDSModel(context as TransformerContextProvider, modelName);
+    if (!areFieldMappingsSupported) {
+      return;
+    }
+    setFieldMappingResolverReference(context, config.relatedType?.name?.value, modelName, config.field.name.value);
+  });
 };

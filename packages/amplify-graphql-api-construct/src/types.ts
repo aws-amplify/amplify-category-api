@@ -17,6 +17,7 @@ import { IRole, CfnRole } from 'aws-cdk-lib/aws-iam';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { IFunction, CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
+import { AmplifyDynamoDbTableWrapper } from './amplify-dynamodb-table-wrapper';
 
 /**
  * Configuration for IAM Authorization on the Graphql Api.
@@ -400,13 +401,6 @@ export interface TranslationBehavior {
    */
   readonly respectPrimaryKeyAttributesOnConnectionField: boolean;
 
-  /**
-   * If enabled, set nodeToNodeEncryption on the searchable domain (if one exists). Not recommended for use, prefer
-   * to use `Object.values(resources.additionalResources['AWS::Elasticsearch::Domain']).forEach((domain: CfnDomain) => {
-   *   domain.NodeToNodeEncryptionOptions = { Enabled: True };
-   * });
-   * @default false
-   */
   readonly enableSearchNodeToNodeEncryption: boolean;
 
   /**
@@ -414,6 +408,29 @@ export interface TranslationBehavior {
    * @default false
    */
   readonly enableTransformerCfnOutputs: boolean;
+
+  /**
+   * The following schema updates require replacement of the underlying DynamoDB table:
+   *
+   *  - Removing or renaming a model
+   *  - Modifying the primary key of a model
+   *  - Modifying a Local Secondary Index of a model (only applies to projects with secondaryKeyAsGSI turned off)
+   *
+   * ALL DATA WILL BE LOST when the table replacement happens. When enabled, destructive updates are allowed.
+   * This will only affect DynamoDB tables with provision strategy "AMPLIFY_TABLE".
+   * @default false
+   * @experimental
+   */
+  readonly allowDestructiveGraphqlSchemaUpdates: boolean;
+
+  /**
+   * This behavior will only come into effect when both "allowDestructiveGraphqlSchemaUpdates" and this value are set to true
+   * When enabled, any GSI update operation will replace the table instead of iterative deployment, which will WIPE ALL EXISTING DATA but cost much less time for deployment
+   * This will only affect DynamoDB tables with provision strategy "AMPLIFY_TABLE".
+   * @default false
+   * @experimental
+   */
+  readonly replaceTableUponGsiUpdate: boolean;
 }
 
 /**
@@ -492,6 +509,29 @@ export interface PartialTranslationBehavior {
    * @default false
    */
   readonly enableTransformerCfnOutputs?: boolean;
+
+  /**
+   * The following schema updates require replacement of the underlying DynamoDB table:
+   *
+   *  - Removing or renaming a model
+   *  - Modifying the primary key of a model
+   *  - Modifying a Local Secondary Index of a model (only applies to projects with secondaryKeyAsGSI turned off)
+   *
+   * ALL DATA WILL BE LOST when the table replacement happens. When enabled, destructive updates are allowed.
+   * This will only affect DynamoDB tables with provision strategy "AMPLIFY_TABLE".
+   * @default false
+   * @experimental
+   */
+  readonly allowDestructiveGraphqlSchemaUpdates?: boolean;
+
+  /**
+   * This behavior will only come into effect when both "allowDestructiveGraphqlSchemaUpdates" and this value are set to true
+   * When enabled, any global secondary index update operation will replace the table instead of iterative deployment, which will WIPE ALL EXISTING DATA but cost much less time for deployment
+   * This will only affect DynamoDB tables with provision strategy "AMPLIFY_TABLE".
+   * @default false
+   * @experimental
+   */
+  readonly replaceTableUponGsiUpdate?: boolean;
 }
 
 /**
@@ -509,6 +549,24 @@ export interface IAmplifyGraphqlDefinition {
    * @returns generated function slots
    */
   readonly functionSlots: FunctionSlot[];
+
+  /**
+   * Retrieve the references to any lambda functions used in the definition.
+   * Useful for wiring through aws_lambda.Function constructs into the definition directly,
+   * and generated references to invoke them.
+   * @returns any lambda functions, keyed by their referenced 'name' in the generated schema.
+   */
+  readonly referencedLambdaFunctions?: Record<string, IFunction>;
+
+  /**
+   * Retrieve the datasource strategy mapping. The default strategy is to use DynamoDB from CloudFormation.
+   *
+   * **NOTE** Explicitly specifying the 'dataSourceStrategies' configuration option is in preview and is not recommended to use with
+   * production systems. For production, use the static factory methods `fromString` or `fromFiles`.
+   * @experimental
+   * @returns datasource strategy mapping
+   */
+  readonly dataSourceStrategies: Record<string, ModelDataSourceStrategy>;
 }
 
 /**
@@ -687,6 +745,11 @@ export interface AmplifyGraphqlApiResources {
   readonly tables: Record<string, ITable>;
 
   /**
+   * The Generated Amplify DynamoDb Table wrapped if produced, keyed by name.
+   */
+  readonly amplifyDynamoDbTables: Record<string, AmplifyDynamoDbTableWrapper>;
+
+  /**
    * The Generated IAM Role L2 Resources, keyed by logicalId.
    */
   readonly roles: Record<string, IRole>;
@@ -756,4 +819,151 @@ export interface AddFunctionProps {
    * @default - no code is used
    */
   readonly code?: Code;
+}
+
+/**
+ * All known ModelDataSourceStrategies. Concrete strategies vary widely in their requirements and implementations.
+ * @experimental
+ */
+export type ModelDataSourceStrategy =
+  | DefaultDynamoDbModelDataSourceStrategy
+  | AmplifyDynamoDbModelDataSourceStrategy
+  | SQLLambdaModelDataSourceStrategy;
+
+// TODO: Make this the source of truth for database type definitions used throughout the construct & transformer
+export type ModelDataSourceStrategyDbType = 'DYNAMODB';
+
+/**
+ * Use default CloudFormation type 'AWS::DynamoDB::Table' to provision table.
+ * @experimental
+ */
+export interface DefaultDynamoDbModelDataSourceStrategy {
+  readonly dbType: 'DYNAMODB';
+  readonly provisionStrategy: 'DEFAULT';
+}
+
+/**
+ * Use custom resource type 'Custom::AmplifyDynamoDBTable' to provision table.
+ * @experimental
+ */
+export interface AmplifyDynamoDbModelDataSourceStrategy {
+  readonly dbType: 'DYNAMODB';
+  readonly provisionStrategy: 'AMPLIFY_TABLE';
+}
+
+/**
+ * A strategy that creates a Lambda to connect to a pre-existing SQL table to resolve model data.
+ *
+ * @experimental
+ */
+export interface SQLLambdaModelDataSourceStrategy {
+  /**
+   * The name of the strategy. This will be used to name the AppSync DataSource itself, plus any associated resources like resolver Lambdas.
+   * This name must be unique across all schema definitions in a GraphQL API.
+   */
+  readonly name: string;
+
+  /**
+   * The type of the SQL database used to process model operations for this definition.
+   */
+  readonly dbType: 'MYSQL' | 'POSTGRES';
+
+  /**
+   * The parameters the Lambda data source will use to connect to the database.
+   */
+  readonly dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
+
+  /**
+   * The configuration of the VPC into which to install the Lambda.
+   */
+  readonly vpcConfiguration?: VpcConfig;
+
+  /**
+   * Custom SQL statements. The key is the value of the `references` attribute of the `@sql` directive in the `schema`; the value is the SQL
+   * to be executed.
+   */
+  readonly customSqlStatements?: Record<string, string>;
+
+  /**
+   * An optional override for the default SQL Lambda Layer
+   */
+  readonly sqlLambdaLayerMapping?: SQLLambdaLayerMapping;
+
+  /**
+   * The configuration for the provisioned concurrency of the Lambda.
+   */
+  readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
+}
+
+/**
+ * Configuration of the VPC in which to install a Lambda to resolve queries against a SQL-based data source. The SQL Lambda will be deployed
+ * into the specified VPC, subnets, and security groups. The specified subnets and security groups must be in the same VPC. The VPC must
+ * have at least one subnet. The construct will also create VPC service endpoints in the specified subnets, as well as inbound security
+ * rules, to allow traffic on port 443 within each security group. This allows the Lambda to read database connection information from
+ * Secure Systems Manager.
+ * @experimental
+ */
+export interface VpcConfig {
+  /** The VPC to install the Lambda data source in. */
+  readonly vpcId: string;
+
+  /** The security groups to install the Lambda data source in. */
+  readonly securityGroupIds: string[];
+
+  /** The subnets to install the Lambda data source in, one per availability zone. */
+  readonly subnetAvailabilityZoneConfig: SubnetAvailabilityZone[];
+}
+
+/**
+ * The configuration for the provisioned concurrency of the Lambda.
+ * @experimental
+ */
+export interface ProvisionedConcurrencyConfig {
+  /** The amount of provisioned concurrency to allocate. **/
+  readonly provisionedConcurrentExecutions: number;
+}
+
+/**
+ * Subnet configuration for VPC endpoints used by a Lambda resolver for a SQL-based data source. Although it is possible to create multiple
+ * subnets in a single availability zone, VPC service endpoints may only be deployed to a single subnet in a given availability zone. This
+ * structure ensures that the Lambda function and VPC service endpoints are mutually consistent.
+ * @experimental
+ */
+export interface SubnetAvailabilityZone {
+  /** The subnet ID to install the Lambda data source in. */
+  readonly subnetId: string;
+
+  /** The availability zone of the subnet. */
+  readonly availabilityZone: string;
+}
+
+/**
+ * Maps a given AWS region to the SQL Lambda layer version ARN for that region. `key` is the region; the `value` is the Lambda Layer version
+ * ARN
+ */
+export type SQLLambdaLayerMapping = Record<string, string>;
+
+/**
+ * The Secure Systems Manager parameter paths the Lambda data source will use to connect to the database.
+ *
+ * These parameters are retrieved from Secure Systems Manager in the same region as the Lambda.
+ * @experimental
+ */
+export interface SqlModelDataSourceDbConnectionConfig {
+  /** The Secure Systems Manager parameter containing the hostname of the database. For RDS-based SQL data sources, this can be the hostname
+   * of a database proxy, cluster, or instance.
+   */
+  readonly hostnameSsmPath: string;
+
+  /** The Secure Systems Manager parameter containing the port number of the database proxy, cluster, or instance. */
+  readonly portSsmPath: string;
+
+  /** The Secure Systems Manager parameter containing the username to use when connecting to the database. */
+  readonly usernameSsmPath: string;
+
+  /** The Secure Systems Manager parameter containing the password to use when connecting to the database. */
+  readonly passwordSsmPath: string;
+
+  /** The Secure Systems Manager parameter containing the database name. */
+  readonly databaseNameSsmPath: string;
 }

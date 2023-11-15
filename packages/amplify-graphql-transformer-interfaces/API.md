@@ -155,9 +155,33 @@ export interface DataSourceProvider extends BackedDataSource {
 }
 
 // @public (undocumented)
+export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy | SQLLambdaModelProvisionStrategy;
+
+// @public (undocumented)
+export interface DataSourceType {
+    // (undocumented)
+    dbType: DBType;
+    // (undocumented)
+    provisionDB: boolean;
+    // (undocumented)
+    provisionStrategy: DataSourceProvisionStrategy;
+}
+
+// @public (undocumented)
+export type DBType = 'DDB' | SQLDBType;
+
+// @public (undocumented)
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {
     // (undocumented)
     readonly serviceRole: IRole;
+}
+
+// @public (undocumented)
+export const enum DynamoDBProvisionStrategy {
+    // (undocumented)
+    AMPLIFY_TABLE = "AMPLIFY_TABLE",
+    // (undocumented)
+    DEFAULT = "DEFAULT"
 }
 
 // @public (undocumented)
@@ -233,6 +257,12 @@ export type NestedStackProvider = {
 };
 
 // @public (undocumented)
+export interface ProvisionedConcurrencyConfig {
+    // (undocumented)
+    readonly provisionedConcurrentExecutions: number;
+}
+
+// @public (undocumented)
 export enum QueryFieldType {
     // (undocumented)
     GET = "GET",
@@ -243,11 +273,12 @@ export enum QueryFieldType {
 }
 
 // @public (undocumented)
-export type RDSLayerMapping = {
-    [key: string]: {
+export interface RDSLayerMapping {
+    // (undocumented)
+    readonly [key: string]: {
         layerRegion: string;
     };
-};
+}
 
 // @public (undocumented)
 type ReadonlyArray_2<T> = Readonly<Array<Readonly<T>>>;
@@ -294,6 +325,15 @@ export interface SearchableDataSourceOptions extends DataSourceOptions {
 }
 
 // @public (undocumented)
+export type SQLDBType = 'MySQL' | 'Postgres';
+
+// @public (undocumented)
+export const enum SQLLambdaModelProvisionStrategy {
+    // (undocumented)
+    DEFAULT = "DEFAULT"
+}
+
+// @public (undocumented)
 export interface StackManagerProvider {
     // (undocumented)
     createStack: (stackName: string) => Stack;
@@ -309,6 +349,14 @@ export interface StackManagerProvider {
     hasStack: (stackName: string) => boolean;
     // (undocumented)
     readonly scope: Construct;
+}
+
+// @public (undocumented)
+export interface SubnetAvailabilityZone {
+    // (undocumented)
+    readonly availabilityZone: string;
+    // (undocumented)
+    readonly subnetId: string;
 }
 
 // @public (undocumented)
@@ -403,6 +451,8 @@ export interface TransformerContextProvider {
     // (undocumented)
     authConfig: AppSyncAuthConfiguration;
     // (undocumented)
+    customQueries: Map<string, string>;
+    // (undocumented)
     dataSources: TransformerDataSourceManagerProvider;
     // (undocumented)
     datasourceSecretParameterLocations: Map<string, TransformerSecrets>;
@@ -416,10 +466,8 @@ export interface TransformerContextProvider {
     //
     // (undocumented)
     metadata: TransformerContextMetadataProvider;
-    // Warning: (ae-forgotten-export) The symbol "DatasourceType" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
-    modelToDatasourceMap: Map<string, DatasourceType>;
+    modelToDatasourceMap: Map<string, DataSourceType>;
     // (undocumented)
     output: TransformerContextOutputProvider;
     // (undocumented)
@@ -430,6 +478,8 @@ export interface TransformerContextProvider {
     resolvers: TransformerResolversManagerProvider;
     // (undocumented)
     resourceHelper: TransformerResourceHelperProvider;
+    // (undocumented)
+    readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
     // (undocumented)
     readonly sqlLambdaVpcConfig?: VpcConfig;
     // (undocumented)
@@ -443,11 +493,11 @@ export interface TransformerContextProvider {
 // @public (undocumented)
 export interface TransformerDataSourceManagerProvider {
     // (undocumented)
-    add(type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, dataSourceInstance: DataSourceInstance): void;
+    add: (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, dataSourceInstance: DataSourceInstance) => void;
     // (undocumented)
-    get(type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode): DataSourceInstance;
+    get: (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode) => DataSourceInstance;
     // (undocumented)
-    has(name: string): boolean;
+    has: (name: string) => boolean;
 }
 
 // @public (undocumented)
@@ -738,6 +788,8 @@ export type TransformParameters = {
     shouldDeepMergeDirectiveConfigDefaults: boolean;
     disableResolverDeduping: boolean;
     sandboxModeEnabled: boolean;
+    allowDestructiveGraphqlSchemaUpdates: boolean;
+    replaceTableUponGsiUpdate: boolean;
     useSubUsernameForDefaultIdentityClaim: boolean;
     populateOwnerFieldForStaticGroupAuth: boolean;
     suppressApiKeyGeneration: boolean;
@@ -754,15 +806,18 @@ export interface UserPoolConfig {
 }
 
 // @public (undocumented)
-export type VpcConfig = {
-    vpcId: string;
-    subnetIds: string[];
-    securityGroupIds: string[];
-};
+export interface VpcConfig {
+    // (undocumented)
+    readonly securityGroupIds: string[];
+    // (undocumented)
+    readonly subnetAvailabilityZoneConfig: SubnetAvailabilityZone[];
+    // (undocumented)
+    readonly vpcId: string;
+}
 
 // Warnings were encountered during analysis:
 //
-// src/graphql-api-provider.ts:34:3 - (ae-forgotten-export) The symbol "OpenIDConnectConfig" needs to be exported by the entry point index.d.ts
+// src/graphql-api-provider.ts:35:3 - (ae-forgotten-export) The symbol "OpenIDConnectConfig" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

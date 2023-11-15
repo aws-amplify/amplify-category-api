@@ -1,9 +1,10 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { validateModelSchema, DatasourceType } from '@aws-amplify/graphql-transformer-core';
+import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Kind, parse } from 'graphql';
 import _ from 'lodash';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { DataSourceType, DynamoDBProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { PrimaryKeyTransformer } from '..';
 
 test('throws if multiple primary keys are defined on an object', () => {
@@ -726,10 +727,11 @@ test('lowercase model names generate the correct get/list query arguments', () =
 });
 
 describe('RDS primary key transformer tests', () => {
-  const modelToDatasourceMap = new Map<string, DatasourceType>();
+  const modelToDatasourceMap = new Map<string, DataSourceType>();
   modelToDatasourceMap.set('Test', {
     dbType: 'MySQL',
     provisionDB: false,
+    provisionStrategy: DynamoDBProvisionStrategy.DEFAULT, // TODO: change this once the RDS stratety is added
   });
 
   it('a primary key with a single sort key field is properly configured', () => {

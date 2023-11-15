@@ -104,7 +104,13 @@ export class IndexTransformer extends TransformerPluginBase {
  * compute the name based on the field name, and sortKeyFields.
  */
 const getOrGenerateDefaultName = (config: IndexDirectiveConfiguration): string => {
+  const indexNameRegex = /^[A-Za-z0-9_\-\.]{3,255}$/;
   if (config.name) {
+    if (!indexNameRegex.test(config.name)) {
+      throw new Error(
+        `The indexName is invalid. It should be between 3 and 255 characters. Only A–Z, a–z, 0–9, underscore characters, hyphens, and periods allowed.`,
+      );
+    }
     return config.name;
   }
 

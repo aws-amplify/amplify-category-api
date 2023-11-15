@@ -19,6 +19,9 @@ import { CfnResource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { DataSourceProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { DataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
+import { DBType } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveDefinitionNode } from 'graphql';
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql/language';
@@ -49,6 +52,7 @@ import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { ObjectTypeExtensionNode } from 'graphql';
 import { OperationTypeDefinitionNode } from 'graphql';
+import type { ProvisionedConcurrencyConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { QueryFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { S3MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -59,6 +63,7 @@ import { StringValueNode } from 'graphql';
 import { SubscriptionFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerAuthProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerBeforeStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
 import { TransformerContextOutputProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -83,7 +88,7 @@ import { TypeNode } from 'graphql';
 import { TypeSystemDefinitionNode } from 'graphql';
 import { UnionTypeDefinitionNode } from 'graphql';
 import { UnionTypeExtensionNode } from 'graphql';
-import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import type { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
 export const APICategory = "api";
@@ -111,6 +116,9 @@ export const enum ConflictHandlerType {
 }
 
 // @public (undocumented)
+export function constructDataSourceMap(schema: string, datasourceType: DataSourceType): Map<string, DataSourceType>;
+
+// @public (undocumented)
 function createSyncLambdaIAMPolicy(context: TransformerContextProvider, scope: Construct, name: string, region?: string): iam.Policy;
 
 // Warning: (ae-forgotten-export) The symbol "TransformerContext" needs to be exported by the entry point index.d.ts
@@ -119,18 +127,7 @@ function createSyncLambdaIAMPolicy(context: TransformerContextProvider, scope: C
 function createSyncTable(context: TransformerContext): void;
 
 // @public (undocumented)
-export interface DatasourceType {
-    // (undocumented)
-    dbType: DBType;
-    // (undocumented)
-    provisionDB: boolean;
-}
-
-// @public (undocumented)
-export type DBType = 'MySQL' | 'DDB';
-
-// @public (undocumented)
-export const DDB_DB_TYPE = "DDB";
+export const DDB_DB_TYPE: DBType;
 
 // @public (undocumented)
 export class DirectiveWrapper {
@@ -186,16 +183,31 @@ export type GetArgumentsOptions = {
     deepMergeArguments?: boolean;
 };
 
+// @public (undocumented)
+export function getDatasourceProvisionStrategy(ctx: TransformerBeforeStepContextProvider, typeName?: string): DataSourceProvisionStrategy;
+
+// @public (undocumented)
+export const getDataSourceType: (type: TypeNode, ctx: TransformerContextProvider) => DBType;
+
+// @public (undocumented)
+export const getEngineFromDBType: (dbType: DBType) => ImportedRDSType;
+
 // Warning: (ae-forgotten-export) The symbol "Operation" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export const getFieldNameFor: (op: Operation, typeName: string) => string;
 
 // @public (undocumented)
+export const getImportedRDSType: (modelToDatasourceMap: Map<string, DataSourceType>) => DBType;
+
+// @public (undocumented)
 export const getKeySchema: (table: any, indexName?: string) => any;
 
 // @public (undocumented)
 export const getParameterStoreSecretPath: (secret: string, secretsKey: string, apiName: string, environmentName: string, appId: string) => string;
+
+// @public (undocumented)
+export const getPrimaryKeyFields: (type: ObjectTypeDefinitionNode) => string[];
 
 // @public (undocumented)
 export const getResourceName: (scope: Construct) => string | undefined;
@@ -238,6 +250,8 @@ export interface GraphQLTransformOptions {
     // (undocumented)
     readonly resolverConfig?: ResolverConfig;
     // (undocumented)
+    readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
+    // (undocumented)
     readonly sqlLambdaVpcConfig?: VpcConfig;
     // Warning: (ae-forgotten-export) The symbol "StackMapping" needs to be exported by the entry point index.d.ts
     //
@@ -268,7 +282,7 @@ export enum ImportedRDSType {
     // (undocumented)
     MYSQL = "mysql",
     // (undocumented)
-    POSTGRESQL = "postgresql"
+    POSTGRESQL = "postgres"
 }
 
 // @public (undocumented)
@@ -339,7 +353,16 @@ export class InvalidTransformerError extends Error {
 }
 
 // @public (undocumented)
+export const isImportedRDSType: (dbInfo: DataSourceType) => boolean;
+
+// @public (undocumented)
 function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncConfigLambda;
+
+// @public (undocumented)
+export const isRDSDBType: (dbType: DBType) => boolean;
+
+// @public (undocumented)
+export const isRDSModel: (ctx: TransformerContextProvider, typename: string) => boolean;
 
 // @public (undocumented)
 export class MappingTemplate {
@@ -354,7 +377,7 @@ export class MappingTemplate {
 }
 
 // @public (undocumented)
-export const MYSQL_DB_TYPE = "MySQL";
+export const MYSQL_DB_TYPE: DBType;
 
 // @public (undocumented)
 export class ObjectDefinitionWrapper {
@@ -380,7 +403,7 @@ export class ObjectDefinitionWrapper {
 }
 
 // @public (undocumented)
-export const RDS_SCHEMA_FILE_NAME = "schema.rds.graphql";
+export const POSTGRES_DB_TYPE: DBType;
 
 // @public (undocumented)
 export type RDSConnectionSecrets = TransformerSecrets & {
@@ -415,6 +438,9 @@ export type SetResourceNameProps = {
     name: string;
     setOnDefaultChild?: boolean;
 };
+
+// @public (undocumented)
+export const SQL_SCHEMA_FILE_NAME = "schema.sql.graphql";
 
 // @public (undocumented)
 export class StackManager implements StackManagerProvider {

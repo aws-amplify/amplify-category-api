@@ -8,8 +8,23 @@ type DepsClosure = {
   registryDeps: Array<string>;
 };
 
+type ConstructPackageConfiguration = {
+  packageName: string;
+  packageDir: string;
+};
+
+const CONSTRUCT_PACKAGE_CONFIGURATIONS: ConstructPackageConfiguration[] = [
+  {
+    packageName: '@aws-amplify/graphql-api-construct',
+    packageDir: 'amplify-graphql-api-construct',
+  },
+  {
+    packageName: '@aws-amplify/data-construct',
+    packageDir: 'amplify-data-construct',
+  },
+];
+
 const PACKAGES_DIR = 'packages';
-const CONSTRUCT_PACKAGE_DIR = 'amplify-graphql-api-construct';
 const NON_JSII_DEPENDENCIES_FILENAME = 'nonJsiiDependencies.json';
 const PACKAGE_JSON_FILENAME = 'package.json';
 
@@ -102,8 +117,8 @@ const stripSemverString = (vals: string[]): string[] => vals.map((val: string) =
  * Return the package.json file for the cdk construct.
  * @returns the package.json file for the cdk construct.
  */
-const getCdkConstructPackageJson = (): any =>
-  JSON.parse(fs.readFileSync(path.join(PACKAGES_DIR, CONSTRUCT_PACKAGE_DIR, PACKAGE_JSON_FILENAME), 'utf-8'));
+const getCdkConstructPackageJson = (contructPackageDir: string): any =>
+  JSON.parse(fs.readFileSync(path.join(PACKAGES_DIR, contructPackageDir, PACKAGE_JSON_FILENAME), 'utf-8'));
 
 /**
  * Return the package.json file for the monorepo root.
@@ -113,54 +128,55 @@ const getRootPackageJson = (): any => JSON.parse(fs.readFileSync(PACKAGE_JSON_FI
 
 /**
  * Read the current versions of these packages from the package.json file for the cdk construct.
- * @param deps the deps to decorate with current package.json versions
  * @returns the deps decorate with current versions
  */
-const attachCurrentVersions = (deps: string[]): string[] => {
+const attachCurrentVersions = (constructPackageDir: string, deps: string[]): string[] => {
   const trackedDeps = new Set(deps);
-  return Object.entries(getCdkConstructPackageJson().dependencies)
+  return Object.entries(getCdkConstructPackageJson(constructPackageDir).dependencies)
     .filter(([packageName]) => trackedDeps.has(packageName))
     .map(([packageName, packageSemver]) => `${packageName}@${packageSemver}`);
 };
 
 /**
  * Validate that there is a package scoped nohoist for each dependency required.
- * @param deps the deps to check exist in nohoist
  */
-const validateNohoistsAreConfigured = (deps: string[]): string[] => {
+const validateNohoistsAreConfigured = (constructPackageName: string, deps: string[]): string[] => {
   const nohoistValues = new Set(getRootPackageJson().workspaces.nohoist);
   return deps
-    .map((depName) => `@aws-amplify/graphql-api-construct/${depName}`)
+    .map((depName) => `${constructPackageName}/${depName}`)
     .filter((depPath) => !nohoistValues.has(depPath))
     .map((depPath) => `${depPath} not found in root package.json nohoist config`);
 };
 
 /**
  * Validate that there is a runtime dependency in the construct for each dependency required.
- * @param deps the deps to check exist in dependencies
  */
-const validateConstructDependenciesAreConfigured = (deps: string[]): string[] => {
-  const dependencyKeys = new Set(Object.keys(getCdkConstructPackageJson().dependencies));
-  return deps.filter((depName) => !dependencyKeys.has(depName)).map((depName) => `${depName} not found in construct dependencies`);
+const validateConstructDependenciesAreConfigured = (constructPackageDir: string, deps: string[]): string[] => {
+  const dependencyKeys = new Set(Object.keys(getCdkConstructPackageJson(constructPackageDir).dependencies));
+  return deps
+    .filter((depName) => !dependencyKeys.has(depName))
+    .map((depName) => `${depName} not found in construct dependencies in ${constructPackageDir}`);
 };
 
 /**
  * Deps don't seem to bundle when they're also in devDependencies, validate none of those exist.
- * @param deps the dependencies to validate against
  * @returns a list of warning strings for incorrectly included devDependencies
  */
-const validateConstructDevDependenciesAreConfigured = (deps: string[]): string[] => {
-  const devDependencyKeys = new Set(Object.keys(getCdkConstructPackageJson().devDependencies));
-  return deps.filter((depName) => devDependencyKeys.has(depName)).map((depName) => `${depName} found in construct devDependencies`);
+const validateConstructDevDependenciesAreConfigured = (constructPackageDir: string, deps: string[]): string[] => {
+  const devDependencyKeys = new Set(Object.keys(getCdkConstructPackageJson(constructPackageDir).devDependencies));
+  return deps
+    .filter((depName) => devDependencyKeys.has(depName))
+    .map((depName) => `${depName} found in construct devDependencies in ${constructPackageDir}`);
 };
 
 /**
  * Validate that there is a bundled dependency in the construct for each dependency required.
- * @param deps the deps to check exist in bundled dependencies
  */
-const validateConstructBundledDependenciesAreConfigured = (deps: string[]): string[] => {
-  const dependencyKeys = new Set(getCdkConstructPackageJson().bundledDependencies);
-  return deps.filter((depName) => !dependencyKeys.has(depName)).map((depName) => `${depName} not found in construct bundledDependencies`);
+const validateConstructBundledDependenciesAreConfigured = (constructPackageDir: string, deps: string[]): string[] => {
+  const dependencyKeys = new Set(getCdkConstructPackageJson(constructPackageDir).bundledDependencies);
+  return deps
+    .filter((depName) => !dependencyKeys.has(depName))
+    .map((depName) => `${depName} not found in construct bundledDependencies in ${constructPackageDir}`);
 };
 
 /**
@@ -174,19 +190,21 @@ const validateConstructBundledDependenciesAreConfigured = (deps: string[]): stri
  */
 const main = (): void => {
   try {
-    const nonJsiiDeps = JSON.parse(
-      fs.readFileSync(path.join(PACKAGES_DIR, CONSTRUCT_PACKAGE_DIR, NON_JSII_DEPENDENCIES_FILENAME), 'utf-8'),
-    );
-    const fullDepsClosure = computeDepsClosure(attachCurrentVersions(nonJsiiDeps));
-    const dedupedDepListWithoutSemver: string[] = Array.from(
-      new Set([...stripSemverString(fullDepsClosure.repoDeps), ...stripSemverString(fullDepsClosure.registryDeps)]),
-    );
-    const validationErrors = [
-      ...validateNohoistsAreConfigured(dedupedDepListWithoutSemver),
-      ...validateConstructDependenciesAreConfigured(dedupedDepListWithoutSemver),
-      ...validateConstructBundledDependenciesAreConfigured(dedupedDepListWithoutSemver),
-      ...validateConstructDevDependenciesAreConfigured(dedupedDepListWithoutSemver),
-    ];
+    const validationErrors: string[] = [];
+    CONSTRUCT_PACKAGE_CONFIGURATIONS.forEach(({ packageName, packageDir }) => {
+      const nonJsiiDeps = JSON.parse(fs.readFileSync(path.join(PACKAGES_DIR, packageDir, NON_JSII_DEPENDENCIES_FILENAME), 'utf-8'));
+      const fullDepsClosure = computeDepsClosure(attachCurrentVersions(packageDir, nonJsiiDeps));
+      const dedupedDepListWithoutSemver: string[] = Array.from(
+        new Set([...stripSemverString(fullDepsClosure.repoDeps), ...stripSemverString(fullDepsClosure.registryDeps)]),
+      );
+      validationErrors.push(
+        ...validateNohoistsAreConfigured(packageName, dedupedDepListWithoutSemver),
+        ...validateConstructDependenciesAreConfigured(packageDir, dedupedDepListWithoutSemver),
+        ...validateConstructBundledDependenciesAreConfigured(packageDir, dedupedDepListWithoutSemver),
+        ...validateConstructDevDependenciesAreConfigured(packageDir, dedupedDepListWithoutSemver),
+      );
+    });
+
     if (validationErrors.length > 0) {
       console.error(`Caught Validation Errors: ${validationErrors.join('\n')}`);
       process.exit(1);

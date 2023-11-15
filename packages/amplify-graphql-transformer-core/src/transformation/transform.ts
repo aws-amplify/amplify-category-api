@@ -5,15 +5,17 @@ import {
   TransformHostProvider,
   TransformerLog,
   NestedStackProvider,
-  VpcConfig,
   RDSLayerMapping,
   SynthParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type {
   AssetProvider,
+  DataSourceType,
   StackManagerProvider,
   TransformParameterProvider,
   TransformParameters,
+  VpcConfig,
+  ProvisionedConcurrencyConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { Aws, CfnOutput, Fn, Stack } from 'aws-cdk-lib';
@@ -43,7 +45,6 @@ import { TransformerOutput } from '../transformer-context/output';
 import { adoptAuthModes } from '../utils/authType';
 import { MappingTemplate } from '../cdk-compat';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
-import { DatasourceType } from '../config/project-config';
 import { defaultTransformParameters } from '../transformer-context/transform-parameters';
 import * as SyncUtils from './sync-utils';
 import { UserDefinedSlot, DatasourceTransformationConfig } from './types';
@@ -88,6 +89,7 @@ export interface GraphQLTransformOptions {
   readonly resolverConfig?: ResolverConfig;
   readonly sqlLambdaVpcConfig?: VpcConfig;
   readonly rdsLayerMapping?: RDSLayerMapping;
+  readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
 }
 
 export type TransformOption = {
@@ -115,7 +117,7 @@ export class GraphQLTransform {
 
   private readonly sqlLambdaVpcConfig?: VpcConfig;
   private readonly transformParameters: TransformParameters;
-  private readonly rdsLayerMapping?: RDSLayerMapping;
+  private readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
   // that specifies we have run already run a directive at a given location.
@@ -148,11 +150,11 @@ export class GraphQLTransform {
     this.userDefinedSlots = options.userDefinedSlots || ({} as Record<string, UserDefinedSlot[]>);
     this.resolverConfig = options.resolverConfig || {};
     this.sqlLambdaVpcConfig = options.sqlLambdaVpcConfig;
-    this.sqlLambdaVpcConfig = options.sqlLambdaVpcConfig;
     this.transformParameters = {
       ...defaultTransformParameters,
       ...(options.transformParameters ?? {}),
     };
+    this.sqlLambdaProvisionedConcurrencyConfig = options.sqlLambdaProvisionedConcurrencyConfig;
 
     this.logs = [];
   }
@@ -209,14 +211,16 @@ export class GraphQLTransform {
       assetProvider,
       synthParameters,
       parsedDocument,
-      datasourceConfig?.modelToDatasourceMap ?? new Map<string, DatasourceType>(),
+      datasourceConfig?.modelToDatasourceMap ?? new Map<string, DataSourceType>(),
+      datasourceConfig?.customQueries ?? new Map<string, string>(),
       this.stackMappingOverrides,
       this.authConfig,
       this.transformParameters,
       this.resolverConfig,
       datasourceConfig?.datasourceSecretParameterLocations,
       this.sqlLambdaVpcConfig,
-      this.rdsLayerMapping,
+      datasourceConfig?.rdsLayerMapping,
+      this.sqlLambdaProvisionedConcurrencyConfig,
     );
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),

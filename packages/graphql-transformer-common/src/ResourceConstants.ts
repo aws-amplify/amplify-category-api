@@ -29,16 +29,19 @@ export class ResourceConstants {
     OpenSearchStreamingLambdaFunctionLogicalID: 'OpenSearchStreamingLambdaFunction',
     OpenSearchDataSourceLogicalID: 'OpenSearchDataSource',
 
-    // RDS
-    RDSLambdaIAMRoleLogicalID: 'RDSLambdaIAMRole',
-    RDSLambdaLogAccessPolicy: 'RDSLambdaLogAccessPolicy',
-    RDSPatchingLambdaIAMRoleLogicalID: 'RDSPatchingLambdaIAMRole',
-    RDSLambdaLogicalID: 'RDSLambdaLogicalID',
-    RDSPatchingLambdaLogAccessPolicy: 'RDSPatchingLambdaLogAccessPolicy',
-    RDSPatchingLambdaLogicalID: 'RDSPatchingLambdaLogicalID',
-    RDSLambdaDataSourceLogicalID: 'RDSLambdaDataSource',
-    RDSLambdaDataSourceLogicalName: 'RDSLambdaDatabase',
-    RDSPatchingSubscriptionLogicalID: 'RDSPatchingSubscriptionLogicalID',
+    // SQL
+    SQLLambdaIAMRoleLogicalID: 'SQLLambdaIAMRole',
+    SQLLambdaLogAccessPolicy: 'SQLLambdaLogAccessPolicy',
+    SQLPatchingLambdaIAMRoleLogicalID: 'SQLPatchingLambdaIAMRole',
+    SQLLambdaLogicalID: 'SQLLambdaFunction',
+    SQLPatchingLambdaLogAccessPolicy: 'SQLPatchingLambdaLogAccessPolicy',
+    SQLPatchingLambdaLogicalID: 'SQLPatchingLambda',
+    SQLLambdaDataSourceLogicalID: 'SQLLambdaDataSource',
+    SQLPatchingSubscriptionLogicalID: 'SQLPatchingSubscription',
+    SQLPatchingTopicLogicalID: 'SQLPatchingTopic',
+    SQLLambdaAliasLogicalID: 'SQLLambdaAlias',
+    SQLLambdaLayerVersionLogicalID: 'SQLLambdaLayerVersion',
+    SQLLayerMappingID: 'SQLLayerResourceMapping',
 
     // Local. Try not to collide with model data sources.
     NoneDataSource: 'NoneDataSource',
@@ -47,6 +50,11 @@ export class ResourceConstants {
     AuthCognitoUserPoolLogicalID: 'AuthCognitoUserPool',
     AuthCognitoUserPoolNativeClientLogicalID: 'AuthCognitoUserPoolNativeClient',
     AuthCognitoUserPoolJSClientLogicalID: 'AuthCognitoUserPoolJSClient',
+
+    // Amplify Table Manager
+    TableManagerOnEventHandlerLogicalID: 'TableManagerOnEventHandler',
+    TableManagerIsCompleteHandlerLogicalID: 'TableManagerIsCompleteHandler',
+    TableManagerCustomProviderLogicalID: 'TableManagerCustomProvider',
   };
 
   public static PARAMETERS = {

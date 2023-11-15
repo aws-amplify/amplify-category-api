@@ -9,12 +9,19 @@ import { getScriptRunnerPath, nspawn as spawn } from 'amplify-category-api-e2e-c
  */
 const getNpxPath = (): string => (process.platform === 'win32' ? getScriptRunnerPath().replace('node.exe', 'npx.cmd') : 'npx');
 
+export type CdkConstruct = 'GraphqlApi' | 'Data';
+
+const cdkConstructToPackagedConstructDirectory: Record<CdkConstruct, string> = {
+  GraphqlApi: path.join(__dirname, '..', '..', 'amplify-graphql-api-construct', 'dist', 'js'),
+  Data: path.join(__dirname, '..', '..', 'amplify-data-construct', 'dist', 'js'),
+};
+
 /**
  * Try and retrieve the locally packaged construct path, and throw an error if not found.
  * @returns path to the packaged construct for testing.
  */
-const getPackagedConstructPath = (): string => {
-  const packagedConstructDirectory = path.join(__dirname, '..', '..', 'amplify-graphql-api-construct', 'dist', 'js');
+const getPackagedConstructPath = (cdkConstruct: CdkConstruct): string => {
+  const packagedConstructDirectory = cdkConstructToPackagedConstructDirectory[cdkConstruct];
   const packagedConstructTarballs = fs.readdirSync(packagedConstructDirectory).filter((fileName) => fileName.match(/\.tgz/));
   if (packagedConstructTarballs.length !== 1) {
     throw new Error('Construct packaged tarball not found');
@@ -32,6 +39,7 @@ const copyTemplateDirectory = (projectPath: string, templatePath: string): void 
 };
 
 export type InitCDKProjectProps = {
+  construct?: CdkConstruct;
   cdkVersion?: string;
   additionalDependencies?: Array<string>;
 };
@@ -59,10 +67,14 @@ export const initCDKProject = async (cwd: string, templatePath: string, props?: 
 
   copyTemplateDirectory(cwd, templatePath);
 
-  const deps = [getPackagedConstructPath(), `aws-cdk-lib@${cdkVersion}`, ...additionalDependencies];
+  const deps = [getPackagedConstructPath(props?.construct ?? 'GraphqlApi'), `aws-cdk-lib@${cdkVersion}`, ...additionalDependencies];
   await spawn('npm', ['install', ...deps], { cwd, stripColors: true }).runAsync();
 
   return JSON.parse(readFileSync(path.join(cwd, 'package.json'), 'utf8')).name.replace(/_/g, '-');
+};
+
+export type CdkDeployProps = {
+  timeoutMs: number;
 };
 
 /**
@@ -71,12 +83,13 @@ export const initCDKProject = async (cwd: string, templatePath: string, props?: 
  * @param option additional option to pass into the deployment
  * @returns the generated outputs file as a JSON object
  */
-export const cdkDeploy = async (cwd: string, option: string): Promise<any> => {
+export const cdkDeploy = async (cwd: string, option: string, props?: CdkDeployProps): Promise<any> => {
   await spawn(getNpxPath(), ['cdk', 'deploy', '--outputs-file', 'outputs.json', '--require-approval', 'never', option], {
     cwd,
     stripColors: true,
     // npx cdk does not work on verdaccio
     env: { npm_config_registry: 'https://registry.npmjs.org/' },
+    noOutputTimeout: props?.timeoutMs,
   }).runAsync();
 
   return JSON.parse(readFileSync(path.join(cwd, 'outputs.json'), 'utf8'));
@@ -89,5 +102,16 @@ export const cdkDeploy = async (cwd: string, option: string): Promise<any> => {
  * @returns a promise which resolves after teardown of the stack
  */
 export const cdkDestroy = async (cwd: string, option: string): Promise<void> => {
-  return spawn(getNpxPath(), ['cdk', 'destroy', option], { cwd, stripColors: true }).sendYes().runAsync();
+  return spawn(getNpxPath(), ['cdk', 'destroy', '--force', option], { cwd, stripColors: true }).runAsync();
+};
+
+/**
+ * Helper function to update the cdk app code by a given directory path containing the new `app.ts`
+ * @param cwd cdk app project root
+ * @param templatePath updated cdk app code directory path. The new `app.ts` should be defined under this directory
+ */
+export const updateCDKAppWithTemplate = (cwd: string, templatePath: string): void => {
+  const binDir = path.join(cwd, 'bin');
+  copySync(templatePath, binDir, { overwrite: true });
+  moveSync(path.join(binDir, 'app.ts'), path.join(binDir, `${path.basename(cwd)}.ts`), { overwrite: true });
 };

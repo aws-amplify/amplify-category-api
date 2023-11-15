@@ -1,6 +1,6 @@
 import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import { ModelResourceIDs, toPascalCase } from 'graphql-transformer-common';
+import { ModelResourceIDs, getBaseType, toPascalCase } from 'graphql-transformer-common';
 import { InputFieldWrapper, InputObjectDefinitionWrapper, ObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
 import { ModelDirectiveConfiguration } from '../directive';
 import { makeConditionFilterInput } from './common';
@@ -104,7 +104,15 @@ export const makeCreateInputField = (
   const typeName = objectWrapped.name;
   const name = ModelResourceIDs.ModelCreateInputObjectName(typeName);
 
-  const hasIdField = objectWrapped.hasField('id');
+  const idFieldName = 'id';
+  const hasIdField = objectWrapped.hasField(idFieldName);
+  let shouldAutogenerateIdField = false;
+  if (hasIdField) {
+    const idField = objectWrapped.getField(idFieldName);
+    const idBaseType = getBaseType(idField.type);
+    shouldAutogenerateIdField = idBaseType === 'ID' || idBaseType === 'String';
+  }
+
   const fieldsToRemove = objectWrapped
     .fields!.filter((field) => {
       if (knownModelTypes.has(field.getTypeName())) {
@@ -126,7 +134,7 @@ export const makeCreateInputField = (
     input.addField(InputFieldWrapper.create('id', 'ID', true));
   } else {
     const idField = input.fields.find((f) => f.name === 'id');
-    if (idField) {
+    if (idField && shouldAutogenerateIdField) {
       idField.makeNullable();
     }
   }

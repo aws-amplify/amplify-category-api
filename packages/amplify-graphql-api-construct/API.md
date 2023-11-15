@@ -6,6 +6,7 @@
 
 import { AppsyncFunction } from 'aws-cdk-lib/aws-appsync';
 import { BaseDataSource } from 'aws-cdk-lib/aws-appsync';
+import { BillingMode } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
@@ -45,6 +46,7 @@ import { NoneDataSource } from 'aws-cdk-lib/aws-appsync';
 import { OpenSearchDataSource } from 'aws-cdk-lib/aws-appsync';
 import { RdsDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Resolver } from 'aws-cdk-lib/aws-appsync';
+import { StreamViewType } from 'aws-cdk-lib/aws-dynamodb';
 
 // @public
 export interface AddFunctionProps {
@@ -55,6 +57,28 @@ export interface AddFunctionProps {
     readonly requestMappingTemplate?: MappingTemplate;
     readonly responseMappingTemplate?: MappingTemplate;
     readonly runtime?: FunctionRuntime;
+}
+
+// @public
+export interface AmplifyDynamoDbModelDataSourceStrategy {
+    // (undocumented)
+    readonly dbType: 'DYNAMODB';
+    // (undocumented)
+    readonly provisionStrategy: 'AMPLIFY_TABLE';
+}
+
+// @public
+export class AmplifyDynamoDbTableWrapper {
+    constructor(resource: CfnResource);
+    set billingMode(billingMode: BillingMode);
+    set deletionProtectionEnabled(deletionProtectionEnabled: boolean);
+    static isAmplifyDynamoDbTableResource(x: any): x is CfnResource;
+    set pointInTimeRecoveryEnabled(pointInTimeRecoveryEnabled: boolean);
+    set provisionedThroughput(provisionedThroughput: ProvisionedThroughput);
+    setGlobalSecondaryIndexProvisionedThroughput(indexName: string, provisionedThroughput: ProvisionedThroughput): void;
+    set sseSpecification(sseSpecification: SSESpecification);
+    set streamSpecification(streamSpecification: StreamSpecification);
+    set timeToLiveAttribute(timeToLiveSpecification: TimeToLiveSpecification);
 }
 
 // @public
@@ -110,6 +134,7 @@ export interface AmplifyGraphqlApiProps {
 
 // @public
 export interface AmplifyGraphqlApiResources {
+    readonly amplifyDynamoDbTables: Record<string, AmplifyDynamoDbTableWrapper>;
     readonly cfnResources: AmplifyGraphqlApiCfnResources;
     readonly functions: Record<string, IFunction>;
     readonly graphqlApi: IGraphqlApi;
@@ -120,8 +145,10 @@ export interface AmplifyGraphqlApiResources {
 
 // @public
 export class AmplifyGraphqlDefinition {
+    static combine(definitions: IAmplifyGraphqlDefinition[]): IAmplifyGraphqlDefinition;
     static fromFiles(...filePaths: string[]): IAmplifyGraphqlDefinition;
-    static fromString(schema: string): IAmplifyGraphqlDefinition;
+    static fromFilesAndStrategy(filePaths: string | string[], dataSourceStrategy?: ModelDataSourceStrategy): IAmplifyGraphqlDefinition;
+    static fromString(schema: string, dataSourceStrategy?: ModelDataSourceStrategy): IAmplifyGraphqlDefinition;
 }
 
 // @public
@@ -170,6 +197,14 @@ export interface CustomConflictResolutionStrategy extends ConflictResolutionStra
 }
 
 // @public
+export interface DefaultDynamoDbModelDataSourceStrategy {
+    // (undocumented)
+    readonly dbType: 'DYNAMODB';
+    // (undocumented)
+    readonly provisionStrategy: 'DEFAULT';
+}
+
+// @public
 export type FunctionSlot = MutationFunctionSlot | QueryFunctionSlot | SubscriptionFunctionSlot;
 
 // @public
@@ -195,7 +230,9 @@ export interface IAMAuthorizationConfig {
 
 // @public
 export interface IAmplifyGraphqlDefinition {
+    readonly dataSourceStrategies: Record<string, ModelDataSourceStrategy>;
     readonly functionSlots: FunctionSlot[];
+    readonly referencedLambdaFunctions?: Record<string, IFunction>;
     readonly schema: string;
 }
 
@@ -215,6 +252,12 @@ export interface LambdaAuthorizationConfig {
     readonly function: IFunction;
     readonly ttl: Duration;
 }
+
+// @public
+export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
+
+// @public (undocumented)
+export type ModelDataSourceStrategyDbType = 'DYNAMODB';
 
 // @public
 export interface MutationFunctionSlot extends FunctionSlotBase {
@@ -238,11 +281,13 @@ export interface OptimisticConflictResolutionStrategy extends ConflictResolution
 
 // @public
 export interface PartialTranslationBehavior {
+    readonly allowDestructiveGraphqlSchemaUpdates?: boolean;
     readonly disableResolverDeduping?: boolean;
     readonly enableAutoIndexQueryNames?: boolean;
     readonly enableSearchNodeToNodeEncryption?: boolean;
     readonly enableTransformerCfnOutputs?: boolean;
     readonly populateOwnerFieldForStaticGroupAuth?: boolean;
+    readonly replaceTableUponGsiUpdate?: boolean;
     readonly respectPrimaryKeyAttributesOnConnectionField?: boolean;
     readonly sandboxModeEnabled?: boolean;
     readonly secondaryKeyAsGSI?: boolean;
@@ -252,9 +297,67 @@ export interface PartialTranslationBehavior {
 }
 
 // @public
+export interface ProvisionedConcurrencyConfig {
+    readonly provisionedConcurrentExecutions: number;
+}
+
+// @public
+export interface ProvisionedThroughput {
+    readonly readCapacityUnits: number;
+    readonly writeCapacityUnits: number;
+}
+
+// @public
 export interface QueryFunctionSlot extends FunctionSlotBase {
     readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preDataLoad' | 'postDataLoad' | 'finish';
     readonly typeName: 'Query';
+}
+
+// @public
+export type SQLLambdaLayerMapping = Record<string, string>;
+
+// @public
+export interface SQLLambdaModelDataSourceStrategy {
+    readonly customSqlStatements?: Record<string, string>;
+    readonly dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
+    readonly dbType: 'MYSQL' | 'POSTGRES';
+    readonly name: string;
+    readonly sqlLambdaLayerMapping?: SQLLambdaLayerMapping;
+    readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
+    readonly vpcConfiguration?: VpcConfig;
+}
+
+// @public
+export interface SqlModelDataSourceDbConnectionConfig {
+    readonly databaseNameSsmPath: string;
+    readonly hostnameSsmPath: string;
+    readonly passwordSsmPath: string;
+    readonly portSsmPath: string;
+    readonly usernameSsmPath: string;
+}
+
+// @public
+export interface SSESpecification {
+    readonly kmsMasterKeyId?: string;
+    readonly sseEnabled: boolean;
+    readonly sseType?: SSEType;
+}
+
+// @public
+export enum SSEType {
+    // (undocumented)
+    KMS = "KMS"
+}
+
+// @public
+export interface StreamSpecification {
+    readonly streamViewType: StreamViewType;
+}
+
+// @public
+export interface SubnetAvailabilityZone {
+    readonly availabilityZone: string;
+    readonly subnetId: string;
 }
 
 // @public
@@ -264,12 +367,21 @@ export interface SubscriptionFunctionSlot extends FunctionSlotBase {
 }
 
 // @public
+export interface TimeToLiveSpecification {
+    readonly attributeName?: string;
+    readonly enabled: boolean;
+}
+
+// @public
 export interface TranslationBehavior {
+    readonly allowDestructiveGraphqlSchemaUpdates: boolean;
     readonly disableResolverDeduping: boolean;
     readonly enableAutoIndexQueryNames: boolean;
+    // (undocumented)
     readonly enableSearchNodeToNodeEncryption: boolean;
     readonly enableTransformerCfnOutputs: boolean;
     readonly populateOwnerFieldForStaticGroupAuth: boolean;
+    readonly replaceTableUponGsiUpdate: boolean;
     readonly respectPrimaryKeyAttributesOnConnectionField: boolean;
     readonly sandboxModeEnabled: boolean;
     readonly secondaryKeyAsGSI: boolean;
@@ -281,6 +393,13 @@ export interface TranslationBehavior {
 // @public
 export interface UserPoolAuthorizationConfig {
     readonly userPool: IUserPool;
+}
+
+// @public
+export interface VpcConfig {
+    readonly securityGroupIds: string[];
+    readonly subnetAvailabilityZoneConfig: SubnetAvailabilityZone[];
+    readonly vpcId: string;
 }
 
 // (No @packageDocumentation comment for this package)

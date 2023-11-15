@@ -1,7 +1,7 @@
 import { print } from 'graphql';
 import { EXTRA_DIRECTIVES_DOCUMENT } from './transformation/validation';
 
-export { GraphQLTransform, GraphQLTransformOptions, SyncUtils } from './transformation';
+export { GraphQLTransform, GraphQLTransformOptions, SyncUtils, constructDataSourceMap } from './transformation';
 export { UserDefinedSlot, UserDefinedResolver } from './transformation/types';
 export { validateModelSchema } from './transformation/validation';
 export {
@@ -13,8 +13,6 @@ export {
   SyncConfigServer,
   SyncConfigLambda,
   TransformConfig,
-  DatasourceType,
-  DBType,
 } from './config/index';
 export {
   GetArgumentsOptions,
@@ -27,8 +25,16 @@ export {
   collectDirectivesByTypeNames,
   DirectiveWrapper,
   APICategory,
+  getPrimaryKeyFields,
+  getDataSourceType,
   setResourceName,
   getResourceName,
+  isRDSModel,
+  isImportedRDSType,
+  isRDSDBType,
+  getEngineFromDBType,
+  getImportedRDSType,
+  getDatasourceProvisionStrategy,
 } from './utils';
 export type { SetResourceNameProps } from './utils';
 export * from './utils/operation-names';
@@ -46,7 +52,8 @@ export {
   ImportedDataSourceType,
   ImportedRDSType,
   MYSQL_DB_TYPE,
-  RDS_SCHEMA_FILE_NAME,
+  POSTGRES_DB_TYPE,
+  SQL_SCHEMA_FILE_NAME,
   RDSConnectionSecrets,
   ImportedDataSourceConfig,
   RDSDataSourceConfig,

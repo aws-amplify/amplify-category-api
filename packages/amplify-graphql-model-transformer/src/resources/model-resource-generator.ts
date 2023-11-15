@@ -252,7 +252,7 @@ export abstract class ModelResourceGenerator {
         resolverLogicalId,
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(
-          vtlGenerator.generateGetRequestTemplate(requestConfig),
+          vtlGenerator.generateGetRequestTemplate(requestConfig, ctx),
           `${typeName}.${fieldName}.req.vtl`,
         ),
         MappingTemplate.s3MappingTemplateFromString(
@@ -292,7 +292,7 @@ export abstract class ModelResourceGenerator {
         resolverLogicalId,
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(
-          vtlGenerator.generateListRequestTemplate(requestConfig),
+          vtlGenerator.generateListRequestTemplate(requestConfig, ctx),
           `${typeName}.${fieldName}.req.vtl`,
         ),
         MappingTemplate.s3MappingTemplateFromString(
@@ -338,7 +338,7 @@ export abstract class ModelResourceGenerator {
         resolverLogicalId,
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(
-          vtlGenerator.generateCreateRequestTemplate(requestConfig),
+          vtlGenerator.generateCreateRequestTemplate(requestConfig, ctx),
           `${typeName}.${fieldName}.req.vtl`,
         ),
         MappingTemplate.s3MappingTemplateFromString(
@@ -400,7 +400,7 @@ export abstract class ModelResourceGenerator {
         resolverLogicalId,
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(
-          vtlGenerator.generateUpdateRequestTemplate(requestConfig),
+          vtlGenerator.generateUpdateRequestTemplate(requestConfig, ctx),
           `${typeName}.${fieldName}.req.vtl`,
         ),
         MappingTemplate.s3MappingTemplateFromString(
@@ -461,7 +461,7 @@ export abstract class ModelResourceGenerator {
         resolverLogicalId,
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(
-          vtlGenerator.generateDeleteRequestTemplate(requestConfig),
+          vtlGenerator.generateDeleteRequestTemplate(requestConfig, ctx),
           `${typeName}.${fieldName}.req.vtl`,
         ),
         MappingTemplate.s3MappingTemplateFromString(

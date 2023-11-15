@@ -102,6 +102,11 @@ function _verifyYarnLock {
   loadCacheFromBuildJob
   yarn verify-yarn-lock
 }
+function _verifyDependencyLicensesExtract {
+  echo "Verify Dependency Licenses Extract"
+  loadCacheFromBuildJob
+  yarn verify-dependency-licenses-extract
+}
 function _verifyCDKVersion {
   echo "Verify CDK Version"
   loadCacheFromBuildJob
@@ -209,9 +214,7 @@ function _setupCDKTestsLinux {
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
     _installCLIFromLocalRegistry
-    cd packages/amplify-graphql-api-construct
     yarn package
-    cd ../..
     _loadTestAccountCredentials
     _setShell
 }
