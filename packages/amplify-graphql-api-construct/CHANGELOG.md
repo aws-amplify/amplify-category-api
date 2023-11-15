@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.3.0...@aws-amplify/graphql-api-construct@1.4.0) (2023-11-15)
+
+### Bug Fixes
+
+- address managed table QA feedbacks ([#2059](https://github.com/aws-amplify/amplify-category-api/issues/2059)) ([82a5cd6](https://github.com/aws-amplify/amplify-category-api/commit/82a5cd677fdf183e81590d120a8f494a2ff611ec))
+- Change 'rds' to 'sql' in public-facing symbols ([#2069](https://github.com/aws-amplify/amplify-category-api/issues/2069)) ([ff374dd](https://github.com/aws-amplify/amplify-category-api/commit/ff374dd8398d3f1138a31669b1a5962122039437))
+- construct hub link image ([dbc8ea3](https://github.com/aws-amplify/amplify-category-api/commit/dbc8ea3f2861c4a4e7cd81f70bf8840773b5e5e3))
+- fix api extract ([1f5aa54](https://github.com/aws-amplify/amplify-category-api/commit/1f5aa542150d62df0bd71df7c4586df44cfc3349))
+- Make VPC configuration optional ([#2021](https://github.com/aws-amplify/amplify-category-api/issues/2021)) ([698d816](https://github.com/aws-amplify/amplify-category-api/commit/698d8163b99e962ea6cb43fa28d1fea3d87b9bc3))
+
+### Features
+
+- add managed table support in API construct ([#2024](https://github.com/aws-amplify/amplify-category-api/issues/2024)) ([96a0d94](https://github.com/aws-amplify/amplify-category-api/commit/96a0d94fa872a5329da120f53be139833449b815)), closes [#1849](https://github.com/aws-amplify/amplify-category-api/issues/1849) [#1903](https://github.com/aws-amplify/amplify-category-api/issues/1903) [#1940](https://github.com/aws-amplify/amplify-category-api/issues/1940) [#1971](https://github.com/aws-amplify/amplify-category-api/issues/1971) [#1973](https://github.com/aws-amplify/amplify-category-api/issues/1973)
+- add postgres engine and update types as needed ([#1979](https://github.com/aws-amplify/amplify-category-api/issues/1979)) ([5257d53](https://github.com/aws-amplify/amplify-category-api/commit/5257d53f1d4d02be71b34ddf6757f22dd5d74aff))
+- Add SQL database support to AmplifyGraphqlApi construct ([#1986](https://github.com/aws-amplify/amplify-category-api/issues/1986)) ([2ff63a5](https://github.com/aws-amplify/amplify-category-api/commit/2ff63a540387d96cf10d8ae1975858a76d9ba045)), closes [#1917](https://github.com/aws-amplify/amplify-category-api/issues/1917) [#1983](https://github.com/aws-amplify/amplify-category-api/issues/1983)
+- enable api definition to pass in referenced functions ([#2061](https://github.com/aws-amplify/amplify-category-api/issues/2061)) ([d281f5b](https://github.com/aws-amplify/amplify-category-api/commit/d281f5bcff568a71ed266d1f9d5e45af4a73701f))
+- sql lambda provisioned concurrency ([#2055](https://github.com/aws-amplify/amplify-category-api/issues/2055)) ([d8c5bf0](https://github.com/aws-amplify/amplify-category-api/commit/d8c5bf0b7df3cdd1ad499380d24fe49a61acbc7e))
+- transformer behavior of replacing table upon gsi updates ([#2067](https://github.com/aws-amplify/amplify-category-api/issues/2067)) ([c4b7530](https://github.com/aws-amplify/amplify-category-api/commit/c4b7530e0880b34d411fc2732fa199e4a28bcea1))
+
 # [1.3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.2.1...@aws-amplify/graphql-api-construct@1.3.0) (2023-11-06)
 
 ### Features
