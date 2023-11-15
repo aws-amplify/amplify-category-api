@@ -110,6 +110,7 @@ describe('RDS Tests', () => {
       apiExists: true,
     });
 
+    console.log(`Reading schema file at ${rdsSchemaFilePath}`);
     const schemaContent = readFileSync(rdsSchemaFilePath, 'utf8');
     const schema = parse(schemaContent);
 
@@ -154,14 +155,14 @@ describe('RDS Tests', () => {
     expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds).toBeDefined();
     expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds.length).toBeGreaterThan(0);
 
-    expect(getResource(resources, 'RDSVpcEndpointssm', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-    expect(getResource(resources, 'RDSVpcEndpointssmmessages', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-    expect(getResource(resources, 'RDSVpcEndpointkms', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-    expect(getResource(resources, 'RDSVpcEndpointec2', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-    expect(getResource(resources, 'RDSVpcEndpointec2messages', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, 'SQLVpcEndpointssm', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, 'SQLVpcEndpointssmmessages', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, 'SQLVpcEndpointkms', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, 'SQLVpcEndpointec2', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, 'SQLVpcEndpointec2messages', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
 
     // Validate patching lambda and subscription
-    const rdsPatchingLambdaFunction = getResource(resources, 'SQLPatchingLambdaLogicalID', CDK_FUNCTION_TYPE);
+    const rdsPatchingLambdaFunction = getResource(resources, 'SQLPatchingLambda', CDK_FUNCTION_TYPE);
     expect(rdsPatchingLambdaFunction).toBeDefined();
     expect(rdsPatchingLambdaFunction.Properties).toBeDefined();
     expect(rdsPatchingLambdaFunction.Properties.Environment).toBeDefined();
@@ -173,7 +174,7 @@ describe('RDS Tests', () => {
     );
 
     // Validate subscription
-    const rdsPatchingSubscription = getResource(resources, 'SQLPatchingLambdaLogicalID', CDK_SUBSCRIPTION_TYPE);
+    const rdsPatchingSubscription = getResource(resources, 'SQLPatchingLambda', CDK_SUBSCRIPTION_TYPE);
     expect(rdsPatchingSubscription).toBeDefined();
     expect(rdsPatchingSubscription.Properties).toBeDefined();
     expect(rdsPatchingSubscription.Properties.Protocol).toBeDefined();
