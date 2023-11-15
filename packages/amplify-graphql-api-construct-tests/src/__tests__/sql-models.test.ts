@@ -123,7 +123,7 @@ describe('CDK GraphQL Transformer', () => {
     expect(listResult.body.data.listTodos.items.length).toEqual(1);
     expect(todo.id).toEqual(listResult.body.data.listTodos.items[0].id);
     const client = new LambdaClient({ region });
-    const functionName = outputs.SQLLambdaFunctionName;
+    const functionName = outputs[name].SQLLambdaFunctionName;
     const functionAlias = 'SQLLambdaAlias';
     const command = new GetProvisionedConcurrencyConfigCommand({
       FunctionName: functionName,
