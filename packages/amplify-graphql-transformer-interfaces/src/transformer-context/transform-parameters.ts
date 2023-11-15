@@ -13,6 +13,7 @@ export type TransformParameters = {
   disableResolverDeduping: boolean;
   sandboxModeEnabled: boolean;
   allowDestructiveGraphqlSchemaUpdates: boolean;
+  replaceTableUponGsiUpdate: boolean;
 
   // Auth Params
   useSubUsernameForDefaultIdentityClaim: boolean;

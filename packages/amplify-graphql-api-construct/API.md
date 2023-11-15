@@ -287,12 +287,18 @@ export interface PartialTranslationBehavior {
     readonly enableSearchNodeToNodeEncryption?: boolean;
     readonly enableTransformerCfnOutputs?: boolean;
     readonly populateOwnerFieldForStaticGroupAuth?: boolean;
+    readonly replaceTableUponGsiUpdate?: boolean;
     readonly respectPrimaryKeyAttributesOnConnectionField?: boolean;
     readonly sandboxModeEnabled?: boolean;
     readonly secondaryKeyAsGSI?: boolean;
     readonly shouldDeepMergeDirectiveConfigDefaults?: boolean;
     readonly suppressApiKeyGeneration?: boolean;
     readonly useSubUsernameForDefaultIdentityClaim?: boolean;
+}
+
+// @public
+export interface ProvisionedConcurrencyConfig {
+    readonly provisionedConcurrentExecutions: number;
 }
 
 // @public
@@ -317,6 +323,7 @@ export interface SQLLambdaModelDataSourceStrategy {
     readonly dbType: 'MYSQL' | 'POSTGRES';
     readonly name: string;
     readonly sqlLambdaLayerMapping?: SQLLambdaLayerMapping;
+    readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
     readonly vpcConfiguration?: VpcConfig;
 }
 
@@ -374,6 +381,7 @@ export interface TranslationBehavior {
     readonly enableSearchNodeToNodeEncryption: boolean;
     readonly enableTransformerCfnOutputs: boolean;
     readonly populateOwnerFieldForStaticGroupAuth: boolean;
+    readonly replaceTableUponGsiUpdate: boolean;
     readonly respectPrimaryKeyAttributesOnConnectionField: boolean;
     readonly sandboxModeEnabled: boolean;
     readonly secondaryKeyAsGSI: boolean;

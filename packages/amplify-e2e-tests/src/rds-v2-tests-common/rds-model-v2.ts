@@ -88,13 +88,13 @@ export const testRDSModel = (engine: ImportedRDSType, queries: string[]): void =
       // Validate the generated resources in the CloudFormation template
       const apisDirectory = path.join(projRoot, 'amplify', 'backend', 'api');
       const apiDirectory = path.join(apisDirectory, apiName);
-      const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', 'RdsApiStack.json');
+      const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', 'SqlApiStack.json');
       const cfnTemplate = JSON.parse(readFileSync(cfnRDSTemplateFile, 'utf8'));
       expect(cfnTemplate.Resources).toBeDefined();
       const resources = cfnTemplate.Resources;
 
       // Validate if the SQL lambda function has VPC configuration even if the database is accessible through internet
-      const rdsLambdaFunction = getResource(resources, 'RDSLambdaLogicalID', CDK_FUNCTION_TYPE);
+      const rdsLambdaFunction = getResource(resources, 'SQLLambdaFunction', CDK_FUNCTION_TYPE);
       expect(rdsLambdaFunction).toBeDefined();
       expect(rdsLambdaFunction.Properties).toBeDefined();
       expect(rdsLambdaFunction.Properties.VpcConfig).toBeDefined();
@@ -103,11 +103,11 @@ export const testRDSModel = (engine: ImportedRDSType, queries: string[]): void =
       expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds).toBeDefined();
       expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds.length).toBeGreaterThan(0);
 
-      expect(getResource(resources, 'RDSVpcEndpointssm', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-      expect(getResource(resources, 'RDSVpcEndpointssmmessages', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-      expect(getResource(resources, 'RDSVpcEndpointkms', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-      expect(getResource(resources, 'RDSVpcEndpointec2', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-      expect(getResource(resources, 'RDSVpcEndpointec2messages', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+      expect(getResource(resources, 'SQLVpcEndpointssm', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+      expect(getResource(resources, 'SQLVpcEndpointssmmessages', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+      expect(getResource(resources, 'SQLVpcEndpointkms', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+      expect(getResource(resources, 'SQLVpcEndpointec2', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+      expect(getResource(resources, 'SQLVpcEndpointec2messages', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
     };
 
     afterAll(async () => {
@@ -148,7 +148,7 @@ export const testRDSModel = (engine: ImportedRDSType, queries: string[]): void =
       region = metaAfterInit.providers.awscloudformation.Region;
       await setupDatabase();
 
-      const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+      const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.sql.graphql');
 
       await addApiWithoutSchema(projRoot, { transformerVersion: 2, apiName });
 

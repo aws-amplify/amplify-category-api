@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
-import { App, Stack, Duration } from 'aws-cdk-lib';
+import { App, Stack, Duration, CfnOutput } from 'aws-cdk-lib';
 // @ts-ignore
 import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
 
@@ -38,7 +38,7 @@ const stack = new Stack(app, packageJson.name.replace(/_/g, '-'), {
   env: { region: process.env.CLI_REGION || 'us-west-2' },
 });
 
-new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
+const api = new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
   apiName: 'MySqlBoundApi',
   definition: AmplifyGraphqlDefinition.fromString(
     /* GraphQL */ `
@@ -58,6 +58,9 @@ new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
       dbConnectionConfig: {
         ...dbDetails.ssmPaths,
       },
+      sqlLambdaProvisionedConcurrencyConfig: {
+        provisionedConcurrentExecutions: 2,
+      },
     },
   ),
   authorizationModes: {
@@ -67,3 +70,9 @@ new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
     sandboxModeEnabled: true,
   },
 });
+const {
+  resources: { functions },
+} = api;
+
+const sqlLambda = functions['SQLLambdaFunction'];
+new CfnOutput(stack, 'SQLLambdaFunctionName', { value: sqlLambda.functionName });

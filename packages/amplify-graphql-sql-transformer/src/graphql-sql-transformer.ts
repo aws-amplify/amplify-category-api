@@ -100,7 +100,7 @@ export class SqlTransformer extends TransformerPluginBase {
 
     this.sqlDirectiveFields.forEach((resolverFns) => {
       resolverFns.forEach((config) => {
-        const { RDSLambdaDataSourceLogicalID: dataSourceId } = ResourceConstants.RESOURCES;
+        const { SQLLambdaDataSourceLogicalID: dataSourceId } = ResourceConstants.RESOURCES;
         const dataSource = context.api.host.getDataSource(dataSourceId);
         const statement = getStatement(config, context.customQueries);
         const resolverResourceId = ResolverResourceIDs.ResolverResourceID(config.resolverTypeName, config.resolverFieldName);

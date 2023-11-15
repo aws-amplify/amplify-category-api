@@ -422,6 +422,15 @@ export interface TranslationBehavior {
    * @experimental
    */
   readonly allowDestructiveGraphqlSchemaUpdates: boolean;
+
+  /**
+   * This behavior will only come into effect when both "allowDestructiveGraphqlSchemaUpdates" and this value are set to true
+   * When enabled, any GSI update operation will replace the table instead of iterative deployment, which will WIPE ALL EXISTING DATA but cost much less time for deployment
+   * This will only affect DynamoDB tables with provision strategy "AMPLIFY_TABLE".
+   * @default false
+   * @experimental
+   */
+  readonly replaceTableUponGsiUpdate: boolean;
 }
 
 /**
@@ -514,6 +523,15 @@ export interface PartialTranslationBehavior {
    * @experimental
    */
   readonly allowDestructiveGraphqlSchemaUpdates?: boolean;
+
+  /**
+   * This behavior will only come into effect when both "allowDestructiveGraphqlSchemaUpdates" and this value are set to true
+   * When enabled, any global secondary index update operation will replace the table instead of iterative deployment, which will WIPE ALL EXISTING DATA but cost much less time for deployment
+   * This will only affect DynamoDB tables with provision strategy "AMPLIFY_TABLE".
+   * @default false
+   * @experimental
+   */
+  readonly replaceTableUponGsiUpdate?: boolean;
 }
 
 /**
@@ -870,6 +888,11 @@ export interface SQLLambdaModelDataSourceStrategy {
    * An optional override for the default SQL Lambda Layer
    */
   readonly sqlLambdaLayerMapping?: SQLLambdaLayerMapping;
+
+  /**
+   * The configuration for the provisioned concurrency of the Lambda.
+   */
+  readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
 }
 
 /**
@@ -889,6 +912,15 @@ export interface VpcConfig {
 
   /** The subnets to install the Lambda data source in, one per availability zone. */
   readonly subnetAvailabilityZoneConfig: SubnetAvailabilityZone[];
+}
+
+/**
+ * The configuration for the provisioned concurrency of the Lambda.
+ * @experimental
+ */
+export interface ProvisionedConcurrencyConfig {
+  /** The amount of provisioned concurrency to allocate. **/
+  readonly provisionedConcurrentExecutions: number;
 }
 
 /**

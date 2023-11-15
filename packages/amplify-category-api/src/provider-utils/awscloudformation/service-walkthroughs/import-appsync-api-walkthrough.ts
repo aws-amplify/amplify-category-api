@@ -7,7 +7,7 @@ import {
   ImportedDataSourceType,
   ImportedRDSType,
   ImportedDataSourceConfig,
-  RDS_SCHEMA_FILE_NAME,
+  SQL_SCHEMA_FILE_NAME,
 } from '@aws-amplify/graphql-transformer-core';
 import { storeConnectionSecrets, getSecretsKey } from '../utils/rds-resources/database-resources';
 import { constructDefaultGlobalAmplifyInput } from '@aws-amplify/graphql-schema-generator';
@@ -39,7 +39,7 @@ export const importAppSyncAPIWalkthrough = async (context: $TSContext): Promise<
   }
 
   const apiResourceDir = getAPIResourceDir(apiName);
-  const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
+  const pathToSchemaFile = path.join(apiResourceDir, SQL_SCHEMA_FILE_NAME);
   const secretsKey = await getSecretsKey();
 
   if (fs.pathExistsSync(pathToSchemaFile)) {

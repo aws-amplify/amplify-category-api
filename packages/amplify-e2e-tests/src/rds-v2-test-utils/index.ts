@@ -108,7 +108,7 @@ export const setupRDSDatabase = async (
 };
 
 export const verifyRDSSchema = (projectRoot: string, apiName: string, expected: string = '') => {
-  const rdsSchemaPath = join(projectRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+  const rdsSchemaPath = join(projectRoot, 'amplify', 'backend', 'api', apiName, 'schema.sql.graphql');
   const expectExists = !_.isEmpty(expected);
   expect(fs.existsSync(rdsSchemaPath)).toEqual(expectExists);
   if (!expectExists) {

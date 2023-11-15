@@ -9,6 +9,7 @@ import {
   setupRDSInstanceAndData,
   storeDbConnectionConfig,
 } from 'amplify-category-api-e2e-core';
+import { LambdaClient, GetProvisionedConcurrencyConfigCommand } from '@aws-sdk/client-lambda';
 import generator from 'generate-password';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { graphql } from '../graphql-request';
@@ -42,7 +43,7 @@ describe('CDK GraphQL Transformer', () => {
 
   const [username, password, identifier] = generator.generateMultiple(3);
 
-  const region = process.env.AWS_REGION ?? 'us-east-1';
+  const region = process.env.CLI_REGION ?? 'us-west-2';
 
   const dbname = 'default_db';
 
@@ -121,6 +122,15 @@ describe('CDK GraphQL Transformer', () => {
 
     expect(listResult.body.data.listTodos.items.length).toEqual(1);
     expect(todo.id).toEqual(listResult.body.data.listTodos.items[0].id);
+    const client = new LambdaClient({ region });
+    const functionName = outputs[name].SQLLambdaFunctionName;
+    const functionAlias = 'SQLLambdaFunctionAlias';
+    const command = new GetProvisionedConcurrencyConfigCommand({
+      FunctionName: functionName,
+      Qualifier: functionAlias,
+    });
+    const response = await client.send(command);
+    expect(response.RequestedProvisionedConcurrentExecutions).toEqual(2);
   });
 });
 
