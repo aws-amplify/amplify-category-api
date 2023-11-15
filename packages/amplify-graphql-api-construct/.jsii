@@ -6548,23 +6548,6 @@
           "abstract": true,
           "docs": {
             "default": "false",
-            "stability": "experimental",
-            "summary": "This behavior will only come into effect when both \"allowDestructiveGraphqlSchemaUpdates\" and this value are set to true When enabled, any global secondary index update operation will replace the table instead of iterative deployment, which will WIPE ALL EXISTING DATA but cost much less time for deployment This will only affect DynamoDB tables with provision strategy \"AMPLIFY_TABLE\"."
-          },
-          "immutable": true,
-          "locationInModule": {
-            "filename": "src/types.ts",
-            "line": 534
-          },
-          "name": "replaceTableUponGsiUpdate",
-          "type": {
-            "primitive": "boolean"
-          }
-        },
-        {
-          "abstract": true,
-          "docs": {
-            "default": "false",
             "remarks": "- Removing or renaming a model\n - Modifying the primary key of a model\n - Modifying a Local Secondary Index of a model (only applies to projects with secondaryKeyAsGSI turned off)\n\nALL DATA WILL BE LOST when the table replacement happens. When enabled, destructive updates are allowed.\nThis will only affect DynamoDB tables with provision strategy \"AMPLIFY_TABLE\".",
             "stability": "experimental",
             "summary": "The following schema updates require replacement of the underlying DynamoDB table:."
@@ -6670,6 +6653,24 @@
             "line": 470
           },
           "name": "populateOwnerFieldForStaticGroupAuth",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "experimental",
+            "summary": "This behavior will only come into effect when both \"allowDestructiveGraphqlSchemaUpdates\" and this value are set to true When enabled, any global secondary index update operation will replace the table instead of iterative deployment, which will WIPE ALL EXISTING DATA but cost much less time for deployment This will only affect DynamoDB tables with provision strategy \"AMPLIFY_TABLE\"."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 534
+          },
+          "name": "replaceTableUponGsiUpdate",
           "optional": true,
           "type": {
             "primitive": "boolean"
@@ -7827,5 +7828,5 @@
     }
   },
   "version": "1.3.0",
-  "fingerprint": "ZR85N1XV4eAGXnxlp6nMPRL/tPwNy2MP9ncIgrW4afc="
+  "fingerprint": "6lnPyRHpypFR3EvmDPQeHQKB8uBJ/TXiIp0QK0yT/nk="
 }

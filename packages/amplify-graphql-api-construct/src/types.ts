@@ -531,7 +531,7 @@ export interface PartialTranslationBehavior {
    * @default false
    * @experimental
    */
-  readonly replaceTableUponGsiUpdate: boolean;
+  readonly replaceTableUponGsiUpdate?: boolean;
 }
 
 /**
