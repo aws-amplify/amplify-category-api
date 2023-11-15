@@ -13,7 +13,6 @@ import {
   getConnectionSecrets,
 } from '../../provider-utils/awscloudformation/utils/rds-resources/database-resources';
 import { writeSchemaFile, generateRDSSchema } from '../../provider-utils/awscloudformation/utils/graphql-schema-utils';
-import { PREVIEW_BANNER } from '../../category-constants';
 import { parse } from 'graphql';
 import { getEngineInput } from '../../provider-utils/awscloudformation/utils/rds-input-utils';
 
@@ -22,7 +21,6 @@ const subcommand = 'generate-schema';
 export const name = subcommand;
 
 export const run = async (context: $TSContext): Promise<void> => {
-  printer.warn(PREVIEW_BANNER);
   const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
   if (transformerVersion !== 2) {
     throw new AmplifyError('InvalidDirectiveError', {
