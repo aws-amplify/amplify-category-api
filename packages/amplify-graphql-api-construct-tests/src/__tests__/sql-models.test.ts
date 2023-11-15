@@ -43,7 +43,7 @@ describe('CDK GraphQL Transformer', () => {
 
   const [username, password, identifier] = generator.generateMultiple(3);
 
-  const region = process.env.AWS_REGION ?? 'us-east-1';
+  const region = process.env.CLI_REGION ?? 'us-west-2';
 
   const dbname = 'default_db';
 
