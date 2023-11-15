@@ -12,6 +12,7 @@ import {
   UpdateContinuousBackupsCommandInput,
   UpdateTableCommandInput,
   UpdateTimeToLiveCommandInput,
+  ResourceNotFoundException,
 } from '@aws-sdk/client-dynamodb';
 
 const ddbClient = new DynamoDB();
@@ -73,31 +74,26 @@ export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
       }
       log('Current table state: ', describeTableResult);
 
-      // determine if table needs replacement
+      // determine if table needs replacement when table key schema is changed
       if (isKeySchemaModified(describeTableResult.Table.KeySchema!, tableDef.keySchema)) {
-        console.log('Update requires replacement');
-
-        console.log('Deleting the old table');
-        await ddbClient.deleteTable({ TableName: event.PhysicalResourceId });
-        await retry(
-          async () => await doesTableExist(event.PhysicalResourceId!),
-          (res) => res === false,
-        );
-        console.log(`Table '${event.PhysicalResourceId}' does not exist. Deletion is finished.`);
-
-        const createTableInput = toCreateTableInput(tableDef);
-        const response = await createNewTable(createTableInput);
-        result = {
-          PhysicalResourceId: response.tableName,
-          Data: {
-            TableArn: response.tableArn,
-            TableStreamArn: response.streamArn,
-            TableName: response.tableName,
-            IsTableReplaced: true, // This value will be consumed by isComplete handler
-          },
-        };
-        log('Returning result', result);
-        return result;
+        console.log('Detected table key schema change. Update requires replacement');
+        if (tableDef.allowDestructiveGraphqlSchemaUpdates) {
+          return replaceTable(describeTableResult.Table, tableDef);
+        } else {
+          throw new Error(
+            "Editing key schema of table requires replacement which will cause ALL EXISITING DATA TO BE LOST. If this is intended, set the 'allowDestructiveGraphqlSchemaUpdates' to true and deploy again.",
+          );
+        }
+      }
+      // when both sandbox and destructive updates are enabled, gsi update will trigger a table replacement
+      if (tableDef.replaceTableUponGsiUpdate && tableDef.allowDestructiveGraphqlSchemaUpdates) {
+        const nextUpdate = getNextGSIUpdate(describeTableResult.Table, tableDef);
+        if (nextUpdate !== undefined) {
+          console.log(
+            'Detected global secondary index changes in sandbox mode with destructive updates allowed. Update requires replacement',
+          );
+          return replaceTable(describeTableResult.Table, tableDef);
+        }
       }
 
       // determine if point in time recovery is changed -> describeContinuousBackups & updateContinuousBackups
@@ -175,7 +171,7 @@ export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
       }
 
       // determine GSI updates
-      const nextGsiUpdate = getNextGSIUpdate(describeTableResult.Table, tableDef);
+      const nextGsiUpdate = getNextAtomicUpdate(describeTableResult.Table, tableDef);
       if (nextGsiUpdate) {
         log('Computed next update', nextGsiUpdate);
         console.log('Initiating table GSI update');
@@ -197,18 +193,19 @@ export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
       result = {
         PhysicalResourceId: event.PhysicalResourceId,
       };
-      console.log('Fetching current table state');
-      const describeTableResultBeforeDeletion = await ddbClient.describeTable({ TableName: event.PhysicalResourceId });
-      if (describeTableResultBeforeDeletion.Table?.DeletionProtectionEnabled) {
-        // Skip the deletion when protection is enabled
-        return result;
-      }
       try {
+        console.log('Fetching current table state');
+        const describeTableResultBeforeDeletion = await ddbClient.describeTable({ TableName: event.PhysicalResourceId });
+        if (describeTableResultBeforeDeletion.Table?.DeletionProtectionEnabled) {
+          // Skip the deletion when protection is enabled
+          return result;
+        }
         console.log('Initiating table deletion');
         await ddbClient.deleteTable({ TableName: event.PhysicalResourceId });
         return result;
       } catch (err) {
-        if (err.code === 'ResourceNotFoundException') {
+        if (err instanceof ResourceNotFoundException) {
+          console.log('Table to be deleted is not found. Deletion complete.');
           return result;
         }
         throw err;
@@ -277,7 +274,7 @@ export const isComplete = async (
   }
 
   // need to check if any more GSI updates are necessary
-  const nextUpdate = getNextGSIUpdate(describeTableResult.Table, endState);
+  const nextUpdate = getNextAtomicUpdate(describeTableResult.Table, endState);
   log('Computed next update', nextUpdate);
   if (!nextUpdate) {
     // current state equals end state so we're done
@@ -292,25 +289,54 @@ export const isComplete = async (
 };
 
 /**
- * Compares the currentState with the endState to determine a next GSI related update step that will get the table closer to the end state
+ * Util function to replace a table with the table name unchanged
  * @param currentState table description result from DynamoDB SDK call
  * @param endState The input table state from user
- * @returns UpdateTableInput object including the next GSI update only. Undefined if no next steps
+ * @returns Response object which is sent back to CFN
  */
-export const getNextGSIUpdate = (currentState: TableDescription, endState: CustomDDB.Input): UpdateTableCommandInput | undefined => {
-  const endStateGSIs = endState.globalSecondaryIndexes || [];
-  const endStateGSINames = endStateGSIs.map((gsi) => gsi.indexName);
+const replaceTable = async (
+  currentState: TableDescription,
+  endState: CustomDDB.Input,
+): Promise<AWSCDKAsyncCustomResource.OnEventResponse> => {
+  if (currentState.DeletionProtectionEnabled === true) {
+    throw new Error('Table cannot be replaced when the deletion protection is enabled.');
+  }
+  console.log('Deleting the old table');
+  await ddbClient.deleteTable({ TableName: currentState.TableName });
+  await retry(
+    async () => await doesTableExist(currentState.TableName!),
+    (res) => res === false,
+  );
+  console.log(`Table '${currentState.TableName}' does not exist. Deletion is finished.`);
 
-  const currentStateGSIs = currentState.GlobalSecondaryIndexes || [];
-  const currentStateGSINames = currentStateGSIs.map((gsi) => gsi.IndexName);
+  const createTableInput = toCreateTableInput(endState);
+  console.log('Creating the new table');
+  const response = await createNewTable(createTableInput);
+  const result = {
+    PhysicalResourceId: response.tableName,
+    Data: {
+      TableArn: response.tableArn,
+      TableStreamArn: response.streamArn,
+      TableName: response.tableName,
+      IsTableReplaced: true, // This value will be consumed by isComplete handler
+    },
+  };
+  log('Returning result', result);
+  return result;
+};
 
-  /**
-   * You can only perform one of the following operations at once:
+/**
+ * You can only perform one of the following operations at once:
     - Modify the provisioned throughput settings of the table.
     - Remove a global secondary index from the table.
     - Create a new global secondary index on the table. After the index begins backfilling, you can use UpdateTable to perform other operations.
     @link https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#updateTable-property
-  */
+ * @param currentState table description result from DynamoDB SDK call
+ * @param endState The input table state from user
+ * @returns UpdateTableInput object including the next GSI update only. Undefined if no next steps
+ */
+export const getNextAtomicUpdate = (currentState: TableDescription, endState: CustomDDB.Input): UpdateTableCommandInput | undefined => {
+  const currentStateGSIs = currentState.GlobalSecondaryIndexes || [];
   const isTableBillingModeModified =
     (currentState.BillingModeSummary?.BillingMode !== undefined && currentState.BillingModeSummary?.BillingMode !== endState.billingMode) ||
     (currentState.BillingModeSummary?.BillingMode == undefined && endState.billingMode === 'PAY_PER_REQUEST');
@@ -353,6 +379,21 @@ export const getNextGSIUpdate = (currentState: TableDescription, endState: Custo
     }
     return parsePropertiesToDynamoDBInput(updateInput) as UpdateTableCommandInput;
   }
+  return getNextGSIUpdate(currentState, endState);
+};
+
+/**
+ * Compares the currentState with the endState to determine a next GSI related update step that will get the table closer to the end state
+ * @param currentState table description result from DynamoDB SDK call
+ * @param endState The input table state from user
+ * @returns UpdateTableInput object including the next GSI update only. Undefined if no next steps
+ */
+const getNextGSIUpdate = (currentState: TableDescription, endState: CustomDDB.Input): UpdateTableCommandInput | undefined => {
+  const endStateGSIs = endState.globalSecondaryIndexes || [];
+  const endStateGSINames = endStateGSIs.map((gsi) => gsi.indexName);
+
+  const currentStateGSIs = currentState.GlobalSecondaryIndexes || [];
+  const currentStateGSINames = currentStateGSIs.map((gsi) => gsi.IndexName);
 
   // function to identify any GSIs that need to be removed
   const gsiRequiresReplacementPredicate = (currentGSI: GlobalSecondaryIndexDescription): boolean => {
@@ -387,12 +428,20 @@ export const getNextGSIUpdate = (currentState: TableDescription, endState: Custo
 
   const gsiToAdd = endStateGSIs.find(gsiRequiresCreationPredicate);
   if (gsiToAdd) {
+    let gsiProvisionThroughput: any = gsiToAdd.provisionedThroughput;
+    // When table is billing at `PROVISIONED` and no throughput defined for gsi, the table's throughput will be used by default
+    if (endState.billingMode === 'PROVISIONED' && gsiToAdd.provisionedThroughput === undefined) {
+      gsiProvisionThroughput = {
+        readCapacityUnits: endState.provisionedThroughput?.readCapacityUnits,
+        writeCapacityUnits: endState.provisionedThroughput?.writeCapacityUnits,
+      };
+    }
     const attributeNamesToInclude = gsiToAdd.keySchema.map((schema) => schema.attributeName);
     const gsiToAddAction = {
       IndexName: gsiToAdd.indexName,
       KeySchema: gsiToAdd.keySchema,
       Projection: gsiToAdd.projection,
-      ProvisionedThroughput: gsiToAdd.provisionedThroughput,
+      ProvisionedThroughput: gsiProvisionThroughput,
     };
     return {
       TableName: currentState.TableName!,
@@ -721,7 +770,14 @@ const usePascalCaseForObjectKeys = (obj: { [key: string]: any }): { [key: string
  * @returns Object with its values converted to the correct form of boolean or number
  */
 const convertStringToBooleanOrNumber = (obj: Record<string, any>): Record<string, any> => {
-  const fieldsToBeConvertedToBoolean = ['deletionProtectionEnabled', 'enabled', 'sseEnabled', 'pointInTimeRecoveryEnabled'];
+  const fieldsToBeConvertedToBoolean = [
+    'deletionProtectionEnabled',
+    'enabled',
+    'sseEnabled',
+    'pointInTimeRecoveryEnabled',
+    'allowDestructiveGraphqlSchemaUpdates',
+    'replaceTableUponGsiUpdate',
+  ];
   const fieldsToBeConvertedToNumber = ['readCapacityUnits', 'writeCapacityUnits'];
   for (const key in obj) {
     if (Array.isArray(obj[key])) {
@@ -780,6 +836,7 @@ export const toCreateTableInput = (props: CustomDDB.Input): CreateTableCommandIn
       : undefined,
     ProvisionedThroughput: props.provisionedThroughput,
     SSESpecification: props.sseSpecification ? { Enabled: props.sseSpecification.sseEnabled } : undefined,
+    DeletionProtectionEnabled: props.deletionProtectionEnabled,
   };
   return parsePropertiesToDynamoDBInput(createTableInput) as CreateTableCommandInput;
 };
@@ -806,7 +863,7 @@ const doesTableExist = async (tableName: string): Promise<boolean> => {
     await ddbClient.describeTable({ TableName: tableName });
     return true; // Table exists
   } catch (error) {
-    if (error.code === 'ResourceNotFoundException') {
+    if (error instanceof ResourceNotFoundException) {
       return false; // Table does not exist
     }
     throw error; // Handle other errors

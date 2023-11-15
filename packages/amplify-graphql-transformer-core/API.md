@@ -52,6 +52,7 @@ import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { ObjectTypeExtensionNode } from 'graphql';
 import { OperationTypeDefinitionNode } from 'graphql';
+import type { ProvisionedConcurrencyConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { QueryFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { S3MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -249,6 +250,8 @@ export interface GraphQLTransformOptions {
     // (undocumented)
     readonly resolverConfig?: ResolverConfig;
     // (undocumented)
+    readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
+    // (undocumented)
     readonly sqlLambdaVpcConfig?: VpcConfig;
     // Warning: (ae-forgotten-export) The symbol "StackMapping" needs to be exported by the entry point index.d.ts
     //
@@ -403,9 +406,6 @@ export class ObjectDefinitionWrapper {
 export const POSTGRES_DB_TYPE: DBType;
 
 // @public (undocumented)
-export const RDS_SCHEMA_FILE_NAME = "schema.rds.graphql";
-
-// @public (undocumented)
 export type RDSConnectionSecrets = TransformerSecrets & {
     username: string;
     password: string;
@@ -438,6 +438,9 @@ export type SetResourceNameProps = {
     name: string;
     setOnDefaultChild?: boolean;
 };
+
+// @public (undocumented)
+export const SQL_SCHEMA_FILE_NAME = "schema.sql.graphql";
 
 // @public (undocumented)
 export class StackManager implements StackManagerProvider {

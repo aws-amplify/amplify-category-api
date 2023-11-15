@@ -1,5 +1,5 @@
 import {
-  getNextGSIUpdate,
+  getNextAtomicUpdate,
   toCreateTableInput,
   getStreamUpdate,
   getTtlUpdate,
@@ -109,7 +109,7 @@ describe('Custom Resource Lambda Tests', () => {
           },
         ],
       };
-      const nextUpdate = getNextGSIUpdate(currentState, endState);
+      const nextUpdate = getNextAtomicUpdate(currentState, endState);
       expect(nextUpdate).toMatchSnapshot();
     });
     it('should compute addition correctly', () => {
@@ -136,7 +136,7 @@ describe('Custom Resource Lambda Tests', () => {
         },
         GlobalSecondaryIndexes: [],
       };
-      const nextUpdate = getNextGSIUpdate(currentState, endState);
+      const nextUpdate = getNextAtomicUpdate(currentState, endState);
       expect(nextUpdate).toMatchSnapshot();
     });
     it('should compute next addition correctly', () => {
@@ -177,7 +177,7 @@ describe('Custom Resource Lambda Tests', () => {
           },
         ],
       };
-      const nextUpdate = getNextGSIUpdate(currentState, endState);
+      const nextUpdate = getNextAtomicUpdate(currentState, endState);
       expect(nextUpdate).toMatchSnapshot();
     });
     it('should compute end state correctly in which no additional update step is defined', () => {
@@ -235,7 +235,7 @@ describe('Custom Resource Lambda Tests', () => {
           },
         ],
       };
-      const nextUpdate = getNextGSIUpdate(currentState, endState);
+      const nextUpdate = getNextAtomicUpdate(currentState, endState);
       expect(nextUpdate).toBeUndefined();
     });
   });
@@ -301,7 +301,7 @@ describe('Custom Resource Lambda Tests', () => {
       const endState: CustomDDB.Input = {
         ...baseTableDef,
       };
-      const nextUpdate = getNextGSIUpdate(currentState, endState);
+      const nextUpdate = getNextAtomicUpdate(currentState, endState);
       expect(nextUpdate).toMatchSnapshot();
     });
     it('when the hash key is renamed', () => {
@@ -336,7 +336,7 @@ describe('Custom Resource Lambda Tests', () => {
           },
         ],
       };
-      const nextUpdate = getNextGSIUpdate(currentState, endState);
+      const nextUpdate = getNextAtomicUpdate(currentState, endState);
       expect(nextUpdate).toMatchSnapshot();
     });
     it('when the sort key is modified', () => {
@@ -379,7 +379,7 @@ describe('Custom Resource Lambda Tests', () => {
           },
         ],
       };
-      const nextUpdate = getNextGSIUpdate(currentState, endState);
+      const nextUpdate = getNextAtomicUpdate(currentState, endState);
       expect(nextUpdate).toMatchSnapshot();
     });
     it('when projection type is modified', () => {
@@ -410,7 +410,7 @@ describe('Custom Resource Lambda Tests', () => {
           },
         ],
       };
-      const nextUpdate = getNextGSIUpdate(currentState, endState);
+      const nextUpdate = getNextAtomicUpdate(currentState, endState);
       expect(nextUpdate).toMatchSnapshot();
     });
     it('when non key attributes are modified', () => {
@@ -461,7 +461,7 @@ describe('Custom Resource Lambda Tests', () => {
           },
         ],
       };
-      const nextUpdate = getNextGSIUpdate(modifiedCurrentState, endState);
+      const nextUpdate = getNextAtomicUpdate(modifiedCurrentState, endState);
       expect(nextUpdate).toMatchSnapshot();
     });
   });
@@ -828,7 +828,7 @@ describe('Custom Resource Lambda Tests', () => {
             writeCapacityUnits: 5,
           },
         };
-        nextUpdate = getNextGSIUpdate(currentState, endState);
+        nextUpdate = getNextAtomicUpdate(currentState, endState);
         expect(nextUpdate).toMatchSnapshot();
       });
       it('should compute the difference correctly when billingMode is changed to "PROVISIONED" and GSIs exist in current table', () => {
@@ -906,7 +906,7 @@ describe('Custom Resource Lambda Tests', () => {
             },
           ],
         };
-        nextUpdate = getNextGSIUpdate(currentState, endState);
+        nextUpdate = getNextAtomicUpdate(currentState, endState);
         expect(nextUpdate).toMatchSnapshot();
 
         // Second Update
@@ -952,7 +952,7 @@ describe('Custom Resource Lambda Tests', () => {
             },
           ],
         };
-        nextUpdate = getNextGSIUpdate(currentState, endState);
+        nextUpdate = getNextAtomicUpdate(currentState, endState);
         expect(nextUpdate).toMatchSnapshot();
       });
       it('should compute the difference correctly when billingMode is changed to "PAY_PER_REQUEST"', () => {
@@ -970,7 +970,43 @@ describe('Custom Resource Lambda Tests', () => {
           ...baseTableDef,
           billingMode: 'PAY_PER_REQUEST',
         };
-        nextUpdate = getNextGSIUpdate(currentState, endState);
+        nextUpdate = getNextAtomicUpdate(currentState, endState);
+        expect(nextUpdate).toMatchSnapshot();
+      });
+      it('should assign the table provision throughput when billingMode is "PROVISIONED" and no throughput defined in the new GSI', () => {
+        currentState = {
+          ...currentStateBase,
+          BillingModeSummary: {
+            BillingMode: 'PROVISIONED',
+          },
+          ProvisionedThroughput: {
+            ReadCapacityUnits: 5,
+            WriteCapacityUnits: 5,
+          },
+        };
+        endState = {
+          ...baseTableDef,
+          billingMode: 'PROVISIONED',
+          provisionedThroughput: {
+            readCapacityUnits: 5,
+            writeCapacityUnits: 5,
+          },
+          globalSecondaryIndexes: [
+            {
+              indexName: 'bySk',
+              keySchema: [
+                {
+                  attributeName: 'sk',
+                  keyType: 'HASH',
+                },
+              ],
+              projection: {
+                projectionType: 'ALL',
+              },
+            },
+          ],
+        };
+        nextUpdate = getNextAtomicUpdate(currentState, endState);
         expect(nextUpdate).toMatchSnapshot();
       });
     });

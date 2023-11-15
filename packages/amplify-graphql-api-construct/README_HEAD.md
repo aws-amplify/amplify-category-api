@@ -1,6 +1,6 @@
 # Amplify Graphql API Construct
 
-[![View on Construct Hub](https://constructs.dev/badge?package=%40aws-amplify%2Fgraphql-construct-alpha)](https://constructs.dev/packages/@aws-amplify/graphql-api-construct)
+[![View on Construct Hub](https://constructs.dev/badge?package=%40aws-amplify%2Fgraphql-api-construct)](https://constructs.dev/packages/@aws-amplify/graphql-api-construct)
 
 This package vends an L3 CDK Construct wrapping the behavior of the Amplify GraphQL Transformer. This enables quick development and interation of AppSync APIs which support the Amplify GraphQL Directives. For more information on schema modeling in GraphQL, please refer to the [amplify developer docs](https://docs.amplify.aws/cli/graphql/overview/).
 
@@ -132,4 +132,4 @@ new AmplifyGraphqlApi(stack, 'MultiFileDefinition', {
 });
 ```
 
-> **NOTE** The 'modelDataSourceDefinition' configuration option is in preview and is not recommended to use with production systems.
+> **NOTE** The 'dataSourceStrategies' configuration option is in preview and is not recommended to use with production systems.

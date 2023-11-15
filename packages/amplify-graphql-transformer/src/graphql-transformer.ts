@@ -26,6 +26,7 @@ import {
   SynthParameters,
   TransformParameterProvider,
   DataSourceType,
+  ProvisionedConcurrencyConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
 import { GraphQLTransform, RDSConnectionSecrets, ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
@@ -54,6 +55,7 @@ export type TransformConfig = {
   transformParameters: TransformParameters;
   sqlLambdaVpcConfig?: VpcConfig;
   rdsLayerMapping?: RDSLayerMapping;
+  sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
 };
 
 export const constructTransformerChain = (options?: TransformerFactoryArgs): TransformerPluginProvider[] => {
@@ -98,6 +100,7 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
     transformParameters,
     sqlLambdaVpcConfig,
     rdsLayerMapping,
+    sqlLambdaProvisionedConcurrencyConfig,
   } = config;
 
   const transformers = constructTransformerChain(transformersFactoryArgs);
@@ -111,6 +114,7 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
     resolverConfig,
     sqlLambdaVpcConfig,
     rdsLayerMapping,
+    sqlLambdaProvisionedConcurrencyConfig,
   });
 };
 
@@ -127,6 +131,7 @@ export type ExecuteTransformConfig = TransformConfig & {
   parameterProvider?: TransformParameterProvider;
   assetProvider: AssetProvider;
   synthParameters: SynthParameters;
+  sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
 };
 
 /**

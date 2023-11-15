@@ -60,7 +60,6 @@ const AWS_REGIONS_TO_RUN_TESTS = [
 const FORCE_REGION_MAP = {
   interactions: 'us-west-2',
   containers: 'us-east-1',
-  rds: 'ap-northeast-2',
 };
 
 // some tests require additional time, the parent account can handle longer tests (up to 90 minutes)
@@ -119,32 +118,19 @@ const RUN_SOLO: (string | RegExp)[] = [
   'src/__tests__/transformer-migrations/model-migration.test.ts',
   'src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-no-node-to-node.test.ts',
   'src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-had-node-to-node.test.ts',
-  'src/__tests__/rds-mysql-auth-apikey-lambda.test.ts',
-  'src/__tests__/rds-mysql-auth-iam-apikey-lambda-subscription.test.ts',
-  'src/__tests__/rds-mysql-auth-iam.test.ts',
-  'src/__tests__/rds-mysql-custom-claims-refersto-auth.test.ts',
-  'src/__tests__/rds-mysql-multi-auth-1.test.ts',
-  'src/__tests__/rds-mysql-oidc-auth.test.ts',
-  'src/__tests__/rds-mysql-userpool-auth.test.ts',
-  'src/__tests__/rds-pg-auth-apikey-lambda.test.ts',
-  'src/__tests__/rds-pg-auth-iam-apikey-lambda-subscription.test.ts',
-  'src/__tests__/rds-pg-auth-iam.test.ts',
   // GraphQL E2E tests
   'src/__tests__/FunctionTransformerTestsV2.e2e.test.ts',
   'src/__tests__/HttpTransformer.e2e.test.ts',
   'src/__tests__/HttpTransformerV2.e2e.test.ts',
   // Deploy Velocity tests
   /src\/__tests__\/deploy-velocity\/.*\.test\.ts/,
+  // RDS tests
+  /src\/__tests__\/rds-.*\.test\.ts/,
 ];
 
 const DEBUG_FLAG = '--debug';
 
-const EXCLUDE_TEST_IDS = [
-  'rds_mysql_custom_claims_refersto_auth',
-  'rds_pg_auth_apikey_lambda',
-  'rds_pg_auth_iam_apikey_lambda_subscription',
-  'rds_pg_auth_iam',
-];
+const EXCLUDE_TEST_IDS: string[] = [];
 
 const MAX_WORKERS = 4;
 

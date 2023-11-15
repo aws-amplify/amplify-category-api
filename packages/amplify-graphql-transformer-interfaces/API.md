@@ -257,6 +257,12 @@ export type NestedStackProvider = {
 };
 
 // @public (undocumented)
+export interface ProvisionedConcurrencyConfig {
+    // (undocumented)
+    readonly provisionedConcurrentExecutions: number;
+}
+
+// @public (undocumented)
 export enum QueryFieldType {
     // (undocumented)
     GET = "GET",
@@ -472,6 +478,8 @@ export interface TransformerContextProvider {
     resolvers: TransformerResolversManagerProvider;
     // (undocumented)
     resourceHelper: TransformerResourceHelperProvider;
+    // (undocumented)
+    readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
     // (undocumented)
     readonly sqlLambdaVpcConfig?: VpcConfig;
     // (undocumented)
@@ -780,6 +788,8 @@ export type TransformParameters = {
     shouldDeepMergeDirectiveConfigDefaults: boolean;
     disableResolverDeduping: boolean;
     sandboxModeEnabled: boolean;
+    allowDestructiveGraphqlSchemaUpdates: boolean;
+    replaceTableUponGsiUpdate: boolean;
     useSubUsernameForDefaultIdentityClaim: boolean;
     populateOwnerFieldForStaticGroupAuth: boolean;
     suppressApiKeyGeneration: boolean;

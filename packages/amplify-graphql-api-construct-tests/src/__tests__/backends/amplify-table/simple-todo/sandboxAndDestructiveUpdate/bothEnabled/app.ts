@@ -18,18 +18,19 @@ new AmplifyGraphqlApi(stack, 'GraphqlApi', {
       type Todo @model @auth(rules: [{ allow: public }]) {
         id: ID!
         description: String!
-        name: String! @index(name: "byName")
+        name: String! @index(name: "byName2")
       }
     `,
     {
-      name: 'customDDB',
-      strategy: {
-        dbType: 'DYNAMODB',
-        provisionStrategy: 'AMPLIFY_TABLE',
-      },
+      dbType: 'DYNAMODB',
+      provisionStrategy: 'AMPLIFY_TABLE',
     },
   ),
   authorizationModes: {
     apiKeyConfig: { expires: Duration.days(7) },
+  },
+  translationBehavior: {
+    allowDestructiveGraphqlSchemaUpdates: true,
+    replaceTableUponGsiUpdate: true,
   },
 });

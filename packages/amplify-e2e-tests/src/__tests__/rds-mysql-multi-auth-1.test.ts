@@ -25,6 +25,7 @@ import {
 } from '../rds-v2-test-utils';
 import { setupUser, getUserPoolId, signInUser, configureAmplify } from '../schema-api-directives';
 import { GQLQueryHelper } from '../query-utils/gql-helper';
+import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -105,7 +106,7 @@ describe('RDS Cognito userpool provider Auth tests', () => {
       'Amazon Cognito User Pool': {},
       'API key': {},
     });
-    const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+    const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.sql.graphql');
     const ddbSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.graphql');
     removeSync(ddbSchemaFilePath);
 
@@ -119,7 +120,7 @@ describe('RDS Cognito userpool provider Auth tests', () => {
       useVpc: true,
       apiExists: true,
     });
-    writeFileSync(rdsSchemaFilePath, appendAmplifyInput(schema, 'mysql'), 'utf8');
+    writeFileSync(rdsSchemaFilePath, appendAmplifyInput(schema, ImportedRDSType.MYSQL), 'utf8');
 
     await updateAuthAddUserGroups(projRoot, [adminGroupName, devGroupName, moderatorGroupName]);
     await amplifyPush(projRoot);

@@ -53,6 +53,8 @@ const defaultTransformConfig: TransformConfig = {
     respectPrimaryKeyAttributesOnConnectionField: false,
     enableSearchNodeToNodeEncryption: false,
     enableTransformerCfnOutputs: true,
+    allowDestructiveGraphqlSchemaUpdates: false,
+    replaceTableUponGsiUpdate: false,
   },
 };
 

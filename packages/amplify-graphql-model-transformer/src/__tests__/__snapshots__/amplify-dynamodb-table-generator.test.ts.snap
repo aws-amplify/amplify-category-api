@@ -19,22 +19,13 @@ Object {
           "Effect": "Allow",
           "Resource": Object {
             "Fn::Sub": Array [
-              "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}",
+              "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/*-\${apiId}-\${envName}",
               Object {
-                "tablename": Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "Post-",
-                      Object {
-                        "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-                      },
-                      "-",
-                      Object {
-                        "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                      },
-                    ],
-                  ],
+                "apiId": Object {
+                  "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+                },
+                "envName": Object {
+                  "Ref": "referencetotransformerrootstackenv10C5A902Ref",
                 },
               },
             ],

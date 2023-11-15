@@ -6,7 +6,16 @@
 
 export as namespace CustomDDB;
 
-export type Input = CfnTableProps;
+export type Input = CfnTableProps & {
+  /**
+   * Determines if a table is allowed for destructive updates. When enabled, the table will be replaced when key schema is changed. This setting is disabled by default.
+   */
+  allowDestructiveGraphqlSchemaUpdates?: boolean;
+  /**
+   * Determines if a table is in sandbox mode. When enabled along with 'allowDestructiveGraphqlSchemaUpdates' , the table will be replaced when GSI updates are detected. This setting is disabled by default.
+   */
+  replaceTableUponGsiUpdate?: boolean;
+};
 
 /**
  * Properties for defining a `CfnTable`

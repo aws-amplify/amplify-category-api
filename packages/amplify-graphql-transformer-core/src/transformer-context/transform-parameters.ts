@@ -8,6 +8,8 @@ export const defaultTransformParameters: TransformParameters = {
   shouldDeepMergeDirectiveConfigDefaults: true,
   disableResolverDeduping: false,
   sandboxModeEnabled: false,
+  allowDestructiveGraphqlSchemaUpdates: false,
+  replaceTableUponGsiUpdate: false,
 
   // Auth Params
   useSubUsernameForDefaultIdentityClaim: true,

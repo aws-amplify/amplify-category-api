@@ -282,7 +282,7 @@ const getRDSLayerMapping = async (): Promise<RDSLayerMapping> => {
   } catch (err) {
     // Ignore the error and return default layer mapping
   }
-  printer.warn('Unable to load the latest RDS layer configuration, using local configuration.');
+  printer.warn('Unable to load the latest SQL layer configuration, using local configuration.');
   return {};
 };
 

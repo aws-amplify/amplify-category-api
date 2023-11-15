@@ -51,7 +51,7 @@ export function schemaHasSandboxModeEnabled(schema: string, docLink: string): bo
   const authRuleField = amplifyInputType.fields.find(matchesGlobalAuth);
 
   if (!authRuleField) {
-    throw Error(`input AMPLIFY requires "globalAuthRule" field. Learn more here: ${docLink}`);
+    return false;
   }
 
   const typeName = authRuleField.type.name.value;

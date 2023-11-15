@@ -26,6 +26,8 @@ export const CUSTOM_DDB_CFN_TYPE = 'Custom::AmplifyDynamoDBTable';
 
 export interface AmplifyDynamoDBTableProps extends TableProps {
   customResourceServiceToken: string;
+  allowDestructiveGraphqlSchemaUpdates?: boolean;
+  replaceTableUponGsiUpdate?: boolean;
 }
 export class AmplifyDynamoDBTable extends Resource {
   public readonly encryptionKey?: kms.IKey;
@@ -91,6 +93,8 @@ export class AmplifyDynamoDBTable extends Resource {
         tableClass: props.tableClass,
         timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined,
         deletionProtectionEnabled: props.deletionProtection,
+        allowDestructiveGraphqlSchemaUpdates: props.allowDestructiveGraphqlSchemaUpdates ?? false,
+        replaceTableUponGsiUpdate: props.replaceTableUponGsiUpdate ?? false,
       },
       removalPolicy: props.removalPolicy,
     });

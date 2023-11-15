@@ -15,7 +15,7 @@ import {
 import { existsSync, writeFileSync, removeSync } from 'fs-extra';
 import generator from 'generate-password';
 import path from 'path';
-import { schema, sqlCreateStatements } from './auth-test-schemas/userpool-provider';
+import { schema as generateSchema, sqlCreateStatements } from './auth-test-schemas/userpool-provider';
 import {
   createModelOperationHelpers,
   configureAppSyncClients,
@@ -26,11 +26,13 @@ import {
 } from '../rds-v2-test-utils';
 import { setupUser, getUserPoolId, signInUser, configureAmplify, getConfiguredAppsyncClientCognitoAuth } from '../schema-api-directives';
 import { gql } from 'graphql-tag';
+import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 
 describe('RDS Cognito userpool provider Auth tests', () => {
+  const schema = generateSchema(ImportedRDSType.MYSQL);
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
 
   // Generate settings for RDS instance
@@ -55,7 +57,7 @@ describe('RDS Cognito userpool provider Auth tests', () => {
   const userMap = {};
 
   beforeAll(async () => {
-    console.log(sqlCreateStatements);
+    console.log(sqlCreateStatements(ImportedRDSType.MYSQL));
     projRoot = await createNewProjectDir(projName);
     await setupAmplifyProject();
   });
@@ -79,7 +81,7 @@ describe('RDS Cognito userpool provider Auth tests', () => {
       region,
     };
 
-    const db = await setupRDSInstanceAndData(dbConfig, sqlCreateStatements);
+    const db = await setupRDSInstanceAndData(dbConfig, sqlCreateStatements(ImportedRDSType.MYSQL));
     port = db.port;
     host = db.endpoint;
   };
@@ -115,7 +117,7 @@ describe('RDS Cognito userpool provider Auth tests', () => {
       'Amazon Cognito User Pool': {},
       'API key': {},
     });
-    const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+    const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.sql.graphql');
     const ddbSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.graphql');
     removeSync(ddbSchemaFilePath);
 
@@ -130,7 +132,7 @@ describe('RDS Cognito userpool provider Auth tests', () => {
       apiExists: true,
     });
 
-    writeFileSync(rdsSchemaFilePath, appendAmplifyInput(schema, 'mysql'), 'utf8');
+    writeFileSync(rdsSchemaFilePath, appendAmplifyInput(schema, ImportedRDSType.MYSQL), 'utf8');
 
     await updateAuthAddUserGroups(projRoot, [adminGroupName, devGroupName]);
     await amplifyPush(projRoot);

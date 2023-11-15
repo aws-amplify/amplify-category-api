@@ -89,13 +89,13 @@ describe('RDS Model Directive', () => {
     // Validate the generated resources in the CloudFormation template
     const apisDirectory = path.join(projRoot, 'amplify', 'backend', 'api');
     const apiDirectory = path.join(apisDirectory, 'rdsapi');
-    const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', 'RdsApiStack.json');
+    const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', 'SqlApiStack.json');
     const cfnTemplate = JSON.parse(readFileSync(cfnRDSTemplateFile, 'utf8'));
     expect(cfnTemplate.Resources).toBeDefined();
     const resources = cfnTemplate.Resources;
 
     // Validate if the SQL lambda function has VPC configuration even if the database is accessible through internet
-    const rdsLambdaFunction = getResource(resources, 'RDSLambdaLogicalID', CDK_FUNCTION_TYPE);
+    const rdsLambdaFunction = getResource(resources, 'SQLLambdaFunction', CDK_FUNCTION_TYPE);
     expect(rdsLambdaFunction).toBeDefined();
     expect(rdsLambdaFunction.Properties).toBeDefined();
     expect(rdsLambdaFunction.Properties.VpcConfig).toBeDefined();
@@ -172,7 +172,7 @@ describe('RDS Model Directive', () => {
   };
 
   test('check import workflow works on postgres database', async () => {
-    const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+    const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.sql.graphql');
     const schemaContent = readFileSync(rdsSchemaFilePath, 'utf8');
     const schema = parse(schemaContent);
 

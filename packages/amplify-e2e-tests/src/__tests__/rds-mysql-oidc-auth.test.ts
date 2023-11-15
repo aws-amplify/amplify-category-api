@@ -17,7 +17,7 @@ import {
 import { existsSync, writeFileSync, removeSync } from 'fs-extra';
 import generator from 'generate-password';
 import path from 'path';
-import { schema, sqlCreateStatements } from './auth-test-schemas/oidc-provider';
+import { schema as generateSchema, sqlCreateStatements } from './auth-test-schemas/oidc-provider';
 import {
   createModelOperationHelpers,
   configureAppSyncClients,
@@ -37,13 +37,14 @@ import {
   getConfiguredAppsyncClientOIDCAuth,
 } from '../schema-api-directives';
 import { gql } from 'graphql-tag';
+import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 
 describe('RDS OIDC provider Auth tests', () => {
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
-
+  const schema = generateSchema(ImportedRDSType.MYSQL);
   // Generate settings for RDS instance
   const username = db_user;
   const password = db_password;
@@ -64,9 +65,10 @@ describe('RDS OIDC provider Auth tests', () => {
   let projRoot;
   let appSyncClients = {};
   const userMap = {};
+  const engine = ImportedRDSType.MYSQL;
 
   beforeAll(async () => {
-    console.log(sqlCreateStatements);
+    console.log(sqlCreateStatements(engine));
     projRoot = await createNewProjectDir(projName);
     await setupAmplifyProject();
   });
@@ -90,7 +92,7 @@ describe('RDS OIDC provider Auth tests', () => {
       region,
     };
 
-    const db = await setupRDSInstanceAndData(dbConfig, sqlCreateStatements);
+    const db = await setupRDSInstanceAndData(dbConfig, sqlCreateStatements(engine));
     port = db.port;
     host = db.endpoint;
   };
@@ -137,7 +139,7 @@ describe('RDS OIDC provider Auth tests', () => {
       transformerVersion: 2,
     });
 
-    const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+    const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.sql.graphql');
     const ddbSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.graphql');
     removeSync(ddbSchemaFilePath);
 
@@ -151,7 +153,7 @@ describe('RDS OIDC provider Auth tests', () => {
       useVpc: true,
       apiExists: true,
     });
-    writeFileSync(rdsSchemaFilePath, appendAmplifyInput(schema, 'mysql'), 'utf8');
+    writeFileSync(rdsSchemaFilePath, appendAmplifyInput(schema, ImportedRDSType.MYSQL), 'utf8');
 
     await updateAuthAddUserGroups(projRoot, [adminGroupName, devGroupName]);
     await amplifyPush(projRoot);

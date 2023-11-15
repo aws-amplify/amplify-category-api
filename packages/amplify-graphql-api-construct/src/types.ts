@@ -408,6 +408,29 @@ export interface TranslationBehavior {
    * @default false
    */
   readonly enableTransformerCfnOutputs: boolean;
+
+  /**
+   * The following schema updates require replacement of the underlying DynamoDB table:
+   *
+   *  - Removing or renaming a model
+   *  - Modifying the primary key of a model
+   *  - Modifying a Local Secondary Index of a model (only applies to projects with secondaryKeyAsGSI turned off)
+   *
+   * ALL DATA WILL BE LOST when the table replacement happens. When enabled, destructive updates are allowed.
+   * This will only affect DynamoDB tables with provision strategy "AMPLIFY_TABLE".
+   * @default false
+   * @experimental
+   */
+  readonly allowDestructiveGraphqlSchemaUpdates: boolean;
+
+  /**
+   * This behavior will only come into effect when both "allowDestructiveGraphqlSchemaUpdates" and this value are set to true
+   * When enabled, any GSI update operation will replace the table instead of iterative deployment, which will WIPE ALL EXISTING DATA but cost much less time for deployment
+   * This will only affect DynamoDB tables with provision strategy "AMPLIFY_TABLE".
+   * @default false
+   * @experimental
+   */
+  readonly replaceTableUponGsiUpdate: boolean;
 }
 
 /**
@@ -486,6 +509,29 @@ export interface PartialTranslationBehavior {
    * @default false
    */
   readonly enableTransformerCfnOutputs?: boolean;
+
+  /**
+   * The following schema updates require replacement of the underlying DynamoDB table:
+   *
+   *  - Removing or renaming a model
+   *  - Modifying the primary key of a model
+   *  - Modifying a Local Secondary Index of a model (only applies to projects with secondaryKeyAsGSI turned off)
+   *
+   * ALL DATA WILL BE LOST when the table replacement happens. When enabled, destructive updates are allowed.
+   * This will only affect DynamoDB tables with provision strategy "AMPLIFY_TABLE".
+   * @default false
+   * @experimental
+   */
+  readonly allowDestructiveGraphqlSchemaUpdates?: boolean;
+
+  /**
+   * This behavior will only come into effect when both "allowDestructiveGraphqlSchemaUpdates" and this value are set to true
+   * When enabled, any global secondary index update operation will replace the table instead of iterative deployment, which will WIPE ALL EXISTING DATA but cost much less time for deployment
+   * This will only affect DynamoDB tables with provision strategy "AMPLIFY_TABLE".
+   * @default false
+   * @experimental
+   */
+  readonly replaceTableUponGsiUpdate?: boolean;
 }
 
 /**
@@ -505,10 +551,22 @@ export interface IAmplifyGraphqlDefinition {
   readonly functionSlots: FunctionSlot[];
 
   /**
-   * Retrieve the datasource definition mapping. The default strategy is to use DynamoDB from CloudFormation.
-   * @returns datasource definition mapping
+   * Retrieve the references to any lambda functions used in the definition.
+   * Useful for wiring through aws_lambda.Function constructs into the definition directly,
+   * and generated references to invoke them.
+   * @returns any lambda functions, keyed by their referenced 'name' in the generated schema.
    */
-  readonly dataSourceDefinition: Record<string, ModelDataSourceDefinition>;
+  readonly referencedLambdaFunctions?: Record<string, IFunction>;
+
+  /**
+   * Retrieve the datasource strategy mapping. The default strategy is to use DynamoDB from CloudFormation.
+   *
+   * **NOTE** Explicitly specifying the 'dataSourceStrategies' configuration option is in preview and is not recommended to use with
+   * production systems. For production, use the static factory methods `fromString` or `fromFiles`.
+   * @experimental
+   * @returns datasource strategy mapping
+   */
+  readonly dataSourceStrategies: Record<string, ModelDataSourceStrategy>;
 }
 
 /**
@@ -764,37 +822,22 @@ export interface AddFunctionProps {
 }
 
 /**
- * Defines a datasource for resolving GraphQL operations against `@model` types in a GraphQL schema.
+ * All known ModelDataSourceStrategies. Concrete strategies vary widely in their requirements and implementations.
  * @experimental
  */
-export interface ModelDataSourceDefinition {
-  /**
-   * The name of the ModelDataSourceDefinition. This will be used to name the AppSync DataSource itself, plus any associated resources like
-   * resolver Lambdas and custom CDK resources. This name must be unique across all schema definitions in a GraphQL API.
-   */
-  readonly name: string;
-  /**
-   * The ModelDataSourceDefinitionStrategy.
-   */
-  readonly strategy: ModelDataSourceDefinitionStrategy;
-}
-/**
- * All known ModelDataSourceDefinitionStrategies. Concrete strategies vary widely in their requirements and implementations.
- * @experimental
- */
-export type ModelDataSourceDefinitionStrategy =
-  | DefaultDynamoDbModelDataSourceDefinitionStrategy
-  | AmplifyDynamoDbModelDataSourceDefinitionStrategy
-  | SQLLambdaModelDataSourceDefinitionStrategy;
+export type ModelDataSourceStrategy =
+  | DefaultDynamoDbModelDataSourceStrategy
+  | AmplifyDynamoDbModelDataSourceStrategy
+  | SQLLambdaModelDataSourceStrategy;
 
 // TODO: Make this the source of truth for database type definitions used throughout the construct & transformer
-export type ModelDataSourceDefinitionDbType = 'DYNAMODB';
+export type ModelDataSourceStrategyDbType = 'DYNAMODB';
 
 /**
  * Use default CloudFormation type 'AWS::DynamoDB::Table' to provision table.
  * @experimental
  */
-export interface DefaultDynamoDbModelDataSourceDefinitionStrategy {
+export interface DefaultDynamoDbModelDataSourceStrategy {
   readonly dbType: 'DYNAMODB';
   readonly provisionStrategy: 'DEFAULT';
 }
@@ -803,7 +846,7 @@ export interface DefaultDynamoDbModelDataSourceDefinitionStrategy {
  * Use custom resource type 'Custom::AmplifyDynamoDBTable' to provision table.
  * @experimental
  */
-export interface AmplifyDynamoDbModelDataSourceDefinitionStrategy {
+export interface AmplifyDynamoDbModelDataSourceStrategy {
   readonly dbType: 'DYNAMODB';
   readonly provisionStrategy: 'AMPLIFY_TABLE';
 }
@@ -813,7 +856,13 @@ export interface AmplifyDynamoDbModelDataSourceDefinitionStrategy {
  *
  * @experimental
  */
-export interface SQLLambdaModelDataSourceDefinitionStrategy {
+export interface SQLLambdaModelDataSourceStrategy {
+  /**
+   * The name of the strategy. This will be used to name the AppSync DataSource itself, plus any associated resources like resolver Lambdas.
+   * This name must be unique across all schema definitions in a GraphQL API.
+   */
+  readonly name: string;
+
   /**
    * The type of the SQL database used to process model operations for this definition.
    */
@@ -822,7 +871,7 @@ export interface SQLLambdaModelDataSourceDefinitionStrategy {
   /**
    * The parameters the Lambda data source will use to connect to the database.
    */
-  readonly dbConnectionConfig: SqlModelDataSourceDefinitionDbConnectionConfig;
+  readonly dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
 
   /**
    * The configuration of the VPC into which to install the Lambda.
@@ -839,6 +888,11 @@ export interface SQLLambdaModelDataSourceDefinitionStrategy {
    * An optional override for the default SQL Lambda Layer
    */
   readonly sqlLambdaLayerMapping?: SQLLambdaLayerMapping;
+
+  /**
+   * The configuration for the provisioned concurrency of the Lambda.
+   */
+  readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
 }
 
 /**
@@ -858,6 +912,15 @@ export interface VpcConfig {
 
   /** The subnets to install the Lambda data source in, one per availability zone. */
   readonly subnetAvailabilityZoneConfig: SubnetAvailabilityZone[];
+}
+
+/**
+ * The configuration for the provisioned concurrency of the Lambda.
+ * @experimental
+ */
+export interface ProvisionedConcurrencyConfig {
+  /** The amount of provisioned concurrency to allocate. **/
+  readonly provisionedConcurrentExecutions: number;
 }
 
 /**
@@ -886,7 +949,7 @@ export type SQLLambdaLayerMapping = Record<string, string>;
  * These parameters are retrieved from Secure Systems Manager in the same region as the Lambda.
  * @experimental
  */
-export interface SqlModelDataSourceDefinitionDbConnectionConfig {
+export interface SqlModelDataSourceDbConnectionConfig {
   /** The Secure Systems Manager parameter containing the hostname of the database. For RDS-based SQL data sources, this can be the hostname
    * of a database proxy, cluster, or instance.
    */

@@ -16,7 +16,11 @@ export const validateFieldsMatchInParentModel = (schema: DocumentNode): Error[] 
   objectTypeDefinitions.forEach((objectTypeDefinition) => {
     const directiveFields = objectTypeDefinition.fields?.filter((objectField) =>
       objectField.directives?.find(
-        (directive) => directive.name.value === 'connection' || directive.name.value === 'hasOne' || directive.name.value === 'belongsTo',
+        (directive) =>
+          directive.name.value === 'connection' ||
+          directive.name.value === 'hasOne' ||
+          directive.name.value === 'belongsTo' ||
+          directive.name.value === 'hasMany',
       ),
     );
 
