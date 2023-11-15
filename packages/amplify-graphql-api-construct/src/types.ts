@@ -885,11 +885,6 @@ export interface SQLLambdaModelDataSourceStrategy {
   readonly customSqlStatements?: Record<string, string>;
 
   /**
-   * An optional override for the default SQL Lambda Layer
-   */
-  readonly sqlLambdaLayerMapping?: SQLLambdaLayerMapping;
-
-  /**
    * The configuration for the provisioned concurrency of the Lambda.
    */
   readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
@@ -936,12 +931,6 @@ export interface SubnetAvailabilityZone {
   /** The availability zone of the subnet. */
   readonly availabilityZone: string;
 }
-
-/**
- * Maps a given AWS region to the SQL Lambda layer version ARN for that region. `key` is the region; the `value` is the Lambda Layer version
- * ARN
- */
-export type SQLLambdaLayerMapping = Record<string, string>;
 
 /**
  * The Secure Systems Manager parameter paths the Lambda data source will use to connect to the database.
