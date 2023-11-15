@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.6.0-nov-14-cut-1.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.5.12...amplify-category-api-graphql-transformers-e2e-tests@8.6.0-nov-14-cut-1.0) (2023-11-15)
+
+### Features
+
+- add refersTo directive transformer for model renaming ([#1830](https://github.com/aws-amplify/amplify-category-api/issues/1830)) ([afbd6f2](https://github.com/aws-amplify/amplify-category-api/commit/afbd6f282bc411313ce098a53a87bb8c6481aa48))
+
 ## [8.5.12](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.5.11...amplify-category-api-graphql-transformers-e2e-tests@8.5.12) (2023-11-02)
 
 **Note:** Version bump only for package amplify-category-api-graphql-transformers-e2e-tests

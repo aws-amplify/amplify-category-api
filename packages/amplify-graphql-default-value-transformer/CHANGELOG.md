@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.9-nov-14-cut-1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-default-value-transformer@2.1.8...@aws-amplify/graphql-default-value-transformer@2.1.9-nov-14-cut-1.0) (2023-11-15)
+
+### Bug Fixes
+
+- Change 'rds' to 'sql' in public-facing symbols ([#2069](https://github.com/aws-amplify/amplify-category-api/issues/2069)) ([ff374dd](https://github.com/aws-amplify/amplify-category-api/commit/ff374dd8398d3f1138a31669b1a5962122039437))
+- **graphql:** disable default value validation for rds ([8cd3b26](https://github.com/aws-amplify/amplify-category-api/commit/8cd3b26d24a5553104267ce8f597d7d4701246f0))
+
 ## [2.1.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-default-value-transformer@2.1.7...@aws-amplify/graphql-default-value-transformer@2.1.8) (2023-11-02)
 
 **Note:** Version bump only for package @aws-amplify/graphql-default-value-transformer

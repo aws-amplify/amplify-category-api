@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.2.0-nov-14-cut-1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.1.10...@aws-amplify/graphql-auth-transformer@3.2.0-nov-14-cut-1.0) (2023-11-15)
+
+### Bug Fixes
+
+- **api:** do not allow auth directive on rds model fields ([a1f1ae0](https://github.com/aws-amplify/amplify-category-api/commit/a1f1ae081dd9523e4a3500c6a31905fd4c222fdd))
+- **api:** iam rule correct cognito pool id ([183e78b](https://github.com/aws-amplify/amplify-category-api/commit/183e78bc94aa548c02536d963129382c8b7eabe4))
+- **api:** iam support for admin roles with auth utils ([6169cce](https://github.com/aws-amplify/amplify-category-api/commit/6169cce3a1c3708ec491b058e076b92cb1da99bd))
+- Change 'rds' to 'sql' in public-facing symbols ([#2069](https://github.com/aws-amplify/amplify-category-api/issues/2069)) ([ff374dd](https://github.com/aws-amplify/amplify-category-api/commit/ff374dd8398d3f1138a31669b1a5962122039437))
+- relational auth cases; preserve auth rule schema edits, added multi-auth e2e tests ([#1965](https://github.com/aws-amplify/amplify-category-api/issues/1965)) ([df085b2](https://github.com/aws-amplify/amplify-category-api/commit/df085b2bf75dded743809b59386272070fc92251))
+- Update rds transformers to accommodate ConfiguredAuthProviders change ([ae2a451](https://github.com/aws-amplify/amplify-category-api/commit/ae2a451d419eed88fecdf4e778410bce5c9d80f8))
+
+### Features
+
+- **api:** rds auth model level rules ([d2b0217](https://github.com/aws-amplify/amplify-category-api/commit/d2b0217b9c0ba11c60441720c0fd31802b64de39))
+- **api:** refactor auth transformer to use vtl generator factory pattern ([e965d24](https://github.com/aws-amplify/amplify-category-api/commit/e965d24731fc1e2300ef0e16b61af6b39afb0cad))
+- refersTo supports field name mappings on RDS models ([#1865](https://github.com/aws-amplify/amplify-category-api/issues/1865)) ([ee60011](https://github.com/aws-amplify/amplify-category-api/commit/ee60011f5c41d0442e1096dd16d80e94b900745a))
+
 ## [3.1.10](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.1.9...@aws-amplify/graphql-auth-transformer@3.1.10) (2023-11-02)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer

@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.4.0-nov-14-cut-1.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.3.6...amplify-category-api-util-mock@6.4.0-nov-14-cut-1.0) (2023-11-15)
+
+### Features
+
+- add refersTo directive transformer for model renaming ([#1830](https://github.com/aws-amplify/amplify-category-api/issues/1830)) ([afbd6f2](https://github.com/aws-amplify/amplify-category-api/commit/afbd6f282bc411313ce098a53a87bb8c6481aa48))
+- transformer behavior of replacing table upon gsi updates ([#2067](https://github.com/aws-amplify/amplify-category-api/issues/2067)) ([c4b7530](https://github.com/aws-amplify/amplify-category-api/commit/c4b7530e0880b34d411fc2732fa199e4a28bcea1))
+
 ## [6.3.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.3.5...amplify-category-api-util-mock@6.3.6) (2023-11-02)
 
 **Note:** Version bump only for package amplify-category-api-util-mock

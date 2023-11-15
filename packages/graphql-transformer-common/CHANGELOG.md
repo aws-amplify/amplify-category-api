@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.26.0-nov-14-cut-1.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.25.1...graphql-transformer-common@4.26.0-nov-14-cut-1.0) (2023-11-15)
+
+### Bug Fixes
+
+- Change 'rds' to 'sql' in public-facing symbols ([#2069](https://github.com/aws-amplify/amplify-category-api/issues/2069)) ([ff374dd](https://github.com/aws-amplify/amplify-category-api/commit/ff374dd8398d3f1138a31669b1a5962122039437))
+- handle field names starting with number ([2e9de1b](https://github.com/aws-amplify/amplify-category-api/commit/2e9de1b061ac212fad23b133ada44bfaadb1a2ff))
+
+### Features
+
+- add managed table support in API construct ([#2024](https://github.com/aws-amplify/amplify-category-api/issues/2024)) ([96a0d94](https://github.com/aws-amplify/amplify-category-api/commit/96a0d94fa872a5329da120f53be139833449b815)), closes [#1849](https://github.com/aws-amplify/amplify-category-api/issues/1849) [#1903](https://github.com/aws-amplify/amplify-category-api/issues/1903) [#1940](https://github.com/aws-amplify/amplify-category-api/issues/1940) [#1971](https://github.com/aws-amplify/amplify-category-api/issues/1971) [#1973](https://github.com/aws-amplify/amplify-category-api/issues/1973)
+- **api:** add arrays and objects support for rds datasource ([cbfb017](https://github.com/aws-amplify/amplify-category-api/commit/cbfb017029e45c6e7cb8fea4250794d02afff4ca))
+- infer and preserve field mappings in schema ([4f8e7f4](https://github.com/aws-amplify/amplify-category-api/commit/4f8e7f43e6ba3e64702baffe60b8b4870d37ffb6))
+- sql lambda provisioned concurrency ([#2055](https://github.com/aws-amplify/amplify-category-api/issues/2055)) ([d8c5bf0](https://github.com/aws-amplify/amplify-category-api/commit/d8c5bf0b7df3cdd1ad499380d24fe49a61acbc7e))
+
 ## [4.25.1](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.25.0...graphql-transformer-common@4.25.1) (2023-08-30)
 
 **Note:** Version bump only for package graphql-transformer-common
