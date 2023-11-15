@@ -60,7 +60,9 @@ const unsupportedDirectiveError = (
   return new Error(
     `@${directiveName} directive on type "${typeName}" ${
       fieldName ? `and field "${fieldName}"` : ''
-    } is not supported on RDS datasource. Following directives are not supported on RDS datasource: ${unsupportedDirectives.join(', ')}`,
+    } is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: ${unsupportedDirectives.join(
+      ', ',
+    )}`,
   );
 };
 

@@ -36,7 +36,7 @@ export const renderSchema = (
   return constructRDSGlobalAmplifyInput(databaseConfig, existingSchema) + os.EOL + os.EOL + generateGraphQLSchema(schema, existingSchema);
 };
 
-export const graphqlSchemaFromRDSSchema = (sqlSchema: string, engineType: ImportedRDSType): string => {
+export const graphqlSchemaFromSQLSchema = (sqlSchema: string, engineType: ImportedRDSType): string => {
   const schema = buildSchemaFromString(sqlSchema, engineType);
 
   const databaseConfig = {

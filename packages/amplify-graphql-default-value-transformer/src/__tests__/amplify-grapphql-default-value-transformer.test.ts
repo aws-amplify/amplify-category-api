@@ -338,8 +338,8 @@ describe('DefaultValueModelTransformer:', () => {
 
     validateModelSchema(parse(out.schema));
     expect(out.stacks).toBeDefined();
-    expect(out.stacks.RdsApiStack).toBeDefined();
-    expect(out.stacks.RdsApiStack.Resources).toBeDefined();
+    expect(out.stacks.SqlApiStack).toBeDefined();
+    expect(out.stacks.SqlApiStack.Resources).toBeDefined();
     expect(out.resolvers['Mutation.createNote.init.1.req.vtl']).toBeDefined();
     expect(out.resolvers['Mutation.createNote.init.2.req.vtl']).toBeUndefined();
   });

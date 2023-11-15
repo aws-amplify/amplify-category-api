@@ -936,10 +936,10 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
 
       return roleDefinition;
     });
-    const { RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
+    const { SQLLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
     const dataSource = (
       isRDSModel(ctx, def.name.value)
-        ? ctx.api.host.getDataSource(RDSLambdaDataSourceLogicalID)
+        ? ctx.api.host.getDataSource(SQLLambdaDataSourceLogicalID)
         : ctx.api.host.getDataSource(`${def.name.value}Table`)
     ) as DataSourceProvider;
     const requestExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthRequestExpression(ctx, def);
@@ -973,10 +973,10 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       roleDefinition.allowedFields = allowedFields;
       return roleDefinition;
     });
-    const { RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
+    const { SQLLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
     const dataSource = (
       isRDSModel(ctx, def.name.value)
-        ? ctx.api.host.getDataSource(RDSLambdaDataSourceLogicalID)
+        ? ctx.api.host.getDataSource(SQLLambdaDataSourceLogicalID)
         : ctx.api.host.getDataSource(`${def.name.value}Table`)
     ) as DataSourceProvider;
     const requestExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthRequestExpression(ctx, def);

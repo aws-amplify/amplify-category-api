@@ -74,5 +74,5 @@ const {
   resources: { functions },
 } = api;
 
-const sqlLambda = functions['RDSLambdaLogicalID'];
+const sqlLambda = functions['SQLLambdaFunction'];
 new CfnOutput(stack, 'SQLLambdaFunctionName', { value: sqlLambda.functionName });

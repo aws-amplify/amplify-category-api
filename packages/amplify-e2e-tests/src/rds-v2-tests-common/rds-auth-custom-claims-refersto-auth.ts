@@ -111,7 +111,7 @@ export const testCustomClaimsRefersTo = (engine: ImportedRDSType): void => {
         transformerVersion: 2,
         authTypesToSkipSetup: ['Amazon Cognito User Pool'],
       });
-      const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+      const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.sql.graphql');
       const ddbSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.graphql');
       removeSync(ddbSchemaFilePath);
 

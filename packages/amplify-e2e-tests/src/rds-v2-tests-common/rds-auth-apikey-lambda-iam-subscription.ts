@@ -165,7 +165,7 @@ export const testApiKeyLambdaIamAuthSubscription = (engine: ImportedRDSType, que
       region = metaAfterInit.providers.awscloudformation.Region;
       await setupDatabase();
 
-      const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+      const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.sql.graphql');
 
       await addApiWithAllAuthModes(projRoot, { transformerVersion: 2, apiName });
       await enableUserPoolUnauthenticatedAccess(projRoot);

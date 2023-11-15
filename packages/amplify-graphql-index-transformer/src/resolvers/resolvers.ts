@@ -519,7 +519,7 @@ export const updateResolversForIndex = (
 };
 
 export const makeQueryResolver = (config: IndexDirectiveConfiguration, ctx: TransformerContextProvider, dbType: DBType): void => {
-  const { RDSLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
+  const { SQLLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
   const isDynamoDB = dbType === DDB_DB_TYPE;
   const { name, object, queryField } = config;
   if (!(name && queryField)) {
@@ -529,7 +529,7 @@ export const makeQueryResolver = (config: IndexDirectiveConfiguration, ctx: Tran
   const dbInfo = getDBInfo(ctx, modelName);
   let dataSourceName = `${object.name.value}Table`;
   if (!isDynamoDB) {
-    dataSourceName = RDSLambdaDataSourceLogicalID;
+    dataSourceName = SQLLambdaDataSourceLogicalID;
   }
   const dataSource = ctx.api.host.getDataSource(dataSourceName);
   const queryTypeName = ctx.output.getQueryTypeName() as string;

@@ -17,7 +17,7 @@ export type ImportAppSyncAPIInputs = {
   dataSourceConfig?: ImportedDataSourceConfig;
 };
 
-export const RDS_SCHEMA_FILE_NAME = 'schema.rds.graphql';
+export const SQL_SCHEMA_FILE_NAME = 'schema.sql.graphql';
 
 // TODO: Fix RDSConnectionSecrets type. It is currently used as both an input type for interactive DB discovery, where each value is
 // expected to be the actual value used to connect to the database; and as a configuration holder for the Lambda environment variables,

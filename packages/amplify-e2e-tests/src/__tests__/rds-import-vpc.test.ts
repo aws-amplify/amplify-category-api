@@ -32,7 +32,7 @@ const CDK_SUBSCRIPTION_TYPE = 'AWS::SNS::Subscription';
 const APPSYNC_DATA_SOURCE_TYPE = 'AWS::AppSync::DataSource';
 
 const SNS_TOPIC_REGION = 'us-east-1';
-const SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:582037449441:AmplifyRDSLayerNotification';
+const SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:582037449441:AmplifySQLLayerNotification';
 
 describe('RDS Tests', () => {
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
@@ -95,7 +95,7 @@ describe('RDS Tests', () => {
     region = metaAfterInit.providers.awscloudformation.Region;
     await setupDatabase();
 
-    const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.rds.graphql');
+    const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.sql.graphql');
 
     await addApiWithoutSchema(projRoot, { transformerVersion: 2, apiName });
 
@@ -133,19 +133,19 @@ describe('RDS Tests', () => {
         component_urn: String!
       }
     `;
-    updateSchema(projRoot, apiName, print(updatedSchema), 'schema.rds.graphql');
+    updateSchema(projRoot, apiName, print(updatedSchema), 'schema.sql.graphql');
     await apiGqlCompile(projRoot);
 
     // Validate the generated resources in the CloudFormation template
     const apisDirectory = path.join(projRoot, 'amplify', 'backend', 'api');
     const apiDirectory = path.join(apisDirectory, apiName);
-    const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', `RdsApiStack.json`);
+    const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', `SqlApiStack.json`);
     const cfnTemplate = JSON.parse(readFileSync(cfnRDSTemplateFile, 'utf8'));
     expect(cfnTemplate.Resources).toBeDefined();
     const resources = cfnTemplate.Resources;
 
     // Validate if the SQL lambda function has VPC configuration
-    const rdsLambdaFunction = getResource(resources, 'RDSLambdaLogicalID', CDK_FUNCTION_TYPE);
+    const rdsLambdaFunction = getResource(resources, 'SQLLambdaFunction', CDK_FUNCTION_TYPE);
     expect(rdsLambdaFunction).toBeDefined();
     expect(rdsLambdaFunction.Properties).toBeDefined();
     expect(rdsLambdaFunction.Properties.VpcConfig).toBeDefined();
@@ -161,19 +161,19 @@ describe('RDS Tests', () => {
     expect(getResource(resources, 'RDSVpcEndpointec2messages', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
 
     // Validate patching lambda and subscription
-    const rdsPatchingLambdaFunction = getResource(resources, 'RDSPatchingLambdaLogicalID', CDK_FUNCTION_TYPE);
+    const rdsPatchingLambdaFunction = getResource(resources, 'SQLPatchingLambdaLogicalID', CDK_FUNCTION_TYPE);
     expect(rdsPatchingLambdaFunction).toBeDefined();
     expect(rdsPatchingLambdaFunction.Properties).toBeDefined();
     expect(rdsPatchingLambdaFunction.Properties.Environment).toBeDefined();
     expect(rdsPatchingLambdaFunction.Properties.Environment.Variables).toBeDefined();
     expect(rdsPatchingLambdaFunction.Properties.Environment.Variables.LAMBDA_FUNCTION_ARN).toBeDefined();
-    const rdsDataSourceLambda = getResource(resources, 'RDSLambdaDataSource', APPSYNC_DATA_SOURCE_TYPE);
+    const rdsDataSourceLambda = getResource(resources, 'SQLLambdaDataSource', APPSYNC_DATA_SOURCE_TYPE);
     expect(rdsPatchingLambdaFunction.Properties.Environment.Variables.LAMBDA_FUNCTION_ARN).toEqual(
       rdsDataSourceLambda.Properties.LambdaConfig.LambdaFunctionArn,
     );
 
     // Validate subscription
-    const rdsPatchingSubscription = getResource(resources, 'RDSPatchingLambdaLogicalID', CDK_SUBSCRIPTION_TYPE);
+    const rdsPatchingSubscription = getResource(resources, 'SQLPatchingLambdaLogicalID', CDK_SUBSCRIPTION_TYPE);
     expect(rdsPatchingSubscription).toBeDefined();
     expect(rdsPatchingSubscription.Properties).toBeDefined();
     expect(rdsPatchingSubscription.Properties.Protocol).toBeDefined();
