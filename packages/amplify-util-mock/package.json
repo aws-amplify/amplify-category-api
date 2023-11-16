@@ -114,7 +114,10 @@
       "jsx",
       "json",
       "node"
-    ]
+    ],
+    "moduleNameMapper": {
+      "axios": "axios/dist/node/axios.cjs"
+    }
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",

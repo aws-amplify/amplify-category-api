@@ -104,6 +104,9 @@
       "ts-jest": {
         "tsconfig": "<rootDir>/tsconfig.tests.json"
       }
+    },
+    "moduleNameMapper": {
+      "axios": "axios/dist/node/axios.cjs"
     }
   },
   "jest-junit": {
