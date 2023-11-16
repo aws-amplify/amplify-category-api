@@ -800,6 +800,50 @@ describe('model auth rules overrides', () => {
   });
 });
 
+describe('schema overrides for Enum types', () => {
+  it('should retain added custom enum types', () => {
+    const document = parse(`
+            type Post @model {
+                id: ID!
+                title: String
+            }
+        `);
+    const editedSchema = `
+            type Post @model {
+                id: ID!
+                title: String
+            }
+            enum Status {
+                ACTIVE
+                INACTIVE
+            }
+        `;
+    const editedDocument = parse(editedSchema);
+    const updatedDocument = applySchemaOverrides(document, editedDocument);
+    stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
+  });
+
+  it('should not retain edits to non-custom enum types', () => {
+    const schema = `
+            enum Status {
+                ACTIVE
+                INACTIVE
+            }
+        `;
+    const editedSchema = `
+            enum Status {
+                ACTIVE
+                INACTIVE
+                DELETED
+            }
+        `;
+    const document = parse(schema);
+    const editedDocument = parse(editedSchema);
+    const updatedDocument = applySchemaOverrides(document, editedDocument);
+    stringsMatchWithoutWhitespace(print(updatedDocument), schema);
+  });
+});
+
 const stringsMatchWithoutWhitespace = (actual: string, expected: string) => {
   expect(actual.replace(/\s/g, '')).toEqual(expected.replace(/\s/g, ''));
 };
