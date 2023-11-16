@@ -188,5 +188,27 @@ describe('storeOutput', () => {
       };
       expect(JSON.parse(stack.templateOptions.description || '{}')).toMatchObject({ createdWith: version, stackType: 'api-AppSync' });
     });
+
+    /**
+     * This test is testing a dependency more than it's testing code in this package,
+     * but it's still good to verify that the expected CDK context key is being respected
+     */
+    it('stores expected BI metadata when Amplify context key is set', () => {
+      const stack = new cdk.Stack();
+      stack.node.setContext('amplify-backend-type', 'branch');
+      new AmplifyGraphqlApi(stack, 'TestApi', {
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+          type Todo @model {
+            description: String!
+          }
+        `),
+        authorizationModes: {
+          apiKeyConfig: {
+            expires: cdk.Duration.days(2),
+          },
+        },
+      });
+      expect(JSON.parse(stack.templateOptions.description || '{}')).toMatchObject({ createdBy: 'AmplifyPipelineDeploy' });
+    });
   });
 });

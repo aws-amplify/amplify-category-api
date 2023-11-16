@@ -43,7 +43,7 @@ describe('CDK GraphQL Transformer', () => {
 
   const [username, password, identifier] = generator.generateMultiple(3);
 
-  const region = process.env.AWS_REGION ?? 'us-east-1';
+  const region = process.env.CLI_REGION ?? 'us-west-2';
 
   const dbname = 'default_db';
 
@@ -123,8 +123,8 @@ describe('CDK GraphQL Transformer', () => {
     expect(listResult.body.data.listTodos.items.length).toEqual(1);
     expect(todo.id).toEqual(listResult.body.data.listTodos.items[0].id);
     const client = new LambdaClient({ region });
-    const functionName = outputs.SQLLambdaFunctionName;
-    const functionAlias = 'SQLLambdaAlias';
+    const functionName = outputs[name].SQLLambdaFunctionName;
+    const functionAlias = 'SQLLambdaFunctionAlias';
     const command = new GetProvisionedConcurrencyConfigCommand({
       FunctionName: functionName,
       Qualifier: functionAlias,
