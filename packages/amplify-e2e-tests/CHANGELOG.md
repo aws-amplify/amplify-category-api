@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.18.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.18.0...amplify-category-api-e2e-tests@3.18.1) (2023-11-16)
+
+### Bug Fixes
+
+- Rename VPC Endpoint CDK prefix ([#2072](https://github.com/aws-amplify/amplify-category-api/issues/2072)) ([00824c1](https://github.com/aws-amplify/amplify-category-api/commit/00824c137a07fd04d325e02465ca6be3805f78c2))
+
 # [3.18.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.17.6...amplify-category-api-e2e-tests@3.18.0) (2023-11-15)
 
 ### Bug Fixes
