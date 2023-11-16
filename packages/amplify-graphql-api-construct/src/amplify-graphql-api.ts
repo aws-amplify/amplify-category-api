@@ -173,7 +173,7 @@ export class AmplifyGraphqlApi extends Construct {
 
     const assetManager = new AssetManager();
 
-    // The following override is used for samara command 'amplify sandbox` only
+    // The following override is used for Samsara CLI command 'amplify sandbox` only
     let transformeBehaviorRuntimeOverride;
     const deployByAmplifySandbox = this.node.tryGetContext('amplifySandboxDeploy');
     if (deployByAmplifySandbox && (deployByAmplifySandbox === 'true' || deployByAmplifySandbox === true)) {
