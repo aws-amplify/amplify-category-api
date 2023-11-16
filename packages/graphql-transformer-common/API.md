@@ -419,6 +419,7 @@ export class ResourceConstants {
         SQLLambdaAliasLogicalID: string;
         SQLLambdaLayerVersionLogicalID: string;
         SQLLayerMappingID: string;
+        SQLVpcEndpointLogicalIDPrefix: string;
         NoneDataSource: string;
         AuthCognitoUserPoolLogicalID: string;
         AuthCognitoUserPoolNativeClientLogicalID: string;

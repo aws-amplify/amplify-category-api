@@ -42,6 +42,7 @@ export class ResourceConstants {
     SQLLambdaAliasLogicalID: 'SQLLambdaAlias',
     SQLLambdaLayerVersionLogicalID: 'SQLLambdaLayerVersion',
     SQLLayerMappingID: 'SQLLayerResourceMapping',
+    SQLVpcEndpointLogicalIDPrefix: 'SQLVpcEndpoint',
 
     // Local. Try not to collide with model data sources.
     NoneDataSource: 'NoneDataSource',

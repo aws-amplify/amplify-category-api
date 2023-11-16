@@ -197,7 +197,7 @@ export const createRdsLambda = (
 
 const addVpcEndpoint = (scope: Construct, sqlLambdaVpcConfig: VpcConfig, serviceSuffix: string): CfnVPCEndpoint => {
   const serviceEndpointPrefix = 'com.amazonaws';
-  const endpoint = new CfnVPCEndpoint(scope, `RDSVpcEndpoint${serviceSuffix}`, {
+  const endpoint = new CfnVPCEndpoint(scope, `${ResourceConstants.RESOURCES.SQLVpcEndpointLogicalIDPrefix}${serviceSuffix}`, {
     serviceName: Fn.join('', [serviceEndpointPrefix, '.', Fn.ref('AWS::Region'), '.', serviceSuffix]), // Sample: com.amazonaws.us-east-1.ssmmessages
     vpcEndpointType: 'Interface',
     vpcId: sqlLambdaVpcConfig.vpcId,
