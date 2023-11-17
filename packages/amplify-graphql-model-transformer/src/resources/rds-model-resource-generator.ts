@@ -1,10 +1,13 @@
-import { MYSQL_DB_TYPE, RDSConnectionSecrets, getImportedRDSType, getEngineFromDBType } from '@aws-amplify/graphql-transformer-core';
-import { QueryFieldType, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { Fn } from 'aws-cdk-lib';
 import { Topic, SubscriptionFilter } from 'aws-cdk-lib/aws-sns';
 import { LambdaSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
+import { Construct } from 'constructs';
+import { RDSConnectionSecrets, getImportedRDSType, getEngineFromDBType } from '@aws-amplify/graphql-transformer-core';
+import { QueryFieldType, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { ModelVTLGenerator, RDSModelVTLGenerator } from '../resolvers';
 import {
+  createLayerVersionCustomResource,
   createRdsLambda,
   createRdsLambdaRole,
   createRdsPatchingLambda,
@@ -12,12 +15,7 @@ import {
   setRDSLayerMappings,
 } from '../resolvers/rds';
 import { ModelResourceGenerator } from './model-resource-generator';
-import { Fn } from 'aws-cdk-lib';
 
-export const SQL_STACK_NAME = 'SqlApiStack';
-// Beta SNS topic - 'arn:aws:sns:us-east-1:956468067974:AmplifySQLLayerNotification'
-// PROD SNS topic - 'arn:aws:sns:us-east-1:582037449441:AmplifySQLLayerNotification'
-const SQL_PATCHING_SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:582037449441:AmplifySQLLayerNotification';
 /**
  * An implementation of ModelResourceGenerator responsible for generated CloudFormation resources
  * for models backed by an RDS data source
@@ -31,16 +29,22 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       const engine = getEngineFromDBType(dbType);
       const secretEntry = context.datasourceSecretParameterLocations.get(dbType);
       const {
-        SQLLambdaIAMRoleLogicalID,
-        SQLPatchingLambdaIAMRoleLogicalID,
-        SQLLambdaLogicalID,
-        SQLPatchingLambdaLogicalID,
+        AmplifySQLLayerNotificationTopicAccount,
+        AmplifySQLLayerNotificationTopicName,
         SQLLambdaDataSourceLogicalID,
+        SQLLambdaIAMRoleLogicalID,
+        SQLLambdaLogicalID,
+        SQLPatchingLambdaIAMRoleLogicalID,
+        SQLPatchingLambdaLogicalID,
         SQLPatchingSubscriptionLogicalID,
+        SQLPatchingTopicLogicalID,
+        SQLStackName,
       } = ResourceConstants.RESOURCES;
-      const lambdaRoleScope = context.stackManager.getScopeFor(SQLLambdaIAMRoleLogicalID, SQL_STACK_NAME);
-      const lambdaScope = context.stackManager.getScopeFor(SQLLambdaLogicalID, SQL_STACK_NAME);
-      setRDSLayerMappings(lambdaScope, context.rdsLayerMapping);
+      const lambdaRoleScope = context.stackManager.getScopeFor(SQLLambdaIAMRoleLogicalID, SQLStackName);
+      const lambdaScope = context.stackManager.getScopeFor(SQLLambdaLogicalID, SQLStackName);
+
+      const layerVersionArn = resolveLayerVersion(lambdaScope, context);
+
       const role = createRdsLambdaRole(
         context.resourceHelper.generateIAMRoleName(SQLLambdaIAMRoleLogicalID),
         lambdaRoleScope,
@@ -51,6 +55,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
         lambdaScope,
         context.api,
         role,
+        layerVersionArn,
         {
           engine: engine,
           username: secretEntry?.username ?? '',
@@ -63,8 +68,8 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
         context.sqlLambdaProvisionedConcurrencyConfig,
       );
 
-      const patchingLambdaRoleScope = context.stackManager.getScopeFor(SQLPatchingLambdaIAMRoleLogicalID, SQL_STACK_NAME);
-      const patchingLambdaScope = context.stackManager.getScopeFor(SQLPatchingLambdaLogicalID, SQL_STACK_NAME);
+      const patchingLambdaRoleScope = context.stackManager.getScopeFor(SQLPatchingLambdaIAMRoleLogicalID, SQLStackName);
+      const patchingLambdaScope = context.stackManager.getScopeFor(SQLPatchingLambdaLogicalID, SQLStackName);
       const patchingLambdaRole = createRdsPatchingLambdaRole(
         context.resourceHelper.generateIAMRoleName(SQLPatchingLambdaIAMRoleLogicalID),
         patchingLambdaRoleScope,
@@ -77,12 +82,17 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       });
 
       // Add SNS subscription for patching notifications
-      const patchingSubscriptionScope = context.stackManager.getScopeFor(SQLPatchingSubscriptionLogicalID, SQL_STACK_NAME);
-      const snsTopic = Topic.fromTopicArn(
-        patchingSubscriptionScope,
-        ResourceConstants.RESOURCES.SQLPatchingTopicLogicalID,
-        SQL_PATCHING_SNS_TOPIC_ARN,
-      );
+      const topicArn = Fn.join(':', [
+        'arn',
+        'aws',
+        'sns',
+        Fn.ref('AWS::Region'),
+        AmplifySQLLayerNotificationTopicAccount,
+        AmplifySQLLayerNotificationTopicName,
+      ]);
+
+      const patchingSubscriptionScope = context.stackManager.getScopeFor(SQLPatchingSubscriptionLogicalID, SQLStackName);
+      const snsTopic = Topic.fromTopicArn(patchingSubscriptionScope, SQLPatchingTopicLogicalID, topicArn);
       const subscription = new LambdaSubscription(patchingLambda, {
         filterPolicy: {
           Region: SubscriptionFilter.stringFilter({
@@ -92,7 +102,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       });
       snsTopic.addSubscription(subscription);
 
-      const lambdaDataSourceScope = context.stackManager.getScopeFor(SQLLambdaDataSourceLogicalID, SQL_STACK_NAME);
+      const lambdaDataSourceScope = context.stackManager.getScopeFor(SQLLambdaDataSourceLogicalID, SQLStackName);
       const rdsDatasource = context.api.host.addLambdaDataSource(`${SQLLambdaDataSourceLogicalID}`, lambda, {}, lambdaDataSourceScope);
       this.models.forEach((model) => {
         context.dataSources.add(model, rdsDatasource);
@@ -130,3 +140,25 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
     });
   }
 }
+
+/**
+ * Resolves the layer version using an appropriate strategy for the current context. In the Gen1 CLI flow, the transform-graphql-schema-v2
+ * buildAPIProject function retrieves the latest layer version from the S3 bucket. In the CDK construct, such async behavior at synth time
+ * is forbidden, so we use an AwsCustomResource to resolve the latest layer version. The AwsCustomResource does not work with the CLI custom
+ * synth functionality, so we fork the behavior at this point.
+ *
+ * Note that in either case, the returned value is not actually the literal layer ARN, but rather a reference to be resolved at deploy time:
+ * in the CLI case, it's the resolution of the SQLLayerMapping; in the CDK case, it's the 'Body' response field from the AwsCustomResource's
+ * invocation of s3::GetObject.
+ */
+const resolveLayerVersion = (scope: Construct, context: TransformerContextProvider): string => {
+  let layerVersionArn: string;
+  if (context.rdsLayerMapping) {
+    setRDSLayerMappings(scope, context.rdsLayerMapping);
+    layerVersionArn = Fn.findInMap(ResourceConstants.RESOURCES.SQLLayerMappingID, Fn.ref('AWS::Region'), 'layerRegion');
+  } else {
+    const layerVersionCustomResource = createLayerVersionCustomResource(scope);
+    layerVersionArn = layerVersionCustomResource.getResponseField('Body');
+  }
+  return layerVersionArn;
+};

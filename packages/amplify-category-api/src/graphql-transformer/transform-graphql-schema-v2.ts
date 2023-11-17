@@ -273,17 +273,13 @@ export const getUserOverridenSlots = (userDefinedSlots: Record<string, UserDefin
     .filter((slotName) => slotName !== undefined);
 
 const getRDSLayerMapping = async (): Promise<RDSLayerMapping> => {
-  try {
-    const response = await fetch(LAYER_MAPPING_URL);
-    if (response.status === 200) {
-      const result = await response.json();
-      return result as RDSLayerMapping;
-    }
-  } catch (err) {
-    // Ignore the error and return default layer mapping
+  const response = await fetch(LAYER_MAPPING_URL);
+  if (response.status === 200) {
+    const result = await response.json();
+    return result as RDSLayerMapping;
+  } else {
+    throw new Error(`Unable to retrieve layer mapping from ${LAYER_MAPPING_URL} with status code ${response.status}.`);
   }
-  printer.warn('Unable to load the latest SQL layer configuration, using local configuration.');
-  return {};
 };
 
 const isSqlLambdaVpcConfigRequired = async (context: $TSContext, dbType: DBType): Promise<VpcConfig | undefined> => {

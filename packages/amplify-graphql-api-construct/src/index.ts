@@ -38,7 +38,6 @@ export type {
   ModelDataSourceStrategyDbType,
   VpcConfig,
   SubnetAvailabilityZone,
-  SQLLambdaLayerMapping,
   SqlModelDataSourceDbConnectionConfig,
   ProvisionedConcurrencyConfig,
 } from './types';
@@ -52,3 +51,4 @@ export {
   SSEType,
   StreamSpecification,
 } from './amplify-dynamodb-table-wrapper';
+export { SQLLambdaModelDataSourceStrategyFactory } from './sql-model-datasource-strategy';

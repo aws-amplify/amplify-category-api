@@ -8,19 +8,19 @@
   "bundled": {
     "@aws-amplify/backend-output-schemas": "^0.4.0",
     "@aws-amplify/backend-output-storage": "^0.2.2",
-    "@aws-amplify/graphql-auth-transformer": "3.2.0",
-    "@aws-amplify/graphql-default-value-transformer": "2.1.9",
-    "@aws-amplify/graphql-function-transformer": "2.1.8",
-    "@aws-amplify/graphql-http-transformer": "2.1.8",
-    "@aws-amplify/graphql-index-transformer": "2.2.0",
-    "@aws-amplify/graphql-maps-to-transformer": "3.3.0",
-    "@aws-amplify/graphql-model-transformer": "2.3.0",
-    "@aws-amplify/graphql-predictions-transformer": "2.1.8",
-    "@aws-amplify/graphql-relational-transformer": "2.2.0",
-    "@aws-amplify/graphql-searchable-transformer": "2.3.0",
-    "@aws-amplify/graphql-sql-transformer": "0.1.0",
-    "@aws-amplify/graphql-transformer": "1.3.0",
-    "@aws-amplify/graphql-transformer-core": "2.3.0",
+    "@aws-amplify/graphql-auth-transformer": "3.2.1",
+    "@aws-amplify/graphql-default-value-transformer": "2.1.10",
+    "@aws-amplify/graphql-function-transformer": "2.1.9",
+    "@aws-amplify/graphql-http-transformer": "2.1.9",
+    "@aws-amplify/graphql-index-transformer": "2.2.1",
+    "@aws-amplify/graphql-maps-to-transformer": "3.3.1",
+    "@aws-amplify/graphql-model-transformer": "2.3.1",
+    "@aws-amplify/graphql-predictions-transformer": "2.1.9",
+    "@aws-amplify/graphql-relational-transformer": "2.2.1",
+    "@aws-amplify/graphql-searchable-transformer": "2.3.1",
+    "@aws-amplify/graphql-sql-transformer": "0.1.1",
+    "@aws-amplify/graphql-transformer": "1.3.1",
+    "@aws-amplify/graphql-transformer-core": "2.3.1",
     "@aws-amplify/graphql-transformer-interfaces": "3.3.0",
     "@aws-amplify/platform-core": "^0.2.0",
     "@aws-amplify/plugin-types": "^0.4.1",
@@ -30,7 +30,7 @@
     "graceful-fs": "^4.2.11",
     "graphql": "^15.5.0",
     "graphql-mapping-template": "4.20.12",
-    "graphql-transformer-common": "4.26.0",
+    "graphql-transformer-common": "4.26.1",
     "hjson": "^3.2.2",
     "immer": "^9.0.12",
     "is-buffer": "^2.0.5",
@@ -6805,7 +6805,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 921
+        "line": 916
       },
       "name": "ProvisionedConcurrencyConfig",
       "properties": [
@@ -6819,7 +6819,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 923
+            "line": 918
           },
           "name": "provisionedConcurrentExecutions",
           "type": {
@@ -7024,34 +7024,12 @@
           "abstract": true,
           "docs": {
             "stability": "experimental",
-            "summary": "An optional override for the default SQL Lambda Layer."
-          },
-          "immutable": true,
-          "locationInModule": {
-            "filename": "src/types.ts",
-            "line": 890
-          },
-          "name": "sqlLambdaLayerMapping",
-          "optional": true,
-          "type": {
-            "collection": {
-              "elementtype": {
-                "primitive": "string"
-              },
-              "kind": "map"
-            }
-          }
-        },
-        {
-          "abstract": true,
-          "docs": {
-            "stability": "experimental",
             "summary": "The configuration for the provisioned concurrency of the Lambda."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 895
+            "line": 890
           },
           "name": "sqlLambdaProvisionedConcurrencyConfig",
           "optional": true,
@@ -7078,6 +7056,71 @@
         }
       ],
       "symbolId": "src/types:SQLLambdaModelDataSourceStrategy"
+    },
+    "@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategyFactory": {
+      "assembly": "@aws-amplify/graphql-api-construct",
+      "docs": {
+        "stability": "stable",
+        "summary": "Class exposing utilities to produce SQLLambdaModelDataSourceStrategy objects given various inputs."
+      },
+      "fqn": "@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategyFactory",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        }
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "src/sql-model-datasource-strategy.ts",
+        "line": 40
+      },
+      "methods": [
+        {
+          "docs": {
+            "remarks": "The key\nof the `customSqlStatements` record is the file's base name (that is, the name of the file minus the directory and extension).",
+            "stability": "stable",
+            "summary": "Creates a SQLLambdaModelDataSourceStrategy where the binding's `customSqlStatements` are populated from `sqlFiles`."
+          },
+          "locationInModule": {
+            "filename": "src/sql-model-datasource-strategy.ts",
+            "line": 47
+          },
+          "name": "fromCustomSqlFiles",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the list of files to load SQL statements from."
+              },
+              "name": "sqlFiles",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "string"
+                  },
+                  "kind": "array"
+                }
+              }
+            },
+            {
+              "docs": {
+                "summary": "the remaining SQLLambdaModelDataSourceStrategy options."
+              },
+              "name": "options",
+              "type": {
+                "fqn": "@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy"
+            }
+          },
+          "static": true
+        }
+      ],
+      "name": "SQLLambdaModelDataSourceStrategyFactory",
+      "symbolId": "src/sql-model-datasource-strategy:SQLLambdaModelDataSourceStrategyFactory"
     },
     "@aws-amplify/graphql-api-construct.SSESpecification": {
       "assembly": "@aws-amplify/graphql-api-construct",
@@ -7186,7 +7229,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 952
+        "line": 941
       },
       "name": "SqlModelDataSourceDbConnectionConfig",
       "properties": [
@@ -7199,7 +7242,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 968
+            "line": 957
           },
           "name": "databaseNameSsmPath",
           "type": {
@@ -7216,7 +7259,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 956
+            "line": 945
           },
           "name": "hostnameSsmPath",
           "type": {
@@ -7232,7 +7275,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 965
+            "line": 954
           },
           "name": "passwordSsmPath",
           "type": {
@@ -7248,7 +7291,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 959
+            "line": 948
           },
           "name": "portSsmPath",
           "type": {
@@ -7264,7 +7307,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 962
+            "line": 951
           },
           "name": "usernameSsmPath",
           "type": {
@@ -7321,7 +7364,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 932
+        "line": 927
       },
       "name": "SubnetAvailabilityZone",
       "properties": [
@@ -7334,7 +7377,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 937
+            "line": 932
           },
           "name": "availabilityZone",
           "type": {
@@ -7350,7 +7393,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 934
+            "line": 929
           },
           "name": "subnetId",
           "type": {
@@ -7761,7 +7804,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 906
+        "line": 901
       },
       "name": "VpcConfig",
       "properties": [
@@ -7774,7 +7817,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 911
+            "line": 906
           },
           "name": "securityGroupIds",
           "type": {
@@ -7795,7 +7838,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 914
+            "line": 909
           },
           "name": "subnetAvailabilityZoneConfig",
           "type": {
@@ -7816,7 +7859,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 908
+            "line": 903
           },
           "name": "vpcId",
           "type": {
@@ -7827,6 +7870,6 @@
       "symbolId": "src/types:VpcConfig"
     }
   },
-  "version": "1.4.0",
-  "fingerprint": "hmlKeaou2lY8Ca+maEUF3gvn7GlXomiiRaWAFJ9F2tc="
+  "version": "1.4.1",
+  "fingerprint": "pu8IiYqlIIg0uQAOAdEyXpa/tDHsfzk+MKOik2znroM="
 }

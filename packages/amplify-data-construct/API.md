@@ -34,7 +34,7 @@ import { PartialTranslationBehavior } from '@aws-amplify/graphql-api-construct';
 import { ProvisionedConcurrencyConfig } from '@aws-amplify/graphql-api-construct';
 import { ProvisionedThroughput } from '@aws-amplify/graphql-api-construct';
 import { QueryFunctionSlot } from '@aws-amplify/graphql-api-construct';
-import { SQLLambdaLayerMapping } from '@aws-amplify/graphql-api-construct';
+import { SQLLambdaModelDataSourceStrategyFactory } from '@aws-amplify/graphql-api-construct';
 import { SSESpecification } from '@aws-amplify/graphql-api-construct';
 import { SSEType } from '@aws-amplify/graphql-api-construct';
 import { StreamSpecification } from '@aws-amplify/graphql-api-construct';
@@ -105,7 +105,7 @@ export { ProvisionedThroughput }
 
 export { QueryFunctionSlot }
 
-export { SQLLambdaLayerMapping }
+export { SQLLambdaModelDataSourceStrategyFactory }
 
 export { SSESpecification }
 
