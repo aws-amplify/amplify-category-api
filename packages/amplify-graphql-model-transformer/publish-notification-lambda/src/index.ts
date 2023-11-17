@@ -1,27 +1,33 @@
-import { LambdaClient, ListLayerVersionsCommand, ListLayerVersionsCommandOutput } from '@aws-sdk/client-lambda';
+import { LambdaClient, ListLayerVersionsCommand } from '@aws-sdk/client-lambda';
 import { PublishCommand, SNSClient } from '@aws-sdk/client-sns';
 
 const MAX_ITEMS = 50;
 const { LAYER_NAME, SNS_TOPIC_ARN, SNS_TOPIC_REGION } = process.env;
 
+/*
+ * NOTE: The list of supported regions must be kept in sync amongst all of:
+ * - packages/amplify-graphql-model-transformer/publish-notification-lambda/src/index.ts
+ * - the internal pipeline that actually publishes new layer versions
+ */
 const SUPPORTED_REGIONS = [
-  'us-east-1',
-  'us-west-2',
-  'us-west-1',
-  'eu-north-1',
-  'ap-south-1',
-  'eu-central-1',
-  'eu-west-1',
-  'sa-east-1',
-  'ap-southeast-1',
-  'ap-northeast-2',
-  'eu-west-2',
-  'us-east-2',
   'ap-northeast-1',
-  'eu-west-3',
+  'ap-northeast-2',
+  'ap-northeast-3',
+  'ap-south-1',
+  'ap-southeast-1',
   'ap-southeast-2',
   'ca-central-1',
-  'ap-northeast-3',
+  'eu-central-1',
+  'eu-north-1',
+  'eu-west-1',
+  'eu-west-2',
+  'eu-west-3',
+  'me-south-1',
+  'sa-east-1',
+  'us-east-1',
+  'us-east-2',
+  'us-west-1',
+  'us-west-2',
 ];
 
 type LayerConfig = {

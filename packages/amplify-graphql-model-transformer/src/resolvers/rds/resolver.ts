@@ -1,3 +1,4 @@
+import path from 'path';
 import { CfnMapping, Duration, Fn } from 'aws-cdk-lib';
 import {
   Expression,
@@ -28,9 +29,9 @@ import {
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction, LayerVersion, Runtime, Alias, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
-import path from 'path';
 import { EnumTypeDefinitionNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
 import { CfnVPCEndpoint } from 'aws-cdk-lib/aws-ec2';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
 
 /**
  * Define RDS Lambda operations
@@ -39,98 +40,17 @@ export type OPERATIONS = 'CREATE' | 'UPDATE' | 'DELETE' | 'GET' | 'LIST' | 'SYNC
 
 const OPERATION_KEY = '__operation';
 
-// TODO: This is temporary state, we need to modify this to a production layer
 /**
- * Define RDS Lambda Layer region mappings
+ * Define RDS Lambda Layer region mappings. The optional `mapping` can be specified in place of the defaults that are hardcoded at the time
+ * this package is published. For the CLI flow, the `mapping` will be downloaded at runtime during the `amplify push` flow. For the CDK,
+ * the layer version will be resolved by a custom CDK resource.
  * @param scope Construct
+ * @param mapping an RDSLayerMapping to use in place of the defaults
  */
-export const setRDSLayerMappings = (scope: Construct, mapping?: RDSLayerMapping): CfnMapping =>
+export const setRDSLayerMappings = (scope: Construct, mapping: RDSLayerMapping): CfnMapping =>
   new CfnMapping(scope, ResourceConstants.RESOURCES.SQLLayerMappingID, {
-    mapping: getLatestLayers(mapping),
+    mapping,
   });
-
-const getLatestLayers = (latestLayers?: RDSLayerMapping): RDSLayerMapping => {
-  if (latestLayers && Object.keys(latestLayers).length > 0) {
-    return latestLayers;
-  }
-  console.warn('Unable to load the latest SQL layer configuration, using local configuration.');
-  const defaultLayerMapping = getDefaultLayerMapping();
-  return defaultLayerMapping;
-};
-
-// For beta use account '956468067974', layer name 'AmplifySQLLayerBeta' and layer version '12' as of 2023-06-20
-// For prod use account '582037449441', layer name 'AmplifySQLLayer' and layer version '3' as of 2023-06-20
-const getDefaultLayerMapping = (): RDSLayerMapping => ({
-  'ap-northeast-1': {
-    layerRegion: 'arn:aws:lambda:ap-northeast-1:582037449441:layer:AmplifySQLLayer:1',
-  },
-  'us-east-1': {
-    layerRegion: 'arn:aws:lambda:us-east-1:582037449441:layer:AmplifySQLLayer:1',
-  },
-  'ap-southeast-1': {
-    layerRegion: 'arn:aws:lambda:ap-southeast-1:582037449441:layer:AmplifySQLLayer:1',
-  },
-  'eu-west-1': {
-    layerRegion: 'arn:aws:lambda:eu-west-1:582037449441:layer:AmplifySQLLayer:1',
-  },
-  'us-west-1': {
-    layerRegion: 'arn:aws:lambda:us-west-1:582037449441:layer:AmplifySQLLayer:1',
-  },
-  'ap-east-1': {
-    layerRegion: 'arn:aws:lambda:ap-east-1:582037449441:layer:AmplifySQLLayer:1',
-  },
-  'ap-northeast-2': {
-    layerRegion: 'arn:aws:lambda:ap-northeast-2:582037449441:layer:AmplifySQLLayer:1',
-  },
-  'ap-northeast-3': {
-    layerRegion: 'arn:aws:lambda:ap-northeast-3:582037449441:layer:AmplifySQLLayer:1',
-  },
-  'ap-south-1': {
-    layerRegion: 'arn:aws:lambda:ap-south-1:582037449441:layer:AmplifySQLLayer:1',
-  },
-  'ap-southeast-2': {
-    layerRegion: 'arn:aws:lambda:ap-southeast-2:582037449441:layer:AmplifySQLLayer:1',
-  },
-  'ca-central-1': {
-    layerRegion: 'arn:aws:lambda:ca-central-1:582037449441:layer:AmplifySQLLayer:1',
-  },
-  'eu-central-1': {
-    layerRegion: 'arn:aws:lambda:eu-central-1:582037449441:layer:AmplifySQLLayer:1',
-  },
-  'eu-north-1': {
-    layerRegion: 'arn:aws:lambda:eu-north-1:582037449441:layer:AmplifySQLLayer:1',
-  },
-  'eu-west-2': {
-    layerRegion: 'arn:aws:lambda:eu-west-2:582037449441:layer:AmplifySQLLayer:1',
-  },
-  'eu-west-3': {
-    layerRegion: 'arn:aws:lambda:eu-west-3:582037449441:layer:AmplifySQLLayer:1',
-  },
-  'sa-east-1': {
-    layerRegion: 'arn:aws:lambda:sa-east-1:582037449441:layer:AmplifySQLLayer:1',
-  },
-  'us-east-2': {
-    layerRegion: 'arn:aws:lambda:us-east-2:582037449441:layer:AmplifySQLLayer:1',
-  },
-  'us-west-2': {
-    layerRegion: 'arn:aws:lambda:us-west-2:582037449441:layer:AmplifySQLLayer:1',
-  },
-  'cn-north-1': {
-    layerRegion: 'arn:aws:lambda:cn-north-1:582037449441:layer:AmplifySQLLayer:1',
-  },
-  'cn-northwest-1': {
-    layerRegion: 'arn:aws:lambda:cn-northwest-1:582037449441:layer:AmplifySQLLayer:1',
-  },
-  'us-gov-west-1': {
-    layerRegion: 'arn:aws:lambda:us-gov-west-1:582037449441:layer:AmplifySQLLayer:1',
-  },
-  'us-gov-east-1': {
-    layerRegion: 'arn:aws:lambda:us-gov-east-1:582037449441:layer:AmplifySQLLayer:1',
-  },
-  'me-south-1': {
-    layerRegion: 'arn:aws:lambda:me-south-1:582037449441:layer:AmplifySQLLayer:1',
-  },
-});
 
 /**
  * Create RDS Lambda function
@@ -142,6 +62,7 @@ export const createRdsLambda = (
   scope: Construct,
   apiGraphql: GraphQLAPIProvider,
   lambdaRole: IRole,
+  layerVersionArn: string,
   environment?: { [key: string]: string },
   sqlLambdaVpcConfig?: VpcConfig,
   sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig,
@@ -163,13 +84,7 @@ export const createRdsLambda = (
     'handler.run',
     path.resolve(__dirname, '..', '..', '..', 'lib', 'rds-lambda.zip'),
     Runtime.NODEJS_18_X,
-    [
-      LayerVersion.fromLayerVersionArn(
-        scope,
-        SQLLambdaLayerVersionLogicalID,
-        Fn.findInMap(ResourceConstants.RESOURCES.SQLLayerMappingID, Fn.ref('AWS::Region'), 'layerRegion'),
-      ),
-    ],
+    [LayerVersion.fromLayerVersionArn(scope, SQLLambdaLayerVersionLogicalID, layerVersionArn)],
     lambdaRole,
     {
       ...environment,
@@ -193,6 +108,41 @@ export const createRdsLambda = (
   }
 
   return fn;
+};
+
+export const createLayerVersionCustomResource = (scope: Construct): AwsCustomResource => {
+  const {
+    SQLLayerVersionCustomResourceID,
+    SQLLayerVersionManifestBucket,
+    SQLLayerVersionManifestBucketRegion,
+    SQLLayerVersionManifestKeyPrefix,
+  } = ResourceConstants.RESOURCES;
+
+  const key = Fn.join('', [SQLLayerVersionManifestKeyPrefix, Fn.ref('AWS::Region')]);
+
+  const manifestArn = `arn:aws:s3:::${SQLLayerVersionManifestBucket}/${key}`;
+
+  const customResource = new AwsCustomResource(scope, SQLLayerVersionCustomResourceID, {
+    resourceType: `Custom::${SQLLayerVersionCustomResourceID}`,
+    onUpdate: {
+      service: 'S3',
+      action: 'getObject',
+      region: SQLLayerVersionManifestBucketRegion,
+      parameters: {
+        Bucket: SQLLayerVersionManifestBucket,
+        Key: key,
+      },
+      // Make the physical ID change each time we do a deployment, so we always check for the latest version. This means we will never have
+      // a strictly no-op deployment, but the SQL Lambda configuration won't change unless the actual layer value changes
+      physicalResourceId: PhysicalResourceId.of(`${SQLLayerVersionCustomResourceID}-${Date.now().toString()}`),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({
+      resources: [manifestArn],
+    }),
+  });
+
+  setResourceName(customResource, { name: SQLLayerVersionCustomResourceID, setOnDefaultChild: true });
+  return customResource;
 };
 
 const addVpcEndpoint = (scope: Construct, sqlLambdaVpcConfig: VpcConfig, serviceSuffix: string): CfnVPCEndpoint => {

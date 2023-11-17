@@ -314,17 +314,18 @@ export interface QueryFunctionSlot extends FunctionSlotBase {
 }
 
 // @public
-export type SQLLambdaLayerMapping = Record<string, string>;
-
-// @public
 export interface SQLLambdaModelDataSourceStrategy {
     readonly customSqlStatements?: Record<string, string>;
     readonly dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
     readonly dbType: 'MYSQL' | 'POSTGRES';
     readonly name: string;
-    readonly sqlLambdaLayerMapping?: SQLLambdaLayerMapping;
     readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
     readonly vpcConfiguration?: VpcConfig;
+}
+
+// @public
+export class SQLLambdaModelDataSourceStrategyFactory {
+    static fromCustomSqlFiles(sqlFiles: string[], options: Exclude<SQLLambdaModelDataSourceStrategy, 'customSqlStatements'>): SQLLambdaModelDataSourceStrategy;
 }
 
 // @public
