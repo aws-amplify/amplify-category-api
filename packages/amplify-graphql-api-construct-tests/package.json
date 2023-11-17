@@ -93,6 +93,9 @@
       "ts-jest": {
         "diagnostics": false
       }
+    },
+    "moduleNameMapper": {
+      "axios": "axios/dist/node/axios.cjs"
     }
   },
   "jest-junit": {
