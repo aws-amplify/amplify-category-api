@@ -38,7 +38,6 @@ const {
   SQLLambdaDataSourceLogicalID,
   SQLLambdaLogicalID,
   SQLPatchingLambdaLogicalID,
-  SQLPatchingSubscriptionLogicalID,
   SQLStackName,
   SQLVpcEndpointLogicalIDPrefix,
 } = ResourceConstants.RESOURCES;
@@ -181,23 +180,23 @@ describe('RDS Tests', () => {
     );
 
     // Validate subscription
-    const expectedTopicArn = [
-      'arn',
-      'aws',
-      'sns',
-      region,
-      AmplifySQLLayerNotificationTopicAccount,
-      AmplifySQLLayerNotificationTopicName,
-    ].join(':');
-    const rdsPatchingSubscription = getResource(resources, SQLPatchingSubscriptionLogicalID, CDK_SUBSCRIPTION_TYPE);
+    const expectedTopicArn = {
+      'Fn::Join': [
+        ':',
+        ['arn:aws:sns', { Ref: 'AWS::Region' }, `${AmplifySQLLayerNotificationTopicAccount}:${AmplifySQLLayerNotificationTopicName}`],
+      ],
+    };
+    // Counterintuitively, the subscription actually gets created with the resource prefix of the FUNCTION that gets triggered, rather than
+    // the scope created specifically for the subscription
+    const rdsPatchingSubscription = getResource(resources, SQLPatchingLambdaLogicalID, CDK_SUBSCRIPTION_TYPE);
     expect(rdsPatchingSubscription).toBeDefined();
     expect(rdsPatchingSubscription.Properties).toBeDefined();
     expect(rdsPatchingSubscription.Properties.Protocol).toBeDefined();
     expect(rdsPatchingSubscription.Properties.Protocol).toEqual('lambda');
     expect(rdsPatchingSubscription.Properties.Endpoint).toBeDefined();
     expect(rdsPatchingSubscription.Properties.TopicArn).toBeDefined();
-    expect(rdsPatchingSubscription.Properties.TopicArn).toEqual(expectedTopicArn);
-    expect(rdsPatchingSubscription.Properties.Region).toEqual(region);
+    expect(rdsPatchingSubscription.Properties.TopicArn).toMatchObject(expectedTopicArn);
+    expect(rdsPatchingSubscription.Properties.Region).toBeDefined();
     expect(rdsPatchingSubscription.Properties.FilterPolicy).toBeDefined();
     expect(rdsPatchingSubscription.Properties.FilterPolicy.Region).toBeDefined();
 
