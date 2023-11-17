@@ -29,6 +29,12 @@ export class StackManager implements StackManagerProvider {
 
   hasStack = (stackName: string): boolean => this.stacks.has(stackName);
 
+  /**
+   * Returns the stack in which `resourceId` was created. If the stack doesn't currently exist, creates one.
+   * @param resourceId the resourceId to search for
+   * @param defaultStackName the default stack name to retrieve.
+   * @returns the stack, or a new one if not yet defined.
+   */
   getScopeFor = (resourceId: string, defaultStackName?: string): Construct => {
     const stackName = this.resourceToStackMap.has(resourceId) ? this.resourceToStackMap.get(resourceId) : defaultStackName;
     if (!stackName) {

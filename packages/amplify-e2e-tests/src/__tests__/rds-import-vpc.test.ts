@@ -1,3 +1,4 @@
+import path from 'path';
 import {
   addApiWithoutSchema,
   amplifyPush,
@@ -19,9 +20,9 @@ import { existsSync, readFileSync } from 'fs-extra';
 import generator from 'generate-password';
 import { ObjectTypeDefinitionNode, parse } from 'graphql';
 import gql from 'graphql-tag';
-import path from 'path';
 import { print } from 'graphql';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import { ResourceConstants } from 'graphql-transformer-common';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -31,8 +32,16 @@ const CDK_VPC_ENDPOINT_TYPE = 'AWS::EC2::VPCEndpoint';
 const CDK_SUBSCRIPTION_TYPE = 'AWS::SNS::Subscription';
 const APPSYNC_DATA_SOURCE_TYPE = 'AWS::AppSync::DataSource';
 
-const SNS_TOPIC_REGION = 'us-east-1';
-const SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:582037449441:AmplifySQLLayerNotification';
+const {
+  AmplifySQLLayerNotificationTopicAccount,
+  AmplifySQLLayerNotificationTopicName,
+  SQLLambdaDataSourceLogicalID,
+  SQLLambdaLogicalID,
+  SQLPatchingLambdaLogicalID,
+  SQLPatchingSubscriptionLogicalID,
+  SQLStackName,
+  SQLVpcEndpointLogicalIDPrefix,
+} = ResourceConstants.RESOURCES;
 
 describe('RDS Tests', () => {
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
@@ -46,9 +55,7 @@ describe('RDS Tests', () => {
   let host = 'localhost';
   const identifier = `integtest${db_identifier}`;
   const projName = 'rdsimportapi';
-  let projRoot;
-
-  beforeAll(async () => {});
+  let projRoot = '';
 
   afterAll(async () => {
     await cleanupDatabase();
@@ -140,13 +147,13 @@ describe('RDS Tests', () => {
     // Validate the generated resources in the CloudFormation template
     const apisDirectory = path.join(projRoot, 'amplify', 'backend', 'api');
     const apiDirectory = path.join(apisDirectory, apiName);
-    const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', `SqlApiStack.json`);
+    const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', `${SQLStackName}.json`);
     const cfnTemplate = JSON.parse(readFileSync(cfnRDSTemplateFile, 'utf8'));
     expect(cfnTemplate.Resources).toBeDefined();
     const resources = cfnTemplate.Resources;
 
     // Validate if the SQL lambda function has VPC configuration
-    const rdsLambdaFunction = getResource(resources, 'SQLLambdaFunction', CDK_FUNCTION_TYPE);
+    const rdsLambdaFunction = getResource(resources, SQLLambdaLogicalID, CDK_FUNCTION_TYPE);
     expect(rdsLambdaFunction).toBeDefined();
     expect(rdsLambdaFunction.Properties).toBeDefined();
     expect(rdsLambdaFunction.Properties.VpcConfig).toBeDefined();
@@ -155,34 +162,42 @@ describe('RDS Tests', () => {
     expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds).toBeDefined();
     expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds.length).toBeGreaterThan(0);
 
-    expect(getResource(resources, 'SQLVpcEndpointssm', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-    expect(getResource(resources, 'SQLVpcEndpointssmmessages', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-    expect(getResource(resources, 'SQLVpcEndpointkms', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-    expect(getResource(resources, 'SQLVpcEndpointec2', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-    expect(getResource(resources, 'SQLVpcEndpointec2messages', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, `${SQLVpcEndpointLogicalIDPrefix}ssm`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, `${SQLVpcEndpointLogicalIDPrefix}ssmmessages`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, `${SQLVpcEndpointLogicalIDPrefix}kms`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, `${SQLVpcEndpointLogicalIDPrefix}ec2`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, `${SQLVpcEndpointLogicalIDPrefix}ec2messages`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
 
     // Validate patching lambda and subscription
-    const rdsPatchingLambdaFunction = getResource(resources, 'SQLPatchingLambda', CDK_FUNCTION_TYPE);
+    const rdsPatchingLambdaFunction = getResource(resources, SQLPatchingLambdaLogicalID, CDK_FUNCTION_TYPE);
     expect(rdsPatchingLambdaFunction).toBeDefined();
     expect(rdsPatchingLambdaFunction.Properties).toBeDefined();
     expect(rdsPatchingLambdaFunction.Properties.Environment).toBeDefined();
     expect(rdsPatchingLambdaFunction.Properties.Environment.Variables).toBeDefined();
     expect(rdsPatchingLambdaFunction.Properties.Environment.Variables.LAMBDA_FUNCTION_ARN).toBeDefined();
-    const rdsDataSourceLambda = getResource(resources, 'SQLLambdaDataSource', APPSYNC_DATA_SOURCE_TYPE);
+    const rdsDataSourceLambda = getResource(resources, SQLLambdaDataSourceLogicalID, APPSYNC_DATA_SOURCE_TYPE);
     expect(rdsPatchingLambdaFunction.Properties.Environment.Variables.LAMBDA_FUNCTION_ARN).toEqual(
       rdsDataSourceLambda.Properties.LambdaConfig.LambdaFunctionArn,
     );
 
     // Validate subscription
-    const rdsPatchingSubscription = getResource(resources, 'SQLPatchingLambda', CDK_SUBSCRIPTION_TYPE);
+    const expectedTopicArn = [
+      'arn',
+      'aws',
+      'sns',
+      region,
+      AmplifySQLLayerNotificationTopicAccount,
+      AmplifySQLLayerNotificationTopicName,
+    ].join(':');
+    const rdsPatchingSubscription = getResource(resources, SQLPatchingSubscriptionLogicalID, CDK_SUBSCRIPTION_TYPE);
     expect(rdsPatchingSubscription).toBeDefined();
     expect(rdsPatchingSubscription.Properties).toBeDefined();
     expect(rdsPatchingSubscription.Properties.Protocol).toBeDefined();
     expect(rdsPatchingSubscription.Properties.Protocol).toEqual('lambda');
     expect(rdsPatchingSubscription.Properties.Endpoint).toBeDefined();
     expect(rdsPatchingSubscription.Properties.TopicArn).toBeDefined();
-    expect(rdsPatchingSubscription.Properties.TopicArn).toEqual(SNS_TOPIC_ARN);
-    expect(rdsPatchingSubscription.Properties.Region).toEqual(SNS_TOPIC_REGION);
+    expect(rdsPatchingSubscription.Properties.TopicArn).toEqual(expectedTopicArn);
+    expect(rdsPatchingSubscription.Properties.Region).toEqual(region);
     expect(rdsPatchingSubscription.Properties.FilterPolicy).toBeDefined();
     expect(rdsPatchingSubscription.Properties.FilterPolicy.Region).toBeDefined();
 
