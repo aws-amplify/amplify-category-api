@@ -1,4 +1,4 @@
-import { DocumentNode, FieldDefinitionNode, ObjectTypeDefinitionNode, StringValueNode, visit } from 'graphql';
+import { DocumentNode, EnumTypeDefinitionNode, FieldDefinitionNode, ObjectTypeDefinitionNode, StringValueNode, visit } from 'graphql';
 import { isArrayOrObject, getNonModelTypes, isOfType, isNonNullType } from 'graphql-transformer-common';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { FieldWrapper, ObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
@@ -46,7 +46,11 @@ export const applySchemaOverrides = (document: DocumentNode, existingDocument?: 
   };
 
   updatedDocument = visit(updatedDocument, schemaVisitor);
-  updatedDocument['definitions'] = [...updatedDocument['definitions'], ...getNonModelTypes(existingDocument)];
+  updatedDocument['definitions'] = [
+    ...updatedDocument['definitions'],
+    ...getNonModelTypes(existingDocument),
+    ...getCustomEnumTypes(document, existingDocument),
+  ];
 
   return updatedDocument;
 };
@@ -275,4 +279,15 @@ const checkDuplicateFieldMapping = (columnName: string, tableName: string, docum
         .join(', ')} are mapped to the same column ${columnName}. Remove the duplicate mapping.`,
     );
   }
+};
+
+const getCustomEnumTypes = (document: DocumentNode, existingDocument: DocumentNode): EnumTypeDefinitionNode[] => {
+  // Get all the enum types that are added to the existing schema for the purpose of custom operations.
+  const existingEnumTypes = getEnumTypes(existingDocument);
+  const newEnumTypes = getEnumTypes(document);
+  return existingEnumTypes.filter((existingEnum) => !newEnumTypes.find((newEnum) => newEnum?.name?.value === existingEnum?.name?.value));
+};
+
+const getEnumTypes = (document: DocumentNode): EnumTypeDefinitionNode[] => {
+  return document.definitions.filter((def) => def.kind === 'EnumTypeDefinition').map((def) => def as EnumTypeDefinitionNode);
 };

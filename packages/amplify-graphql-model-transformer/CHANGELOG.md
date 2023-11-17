@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.3.0...@aws-amplify/graphql-model-transformer@2.3.1) (2023-11-16)
+
+### Bug Fixes
+
+- Rename VPC Endpoint CDK prefix ([#2072](https://github.com/aws-amplify/amplify-category-api/issues/2072)) ([00824c1](https://github.com/aws-amplify/amplify-category-api/commit/00824c137a07fd04d325e02465ca6be3805f78c2))
+
 # [2.3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.2.4...@aws-amplify/graphql-model-transformer@2.3.0) (2023-11-15)
 
 ### Bug Fixes
