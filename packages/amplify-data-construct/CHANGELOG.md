@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.4.0...@aws-amplify/data-construct@1.4.1) (2023-11-16)
+
+### Bug Fixes
+
+- update backend-output-storage dependencies ([#2075](https://github.com/aws-amplify/amplify-category-api/issues/2075)) ([e577192](https://github.com/aws-amplify/amplify-category-api/commit/e577192c9cd86b8aa913be22dcda98637a8e1d2d))
+
 # 1.4.0 (2023-11-15)
 
 ### Bug Fixes
