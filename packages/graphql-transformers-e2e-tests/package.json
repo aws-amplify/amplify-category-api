@@ -24,7 +24,7 @@
   "dependencies": {
     "@aws-amplify/graphql-auth-transformer": "3.2.2",
     "@aws-amplify/graphql-relational-transformer": "2.2.2",
-    "axios": "^0.26.0",
+    "axios": "^1.6.0",
     "cloudform-types": "^4.2.0",
     "graphql": "^15.5.0",
     "graphql-transformer-common": "4.26.2",
