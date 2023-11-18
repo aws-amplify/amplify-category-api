@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.18.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.18.1...amplify-category-api-e2e-tests@3.18.2) (2023-11-18)
+
+### Bug Fixes
+
+- regionalize lambda layer patching SNS topics ([#2079](https://github.com/aws-amplify/amplify-category-api/issues/2079)) ([6006c86](https://github.com/aws-amplify/amplify-category-api/commit/6006c86cd4ee624b24c184fab523fcdcdb38be63))
+
 ## [3.18.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.18.0...amplify-category-api-e2e-tests@3.18.1) (2023-11-16)
 
 ### Bug Fixes
