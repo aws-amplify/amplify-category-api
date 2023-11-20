@@ -1,44 +1,21 @@
+import { parse } from 'graphql';
 import {
+  CustomSqlDataSourceStrategy as ImplementationCustomSqlDataSourceStrategy,
   DataSourceType,
-  DynamoDBProvisionStrategy,
-  SQLDBType,
   SQLLambdaModelProvisionStrategy,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { ModelDataSourceStrategy } from '../types';
+import {
+  dataSourceStrategyToDataSourceType,
+  isSqlStrategy,
+  isQueryNode,
+  isMutationNode,
+  fieldsWithSqlDirective,
+} from '@aws-amplify/graphql-transformer-core';
+import { normalizeDbType } from '@aws-amplify/graphql-transformer-core/lib/utils';
+import { CustomSqlDataSourceStrategy as InterfaceCustomSqlDataSourceStrategy, ModelDataSourceStrategy } from '../model-datasource-strategy';
 
 type DataSourceConfig = {
   modelToDatasourceMap: Map<string, DataSourceType>;
-};
-
-// TODO: Do away with this after we normalize database types throughout the internals
-const convertSQLDBType = (definitionDBType: 'MYSQL' | 'POSTGRES'): SQLDBType => (definitionDBType === 'MYSQL' ? 'MySQL' : 'Postgres');
-
-const convertToDataSourceType = (dataSourceStrategy: ModelDataSourceStrategy): DataSourceType => {
-  if (dataSourceStrategy.dbType === 'DYNAMODB') {
-    switch (dataSourceStrategy.provisionStrategy) {
-      case 'DEFAULT':
-        return {
-          dbType: 'DDB',
-          provisionDB: true,
-          provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
-        };
-      case 'AMPLIFY_TABLE':
-        return {
-          dbType: 'DDB',
-          provisionDB: true,
-          provisionStrategy: DynamoDBProvisionStrategy.AMPLIFY_TABLE,
-        };
-      default:
-        throw new Error(`Encountered unexpected provision strategy: ${(dataSourceStrategy as any).provisionStrategy}`);
-    }
-  } else if (dataSourceStrategy.dbType === 'MYSQL' || dataSourceStrategy.dbType === 'POSTGRES') {
-    return {
-      dbType: convertSQLDBType(dataSourceStrategy.dbType),
-      provisionDB: false,
-      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-    };
-  }
-  throw new Error(`Encountered unexpected database type ${dataSourceStrategy.dbType}`);
 };
 
 /**
@@ -48,10 +25,76 @@ const convertToDataSourceType = (dataSourceStrategy: ModelDataSourceStrategy): D
 export const parseDataSourceConfig = (dataSourceDefinitionMap: Record<string, ModelDataSourceStrategy>): DataSourceConfig => {
   const modelToDatasourceMap = new Map<string, DataSourceType>();
   for (const [key, value] of Object.entries(dataSourceDefinitionMap)) {
-    const dataSourceType = convertToDataSourceType(value);
+    const dataSourceType = dataSourceStrategyToDataSourceType(value);
     modelToDatasourceMap.set(key, dataSourceType);
   }
   return {
     modelToDatasourceMap,
   };
+};
+
+/**
+ * Creates an interface flavor of customSqlDataSourceStrategies from a factory method's schema and data source.
+ *
+ * TODO: Reword this when we refactor to use Strategies throughout the implementation rather than DataSources.
+ */
+export const constructCustomSqlDataSourceStrategies = (
+  schema: string,
+  dataSourceStrategy: ModelDataSourceStrategy,
+): InterfaceCustomSqlDataSourceStrategy[] => {
+  if (!isSqlStrategy(dataSourceStrategy)) {
+    return [];
+  }
+
+  const parsedSchema = parse(schema);
+
+  const queryNode = parsedSchema.definitions.find(isQueryNode);
+  const mutationNode = parsedSchema.definitions.find(isMutationNode);
+  if (!queryNode && !mutationNode) {
+    return [];
+  }
+
+  const customSqlDataSourceStrategies: InterfaceCustomSqlDataSourceStrategy[] = [];
+
+  if (queryNode) {
+    const fields = fieldsWithSqlDirective(queryNode);
+    for (const field of fields) {
+      customSqlDataSourceStrategies.push({
+        typeName: 'Query',
+        fieldName: field.name.value,
+        strategy: dataSourceStrategy,
+      });
+    }
+  }
+
+  if (mutationNode) {
+    const fields = fieldsWithSqlDirective(mutationNode);
+    for (const field of fields) {
+      customSqlDataSourceStrategies.push({
+        typeName: 'Mutation',
+        fieldName: field.name.value,
+        strategy: dataSourceStrategy,
+      });
+    }
+  }
+
+  return customSqlDataSourceStrategies;
+};
+
+// TODO: Remove this once we refactor the internals to use strategies rather than DataSourceTypes
+export const mapInterfaceCustomSqlStrategiesToImplementationStrategies = (
+  strategies?: InterfaceCustomSqlDataSourceStrategy[],
+): ImplementationCustomSqlDataSourceStrategy[] => {
+  if (!strategies) {
+    return [];
+  }
+  return strategies.map((interfaceStrategy) => ({
+    fieldName: interfaceStrategy.fieldName,
+    typeName: interfaceStrategy.typeName,
+    dataSourceType: {
+      dbType: normalizeDbType(interfaceStrategy.strategy.dbType),
+      provisionDB: false,
+      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
+    },
+  }));
 };

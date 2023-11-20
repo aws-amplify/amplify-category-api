@@ -1,5 +1,11 @@
 import { AppSyncAuthConfiguration, TransformerPluginProvider, TransformerLogLevel } from '@aws-amplify/graphql-transformer-interfaces';
-import type { DataSourceType, SynthParameters, TransformParameters, VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import type {
+  DataSourceType,
+  CustomSqlDataSourceStrategy,
+  SynthParameters,
+  TransformParameters,
+  VpcConfig,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform, RDSConnectionSecrets, ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 import { OverrideConfig, TransformManager } from './cdk-compat/transform-manager';
 import { DeploymentResources } from './deployment-resources';
@@ -13,6 +19,7 @@ export type TestTransformParameters = {
   userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   stackMapping?: Record<string, string>;
   modelToDatasourceMap?: Map<string, DataSourceType>;
+  customSqlDataSourceStrategies?: CustomSqlDataSourceStrategy[];
   datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
   customQueries?: Map<string, string>;
   overrideConfig?: OverrideConfig;
@@ -28,6 +35,7 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
   const {
     schema,
     modelToDatasourceMap,
+    customSqlDataSourceStrategies,
     datasourceSecretParameterLocations,
     customQueries,
     overrideConfig,
@@ -73,6 +81,7 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
       modelToDatasourceMap,
       datasourceSecretParameterLocations,
       customQueries,
+      customSqlDataSourceStrategies,
     },
   });
 

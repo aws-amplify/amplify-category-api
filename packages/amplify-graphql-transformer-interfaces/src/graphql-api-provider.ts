@@ -74,51 +74,11 @@ export interface LambdaConfig {
   ttlSeconds?: number;
 }
 
-/**
- * Configuration of the VPC in which to install a Lambda to resolve queries against a SQL-based data source. The SQL Lambda will be deployed
- * into the specified VPC, subnets, and security groups. The specified subnets and security groups must be in the same VPC. The VPC must
- * have at least one subnet. The construct will also create VPC service endpoints in the specified subnets, as well as inbound security
- * rules, to allow traffic on port 443 within each security group. This allows the Lambda to read database connection information from
- * Secure Systems Manager.
- * @experimental
- */
-export interface VpcConfig {
-  /** The VPC to install the Lambda data source in. */
-  readonly vpcId: string;
-
-  /** The security groups to install the Lambda data source in. */
-  readonly securityGroupIds: string[];
-
-  /** The subnets to install the Lambda data source in, one per availability zone. */
-  readonly subnetAvailabilityZoneConfig: SubnetAvailabilityZone[];
-}
-
-export interface ProvisionedConcurrencyConfig {
-  readonly provisionedConcurrentExecutions: number;
-}
-
-/**
- * Although it is possible to create multiple subnets in a single availability zone, VPC Endpoints may only be deployed to a single subnet
- * in a given availability zone. We use this structure to ensure that the Lambda function and VPC endpoints are mutually consistent.
- */
-export interface SubnetAvailabilityZone {
-  readonly subnetId: string;
-  readonly availabilityZone: string;
-}
-
-/**
- * Maps a given AWS region to the SQL Lambda layer version ARN for that region. TODO: Rename to SQLLambdaLayerMapping
- */
-export interface RDSLayerMapping {
-  readonly [key: string]: {
-    layerRegion: string;
-  };
-}
-
 export interface AppSyncFunctionConfigurationProvider extends IConstruct {
   readonly arn: string;
   readonly functionId: string;
 }
+
 export interface DataSourceOptions {
   /**
    * The name of the data source, overrides the id given by cdk

@@ -28,7 +28,7 @@ import {
   DataSourceType,
   ProvisionedConcurrencyConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
+import type { CustomSqlDataSourceStrategy, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform, RDSConnectionSecrets, ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 import { Construct } from 'constructs';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
@@ -122,6 +122,7 @@ export type ExecuteTransformConfig = TransformConfig & {
   schema: string;
   modelToDatasourceMap?: Map<string, DataSourceType>;
   customQueries?: Map<string, string>;
+  customSqlDataSourceStrategies?: CustomSqlDataSourceStrategy[];
   datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
   printTransformerLog?: (log: TransformerLog) => void;
   sqlLambdaVpcConfig?: VpcConfig;
@@ -166,6 +167,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
   const {
     schema,
     modelToDatasourceMap,
+    customSqlDataSourceStrategies,
     datasourceSecretParameterLocations,
     printTransformerLog,
     rdsLayerMapping,
@@ -189,6 +191,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
       schema,
       datasourceConfig: {
         modelToDatasourceMap,
+        customSqlDataSourceStrategies,
         datasourceSecretParameterLocations,
         rdsLayerMapping,
         customQueries,

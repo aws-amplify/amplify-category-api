@@ -7,6 +7,8 @@
 import { AppSyncDataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from 'aws-cdk-lib';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
+import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { DBType } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql';
 import { EnumTypeDefinitionNode } from 'graphql';
@@ -312,6 +314,20 @@ export const OPERATION_KEY = "__operation";
 
 // @public (undocumented)
 export const propagateApiKeyToNestedTypes: (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode, seenNonModelTypes: Set<string>) => void;
+
+// Warning: (ae-forgotten-export) The symbol "ModelResourceGenerator" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export class RdsModelResourceGenerator extends ModelResourceGenerator {
+    // (undocumented)
+    generateResources(context: TransformerContextProvider, dbTypeOverride?: DBType): void;
+    // (undocumented)
+    protected readonly generatorType = "RdsModelResourceGenerator";
+    // (undocumented)
+    getVTLGenerator(): ModelVTLGenerator;
+    // (undocumented)
+    setFieldMappingResolverReferences(context: TransformerContextProvider): void;
+}
 
 // @public (undocumented)
 export class RDSModelVTLGenerator implements ModelVTLGenerator {

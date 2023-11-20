@@ -1,10 +1,10 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { $TSContext, CloudformationProviderFacade, pathManager, JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { DataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
 import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk, getAdminRoles } from '../../graphql-transformer/utils';
 import { TransformerProjectConfig } from '../../graphql-transformer/cdk-compat/project-config';
 import { DeploymentResources } from '../../graphql-transformer/cdk-compat/deployment-resources';
-import { DataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
 
 jest.mock('fs-extra');
 jest.mock('@aws-amplify/amplify-cli-core');
@@ -77,6 +77,7 @@ describe('graphql transformer utils', () => {
           modelToDatasourceMap: new Map<string, DataSourceType>(),
           config: { Version: 5, ElasticsearchWarning: true },
           customQueries: new Map<string, string>(),
+          customSqlDataSourceStrategies: [],
         } as TransformerProjectConfig;
       });
 
@@ -100,6 +101,7 @@ describe('graphql transformer utils', () => {
           modelToDatasourceMap: new Map<string, DataSourceType>(),
           config: { Version: 5, ElasticsearchWarning: true },
           customQueries: new Map<string, string>(),
+          customSqlDataSourceStrategies: [],
         } as TransformerProjectConfig;
       });
 
@@ -123,6 +125,7 @@ describe('graphql transformer utils', () => {
           modelToDatasourceMap: new Map<string, DataSourceType>(),
           config: { Version: 5, ElasticsearchWarning: true },
           customQueries: new Map<string, string>(),
+          customSqlDataSourceStrategies: [],
         } as TransformerProjectConfig;
       });
 

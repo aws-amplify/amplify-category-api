@@ -50,6 +50,14 @@ import { UnionTypeDefinitionNode } from 'graphql';
 import { UnionTypeExtensionNode } from 'graphql';
 
 // @public (undocumented)
+export interface AmplifyDynamoDbModelDataSourceStrategy extends ModelDataSourceStrategyBase {
+    // (undocumented)
+    readonly dbType: 'DYNAMODB';
+    // (undocumented)
+    readonly provisionStrategy: 'AMPLIFY_TABLE';
+}
+
+// @public (undocumented)
 export interface APIIAMResourceProvider {
     // (undocumented)
     resourceArns: (api: GraphQLAPIProvider) => string[];
@@ -137,6 +145,16 @@ export type AssetProvider = {
     provide: (scope: Construct, name: string, props: AssetProps) => S3Asset;
 };
 
+// @public (undocumented)
+export interface CustomSqlDataSourceStrategy {
+    // (undocumented)
+    readonly dataSourceType: DataSourceType;
+    // (undocumented)
+    readonly fieldName: string;
+    // (undocumented)
+    readonly typeName: 'Query' | 'Mutation';
+}
+
 // Warning: (ae-forgotten-export) The symbol "NoneDataSourceProvider" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -158,6 +176,12 @@ export interface DataSourceProvider extends BackedDataSource {
 export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy | SQLLambdaModelProvisionStrategy;
 
 // @public (undocumented)
+export interface DataSourceStrategiesProvider {
+    // (undocumented)
+    customSqlDataSourceStrategies: CustomSqlDataSourceStrategy[];
+}
+
+// @public (undocumented)
 export interface DataSourceType {
     // (undocumented)
     dbType: DBType;
@@ -169,6 +193,14 @@ export interface DataSourceType {
 
 // @public (undocumented)
 export type DBType = 'DDB' | SQLDBType;
+
+// @public (undocumented)
+export interface DefaultDynamoDbModelDataSourceStrategy extends ModelDataSourceStrategyBase {
+    // (undocumented)
+    readonly dbType: 'DYNAMODB';
+    // (undocumented)
+    readonly provisionStrategy: 'DEFAULT';
+}
 
 // @public (undocumented)
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {
@@ -232,6 +264,18 @@ export enum MappingTemplateType {
     // (undocumented)
     S3_LOCATION = "S3_LOCATION"
 }
+
+// @public (undocumented)
+export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
+
+// @public (undocumented)
+export interface ModelDataSourceStrategyBase {
+    // (undocumented)
+    dbType: ModelDataSourceStrategyDbType;
+}
+
+// @public (undocumented)
+export type ModelDataSourceStrategyDbType = 'DYNAMODB' | 'MYSQL' | 'POSTGRES';
 
 // @public (undocumented)
 export type ModelFieldMap = {
@@ -328,9 +372,39 @@ export interface SearchableDataSourceOptions extends DataSourceOptions {
 export type SQLDBType = 'MySQL' | 'Postgres';
 
 // @public (undocumented)
+export interface SQLLambdaModelDataSourceStrategy extends ModelDataSourceStrategyBase {
+    // (undocumented)
+    readonly customSqlStatements?: Record<string, string>;
+    // (undocumented)
+    readonly dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
+    // (undocumented)
+    readonly dbType: 'MYSQL' | 'POSTGRES';
+    // (undocumented)
+    readonly name: string;
+    // (undocumented)
+    readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
+    // (undocumented)
+    readonly vpcConfiguration?: VpcConfig;
+}
+
+// @public (undocumented)
 export const enum SQLLambdaModelProvisionStrategy {
     // (undocumented)
     DEFAULT = "DEFAULT"
+}
+
+// @public (undocumented)
+export interface SqlModelDataSourceDbConnectionConfig {
+    // (undocumented)
+    readonly databaseNameSsmPath: string;
+    // (undocumented)
+    readonly hostnameSsmPath: string;
+    // (undocumented)
+    readonly passwordSsmPath: string;
+    // (undocumented)
+    readonly portSsmPath: string;
+    // (undocumented)
+    readonly usernameSsmPath: string;
 }
 
 // @public (undocumented)
@@ -384,7 +458,17 @@ export type SynthParameters = {
 export type TransformerAuthProvider = TransformerPluginProvider;
 
 // @public (undocumented)
-export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager' | 'synthParameters'>;
+export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'customSqlDataSourceStrategies' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager' | 'synthParameters'>;
+
+// @public (undocumented)
+export interface TransformerContextMetadataProvider {
+    // (undocumented)
+    get<T>(key: string): T | undefined;
+    // (undocumented)
+    has(key: string): boolean;
+    // (undocumented)
+    set<T>(key: string, value: T): void;
+}
 
 // @public (undocumented)
 export interface TransformerContextOutputProvider {
@@ -453,6 +537,8 @@ export interface TransformerContextProvider {
     // (undocumented)
     customQueries: Map<string, string>;
     // (undocumented)
+    customSqlDataSourceStrategies?: CustomSqlDataSourceStrategy[];
+    // (undocumented)
     dataSources: TransformerDataSourceManagerProvider;
     // (undocumented)
     datasourceSecretParameterLocations: Map<string, TransformerSecrets>;
@@ -462,8 +548,6 @@ export interface TransformerContextProvider {
     inputDocument: DocumentNode;
     // (undocumented)
     isProjectUsingDataStore(): boolean;
-    // Warning: (ae-forgotten-export) The symbol "TransformerContextMetadataProvider" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     metadata: TransformerContextMetadataProvider;
     // (undocumented)
@@ -731,7 +815,7 @@ export interface TransformerSchemaHelperProvider {
 }
 
 // @public (undocumented)
-export type TransformerSchemaVisitStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'output' | 'providerRegistry' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper'>;
+export type TransformerSchemaVisitStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'customSqlDataSourceStrategies' | 'output' | 'providerRegistry' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper'>;
 
 // @public (undocumented)
 export type TransformerSecrets = {
@@ -742,7 +826,7 @@ export type TransformerSecrets = {
 export type TransformerTransformSchemaStepContextProvider = TransformerValidationStepContextProvider;
 
 // @public (undocumented)
-export type TransformerValidationStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'output' | 'providerRegistry' | 'dataSources' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper' | 'resolvers' | 'stackManager' | 'synthParameters'>;
+export type TransformerValidationStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'customSqlDataSourceStrategies' | 'output' | 'providerRegistry' | 'dataSources' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper' | 'resolvers' | 'stackManager' | 'synthParameters'>;
 
 // @public (undocumented)
 export interface TransformHostProvider {

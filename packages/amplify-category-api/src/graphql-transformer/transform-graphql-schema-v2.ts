@@ -195,6 +195,7 @@ const hasUserPoolAuth = (authConfig?: AppSyncAuthConfiguration): boolean =>
 
 /**
  * buildAPIProject
+ * Note that this explicitly does not support the ability to declare a schema without a `@model`.
  */
 const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOptions): Promise<DeploymentResources | undefined> => {
   const schema = opts.projectConfig.schema.toString();
