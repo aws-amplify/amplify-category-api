@@ -7,6 +7,7 @@
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AssetProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct } from 'constructs';
+import type { CustomSqlDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
@@ -19,7 +20,7 @@ import { SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformParameterProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
+import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
@@ -37,6 +38,7 @@ export type ExecuteTransformConfig = TransformConfig & {
     schema: string;
     modelToDatasourceMap?: Map<string, DataSourceType>;
     customQueries?: Map<string, string>;
+    customSqlDataSourceStrategies?: CustomSqlDataSourceStrategy[];
     datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
     printTransformerLog?: (log: TransformerLog) => void;
     sqlLambdaVpcConfig?: VpcConfig;

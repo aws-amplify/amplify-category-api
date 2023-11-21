@@ -6,6 +6,7 @@ import {
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { RdsModelResourceGenerator } from '@aws-amplify/graphql-model-transformer';
 import * as cdk from 'aws-cdk-lib';
 import {
   obj,
@@ -57,6 +58,8 @@ export class SqlTransformer extends TransformerPluginBase {
     }
 
     const directiveWrapped = new DirectiveWrapper(directive);
+
+    // This should never happen -- it will be picked up during schema validation
     if (
       !directive?.arguments?.find((arg) => arg.name.value === 'statement') &&
       !directive?.arguments?.find((arg) => arg.name.value === 'reference')
@@ -101,7 +104,22 @@ export class SqlTransformer extends TransformerPluginBase {
     this.sqlDirectiveFields.forEach((resolverFns) => {
       resolverFns.forEach((config) => {
         const { SQLLambdaDataSourceLogicalID: dataSourceId } = ResourceConstants.RESOURCES;
-        const dataSource = context.api.host.getDataSource(dataSourceId);
+        let dataSource = context.api.host.getDataSource(dataSourceId);
+
+        // Generate resources for schemas without @models, or schemas that use different data sources for custom SQL than for models
+        if (!dataSource) {
+          const generator = new RdsModelResourceGenerator();
+          generator.enableGenerator();
+          const typeName = config.resolverTypeName;
+          const fieldName = config.resolverFieldName;
+          const strategy = context.customSqlDataSourceStrategies?.find((css) => css.typeName === typeName && css.fieldName === fieldName);
+          if (!strategy) {
+            throw new Error(`Could not find custom SQL strategy for ${typeName}.${fieldName}`);
+          }
+          generator.generateResources(context, strategy.dataSourceType.dbType);
+          dataSource = context.api.host.getDataSource(dataSourceId);
+        }
+
         const statement = getStatement(config, context.customQueries);
         const resolverResourceId = ResolverResourceIDs.ResolverResourceID(config.resolverTypeName, config.resolverFieldName);
         const resolver = context.resolvers.generateQueryResolver(

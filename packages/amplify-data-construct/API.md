@@ -19,6 +19,7 @@ import { ConflictResolution } from '@aws-amplify/graphql-api-construct';
 import { ConflictResolutionStrategy } from '@aws-amplify/graphql-api-construct';
 import { ConflictResolutionStrategyBase } from '@aws-amplify/graphql-api-construct';
 import { CustomConflictResolutionStrategy } from '@aws-amplify/graphql-api-construct';
+import { CustomSqlDataSourceStrategy } from '@aws-amplify/graphql-api-construct';
 import { FunctionSlot } from '@aws-amplify/graphql-api-construct';
 import { FunctionSlotBase } from '@aws-amplify/graphql-api-construct';
 import { FunctionSlotOverride } from '@aws-amplify/graphql-api-construct';
@@ -74,6 +75,8 @@ export { ConflictResolutionStrategy }
 export { ConflictResolutionStrategyBase }
 
 export { CustomConflictResolutionStrategy }
+
+export { CustomSqlDataSourceStrategy }
 
 export { FunctionSlot }
 

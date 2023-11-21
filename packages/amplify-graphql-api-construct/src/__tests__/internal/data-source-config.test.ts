@@ -1,6 +1,6 @@
 import { DynamoDBProvisionStrategy, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { parseDataSourceConfig } from '../../internal/data-source-config';
-import { ModelDataSourceStrategy } from '../../types';
+import { ModelDataSourceStrategy } from '../../model-datasource-strategy';
 
 describe('datasource config', () => {
   it('should parse the datasource config correctly', () => {

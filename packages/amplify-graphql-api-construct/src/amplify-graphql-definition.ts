@@ -1,7 +1,9 @@
 import * as os from 'os';
 import { SchemaFile } from 'aws-cdk-lib/aws-appsync';
-import { IAmplifyGraphqlDefinition, ModelDataSourceStrategy } from './types';
+import { IAmplifyGraphqlDefinition } from './types';
 import { constructDataSourceStrategyMap } from './internal';
+import { ModelDataSourceStrategy } from './model-datasource-strategy';
+import { constructCustomSqlDataSourceStrategies } from './internal/data-source-config';
 
 export const DEFAULT_MODEL_DATA_SOURCE_STRATEGY: ModelDataSourceStrategy = {
   dbType: 'DYNAMODB',
@@ -18,8 +20,8 @@ export class AmplifyGraphqlDefinition {
    * **NOTE** The 'dataSourceStrategy' configuration option is in preview and is not recommended to use with production systems.
    *
    * @param schema the graphql input as a string
-   * @param dataSourceStrategy the provisioning definition for datasources that resolve `@model`s in this schema. The DynamoDB from
-   * CloudFormation will be used by default.
+   * @param dataSourceStrategy the provisioning definition for datasources that resolve `@model`s and custom SQL statements in this schema.
+   * The DynamoDB from CloudFormation will be used by default.
    * @experimental dataSourceStrategy
    * @returns a fully formed amplify graphql definition
    */
@@ -32,6 +34,7 @@ export class AmplifyGraphqlDefinition {
       functionSlots: [],
       referencedLambdaFunctions: {},
       dataSourceStrategies: constructDataSourceStrategyMap(schema, dataSourceStrategy),
+      customSqlDataSourceStrategies: constructCustomSqlDataSourceStrategies(schema, dataSourceStrategy),
     };
   }
 
@@ -45,12 +48,7 @@ export class AmplifyGraphqlDefinition {
       filePaths = [filePaths];
     }
     const schema = filePaths.map((filePath) => new SchemaFile({ filePath }).definition).join(os.EOL);
-    return {
-      schema,
-      functionSlots: [],
-      referencedLambdaFunctions: {},
-      dataSourceStrategies: constructDataSourceStrategyMap(schema, DEFAULT_MODEL_DATA_SOURCE_STRATEGY),
-    };
+    return AmplifyGraphqlDefinition.fromString(schema, DEFAULT_MODEL_DATA_SOURCE_STRATEGY);
   }
 
   /**
@@ -72,12 +70,7 @@ export class AmplifyGraphqlDefinition {
       filePaths = [filePaths];
     }
     const schema = filePaths.map((filePath) => new SchemaFile({ filePath }).definition).join(os.EOL);
-    return {
-      schema,
-      functionSlots: [],
-      referencedLambdaFunctions: {},
-      dataSourceStrategies: constructDataSourceStrategyMap(schema, dataSourceStrategy),
-    };
+    return AmplifyGraphqlDefinition.fromString(schema, dataSourceStrategy);
   }
 
   /**

@@ -9,7 +9,7 @@ import { ApiKeyConfig } from 'aws-cdk-lib/aws-appsync';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AppSyncDataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
 import { AppSyncFunctionConfigurationProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import type { AssetProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { AssetProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationConfig } from 'aws-cdk-lib/aws-appsync';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
@@ -17,11 +17,13 @@ import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
 import { CfnParameter } from 'aws-cdk-lib';
 import { CfnResource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import { CustomSqlDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
 import { DBType } from '@aws-amplify/graphql-transformer-interfaces';
+import { DefinitionNode } from 'graphql';
 import { DirectiveDefinitionNode } from 'graphql';
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql/language';
@@ -45,6 +47,7 @@ import { InterfaceTypeExtensionNode } from 'graphql';
 import { Location as Location_2 } from 'graphql';
 import { LogConfig } from 'aws-cdk-lib/aws-appsync';
 import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelFieldMap } from '@aws-amplify/graphql-transformer-interfaces';
 import { MutationFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { NamedTypeNode } from 'graphql';
@@ -52,11 +55,12 @@ import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { ObjectTypeExtensionNode } from 'graphql';
 import { OperationTypeDefinitionNode } from 'graphql';
-import type { ProvisionedConcurrencyConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { ProvisionedConcurrencyConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { QueryFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { S3MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { SchemaDefinitionNode } from 'graphql';
+import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { Stack } from 'aws-cdk-lib';
 import { StackManagerProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { StringValueNode } from 'graphql';
@@ -64,7 +68,7 @@ import { SubscriptionFieldType } from '@aws-amplify/graphql-transformer-interfac
 import { SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerAuthProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerBeforeStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
+import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextOutputProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerDataSourceManagerProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -82,13 +86,13 @@ import { TransformerSecrets } from '@aws-amplify/graphql-transformer-interfaces'
 import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformParameterProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TypeDefinitionNode } from 'graphql';
 import { TypeNode } from 'graphql';
 import { TypeSystemDefinitionNode } from 'graphql';
 import { UnionTypeDefinitionNode } from 'graphql';
 import { UnionTypeExtensionNode } from 'graphql';
-import type { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
 export const APICategory = "api";
@@ -127,6 +131,9 @@ function createSyncLambdaIAMPolicy(context: TransformerContextProvider, scope: C
 function createSyncTable(context: TransformerContext): void;
 
 // @public (undocumented)
+export const dataSourceStrategyToDataSourceType: (dataSourceStrategy: ModelDataSourceStrategy) => DataSourceType;
+
+// @public (undocumented)
 export const DDB_DB_TYPE: DBType;
 
 // @public (undocumented)
@@ -154,6 +161,9 @@ export class EnumWrapper {
     // (undocumented)
     values: string[];
 }
+
+// @public (undocumented)
+export const fieldsWithSqlDirective: (obj: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode) => FieldDefinitionNode[];
 
 // Warning: (ae-forgotten-export) The symbol "GenericFieldWrapper" needs to be exported by the entry point index.d.ts
 //
@@ -359,10 +369,30 @@ export const isImportedRDSType: (dbInfo: DataSourceType) => boolean;
 function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncConfigLambda;
 
 // @public (undocumented)
+export const isMutationNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitionNode | (InterfaceTypeDefinitionNode & {
+    name: {
+        value: 'Mutation';
+    };
+});
+
+// @public (undocumented)
+export const isObjectTypeDefinitionNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitionNode;
+
+// @public (undocumented)
+export const isQueryNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitionNode | (InterfaceTypeDefinitionNode & {
+    name: {
+        value: 'Query';
+    };
+});
+
+// @public (undocumented)
 export const isRDSDBType: (dbType: DBType) => boolean;
 
 // @public (undocumented)
 export const isRDSModel: (ctx: TransformerContextProvider, typename: string) => boolean;
+
+// @public (undocumented)
+export const isSqlStrategy: (strategy: ModelDataSourceStrategy) => strategy is SQLLambdaModelDataSourceStrategy;
 
 // @public (undocumented)
 export class MappingTemplate {

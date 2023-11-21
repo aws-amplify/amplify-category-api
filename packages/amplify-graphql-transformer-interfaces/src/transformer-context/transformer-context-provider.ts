@@ -1,11 +1,6 @@
 import { DocumentNode } from 'graphql';
-import {
-  AppSyncAuthConfiguration,
-  GraphQLAPIProvider,
-  RDSLayerMapping,
-  VpcConfig,
-  ProvisionedConcurrencyConfig,
-} from '../graphql-api-provider';
+import { AppSyncAuthConfiguration, GraphQLAPIProvider } from '../graphql-api-provider';
+import { CustomSqlDataSourceStrategy, ProvisionedConcurrencyConfig, RDSLayerMapping, VpcConfig } from '../model-datasource';
 import { TransformerDataSourceManagerProvider, DataSourceType } from './transformer-datasource-provider';
 import { TransformerProviderRegistry } from './transformer-provider-registry';
 import { TransformerContextOutputProvider } from './transformer-context-output-provider';
@@ -31,6 +26,7 @@ export interface TransformerContextProvider {
 
   inputDocument: DocumentNode;
   modelToDatasourceMap: Map<string, DataSourceType>;
+  customSqlDataSourceStrategies?: CustomSqlDataSourceStrategy[];
   datasourceSecretParameterLocations: Map<string, TransformerSecrets>;
   output: TransformerContextOutputProvider;
   stackManager: StackManagerProvider;
@@ -52,6 +48,7 @@ export type TransformerBeforeStepContextProvider = Pick<
   TransformerContextProvider,
   | 'inputDocument'
   | 'modelToDatasourceMap'
+  | 'customSqlDataSourceStrategies'
   | 'transformParameters'
   | 'isProjectUsingDataStore'
   | 'getResolverConfig'
@@ -64,6 +61,7 @@ export type TransformerSchemaVisitStepContextProvider = Pick<
   TransformerContextProvider,
   | 'inputDocument'
   | 'modelToDatasourceMap'
+  | 'customSqlDataSourceStrategies'
   | 'output'
   | 'providerRegistry'
   | 'transformParameters'
@@ -78,6 +76,7 @@ export type TransformerValidationStepContextProvider = Pick<
   TransformerContextProvider,
   | 'inputDocument'
   | 'modelToDatasourceMap'
+  | 'customSqlDataSourceStrategies'
   | 'output'
   | 'providerRegistry'
   | 'dataSources'

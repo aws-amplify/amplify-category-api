@@ -28,12 +28,12 @@ export interface TransformerDataSourceManagerProvider {
 export interface DataSourceProvider extends BackedDataSource {}
 
 /**
- * Supported transformable database types. TODO: Move this to amplify-graphql-api-construct
+ * Supported transformable database types. TODO: Remove this when we normalize database type handling throughout
  */
 export type DBType = 'DDB' | SQLDBType;
 
 /**
- * Supported transformable SQL database types. TODO: Move this to amplify-graphql-api-construct
+ * Supported transformable SQL database types. TODO: Remove this when we normalize database type handling throughout
  */
 export type SQLDBType = 'MySQL' | 'Postgres';
 

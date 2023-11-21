@@ -1,4 +1,4 @@
-import { DataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
+import { CustomSqlDataSourceStrategy, DataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformConfig } from 'graphql-transformer-core';
 
 export type Template = {
@@ -16,5 +16,6 @@ export interface TransformerProjectConfig {
   stacks: Record<string, Template>;
   config: TransformConfig;
   modelToDatasourceMap: Map<string, DataSourceType>;
+  customSqlDataSourceStrategies: CustomSqlDataSourceStrategy[];
   customQueries: Map<string, string>;
 }

@@ -19,3 +19,5 @@ export const APICategory = 'api';
 export { setResourceName, getResourceName } from './resource-name';
 export type { SetResourceNameProps } from './resource-name';
 export { getDatasourceProvisionStrategy } from './provision-strategy-utils';
+export * from './model-datasource-strategy-utils';
+export * from './graphql-utils';

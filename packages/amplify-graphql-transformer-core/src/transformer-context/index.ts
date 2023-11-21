@@ -1,24 +1,23 @@
 /* eslint-disable max-classes-per-file, no-underscore-dangle */
 import {
+  AppSyncAuthConfiguration,
+  AssetProvider,
+  CustomSqlDataSourceStrategy,
+  DataSourceType,
   GraphQLAPIProvider,
+  NestedStackProvider,
+  ProvisionedConcurrencyConfig,
+  RDSLayerMapping,
   StackManagerProvider,
+  SynthParameters,
+  TransformerContextMetadataProvider,
   TransformerContextOutputProvider,
   TransformerContextProvider,
   TransformerDataSourceManagerProvider,
-  AppSyncAuthConfiguration,
-  RDSLayerMapping,
-  SynthParameters,
-} from '@aws-amplify/graphql-transformer-interfaces';
-import type {
-  AssetProvider,
-  DataSourceType,
-  NestedStackProvider,
   TransformParameterProvider,
   TransformParameters,
   VpcConfig,
-  ProvisionedConcurrencyConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
 import { DocumentNode } from 'graphql';
 import { Construct } from 'constructs';
 import { ResolverConfig } from '../config/transformer-config';
@@ -52,6 +51,26 @@ export class TransformerContextMetadata implements TransformerContextMetadataPro
   }
 }
 
+export interface TransformerContextConstructorOptions {
+  scope: Construct;
+  nestedStackProvider: NestedStackProvider;
+  parameterProvider: TransformParameterProvider | undefined;
+  assetProvider: AssetProvider;
+  synthParameters: SynthParameters;
+  inputDocument: DocumentNode;
+  modelToDatasourceMap: Map<string, DataSourceType>;
+  customSqlDataSourceStrategies: CustomSqlDataSourceStrategy[];
+  customQueries: Map<string, string>;
+  stackMapping: Record<string, string>;
+  authConfig: AppSyncAuthConfiguration;
+  transformParameters: TransformParameters;
+  resolverConfig?: ResolverConfig;
+  datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
+  sqlLambdaVpcConfig?: VpcConfig;
+  rdsLayerMapping?: RDSLayerMapping;
+  sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
+}
+
 export class TransformerContext implements TransformerContextProvider {
   public readonly output: TransformerContextOutputProvider;
 
@@ -75,6 +94,8 @@ export class TransformerContext implements TransformerContextProvider {
 
   public readonly modelToDatasourceMap: Map<string, DataSourceType>;
 
+  public readonly customSqlDataSourceStrategies: CustomSqlDataSourceStrategy[];
+
   public readonly datasourceSecretParameterLocations: Map<string, RDSConnectionSecrets>;
 
   public readonly sqlLambdaVpcConfig?: VpcConfig;
@@ -87,41 +108,50 @@ export class TransformerContext implements TransformerContextProvider {
 
   public metadata: TransformerContextMetadata;
 
-  constructor(
-    scope: Construct,
-    nestedStackProvider: NestedStackProvider,
-    parameterProvider: TransformParameterProvider | undefined,
-    assetProvider: AssetProvider,
-    public readonly synthParameters: SynthParameters,
-    public readonly inputDocument: DocumentNode,
-    modelToDatasourceMap: Map<string, DataSourceType>,
-    customQueries: Map<string, string>,
-    stackMapping: Record<string, string>,
-    authConfig: AppSyncAuthConfiguration,
-    transformParameters: TransformParameters,
-    resolverConfig?: ResolverConfig,
-    datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>,
-    sqlLambdaVpcConfig?: VpcConfig,
-    rdsLayerMapping?: RDSLayerMapping,
-    sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig,
-  ) {
+  public readonly synthParameters: SynthParameters;
+
+  public readonly inputDocument: DocumentNode;
+
+  constructor(options: TransformerContextConstructorOptions) {
+    const {
+      assetProvider,
+      authConfig,
+      customQueries,
+      customSqlDataSourceStrategies,
+      datasourceSecretParameterLocations,
+      inputDocument,
+      modelToDatasourceMap,
+      nestedStackProvider,
+      parameterProvider,
+      rdsLayerMapping,
+      resolverConfig,
+      scope,
+      sqlLambdaProvisionedConcurrencyConfig,
+      sqlLambdaVpcConfig,
+      stackMapping,
+      synthParameters,
+      transformParameters,
+    } = options;
     assetManager.setAssetProvider(assetProvider);
-    this.output = new TransformerOutput(inputDocument);
-    this.resolvers = new ResolverManager();
-    this.dataSources = new TransformerDataSourceManager();
-    this.providerRegistry = new TransformerContextProviderRegistry();
-    this.stackManager = new StackManager(scope, nestedStackProvider, parameterProvider, stackMapping);
     this.authConfig = authConfig;
-    this.resourceHelper = new TransformerResourceHelper(this.synthParameters);
-    this.transformParameters = transformParameters;
-    this.resolverConfig = resolverConfig;
+    this.customQueries = customQueries;
+    this.customSqlDataSourceStrategies = customSqlDataSourceStrategies;
+    this.dataSources = new TransformerDataSourceManager();
+    this.datasourceSecretParameterLocations = datasourceSecretParameterLocations ?? new Map<string, RDSConnectionSecrets>();
+    this.inputDocument = inputDocument;
     this.metadata = new TransformerContextMetadata();
     this.modelToDatasourceMap = modelToDatasourceMap;
-    this.datasourceSecretParameterLocations = datasourceSecretParameterLocations ?? new Map<string, RDSConnectionSecrets>();
-    this.sqlLambdaVpcConfig = sqlLambdaVpcConfig;
+    this.output = new TransformerOutput(inputDocument);
+    this.providerRegistry = new TransformerContextProviderRegistry();
     this.rdsLayerMapping = rdsLayerMapping;
+    this.resolverConfig = resolverConfig;
+    this.resolvers = new ResolverManager();
+    this.resourceHelper = new TransformerResourceHelper(synthParameters);
     this.sqlLambdaProvisionedConcurrencyConfig = sqlLambdaProvisionedConcurrencyConfig;
-    this.customQueries = customQueries;
+    this.sqlLambdaVpcConfig = sqlLambdaVpcConfig;
+    this.stackManager = new StackManager(scope, nestedStackProvider, parameterProvider, stackMapping);
+    this.synthParameters = synthParameters;
+    this.transformParameters = transformParameters;
   }
 
   /**
