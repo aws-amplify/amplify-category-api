@@ -62,6 +62,10 @@
         "functions": 0,
         "lines": 0
       }
-    }
+    },
+    "coverageReporters": [
+      "clover",
+      "text"
+    ]
   }
 }

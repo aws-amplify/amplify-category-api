@@ -47,6 +47,10 @@
       "json",
       "node"
     ],
-    "collectCoverage": true
+    "collectCoverage": true,
+    "coverageReporters": [
+      "clover",
+      "text"
+    ]
   }
 }

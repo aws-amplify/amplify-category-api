@@ -69,6 +69,10 @@
         "lines": 74
       }
     },
+    "coverageReporters": [
+      "clover",
+      "text"
+    ],
     "modulePathIgnorePatterns": [
       "overrides"
     ]
