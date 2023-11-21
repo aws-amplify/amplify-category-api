@@ -1,6 +1,12 @@
 import { DocumentNode } from 'graphql';
 import { AppSyncAuthConfiguration, GraphQLAPIProvider } from '../graphql-api-provider';
-import { CustomSqlDataSourceStrategy, ProvisionedConcurrencyConfig, RDSLayerMapping, VpcConfig } from '../model-datasource';
+import {
+  CustomSqlDataSourceStrategy,
+  DataSourceStrategiesProvider,
+  ProvisionedConcurrencyConfig,
+  RDSLayerMapping,
+  VpcConfig,
+} from '../model-datasource';
 import { TransformerDataSourceManagerProvider, DataSourceType } from './transformer-datasource-provider';
 import { TransformerProviderRegistry } from './transformer-provider-registry';
 import { TransformerContextOutputProvider } from './transformer-context-output-provider';
@@ -18,7 +24,7 @@ export interface TransformerContextMetadataProvider {
 
 export type TransformerSecrets = { [key: string]: any };
 
-export interface TransformerContextProvider {
+export interface TransformerContextProvider extends DataSourceStrategiesProvider {
   metadata: TransformerContextMetadataProvider;
   resolvers: TransformerResolversManagerProvider;
   dataSources: TransformerDataSourceManagerProvider;

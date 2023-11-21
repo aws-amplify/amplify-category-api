@@ -325,7 +325,7 @@ describe('DefaultValueModelTransformer:', () => {
 
     const modelToDatasourceMap = new Map<string, DataSourceType>();
     modelToDatasourceMap.set('Note', {
-      dbType: 'MySQL',
+      dbType: 'MYSQL',
       provisionDB: false,
       provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
     });

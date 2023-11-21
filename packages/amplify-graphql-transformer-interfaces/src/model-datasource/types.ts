@@ -1,3 +1,4 @@
+// This dependency cycle should go away once we refactor the internals to use ModelDataSourceStrategy instead of DataSourceType
 import { DataSourceType } from '../transformer-context/transformer-datasource-provider';
 
 // #########################################################################################################################################
@@ -17,8 +18,15 @@ export interface ModelDataSourceStrategyBase {
   dbType: ModelDataSourceStrategyDbType;
 }
 
-// TODO: Make this the source of truth for database type definitions used throughout the construct & transformer
-export type ModelDataSourceStrategyDbType = 'DYNAMODB' | 'MYSQL' | 'POSTGRES';
+/**
+ * All supported database types that can be used to resolve models.
+ */
+export type ModelDataSourceStrategyDbType = 'DYNAMODB' | ModelDataSourceStrategySqlDbType;
+
+/**
+ * All supported SQL database types that can be used to resolve models.
+ */
+export type ModelDataSourceStrategySqlDbType = 'MYSQL' | 'POSTGRES';
 
 /**
  * Use default CloudFormation type 'AWS::DynamoDB::Table' to provision table.
@@ -50,7 +58,7 @@ export interface SQLLambdaModelDataSourceStrategy extends ModelDataSourceStrateg
   /**
    * The type of the SQL database used to process model operations for this definition.
    */
-  readonly dbType: 'MYSQL' | 'POSTGRES';
+  readonly dbType: ModelDataSourceStrategySqlDbType;
 
   /**
    * The parameters the Lambda data source will use to connect to the database.
@@ -149,8 +157,11 @@ export interface DataSourceStrategiesProvider {
   // TODO: Add this back during combine feature
   // dataSourceStrategies: Record<string, ModelDataSourceStrategy>;
 
+  // TODO: Remove this when we refactor the internals to use ModelDataSourceStrategy instead of DataSourceType
+  modelToDatasourceMap: Map<string, DataSourceType>;
+
   /** Maps custom Query and Mutation fields to the ModelDataSourceStrategy used to resolve them. */
-  customSqlDataSourceStrategies: CustomSqlDataSourceStrategy[];
+  customSqlDataSourceStrategies?: CustomSqlDataSourceStrategy[];
 }
 
 /**

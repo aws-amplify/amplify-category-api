@@ -3,6 +3,7 @@ import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnDomain } from 'aws-cdk-lib/aws-elasticsearch';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
+import { ModelDataSourceStrategyDbType } from '../model-datasource';
 
 export enum AppSyncDataSourceType {
   AMAZON_DYNAMODB = 'AMAZON_DYNAMODB',
@@ -27,23 +28,14 @@ export interface TransformerDataSourceManagerProvider {
 
 export interface DataSourceProvider extends BackedDataSource {}
 
-/**
- * Supported transformable database types. TODO: Remove this when we normalize database type handling throughout
- */
-export type DBType = 'DDB' | SQLDBType;
-
-/**
- * Supported transformable SQL database types. TODO: Remove this when we normalize database type handling throughout
- */
-export type SQLDBType = 'MySQL' | 'Postgres';
-
-// TODO: add strategy for the RDS. TODO: Move this to amplify-graphql-api-construct
+// TODO: Remove this type in favor of fully-specified SQLLambdaModelDataSourceStrategy from amplify-graphql-api-construct
 export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy | SQLLambdaModelProvisionStrategy;
 
 /**
  * Provisioning configuration for a DynamoDB datasource. TODO: Remove this type in favor of strategy definitions in
  * amplify-graphql-api-construct
  */
+// TODO: Remove this type in favor of fully-specified SQLLambdaModelDataSourceStrategy from amplify-graphql-api-construct
 export const enum DynamoDBProvisionStrategy {
   /**
    * Use default CloudFormation resource of `AWS::DynamoDB::Table`
@@ -65,7 +57,7 @@ export const enum SQLLambdaModelProvisionStrategy {
 
 // TODO: Replace usages of this type with ModelDataSourceStrategy
 export interface DataSourceType {
-  dbType: DBType;
+  dbType: ModelDataSourceStrategyDbType;
   provisionDB: boolean;
   provisionStrategy: DataSourceProvisionStrategy;
 }

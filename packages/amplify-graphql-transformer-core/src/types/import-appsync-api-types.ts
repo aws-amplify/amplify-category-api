@@ -1,5 +1,8 @@
-import { DBType, TransformerSecrets } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerSecrets } from '@aws-amplify/graphql-transformer-interfaces';
 
+/**
+ * This is the engine type written by the importer into the GraphQL schema, and specified by the customer during the Gen1 CLI import flow.
+ */
 export enum ImportedRDSType {
   MYSQL = 'mysql',
   POSTGRESQL = 'postgres',
@@ -30,7 +33,3 @@ export type RDSConnectionSecrets = TransformerSecrets & {
   database: string;
   port: number;
 };
-
-export const MYSQL_DB_TYPE: DBType = 'MySQL';
-export const DDB_DB_TYPE: DBType = 'DDB';
-export const POSTGRES_DB_TYPE: DBType = 'Postgres';

@@ -1,10 +1,12 @@
 import path from 'path';
 import _ from 'lodash';
 import { parse, Kind, ObjectTypeDefinitionNode } from 'graphql';
-import { DataSourceType, DBType, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { DDB_DB_TYPE, MYSQL_DB_TYPE, POSTGRES_DB_TYPE } from '../types';
+import { DataSourceStrategiesProvider, DataSourceType, ModelDataSourceStrategyDbType } from '@aws-amplify/graphql-transformer-interfaces';
+import { MYSQL_DB_TYPE, POSTGRES_DB_TYPE } from '../types';
 import { ImportedRDSType } from '../types';
 import { APICategory } from './api-category';
+import { isDynamoDbType, isSqlDbType } from './model-datasource-strategy-utils';
+import { isBuiltInGraphqlType } from './graphql-utils';
 
 const getParameterNameForDBSecret = (secret: string, secretsKey: string): string => {
   return `${secretsKey}_${secret}`;
@@ -34,14 +36,17 @@ export const getParameterStoreSecretPath = (
 };
 
 /**
- * Get the datasource type of the model.
+ * Get the datasource database type of the model.
  * @param ctx Transformer Context
  * @param typename Model name
  * @returns datasource type
  */
-export const getModelDataSourceType = (ctx: TransformerContextProvider, typename: string): DBType => {
+export const getModelDataSourceType = (ctx: DataSourceStrategiesProvider, typename: string): ModelDataSourceStrategyDbType => {
   const config = ctx.modelToDatasourceMap.get(typename);
-  return config?.dbType || DDB_DB_TYPE;
+  if (!config) {
+    throw new Error(`Cannot find datasource type for model ${typename}`);
+  }
+  return config.dbType;
 };
 
 /**
@@ -50,8 +55,12 @@ export const getModelDataSourceType = (ctx: TransformerContextProvider, typename
  * @param typename Model name
  * @returns boolean
  */
-export const isDynamoDBModel = (ctx: TransformerContextProvider, typename: string): boolean => {
-  return getModelDataSourceType(ctx, typename) === DDB_DB_TYPE;
+export const isDynamoDBModel = (ctx: DataSourceStrategiesProvider, typename: string): boolean => {
+  if (isBuiltInGraphqlType(typename)) {
+    return false;
+  }
+  const modelDataSourceType = getModelDataSourceType(ctx, typename);
+  return isDynamoDbType(modelDataSourceType);
 };
 
 /**
@@ -60,9 +69,12 @@ export const isDynamoDBModel = (ctx: TransformerContextProvider, typename: strin
  * @param typename Model name
  * @returns boolean
  */
-export const isRDSModel = (ctx: TransformerContextProvider, typename: string): boolean => {
+export const isSqlModel = (ctx: DataSourceStrategiesProvider, typename: string): boolean => {
+  if (isBuiltInGraphqlType(typename)) {
+    return false;
+  }
   const modelDataSourceType = getModelDataSourceType(ctx, typename);
-  return [MYSQL_DB_TYPE, POSTGRES_DB_TYPE].includes(modelDataSourceType);
+  return isSqlDbType(modelDataSourceType);
 };
 
 /**
@@ -71,11 +83,7 @@ export const isRDSModel = (ctx: TransformerContextProvider, typename: string): b
  * @returns boolean
  */
 export const isImportedRDSType = (dbInfo: DataSourceType): boolean => {
-  return isRDSDBType(dbInfo?.dbType) && !dbInfo?.provisionDB;
-};
-
-export const isRDSDBType = (dbType: DBType): boolean => {
-  return [MYSQL_DB_TYPE, POSTGRES_DB_TYPE].includes(dbType);
+  return isSqlDbType(dbInfo?.dbType) && !dbInfo?.provisionDB;
 };
 
 /**
@@ -97,11 +105,9 @@ export const constructDataSourceMap = (schema: string, datasourceType: DataSourc
 };
 
 /**
- * Map the DBType that is set in the modelToDatasourceMap to the engine represented by ImportedRDSType
- * @param dbType datasource type
- * @returns
+ * Map the database type that is set in the modelToDatasourceMap to the engine represented by ImportedRDSType
  */
-export const getEngineFromDBType = (dbType: DBType): ImportedRDSType => {
+export const getEngineFromDBType = (dbType: ModelDataSourceStrategyDbType): ImportedRDSType => {
   switch (dbType) {
     case MYSQL_DB_TYPE:
       return ImportedRDSType.MYSQL;
@@ -115,10 +121,12 @@ export const getEngineFromDBType = (dbType: DBType): ImportedRDSType => {
 /**
  * Returns the datasource type of the imported RDS models.
  * Throws an error if more than one datasource type is detected.
+ *
+ * TODO: Remove this during `combine` feature work; we will explicitly support more than one SQL data source
  * @param modelToDatasourceMap Array of datasource types
  * @returns datasource type
  */
-export const getImportedRDSType = (modelToDatasourceMap: Map<string, DataSourceType>): DBType => {
+export const getImportedRDSType = (modelToDatasourceMap: Map<string, DataSourceType>): ModelDataSourceStrategyDbType => {
   const datasourceMapValues = Array.from(modelToDatasourceMap?.values());
   const dbTypes = new Set(datasourceMapValues?.filter((value) => isImportedRDSType(value))?.map((value) => value?.dbType));
   if (dbTypes.size > 1) {

@@ -2,8 +2,8 @@ import { checkForUnsupportedDirectives } from '../../../../provider-utils/awsclo
 
 describe('check for unsupported RDS directives', () => {
   const modelToDatasourceMap = new Map();
-  modelToDatasourceMap.set('Post', { dbType: 'MySQL' });
-  modelToDatasourceMap.set('Tag', { dbType: 'DDB' });
+  modelToDatasourceMap.set('Post', { dbType: 'MYSQL' });
+  modelToDatasourceMap.set('Tag', { dbType: 'DYNAMODB' });
 
   it('should throw error if searchable directive is present on a model', () => {
     const schema = `
@@ -91,7 +91,7 @@ describe('check for unsupported RDS directives', () => {
 
   it('should not throw error if there are only DDB models', () => {
     const modelToDatasourceMap = new Map();
-    modelToDatasourceMap.set('Post', { dbType: 'DDB' });
+    modelToDatasourceMap.set('Post', { dbType: 'DYNAMODB' });
     const schema = `
             type Post @model @mapsTo(name: "Article") {
                 id: ID!
@@ -114,7 +114,7 @@ describe('check for unsupported RDS directives', () => {
 
   it('early return if schema is empty or undefined', () => {
     const modelToDatasourceMap = new Map();
-    modelToDatasourceMap.set('Post', { dbType: 'MySQL' });
+    modelToDatasourceMap.set('Post', { dbType: 'MYSQL' });
     const schema = '';
     expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).not.toThrowError();
   });

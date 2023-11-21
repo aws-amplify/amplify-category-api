@@ -1,7 +1,7 @@
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { DataSourceType, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { DDB_DB_TYPE, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { DataSourceType, DynamoDBProvisionStrategy, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, Kind, parse } from 'graphql';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
@@ -40,10 +40,20 @@ test('fails if @belongsTo was used with a related type that is not a model', () 
       name: String!
     }`;
 
+  const DDB_DATASOURCE_TYPE: DataSourceType = {
+    dbType: DDB_DB_TYPE,
+    provisionDB: true,
+    provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
+  };
+
   expect(() =>
     testTransform({
       schema: inputSchema,
       transformers: [new ModelTransformer(), new BelongsToTransformer()],
+      modelToDatasourceMap: new Map([
+        ['Test', DDB_DATASOURCE_TYPE],
+        ['Test1', DDB_DATASOURCE_TYPE],
+      ]),
     }),
   ).toThrowError('Object type Test1 must be annotated with @model.');
 });
@@ -745,12 +755,12 @@ describe('@belongsTo directive with RDS datasource', () => {
   test('happy case should generate correct resolvers', () => {
     const modelToDatasourceMap = new Map<string, DataSourceType>();
     modelToDatasourceMap.set('User', {
-      dbType: 'MySQL',
+      dbType: 'MYSQL',
       provisionDB: false,
       provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
     });
     modelToDatasourceMap.set('Profile', {
-      dbType: 'MySQL',
+      dbType: 'MYSQL',
       provisionDB: false,
       provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
     });
@@ -787,12 +797,12 @@ describe('@belongsTo directive with RDS datasource', () => {
   test('composite key should generate correct resolvers', () => {
     const modelToDatasourceMap = new Map<string, DataSourceType>();
     modelToDatasourceMap.set('User', {
-      dbType: 'MySQL',
+      dbType: 'MYSQL',
       provisionDB: false,
       provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
     });
     modelToDatasourceMap.set('Profile', {
-      dbType: 'MySQL',
+      dbType: 'MYSQL',
       provisionDB: false,
       provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
     });

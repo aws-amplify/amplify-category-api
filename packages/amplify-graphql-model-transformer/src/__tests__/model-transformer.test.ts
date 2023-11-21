@@ -5,7 +5,12 @@ import { getBaseType } from 'graphql-transformer-common';
 import { Template } from 'aws-cdk-lib/assertions';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { DataSourceType, VpcConfig, DBType, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  DataSourceType,
+  VpcConfig,
+  SQLLambdaModelProvisionStrategy,
+  ModelDataSourceStrategySqlDbType,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import {
   doNotExpectFields,
   expectFields,
@@ -17,10 +22,9 @@ import {
   verifyInputCount,
   verifyMatchingTypes,
 } from './test-utils/helpers';
-import { DynamoDBProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 
 describe('ModelTransformer:', () => {
-  const rdsDatasources: DBType[] = [MYSQL_DB_TYPE, POSTGRES_DB_TYPE];
+  const rdsDatasources: ModelDataSourceStrategySqlDbType[] = [MYSQL_DB_TYPE, POSTGRES_DB_TYPE];
 
   it('should successfully transform simple valid schema', async () => {
     const validSchema = `

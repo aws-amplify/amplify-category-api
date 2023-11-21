@@ -33,12 +33,13 @@ export {
   getResourceName,
   getSortKeyFieldNames,
   getTable,
+  isDynamoDbType,
   isImportedRDSType,
   isMutationNode,
   isObjectTypeDefinitionNode,
   isQueryNode,
-  isRDSDBType,
-  isRDSModel,
+  isSqlDbType,
+  isSqlModel,
   isSqlStrategy,
   setResourceName,
 } from './utils';
@@ -53,16 +54,20 @@ export {
 } from './transformation/transformer-plugin-base';
 export { TransformerResolver, StackManager } from './transformer-context';
 export {
+  DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
+  DDB_AMPLIFY_MANAGED_DATASOURCE_TYPE,
   DDB_DB_TYPE,
+  DDB_DEFAULT_DATASOURCE_STRATEGY,
+  DDB_DEFAULT_DATASOURCE_TYPE,
   ImportAppSyncAPIInputs,
+  ImportedDataSourceConfig,
   ImportedDataSourceType,
   ImportedRDSType,
   MYSQL_DB_TYPE,
   POSTGRES_DB_TYPE,
-  SQL_SCHEMA_FILE_NAME,
   RDSConnectionSecrets,
-  ImportedDataSourceConfig,
   RDSDataSourceConfig,
+  SQL_SCHEMA_FILE_NAME,
 } from './types';
 /**
  * Returns the extra set of directives that are supported by AppSync service.

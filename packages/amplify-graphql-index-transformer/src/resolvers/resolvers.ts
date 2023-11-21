@@ -11,8 +11,8 @@ import {
   TransformerContextProvider,
   TransformerResolverProvider,
   DynamoDBProvisionStrategy,
-  DBType,
   DataSourceType,
+  ModelDataSourceStrategyDbType,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
@@ -56,7 +56,7 @@ import {
   toCamelCase,
 } from 'graphql-transformer-common';
 import _ from 'lodash';
-import { isRDSModel } from '@aws-amplify/graphql-transformer-core';
+import { isDynamoDbType, isSqlModel } from '@aws-amplify/graphql-transformer-core';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../types';
 import { lookupResolverName } from '../utils';
 import { RDSIndexVTLGenerator, DynamoDBIndexVTLGenerator } from './generators';
@@ -369,7 +369,7 @@ export const validateSortDirectionInput = (config: PrimaryKeyDirectiveConfigurat
  */
 export const appendSecondaryIndex = (config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { name, object, primaryKeyField } = config;
-  if (isRDSModel(ctx, object.name.value)) {
+  if (isSqlModel(ctx, object.name.value)) {
     return;
   }
 
@@ -481,7 +481,7 @@ export const updateResolversForIndex = (
   const syncResolver = getResolverObject(config, ctx, 'sync');
 
   const dbType = getDBType(ctx, object.name.value);
-  const isDynamoDB = dbType === 'DDB';
+  const isDynamoDB = dbType === 'DYNAMODB';
 
   // Ensure any composite sort key values and validate update operations to
   // protect the integrity of composite sort keys.
@@ -518,9 +518,13 @@ export const updateResolversForIndex = (
   }
 };
 
-export const makeQueryResolver = (config: IndexDirectiveConfiguration, ctx: TransformerContextProvider, dbType: DBType): void => {
+export const makeQueryResolver = (
+  config: IndexDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+  dbType: ModelDataSourceStrategyDbType,
+): void => {
   const { SQLLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
-  const isDynamoDB = dbType === DDB_DB_TYPE;
+  const isDynamoDB = isDynamoDbType(dbType);
   const { name, object, queryField } = config;
   if (!(name && queryField)) {
     throw new Error('Expected name and queryField to be defined while generating resolver.');
@@ -918,14 +922,15 @@ export const generateAuthExpressionForSandboxMode = (enabled: boolean): string =
 
 export const getDBInfo = (ctx: TransformerContextProvider, modelName: string): DataSourceType => {
   const dbInfo = ctx.modelToDatasourceMap.get(modelName);
-  const result = dbInfo ?? { dbType: DDB_DB_TYPE, provisionDB: true, provisionStrategy: DynamoDBProvisionStrategy.DEFAULT };
-  return result;
+  if (!dbInfo) {
+    throw new Error(`No datasource found for model ${modelName}`);
+  }
+  return dbInfo;
 };
 
-export const getDBType = (ctx: TransformerContextProvider, modelName: string): DBType => {
+export const getDBType = (ctx: TransformerContextProvider, modelName: string): ModelDataSourceStrategyDbType => {
   const dbInfo = getDBInfo(ctx, modelName);
-  const dbType = dbInfo ? dbInfo.dbType : DDB_DB_TYPE;
-  return dbType;
+  return dbInfo.dbType;
 };
 
 export const getVTLGenerator = (dbInfo: DataSourceType | undefined): RDSIndexVTLGenerator | DynamoDBIndexVTLGenerator => {

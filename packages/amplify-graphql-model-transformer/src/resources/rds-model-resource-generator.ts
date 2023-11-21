@@ -3,7 +3,7 @@ import { Topic, SubscriptionFilter } from 'aws-cdk-lib/aws-sns';
 import { LambdaSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
 import { Construct } from 'constructs';
 import { RDSConnectionSecrets, getImportedRDSType, getEngineFromDBType } from '@aws-amplify/graphql-transformer-core';
-import { DBType, QueryFieldType, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { ModelDataSourceStrategySqlDbType, QueryFieldType, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { ModelVTLGenerator, RDSModelVTLGenerator } from '../resolvers';
 import {
@@ -23,7 +23,7 @@ import { ModelResourceGenerator } from './model-resource-generator';
 export class RdsModelResourceGenerator extends ModelResourceGenerator {
   protected readonly generatorType = 'RdsModelResourceGenerator';
 
-  generateResources(context: TransformerContextProvider, dbTypeOverride?: DBType): void {
+  generateResources(context: TransformerContextProvider, dbTypeOverride?: ModelDataSourceStrategySqlDbType): void {
     if (this.isEnabled()) {
       const dbType = dbTypeOverride ?? getImportedRDSType(context.modelToDatasourceMap);
       const engine = getEngineFromDBType(dbType);

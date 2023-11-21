@@ -5,15 +5,14 @@ export { stripDirectives } from './strip-directives';
 export { getTable, getKeySchema, getSortKeyFieldNames, getDataSourceType } from './schema-utils';
 export { DEFAULT_SCHEMA_DEFINITION } from './defaultSchema';
 export {
-  getParameterStoreSecretPath,
-  getModelDataSourceType,
-  isDynamoDBModel,
-  isRDSModel,
-  isImportedRDSType,
-  isRDSDBType,
   constructDataSourceMap,
   getEngineFromDBType,
   getImportedRDSType,
+  getModelDataSourceType,
+  getParameterStoreSecretPath,
+  isDynamoDBModel,
+  isImportedRDSType,
+  isSqlModel,
 } from './rds-util';
 export const APICategory = 'api';
 export { setResourceName, getResourceName } from './resource-name';

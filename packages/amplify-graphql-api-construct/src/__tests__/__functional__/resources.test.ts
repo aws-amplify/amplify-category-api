@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
+import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 
@@ -415,10 +416,7 @@ describe('generated resource access', () => {
                 description: String!
               }
             `,
-            {
-              dbType: 'DYNAMODB',
-              provisionStrategy: 'AMPLIFY_TABLE',
-            },
+            DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
           ),
           authorizationModes: {
             userPoolConfig: { userPool },
@@ -445,10 +443,7 @@ describe('generated resource access', () => {
                 description: String!
               }
             `,
-            {
-              dbType: 'DYNAMODB',
-              provisionStrategy: 'AMPLIFY_TABLE',
-            },
+            DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
           ),
           authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },

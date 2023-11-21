@@ -3,8 +3,6 @@ import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
 import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
-import { constructModelToDataSourceMap } from './common';
-import { DDB_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 
 const mappedSearchableSchema = /* GraphQL */ `
   type Agenda @model {
@@ -34,7 +32,6 @@ const transformSchema = (schema: string) => {
   return testTransform({
     schema,
     transformers: [new ModelTransformer(), new HasManyTransformer(), new SearchableModelTransformer(), new MapsToTransformer()],
-    modelToDatasourceMap: constructModelToDataSourceMap(['Agenda', 'Todo'], DDB_DB_TYPE),
     transformParameters: {
       sandboxModeEnabled: true,
     },

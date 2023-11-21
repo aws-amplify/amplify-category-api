@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { DBType, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { ModelDataSourceStrategyDbType, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import { ListValueNode, ObjectTypeDefinitionNode, StringValueNode, TypeNode } from 'graphql';
 import { ModelResourceIDs, getBaseType } from 'graphql-transformer-common';
-import { DDB_DB_TYPE } from '../types';
 
 /**
  * getKeySchema
@@ -52,6 +51,11 @@ export const getSortKeyFieldNames = (type: ObjectTypeDefinitionNode): string[] =
 /**
  * Get DB type from the transformer context
  */
-export const getDataSourceType = (type: TypeNode, ctx: TransformerContextProvider): DBType => {
-  return ctx.modelToDatasourceMap.get(getBaseType(type))?.dbType ?? DDB_DB_TYPE;
+export const getDataSourceType = (type: TypeNode, ctx: TransformerContextProvider): ModelDataSourceStrategyDbType => {
+  const baseTypeName = getBaseType(type);
+  const dataSourceType = ctx.modelToDatasourceMap.get(baseTypeName);
+  if (!dataSourceType) {
+    throw new Error(`No datasource found for type ${baseTypeName}`);
+  }
+  return dataSourceType.dbType;
 };

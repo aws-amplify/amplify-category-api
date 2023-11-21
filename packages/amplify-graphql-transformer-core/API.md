@@ -21,8 +21,8 @@ import { CustomSqlDataSourceStrategy } from '@aws-amplify/graphql-transformer-in
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { DataSourceStrategiesProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
-import { DBType } from '@aws-amplify/graphql-transformer-interfaces';
 import { DefinitionNode } from 'graphql';
 import { DirectiveDefinitionNode } from 'graphql';
 import { DirectiveNode } from 'graphql';
@@ -48,6 +48,8 @@ import { Location as Location_2 } from 'graphql';
 import { LogConfig } from 'aws-cdk-lib/aws-appsync';
 import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { ModelDataSourceStrategyDbType } from '@aws-amplify/graphql-transformer-interfaces';
+import { ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelFieldMap } from '@aws-amplify/graphql-transformer-interfaces';
 import { MutationFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { NamedTypeNode } from 'graphql';
@@ -134,7 +136,19 @@ function createSyncTable(context: TransformerContext): void;
 export const dataSourceStrategyToDataSourceType: (dataSourceStrategy: ModelDataSourceStrategy) => DataSourceType;
 
 // @public (undocumented)
-export const DDB_DB_TYPE: DBType;
+export const DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY: ModelDataSourceStrategy;
+
+// @public (undocumented)
+export const DDB_AMPLIFY_MANAGED_DATASOURCE_TYPE: DataSourceType;
+
+// @public (undocumented)
+export const DDB_DB_TYPE: ModelDataSourceStrategyDbType;
+
+// @public (undocumented)
+export const DDB_DEFAULT_DATASOURCE_STRATEGY: ModelDataSourceStrategy;
+
+// @public (undocumented)
+export const DDB_DEFAULT_DATASOURCE_TYPE: DataSourceType;
 
 // @public (undocumented)
 export class DirectiveWrapper {
@@ -197,10 +211,10 @@ export type GetArgumentsOptions = {
 export function getDatasourceProvisionStrategy(ctx: TransformerBeforeStepContextProvider, typeName?: string): DataSourceProvisionStrategy;
 
 // @public (undocumented)
-export const getDataSourceType: (type: TypeNode, ctx: TransformerContextProvider) => DBType;
+export const getDataSourceType: (type: TypeNode, ctx: TransformerContextProvider) => ModelDataSourceStrategyDbType;
 
 // @public (undocumented)
-export const getEngineFromDBType: (dbType: DBType) => ImportedRDSType;
+export const getEngineFromDBType: (dbType: ModelDataSourceStrategyDbType) => ImportedRDSType;
 
 // Warning: (ae-forgotten-export) The symbol "Operation" needs to be exported by the entry point index.d.ts
 //
@@ -208,7 +222,7 @@ export const getEngineFromDBType: (dbType: DBType) => ImportedRDSType;
 export const getFieldNameFor: (op: Operation, typeName: string) => string;
 
 // @public (undocumented)
-export const getImportedRDSType: (modelToDatasourceMap: Map<string, DataSourceType>) => DBType;
+export const getImportedRDSType: (modelToDatasourceMap: Map<string, DataSourceType>) => ModelDataSourceStrategyDbType;
 
 // @public (undocumented)
 export const getKeySchema: (table: any, indexName?: string) => any;
@@ -363,6 +377,9 @@ export class InvalidTransformerError extends Error {
 }
 
 // @public (undocumented)
+export const isDynamoDbType: (dbType: ModelDataSourceStrategyDbType) => dbType is "DYNAMODB";
+
+// @public (undocumented)
 export const isImportedRDSType: (dbInfo: DataSourceType) => boolean;
 
 // @public (undocumented)
@@ -386,10 +403,10 @@ export const isQueryNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitionNo
 });
 
 // @public (undocumented)
-export const isRDSDBType: (dbType: DBType) => boolean;
+export const isSqlDbType: (dbType: ModelDataSourceStrategyDbType) => dbType is ModelDataSourceStrategySqlDbType;
 
 // @public (undocumented)
-export const isRDSModel: (ctx: TransformerContextProvider, typename: string) => boolean;
+export const isSqlModel: (ctx: DataSourceStrategiesProvider, typename: string) => boolean;
 
 // @public (undocumented)
 export const isSqlStrategy: (strategy: ModelDataSourceStrategy) => strategy is SQLLambdaModelDataSourceStrategy;
@@ -407,7 +424,7 @@ export class MappingTemplate {
 }
 
 // @public (undocumented)
-export const MYSQL_DB_TYPE: DBType;
+export const MYSQL_DB_TYPE: ModelDataSourceStrategySqlDbType;
 
 // @public (undocumented)
 export class ObjectDefinitionWrapper {
@@ -433,7 +450,7 @@ export class ObjectDefinitionWrapper {
 }
 
 // @public (undocumented)
-export const POSTGRES_DB_TYPE: DBType;
+export const POSTGRES_DB_TYPE: ModelDataSourceStrategySqlDbType;
 
 // @public (undocumented)
 export type RDSConnectionSecrets = TransformerSecrets & {

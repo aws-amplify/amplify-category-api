@@ -19,7 +19,7 @@ describe('sql directive tests', () => {
       modelToDatasourceMap: new Map(
         Object.entries({
           Post: {
-            dbType: 'MySQL',
+            dbType: 'MYSQL',
             provisionDB: false,
             provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },
@@ -30,7 +30,7 @@ describe('sql directive tests', () => {
           typeName: 'Query',
           fieldName: 'calculateTaxRate',
           dataSourceType: {
-            dbType: 'MySQL',
+            dbType: 'MYSQL',
             provisionDB: false,
             provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },
@@ -69,7 +69,7 @@ describe('sql directive tests', () => {
       modelToDatasourceMap: new Map(
         Object.entries({
           Post: {
-            dbType: 'MySQL',
+            dbType: 'MYSQL',
             provisionDB: false,
             provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },
@@ -80,7 +80,7 @@ describe('sql directive tests', () => {
           typeName: 'Query',
           fieldName: 'calculateTaxRate',
           dataSourceType: {
-            dbType: 'MySQL',
+            dbType: 'MYSQL',
             provisionDB: false,
             provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },
@@ -119,7 +119,7 @@ describe('sql directive tests', () => {
       modelToDatasourceMap: new Map(
         Object.entries({
           Post: {
-            dbType: 'MySQL' as const,
+            dbType: 'MYSQL' as const,
             provisionDB: false,
             provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },
@@ -130,7 +130,7 @@ describe('sql directive tests', () => {
           typeName: 'Query',
           fieldName: 'calculateTaxRate',
           dataSourceType: {
-            dbType: 'MySQL',
+            dbType: 'MYSQL',
             provisionDB: false,
             provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },
@@ -160,7 +160,7 @@ describe('sql directive tests', () => {
       modelToDatasourceMap: new Map(
         Object.entries({
           Post: {
-            dbType: 'MySQL' as const,
+            dbType: 'MYSQL' as const,
             provisionDB: false,
             provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },
@@ -171,7 +171,7 @@ describe('sql directive tests', () => {
           typeName: 'Query',
           fieldName: 'calculateTaxRate',
           dataSourceType: {
-            dbType: 'MySQL',
+            dbType: 'MYSQL',
             provisionDB: false,
             provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },
@@ -197,7 +197,7 @@ describe('sql directive tests', () => {
       modelToDatasourceMap: new Map(
         Object.entries({
           Post: {
-            dbType: 'MySQL' as const,
+            dbType: 'MYSQL' as const,
             provisionDB: false,
             provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },
@@ -208,7 +208,7 @@ describe('sql directive tests', () => {
           typeName: 'Query',
           fieldName: 'calculateTaxRate',
           dataSourceType: {
-            dbType: 'MySQL',
+            dbType: 'MYSQL',
             provisionDB: false,
             provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },
@@ -234,7 +234,7 @@ describe('sql directive tests', () => {
       modelToDatasourceMap: new Map(
         Object.entries({
           Post: {
-            dbType: 'MySQL',
+            dbType: 'MYSQL',
             provisionDB: false,
             provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },
@@ -245,7 +245,7 @@ describe('sql directive tests', () => {
           typeName: 'Query',
           fieldName: 'calculateTaxRate',
           dataSourceType: {
-            dbType: 'MySQL',
+            dbType: 'MYSQL',
             provisionDB: false,
             provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },
@@ -273,7 +273,7 @@ describe('sql directive tests', () => {
           typeName: 'Query',
           fieldName: 'calculateTaxRate',
           dataSourceType: {
-            dbType: 'MySQL',
+            dbType: 'MYSQL',
             provisionDB: false,
             provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },

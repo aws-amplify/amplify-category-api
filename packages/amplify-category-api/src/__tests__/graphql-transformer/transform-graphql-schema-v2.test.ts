@@ -1,10 +1,10 @@
 import { $TSContext, pathManager, ApiCategoryFacade } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { constructTransformerChain } from '@aws-amplify/graphql-transformer';
+import { constructDataSourceMap, DDB_DEFAULT_DATASOURCE_TYPE } from '@aws-amplify/graphql-transformer-core';
 import { getUserOverridenSlots, transformGraphQLSchemaV2 } from '../../graphql-transformer/transform-graphql-schema-v2';
 import { generateTransformerOptions } from '../../graphql-transformer/transformer-options-v2';
 import { getAppSyncAPIName } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import { AmplifyCLIFeatureFlagAdapter } from '../../graphql-transformer/amplify-cli-feature-flag-adapter';
 
 jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('@aws-amplify/amplify-prompts');
@@ -51,15 +51,17 @@ describe('transformGraphQLSchemaV2', () => {
     pathManagerMock.getBackendDirPath.mockReturnValue('backenddir');
     pathManagerMock.getCurrentCloudBackendDirPath.mockReturnValue('currentcloudbackenddir');
     ApiCategoryFacadeMock.getTransformerVersion.mockReturnValue(Promise.resolve(2));
-    generateTransformerOptionsMock.mockReturnValue({
-      projectConfig: {
-        // schema that will generate auth warnings
-        schema: `
+    const schema = `
           type Todo @model @auth(rules: [{ allow: owner }]) {
             content: String
           }
-        `,
+        `;
+    generateTransformerOptionsMock.mockReturnValue({
+      projectConfig: {
+        // schema that will generate auth warnings
+        schema,
         config: { StackMapping: {} },
+        modelToDatasourceMap: constructDataSourceMap(schema, DDB_DEFAULT_DATASOURCE_TYPE),
       },
       transformersFactory: constructTransformerChain(),
       transformersFactoryArgs: {},
