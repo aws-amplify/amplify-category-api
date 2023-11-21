@@ -34,7 +34,12 @@ export const parseDataSourceConfig = (dataSourceDefinitionMap: Record<string, Mo
 };
 
 /**
- * Creates an interface flavor of customSqlDataSourceStrategies from a factory method's schema and data source.
+ * Creates an interface flavor of customSqlDataSourceStrategies from a factory method's schema and data source. Internally, this function
+ * scans the fields of `Query` and `Mutation` looking for fields annotated with the `@sql` directive and designates the specified
+ * dataSourceStrategy to fulfill those custom queries.
+ *
+ * Note that we do not scan for `Subscription` fields: `@sql` directives are not allowed on those, and it wouldn't make sense to do so
+ * anyway, since subscriptions are processed from an incoming Mutation, not as the result of a direct datasource access.
  *
  * TODO: Reword this when we refactor to use Strategies throughout the implementation rather than DataSources.
  */
@@ -81,7 +86,13 @@ export const constructCustomSqlDataSourceStrategies = (
   return customSqlDataSourceStrategies;
 };
 
-// TODO: Remove this once we refactor the internals to use strategies rather than DataSourceTypes
+/**
+ * We currently use a different type structure to model strategies in the interface than we do in the implementation. This maps the
+ * interface CustomSqlDataSourceStrategy (which uses SQLLambdaModelDataSourceStrategy) to the implementation flavor (which uses
+ * DataSourceType).
+ *
+ * TODO: Remove this once we refactor the internals to use strategies rather than DataSourceTypes
+ */
 export const mapInterfaceCustomSqlStrategiesToImplementationStrategies = (
   strategies?: InterfaceCustomSqlDataSourceStrategy[],
 ): ImplementationCustomSqlDataSourceStrategy[] => {
