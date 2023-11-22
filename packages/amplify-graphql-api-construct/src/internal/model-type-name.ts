@@ -1,5 +1,5 @@
-import { ModelDataSourceStrategy } from '../types';
 import { Kind, ObjectTypeDefinitionNode, StringValueNode, parse } from 'graphql';
+import { ModelDataSourceStrategy } from '../model-datasource-strategy';
 
 const MODEL_DIRECTIVE_NAME = 'model';
 const MANY_TO_MANY_DIRECTIVE_NAME = 'manyToMany';
@@ -8,7 +8,7 @@ const MANY_TO_MANY_DIRECTIVE_NAME = 'manyToMany';
  * @param schema graphql schema in SDL
  * @returns type names which model diretives are attached
  */
-export function getModelTypeNames(schema: string): string[] {
+export const getModelTypeNames = (schema: string): string[] => {
   const parsedSchema = parse(schema);
   const nodesWithModelDirective = parsedSchema.definitions.filter(
     (obj) => obj.kind === Kind.OBJECT_TYPE_DEFINITION && obj.directives?.some((dir) => dir.name.value === MODEL_DIRECTIVE_NAME),
@@ -28,7 +28,7 @@ export function getModelTypeNames(schema: string): string[] {
     });
   });
   return modelKeys.filter((key, idx) => modelKeys.indexOf(key) === idx);
-}
+};
 
 export const constructDataSourceStrategyMap = (
   schema: string,

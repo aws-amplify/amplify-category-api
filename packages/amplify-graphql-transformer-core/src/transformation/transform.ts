@@ -204,24 +204,25 @@ export class GraphQLTransform {
   }: TransformOption): void {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
-    const context = new TransformerContext(
-      scope,
+    const context = new TransformerContext({
+      assetProvider,
+      authConfig: this.authConfig,
+      customQueries: datasourceConfig?.customQueries ?? new Map<string, string>(),
+      customSqlDataSourceStrategies: datasourceConfig?.customSqlDataSourceStrategies ?? [],
+      datasourceSecretParameterLocations: datasourceConfig?.datasourceSecretParameterLocations,
+      inputDocument: parsedDocument,
+      modelToDatasourceMap: datasourceConfig?.modelToDatasourceMap ?? new Map<string, DataSourceType>(),
       nestedStackProvider,
       parameterProvider,
-      assetProvider,
+      rdsLayerMapping: datasourceConfig?.rdsLayerMapping,
+      resolverConfig: this.resolverConfig,
+      scope,
+      sqlLambdaProvisionedConcurrencyConfig: this.sqlLambdaProvisionedConcurrencyConfig,
+      sqlLambdaVpcConfig: this.sqlLambdaVpcConfig,
+      stackMapping: this.stackMappingOverrides,
       synthParameters,
-      parsedDocument,
-      datasourceConfig?.modelToDatasourceMap ?? new Map<string, DataSourceType>(),
-      datasourceConfig?.customQueries ?? new Map<string, string>(),
-      this.stackMappingOverrides,
-      this.authConfig,
-      this.transformParameters,
-      this.resolverConfig,
-      datasourceConfig?.datasourceSecretParameterLocations,
-      this.sqlLambdaVpcConfig,
-      datasourceConfig?.rdsLayerMapping,
-      this.sqlLambdaProvisionedConcurrencyConfig,
-    );
+      transformParameters: this.transformParameters,
+    });
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),
       {

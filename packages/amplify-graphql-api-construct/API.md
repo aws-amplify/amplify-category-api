@@ -196,6 +196,16 @@ export interface CustomConflictResolutionStrategy extends ConflictResolutionStra
     readonly handlerType: 'LAMBDA';
 }
 
+// @public (undocumented)
+export interface CustomSqlDataSourceStrategy {
+    // (undocumented)
+    readonly fieldName: string;
+    // (undocumented)
+    readonly strategy: SQLLambdaModelDataSourceStrategy;
+    // (undocumented)
+    readonly typeName: 'Query' | 'Mutation';
+}
+
 // @public
 export interface DefaultDynamoDbModelDataSourceStrategy {
     // (undocumented)
@@ -230,6 +240,7 @@ export interface IAMAuthorizationConfig {
 
 // @public
 export interface IAmplifyGraphqlDefinition {
+    readonly customSqlDataSourceStrategies?: CustomSqlDataSourceStrategy[];
     readonly dataSourceStrategies: Record<string, ModelDataSourceStrategy>;
     readonly functionSlots: FunctionSlot[];
     readonly referencedLambdaFunctions?: Record<string, IFunction>;

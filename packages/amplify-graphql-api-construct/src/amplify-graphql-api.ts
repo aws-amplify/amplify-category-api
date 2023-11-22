@@ -38,7 +38,6 @@ import type {
   IBackendOutputStorageStrategy,
   AddFunctionProps,
   ConflictResolution,
-  SQLLambdaModelDataSourceStrategy,
 } from './types';
 import {
   convertAuthorizationModesToTransformerAuthConfig,
@@ -50,9 +49,10 @@ import {
   CodegenAssets,
   getAdditionalAuthenticationTypes,
 } from './internal';
-import { isSQLLambdaModelDataSourceStrategy } from './sql-model-datasource-strategy';
-import { parseDataSourceConfig } from './internal/data-source-config';
+import { mapInterfaceCustomSqlStrategiesToImplementationStrategies, parseDataSourceConfig } from './internal/data-source-config';
 import { getStackForScope, walkAndProcessNodes } from './internal/construct-tree';
+import { SQLLambdaModelDataSourceStrategy } from './model-datasource-strategy';
+import { isSQLLambdaModelDataSourceStrategy } from './sql-model-datasource-strategy';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
@@ -209,8 +209,22 @@ export class AmplifyGraphqlApi extends Construct {
       ...parseDataSourceConfig(definition.dataSourceStrategies),
     };
 
+    // TODO: Normalize all of this once we start using strategies internally. Right now the data source configuration (VPC, connection info,
+    // etc) is separate from the DataSourceType, and singular
+    const customSqlDataSourceStrategies = mapInterfaceCustomSqlStrategiesToImplementationStrategies(
+      definition.customSqlDataSourceStrategies,
+    );
+    if (customSqlDataSourceStrategies.length > 0) {
+      executeTransformConfig = {
+        ...executeTransformConfig,
+        customSqlDataSourceStrategies,
+      };
+    }
+
     // TODO: Update this to support multiple definitions; right now we assume only one SQL data source type
-    for (const strategy of Object.values(definition.dataSourceStrategies)) {
+    const modelStrategies = Object.values(definition.dataSourceStrategies).filter(isSQLLambdaModelDataSourceStrategy);
+    const customSqlStrategies = definition.customSqlDataSourceStrategies?.map((css) => css.strategy) ?? [];
+    for (const strategy of [...modelStrategies, ...customSqlStrategies]) {
       if (isSQLLambdaModelDataSourceStrategy(strategy)) {
         executeTransformConfig = this.extendTransformConfig(executeTransformConfig, strategy);
         break;
@@ -235,7 +249,7 @@ export class AmplifyGraphqlApi extends Construct {
   /**
    * Extends executeTransformConfig with fields for provisioning a SQL Lambda
    * @param executeTransformConfig the executeTransformConfig to extend
-   * @param dataSourceDefinition the SQLLambdaModelDataSourceStrategy containing the SQL connection values to add to the transform config
+   * @param strategy the SQLLambdaModelDataSourceStrategy containing the SQL connection values to add to the transform config
    * @returns the extended configuration that includes SQL DB connection information
    */
   private extendTransformConfig(
@@ -243,6 +257,7 @@ export class AmplifyGraphqlApi extends Construct {
     strategy: SQLLambdaModelDataSourceStrategy,
   ): ExecuteTransformConfig {
     const extendedConfig = { ...executeTransformConfig };
+
     if (strategy.customSqlStatements) {
       extendedConfig.customQueries = new Map(Object.entries(strategy.customSqlStatements));
     }
