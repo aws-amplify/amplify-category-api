@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.8.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.8.2...@aws-amplify/amplify-category-api@5.8.3) (2023-11-22)
+
+### Bug Fixes
+
+- Allow custom SQL statements without model declarations ([#2087](https://github.com/aws-amplify/amplify-category-api/issues/2087)) ([ea5b26c](https://github.com/aws-amplify/amplify-category-api/commit/ea5b26cd554f5c74b6431cbad6ccf60ab556478f))
+
 ## [5.8.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.8.1...@aws-amplify/amplify-category-api@5.8.2) (2023-11-18)
 
 ### Bug Fixes

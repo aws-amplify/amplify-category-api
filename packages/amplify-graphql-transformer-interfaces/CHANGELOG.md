@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.3.0...@aws-amplify/graphql-transformer-interfaces@3.3.1) (2023-11-22)
+
+### Bug Fixes
+
+- Allow custom SQL statements without model declarations ([#2087](https://github.com/aws-amplify/amplify-category-api/issues/2087)) ([ea5b26c](https://github.com/aws-amplify/amplify-category-api/commit/ea5b26cd554f5c74b6431cbad6ccf60ab556478f))
+
 # [3.3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.2.2...@aws-amplify/graphql-transformer-interfaces@3.3.0) (2023-11-15)
 
 ### Features
