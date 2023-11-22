@@ -9640,9 +9640,9 @@ aws-sdk-mock@^5.6.2:
     traverse "^0.6.6"
 
 aws-sdk@2.518.0, aws-sdk@^2.1113.0, aws-sdk@^2.1141.0, aws-sdk@^2.1231.0, aws-sdk@^2.1464.0:
-  version "2.1493.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1493.0.tgz#20dfda48eebf2b95cea5df6576ea447bba81576f"
-  integrity sha512-fnOoakH7HUHWDPjnXuCoy3KR+4Fn+Z76ZZjLUbsljzOdy1aBiN5C+cnrEnV8wWKI1dUjU6C1nwEystzi50HHyA==
+  version "2.1501.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1501.0.tgz#25882ec99d3a088e58bccf5a1821e4e3336c2707"
+  integrity sha512-mlYhHlB255oov0ks06hxEUYzOHji4urr0xJ8TRbkgUnp1lYdNaTjUFpwzfqbA7w74ZD6gJtca/EjDxk8g4SSSQ==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -9675,9 +9675,9 @@ axios@^0.21.1:
     follow-redirects "^1.14.0"
 
 axios@^1.0.0, axios@^1.6.0:
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.1.tgz#76550d644bf0a2d469a01f9244db6753208397d7"
-  integrity sha512-vfBmhDpKafglh0EldBEbVuoe7DyAavGSLWhuSm5ZSEKQnHhBf0xAAwybbNH1IkrJNGnS/VG4I5yxig1pCEXE4g==
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.2.tgz#de67d42c755b571d3e698df1b6504cde9b0ee9f2"
+  integrity sha512-7i24Ri4pmDRfJTR7LDBhsOTtcm+9kjX5WiY1X3wIisx6G9So3pfMkEiU7emUBe46oceVImccTEM3k6C5dbVW8A==
   dependencies:
     follow-redirects "^1.15.0"
     form-data "^4.0.0"
