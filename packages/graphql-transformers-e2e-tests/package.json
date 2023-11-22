@@ -73,6 +73,10 @@
       "!src/__tests__/**",
       "!**/*.d.ts"
     ],
+    "coverageReporters": [
+      "clover",
+      "text"
+    ],
     "reporters": [
       "default",
       "jest-junit",

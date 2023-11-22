@@ -107,6 +107,10 @@
         "lines": 44
       }
     },
+    "coverageReporters": [
+      "clover",
+      "text"
+    ],
     "moduleNameMapper": {
       "^csv-parse/sync": "<rootDir>/../../node_modules/csv-parse/dist/cjs/sync.cjs"
     }

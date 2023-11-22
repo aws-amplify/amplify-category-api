@@ -38,5 +38,12 @@
         "graphql"
       ]
     }
-  ]
+  ],
+  "jest": {
+    "collectCoverage": true,
+    "coverageReporters": [
+      "clover",
+      "text"
+    ]
+  }
 }

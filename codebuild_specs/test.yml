@@ -10,3 +10,8 @@ phases:
 artifacts:
   files:
     - 'shared-scripts.sh'
+reports:
+  coverage-report:
+    files:
+      - 'packages/*/coverage/clover.xml'
+    file-format: 'CLOVERXML'
