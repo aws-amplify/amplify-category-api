@@ -50,6 +50,14 @@ import { UnionTypeDefinitionNode } from 'graphql';
 import { UnionTypeExtensionNode } from 'graphql';
 
 // @public (undocumented)
+export interface AmplifyDynamoDbModelDataSourceStrategy extends ModelDataSourceStrategyBase {
+    // (undocumented)
+    readonly dbType: 'DYNAMODB';
+    // (undocumented)
+    readonly provisionStrategy: 'AMPLIFY_TABLE';
+}
+
+// @public (undocumented)
 export interface APIIAMResourceProvider {
     // (undocumented)
     resourceArns: (api: GraphQLAPIProvider) => string[];
@@ -137,6 +145,16 @@ export type AssetProvider = {
     provide: (scope: Construct, name: string, props: AssetProps) => S3Asset;
 };
 
+// @public (undocumented)
+export interface CustomSqlDataSourceStrategy {
+    // (undocumented)
+    readonly dataSourceType: DataSourceType;
+    // (undocumented)
+    readonly fieldName: string;
+    // (undocumented)
+    readonly typeName: 'Query' | 'Mutation';
+}
+
 // Warning: (ae-forgotten-export) The symbol "NoneDataSourceProvider" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -155,7 +173,13 @@ export interface DataSourceProvider extends BackedDataSource {
 }
 
 // @public (undocumented)
-export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy;
+export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy | SQLLambdaModelProvisionStrategy;
+
+// @public (undocumented)
+export interface DataSourceStrategiesProvider {
+    // (undocumented)
+    customSqlDataSourceStrategies: CustomSqlDataSourceStrategy[];
+}
 
 // @public (undocumented)
 export interface DataSourceType {
@@ -168,7 +192,15 @@ export interface DataSourceType {
 }
 
 // @public (undocumented)
-export type DBType = 'MySQL' | 'DDB';
+export type DBType = 'DDB' | SQLDBType;
+
+// @public (undocumented)
+export interface DefaultDynamoDbModelDataSourceStrategy extends ModelDataSourceStrategyBase {
+    // (undocumented)
+    readonly dbType: 'DYNAMODB';
+    // (undocumented)
+    readonly provisionStrategy: 'DEFAULT';
+}
 
 // @public (undocumented)
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {
@@ -234,6 +266,18 @@ export enum MappingTemplateType {
 }
 
 // @public (undocumented)
+export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
+
+// @public (undocumented)
+export interface ModelDataSourceStrategyBase {
+    // (undocumented)
+    dbType: ModelDataSourceStrategyDbType;
+}
+
+// @public (undocumented)
+export type ModelDataSourceStrategyDbType = 'DYNAMODB' | 'MYSQL' | 'POSTGRES';
+
+// @public (undocumented)
 export type ModelFieldMap = {
     addMappedField: (entry: FieldMapEntry) => ModelFieldMap;
     addResolverReference: (entry: ResolverReferenceEntry) => ModelFieldMap;
@@ -257,6 +301,12 @@ export type NestedStackProvider = {
 };
 
 // @public (undocumented)
+export interface ProvisionedConcurrencyConfig {
+    // (undocumented)
+    readonly provisionedConcurrentExecutions: number;
+}
+
+// @public (undocumented)
 export enum QueryFieldType {
     // (undocumented)
     GET = "GET",
@@ -267,11 +317,12 @@ export enum QueryFieldType {
 }
 
 // @public (undocumented)
-export type RDSLayerMapping = {
-    [key: string]: {
+export interface RDSLayerMapping {
+    // (undocumented)
+    readonly [key: string]: {
         layerRegion: string;
     };
-};
+}
 
 // @public (undocumented)
 type ReadonlyArray_2<T> = Readonly<Array<Readonly<T>>>;
@@ -318,6 +369,45 @@ export interface SearchableDataSourceOptions extends DataSourceOptions {
 }
 
 // @public (undocumented)
+export type SQLDBType = 'MySQL' | 'Postgres';
+
+// @public (undocumented)
+export interface SQLLambdaModelDataSourceStrategy extends ModelDataSourceStrategyBase {
+    // (undocumented)
+    readonly customSqlStatements?: Record<string, string>;
+    // (undocumented)
+    readonly dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
+    // (undocumented)
+    readonly dbType: 'MYSQL' | 'POSTGRES';
+    // (undocumented)
+    readonly name: string;
+    // (undocumented)
+    readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
+    // (undocumented)
+    readonly vpcConfiguration?: VpcConfig;
+}
+
+// @public (undocumented)
+export const enum SQLLambdaModelProvisionStrategy {
+    // (undocumented)
+    DEFAULT = "DEFAULT"
+}
+
+// @public (undocumented)
+export interface SqlModelDataSourceDbConnectionConfig {
+    // (undocumented)
+    readonly databaseNameSsmPath: string;
+    // (undocumented)
+    readonly hostnameSsmPath: string;
+    // (undocumented)
+    readonly passwordSsmPath: string;
+    // (undocumented)
+    readonly portSsmPath: string;
+    // (undocumented)
+    readonly usernameSsmPath: string;
+}
+
+// @public (undocumented)
 export interface StackManagerProvider {
     // (undocumented)
     createStack: (stackName: string) => Stack;
@@ -333,6 +423,14 @@ export interface StackManagerProvider {
     hasStack: (stackName: string) => boolean;
     // (undocumented)
     readonly scope: Construct;
+}
+
+// @public (undocumented)
+export interface SubnetAvailabilityZone {
+    // (undocumented)
+    readonly availabilityZone: string;
+    // (undocumented)
+    readonly subnetId: string;
 }
 
 // @public (undocumented)
@@ -360,7 +458,17 @@ export type SynthParameters = {
 export type TransformerAuthProvider = TransformerPluginProvider;
 
 // @public (undocumented)
-export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager' | 'synthParameters'>;
+export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'customSqlDataSourceStrategies' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager' | 'synthParameters'>;
+
+// @public (undocumented)
+export interface TransformerContextMetadataProvider {
+    // (undocumented)
+    get<T>(key: string): T | undefined;
+    // (undocumented)
+    has(key: string): boolean;
+    // (undocumented)
+    set<T>(key: string, value: T): void;
+}
 
 // @public (undocumented)
 export interface TransformerContextOutputProvider {
@@ -427,6 +535,10 @@ export interface TransformerContextProvider {
     // (undocumented)
     authConfig: AppSyncAuthConfiguration;
     // (undocumented)
+    customQueries: Map<string, string>;
+    // (undocumented)
+    customSqlDataSourceStrategies?: CustomSqlDataSourceStrategy[];
+    // (undocumented)
     dataSources: TransformerDataSourceManagerProvider;
     // (undocumented)
     datasourceSecretParameterLocations: Map<string, TransformerSecrets>;
@@ -436,8 +548,6 @@ export interface TransformerContextProvider {
     inputDocument: DocumentNode;
     // (undocumented)
     isProjectUsingDataStore(): boolean;
-    // Warning: (ae-forgotten-export) The symbol "TransformerContextMetadataProvider" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     metadata: TransformerContextMetadataProvider;
     // (undocumented)
@@ -453,6 +563,8 @@ export interface TransformerContextProvider {
     // (undocumented)
     resourceHelper: TransformerResourceHelperProvider;
     // (undocumented)
+    readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
+    // (undocumented)
     readonly sqlLambdaVpcConfig?: VpcConfig;
     // (undocumented)
     stackManager: StackManagerProvider;
@@ -465,11 +577,11 @@ export interface TransformerContextProvider {
 // @public (undocumented)
 export interface TransformerDataSourceManagerProvider {
     // (undocumented)
-    add(type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, dataSourceInstance: DataSourceInstance): void;
+    add: (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, dataSourceInstance: DataSourceInstance) => void;
     // (undocumented)
-    get(type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode): DataSourceInstance;
+    get: (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode) => DataSourceInstance;
     // (undocumented)
-    has(name: string): boolean;
+    has: (name: string) => boolean;
 }
 
 // @public (undocumented)
@@ -703,7 +815,7 @@ export interface TransformerSchemaHelperProvider {
 }
 
 // @public (undocumented)
-export type TransformerSchemaVisitStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'output' | 'providerRegistry' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper'>;
+export type TransformerSchemaVisitStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'customSqlDataSourceStrategies' | 'output' | 'providerRegistry' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper'>;
 
 // @public (undocumented)
 export type TransformerSecrets = {
@@ -714,7 +826,7 @@ export type TransformerSecrets = {
 export type TransformerTransformSchemaStepContextProvider = TransformerValidationStepContextProvider;
 
 // @public (undocumented)
-export type TransformerValidationStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'output' | 'providerRegistry' | 'dataSources' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper' | 'resolvers' | 'stackManager' | 'synthParameters'>;
+export type TransformerValidationStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'modelToDatasourceMap' | 'customSqlDataSourceStrategies' | 'output' | 'providerRegistry' | 'dataSources' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper' | 'resolvers' | 'stackManager' | 'synthParameters'>;
 
 // @public (undocumented)
 export interface TransformHostProvider {
@@ -760,6 +872,8 @@ export type TransformParameters = {
     shouldDeepMergeDirectiveConfigDefaults: boolean;
     disableResolverDeduping: boolean;
     sandboxModeEnabled: boolean;
+    allowDestructiveGraphqlSchemaUpdates: boolean;
+    replaceTableUponGsiUpdate: boolean;
     useSubUsernameForDefaultIdentityClaim: boolean;
     populateOwnerFieldForStaticGroupAuth: boolean;
     suppressApiKeyGeneration: boolean;
@@ -776,15 +890,18 @@ export interface UserPoolConfig {
 }
 
 // @public (undocumented)
-export type VpcConfig = {
-    vpcId: string;
-    subnetIds: string[];
-    securityGroupIds: string[];
-};
+export interface VpcConfig {
+    // (undocumented)
+    readonly securityGroupIds: string[];
+    // (undocumented)
+    readonly subnetAvailabilityZoneConfig: SubnetAvailabilityZone[];
+    // (undocumented)
+    readonly vpcId: string;
+}
 
 // Warnings were encountered during analysis:
 //
-// src/graphql-api-provider.ts:34:3 - (ae-forgotten-export) The symbol "OpenIDConnectConfig" needs to be exported by the entry point index.d.ts
+// src/graphql-api-provider.ts:35:3 - (ae-forgotten-export) The symbol "OpenIDConnectConfig" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

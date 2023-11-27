@@ -4,6 +4,50 @@
 
 ```ts
 
+import { DirectiveNode } from 'graphql';
+import { DocumentNode } from 'graphql';
+import { FieldDefinitionNode } from 'graphql';
+import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { InputObjectTypeDefinitionNode } from 'graphql';
+import { ObjectTypeDefinitionNode } from 'graphql';
+import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
+
+// @public (undocumented)
+export const applyFieldNameOverrides: (field: FieldDefinitionNode, existingField: FieldDefinitionNode) => Partial<FieldDefinitionNode>;
+
+// @public (undocumented)
+export const applyFieldOverrides: (field: FieldDefinitionNode, existingField: FieldDefinitionNode) => FieldDefinitionNode;
+
+// @public (undocumented)
+export const applyJSONFieldTypeOverrides: (field: FieldDefinitionNode, existingField: FieldDefinitionNode) => Partial<FieldDefinitionNode>;
+
+// @public (undocumented)
+export const applyModelAuthOverrides: (obj: ObjectTypeDefinitionNode, existingObj: ObjectTypeDefinitionNode) => ObjectTypeDefinitionNode;
+
+// @public (undocumented)
+export const applyModelNameOverrides: (obj: ObjectTypeDefinitionNode, existingObj: ObjectTypeDefinitionNode) => ObjectTypeDefinitionNode;
+
+// @public (undocumented)
+export const applyModelOverrides: (obj: ObjectTypeDefinitionNode, existingObj: ObjectTypeDefinitionNode) => ObjectTypeDefinitionNode;
+
+// @public (undocumented)
+export const applySchemaOverrides: (document: DocumentNode, existingDocument?: DocumentNode | undefined) => DocumentNode;
+
+// @public (undocumented)
+export const checkDestructiveNullabilityChange: (field: FieldDefinitionNode, existingField: FieldDefinitionNode) => void;
+
+// @public (undocumented)
+export const constructDefaultGlobalAmplifyInput: (dataSourceType: ImportedRDSType, includeAuthRule?: boolean, authDocLink?: string) => string;
+
+// @public (undocumented)
+export const constructRDSGlobalAmplifyInput: (config: any, schemaDocument: DocumentNode | undefined) => string;
+
+// @public (undocumented)
+export const convertToGraphQLFieldName: (fieldName: string) => string;
+
+// @public (undocumented)
+export const convertToGraphQLTypeName: (modelName: string) => string;
+
 // @public (undocumented)
 export interface CustomType {
     // (undocumented)
@@ -17,21 +61,23 @@ export abstract class DataSourceAdapter {
     // (undocumented)
     abstract cleanup(): void;
     // (undocumented)
-    describeTable(tableName: string): Promise<Model>;
+    describeTable(tableName: string): Model;
     // (undocumented)
-    abstract getFields(tableName: string): Promise<Field[]>;
+    abstract getFields(tableName: string): Field[];
     // (undocumented)
-    abstract getIndexes(tableName: string): Promise<Index[]>;
+    abstract getIndexes(tableName: string): Index[];
     // (undocumented)
-    getModels(): Promise<Model[]>;
+    getModels(): Model[];
     // (undocumented)
-    abstract getPrimaryKey(tableName: string): Promise<Index | null>;
+    abstract getPrimaryKey(tableName: string): Index | null;
     // (undocumented)
-    abstract getTablesList(): Promise<string[]>;
+    abstract getTablesList(): string[];
     // (undocumented)
     abstract initialize(): Promise<void>;
     // (undocumented)
-    abstract mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columnType: string): FieldType;
+    protected abstract querySchema(): Promise<string>;
+    // (undocumented)
+    protected queryToCSV(queryResult: any[]): string;
     // (undocumented)
     abstract test(): Promise<boolean>;
     // (undocumented)
@@ -45,7 +91,7 @@ export abstract class DataSourceAdapter {
 }
 
 // @public (undocumented)
-export type DBEngineType = 'MySQL' | 'DynamoDB';
+export type DBEngineType = 'MySQL' | 'Postgres' | 'DynamoDB';
 
 // @public (undocumented)
 export interface DefaultType {
@@ -61,6 +107,11 @@ export interface DefaultValue {
     readonly kind: 'DB_GENERATED' | 'TRANSFORMER_GENERATED';
     // (undocumented)
     readonly value: string | number | boolean;
+}
+
+// @public (undocumented)
+export class EmptySchemaError extends Error {
+    constructor();
 }
 
 // @public (undocumented)
@@ -100,10 +151,22 @@ export type FieldDataType = 'String' | 'ID' | 'Int' | 'Float' | 'AWSJSON' | 'AWS
 export type FieldType = DefaultType | CustomType | ListType | NonNullType | EnumType;
 
 // @public (undocumented)
-export const generateGraphQLSchema: (schema: Schema) => string;
+export const findMatchingField: (columnName: string, taleName: string, document: DocumentNode) => FieldDefinitionNode | undefined;
+
+// @public (undocumented)
+export const generateGraphQLSchema: (schema: Schema, existingSchemaDocument?: DocumentNode | undefined) => string;
 
 // @public (undocumented)
 export const getHostVpc: (hostname: string, region: string) => Promise<VpcConfig | undefined>;
+
+// @public (undocumented)
+export const getParentNode: (ancestors: any[]) => ObjectTypeDefinitionNode | undefined;
+
+// @public (undocumented)
+export const getRefersToDirective: (name: string) => DirectiveNode;
+
+// @public (undocumented)
+export const graphqlSchemaFromSQLSchema: (sqlSchema: string, engineType: ImportedRDSType) => string;
 
 // @public (undocumented)
 export class Index {
@@ -114,6 +177,11 @@ export class Index {
     name: string;
     // (undocumented)
     setFields(fields: string[]): void;
+}
+
+// @public (undocumented)
+export class InvalidSchemaError extends Error {
+    constructor(schema: any[], expectedColumns: string[]);
 }
 
 // @public (undocumented)
@@ -159,17 +227,17 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
     // (undocumented)
     cleanup(): void;
     // (undocumented)
-    getFields(tableName: string): Promise<Field[]>;
+    getFields(tableName: string): Field[];
     // (undocumented)
-    getIndexes(tableName: string): Promise<Index[]>;
+    getIndexes(tableName: string): Index[];
     // (undocumented)
-    getPrimaryKey(tableName: string): Promise<Index | null>;
+    getPrimaryKey(tableName: string): Index | null;
     // (undocumented)
-    getTablesList(): Promise<string[]>;
+    getTablesList(): string[];
     // (undocumented)
     initialize(): Promise<void>;
     // (undocumented)
-    mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columntype: string): FieldType;
+    protected querySchema(): Promise<string>;
     // (undocumented)
     test(): Promise<boolean>;
 }
@@ -189,6 +257,32 @@ export interface MySQLDataSourceConfig {
 }
 
 // @public (undocumented)
+export class MySQLStringDataSourceAdapter extends StringDataSourceAdapter {
+    // (undocumented)
+    getFields(tableName: string): Field[];
+    // (undocumented)
+    getIndexes(tableName: string): Index[];
+    // (undocumented)
+    getPrimaryKey(tableName: string): Index | null;
+    // (undocumented)
+    getTablesList(): string[];
+    // (undocumented)
+    mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columntype: string): FieldType;
+    // (undocumented)
+    protected setFields(parsedSchema: MySQLSchema): void;
+    // (undocumented)
+    protected setIndexes(parsedSchema: MySQLSchema): void;
+    // Warning: (ae-forgotten-export) The symbol "MySQLSchema" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    protected setSchema(schema: MySQLSchema): void;
+    // (undocumented)
+    protected setTables(parsedSchema: MySQLSchema): void;
+    // (undocumented)
+    protected validateSchema(schema: any[]): schema is MySQLSchema;
+}
+
+// @public (undocumented)
 export interface NonNullType {
     // (undocumented)
     readonly kind: 'NonNull';
@@ -197,7 +291,79 @@ export interface NonNullType {
 }
 
 // @public (undocumented)
+export class PostgresDataSourceAdapter extends DataSourceAdapter {
+    constructor(config: PostgresDataSourceConfig);
+    // (undocumented)
+    cleanup(): void;
+    // (undocumented)
+    getFields(tableName: string): Field[];
+    // (undocumented)
+    getIndexes(tableName: string): Index[];
+    // (undocumented)
+    getPrimaryKey(tableName: string): Index | null;
+    // (undocumented)
+    getTablesList(): string[];
+    // (undocumented)
+    initialize(): Promise<void>;
+    // (undocumented)
+    protected querySchema(): Promise<string>;
+    // (undocumented)
+    test(): Promise<boolean>;
+}
+
+// @public (undocumented)
+export interface PostgresDataSourceConfig {
+    // (undocumented)
+    database: string;
+    // (undocumented)
+    host: string;
+    // (undocumented)
+    password: string;
+    // (undocumented)
+    port: number;
+    // (undocumented)
+    username: string;
+}
+
+// @public (undocumented)
+export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
+    // (undocumented)
+    getFields(tableName: string): Field[];
+    // (undocumented)
+    getIndexes(tableName: string): Index[];
+    // (undocumented)
+    getPrimaryKey(tableName: string): Index | null;
+    // (undocumented)
+    getTablesList(): string[];
+    // (undocumented)
+    mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columntype: string): FieldType;
+    // (undocumented)
+    protected setEnums(parsedSchema: PostgresSchema): void;
+    // (undocumented)
+    protected setFields(fields: PostgresSchema): void;
+    // (undocumented)
+    protected setIndexes(indexes: PostgresSchema): void;
+    // Warning: (ae-forgotten-export) The symbol "PostgresSchema" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    protected setSchema(schema: PostgresSchema): void;
+    // (undocumented)
+    protected setTables(parsedSchema: PostgresSchema): void;
+    // (undocumented)
+    protected validateSchema(schema: any[]): schema is PostgresSchema;
+}
+
+// @public (undocumented)
+export const printSchema: (document: DocumentNode) => string;
+
+// @public (undocumented)
 export const provisionSchemaInspectorLambda: (lambdaName: string, vpc: VpcConfig, region: string) => Promise<void>;
+
+// @public (undocumented)
+export const readRDSGlobalAmplifyInput: (schemaDocument: DocumentNode | undefined) => InputObjectTypeDefinitionNode | undefined;
+
+// @public (undocumented)
+export const renderSchema: (schema: Schema, databaseConfig: any, includeAuthRule?: boolean, existingSchema?: DocumentNode) => string;
 
 // @public (undocumented)
 export class Schema {
@@ -216,11 +382,37 @@ export class Schema {
 export const sleep: (milliseconds: number) => Promise<void>;
 
 // @public (undocumented)
-export type VpcConfig = {
-    vpcId: string;
-    subnetIds: string[];
-    securityGroupIds: string[];
-};
+export abstract class StringDataSourceAdapter {
+    constructor(schema: string);
+    // (undocumented)
+    describeTable(tableName: string): Model;
+    // (undocumented)
+    protected getEnumName(name: string): string;
+    // (undocumented)
+    abstract getFields(tableName: string): Field[];
+    // (undocumented)
+    abstract getIndexes(tableName: string): Index[];
+    // (undocumented)
+    getModels(): Model[];
+    // (undocumented)
+    abstract getPrimaryKey(tableName: string): Index | null;
+    // (undocumented)
+    abstract getTablesList(): string[];
+    // (undocumented)
+    protected abstract mapDataType(datatype: string, nullable: boolean, tableName: string, fieldName: string, columnType: string): FieldType;
+    // (undocumented)
+    protected parseSchema(schema: string): any[];
+    // (undocumented)
+    protected abstract setFields(fields: any[]): void;
+    // (undocumented)
+    protected abstract setIndexes(indexes: any[]): void;
+    // (undocumented)
+    protected abstract setSchema(schema: any[]): void;
+    // (undocumented)
+    protected abstract setTables(tables: any[]): void;
+    // (undocumented)
+    protected abstract validateSchema(schema: any[]): void;
+}
 
 // (No @packageDocumentation comment for this package)
 

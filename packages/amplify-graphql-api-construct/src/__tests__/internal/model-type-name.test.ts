@@ -14,8 +14,20 @@ describe('model type names', () => {
       type Phone {
         number: String
       }
+      type Post @model {
+        id: ID!
+        title: String!
+        content: String
+        tags: [Tag] @manyToMany(relationName: "PostTags")
+      }
+
+      type Tag @model {
+        id: ID!
+        label: String!
+        posts: [Post] @manyToMany(relationName: "PostTags")
+      }
     `;
     const typeNames = getModelTypeNames(schema);
-    expect(typeNames).toEqual(['Todo', 'Author']);
+    expect(typeNames).toEqual(['Todo', 'Author', 'Post', 'Tag', 'PostTags']);
   });
 });

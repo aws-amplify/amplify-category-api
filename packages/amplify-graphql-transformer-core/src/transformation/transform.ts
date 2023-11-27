@@ -5,7 +5,6 @@ import {
   TransformHostProvider,
   TransformerLog,
   NestedStackProvider,
-  VpcConfig,
   RDSLayerMapping,
   SynthParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
@@ -15,6 +14,8 @@ import type {
   StackManagerProvider,
   TransformParameterProvider,
   TransformParameters,
+  VpcConfig,
+  ProvisionedConcurrencyConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { Aws, CfnOutput, Fn, Stack } from 'aws-cdk-lib';
@@ -88,6 +89,7 @@ export interface GraphQLTransformOptions {
   readonly resolverConfig?: ResolverConfig;
   readonly sqlLambdaVpcConfig?: VpcConfig;
   readonly rdsLayerMapping?: RDSLayerMapping;
+  readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
 }
 
 export type TransformOption = {
@@ -115,7 +117,7 @@ export class GraphQLTransform {
 
   private readonly sqlLambdaVpcConfig?: VpcConfig;
   private readonly transformParameters: TransformParameters;
-  private readonly rdsLayerMapping?: RDSLayerMapping;
+  private readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
   // that specifies we have run already run a directive at a given location.
@@ -148,11 +150,11 @@ export class GraphQLTransform {
     this.userDefinedSlots = options.userDefinedSlots || ({} as Record<string, UserDefinedSlot[]>);
     this.resolverConfig = options.resolverConfig || {};
     this.sqlLambdaVpcConfig = options.sqlLambdaVpcConfig;
-    this.sqlLambdaVpcConfig = options.sqlLambdaVpcConfig;
     this.transformParameters = {
       ...defaultTransformParameters,
       ...(options.transformParameters ?? {}),
     };
+    this.sqlLambdaProvisionedConcurrencyConfig = options.sqlLambdaProvisionedConcurrencyConfig;
 
     this.logs = [];
   }
@@ -202,22 +204,25 @@ export class GraphQLTransform {
   }: TransformOption): void {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
-    const context = new TransformerContext(
-      scope,
+    const context = new TransformerContext({
+      assetProvider,
+      authConfig: this.authConfig,
+      customQueries: datasourceConfig?.customQueries ?? new Map<string, string>(),
+      customSqlDataSourceStrategies: datasourceConfig?.customSqlDataSourceStrategies ?? [],
+      datasourceSecretParameterLocations: datasourceConfig?.datasourceSecretParameterLocations,
+      inputDocument: parsedDocument,
+      modelToDatasourceMap: datasourceConfig?.modelToDatasourceMap ?? new Map<string, DataSourceType>(),
       nestedStackProvider,
       parameterProvider,
-      assetProvider,
+      rdsLayerMapping: datasourceConfig?.rdsLayerMapping,
+      resolverConfig: this.resolverConfig,
+      scope,
+      sqlLambdaProvisionedConcurrencyConfig: this.sqlLambdaProvisionedConcurrencyConfig,
+      sqlLambdaVpcConfig: this.sqlLambdaVpcConfig,
+      stackMapping: this.stackMappingOverrides,
       synthParameters,
-      parsedDocument,
-      datasourceConfig?.modelToDatasourceMap ?? new Map<string, DataSourceType>(),
-      this.stackMappingOverrides,
-      this.authConfig,
-      this.transformParameters,
-      this.resolverConfig,
-      datasourceConfig?.datasourceSecretParameterLocations,
-      this.sqlLambdaVpcConfig,
-      this.rdsLayerMapping,
-    );
+      transformParameters: this.transformParameters,
+    });
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),
       {

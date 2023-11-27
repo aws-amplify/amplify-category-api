@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-cycle
 export * from './transformer-context';
 export { TransformerPluginProvider, TransformerPluginType } from './transformer-plugin-provider';
 export {
@@ -27,12 +28,11 @@ export {
   AppSyncAuthConfigurationUserPoolEntry,
   AppSyncAuthMode,
   UserPoolConfig,
-  VpcConfig,
   SearchableDataSourceOptions,
-  RDSLayerMapping,
 } from './graphql-api-provider';
 export { TransformHostProvider, DynamoDbDataSourceOptions } from './transform-host-provider';
 export { TransformerLog, TransformerLogLevel } from './transformer-log';
 export type { TransformParameters } from './transformer-context/transform-parameters';
 export type { NestedStackProvider } from './nested-stack-provider';
 export type { AssetProps, AssetProvider, S3Asset } from './asset-provider';
+export * from './model-datasource';

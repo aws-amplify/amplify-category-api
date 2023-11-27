@@ -1,22 +1,38 @@
-import { DynamoDBProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { DynamoDBProvisionStrategy, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { parseDataSourceConfig } from '../../internal/data-source-config';
-import { ModelDataSourceDefinition } from '../../types';
+import { ModelDataSourceStrategy } from '../../model-datasource-strategy';
 
 describe('datasource config', () => {
   it('should parse the datasource config correctly', () => {
-    const input: Record<string, ModelDataSourceDefinition> = {
+    const input: Record<string, ModelDataSourceStrategy> = {
       Todo: {
-        name: 'defaultDDB',
-        strategy: {
-          dbType: 'DYNAMODB',
-          provisionStrategy: 'DEFAULT',
-        },
+        dbType: 'DYNAMODB',
+        provisionStrategy: 'DEFAULT',
       },
       Author: {
-        name: 'customDDB',
-        strategy: {
-          dbType: 'DYNAMODB',
-          provisionStrategy: 'AMPLIFY_TABLE',
+        dbType: 'DYNAMODB',
+        provisionStrategy: 'AMPLIFY_TABLE',
+      },
+      Post: {
+        name: 'mysqlTable',
+        dbType: 'MYSQL',
+        dbConnectionConfig: {
+          hostnameSsmPath: 'hostnameSsmPath',
+          portSsmPath: 'portSsmPath',
+          usernameSsmPath: 'usernameSsmPath',
+          passwordSsmPath: 'passwordSsmPath',
+          databaseNameSsmPath: 'databaseNameSsmPath',
+        },
+      },
+      Comment: {
+        name: 'pgTable',
+        dbType: 'POSTGRES',
+        dbConnectionConfig: {
+          hostnameSsmPath: 'hostnameSsmPath',
+          portSsmPath: 'portSsmPath',
+          usernameSsmPath: 'usernameSsmPath',
+          passwordSsmPath: 'passwordSsmPath',
+          databaseNameSsmPath: 'databaseNameSsmPath',
         },
       },
     };
@@ -37,6 +53,22 @@ describe('datasource config', () => {
             dbType: 'DDB',
             provisionDB: true,
             provisionStrategy: DynamoDBProvisionStrategy.AMPLIFY_TABLE,
+          },
+        ],
+        [
+          'Post',
+          {
+            dbType: 'MySQL',
+            provisionDB: false,
+            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
+          },
+        ],
+        [
+          'Comment',
+          {
+            dbType: 'Postgres',
+            provisionDB: false,
+            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },
         ],
       ]),

@@ -60,7 +60,7 @@ export interface AddFunctionProps {
 }
 
 // @public
-export interface AmplifyDynamoDbModelDataSourceDefinitionStrategy {
+export interface AmplifyDynamoDbModelDataSourceStrategy {
     // (undocumented)
     readonly dbType: 'DYNAMODB';
     // (undocumented)
@@ -147,8 +147,8 @@ export interface AmplifyGraphqlApiResources {
 export class AmplifyGraphqlDefinition {
     static combine(definitions: IAmplifyGraphqlDefinition[]): IAmplifyGraphqlDefinition;
     static fromFiles(...filePaths: string[]): IAmplifyGraphqlDefinition;
-    static fromFilesAndDefinition(filePaths: string | string[], modelDataSourceDefinition?: ModelDataSourceDefinition): IAmplifyGraphqlDefinition;
-    static fromString(schema: string, modelDataSourceDefinition?: ModelDataSourceDefinition): IAmplifyGraphqlDefinition;
+    static fromFilesAndStrategy(filePaths: string | string[], dataSourceStrategy?: ModelDataSourceStrategy): IAmplifyGraphqlDefinition;
+    static fromString(schema: string, dataSourceStrategy?: ModelDataSourceStrategy): IAmplifyGraphqlDefinition;
 }
 
 // @public
@@ -196,8 +196,18 @@ export interface CustomConflictResolutionStrategy extends ConflictResolutionStra
     readonly handlerType: 'LAMBDA';
 }
 
+// @public (undocumented)
+export interface CustomSqlDataSourceStrategy {
+    // (undocumented)
+    readonly fieldName: string;
+    // (undocumented)
+    readonly strategy: SQLLambdaModelDataSourceStrategy;
+    // (undocumented)
+    readonly typeName: 'Query' | 'Mutation';
+}
+
 // @public
-export interface DefaultDynamoDbModelDataSourceDefinitionStrategy {
+export interface DefaultDynamoDbModelDataSourceStrategy {
     // (undocumented)
     readonly dbType: 'DYNAMODB';
     // (undocumented)
@@ -230,8 +240,10 @@ export interface IAMAuthorizationConfig {
 
 // @public
 export interface IAmplifyGraphqlDefinition {
-    readonly dataSourceDefinition: Record<string, ModelDataSourceDefinition>;
+    readonly customSqlDataSourceStrategies?: CustomSqlDataSourceStrategy[];
+    readonly dataSourceStrategies: Record<string, ModelDataSourceStrategy>;
     readonly functionSlots: FunctionSlot[];
+    readonly referencedLambdaFunctions?: Record<string, IFunction>;
     readonly schema: string;
 }
 
@@ -253,16 +265,10 @@ export interface LambdaAuthorizationConfig {
 }
 
 // @public
-export interface ModelDataSourceDefinition {
-    readonly name: string;
-    readonly strategy: ModelDataSourceDefinitionStrategy;
-}
+export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
 
 // @public (undocumented)
-export type ModelDataSourceDefinitionDbType = 'DYNAMODB';
-
-// @public
-export type ModelDataSourceDefinitionStrategy = DefaultDynamoDbModelDataSourceDefinitionStrategy | AmplifyDynamoDbModelDataSourceDefinitionStrategy;
+export type ModelDataSourceStrategyDbType = 'DYNAMODB';
 
 // @public
 export interface MutationFunctionSlot extends FunctionSlotBase {
@@ -286,17 +292,24 @@ export interface OptimisticConflictResolutionStrategy extends ConflictResolution
 
 // @public
 export interface PartialTranslationBehavior {
+    readonly allowDestructiveGraphqlSchemaUpdates?: boolean;
     readonly disableResolverDeduping?: boolean;
     readonly enableAutoIndexQueryNames?: boolean;
     readonly enableSearchNodeToNodeEncryption?: boolean;
     readonly enableTransformerCfnOutputs?: boolean;
     readonly populateOwnerFieldForStaticGroupAuth?: boolean;
+    readonly replaceTableUponGsiUpdate?: boolean;
     readonly respectPrimaryKeyAttributesOnConnectionField?: boolean;
     readonly sandboxModeEnabled?: boolean;
     readonly secondaryKeyAsGSI?: boolean;
     readonly shouldDeepMergeDirectiveConfigDefaults?: boolean;
     readonly suppressApiKeyGeneration?: boolean;
     readonly useSubUsernameForDefaultIdentityClaim?: boolean;
+}
+
+// @public
+export interface ProvisionedConcurrencyConfig {
+    readonly provisionedConcurrentExecutions: number;
 }
 
 // @public
@@ -309,6 +322,30 @@ export interface ProvisionedThroughput {
 export interface QueryFunctionSlot extends FunctionSlotBase {
     readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preDataLoad' | 'postDataLoad' | 'finish';
     readonly typeName: 'Query';
+}
+
+// @public
+export interface SQLLambdaModelDataSourceStrategy {
+    readonly customSqlStatements?: Record<string, string>;
+    readonly dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
+    readonly dbType: 'MYSQL' | 'POSTGRES';
+    readonly name: string;
+    readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
+    readonly vpcConfiguration?: VpcConfig;
+}
+
+// @public
+export class SQLLambdaModelDataSourceStrategyFactory {
+    static fromCustomSqlFiles(sqlFiles: string[], options: Exclude<SQLLambdaModelDataSourceStrategy, 'customSqlStatements'>): SQLLambdaModelDataSourceStrategy;
+}
+
+// @public
+export interface SqlModelDataSourceDbConnectionConfig {
+    readonly databaseNameSsmPath: string;
+    readonly hostnameSsmPath: string;
+    readonly passwordSsmPath: string;
+    readonly portSsmPath: string;
+    readonly usernameSsmPath: string;
 }
 
 // @public
@@ -330,6 +367,12 @@ export interface StreamSpecification {
 }
 
 // @public
+export interface SubnetAvailabilityZone {
+    readonly availabilityZone: string;
+    readonly subnetId: string;
+}
+
+// @public
 export interface SubscriptionFunctionSlot extends FunctionSlotBase {
     readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preSubscribe';
     readonly typeName: 'Subscription';
@@ -343,12 +386,14 @@ export interface TimeToLiveSpecification {
 
 // @public
 export interface TranslationBehavior {
+    readonly allowDestructiveGraphqlSchemaUpdates: boolean;
     readonly disableResolverDeduping: boolean;
     readonly enableAutoIndexQueryNames: boolean;
     // (undocumented)
     readonly enableSearchNodeToNodeEncryption: boolean;
     readonly enableTransformerCfnOutputs: boolean;
     readonly populateOwnerFieldForStaticGroupAuth: boolean;
+    readonly replaceTableUponGsiUpdate: boolean;
     readonly respectPrimaryKeyAttributesOnConnectionField: boolean;
     readonly sandboxModeEnabled: boolean;
     readonly secondaryKeyAsGSI: boolean;
@@ -360,6 +405,13 @@ export interface TranslationBehavior {
 // @public
 export interface UserPoolAuthorizationConfig {
     readonly userPool: IUserPool;
+}
+
+// @public
+export interface VpcConfig {
+    readonly securityGroupIds: string[];
+    readonly subnetAvailabilityZoneConfig: SubnetAvailabilityZone[];
+    readonly vpcId: string;
 }
 
 // (No @packageDocumentation comment for this package)

@@ -1,0 +1,646 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`@hasOne directive with RDS datasource composite key should generate correct resolvers 1`] = `
+"type User {
+  firstName: String!
+  lastName: String!
+  profile: Profile
+}
+
+type Profile {
+  profileId: String!
+  userFirstName: String
+  userLastName: String!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelUserConnection {
+  items: [User]!
+  nextToken: String
+}
+
+input ModelUserFilterInput {
+  firstName: ModelStringInput
+  lastName: ModelStringInput
+  and: [ModelUserFilterInput]
+  or: [ModelUserFilterInput]
+  not: ModelUserFilterInput
+}
+
+type Query {
+  getUser(firstName: String!, lastName: String!): User
+  listUsers(firstName: String, filter: ModelUserFilterInput, limit: Int, nextToken: String, sortDirection: ModelSortDirection): ModelUserConnection
+  getProfile(profileId: String!): Profile
+  listProfiles(profileId: String, filter: ModelProfileFilterInput, limit: Int, nextToken: String, sortDirection: ModelSortDirection): ModelProfileConnection
+}
+
+input ModelUserConditionInput {
+  and: [ModelUserConditionInput]
+  or: [ModelUserConditionInput]
+  not: ModelUserConditionInput
+}
+
+input CreateUserInput {
+  firstName: String!
+  lastName: String!
+}
+
+input UpdateUserInput {
+  firstName: String!
+  lastName: String!
+}
+
+input DeleteUserInput {
+  firstName: String!
+  lastName: String!
+}
+
+type Mutation {
+  createUser(input: CreateUserInput!, condition: ModelUserConditionInput): User
+  updateUser(input: UpdateUserInput!, condition: ModelUserConditionInput): User
+  deleteUser(input: DeleteUserInput!, condition: ModelUserConditionInput): User
+  createProfile(input: CreateProfileInput!, condition: ModelProfileConditionInput): Profile
+  updateProfile(input: UpdateProfileInput!, condition: ModelProfileConditionInput): Profile
+  deleteProfile(input: DeleteProfileInput!, condition: ModelProfileConditionInput): Profile
+}
+
+input ModelSubscriptionUserFilterInput {
+  firstName: ModelSubscriptionStringInput
+  lastName: ModelSubscriptionStringInput
+  and: [ModelSubscriptionUserFilterInput]
+  or: [ModelSubscriptionUserFilterInput]
+}
+
+type Subscription {
+  onCreateUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: [\\"createUser\\"])
+  onUpdateUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: [\\"updateUser\\"])
+  onDeleteUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: [\\"deleteUser\\"])
+  onCreateProfile(filter: ModelSubscriptionProfileFilterInput): Profile @aws_subscribe(mutations: [\\"createProfile\\"])
+  onUpdateProfile(filter: ModelSubscriptionProfileFilterInput): Profile @aws_subscribe(mutations: [\\"updateProfile\\"])
+  onDeleteProfile(filter: ModelSubscriptionProfileFilterInput): Profile @aws_subscribe(mutations: [\\"deleteProfile\\"])
+}
+
+type ModelProfileConnection {
+  items: [Profile]!
+  nextToken: String
+}
+
+input ModelProfileFilterInput {
+  profileId: ModelStringInput
+  userFirstName: ModelStringInput
+  userLastName: ModelStringInput
+  and: [ModelProfileFilterInput]
+  or: [ModelProfileFilterInput]
+  not: ModelProfileFilterInput
+}
+
+input ModelProfileConditionInput {
+  userFirstName: ModelStringInput
+  userLastName: ModelStringInput
+  and: [ModelProfileConditionInput]
+  or: [ModelProfileConditionInput]
+  not: ModelProfileConditionInput
+}
+
+input CreateProfileInput {
+  profileId: String!
+  userFirstName: String
+  userLastName: String!
+}
+
+input UpdateProfileInput {
+  profileId: String!
+  userFirstName: String
+  userLastName: String
+}
+
+input DeleteProfileInput {
+  profileId: String!
+}
+
+input ModelSubscriptionProfileFilterInput {
+  profileId: ModelSubscriptionStringInput
+  userFirstName: ModelSubscriptionStringInput
+  userLastName: ModelSubscriptionStringInput
+  and: [ModelSubscriptionProfileFilterInput]
+  or: [ModelSubscriptionProfileFilterInput]
+}
+
+input ModelStringKeyConditionInput {
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  between: [String]
+  beginsWith: String
+}
+"
+`;
+
+exports[`@hasOne directive with RDS datasource composite key should generate correct resolvers 2`] = `
+"## [Start] Invoke RDS Lambda data source. **
+#if( $ctx.stash.deniedField )
+  #return($util.toJson(null))
+#end
+#set( $lambdaInput = {} )
+#set( $lambdaInput.args = {} )
+#set( $lambdaInput.table = \\"Profile\\" )
+#set( $lambdaInput.operation = \\"GET_FIRST\\" )
+#set( $lambdaInput.operationName = \\"GetItemConnectionQuery\\" )
+#set( $lambdaInput.args.metadata = {} )
+#set( $lambdaInput.args.metadata.keys = [\\"profileId\\"] )
+#set( $lambdaInput.args.metadata.fieldMap = {} )
+$util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
+$util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
+#if( !$lambdaInput.args.input )
+  #set( $lambdaInput.args.input = {} )
+#end
+$util.qr($lambdaInput.args.input.put(\\"userFirstName\\", {
+  \\"eq\\": $util.defaultIfNull($ctx.source.firstName, \\"\\")
+}))
+$util.qr($lambdaInput.args.input.put(\\"userLastName\\", {
+  \\"eq\\": $util.defaultIfNull($ctx.source.lastName, \\"\\")
+}))
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\":   $util.toJson($lambdaInput)
+}
+## [End] Invoke RDS Lambda data source. **"
+`;
+
+exports[`@hasOne directive with RDS datasource composite key should generate correct resolvers 3`] = `
+"## [Start] ResponseTemplate. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] ResponseTemplate. **"
+`;
+
+exports[`@hasOne directive with RDS datasource happy case should generate correct resolvers 1`] = `
+"type User {
+  id: String!
+  name: String
+  profile: Profile
+}
+
+type Profile {
+  id: String!
+  createdAt: AWSDateTime
+  userId: String!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelUserConnection {
+  items: [User]!
+  nextToken: String
+}
+
+input ModelUserFilterInput {
+  id: ModelStringInput
+  name: ModelStringInput
+  and: [ModelUserFilterInput]
+  or: [ModelUserFilterInput]
+  not: ModelUserFilterInput
+}
+
+type Query {
+  getUser(id: String!): User
+  listUsers(id: String, filter: ModelUserFilterInput, limit: Int, nextToken: String, sortDirection: ModelSortDirection): ModelUserConnection
+  getProfile(id: String!): Profile
+  listProfiles(id: String, filter: ModelProfileFilterInput, limit: Int, nextToken: String, sortDirection: ModelSortDirection): ModelProfileConnection
+}
+
+input ModelUserConditionInput {
+  name: ModelStringInput
+  and: [ModelUserConditionInput]
+  or: [ModelUserConditionInput]
+  not: ModelUserConditionInput
+}
+
+input CreateUserInput {
+  id: String
+  name: String
+}
+
+input UpdateUserInput {
+  id: String!
+  name: String
+}
+
+input DeleteUserInput {
+  id: String!
+}
+
+type Mutation {
+  createUser(input: CreateUserInput!, condition: ModelUserConditionInput): User
+  updateUser(input: UpdateUserInput!, condition: ModelUserConditionInput): User
+  deleteUser(input: DeleteUserInput!, condition: ModelUserConditionInput): User
+  createProfile(input: CreateProfileInput!, condition: ModelProfileConditionInput): Profile
+  updateProfile(input: UpdateProfileInput!, condition: ModelProfileConditionInput): Profile
+  deleteProfile(input: DeleteProfileInput!, condition: ModelProfileConditionInput): Profile
+}
+
+input ModelSubscriptionUserFilterInput {
+  id: ModelSubscriptionStringInput
+  name: ModelSubscriptionStringInput
+  and: [ModelSubscriptionUserFilterInput]
+  or: [ModelSubscriptionUserFilterInput]
+}
+
+type Subscription {
+  onCreateUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: [\\"createUser\\"])
+  onUpdateUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: [\\"updateUser\\"])
+  onDeleteUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: [\\"deleteUser\\"])
+  onCreateProfile(filter: ModelSubscriptionProfileFilterInput): Profile @aws_subscribe(mutations: [\\"createProfile\\"])
+  onUpdateProfile(filter: ModelSubscriptionProfileFilterInput): Profile @aws_subscribe(mutations: [\\"updateProfile\\"])
+  onDeleteProfile(filter: ModelSubscriptionProfileFilterInput): Profile @aws_subscribe(mutations: [\\"deleteProfile\\"])
+}
+
+type ModelProfileConnection {
+  items: [Profile]!
+  nextToken: String
+}
+
+input ModelProfileFilterInput {
+  id: ModelStringInput
+  createdAt: ModelStringInput
+  userId: ModelStringInput
+  and: [ModelProfileFilterInput]
+  or: [ModelProfileFilterInput]
+  not: ModelProfileFilterInput
+}
+
+input ModelProfileConditionInput {
+  createdAt: ModelStringInput
+  userId: ModelStringInput
+  and: [ModelProfileConditionInput]
+  or: [ModelProfileConditionInput]
+  not: ModelProfileConditionInput
+}
+
+input CreateProfileInput {
+  id: String
+  createdAt: AWSDateTime
+  userId: String!
+}
+
+input UpdateProfileInput {
+  id: String!
+  createdAt: AWSDateTime
+  userId: String
+}
+
+input DeleteProfileInput {
+  id: String!
+}
+
+input ModelSubscriptionProfileFilterInput {
+  id: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  userId: ModelSubscriptionStringInput
+  and: [ModelSubscriptionProfileFilterInput]
+  or: [ModelSubscriptionProfileFilterInput]
+}
+"
+`;
+
+exports[`@hasOne directive with RDS datasource happy case should generate correct resolvers 2`] = `
+"## [Start] Invoke RDS Lambda data source. **
+#if( $ctx.stash.deniedField )
+  #return($util.toJson(null))
+#end
+#set( $lambdaInput = {} )
+#set( $lambdaInput.args = {} )
+#set( $lambdaInput.table = \\"Profile\\" )
+#set( $lambdaInput.operation = \\"GET_FIRST\\" )
+#set( $lambdaInput.operationName = \\"GetItemConnectionQuery\\" )
+#set( $lambdaInput.args.metadata = {} )
+#set( $lambdaInput.args.metadata.keys = [\\"id\\"] )
+#set( $lambdaInput.args.metadata.fieldMap = {} )
+$util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
+$util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
+#if( !$lambdaInput.args.input )
+  #set( $lambdaInput.args.input = {} )
+#end
+$util.qr($lambdaInput.args.input.put(\\"userId\\", {
+  \\"eq\\": $util.defaultIfNull($ctx.source.id, \\"\\")
+}))
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\":   $util.toJson($lambdaInput)
+}
+## [End] Invoke RDS Lambda data source. **"
+`;
+
+exports[`@hasOne directive with RDS datasource happy case should generate correct resolvers 3`] = `
+"## [Start] ResponseTemplate. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] ResponseTemplate. **"
+`;

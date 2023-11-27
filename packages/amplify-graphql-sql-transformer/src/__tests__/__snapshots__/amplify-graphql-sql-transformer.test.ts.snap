@@ -1,0 +1,79 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`sql directive tests should compile happy case with reference argument 1`] = `
+"## [Start] Invoke RDS Lambda data source. **
+#set( $lambdaInput = {} )
+#set( $lambdaInput.parameters = {} )
+#set( $lambdaInput.statement = \\"SELECT * FROM TAXRATE WHERE ZIP = :zip\\" )
+#set( $lambdaInput.operation = \\"RAW_SQL\\" )
+#set( $lambdaInput.operationName = \\"calculateTaxRate\\" )
+#set( $lambdaInput.parameters = $util.defaultIfNull($context.arguments, {}) )
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\":   $util.toJson($lambdaInput)
+}
+## [End] Invoke RDS Lambda data source. **"
+`;
+
+exports[`sql directive tests should compile happy case with reference argument 2`] = `
+"## [Start] ResponseTemplate. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] ResponseTemplate. **"
+`;
+
+exports[`sql directive tests should compile happy case with statement argument 1`] = `
+"## [Start] Invoke RDS Lambda data source. **
+#set( $lambdaInput = {} )
+#set( $lambdaInput.parameters = {} )
+#set( $lambdaInput.statement = \\"SELECT * FROM TAXRATE WHERE ZIP = :zip\\" )
+#set( $lambdaInput.operation = \\"RAW_SQL\\" )
+#set( $lambdaInput.operationName = \\"calculateTaxRate\\" )
+#set( $lambdaInput.parameters = $util.defaultIfNull($context.arguments, {}) )
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\":   $util.toJson($lambdaInput)
+}
+## [End] Invoke RDS Lambda data source. **"
+`;
+
+exports[`sql directive tests should compile happy case with statement argument 2`] = `
+"## [Start] ResponseTemplate. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] ResponseTemplate. **"
+`;
+
+exports[`sql directive tests successfully processes a schema with only custom SQL 1`] = `
+"## [Start] Invoke RDS Lambda data source. **
+#set( $lambdaInput = {} )
+#set( $lambdaInput.parameters = {} )
+#set( $lambdaInput.statement = \\"SELECT * FROM TAXRATE WHERE ZIP = :zip\\" )
+#set( $lambdaInput.operation = \\"RAW_SQL\\" )
+#set( $lambdaInput.operationName = \\"calculateTaxRate\\" )
+#set( $lambdaInput.parameters = $util.defaultIfNull($context.arguments, {}) )
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\":   $util.toJson($lambdaInput)
+}
+## [End] Invoke RDS Lambda data source. **"
+`;
+
+exports[`sql directive tests successfully processes a schema with only custom SQL 2`] = `
+"## [Start] ResponseTemplate. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] ResponseTemplate. **"
+`;

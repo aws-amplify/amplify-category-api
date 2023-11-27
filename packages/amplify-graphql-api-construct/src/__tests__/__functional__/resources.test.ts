@@ -347,6 +347,124 @@ describe('generated resource access', () => {
       });
     });
 
+    describe('default vs amplify-managed tables', () => {
+      it('returns a standard CDK-managed table for the default provisioning strategy with global auth', () => {
+        const stack = new cdk.Stack();
+        const {
+          resources: {
+            amplifyDynamoDbTables,
+            cfnResources: { cfnTables },
+          },
+        } = new AmplifyGraphqlApi(stack, 'TestApi', {
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+            type Todo @model {
+              description: String!
+            }
+          `),
+          authorizationModes: {
+            apiKeyConfig: { expires: cdk.Duration.days(7) },
+          },
+          translationBehavior: {
+            sandboxModeEnabled: true,
+          },
+        });
+
+        expect(amplifyDynamoDbTables).toMatchObject({});
+        expect(amplifyDynamoDbTables.Todo).toBeUndefined();
+        expect(Object.values(cfnTables).length).toEqual(1);
+        expect(cfnTables.Todo).toBeDefined();
+      });
+
+      it('returns a standard CDK-managed table for the default provisioning strategy with owner auth', () => {
+        const stack = new cdk.Stack();
+        const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
+        const {
+          resources: {
+            amplifyDynamoDbTables,
+            cfnResources: { cfnTables },
+          },
+        } = new AmplifyGraphqlApi(stack, 'TestApi', {
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+            type Todo @model @auth(rules: [{ allow: owner }]) {
+              description: String!
+            }
+          `),
+          authorizationModes: {
+            userPoolConfig: { userPool },
+          },
+        });
+
+        expect(amplifyDynamoDbTables).toMatchObject({});
+        expect(amplifyDynamoDbTables.Todo).toBeUndefined();
+        expect(Object.values(cfnTables).length).toEqual(1);
+        expect(cfnTables.Todo).toBeDefined();
+      });
+
+      it('returns an Amplify-managed table for the Amplify provisioning strategy using owner auth', () => {
+        const stack = new cdk.Stack();
+        const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
+        const {
+          resources: {
+            amplifyDynamoDbTables,
+            cfnResources: { cfnTables },
+          },
+        } = new AmplifyGraphqlApi(stack, 'TestApi', {
+          definition: AmplifyGraphqlDefinition.fromString(
+            /* GraphQL */ `
+              type Todo @model @auth(rules: [{ allow: owner }]) {
+                description: String!
+              }
+            `,
+            {
+              dbType: 'DYNAMODB',
+              provisionStrategy: 'AMPLIFY_TABLE',
+            },
+          ),
+          authorizationModes: {
+            userPoolConfig: { userPool },
+          },
+        });
+
+        expect(amplifyDynamoDbTables).toBeDefined();
+        expect(amplifyDynamoDbTables.Todo).toBeDefined();
+        expect(Object.values(cfnTables).length).toEqual(0);
+        expect(cfnTables.Todo).toBeUndefined();
+      });
+
+      it('returns an Amplify-managed table for the Amplify provisioning strategy using global auth', () => {
+        const stack = new cdk.Stack();
+        const {
+          resources: {
+            amplifyDynamoDbTables,
+            cfnResources: { cfnTables },
+          },
+        } = new AmplifyGraphqlApi(stack, 'TestApi', {
+          definition: AmplifyGraphqlDefinition.fromString(
+            /* GraphQL */ `
+              type Todo @model {
+                description: String!
+              }
+            `,
+            {
+              dbType: 'DYNAMODB',
+              provisionStrategy: 'AMPLIFY_TABLE',
+            },
+          ),
+          authorizationModes: {
+            apiKeyConfig: { expires: cdk.Duration.days(7) },
+          },
+          translationBehavior: {
+            sandboxModeEnabled: true,
+          },
+        });
+
+        expect(amplifyDynamoDbTables).toBeDefined();
+        expect(amplifyDynamoDbTables.Todo).toBeDefined();
+        expect(Object.values(cfnTables).length).toEqual(0);
+        expect(cfnTables.Todo).toBeUndefined();
+      });
+    });
+
     describe('lambda resources', () => {
       it('generates a lambda function for searchable models', () => {
         const {

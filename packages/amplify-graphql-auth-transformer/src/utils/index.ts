@@ -133,6 +133,9 @@ export const getScopeForField = (
   if (fieldDirectives.includes('predictions')) {
     return ctx.stackManager.getStack('PredictionsDirectiveStack');
   }
+  if (fieldDirectives.includes('sql')) {
+    return ctx.stackManager.getStack('CustomSQLStack');
+  }
   if (hasModelDirective) {
     return ctx.stackManager.getStack(obj.name.value);
   }

@@ -58,6 +58,9 @@ export const DEFAULT_SCALARS: ScalarMap;
 export function defineUnionType(name: string, types?: NamedTypeNode[]): UnionTypeDefinitionNode;
 
 // @public (undocumented)
+export const directiveExists: (definition: ObjectTypeDefinitionNode, name: string) => DirectiveNode;
+
+// @public (undocumented)
 export function extendFieldWithDirectives(field: FieldDefinitionNode, directives: DirectiveNode[]): FieldDefinitionNode;
 
 // @public (undocumented)
@@ -65,6 +68,9 @@ export function extensionWithDirectives(object: ObjectTypeExtensionNode, directi
 
 // @public (undocumented)
 export function extensionWithFields(object: ObjectTypeExtensionNode, fields: FieldDefinitionNode[]): ObjectTypeExtensionNode;
+
+// @public (undocumented)
+export const findObjectDefinition: (document: DocumentNode, name: string) => ObjectTypeDefinitionNode | undefined;
 
 // @public (undocumented)
 export class FunctionResourceIDs {
@@ -85,6 +91,9 @@ export function getBaseType(type: TypeNode): string;
 export function getDirectiveArgument(directive: DirectiveNode, arg: string, dflt?: any): any;
 
 // @public (undocumented)
+export const getNonModelTypes: (document: DocumentNode) => DefinitionNode[];
+
+// @public (undocumented)
 export function graphqlName(val: string): string;
 
 // @public (undocumented)
@@ -94,13 +103,25 @@ export class HttpResourceIDs {
 }
 
 // @public (undocumented)
+export const isArrayOrObject: (type: TypeNode, enums: EnumTypeDefinitionNode[]) => boolean;
+
+// @public (undocumented)
 export function isEnum(type: TypeNode, document: DocumentNode): DefinitionNode;
 
 // @public (undocumented)
 export function isListType(type: TypeNode): boolean;
 
 // @public (undocumented)
+export const isNamedType: (type: TypeNode) => boolean;
+
+// @public (undocumented)
+export const isNonModelType: (definition: DefinitionNode) => boolean;
+
+// @public (undocumented)
 export function isNonNullType(type: TypeNode): boolean;
+
+// @public (undocumented)
+export const isOfType: (type: TypeNode, name: string) => boolean;
 
 // @public (undocumented)
 export function isScalar(type: TypeNode): any;
@@ -386,15 +407,26 @@ export class ResourceConstants {
         OpenSearchStreamingLambdaIAMRoleLogicalID: string;
         OpenSearchStreamingLambdaFunctionLogicalID: string;
         OpenSearchDataSourceLogicalID: string;
-        RDSLambdaIAMRoleLogicalID: string;
-        RDSLambdaLogAccessPolicy: string;
-        RDSPatchingLambdaIAMRoleLogicalID: string;
-        RDSLambdaLogicalID: string;
-        RDSPatchingLambdaLogAccessPolicy: string;
-        RDSPatchingLambdaLogicalID: string;
-        RDSLambdaDataSourceLogicalID: string;
-        RDSLambdaDataSourceLogicalName: string;
-        RDSPatchingSubscriptionLogicalID: string;
+        SQLLambdaAliasLogicalID: string;
+        SQLLambdaIAMRoleLogicalID: string;
+        SQLLambdaLogAccessPolicy: string;
+        SQLLambdaLogicalID: string;
+        SQLStackName: string;
+        SQLVpcEndpointLogicalIDPrefix: string;
+        SQLLambdaDataSourceLogicalID: string;
+        SQLPatchingLambdaIAMRoleLogicalID: string;
+        SQLPatchingLambdaLogAccessPolicy: string;
+        SQLPatchingLambdaLogicalID: string;
+        SQLPatchingSubscriptionLogicalID: string;
+        SQLPatchingTopicLogicalID: string;
+        AmplifySQLLayerNotificationTopicName: string;
+        AmplifySQLLayerNotificationTopicAccount: string;
+        SQLLayerVersionManifestBucket: string;
+        SQLLayerVersionManifestBucketRegion: string;
+        SQLLayerVersionManifestKeyPrefix: string;
+        SQLLambdaLayerVersionLogicalID: string;
+        SQLLayerMappingID: string;
+        SQLLayerVersionCustomResourceID: string;
         NoneDataSource: string;
         AuthCognitoUserPoolLogicalID: string;
         AuthCognitoUserPoolNativeClientLogicalID: string;

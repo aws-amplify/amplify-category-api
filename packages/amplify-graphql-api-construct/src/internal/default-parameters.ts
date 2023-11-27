@@ -17,4 +17,6 @@ export const defaultTranslationBehavior: TranslationBehavior = {
   respectPrimaryKeyAttributesOnConnectionField: true,
   enableSearchNodeToNodeEncryption: false,
   enableTransformerCfnOutputs: false,
+  allowDestructiveGraphqlSchemaUpdates: false,
+  replaceTableUponGsiUpdate: false,
 };

@@ -1,5 +1,10 @@
-import { DirectiveWrapper, InvalidDirectiveError, generateGetArgumentsInput } from '@aws-amplify/graphql-transformer-core';
-import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import { DirectiveWrapper, InvalidDirectiveError, generateGetArgumentsInput, isRDSModel } from '@aws-amplify/graphql-transformer-core';
+import type {
+  TransformParameters,
+  TransformerSchemaVisitStepContextProvider,
+  TransformerContextProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
+import { ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode } from 'graphql';
 import { AuthRule, ConfiguredAuthProviders } from './definitions';
 
 export const validateRuleAuthStrategy = (rule: AuthRule, configuredAuthProviders: ConfiguredAuthProviders) => {
@@ -105,8 +110,16 @@ export const validateFieldRules = (
   parentHasModelDirective: boolean,
   fieldName: string,
   transformParameters: TransformParameters,
-) => {
+  parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+  context: TransformerSchemaVisitStepContextProvider,
+): void => {
   const rules = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] }, generateGetArgumentsInput(transformParameters)).rules;
+
+  if (!isParentTypeBuiltinType && isRDSModel(context as TransformerContextProvider, parent.name.value)) {
+    throw new InvalidDirectiveError(
+      `@auth rules are not supported on fields on relational database models. Check field "${fieldName}" on type "${parent.name.value}". Please use @auth on the type instead.`,
+    );
+  }
 
   if (rules.length === 0) {
     throw new InvalidDirectiveError(`@auth on ${fieldName} does not have any auth rules.`);

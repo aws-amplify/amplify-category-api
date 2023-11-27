@@ -99,10 +99,10 @@ export async function installAmplifyCLI(version: string = 'latest') {
   console.log('PATH SET:', process.env.AMPLIFY_PATH);
 }
 
-export async function createNewProjectDir(
+export const createNewProjectDir = async (
   projectName: string,
   prefix = path.join(fs.realpathSync(os.tmpdir()), amplifyTestsDir),
-): Promise<string> {
+): Promise<string> => {
   const currentHash = execSync('git rev-parse --short HEAD', { cwd: __dirname }).toString().trim();
   let projectDir;
   do {
@@ -111,15 +111,20 @@ export async function createNewProjectDir(
   } while (fs.existsSync(projectDir));
 
   fs.ensureDirSync(projectDir);
-  // createProjectDir(..) is something that nearly every test uses
-  // Commands like 'init' would collide with each other if they occurred too close to one another.
-  // Especially for nexpect output waiting
-  // This makes it a perfect candidate for staggering test start times
-  const initialDelay = Math.floor(Math.random() * 180 * 1000); // between 0 to 3 min
-  await sleep(initialDelay);
-  console.log(projectDir);
+
+  if (!process.env.SKIP_CREATE_PROJECT_DIR_INITIAL_DELAY) {
+    // createProjectDir(..) is something that nearly every test uses
+    // Commands like 'init' would collide with each other if they occurred too close to one another.
+    // Especially for nexpect output waiting
+    // This makes it a perfect candidate for staggering test start times
+    const initialDelay = Math.floor(Math.random() * 180 * 1000); // between 0 to 3 min
+    console.log(`Waiting for ${initialDelay} ms`);
+    await sleep(initialDelay);
+  }
+
+  console.log(`projectDir: ${projectDir}`);
   return projectDir;
-}
+};
 
 export const createTempDir = () => {
   const osTempDir = fs.realpathSync(os.tmpdir());

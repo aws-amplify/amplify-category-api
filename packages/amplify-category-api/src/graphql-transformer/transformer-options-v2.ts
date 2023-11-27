@@ -17,7 +17,7 @@ import fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import _ from 'lodash';
 import { printer } from '@aws-amplify/amplify-prompts';
-import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
+import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct } from 'constructs';
 import { contextUtil } from '../category-utils/context-util';
 import { shouldEnableNodeToNodeEncryption } from '../provider-utils/awscloudformation/current-backend-state/searchable-node-to-node-encryption';
@@ -284,6 +284,8 @@ const generateTransformParameters = (
     ),
     sandboxModeEnabled,
     enableTransformerCfnOutputs: true,
+    allowDestructiveGraphqlSchemaUpdates: false,
+    replaceTableUponGsiUpdate: false,
   };
 };
 

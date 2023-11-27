@@ -4,8 +4,8 @@ import { Template } from 'aws-cdk-lib/assertions';
 import { Kind, parse } from 'graphql';
 import _ from 'lodash';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { PrimaryKeyTransformer } from '..';
 import { DataSourceType, DynamoDBProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { PrimaryKeyTransformer } from '..';
 
 test('throws if multiple primary keys are defined on an object', () => {
   const schema = `

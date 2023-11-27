@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.2.70](https://github.com/aws-amplify/amplify-category-api/compare/graphql-auth-transformer@7.2.69...graphql-auth-transformer@7.2.70) (2023-11-18)
+
+**Note:** Version bump only for package graphql-auth-transformer
+
+## [7.2.69](https://github.com/aws-amplify/amplify-category-api/compare/graphql-auth-transformer@7.2.68...graphql-auth-transformer@7.2.69) (2023-11-16)
+
+**Note:** Version bump only for package graphql-auth-transformer
+
+## [7.2.68](https://github.com/aws-amplify/amplify-category-api/compare/graphql-auth-transformer@7.2.67...graphql-auth-transformer@7.2.68) (2023-11-15)
+
+**Note:** Version bump only for package graphql-auth-transformer
+
 ## [7.2.67](https://github.com/aws-amplify/amplify-category-api/compare/graphql-auth-transformer@7.2.66...graphql-auth-transformer@7.2.67) (2023-10-21)
 
 **Note:** Version bump only for package graphql-auth-transformer

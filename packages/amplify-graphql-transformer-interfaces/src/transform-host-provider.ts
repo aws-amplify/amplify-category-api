@@ -17,8 +17,8 @@ import {
   DataSourceOptions,
   SearchableDataSourceOptions,
   MappingTemplateProvider,
-  VpcConfig,
 } from './graphql-api-provider';
+import { VpcConfig } from './model-datasource';
 
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {
   /**

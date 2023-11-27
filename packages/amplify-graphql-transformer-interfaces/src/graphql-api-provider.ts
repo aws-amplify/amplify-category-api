@@ -1,6 +1,7 @@
 import { CfnResource, IAsset } from 'aws-cdk-lib';
 import { Construct, IConstruct } from 'constructs';
 import { Grant, IGrantable, IRole } from 'aws-cdk-lib/aws-iam';
+// eslint-disable-next-line import/no-cycle
 import { TransformHostProvider } from './transform-host-provider';
 
 // Auth Config Modes
@@ -62,8 +63,8 @@ export interface LambdaConfig {
   lambdaFunction: string;
 
   /**
-   * The ARN of an existing Lambda function. If provided, this will circumvent the ARN construction when building the API auth mode config. The ARN must refer to the same function
-   * named in `lambdaFunction`.
+   * The ARN of an existing Lambda function. If provided, this will circumvent the ARN construction when building the API auth mode config.
+   * The ARN must refer to the same function named in `lambdaFunction`.
    */
   lambdaArn?: string;
 
@@ -73,25 +74,11 @@ export interface LambdaConfig {
   ttlSeconds?: number;
 }
 
-/**
- * VpcConfig required to deploy a lambda in a VPC
- */
-export type VpcConfig = {
-  vpcId: string;
-  subnetIds: string[];
-  securityGroupIds: string[];
-};
-
-export type RDSLayerMapping = {
-  [key: string]: {
-    layerRegion: string;
-  };
-};
-
 export interface AppSyncFunctionConfigurationProvider extends IConstruct {
   readonly arn: string;
   readonly functionId: string;
 }
+
 export interface DataSourceOptions {
   /**
    * The name of the data source, overrides the id given by cdk

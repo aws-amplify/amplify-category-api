@@ -1,78 +1,83 @@
 import * as os from 'os';
 import { SchemaFile } from 'aws-cdk-lib/aws-appsync';
-import { IAmplifyGraphqlDefinition, ModelDataSourceDefinition } from './types';
-import { constructDataSourceDefinitionMap } from './internal';
+import { IAmplifyGraphqlDefinition } from './types';
+import { constructDataSourceStrategyMap } from './internal';
+import { ModelDataSourceStrategy } from './model-datasource-strategy';
+import { constructCustomSqlDataSourceStrategies } from './internal/data-source-config';
 
-export const DEFAULT_MODEL_DATA_SOURCE_DEFINITION: ModelDataSourceDefinition = {
-  name: 'DefaultDynamoDB',
-  strategy: {
-    dbType: 'DYNAMODB',
-    provisionStrategy: 'DEFAULT',
-  },
+export const DEFAULT_MODEL_DATA_SOURCE_STRATEGY: ModelDataSourceStrategy = {
+  dbType: 'DYNAMODB',
+  provisionStrategy: 'DEFAULT',
 };
+
 /**
  * Class exposing utilities to produce IAmplifyGraphqlDefinition objects given various inputs.
  */
 export class AmplifyGraphqlDefinition {
   /**
-   * Produce a schema definition from a string input
+   * Produce a schema definition from a string input.
+   *
+   * **NOTE** The 'dataSourceStrategy' configuration option is in preview and is not recommended to use with production systems.
+   *
    * @param schema the graphql input as a string
-   * @param modelDataSourceDefinition the provision definition for `@model` datasource. The DynamoDB from CloudFormation will be used by default.
-   * @experimental modelDataSourceDefinition
+   * @param dataSourceStrategy the provisioning definition for datasources that resolve `@model`s and custom SQL statements in this schema.
+   * The DynamoDB from CloudFormation will be used by default.
+   * @experimental dataSourceStrategy
    * @returns a fully formed amplify graphql definition
    */
   static fromString(
     schema: string,
-    modelDataSourceDefinition: ModelDataSourceDefinition = DEFAULT_MODEL_DATA_SOURCE_DEFINITION,
+    dataSourceStrategy: ModelDataSourceStrategy = DEFAULT_MODEL_DATA_SOURCE_STRATEGY,
   ): IAmplifyGraphqlDefinition {
     return {
       schema,
       functionSlots: [],
-      dataSourceDefinition: constructDataSourceDefinitionMap(schema, modelDataSourceDefinition),
+      referencedLambdaFunctions: {},
+      dataSourceStrategies: constructDataSourceStrategyMap(schema, dataSourceStrategy),
+      customSqlDataSourceStrategies: constructCustomSqlDataSourceStrategies(schema, dataSourceStrategy),
     };
   }
 
   /**
-   * Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema
+   * Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema, binding them to a DynamoDB data source.
    * @param filePaths one or more paths to the graphql files to process
-   * @returns a fully formed amplify graphql definition
+   * @returns a fully formed amplify graphql definition, whose models will be resolved by DynamoDB tables created during deployment.
    */
   static fromFiles(...filePaths: string[]): IAmplifyGraphqlDefinition {
     if (!Array.isArray(filePaths)) {
       filePaths = [filePaths];
     }
     const schema = filePaths.map((filePath) => new SchemaFile({ filePath }).definition).join(os.EOL);
-    return {
-      schema,
-      functionSlots: [],
-      dataSourceDefinition: constructDataSourceDefinitionMap(schema, DEFAULT_MODEL_DATA_SOURCE_DEFINITION),
-    };
+    return AmplifyGraphqlDefinition.fromString(schema, DEFAULT_MODEL_DATA_SOURCE_STRATEGY);
   }
 
   /**
    * Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema
+   *
+   * **NOTE** This API is in preview and is not recommended to use with production systems.
+   *
    * @experimental
    * @param filePaths one or more paths to the graphql files to process
-   * @param modelDataSourceDefinition the provision definition for `@model` datasource. The DynamoDB from CloudFormation will be used by default.
+   * @param dataSourceStrategy the provisioning definition for datasources that resolve `@model`s in this schema. The DynamoDB from
+   * CloudFormation will be used by default.
    * @returns a fully formed amplify graphql definition
    */
-  static fromFilesAndDefinition(
+  static fromFilesAndStrategy(
     filePaths: string | string[],
-    modelDataSourceDefinition: ModelDataSourceDefinition = DEFAULT_MODEL_DATA_SOURCE_DEFINITION,
+    dataSourceStrategy: ModelDataSourceStrategy = DEFAULT_MODEL_DATA_SOURCE_STRATEGY,
   ): IAmplifyGraphqlDefinition {
     if (!Array.isArray(filePaths)) {
       filePaths = [filePaths];
     }
     const schema = filePaths.map((filePath) => new SchemaFile({ filePath }).definition).join(os.EOL);
-    return {
-      schema,
-      functionSlots: [],
-      dataSourceDefinition: constructDataSourceDefinitionMap(schema, modelDataSourceDefinition),
-    };
+    return AmplifyGraphqlDefinition.fromString(schema, dataSourceStrategy);
   }
 
   /**
    * Combines multiple IAmplifyGraphqlDefinitions into a single definition.
+   *
+   * **NOTE** This API is in preview and is not recommended to use with production systems.
+   *
    * @experimental
    * @param definitions the definitions to combine
    */
@@ -86,7 +91,8 @@ export class AmplifyGraphqlDefinition {
     return {
       schema: definitions.map((def) => def.schema).join(os.EOL),
       functionSlots: [],
-      dataSourceDefinition: definitions.reduce((acc, cur) => ({ ...acc, ...cur.dataSourceDefinition }), {}),
+      referencedLambdaFunctions: definitions.reduce((acc, cur) => ({ ...acc, ...cur.referencedLambdaFunctions }), {}),
+      dataSourceStrategies: definitions.reduce((acc, cur) => ({ ...acc, ...cur.dataSourceStrategies }), {}),
     };
   }
 }

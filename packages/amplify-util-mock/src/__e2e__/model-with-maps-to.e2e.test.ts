@@ -1,5 +1,8 @@
+import { DynamoDBProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLClient } from './utils/graphql-client';
 import { defaultTransformParams, deploy, launchDDBLocal, logDebug, terminateDDB, transformAndSynth } from './utils/index';
+
+jest.setTimeout(1000 * 30);
 
 let graphqlClient;
 let server;
@@ -23,6 +26,15 @@ beforeAll(async () => {
         ...defaultTransformParams.transformParameters,
         useSubUsernameForDefaultIdentityClaim: false,
       },
+      modelToDatasourceMap: new Map(
+        Object.entries({
+          Todo: {
+            dbType: 'DDB',
+            provisionDB: true,
+            provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
+          },
+        }),
+      ),
     });
 
     let ddbClient;

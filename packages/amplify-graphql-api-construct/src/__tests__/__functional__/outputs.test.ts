@@ -1,10 +1,12 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import { graphqlOutputKey } from '@aws-amplify/backend-output-schemas';
-import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
-import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { ArnPrincipal, Role } from 'aws-cdk-lib/aws-iam';
+import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
+import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 
 describe('storeOutput', () => {
   describe('default outputStorageStrategy', () => {
@@ -163,6 +165,50 @@ describe('storeOutput', () => {
           amplifyApiModelSchemaS3Uri: expect.stringMatching(s3UriTokenRegex),
         },
       });
+    });
+  });
+
+  describe('BI metrics output', () => {
+    it('stores expected BI metadata in stack description', () => {
+      const stack = new cdk.Stack();
+      new AmplifyGraphqlApi(stack, 'TestApi', {
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+          type Todo @model {
+            description: String!
+          }
+        `),
+        authorizationModes: {
+          apiKeyConfig: {
+            expires: cdk.Duration.days(2),
+          },
+        },
+      });
+      const { version } = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', '..', 'package.json'), 'utf-8')) as {
+        version: string;
+      };
+      expect(JSON.parse(stack.templateOptions.description || '{}')).toMatchObject({ createdWith: version, stackType: 'api-AppSync' });
+    });
+
+    /**
+     * This test is testing a dependency more than it's testing code in this package,
+     * but it's still good to verify that the expected CDK context key is being respected
+     */
+    it('stores expected BI metadata when Amplify context key is set', () => {
+      const stack = new cdk.Stack();
+      stack.node.setContext('amplify-backend-type', 'branch');
+      new AmplifyGraphqlApi(stack, 'TestApi', {
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+          type Todo @model {
+            description: String!
+          }
+        `),
+        authorizationModes: {
+          apiKeyConfig: {
+            expires: cdk.Duration.days(2),
+          },
+        },
+      });
+      expect(JSON.parse(stack.templateOptions.description || '{}')).toMatchObject({ createdBy: 'AmplifyPipelineDeploy' });
     });
   });
 });

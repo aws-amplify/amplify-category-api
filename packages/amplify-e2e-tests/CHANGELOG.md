@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.18.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.18.2...amplify-category-api-e2e-tests@3.18.3) (2023-11-22)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.18.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.18.1...amplify-category-api-e2e-tests@3.18.2) (2023-11-18)
+
+### Bug Fixes
+
+- regionalize lambda layer patching SNS topics ([#2079](https://github.com/aws-amplify/amplify-category-api/issues/2079)) ([6006c86](https://github.com/aws-amplify/amplify-category-api/commit/6006c86cd4ee624b24c184fab523fcdcdb38be63))
+
+## [3.18.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.18.0...amplify-category-api-e2e-tests@3.18.1) (2023-11-16)
+
+### Bug Fixes
+
+- Rename VPC Endpoint CDK prefix ([#2072](https://github.com/aws-amplify/amplify-category-api/issues/2072)) ([00824c1](https://github.com/aws-amplify/amplify-category-api/commit/00824c137a07fd04d325e02465ca6be3805f78c2))
+
+# [3.18.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.17.6...amplify-category-api-e2e-tests@3.18.0) (2023-11-15)
+
+### Bug Fixes
+
+- **api:** make id optional if not a string type ([48ecac0](https://github.com/aws-amplify/amplify-category-api/commit/48ecac0989097106a531ebb898abbda7a0f1745c))
+- Change 'rds' to 'sql' in public-facing symbols ([#2069](https://github.com/aws-amplify/amplify-category-api/issues/2069)) ([ff374dd](https://github.com/aws-amplify/amplify-category-api/commit/ff374dd8398d3f1138a31669b1a5962122039437))
+- preserve null value from mysql and pg schemas ([#2049](https://github.com/aws-amplify/amplify-category-api/issues/2049)) ([d96176e](https://github.com/aws-amplify/amplify-category-api/commit/d96176e9a94b25f6c169c38a79c7135645a8eab7))
+- relational auth cases; preserve auth rule schema edits, added multi-auth e2e tests ([#1965](https://github.com/aws-amplify/amplify-category-api/issues/1965)) ([df085b2](https://github.com/aws-amplify/amplify-category-api/commit/df085b2bf75dded743809b59386272070fc92251))
+
+### Features
+
+- add refersTo directive transformer for model renaming ([#1830](https://github.com/aws-amplify/amplify-category-api/issues/1830)) ([afbd6f2](https://github.com/aws-amplify/amplify-category-api/commit/afbd6f282bc411313ce098a53a87bb8c6481aa48))
+- **api:** add enum support for postgres import ([2e63cec](https://github.com/aws-amplify/amplify-category-api/commit/2e63cecf1f04ec39b644f0ee0842ee79a4b4c149))
+- **api:** custom queries support using sql directive ([5214037](https://github.com/aws-amplify/amplify-category-api/commit/52140374ca974956c5d5eac09fec91a51cfc9027))
+- **api:** specify include or exclude tables option to generate schema ([1fa52a1](https://github.com/aws-amplify/amplify-category-api/commit/1fa52a1f0c0d7bf82caebc94241774ac3b5c8aa1))
+- infer and preserve field mappings in schema ([4f8e7f4](https://github.com/aws-amplify/amplify-category-api/commit/4f8e7f43e6ba3e64702baffe60b8b4870d37ffb6))
+- infer refersTo for models in the import flow and preserve edits during schema regeneration ([#1845](https://github.com/aws-amplify/amplify-category-api/issues/1845)) ([2631c02](https://github.com/aws-amplify/amplify-category-api/commit/2631c027395a35d9841669f2aa034af93cbeb9fc))
+- refersTo supports field name mappings on RDS models ([#1865](https://github.com/aws-amplify/amplify-category-api/issues/1865)) ([ee60011](https://github.com/aws-amplify/amplify-category-api/commit/ee60011f5c41d0442e1096dd16d80e94b900745a))
+
 ## [3.17.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.17.5...amplify-category-api-e2e-tests@3.17.6) (2023-11-02)
 
 **Note:** Version bump only for package amplify-category-api-e2e-tests

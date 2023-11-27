@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { Template } from 'cloudform-types';
 import _ from 'lodash';
-import { parse, Kind, ObjectTypeDefinitionNode, print, DefinitionNode, InputObjectTypeDefinitionNode } from 'graphql';
+import { parse, Kind, ObjectTypeDefinitionNode, print, InputObjectTypeDefinitionNode, StringValueNode } from 'graphql';
 import { ApiCategorySchemaNotFoundError } from '../errors';
 import { throwIfNotJSONExt } from './fileUtils';
 import { ProjectOptions } from './amplifyUtils';
@@ -170,9 +170,10 @@ interface ProjectConfiguration {
     [k: string]: Template;
   };
   config: TransformConfig;
-  modelToDatasourceMap: Map<string, DatasourceType>;
+  modelToDatasourceMap: Map<string, DataSourceType>;
+  customQueries: Map<string, string>;
 }
-export async function loadProject(projectDirectory: string, opts?: ProjectOptions): Promise<ProjectConfiguration> {
+export const loadProject = async (projectDirectory: string, opts?: ProjectOptions): Promise<ProjectConfiguration> => {
   // Schema
   const { schema, modelToDatasourceMap } = await readSchema(projectDirectory);
 
@@ -207,6 +208,23 @@ export async function loadProject(projectDirectory: string, opts?: ProjectOption
         const pipelineFunctionPath = path.join(pipelineFunctionDirectory, pipelineFunctionFile);
         pipelineFunctions[pipelineFunctionFile] = await fs.readFile(pipelineFunctionPath, 'utf8');
       }
+    }
+  }
+
+  // Load Custom Queries
+  const customQueries = new Map<string, string>();
+  const customQueriesDirectoryName = 'sql-statements';
+  const customQueriesDirectory = path.join(projectDirectory, customQueriesDirectoryName);
+  const customQueriesDirExists = await fs.exists(customQueriesDirectory);
+  if (customQueriesDirExists) {
+    const queryFiles = await fs.readdir(customQueriesDirectory);
+    for (const queryFile of queryFiles) {
+      if (!queryFile.endsWith('.sql')) {
+        continue;
+      }
+      const queryFileName = path.parse(queryFile).name;
+      const queryFilePath = path.join(customQueriesDirectory, queryFile);
+      customQueries.set(queryFileName, await fs.readFile(queryFilePath, 'utf8'));
     }
   }
 
@@ -258,8 +276,9 @@ export async function loadProject(projectDirectory: string, opts?: ProjectOption
     schema,
     config,
     modelToDatasourceMap,
+    customQueries,
   };
-}
+};
 
 /**
  * Given a project directory read the schema from disk. The schema may be a
@@ -269,9 +288,9 @@ export async function loadProject(projectDirectory: string, opts?: ProjectOption
  */
 export const readSchema = async (
   projectDirectory: string,
-): Promise<{ schema: string; modelToDatasourceMap: Map<string, DatasourceType> }> => {
-  let modelToDatasourceMap = new Map<string, DatasourceType>();
-  const schemaFilePaths = [path.join(projectDirectory, 'schema.graphql'), path.join(projectDirectory, 'schema.rds.graphql')];
+): Promise<{ schema: string; modelToDatasourceMap: Map<string, DataSourceType> }> => {
+  let modelToDatasourceMap = new Map<string, DataSourceType>();
+  const schemaFilePaths = [path.join(projectDirectory, 'schema.graphql'), path.join(projectDirectory, 'schema.sql.graphql')];
 
   const existingSchemaFiles = schemaFilePaths.filter((p) => fs.existsSync(p));
   const schemaDirectoryPath = path.join(projectDirectory, 'schema');
@@ -279,12 +298,14 @@ export const readSchema = async (
   let schema = '';
   if (!_.isEmpty(existingSchemaFiles)) {
     // Schema.graphql contains the models for DynamoDB datasource.
-    // Schema.rds.graphql contains the models for imported 'MySQL' datasource.
+    // Schema.sql.graphql contains the models for imported 'MySQL' datasource.
     // Intentionally using 'for ... of ...' instead of 'object.foreach' to process this in sequence.
     for (const file of existingSchemaFiles) {
-      const datasourceType = file.endsWith('.rds.graphql') ? constructDataSourceType('MySQL', false) : constructDataSourceType('DDB');
       const fileSchema = (await fs.readFile(file)).toString();
       const { amplifyType, schema: fileSchemaWithoutAmplifyInput } = removeAmplifyInput(fileSchema);
+      const datasourceType = file.endsWith('.sql.graphql')
+        ? constructDataSourceType(getRDSDBTypeFromInput(amplifyType), false)
+        : constructDataSourceType('DDB');
       modelToDatasourceMap = new Map([...modelToDatasourceMap.entries(), ...constructDataSourceMap(fileSchema, datasourceType).entries()]);
       if (amplifyType) {
         amplifyInputType = mergeTypeFields(amplifyInputType, amplifyType);
@@ -310,6 +331,22 @@ export const readSchema = async (
     schema,
     modelToDatasourceMap,
   };
+};
+
+const getRDSDBTypeFromInput = (amplifyType: InputObjectTypeDefinitionNode): DBType => {
+  const engineInput = amplifyType.fields.find((f) => f.name.value === 'engine');
+  if (!engineInput) {
+    throw new Error('engine is not defined in the RDS schema file');
+  }
+  const engine = (engineInput?.defaultValue as StringValueNode)?.value;
+  switch (engine) {
+    case 'mysql':
+      return 'MySQL';
+    case 'postgres':
+      return 'Postgres';
+    default:
+      throw new Error(`engine ${engine} specified in the RDS schema file is not supported`);
+  }
 };
 
 export const removeAmplifyInput = (schema: string): SchemaReaderConfig => {
@@ -364,9 +401,16 @@ async function readSchemaDocuments(schemaDirectoryPath: string): Promise<string[
   return schemaDocuments;
 }
 
-export type DBType = 'MySQL' | 'DDB';
+/**
+ * Supported transformable database types.
+ */
+export type DBType = 'DDB' | 'MySQL' | 'Postgres';
 
-export interface DatasourceType {
+/**
+ * Configuration for a datasource. Defines the underlying database engine, and instructs the tranformer whether to provision the database
+ * storage or whether it already exists.
+ */
+export interface DataSourceType {
   dbType: DBType;
   provisionDB: boolean;
   provisionStrategy: DataSourceProvisionStrategy;
@@ -386,25 +430,32 @@ export const enum DynamoDBProvisionStrategy {
 // TODO: add strategy for the RDS
 export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy;
 
-function constructDataSourceType(
+const constructDataSourceType = (
   dbType: DBType,
-  provisionDB: boolean = true,
+  provisionDB = true,
   provisionStrategy = DynamoDBProvisionStrategy.DEFAULT,
-): DatasourceType {
+): DataSourceType => {
   return {
     dbType,
     provisionDB,
     provisionStrategy,
   };
-}
+};
 
-function constructDataSourceMap(schema: string, datasourceType: DatasourceType): Map<string, DatasourceType> {
+/**
+ * Constructs a map of model names to datasource types for the specified schema. Used by the transformer to auto-generate a model mapping if
+ * the customer has not provided an explicit one.
+ * @param schema the annotated GraphQL schema
+ * @param datasourceType the datasource type for each model to be associated with
+ * @returns a map of model names to datasource types
+ */
+export const constructDataSourceMap = (schema: string, datasourceType: DataSourceType): Map<string, DataSourceType> => {
   const parsedSchema = parse(schema);
-  const result = new Map<string, DatasourceType>();
+  const result = new Map<string, DataSourceType>();
   parsedSchema.definitions
     .filter((obj) => obj.kind === Kind.OBJECT_TYPE_DEFINITION && obj.directives.some((dir) => dir.name.value === MODEL_DIRECTIVE_NAME))
     .forEach((type) => {
       result.set((type as ObjectTypeDefinitionNode).name.value, datasourceType);
     });
   return result;
-}
+};

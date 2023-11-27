@@ -1,14 +1,21 @@
 import path from 'path';
-import { RDSConnectionSecrets, MYSQL_DB_TYPE, ImportedRDSType, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
+import {
+  getEngineFromDBType,
+  getImportedRDSType,
+  isImportedRDSType,
+  RDSConnectionSecrets,
+  UserDefinedSlot,
+} from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncAuthConfiguration,
+  DBType,
   TransformerLog,
   TransformerLogLevel,
   VpcConfig,
   RDSLayerMapping,
   DataSourceType,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import fs from 'fs-extra';
+import * as fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { sanityCheckProject } from 'graphql-transformer-core';
 import _ from 'lodash';
@@ -19,11 +26,11 @@ import { getHostVpc } from '@aws-amplify/graphql-schema-generator';
 import fetch from 'node-fetch';
 import {
   getConnectionSecrets,
-  testDatabaseConnection,
   getExistingConnectionSecretNames,
   getSecretsKey,
 } from '../provider-utils/awscloudformation/utils/rds-resources/database-resources';
 import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
+import { checkForUnsupportedDirectives } from '../provider-utils/awscloudformation/utils/rds-resources/utils';
 import { isAuthModeUpdated } from './auth-mode-compare';
 import { getAdminRoles, getIdentityPoolId, mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
 import { generateTransformerOptions } from './transformer-options-v2';
@@ -63,7 +70,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
     .filter((r) => !resources.includes(r))
     .filter((r) => {
       const buildDir = path.normalize(path.join(backEndDir, AmplifyCategories.API, r.resourceName, 'build'));
-      return !fs.existsSync(buildDir);
+      return !fs.pathExistsSync(buildDir);
     });
   resources = resources.concat(resourceNeedCompile);
 
@@ -100,7 +107,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
 
   const parametersFilePath = path.join(resourceDir, PARAMETERS_FILENAME);
 
-  if (!parameters && fs.existsSync(parametersFilePath)) {
+  if (!parameters && fs.pathExistsSync(parametersFilePath)) {
     try {
       parameters = JSONUtilities.readJson(parametersFilePath);
 
@@ -188,6 +195,7 @@ const hasUserPoolAuth = (authConfig?: AppSyncAuthConfiguration): boolean =>
 
 /**
  * buildAPIProject
+ * Note that this explicitly does not support the ability to declare a schema without a `@model`.
  */
 const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOptions): Promise<DeploymentResources | undefined> => {
   const schema = opts.projectConfig.schema.toString();
@@ -196,12 +204,17 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
     return undefined;
   }
 
+  checkForUnsupportedDirectives(schema, opts.projectConfig.modelToDatasourceMap);
+
   const { modelToDatasourceMap } = opts.projectConfig;
-  const datasourceSecretMap = await getDatasourceSecretMap(context);
   const datasourceMapValues: Array<DataSourceType> = modelToDatasourceMap ? Array.from(modelToDatasourceMap.values()) : [];
+  let datasourceSecretMap: Map<string, RDSConnectionSecrets> | undefined = undefined;
   let sqlLambdaVpcConfig: VpcConfig | undefined;
-  if (datasourceMapValues.some((value) => value.dbType === MYSQL_DB_TYPE && !value.provisionDB)) {
-    sqlLambdaVpcConfig = await isSqlLambdaVpcConfigRequired(context, getSecretsKey(), ImportedRDSType.MYSQL);
+  if (datasourceMapValues.some((value) => isImportedRDSType(value))) {
+    const dbType = getImportedRDSType(modelToDatasourceMap);
+    datasourceSecretMap = new Map();
+    datasourceSecretMap.set(dbType, await getRDSConnectionSecrets(context));
+    sqlLambdaVpcConfig = await isSqlLambdaVpcConfigRequired(context, dbType);
   }
   const rdsLayerMapping = await getRDSLayerMapping();
 
@@ -222,6 +235,7 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
     synthParameters: transformManager.getSynthParameters(),
     schema,
     modelToDatasourceMap: opts.projectConfig.modelToDatasourceMap,
+    customQueries: opts.projectConfig.customQueries,
     datasourceSecretParameterLocations: datasourceSecretMap,
     printTransformerLog,
     sqlLambdaVpcConfig,
@@ -260,50 +274,36 @@ export const getUserOverridenSlots = (userDefinedSlots: Record<string, UserDefin
     .filter((slotName) => slotName !== undefined);
 
 const getRDSLayerMapping = async (): Promise<RDSLayerMapping> => {
-  try {
-    const response = await fetch(LAYER_MAPPING_URL);
-    if (response.status === 200) {
-      const result = await response.json();
-      return result as RDSLayerMapping;
-    }
-  } catch (err) {
-    // Ignore the error and return default layer mapping
+  const response = await fetch(LAYER_MAPPING_URL);
+  if (response.status === 200) {
+    const result = await response.json();
+    return result as RDSLayerMapping;
+  } else {
+    throw new Error(`Unable to retrieve layer mapping from ${LAYER_MAPPING_URL} with status code ${response.status}.`);
   }
-  printer.warn('Unable to load the latest RDS layer configuration, using local configuration.');
-  return {};
 };
 
-const isSqlLambdaVpcConfigRequired = async (
-  context: $TSContext,
-  secretsKey: string,
-  engine: ImportedRDSType,
-): Promise<VpcConfig | undefined> => {
-  const { secrets } = await getConnectionSecrets(context, secretsKey, engine);
-  const isDBPublic = await testDatabaseConnection(secrets);
-  if (isDBPublic) {
-    // No need to deploy the SQL Lambda in VPC if the DB is public
-    return undefined;
-  }
-  const vpcConfig = await getSQLLambdaVpcConfig(context);
-  return vpcConfig;
+const isSqlLambdaVpcConfigRequired = async (context: $TSContext, dbType: DBType): Promise<VpcConfig | undefined> => {
+  // If the database is in VPC, we will use the same VPC configuration for the SQL lambda.
+  // Customers are required to add inbound rule for port 443 from the private subnet in the Security Group.
+  // https://docs.aws.amazon.com/systems-manager/latest/userguide/setup-create-vpc.html#vpc-requirements-and-limitations
+  const vpcSubnetConfig = await getSQLLambdaVpcConfig(context, dbType);
+
+  return vpcSubnetConfig;
 };
 
-const getDatasourceSecretMap = async (context: $TSContext): Promise<Map<string, RDSConnectionSecrets>> => {
-  const outputMap = new Map<string, RDSConnectionSecrets>();
+const getRDSConnectionSecrets = async (context: $TSContext): Promise<RDSConnectionSecrets> => {
   const apiName = getAppSyncAPIName();
   const secretsKey = await getSecretsKey();
   const rdsSecretPaths = await getExistingConnectionSecretNames(context, apiName, secretsKey);
-  if (rdsSecretPaths) {
-    outputMap.set(MYSQL_DB_TYPE, rdsSecretPaths);
-  }
-  return outputMap;
+  return rdsSecretPaths;
 };
 
-const getSQLLambdaVpcConfig = async (context: $TSContext): Promise<VpcConfig | undefined> => {
-  const [secretsKey, engine] = [getSecretsKey(), ImportedRDSType.MYSQL];
+const getSQLLambdaVpcConfig = async (context: $TSContext, dbType: DBType): Promise<VpcConfig> => {
+  const [secretsKey, engine] = [getSecretsKey(), getEngineFromDBType(dbType)];
   const { secrets } = await getConnectionSecrets(context, secretsKey, engine);
   const region = context.amplify.getProjectMeta().providers.awscloudformation.Region;
-  const vpcConfig = getHostVpc(secrets.host, region);
+  const vpcConfig = await getHostVpc(secrets.host, region);
   return vpcConfig;
 };
 

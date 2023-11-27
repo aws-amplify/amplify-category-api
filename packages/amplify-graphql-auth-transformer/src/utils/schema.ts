@@ -115,9 +115,6 @@ export const getSearchableConfig = (
  - All of the fields specified are checked against the ctx.source.relatedField
    since this isn't a many relational we don't need to get values from ctx.args
  */
-/**
- *
- */
 export const getRelationalPrimaryMap = (
   ctx: TransformerContextProvider,
   def: ObjectTypeDefinitionNode,

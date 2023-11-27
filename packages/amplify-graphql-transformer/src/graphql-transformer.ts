@@ -3,8 +3,9 @@ import { DefaultValueTransformer } from '@aws-amplify/graphql-default-value-tran
 import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
 import { HttpTransformer } from '@aws-amplify/graphql-http-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
+import { MapsToTransformer, RefersToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { SqlTransformer } from '@aws-amplify/graphql-sql-transformer';
 import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
 import {
   BelongsToTransformer,
@@ -25,8 +26,9 @@ import {
   SynthParameters,
   TransformParameterProvider,
   DataSourceType,
+  ProvisionedConcurrencyConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
+import type { CustomSqlDataSourceStrategy, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform, RDSConnectionSecrets, ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 import { Construct } from 'constructs';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
@@ -53,6 +55,7 @@ export type TransformConfig = {
   transformParameters: TransformParameters;
   sqlLambdaVpcConfig?: VpcConfig;
   rdsLayerMapping?: RDSLayerMapping;
+  sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
 };
 
 export const constructTransformerChain = (options?: TransformerFactoryArgs): TransformerPluginProvider[] => {
@@ -75,6 +78,8 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
     new DefaultValueTransformer(),
     authTransformer,
     new MapsToTransformer(),
+    new SqlTransformer(),
+    new RefersToTransformer(),
     new SearchableModelTransformer(),
     ...(options?.customTransformers ?? []),
   ];
@@ -95,6 +100,7 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
     transformParameters,
     sqlLambdaVpcConfig,
     rdsLayerMapping,
+    sqlLambdaProvisionedConcurrencyConfig,
   } = config;
 
   const transformers = constructTransformerChain(transformersFactoryArgs);
@@ -108,12 +114,15 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
     resolverConfig,
     sqlLambdaVpcConfig,
     rdsLayerMapping,
+    sqlLambdaProvisionedConcurrencyConfig,
   });
 };
 
 export type ExecuteTransformConfig = TransformConfig & {
   schema: string;
   modelToDatasourceMap?: Map<string, DataSourceType>;
+  customQueries?: Map<string, string>;
+  customSqlDataSourceStrategies?: CustomSqlDataSourceStrategy[];
   datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
   printTransformerLog?: (log: TransformerLog) => void;
   sqlLambdaVpcConfig?: VpcConfig;
@@ -123,6 +132,7 @@ export type ExecuteTransformConfig = TransformConfig & {
   parameterProvider?: TransformParameterProvider;
   assetProvider: AssetProvider;
   synthParameters: SynthParameters;
+  sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
 };
 
 /**
@@ -157,6 +167,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
   const {
     schema,
     modelToDatasourceMap,
+    customSqlDataSourceStrategies,
     datasourceSecretParameterLocations,
     printTransformerLog,
     rdsLayerMapping,
@@ -164,12 +175,12 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
     nestedStackProvider,
     assetProvider,
     synthParameters,
+    customQueries,
     parameterProvider,
   } = config;
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
   const transform = constructTransform(config);
-
   try {
     transform.transform({
       scope,
@@ -180,8 +191,10 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
       schema,
       datasourceConfig: {
         modelToDatasourceMap,
+        customSqlDataSourceStrategies,
         datasourceSecretParameterLocations,
         rdsLayerMapping,
+        customQueries,
       },
     });
   } finally {

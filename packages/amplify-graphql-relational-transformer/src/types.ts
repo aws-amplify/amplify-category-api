@@ -7,6 +7,7 @@ export type HasOneDirectiveConfiguration = {
   field: FieldDefinitionNode;
   directive: DirectiveNode;
   fields: string[];
+  references: string[];
   fieldNodes: FieldDefinitionNode[];
   relatedType: ObjectTypeDefinitionNode;
   relatedTypeIndex: FieldDefinitionNode[];
@@ -20,6 +21,7 @@ export type HasManyDirectiveConfiguration = {
   directive: DirectiveNode;
   indexName: string;
   fields: string[];
+  references: string[];
   fieldNodes: FieldDefinitionNode[];
   relatedType: ObjectTypeDefinitionNode;
   relatedTypeIndex: FieldDefinitionNode[];
@@ -33,6 +35,7 @@ export type BelongsToDirectiveConfiguration = {
   field: FieldDefinitionNode;
   directive: DirectiveNode;
   fields: string[];
+  references: string[];
   fieldNodes: FieldDefinitionNode[];
   relatedType: ObjectTypeDefinitionNode;
   relatedField: FieldDefinitionNode;
@@ -49,6 +52,7 @@ export type ManyToManyDirectiveConfiguration = {
   relationName: string;
   indexName: string;
   fields: string[];
+  references: string[];
   fieldNodes: FieldDefinitionNode[];
   relatedType: ObjectTypeDefinitionNode;
   relatedTypeIndex: FieldDefinitionNode[];

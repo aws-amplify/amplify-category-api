@@ -124,9 +124,13 @@ const RUN_SOLO: (string | RegExp)[] = [
   'src/__tests__/HttpTransformerV2.e2e.test.ts',
   // Deploy Velocity tests
   /src\/__tests__\/deploy-velocity\/.*\.test\.ts/,
+  // RDS tests
+  /src\/__tests__\/rds-.*\.test\.ts/,
 ];
 
 const DEBUG_FLAG = '--debug';
+
+const EXCLUDE_TEST_IDS: string[] = [];
 
 const MAX_WORKERS = 4;
 
@@ -289,6 +293,9 @@ const main = (): void => {
     if (filteredTests.includes(DEBUG_FLAG)) {
       builds = builds.map((build) => ({ ...build, 'debug-session': true }));
     }
+  }
+  if (EXCLUDE_TEST_IDS.length > 0) {
+    builds = builds.filter((build) => !EXCLUDE_TEST_IDS.includes(build.identifier));
   }
 
   const cleanupResources: BatchBuildJob = {

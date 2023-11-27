@@ -1,10 +1,13 @@
-import { MYSQL_DB_TYPE, RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
-import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { Fn } from 'aws-cdk-lib';
 import { Topic, SubscriptionFilter } from 'aws-cdk-lib/aws-sns';
 import { LambdaSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
+import { Construct } from 'constructs';
+import { RDSConnectionSecrets, getImportedRDSType, getEngineFromDBType } from '@aws-amplify/graphql-transformer-core';
+import { DBType, QueryFieldType, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { ModelVTLGenerator, RDSModelVTLGenerator } from '../resolvers';
 import {
+  createLayerVersionCustomResource,
   createRdsLambda,
   createRdsLambdaRole,
   createRdsPatchingLambda,
@@ -12,12 +15,7 @@ import {
   setRDSLayerMappings,
 } from '../resolvers/rds';
 import { ModelResourceGenerator } from './model-resource-generator';
-import { Fn } from 'aws-cdk-lib';
 
-export const RDS_STACK_NAME = 'RdsApiStack';
-// Beta SNS topic - 'arn:aws:sns:us-east-1:956468067974:AmplifyRDSLayerNotification'
-// PROD SNS topic - 'arn:aws:sns:us-east-1:582037449441:AmplifyRDSLayerNotification'
-const RDS_PATCHING_SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:582037449441:AmplifyRDSLayerNotification';
 /**
  * An implementation of ModelResourceGenerator responsible for generated CloudFormation resources
  * for models backed by an RDS data source
@@ -25,22 +23,30 @@ const RDS_PATCHING_SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:582037449441:AmplifyRD
 export class RdsModelResourceGenerator extends ModelResourceGenerator {
   protected readonly generatorType = 'RdsModelResourceGenerator';
 
-  generateResources(context: TransformerContextProvider): void {
+  generateResources(context: TransformerContextProvider, dbTypeOverride?: DBType): void {
     if (this.isEnabled()) {
-      const secretEntry = context.datasourceSecretParameterLocations.get(MYSQL_DB_TYPE);
+      const dbType = dbTypeOverride ?? getImportedRDSType(context.modelToDatasourceMap);
+      const engine = getEngineFromDBType(dbType);
+      const secretEntry = context.datasourceSecretParameterLocations.get(dbType);
       const {
-        RDSLambdaIAMRoleLogicalID,
-        RDSPatchingLambdaIAMRoleLogicalID,
-        RDSLambdaLogicalID,
-        RDSPatchingLambdaLogicalID,
-        RDSLambdaDataSourceLogicalID,
-        RDSPatchingSubscriptionLogicalID,
+        AmplifySQLLayerNotificationTopicAccount,
+        AmplifySQLLayerNotificationTopicName,
+        SQLLambdaDataSourceLogicalID,
+        SQLLambdaIAMRoleLogicalID,
+        SQLLambdaLogicalID,
+        SQLPatchingLambdaIAMRoleLogicalID,
+        SQLPatchingLambdaLogicalID,
+        SQLPatchingSubscriptionLogicalID,
+        SQLPatchingTopicLogicalID,
+        SQLStackName,
       } = ResourceConstants.RESOURCES;
-      const lambdaRoleScope = context.stackManager.getScopeFor(RDSLambdaIAMRoleLogicalID, RDS_STACK_NAME);
-      const lambdaScope = context.stackManager.getScopeFor(RDSLambdaLogicalID, RDS_STACK_NAME);
-      setRDSLayerMappings(lambdaScope, context.rdsLayerMapping);
+      const lambdaRoleScope = context.stackManager.getScopeFor(SQLLambdaIAMRoleLogicalID, SQLStackName);
+      const lambdaScope = context.stackManager.getScopeFor(SQLLambdaLogicalID, SQLStackName);
+
+      const layerVersionArn = resolveLayerVersion(lambdaScope, context);
+
       const role = createRdsLambdaRole(
-        context.resourceHelper.generateIAMRoleName(RDSLambdaIAMRoleLogicalID),
+        context.resourceHelper.generateIAMRoleName(SQLLambdaIAMRoleLogicalID),
         lambdaRoleScope,
         secretEntry as RDSConnectionSecrets,
       );
@@ -49,7 +55,9 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
         lambdaScope,
         context.api,
         role,
+        layerVersionArn,
         {
+          engine: engine,
           username: secretEntry?.username ?? '',
           password: secretEntry?.password ?? '',
           host: secretEntry?.host ?? '',
@@ -57,12 +65,13 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
           database: secretEntry?.database ?? '',
         },
         context.sqlLambdaVpcConfig,
+        context.sqlLambdaProvisionedConcurrencyConfig,
       );
 
-      const patchingLambdaRoleScope = context.stackManager.getScopeFor(RDSPatchingLambdaIAMRoleLogicalID, RDS_STACK_NAME);
-      const patchingLambdaScope = context.stackManager.getScopeFor(RDSPatchingLambdaLogicalID, RDS_STACK_NAME);
+      const patchingLambdaRoleScope = context.stackManager.getScopeFor(SQLPatchingLambdaIAMRoleLogicalID, SQLStackName);
+      const patchingLambdaScope = context.stackManager.getScopeFor(SQLPatchingLambdaLogicalID, SQLStackName);
       const patchingLambdaRole = createRdsPatchingLambdaRole(
-        context.resourceHelper.generateIAMRoleName(RDSPatchingLambdaIAMRoleLogicalID),
+        context.resourceHelper.generateIAMRoleName(SQLPatchingLambdaIAMRoleLogicalID),
         patchingLambdaRoleScope,
         lambda.functionArn,
       );
@@ -73,8 +82,17 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       });
 
       // Add SNS subscription for patching notifications
-      const patchingSubscriptionScope = context.stackManager.getScopeFor(RDSPatchingSubscriptionLogicalID, RDS_STACK_NAME);
-      const snsTopic = Topic.fromTopicArn(patchingSubscriptionScope, 'RDSPatchingTopic', RDS_PATCHING_SNS_TOPIC_ARN);
+      const topicArn = Fn.join(':', [
+        'arn',
+        'aws',
+        'sns',
+        Fn.ref('AWS::Region'),
+        AmplifySQLLayerNotificationTopicAccount,
+        AmplifySQLLayerNotificationTopicName,
+      ]);
+
+      const patchingSubscriptionScope = context.stackManager.getScopeFor(SQLPatchingSubscriptionLogicalID, SQLStackName);
+      const snsTopic = Topic.fromTopicArn(patchingSubscriptionScope, SQLPatchingTopicLogicalID, topicArn);
       const subscription = new LambdaSubscription(patchingLambda, {
         filterPolicy: {
           Region: SubscriptionFilter.stringFilter({
@@ -84,18 +102,63 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       });
       snsTopic.addSubscription(subscription);
 
-      const lambdaDataSourceScope = context.stackManager.getScopeFor(RDSLambdaDataSourceLogicalID, RDS_STACK_NAME);
-      const rdsDatasource = context.api.host.addLambdaDataSource(`${RDSLambdaDataSourceLogicalID}`, lambda, {}, lambdaDataSourceScope);
+      const lambdaDataSourceScope = context.stackManager.getScopeFor(SQLLambdaDataSourceLogicalID, SQLStackName);
+      const rdsDatasource = context.api.host.addLambdaDataSource(`${SQLLambdaDataSourceLogicalID}`, lambda, {}, lambdaDataSourceScope);
       this.models.forEach((model) => {
         context.dataSources.add(model, rdsDatasource);
         this.datasourceMap[model.name.value] = rdsDatasource;
       });
     }
     this.generateResolvers(context);
+    this.setFieldMappingResolverReferences(context);
   }
 
   // eslint-disable-next-line class-methods-use-this
   getVTLGenerator(): ModelVTLGenerator {
     return new RDSModelVTLGenerator();
   }
+
+  setFieldMappingResolverReferences(context: TransformerContextProvider): void {
+    this.models.forEach((def) => {
+      const modelName = def?.name?.value;
+      const modelFieldMap = context.resourceHelper.getModelFieldMap(modelName);
+      if (!modelFieldMap.getMappedFields().length) {
+        return;
+      }
+      const queryFields = this.getQueryFieldNames(def);
+      const mutationFields = this.getMutationFieldNames(def);
+      queryFields.forEach((query) => {
+        modelFieldMap.addResolverReference({
+          typeName: query.typeName,
+          fieldName: query.fieldName,
+          isList: [QueryFieldType.LIST, QueryFieldType.SYNC].includes(query.type),
+        });
+      });
+      mutationFields.forEach((mutation) => {
+        modelFieldMap.addResolverReference({ typeName: mutation.typeName, fieldName: mutation.fieldName, isList: false });
+      });
+    });
+  }
 }
+
+/**
+ * Resolves the layer version using an appropriate strategy for the current context. In the Gen1 CLI flow, the transform-graphql-schema-v2
+ * buildAPIProject function retrieves the latest layer version from the S3 bucket. In the CDK construct, such async behavior at synth time
+ * is forbidden, so we use an AwsCustomResource to resolve the latest layer version. The AwsCustomResource does not work with the CLI custom
+ * synth functionality, so we fork the behavior at this point.
+ *
+ * Note that in either case, the returned value is not actually the literal layer ARN, but rather a reference to be resolved at deploy time:
+ * in the CLI case, it's the resolution of the SQLLayerMapping; in the CDK case, it's the 'Body' response field from the AwsCustomResource's
+ * invocation of s3::GetObject.
+ */
+const resolveLayerVersion = (scope: Construct, context: TransformerContextProvider): string => {
+  let layerVersionArn: string;
+  if (context.rdsLayerMapping) {
+    setRDSLayerMappings(scope, context.rdsLayerMapping);
+    layerVersionArn = Fn.findInMap(ResourceConstants.RESOURCES.SQLLayerMappingID, Fn.ref('AWS::Region'), 'layerRegion');
+  } else {
+    const layerVersionCustomResource = createLayerVersionCustomResource(scope);
+    layerVersionArn = layerVersionCustomResource.getResponseField('Body');
+  }
+  return layerVersionArn;
+};
