@@ -1,7 +1,14 @@
 import { print } from 'graphql';
 import { EXTRA_DIRECTIVES_DOCUMENT } from './transformation/validation';
 
-export { GraphQLTransform, GraphQLTransformOptions, SyncUtils, constructDataSourceMap } from './transformation';
+export {
+  constructDataSourceStrategies,
+  constructSqlDirectiveDataSourceStrategies,
+  getModelTypeNames,
+  GraphQLTransform,
+  GraphQLTransformOptions,
+  SyncUtils,
+} from './transformation';
 export { UserDefinedSlot, UserDefinedResolver } from './transformation/types';
 export { validateModelSchema } from './transformation/validation';
 export {
@@ -18,23 +25,22 @@ export {
   APICategory,
   collectDirectives,
   collectDirectivesByTypeNames,
-  dataSourceStrategyToDataSourceType,
   DirectiveWrapper,
   fieldsWithSqlDirective,
   generateGetArgumentsInput,
   GetArgumentsOptions,
-  getDatasourceProvisionStrategy,
-  getDataSourceType,
-  getEngineFromDBType,
-  getImportedRDSType,
+  getStrategyDbTypeFromTypeNode,
+  getImportedRDSTypeFromStrategyDbType,
   getKeySchema,
+  getModelDataSourceStrategy,
   getParameterStoreSecretPath,
   getPrimaryKeyFields,
   getResourceName,
   getSortKeyFieldNames,
   getTable,
+  isAmplifyDynamoDbModelDataSourceStrategy,
+  isDefaultDynamoDbModelDataSourceStrategy,
   isDynamoDbType,
-  isImportedRDSType,
   isMutationNode,
   isObjectTypeDefinitionNode,
   isQueryNode,
@@ -42,6 +48,11 @@ export {
   isSqlModel,
   isSqlStrategy,
   setResourceName,
+
+  // Exported but possibly unused
+  // TODO: Revisit these after the combine feature work. If they're not used, remove them
+  isDynamoDbModel,
+  isDynamoDbStrategy,
 } from './utils';
 export type { SetResourceNameProps } from './utils';
 export * from './utils/operation-names';
@@ -55,10 +66,8 @@ export {
 export { TransformerResolver, StackManager } from './transformer-context';
 export {
   DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
-  DDB_AMPLIFY_MANAGED_DATASOURCE_TYPE,
   DDB_DB_TYPE,
   DDB_DEFAULT_DATASOURCE_STRATEGY,
-  DDB_DEFAULT_DATASOURCE_TYPE,
   ImportAppSyncAPIInputs,
   ImportedDataSourceConfig,
   ImportedDataSourceType,

@@ -2,8 +2,6 @@ import {
   DirectiveWrapper,
   generateGetArgumentsInput,
   InvalidDirectiveError,
-  isSqlDbType,
-  isSqlStrategy,
   MappingTemplate,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
@@ -105,6 +103,13 @@ export class SqlTransformer extends TransformerPluginBase {
 
     this.sqlDirectiveFields.forEach((resolverFns) => {
       resolverFns.forEach((config) => {
+        const typeName = config.resolverTypeName;
+        const fieldName = config.resolverFieldName;
+        const strategy = context.sqlDirectiveDataSourceStrategies?.find((css) => css.typeName === typeName && css.fieldName === fieldName);
+        if (!strategy) {
+          throw new Error(`Could not find custom SQL strategy for ${typeName}.${fieldName}`);
+        }
+
         const { SQLLambdaDataSourceLogicalID: dataSourceId } = ResourceConstants.RESOURCES;
         let dataSource = context.api.host.getDataSource(dataSourceId);
 
@@ -112,19 +117,11 @@ export class SqlTransformer extends TransformerPluginBase {
         if (!dataSource) {
           const generator = new RdsModelResourceGenerator();
           generator.enableGenerator();
-          const typeName = config.resolverTypeName;
-          const fieldName = config.resolverFieldName;
-          const strategy = context.customSqlDataSourceStrategies?.find((css) => css.typeName === typeName && css.fieldName === fieldName);
-          // TODO: The isSqlDbType is redundant, but since the internals still use DataSourceType, we have to add a separate check for SQL
-          // db type. Remove this check once we refactor the internals to use ModelDataSourceStrategy
-          if (!strategy || !isSqlDbType(strategy.dataSourceType.dbType)) {
-            throw new Error(`Could not find custom SQL strategy for ${typeName}.${fieldName}`);
-          }
-          generator.generateResources(context, strategy.dataSourceType.dbType);
+          generator.generateResources(context, strategy.strategy);
           dataSource = context.api.host.getDataSource(dataSourceId);
         }
 
-        const statement = getStatement(config, context.customQueries);
+        const statement = getStatement(config, strategy.customSqlStatements);
         const resolverResourceId = ResolverResourceIDs.ResolverResourceID(config.resolverTypeName, config.resolverFieldName);
         const resolver = context.resolvers.generateQueryResolver(
           config.resolverTypeName,
@@ -167,8 +164,15 @@ const generateAuthExpressionForSandboxMode = (enabled: boolean): string => {
   );
 };
 
-const getStatement = (config: SqlDirectiveConfiguration, customQueries: Map<string, string>): string => {
-  if (config.reference && !customQueries.has(config.reference)) {
+const getStatement = (config: SqlDirectiveConfiguration, customQueries?: Record<string, string>): string => {
+  const getCustomQuery = (reference: string): string | undefined => {
+    if (customQueries === undefined) {
+      return undefined;
+    }
+    return customQueries[reference];
+  };
+
+  if (config.reference && !getCustomQuery(config.reference)) {
     throw new InvalidDirectiveError(
       `@sql directive 'reference' argument must be a valid custom query name. Check type "${config.resolverTypeName}" and field "${config.resolverFieldName}". The custom query "${config.reference}" does not exist in "sql-statements" directory.`,
     );
@@ -186,7 +190,7 @@ const getStatement = (config: SqlDirectiveConfiguration, customQueries: Map<stri
     );
   }
 
-  const statement = config.statement ?? customQueries.get(config.reference!);
+  const statement = config.statement ?? getCustomQuery(config.reference!);
   return statement!;
 };
 

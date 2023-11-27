@@ -1,17 +1,17 @@
 import { parse, FieldDefinitionNode, ObjectTypeDefinitionNode, visit } from 'graphql';
 import _ from 'lodash';
-import { isImportedRDSType } from '@aws-amplify/graphql-transformer-core';
-import { DataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
+import { isSqlStrategy } from '@aws-amplify/graphql-transformer-core';
+import { DataSourceStrategiesProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
-export const checkForUnsupportedDirectives = (schema: string, modelToDatasourceMap: Map<string, DataSourceType>): void => {
+export const checkForUnsupportedDirectives = (schema: string, context: DataSourceStrategiesProvider): void => {
   const unsupportedRDSDirectives = ['searchable', 'predictions', 'function', 'manyToMany', 'http', 'mapsTo'];
-  if (_.isEmpty(schema) || _.isEmpty(modelToDatasourceMap)) {
+  if (_.isEmpty(schema) || _.isEmpty(context.dataSourceStrategies)) {
     return;
   }
 
-  // get all the models in the modelToDatasourceMap that are backed by RDS whose value is present in the db_type property inside the map
-  const rdsModels = Array.from(modelToDatasourceMap?.entries())
-    .filter(([key, value]) => isImportedRDSType(value))
+  // get all the models in the modelToDatasourceMap that are backed by SQL whose value is present in the db_type property inside the map
+  const rdsModels = Object.entries(context.dataSourceStrategies)
+    .filter(([key, value]) => isSqlStrategy(value))
     .map(([key, value]) => key);
 
   if (_.isEmpty(rdsModels)) {
@@ -70,4 +70,5 @@ const getParentName = (ancestors: any[]): string | undefined => {
   if (ancestors && ancestors?.length > 0) {
     return (ancestors[ancestors.length - 1] as ObjectTypeDefinitionNode)?.name?.value;
   }
+  return undefined;
 };

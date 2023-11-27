@@ -18,7 +18,7 @@ import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { IFunction, CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
 import { AmplifyDynamoDbTableWrapper } from './amplify-dynamodb-table-wrapper';
-import { CustomSqlDataSourceStrategy, ModelDataSourceStrategy } from './model-datasource-strategy';
+import { CustomSqlDataSourceStrategy, ModelDataSourceStrategy } from './model-datasource-strategy-types';
 
 /**
  * Configuration for IAM Authorization on the Graphql Api.

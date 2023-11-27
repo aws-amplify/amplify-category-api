@@ -19,17 +19,17 @@ import {
   TransformerPluginProvider,
   TransformerLog,
   TransformerLogLevel,
-  VpcConfig,
-  RDSLayerMapping,
   NestedStackProvider,
   AssetProvider,
   SynthParameters,
   TransformParameterProvider,
-  DataSourceType,
-  ProvisionedConcurrencyConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import type { CustomSqlDataSourceStrategy, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
-import { GraphQLTransform, RDSConnectionSecrets, ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
+import type {
+  DataSourceStrategiesProvider,
+  RDSLayerMappingProvider,
+  TransformParameters,
+} from '@aws-amplify/graphql-transformer-interfaces';
+import { GraphQLTransform, ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 import { Construct } from 'constructs';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 
@@ -53,9 +53,6 @@ export type TransformConfig = {
   userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   stackMapping?: Record<string, string>;
   transformParameters: TransformParameters;
-  sqlLambdaVpcConfig?: VpcConfig;
-  rdsLayerMapping?: RDSLayerMapping;
-  sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
 };
 
 export const constructTransformerChain = (options?: TransformerFactoryArgs): TransformerPluginProvider[] => {
@@ -91,17 +88,7 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
  * @returns the GraphQLTransform object, which can be used for transformation or preprocessing a given schema.
  */
 export const constructTransform = (config: TransformConfig): GraphQLTransform => {
-  const {
-    transformersFactoryArgs,
-    authConfig,
-    resolverConfig,
-    userDefinedSlots,
-    stackMapping,
-    transformParameters,
-    sqlLambdaVpcConfig,
-    rdsLayerMapping,
-    sqlLambdaProvisionedConcurrencyConfig,
-  } = config;
+  const { transformersFactoryArgs, authConfig, resolverConfig, userDefinedSlots, stackMapping, transformParameters } = config;
 
   const transformers = constructTransformerChain(transformersFactoryArgs);
 
@@ -112,28 +99,20 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
     transformParameters,
     userDefinedSlots,
     resolverConfig,
-    sqlLambdaVpcConfig,
-    rdsLayerMapping,
-    sqlLambdaProvisionedConcurrencyConfig,
   });
 };
 
-export type ExecuteTransformConfig = TransformConfig & {
-  schema: string;
-  modelToDatasourceMap?: Map<string, DataSourceType>;
-  customQueries?: Map<string, string>;
-  customSqlDataSourceStrategies?: CustomSqlDataSourceStrategy[];
-  datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
-  printTransformerLog?: (log: TransformerLog) => void;
-  sqlLambdaVpcConfig?: VpcConfig;
-  rdsLayerMapping?: RDSLayerMapping;
-  scope: Construct;
-  nestedStackProvider: NestedStackProvider;
-  parameterProvider?: TransformParameterProvider;
-  assetProvider: AssetProvider;
-  synthParameters: SynthParameters;
-  sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
-};
+export type ExecuteTransformConfig = TransformConfig &
+  DataSourceStrategiesProvider &
+  RDSLayerMappingProvider & {
+    schema: string;
+    printTransformerLog?: (log: TransformerLog) => void;
+    scope: Construct;
+    nestedStackProvider: NestedStackProvider;
+    parameterProvider?: TransformParameterProvider;
+    assetProvider: AssetProvider;
+    synthParameters: SynthParameters;
+  };
 
 /**
  * By default, rely on console to print out the transformer logs.
@@ -165,37 +144,31 @@ export const defaultPrintTransformerLog = (log: TransformerLog): void => {
  */
 export const executeTransform = (config: ExecuteTransformConfig): void => {
   const {
-    schema,
-    modelToDatasourceMap,
-    customSqlDataSourceStrategies,
-    datasourceSecretParameterLocations,
+    assetProvider,
+    dataSourceStrategies,
+    nestedStackProvider,
+    parameterProvider,
     printTransformerLog,
     rdsLayerMapping,
+    schema,
     scope,
-    nestedStackProvider,
-    assetProvider,
+    sqlDirectiveDataSourceStrategies,
     synthParameters,
-    customQueries,
-    parameterProvider,
   } = config;
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
   const transform = constructTransform(config);
   try {
     transform.transform({
-      scope,
+      assetProvider,
+      dataSourceStrategies,
       nestedStackProvider,
       parameterProvider,
-      assetProvider,
-      synthParameters,
+      rdsLayerMapping,
       schema,
-      datasourceConfig: {
-        modelToDatasourceMap,
-        customSqlDataSourceStrategies,
-        datasourceSecretParameterLocations,
-        rdsLayerMapping,
-        customQueries,
-      },
+      scope,
+      sqlDirectiveDataSourceStrategies,
+      synthParameters,
     });
   } finally {
     transform.getLogs().forEach(printLog);

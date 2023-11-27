@@ -4,6 +4,7 @@ import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import { ListValueNode, ObjectTypeDefinitionNode, StringValueNode, TypeNode } from 'graphql';
 import { ModelResourceIDs, getBaseType } from 'graphql-transformer-common';
+import { getModelDataSourceStrategy } from './model-datasource-strategy-utils';
 
 /**
  * getKeySchema
@@ -49,13 +50,10 @@ export const getSortKeyFieldNames = (type: ObjectTypeDefinitionNode): string[] =
 };
 
 /**
- * Get DB type from the transformer context
+ * Get ModelDataSourceStrategyDbType from the transformer context
  */
-export const getDataSourceType = (type: TypeNode, ctx: TransformerContextProvider): ModelDataSourceStrategyDbType => {
+export const getStrategyDbTypeFromTypeNode = (type: TypeNode, ctx: TransformerContextProvider): ModelDataSourceStrategyDbType => {
   const baseTypeName = getBaseType(type);
-  const dataSourceType = ctx.modelToDatasourceMap.get(baseTypeName);
-  if (!dataSourceType) {
-    throw new Error(`No datasource found for type ${baseTypeName}`);
-  }
-  return dataSourceType.dbType;
+  const strategy = getModelDataSourceStrategy(ctx, baseTypeName);
+  return strategy.dbType;
 };

@@ -1,4 +1,3 @@
-import { DDB_DEFAULT_DATASOURCE_TYPE } from '@aws-amplify/graphql-transformer-core';
 import { GraphQLClient } from './utils/graphql-client';
 import { defaultTransformParams, deploy, launchDDBLocal, logDebug, terminateDDB, transformAndSynth } from './utils/index';
 
@@ -26,11 +25,6 @@ beforeAll(async () => {
         ...defaultTransformParams.transformParameters,
         useSubUsernameForDefaultIdentityClaim: false,
       },
-      modelToDatasourceMap: new Map(
-        Object.entries({
-          Todo: DDB_DEFAULT_DATASOURCE_TYPE,
-        }),
-      ),
     });
 
     let ddbClient;

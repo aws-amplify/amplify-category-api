@@ -3,7 +3,6 @@ import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnDomain } from 'aws-cdk-lib/aws-elasticsearch';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import { ModelDataSourceStrategyDbType } from '../model-datasource';
 
 export enum AppSyncDataSourceType {
   AMAZON_DYNAMODB = 'AMAZON_DYNAMODB',
@@ -27,37 +26,3 @@ export interface TransformerDataSourceManagerProvider {
 }
 
 export interface DataSourceProvider extends BackedDataSource {}
-
-// TODO: Remove this type in favor of fully-specified SQLLambdaModelDataSourceStrategy from amplify-graphql-api-construct
-export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy | SQLLambdaModelProvisionStrategy;
-
-/**
- * Provisioning configuration for a DynamoDB datasource. TODO: Remove this type in favor of strategy definitions in
- * amplify-graphql-api-construct
- */
-// TODO: Remove this type in favor of fully-specified SQLLambdaModelDataSourceStrategy from amplify-graphql-api-construct
-export const enum DynamoDBProvisionStrategy {
-  /**
-   * Use default CloudFormation resource of `AWS::DynamoDB::Table`
-   */
-  DEFAULT = 'DEFAULT',
-  /**
-   * Use custom resource type `Custom::AmplifyDynamoDBTable`
-   */
-  AMPLIFY_TABLE = 'AMPLIFY_TABLE',
-}
-
-// TODO: Remove this type in favor of fully-specified SQLLambdaModelDataSourceStrategy from amplify-graphql-api-construct
-export const enum SQLLambdaModelProvisionStrategy {
-  /**
-   * A strategy that creates a Lambda to connect to a pre-existing SQL table to resolve model data.
-   */
-  DEFAULT = 'DEFAULT',
-}
-
-// TODO: Replace usages of this type with ModelDataSourceStrategy
-export interface DataSourceType {
-  dbType: ModelDataSourceStrategyDbType;
-  provisionDB: boolean;
-  provisionStrategy: DataSourceProvisionStrategy;
-}

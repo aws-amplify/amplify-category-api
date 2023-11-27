@@ -1,9 +1,9 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { MYSQL_DB_TYPE, constructDataSourceStrategies, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { DataSourceType, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DefaultValueTransformer } from '..';
 
 describe('DefaultValueModelTransformer:', () => {
@@ -314,7 +314,7 @@ describe('DefaultValueModelTransformer:', () => {
     validateModelSchema(schema);
   });
 
-  it('default value type should not be validated for rds datasource', async () => {
+  it('default value type should not be validated for sql datasource', async () => {
     const validSchema = `
       type Note @model {
           id: ID! @primaryKey
@@ -323,16 +323,21 @@ describe('DefaultValueModelTransformer:', () => {
       }
     `;
 
-    const modelToDatasourceMap = new Map<string, DataSourceType>();
-    modelToDatasourceMap.set('Note', {
-      dbType: 'MYSQL',
-      provisionDB: false,
-      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-    });
+    const mySqlStrategy: SQLLambdaModelDataSourceStrategy = {
+      name: 'mySqlStrategy',
+      dbType: MYSQL_DB_TYPE,
+      dbConnectionConfig: {
+        databaseNameSsmPath: '/databaseNameSsmPath',
+        hostnameSsmPath: '/hostnameSsmPath',
+        passwordSsmPath: '/passwordSsmPath',
+        portSsmPath: '/portSsmPath',
+        usernameSsmPath: '/usernameSsmPath',
+      },
+    };
     const out = testTransform({
       schema: validSchema,
       transformers: [new ModelTransformer(), new DefaultValueTransformer(), new PrimaryKeyTransformer()],
-      modelToDatasourceMap,
+      dataSourceStrategies: constructDataSourceStrategies(validSchema, mySqlStrategy),
     });
     expect(out).toBeDefined();
 

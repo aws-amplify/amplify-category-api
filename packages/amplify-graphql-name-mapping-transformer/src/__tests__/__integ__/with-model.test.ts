@@ -1,22 +1,35 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
-import { DDB_DEFAULT_DATASOURCE_TYPE, MYSQL_DB_TYPE, constructDataSourceMap } from '@aws-amplify/graphql-transformer-core';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { DataSourceType, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { DDB_DEFAULT_DATASOURCE_STRATEGY, MYSQL_DB_TYPE, constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
+import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { ModelDataSourceStrategy, SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { RefersToTransformer } from '../../graphql-refers-to-transformer';
 import { testTableNameMapping, testColumnNameMapping } from './common';
 
+const mySqlStrategy: SQLLambdaModelDataSourceStrategy = {
+  name: 'mySqlStrategy',
+  dbType: MYSQL_DB_TYPE,
+  dbConnectionConfig: {
+    databaseNameSsmPath: '/databaseNameSsmPath',
+    hostnameSsmPath: '/hostnameSsmPath',
+    passwordSsmPath: '/passwordSsmPath',
+    portSsmPath: '/portSsmPath',
+    usernameSsmPath: '/usernameSsmPath',
+  },
+};
+
 const transformSchema = (
   schema: string,
-  dataSourceType: DataSourceType,
+  strategy: ModelDataSourceStrategy,
 ): DeploymentResources & {
   logs: any[];
 } => {
   return testTransform({
     schema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new MapsToTransformer(), new RefersToTransformer()],
-    modelToDatasourceMap: constructDataSourceMap(schema, dataSourceType),
+    dataSourceStrategies: constructDataSourceStrategies(schema, strategy),
     transformParameters: {
       sandboxModeEnabled: true,
     },
@@ -31,7 +44,7 @@ describe('@mapsTo directive on model type', () => {
         title: String!
       }
     `;
-    const out = transformSchema(basicSchema, DDB_DEFAULT_DATASOURCE_TYPE);
+    const out = transformSchema(basicSchema, DDB_DEFAULT_DATASOURCE_STRATEGY);
     expect(out.stacks.Task.Resources!.TaskTable!.Properties.TableName).toMatchInlineSnapshot(`
       Object {
         "Fn::Join": Array [
@@ -81,11 +94,7 @@ describe('@refersTo with SQL Models', () => {
         title: String!
       }
     `;
-    const out = transformSchema(basicSchema, {
-      dbType: MYSQL_DB_TYPE,
-      provisionDB: false,
-      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-    });
+    const out = transformSchema(basicSchema, mySqlStrategy);
     testTableNameMapping('Todo', 'Task', out);
   });
 
@@ -96,11 +105,7 @@ describe('@refersTo with SQL Models', () => {
         title: String! @refersTo(name: "description")
       }
     `;
-    const out = transformSchema(basicSchema, {
-      dbType: MYSQL_DB_TYPE,
-      provisionDB: false,
-      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-    });
+    const out = transformSchema(basicSchema, mySqlStrategy);
     testColumnNameMapping('Todo', out);
   });
 });

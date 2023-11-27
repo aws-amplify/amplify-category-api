@@ -1,9 +1,9 @@
 import {
-  DDB_DB_TYPE,
   DirectiveWrapper,
   generateGetArgumentsInput,
   InputObjectDefinitionWrapper,
   InvalidDirectiveError,
+  isDynamoDbModel,
   MappingTemplate,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
@@ -82,16 +82,11 @@ const validate = (ctx: TransformerSchemaVisitStepContextProvider, config: Defaul
   validateDirectiveArguments(config.directive);
 
   // Validate the default values only for the DynamoDB datasource.
-  // For RDS, the database determines and sets the default value. We will not validate the value in transformers.
-  const isDynamoDB = isDynamoDBDatasource(ctx, config.object.name.value);
+  // For SQL, the database determines and sets the default value. We will not validate the value in transformers.
+  const isDynamoDB = isDynamoDbModel(ctx, config.object.name.value);
   if (isDynamoDB) {
     validateDefaultValueType(ctx, config);
   }
-};
-
-const isDynamoDBDatasource = (ctx: TransformerSchemaVisitStepContextProvider, modelName: string): boolean => {
-  const isDynamoDB = (ctx.modelToDatasourceMap.get(modelName)?.dbType ?? DDB_DB_TYPE) === DDB_DB_TYPE;
-  return isDynamoDB;
 };
 
 export class DefaultValueTransformer extends TransformerPluginBase {
@@ -141,7 +136,7 @@ export class DefaultValueTransformer extends TransformerPluginBase {
 
     for (const typeName of this.directiveMap.keys()) {
       // Set the default value only for DDB datasource. For RDS, the database will set the value.
-      const isDynamoDB = isDynamoDBDatasource(ctx, typeName);
+      const isDynamoDB = isDynamoDbModel(ctx, typeName);
       if (!isDynamoDB) {
         continue;
       }

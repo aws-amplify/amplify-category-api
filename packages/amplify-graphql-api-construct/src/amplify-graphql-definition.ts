@@ -1,8 +1,8 @@
 import * as os from 'os';
 import { SchemaFile } from 'aws-cdk-lib/aws-appsync';
 import { IAmplifyGraphqlDefinition } from './types';
-import { constructDataSourceStrategyMap } from './internal';
-import { ModelDataSourceStrategy } from './model-datasource-strategy';
+import { constructDataSourceStrategies } from './internal';
+import { ModelDataSourceStrategy } from './model-datasource-strategy-types';
 import { constructCustomSqlDataSourceStrategies } from './internal/data-source-config';
 
 export const DEFAULT_MODEL_DATA_SOURCE_STRATEGY: ModelDataSourceStrategy = {
@@ -33,7 +33,7 @@ export class AmplifyGraphqlDefinition {
       schema,
       functionSlots: [],
       referencedLambdaFunctions: {},
-      dataSourceStrategies: constructDataSourceStrategyMap(schema, dataSourceStrategy),
+      dataSourceStrategies: constructDataSourceStrategies(schema, dataSourceStrategy),
       customSqlDataSourceStrategies: constructCustomSqlDataSourceStrategies(schema, dataSourceStrategy),
     };
   }

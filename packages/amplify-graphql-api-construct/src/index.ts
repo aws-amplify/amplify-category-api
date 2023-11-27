@@ -43,4 +43,4 @@ export {
   StreamSpecification,
 } from './amplify-dynamodb-table-wrapper';
 export { SQLLambdaModelDataSourceStrategyFactory } from './sql-model-datasource-strategy';
-export * from './model-datasource-strategy';
+export * from './model-datasource-strategy-types';

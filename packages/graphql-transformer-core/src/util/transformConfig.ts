@@ -170,7 +170,12 @@ interface ProjectConfiguration {
     [k: string]: Template;
   };
   config: TransformConfig;
+
+  /** TODO: Remove this type when we migrate our SQL E2E tests to use the CDK construct rather than the Gen1 CLI to provision an API. This
+   * is not compatible with transformer internals. */
   modelToDatasourceMap: Map<string, DataSourceType>;
+  /** TODO: Remove this type when we migrate our SQL E2E tests to use the CDK construct rather than the Gen1 CLI to provision an API. This
+   * is not compatible with transformer internals. */
   customQueries: Map<string, string>;
 }
 export const loadProject = async (projectDirectory: string, opts?: ProjectOptions): Promise<ProjectConfiguration> => {
@@ -402,13 +407,16 @@ async function readSchemaDocuments(schemaDirectoryPath: string): Promise<string[
 }
 
 /**
- * Supported transformable database types.
+ * Supported transformable database types. TODO: Remove this type when we migrate our SQL E2E tests to use the CDK construct rather than the
+ * Gen1 CLI to provision an API. That said, the DBType values in this type are compatible with those in `ModelDataSourceStrategyDbType`, so
+ * it's safe to use these values as-is in the transformer internals.
  */
 export type DBType = 'DYNAMODB' | 'MYSQL' | 'POSTGRES';
 
 /**
  * Configuration for a datasource. Defines the underlying database engine, and instructs the tranformer whether to provision the database
- * storage or whether it already exists.
+ * storage or whether it already exists. TODO: Remove this type when we migrate our SQL E2E tests to use the CDK construct rather than the
+ * Gen1 CLI to provision an API. This is not compatible with transformer internals.
  */
 export interface DataSourceType {
   dbType: DBType;
@@ -416,6 +424,8 @@ export interface DataSourceType {
   provisionStrategy: DataSourceProvisionStrategy;
 }
 
+/** TODO: Remove this type when we migrate our SQL E2E tests to use the CDK construct rather than the Gen1 CLI to provision an API. This
+ * is not compatible with transformer internals. */
 export const enum DynamoDBProvisionStrategy {
   /**
    * Use default cloud formation resource of `AWS::DynamoDB::Table`
@@ -427,9 +437,12 @@ export const enum DynamoDBProvisionStrategy {
   AMPLIFY_TABLE = 'AMPLIFY_TABLE',
 }
 
-// TODO: add strategy for the RDS
+/** TODO: Remove this type when we migrate our SQL E2E tests to use the CDK construct rather than the Gen1 CLI to provision an API. This
+ * is not compatible with transformer internals. */
 export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy;
 
+/** TODO: Remove this when we migrate our SQL E2E tests to use the CDK construct rather than the Gen1 CLI to provision an API. This
+ * is not compatible with transformer internals. */
 const constructDataSourceType = (
   dbType: DBType,
   provisionDB = true,

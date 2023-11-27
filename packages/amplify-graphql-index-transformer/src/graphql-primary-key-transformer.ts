@@ -3,7 +3,8 @@ import {
   generateGetArgumentsInput,
   InvalidDirectiveError,
   TransformerPluginBase,
-  isImportedRDSType,
+  isSqlDbType,
+  getModelDataSourceStrategy,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
@@ -102,8 +103,8 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
 
   generateResolvers = (ctx: TransformerContextProvider): void => {
     for (const config of this.directiveList) {
-      const dbInfo = ctx.modelToDatasourceMap.get(config.object.name.value);
-      const vtlGenerator = getVTLGenerator(dbInfo);
+      const dbType = getModelDataSourceStrategy(ctx, config.object.name.value).dbType;
+      const vtlGenerator = getVTLGenerator(dbType);
       vtlGenerator.generatePrimaryKeyVTL(config, ctx, this.resolverMap);
     }
   };
@@ -190,9 +191,9 @@ export const updateListField = (config: PrimaryKeyDirectiveConfiguration, ctx: T
   let listField = query.fields!.find((field: FieldDefinitionNode) => field.name.value === resolverName) as FieldDefinitionNode;
   if (listField) {
     const args = [createHashField(config)];
-    const dbType = ctx.modelToDatasourceMap.get(config.object.name.value);
+    const dbType = getModelDataSourceStrategy(ctx, config.object.name.value).dbType;
 
-    if (!dbType || !isImportedRDSType(dbType)) {
+    if (!dbType || !isSqlDbType(dbType)) {
       const sortField = tryAndCreateSortField(config, ctx);
       if (sortField) {
         args.push(sortField);

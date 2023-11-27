@@ -1,7 +1,8 @@
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
 import {
   DDB_DB_TYPE,
-  getDatasourceProvisionStrategy,
+  getModelDataSourceStrategy,
+  isAmplifyDynamoDbModelDataSourceStrategy,
   MappingTemplate,
   MYSQL_DB_TYPE,
   POSTGRES_DB_TYPE,
@@ -10,8 +11,6 @@ import {
   DataSourceProvider,
   TransformerContextProvider,
   TransformerResolverProvider,
-  DynamoDBProvisionStrategy,
-  DataSourceType,
   ModelDataSourceStrategyDbType,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
@@ -69,10 +68,8 @@ const API_KEY = 'API Key Authorization';
 export const replaceDdbPrimaryKey = (config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   // Replace the table's primary key with the value from @primaryKey
   const { field, object } = config;
-  const tableProvisionStrategy = getDatasourceProvisionStrategy(ctx, object.name.value);
-  const useAmplifyManagedTableResources: boolean = tableProvisionStrategy
-    ? tableProvisionStrategy === DynamoDBProvisionStrategy.AMPLIFY_TABLE
-    : false;
+  const strategy = getModelDataSourceStrategy(ctx, object.name.value);
+  const useAmplifyManagedTableResources = isAmplifyDynamoDbModelDataSourceStrategy(strategy);
   const table = getTable(ctx, object) as any;
   const cfnTable = useAmplifyManagedTableResources ? table.node.defaultChild.node.defaultChild : table.table;
   const tableAttrDefs = table.attributeDefinitions;
@@ -439,10 +436,8 @@ export const appendSecondaryIndex = (config: IndexDirectiveConfiguration, ctx: T
  * @param indexInfo global secondary index properties
  */
 export const overrideIndexAtCfnLevel = (ctx: TransformerContextProvider, typeName: string, table: any, indexInfo: any): void => {
-  const tableProvisionStrategy = getDatasourceProvisionStrategy(ctx, typeName);
-  const useAmplifyManagedTableResources: boolean = tableProvisionStrategy
-    ? tableProvisionStrategy === DynamoDBProvisionStrategy.AMPLIFY_TABLE
-    : false;
+  const strategy = getModelDataSourceStrategy(ctx, typeName);
+  const useAmplifyManagedTableResources = isAmplifyDynamoDbModelDataSourceStrategy(strategy);
 
   if (!useAmplifyManagedTableResources) {
     const cfnTable = table.table;
@@ -480,7 +475,7 @@ export const updateResolversForIndex = (
   const deleteResolver = getResolverObject(config, ctx, 'delete');
   const syncResolver = getResolverObject(config, ctx, 'sync');
 
-  const dbType = getDBType(ctx, object.name.value);
+  const dbType = getModelDataSourceStrategy(ctx, object.name.value).dbType;
   const isDynamoDB = isDynamoDbType(dbType);
 
   // Ensure any composite sort key values and validate update operations to
@@ -530,7 +525,6 @@ export const makeQueryResolver = (
     throw new Error('Expected name and queryField to be defined while generating resolver.');
   }
   const modelName = object.name.value;
-  const dbInfo = getDBInfo(ctx, modelName);
   let dataSourceName = `${object.name.value}Table`;
   if (!isDynamoDB) {
     dataSourceName = SQLLambdaDataSourceLogicalID;
@@ -555,7 +549,7 @@ export const makeQueryResolver = (
     resolverResourceId,
     dataSource as DataSourceProvider,
     MappingTemplate.s3MappingTemplateFromString(
-      getVTLGenerator(dbInfo).generateIndexQueryRequestTemplate(config, ctx, modelName, queryField),
+      getVTLGenerator(dbType).generateIndexQueryRequestTemplate(config, ctx, modelName, queryField),
       `${queryTypeName}.${queryField}.req.vtl`,
     ),
     MappingTemplate.s3MappingTemplateFromString(
@@ -920,21 +914,7 @@ export const generateAuthExpressionForSandboxMode = (enabled: boolean): string =
   );
 };
 
-export const getDBInfo = (ctx: TransformerContextProvider, modelName: string): DataSourceType => {
-  const dbInfo = ctx.modelToDatasourceMap.get(modelName);
-  if (!dbInfo) {
-    throw new Error(`No datasource found for model ${modelName}`);
-  }
-  return dbInfo;
-};
-
-export const getDBType = (ctx: TransformerContextProvider, modelName: string): ModelDataSourceStrategyDbType => {
-  const dbInfo = getDBInfo(ctx, modelName);
-  return dbInfo.dbType;
-};
-
-export const getVTLGenerator = (dbInfo: DataSourceType | undefined): RDSIndexVTLGenerator | DynamoDBIndexVTLGenerator => {
-  const dbType = dbInfo ? dbInfo.dbType : DDB_DB_TYPE;
+export const getVTLGenerator = (dbType: ModelDataSourceStrategyDbType | undefined): RDSIndexVTLGenerator | DynamoDBIndexVTLGenerator => {
   switch (dbType) {
     case DDB_DB_TYPE:
       return new DynamoDBIndexVTLGenerator();

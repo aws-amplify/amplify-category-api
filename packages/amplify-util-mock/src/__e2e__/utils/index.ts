@@ -7,8 +7,8 @@ import { DynamoDB } from 'aws-sdk';
 import { functionRuntimeContributorFactory } from 'amplify-nodejs-function-runtime-provider';
 import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
 import { DeploymentResources, TransformManager } from '@aws-amplify/graphql-transformer-test-utils';
-import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { constructDataSourceMap, DDB_DEFAULT_DATASOURCE_TYPE } from '@aws-amplify/graphql-transformer-core';
+import { AppSyncAuthConfiguration, ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { DDB_DEFAULT_DATASOURCE_STRATEGY, constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
 import { processTransformerStacks } from '../../CFNParser/appsync-resource-processor';
 import { configureDDBDataSource, createAndUpdateTable } from '../../utils/dynamo-db';
 import { getFunctionDetails } from './lambda-helper';
@@ -35,7 +35,9 @@ const hasUserPoolAuth = (authConfig?: AppSyncAuthConfiguration): boolean =>
   getAuthenticationTypesForAuthConfig(authConfig).some((authType) => authType === 'AMAZON_COGNITO_USER_POOLS');
 
 export const transformAndSynth = (
-  options: Omit<ExecuteTransformConfig, 'scope' | 'nestedStackProvider' | 'assetProvider' | 'synthParameters'>,
+  options: Omit<ExecuteTransformConfig, 'scope' | 'nestedStackProvider' | 'assetProvider' | 'synthParameters' | 'dataSourceStrategies'> & {
+    dataSourceStrategies?: Record<string, ModelDataSourceStrategy>;
+  },
 ): DeploymentResources => {
   const transformManager = new TransformManager();
   executeTransform({
@@ -44,7 +46,7 @@ export const transformAndSynth = (
     nestedStackProvider: transformManager.getNestedStackProvider(),
     assetProvider: transformManager.getAssetProvider(),
     synthParameters: transformManager.getSynthParameters(hasIamAuth(options.authConfig), hasUserPoolAuth(options.authConfig)),
-    modelToDatasourceMap: constructDataSourceMap(options.schema, DDB_DEFAULT_DATASOURCE_TYPE),
+    dataSourceStrategies: options.dataSourceStrategies ?? constructDataSourceStrategies(options.schema, DDB_DEFAULT_DATASOURCE_STRATEGY),
   });
   return transformManager.generateDeploymentResources();
 };
