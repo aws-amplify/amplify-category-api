@@ -1,8 +1,8 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { BelongsToTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { DDB_DB_TYPE, MYSQL_DB_TYPE, constructDataSourceMap } from '@aws-amplify/graphql-transformer-core';
-import { DataSourceType, DynamoDBProvisionStrategy, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { DDB_DEFAULT_DATASOURCE_TYPE, MYSQL_DB_TYPE, constructDataSourceMap } from '@aws-amplify/graphql-transformer-core';
+import { DataSourceType, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { RefersToTransformer } from '../../graphql-refers-to-transformer';
 import { MapsToTransformer } from '../../graphql-maps-to-transformer';
@@ -83,15 +83,9 @@ const transformSchema = (
   });
 };
 
-const DEFAULT_DYNAMODB_DATASOURCE_TYPE: DataSourceType = {
-  dbType: DDB_DB_TYPE,
-  provisionDB: true,
-  provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
-};
-
 describe('@mapsTo with @hasOne', () => {
   it('adds CRUD input and output mappings on hasOne type', () => {
-    const out = transformSchema(mappedHasOne, DEFAULT_DYNAMODB_DATASOURCE_TYPE);
+    const out = transformSchema(mappedHasOne, DDB_DEFAULT_DATASOURCE_TYPE);
     const expectedResolvers: string[] = expectedResolversForModelWithRenamedField('Employee');
     expectedResolvers.forEach((resolver) => {
       expect(out.resolvers[resolver]).toMatchSnapshot();
@@ -99,7 +93,7 @@ describe('@mapsTo with @hasOne', () => {
   });
 
   it('if belongsTo related type is renamed, adds mappings when fetching related type through hasOne field', () => {
-    const out = transformSchema(mappedBelongsTo, DEFAULT_DYNAMODB_DATASOURCE_TYPE);
+    const out = transformSchema(mappedBelongsTo, DDB_DEFAULT_DATASOURCE_TYPE);
     expect(out.resolvers['Employee.task.postDataLoad.1.res.vtl']).toMatchInlineSnapshot(`
       "$util.qr($ctx.prev.result.put(\\"taskEmployeeId\\", $ctx.prev.result.todoEmployeeId))
       $util.qr($ctx.prev.result.remove(\\"todoEmployeeId\\"))
@@ -108,7 +102,7 @@ describe('@mapsTo with @hasOne', () => {
   });
 
   it('if bi-di hasOne, remaps foreign key in both types', () => {
-    const out = transformSchema(biDiHasOneMapped, DEFAULT_DYNAMODB_DATASOURCE_TYPE);
+    const out = transformSchema(biDiHasOneMapped, DDB_DEFAULT_DATASOURCE_TYPE);
     expect(out.resolvers['Employee.task.postDataLoad.1.res.vtl']).toMatchInlineSnapshot(`
       "$util.qr($ctx.prev.result.put(\\"taskEmployeeId\\", $ctx.prev.result.todoEmployeeId))
       $util.qr($ctx.prev.result.remove(\\"todoEmployeeId\\"))
