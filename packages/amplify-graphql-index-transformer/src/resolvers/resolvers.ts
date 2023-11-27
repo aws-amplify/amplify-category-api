@@ -481,7 +481,7 @@ export const updateResolversForIndex = (
   const syncResolver = getResolverObject(config, ctx, 'sync');
 
   const dbType = getDBType(ctx, object.name.value);
-  const isDynamoDB = dbType === 'DYNAMODB';
+  const isDynamoDB = isDynamoDbType(dbType);
 
   // Ensure any composite sort key values and validate update operations to
   // protect the integrity of composite sort keys.
