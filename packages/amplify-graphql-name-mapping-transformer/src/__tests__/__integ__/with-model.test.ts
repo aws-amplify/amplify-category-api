@@ -1,9 +1,9 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
-import { DDB_DB_TYPE, MYSQL_DB_TYPE, constructDataSourceMap } from '@aws-amplify/graphql-transformer-core';
+import { DDB_DEFAULT_DATASOURCE_TYPE, MYSQL_DB_TYPE, constructDataSourceMap } from '@aws-amplify/graphql-transformer-core';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { DataSourceType, DynamoDBProvisionStrategy, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { DataSourceType, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { RefersToTransformer } from '../../graphql-refers-to-transformer';
 import { testTableNameMapping, testColumnNameMapping } from './common';
 
@@ -31,11 +31,7 @@ describe('@mapsTo directive on model type', () => {
         title: String!
       }
     `;
-    const out = transformSchema(basicSchema, {
-      dbType: DDB_DB_TYPE,
-      provisionDB: true,
-      provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
-    });
+    const out = transformSchema(basicSchema, DDB_DEFAULT_DATASOURCE_TYPE);
     expect(out.stacks.Task.Resources!.TaskTable!.Properties.TableName).toMatchInlineSnapshot(`
       Object {
         "Fn::Join": Array [
