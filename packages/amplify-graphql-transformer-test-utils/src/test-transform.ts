@@ -1,9 +1,4 @@
-import {
-  AppSyncAuthConfiguration,
-  TransformerPluginProvider,
-  TransformerLogLevel,
-  DynamoDBProvisionStrategy,
-} from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncAuthConfiguration, TransformerPluginProvider, TransformerLogLevel } from '@aws-amplify/graphql-transformer-interfaces';
 import type {
   DataSourceType,
   CustomSqlDataSourceStrategy,
@@ -12,7 +7,7 @@ import type {
   VpcConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
-  DDB_DB_TYPE,
+  DDB_DEFAULT_DATASOURCE_TYPE,
   GraphQLTransform,
   RDSConnectionSecrets,
   ResolverConfig,
@@ -77,12 +72,6 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     (authConfigEntry) => authConfigEntry?.authenticationType,
   );
 
-  const DDB_DATASOURCE_TYPE: DataSourceType = {
-    dbType: DDB_DB_TYPE,
-    provisionDB: true,
-    provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
-  };
-
   transform.transform({
     scope: transformManager.getTransformScope(),
     nestedStackProvider: transformManager.getNestedStackProvider(),
@@ -96,7 +85,7 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     },
     schema,
     datasourceConfig: {
-      modelToDatasourceMap: modelToDatasourceMap ?? constructDataSourceMap(schema, DDB_DATASOURCE_TYPE),
+      modelToDatasourceMap: modelToDatasourceMap ?? constructDataSourceMap(schema, DDB_DEFAULT_DATASOURCE_TYPE),
       datasourceSecretParameterLocations,
       customQueries,
       customSqlDataSourceStrategies,

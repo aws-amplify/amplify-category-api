@@ -40,20 +40,10 @@ test('fails if @belongsTo was used with a related type that is not a model', () 
       name: String!
     }`;
 
-  const DDB_DATASOURCE_TYPE: DataSourceType = {
-    dbType: DDB_DB_TYPE,
-    provisionDB: true,
-    provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
-  };
-
   expect(() =>
     testTransform({
       schema: inputSchema,
       transformers: [new ModelTransformer(), new BelongsToTransformer()],
-      modelToDatasourceMap: new Map([
-        ['Test', DDB_DATASOURCE_TYPE],
-        ['Test1', DDB_DATASOURCE_TYPE],
-      ]),
     }),
   ).toThrowError('Object type Test1 must be annotated with @model.');
 });

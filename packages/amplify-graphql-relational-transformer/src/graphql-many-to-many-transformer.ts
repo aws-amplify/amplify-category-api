@@ -1,5 +1,5 @@
 import {
-  DDB_DB_TYPE,
+  DDB_DEFAULT_DATASOURCE_TYPE,
   DirectiveWrapper,
   InvalidDirectiveError,
   TransformerPluginBase,
@@ -16,7 +16,6 @@ import {
   TransformerValidationStepContextProvider,
   TransformerPreProcessContextProvider,
   DataSourceStrategiesProvider,
-  DynamoDBProvisionStrategy,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   DirectiveNode,
@@ -514,11 +513,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
  * context, but the many to many join table will always be created using the DynamoDB default provisioning strategy.
  */
 const addJoinTableToModelToDatasourceMap = (ctx: DataSourceStrategiesProvider, relationName: string): void => {
-  ctx.modelToDatasourceMap.set(relationName, {
-    dbType: DDB_DB_TYPE,
-    provisionDB: true,
-    provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
-  });
+  ctx.modelToDatasourceMap.set(relationName, DDB_DEFAULT_DATASOURCE_TYPE);
 };
 
 function addDirectiveToRelationMap(map: Map<string, ManyToManyRelation>, directive: ManyToManyDirectiveConfiguration): void {
