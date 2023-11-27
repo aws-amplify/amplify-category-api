@@ -15,8 +15,16 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
   TransformerPreProcessContextProvider,
+  ModelDataSourceStrategyDbType,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { DirectiveNode, DocumentNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
+import {
+  DirectiveNode,
+  DocumentNode,
+  FieldDefinitionNode,
+  InterfaceTypeDefinitionNode,
+  NamedTypeNode,
+  ObjectTypeDefinitionNode,
+} from 'graphql';
 import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 import produce from 'immer';
 import { WritableDraft } from 'immer/dist/types/types-external';
@@ -178,9 +186,20 @@ export class BelongsToTransformer extends TransformerPluginBase {
 const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field, object } = config;
 
-  const dbType = getDataSourceType(field.type, ctx);
-  config.relatedType = getRelatedType(config, ctx);
+  let dbType: ModelDataSourceStrategyDbType;
+  try {
+    // getDataSourceType throws if a datasource is not found for the model. We want to catch that condition here to provide a friendlier
+    // error message, since the most likely error scenario is that the customer neglected to annotate one of the types with `@model`. Since
+    // this transformer gets invoked on both sides of the `belongsTo` relationship, a failure at this point is about the field itself, not
+    // the related type.
+    dbType = getDataSourceType(field.type, ctx);
+  } catch {
+    throw new InvalidDirectiveError(
+      `Object type ${(field.type as NamedTypeNode)?.name.value ?? field.name} must be annotated with @model.`,
+    );
+  }
 
+  config.relatedType = getRelatedType(config, ctx);
   if (dbType === DDB_DB_TYPE) {
     ensureFieldsArray(config);
     config.fieldNodes = getFieldsNodes(config, ctx);
