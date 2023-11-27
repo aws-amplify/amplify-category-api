@@ -347,7 +347,7 @@ test('@function directive applied to Object should throw Error', () => {
   ).toThrow('Directive "@function" may not be used on OBJECT.');
 });
 
-test.only('includes auth info in stash', () => {
+test('includes auth info in stash', () => {
   const validSchema = `
     type Query {
       myFunction(userId: ID!): String
