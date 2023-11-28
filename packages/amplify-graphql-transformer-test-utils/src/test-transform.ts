@@ -6,7 +6,14 @@ import type {
   TransformParameters,
   VpcConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { GraphQLTransform, RDSConnectionSecrets, ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
+import {
+  DDB_DEFAULT_DATASOURCE_TYPE,
+  GraphQLTransform,
+  RDSConnectionSecrets,
+  ResolverConfig,
+  UserDefinedSlot,
+  constructDataSourceMap,
+} from '@aws-amplify/graphql-transformer-core';
 import { OverrideConfig, TransformManager } from './cdk-compat/transform-manager';
 import { DeploymentResources } from './deployment-resources';
 
@@ -78,7 +85,7 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     },
     schema,
     datasourceConfig: {
-      modelToDatasourceMap,
+      modelToDatasourceMap: modelToDatasourceMap ?? constructDataSourceMap(schema, DDB_DEFAULT_DATASOURCE_TYPE),
       datasourceSecretParameterLocations,
       customQueries,
       customSqlDataSourceStrategies,

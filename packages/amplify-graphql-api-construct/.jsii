@@ -3676,7 +3676,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy.ts",
-        "line": 34
+        "line": 41
       },
       "name": "AmplifyDynamoDbModelDataSourceStrategy",
       "properties": [
@@ -3688,7 +3688,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy.ts",
-            "line": 35
+            "line": 42
           },
           "name": "dbType",
           "type": {
@@ -3703,7 +3703,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy.ts",
-            "line": 36
+            "line": 43
           },
           "name": "provisionStrategy",
           "type": {
@@ -5790,13 +5790,15 @@
       "assembly": "@aws-amplify/graphql-api-construct",
       "datatype": true,
       "docs": {
-        "stability": "stable"
+        "remarks": "Although this is a\npublic type, you should rarely need to use this. The AmplifyGraphqlDefinition factory methods (e.g., `fromString`,\n`fromFilesAndStrategy`) will automatically construct this structure for you.",
+        "stability": "stable",
+        "summary": "The input type for defining a ModelDataSourceStrategy used to resolve a field annotated with a `@sql` directive."
       },
       "fqn": "@aws-amplify/graphql-api-construct.CustomSqlDataSourceStrategy",
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy.ts",
-        "line": 145
+        "line": 157
       },
       "name": "CustomSqlDataSourceStrategy",
       "properties": [
@@ -5808,7 +5810,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy.ts",
-            "line": 147
+            "line": 159
           },
           "name": "fieldName",
           "type": {
@@ -5823,7 +5825,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy.ts",
-            "line": 148
+            "line": 160
           },
           "name": "strategy",
           "type": {
@@ -5838,7 +5840,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy.ts",
-            "line": 146
+            "line": 158
           },
           "name": "typeName",
           "type": {
@@ -5859,7 +5861,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy.ts",
-        "line": 25
+        "line": 32
       },
       "name": "DefaultDynamoDbModelDataSourceStrategy",
       "properties": [
@@ -5871,7 +5873,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy.ts",
-            "line": 26
+            "line": 33
           },
           "name": "dbType",
           "type": {
@@ -5886,7 +5888,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy.ts",
-            "line": 27
+            "line": 34
           },
           "name": "provisionStrategy",
           "type": {
@@ -6892,7 +6894,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy.ts",
-        "line": 101
+        "line": 108
       },
       "name": "ProvisionedConcurrencyConfig",
       "properties": [
@@ -6906,7 +6908,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy.ts",
-            "line": 103
+            "line": 110
           },
           "name": "provisionedConcurrentExecutions",
           "type": {
@@ -7031,7 +7033,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy.ts",
-        "line": 44
+        "line": 51
       },
       "name": "SQLLambdaModelDataSourceStrategy",
       "properties": [
@@ -7044,7 +7046,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy.ts",
-            "line": 59
+            "line": 66
           },
           "name": "dbConnectionConfig",
           "type": {
@@ -7060,7 +7062,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy.ts",
-            "line": 54
+            "line": 61
           },
           "name": "dbType",
           "type": {
@@ -7077,7 +7079,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy.ts",
-            "line": 49
+            "line": 56
           },
           "name": "name",
           "type": {
@@ -7094,7 +7096,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy.ts",
-            "line": 70
+            "line": 77
           },
           "name": "customSqlStatements",
           "optional": true,
@@ -7116,7 +7118,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy.ts",
-            "line": 75
+            "line": 82
           },
           "name": "sqlLambdaProvisionedConcurrencyConfig",
           "optional": true,
@@ -7133,7 +7135,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy.ts",
-            "line": 64
+            "line": 71
           },
           "name": "vpcConfiguration",
           "optional": true,
@@ -7316,7 +7318,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy.ts",
-        "line": 126
+        "line": 133
       },
       "name": "SqlModelDataSourceDbConnectionConfig",
       "properties": [
@@ -7329,7 +7331,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy.ts",
-            "line": 142
+            "line": 149
           },
           "name": "databaseNameSsmPath",
           "type": {
@@ -7346,7 +7348,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy.ts",
-            "line": 130
+            "line": 137
           },
           "name": "hostnameSsmPath",
           "type": {
@@ -7362,7 +7364,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy.ts",
-            "line": 139
+            "line": 146
           },
           "name": "passwordSsmPath",
           "type": {
@@ -7378,7 +7380,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy.ts",
-            "line": 133
+            "line": 140
           },
           "name": "portSsmPath",
           "type": {
@@ -7394,7 +7396,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy.ts",
-            "line": 136
+            "line": 143
           },
           "name": "usernameSsmPath",
           "type": {
@@ -7451,7 +7453,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy.ts",
-        "line": 112
+        "line": 119
       },
       "name": "SubnetAvailabilityZone",
       "properties": [
@@ -7464,7 +7466,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy.ts",
-            "line": 117
+            "line": 124
           },
           "name": "availabilityZone",
           "type": {
@@ -7480,7 +7482,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy.ts",
-            "line": 114
+            "line": 121
           },
           "name": "subnetId",
           "type": {
@@ -7892,7 +7894,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy.ts",
-        "line": 86
+        "line": 93
       },
       "name": "VpcConfig",
       "properties": [
@@ -7905,7 +7907,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy.ts",
-            "line": 91
+            "line": 98
           },
           "name": "securityGroupIds",
           "type": {
@@ -7926,7 +7928,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy.ts",
-            "line": 94
+            "line": 101
           },
           "name": "subnetAvailabilityZoneConfig",
           "type": {
@@ -7947,7 +7949,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy.ts",
-            "line": 88
+            "line": 95
           },
           "name": "vpcId",
           "type": {
@@ -7959,5 +7961,5 @@
     }
   },
   "version": "1.4.3",
-  "fingerprint": "d7KHN704ICqllvl5+IW+UJnP4Hl9WRhIrdriyCzjbRk="
+  "fingerprint": "cuAzPvIpUk9/V6diCUbNbBrOumGIc4yJ7vCxD8JrAR0="
 }

@@ -2,8 +2,13 @@
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import { DDB_DB_TYPE, GraphQLTransform, constructDataSourceMap, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import {
+  AppSyncAuthConfiguration,
+  DataSourceType,
+  DynamoDBProvisionStrategy,
+  SQLLambdaModelProvisionStrategy,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, ObjectTypeDefinitionNode, parse } from 'graphql';
 import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { HasOneTransformer, ManyToManyTransformer } from '..';
@@ -154,6 +159,26 @@ test('fails if second half of relation uses the wrong type', () => {
   const transformer = createTransformer();
 
   expect(() => transformer.transform(inputSchema)).toThrowError(`@manyToMany relation 'FooBar' expects 'Baz' but got 'Foo'.`);
+});
+
+test('fails if used on a SQL model', () => {
+  const inputSchema = `
+    type Foo @model {
+      id: ID! @primaryKey
+      bars: [Bar] @manyToMany(relationName: "FooBar")
+    }
+
+    type Bar @model {
+      id: ID! @primaryKey
+      foos: [Foo] @manyToMany(relationName: "FooBar")
+    }`;
+  const modelToDatasourceMap = constructDataSourceMap(inputSchema, {
+    dbType: 'MYSQL',
+    provisionDB: false,
+    provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
+  });
+  const transformer = createTransformer(undefined, modelToDatasourceMap);
+  expect(() => transformer.transform(inputSchema)).toThrowError('@manyToMany directive cannot be used on a SQL model.');
 });
 
 test('valid schema', () => {
@@ -642,7 +667,13 @@ describe('Pre Processing Many To Many Tests', () => {
   });
 });
 
-function createTransformer(overrideAuthConfig?: AppSyncAuthConfiguration) {
+function createTransformer(
+  overrideAuthConfig?: AppSyncAuthConfiguration,
+  overrideModelToDatasourceMap?: Map<string, DataSourceType>,
+): {
+  transform: (schema: string) => DeploymentResources & { logs: any[] };
+  preProcessSchema: (schema: DocumentNode) => DocumentNode;
+} {
   const authConfig: AppSyncAuthConfiguration = overrideAuthConfig ?? {
     defaultAuthentication: {
       authenticationType: 'API_KEY',
@@ -669,8 +700,24 @@ function createTransformer(overrideAuthConfig?: AppSyncAuthConfiguration) {
     respectPrimaryKeyAttributesOnConnectionField: false,
     populateOwnerFieldForStaticGroupAuth: false,
   };
+
+  const DDB_DATASOURCE_TYPE: DataSourceType = {
+    dbType: DDB_DB_TYPE,
+    provisionDB: true,
+    provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
+  };
+
   return {
-    transform: (schema: string) => testTransform({ schema, authConfig, transformers, transformParameters }),
+    transform: (schema: string) => {
+      const modelToDatasourceMap = overrideModelToDatasourceMap ?? constructDataSourceMap(schema, DDB_DATASOURCE_TYPE);
+      return testTransform({
+        schema,
+        authConfig,
+        transformers,
+        transformParameters,
+        modelToDatasourceMap,
+      });
+    },
     preProcessSchema: (schema: DocumentNode) =>
       new GraphQLTransform({ authConfig, transformers, transformParameters }).preProcessSchema(schema),
   };

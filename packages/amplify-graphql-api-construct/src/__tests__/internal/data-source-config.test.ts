@@ -1,4 +1,5 @@
 import { DynamoDBProvisionStrategy, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
 import { parseDataSourceConfig } from '../../internal/data-source-config';
 import { ModelDataSourceStrategy } from '../../model-datasource-strategy';
 
@@ -9,10 +10,7 @@ describe('datasource config', () => {
         dbType: 'DYNAMODB',
         provisionStrategy: 'DEFAULT',
       },
-      Author: {
-        dbType: 'DYNAMODB',
-        provisionStrategy: 'AMPLIFY_TABLE',
-      },
+      Author: DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
       Post: {
         name: 'mysqlTable',
         dbType: 'MYSQL',
@@ -42,7 +40,7 @@ describe('datasource config', () => {
         [
           'Todo',
           {
-            dbType: 'DDB',
+            dbType: 'DYNAMODB',
             provisionDB: true,
             provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
           },
@@ -50,7 +48,7 @@ describe('datasource config', () => {
         [
           'Author',
           {
-            dbType: 'DDB',
+            dbType: 'DYNAMODB',
             provisionDB: true,
             provisionStrategy: DynamoDBProvisionStrategy.AMPLIFY_TABLE,
           },
@@ -58,7 +56,7 @@ describe('datasource config', () => {
         [
           'Post',
           {
-            dbType: 'MySQL',
+            dbType: 'MYSQL',
             provisionDB: false,
             provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },
@@ -66,7 +64,7 @@ describe('datasource config', () => {
         [
           'Comment',
           {
-            dbType: 'Postgres',
+            dbType: 'POSTGRES',
             provisionDB: false,
             provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },

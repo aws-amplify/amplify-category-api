@@ -729,7 +729,7 @@ test('lowercase model names generate the correct get/list query arguments', () =
 describe('RDS primary key transformer tests', () => {
   const modelToDatasourceMap = new Map<string, DataSourceType>();
   modelToDatasourceMap.set('Test', {
-    dbType: 'MySQL',
+    dbType: 'MYSQL',
     provisionDB: false,
     provisionStrategy: DynamoDBProvisionStrategy.DEFAULT, // TODO: change this once the RDS stratety is added
   });

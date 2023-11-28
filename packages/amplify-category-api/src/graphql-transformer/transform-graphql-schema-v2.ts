@@ -8,12 +8,12 @@ import {
 } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncAuthConfiguration,
-  DBType,
   TransformerLog,
   TransformerLogLevel,
   VpcConfig,
   RDSLayerMapping,
   DataSourceType,
+  ModelDataSourceStrategyDbType,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import * as fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
@@ -283,7 +283,7 @@ const getRDSLayerMapping = async (): Promise<RDSLayerMapping> => {
   }
 };
 
-const isSqlLambdaVpcConfigRequired = async (context: $TSContext, dbType: DBType): Promise<VpcConfig | undefined> => {
+const isSqlLambdaVpcConfigRequired = async (context: $TSContext, dbType: ModelDataSourceStrategyDbType): Promise<VpcConfig | undefined> => {
   // If the database is in VPC, we will use the same VPC configuration for the SQL lambda.
   // Customers are required to add inbound rule for port 443 from the private subnet in the Security Group.
   // https://docs.aws.amazon.com/systems-manager/latest/userguide/setup-create-vpc.html#vpc-requirements-and-limitations
@@ -299,7 +299,7 @@ const getRDSConnectionSecrets = async (context: $TSContext): Promise<RDSConnecti
   return rdsSecretPaths;
 };
 
-const getSQLLambdaVpcConfig = async (context: $TSContext, dbType: DBType): Promise<VpcConfig> => {
+const getSQLLambdaVpcConfig = async (context: $TSContext, dbType: ModelDataSourceStrategyDbType): Promise<VpcConfig> => {
   const [secretsKey, engine] = [getSecretsKey(), getEngineFromDBType(dbType)];
   const { secrets } = await getConnectionSecrets(context, secretsKey, engine);
   const region = context.amplify.getProjectMeta().providers.awscloudformation.Region;

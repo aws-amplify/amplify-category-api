@@ -15,8 +15,15 @@ export type ModelDataSourceStrategy =
   | AmplifyDynamoDbModelDataSourceStrategy
   | SQLLambdaModelDataSourceStrategy;
 
-// TODO: Make this the source of truth for database type definitions used throughout the construct & transformer
-export type ModelDataSourceStrategyDbType = 'DYNAMODB';
+/**
+ * All supported database types that can be used to resolve models.
+ */
+export type ModelDataSourceStrategyDbType = 'DYNAMODB' | ModelDataSourceStrategySqlDbType;
+
+/**
+ * All supported SQL database types that can be used to resolve models.
+ */
+export type ModelDataSourceStrategySqlDbType = 'MYSQL' | 'POSTGRES';
 
 /**
  * Use default CloudFormation type 'AWS::DynamoDB::Table' to provision table.
@@ -51,7 +58,7 @@ export interface SQLLambdaModelDataSourceStrategy {
   /**
    * The type of the SQL database used to process model operations for this definition.
    */
-  readonly dbType: 'MYSQL' | 'POSTGRES';
+  readonly dbType: ModelDataSourceStrategySqlDbType;
 
   /**
    * The parameters the Lambda data source will use to connect to the database.
@@ -142,6 +149,11 @@ export interface SqlModelDataSourceDbConnectionConfig {
   readonly databaseNameSsmPath: string;
 }
 
+/**
+ * The input type for defining a ModelDataSourceStrategy used to resolve a field annotated with a `@sql` directive. Although this is a
+ * public type, you should rarely need to use this. The AmplifyGraphqlDefinition factory methods (e.g., `fromString`,
+ * `fromFilesAndStrategy`) will automatically construct this structure for you.
+ */
 export interface CustomSqlDataSourceStrategy {
   readonly typeName: 'Query' | 'Mutation';
   readonly fieldName: string;

@@ -1,4 +1,4 @@
-import { DirectiveWrapper, InvalidDirectiveError, generateGetArgumentsInput, isRDSModel } from '@aws-amplify/graphql-transformer-core';
+import { DirectiveWrapper, InvalidDirectiveError, generateGetArgumentsInput, isSqlModel } from '@aws-amplify/graphql-transformer-core';
 import type {
   TransformParameters,
   TransformerSchemaVisitStepContextProvider,
@@ -115,7 +115,7 @@ export const validateFieldRules = (
 ): void => {
   const rules = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] }, generateGetArgumentsInput(transformParameters)).rules;
 
-  if (!isParentTypeBuiltinType && isRDSModel(context as TransformerContextProvider, parent.name.value)) {
+  if (!isParentTypeBuiltinType && isSqlModel(context as TransformerContextProvider, parent.name.value)) {
     throw new InvalidDirectiveError(
       `@auth rules are not supported on fields on relational database models. Check field "${fieldName}" on type "${parent.name.value}". Please use @auth on the type instead.`,
     );

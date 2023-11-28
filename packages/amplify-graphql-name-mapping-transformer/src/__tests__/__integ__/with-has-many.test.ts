@@ -1,17 +1,16 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { DDB_DB_TYPE, MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
-import { DBType } from '@aws-amplify/graphql-transformer-interfaces';
+import { DDB_DB_TYPE, MYSQL_DB_TYPE, constructDataSourceMap, isDynamoDbType } from '@aws-amplify/graphql-transformer-core';
+import {
+  DynamoDBProvisionStrategy,
+  ModelDataSourceStrategyDbType,
+  SQLLambdaModelProvisionStrategy,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { RefersToTransformer } from '../../graphql-refers-to-transformer';
 import { MapsToTransformer } from '../../graphql-maps-to-transformer';
-import {
-  expectedResolversForModelWithRenamedField,
-  constructModelToDataSourceMap,
-  testRelationalFieldMapping,
-  testTableNameMapping,
-} from './common';
+import { expectedResolversForModelWithRenamedField, testRelationalFieldMapping, testTableNameMapping } from './common';
 
 const mappedHasMany = /* GraphQL */ `
   type Employee @model @mapsTo(name: "Person") {
@@ -39,7 +38,17 @@ const refersToHasMany = /* GraphQL */ `
   }
 `;
 
-const transformSchema = (schema: string, dbType: DBType) => {
+const transformSchema = (
+  schema: string,
+  dbType: ModelDataSourceStrategyDbType,
+): DeploymentResources & {
+  logs: any[];
+} => {
+  const modelToDatasourceMap = constructDataSourceMap(schema, {
+    dbType,
+    provisionDB: isDynamoDbType(dbType),
+    provisionStrategy: isDynamoDbType(dbType) ? DynamoDBProvisionStrategy.DEFAULT : SQLLambdaModelProvisionStrategy.DEFAULT,
+  });
   return testTransform({
     schema,
     transformers: [
@@ -50,7 +59,7 @@ const transformSchema = (schema: string, dbType: DBType) => {
       new MapsToTransformer(),
       new RefersToTransformer(),
     ],
-    modelToDatasourceMap: constructModelToDataSourceMap(['Employee', 'Task'], dbType),
+    modelToDatasourceMap,
     transformParameters: {
       sandboxModeEnabled: true,
     },

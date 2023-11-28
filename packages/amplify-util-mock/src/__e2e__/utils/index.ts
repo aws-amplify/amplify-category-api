@@ -8,6 +8,7 @@ import { functionRuntimeContributorFactory } from 'amplify-nodejs-function-runti
 import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
 import { DeploymentResources, TransformManager } from '@aws-amplify/graphql-transformer-test-utils';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import { constructDataSourceMap, DDB_DEFAULT_DATASOURCE_TYPE } from '@aws-amplify/graphql-transformer-core';
 import { processTransformerStacks } from '../../CFNParser/appsync-resource-processor';
 import { configureDDBDataSource, createAndUpdateTable } from '../../utils/dynamo-db';
 import { getFunctionDetails } from './lambda-helper';
@@ -43,6 +44,7 @@ export const transformAndSynth = (
     nestedStackProvider: transformManager.getNestedStackProvider(),
     assetProvider: transformManager.getAssetProvider(),
     synthParameters: transformManager.getSynthParameters(hasIamAuth(options.authConfig), hasUserPoolAuth(options.authConfig)),
+    modelToDatasourceMap: constructDataSourceMap(options.schema, DDB_DEFAULT_DATASOURCE_TYPE),
   });
   return transformManager.generateDeploymentResources();
 };

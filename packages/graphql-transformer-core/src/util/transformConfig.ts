@@ -298,14 +298,14 @@ export const readSchema = async (
   let schema = '';
   if (!_.isEmpty(existingSchemaFiles)) {
     // Schema.graphql contains the models for DynamoDB datasource.
-    // Schema.sql.graphql contains the models for imported 'MySQL' datasource.
+    // Schema.sql.graphql contains the models for imported 'MYSQL' datasource.
     // Intentionally using 'for ... of ...' instead of 'object.foreach' to process this in sequence.
     for (const file of existingSchemaFiles) {
       const fileSchema = (await fs.readFile(file)).toString();
       const { amplifyType, schema: fileSchemaWithoutAmplifyInput } = removeAmplifyInput(fileSchema);
       const datasourceType = file.endsWith('.sql.graphql')
         ? constructDataSourceType(getRDSDBTypeFromInput(amplifyType), false)
-        : constructDataSourceType('DDB');
+        : constructDataSourceType('DYNAMODB');
       modelToDatasourceMap = new Map([...modelToDatasourceMap.entries(), ...constructDataSourceMap(fileSchema, datasourceType).entries()]);
       if (amplifyType) {
         amplifyInputType = mergeTypeFields(amplifyInputType, amplifyType);
@@ -317,7 +317,7 @@ export const readSchema = async (
     }
   } else if (fs.existsSync(schemaDirectoryPath)) {
     // Schema folder is used only for DynamoDB datasource
-    const datasourceType = constructDataSourceType('DDB');
+    const datasourceType = constructDataSourceType('DYNAMODB');
     const schemaInDirectory = (await readSchemaDocuments(schemaDirectoryPath)).join('\n');
     modelToDatasourceMap = new Map([
       ...modelToDatasourceMap.entries(),
@@ -341,9 +341,9 @@ const getRDSDBTypeFromInput = (amplifyType: InputObjectTypeDefinitionNode): DBTy
   const engine = (engineInput?.defaultValue as StringValueNode)?.value;
   switch (engine) {
     case 'mysql':
-      return 'MySQL';
+      return 'MYSQL';
     case 'postgres':
-      return 'Postgres';
+      return 'POSTGRES';
     default:
       throw new Error(`engine ${engine} specified in the RDS schema file is not supported`);
   }
@@ -404,7 +404,7 @@ async function readSchemaDocuments(schemaDirectoryPath: string): Promise<string[
 /**
  * Supported transformable database types.
  */
-export type DBType = 'DDB' | 'MySQL' | 'Postgres';
+export type DBType = 'DYNAMODB' | 'MYSQL' | 'POSTGRES';
 
 /**
  * Configuration for a datasource. Defines the underlying database engine, and instructs the tranformer whether to provision the database

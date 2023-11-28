@@ -169,7 +169,7 @@ export class TransformManager {
 
 // Warnings were encountered during analysis:
 //
-// src/test-transform.ts:25:3 - (ae-forgotten-export) The symbol "OverrideConfig" needs to be exported by the entry point index.d.ts
+// src/test-transform.ts:32:3 - (ae-forgotten-export) The symbol "OverrideConfig" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

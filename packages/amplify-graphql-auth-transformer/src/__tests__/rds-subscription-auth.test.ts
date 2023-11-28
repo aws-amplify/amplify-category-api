@@ -22,7 +22,7 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
       modelToDatasourceMap: new Map(
         Object.entries({
           Post: {
-            dbType: 'MySQL',
+            dbType: 'MYSQL',
             provisionDB: false,
             provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },
@@ -120,7 +120,7 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
     const modelToDatasourceMap = new Map();
     ['PostPrivate', 'PostSingleOwner', 'PostOwners', 'PostStaticGroups', 'PostSingleGroup', 'PostGroups'].forEach((model) => {
       modelToDatasourceMap.set(model, {
-        dbType: 'MySQL',
+        dbType: 'MYSQL',
         provisionDB: false,
         provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
       });
@@ -278,7 +278,7 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
     const modelToDatasourceMap = new Map();
     ['PostPrivate', 'PostSingleOwner', 'PostOwners', 'PostStaticGroups', 'PostSingleGroup', 'PostGroups'].forEach((model) => {
       modelToDatasourceMap.set(model, {
-        dbType: 'MySQL',
+        dbType: 'MYSQL',
         provisionDB: false,
         provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
       });
@@ -393,7 +393,7 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
       modelToDatasourceMap: new Map(
         Object.entries({
           Post: {
-            dbType: 'MySQL',
+            dbType: 'MYSQL',
             provisionDB: false,
             provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
           },
@@ -453,7 +453,7 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
     const modelToDatasourceMap = new Map();
     ['PostPrivate', 'PostPublic'].forEach((model) => {
       modelToDatasourceMap.set(model, {
-        dbType: 'MySQL',
+        dbType: 'MYSQL',
         provisionDB: false,
         provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
       });
@@ -528,7 +528,7 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
     const modelToDatasourceMap = new Map();
     ['Post'].forEach((model) => {
       modelToDatasourceMap.set(model, {
-        dbType: 'MySQL',
+        dbType: 'MYSQL',
         provisionDB: false,
         provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
       });

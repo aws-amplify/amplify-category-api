@@ -178,21 +178,20 @@ export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy | SQLLambdaM
 // @public (undocumented)
 export interface DataSourceStrategiesProvider {
     // (undocumented)
-    customSqlDataSourceStrategies: CustomSqlDataSourceStrategy[];
+    customSqlDataSourceStrategies?: CustomSqlDataSourceStrategy[];
+    // (undocumented)
+    modelToDatasourceMap: Map<string, DataSourceType>;
 }
 
 // @public (undocumented)
 export interface DataSourceType {
     // (undocumented)
-    dbType: DBType;
+    dbType: ModelDataSourceStrategyDbType;
     // (undocumented)
     provisionDB: boolean;
     // (undocumented)
     provisionStrategy: DataSourceProvisionStrategy;
 }
-
-// @public (undocumented)
-export type DBType = 'DDB' | SQLDBType;
 
 // @public (undocumented)
 export interface DefaultDynamoDbModelDataSourceStrategy extends ModelDataSourceStrategyBase {
@@ -275,7 +274,10 @@ export interface ModelDataSourceStrategyBase {
 }
 
 // @public (undocumented)
-export type ModelDataSourceStrategyDbType = 'DYNAMODB' | 'MYSQL' | 'POSTGRES';
+export type ModelDataSourceStrategyDbType = 'DYNAMODB' | ModelDataSourceStrategySqlDbType;
+
+// @public (undocumented)
+export type ModelDataSourceStrategySqlDbType = 'MYSQL' | 'POSTGRES';
 
 // @public (undocumented)
 export type ModelFieldMap = {
@@ -369,16 +371,13 @@ export interface SearchableDataSourceOptions extends DataSourceOptions {
 }
 
 // @public (undocumented)
-export type SQLDBType = 'MySQL' | 'Postgres';
-
-// @public (undocumented)
 export interface SQLLambdaModelDataSourceStrategy extends ModelDataSourceStrategyBase {
     // (undocumented)
     readonly customSqlStatements?: Record<string, string>;
     // (undocumented)
     readonly dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
     // (undocumented)
-    readonly dbType: 'MYSQL' | 'POSTGRES';
+    readonly dbType: ModelDataSourceStrategySqlDbType;
     // (undocumented)
     readonly name: string;
     // (undocumented)
@@ -529,7 +528,7 @@ export interface TransformerContextOutputProvider {
 }
 
 // @public (undocumented)
-export interface TransformerContextProvider {
+export interface TransformerContextProvider extends DataSourceStrategiesProvider {
     // (undocumented)
     api: GraphQLAPIProvider;
     // (undocumented)

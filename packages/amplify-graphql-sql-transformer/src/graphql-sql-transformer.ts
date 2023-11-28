@@ -2,6 +2,8 @@ import {
   DirectiveWrapper,
   generateGetArgumentsInput,
   InvalidDirectiveError,
+  isSqlDbType,
+  isSqlStrategy,
   MappingTemplate,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
@@ -113,7 +115,9 @@ export class SqlTransformer extends TransformerPluginBase {
           const typeName = config.resolverTypeName;
           const fieldName = config.resolverFieldName;
           const strategy = context.customSqlDataSourceStrategies?.find((css) => css.typeName === typeName && css.fieldName === fieldName);
-          if (!strategy) {
+          // TODO: The isSqlDbType is redundant, but since the internals still use DataSourceType, we have to add a separate check for SQL
+          // db type. Remove this check once we refactor the internals to use ModelDataSourceStrategy
+          if (!strategy || !isSqlDbType(strategy.dataSourceType.dbType)) {
             throw new Error(`Could not find custom SQL strategy for ${typeName}.${fieldName}`);
           }
           generator.generateResources(context, strategy.dataSourceType.dbType);

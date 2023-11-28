@@ -1,4 +1,4 @@
-import { DynamoDBProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { DDB_DEFAULT_DATASOURCE_TYPE } from '@aws-amplify/graphql-transformer-core';
 import { GraphQLClient } from './utils/graphql-client';
 import { defaultTransformParams, deploy, launchDDBLocal, logDebug, terminateDDB, transformAndSynth } from './utils/index';
 
@@ -28,11 +28,7 @@ beforeAll(async () => {
       },
       modelToDatasourceMap: new Map(
         Object.entries({
-          Todo: {
-            dbType: 'DDB',
-            provisionDB: true,
-            provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
-          },
+          Todo: DDB_DEFAULT_DATASOURCE_TYPE,
         }),
       ),
     });
