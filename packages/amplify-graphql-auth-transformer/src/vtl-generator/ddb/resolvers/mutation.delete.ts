@@ -1,7 +1,6 @@
 import { FieldDefinitionNode } from 'graphql';
 import {
   Expression,
-  printBlock,
   compoundExpression,
   bool,
   equals,
@@ -17,6 +16,7 @@ import {
   nul,
   ifElse,
   or,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import {
   API_KEY_AUTH_TYPE,
@@ -231,5 +231,5 @@ export const generateAuthExpressionForDelete = (
     );
   }
   totalAuthExpressions.push(iff(not(ref(IS_AUTHORIZED_FLAG)), ref('util.unauthorized()')));
-  return printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
+  return vtlPrinter.printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
 };

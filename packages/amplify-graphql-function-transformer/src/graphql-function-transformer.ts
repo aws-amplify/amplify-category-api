@@ -3,7 +3,7 @@ import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider }
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import * as cdk from 'aws-cdk-lib';
-import { obj, str, ref, printBlock, compoundExpression, qref, raw, iff, Expression } from 'graphql-mapping-template';
+import { obj, str, ref, compoundExpression, qref, raw, iff, Expression, vtlPrinter } from 'graphql-mapping-template';
 import { FunctionResourceIDs, ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { DirectiveNode, ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
 
@@ -93,7 +93,7 @@ export class FunctionTransformer extends TransformerPluginBase {
           func = context.api.host.addAppSyncFunction(
             functionId,
             MappingTemplate.s3MappingTemplateFromString(
-              printBlock(`Invoke AWS Lambda data source: ${dataSourceId}`)(
+              vtlPrinter.printBlock(`Invoke AWS Lambda data source: ${dataSourceId}`)(
                 obj({
                   version: str('2018-05-29'),
                   operation: str('Invoke'),
@@ -111,7 +111,7 @@ export class FunctionTransformer extends TransformerPluginBase {
               `${functionId}.req.vtl`,
             ),
             MappingTemplate.s3MappingTemplateFromString(
-              printBlock('Handle error or return result')(
+              vtlPrinter.printBlock('Handle error or return result')(
                 compoundExpression([
                   iff(ref('ctx.error'), raw('$util.error($ctx.error.message, $ctx.error.type)')),
                   raw('$util.toJson($ctx.result)'),
@@ -161,7 +161,9 @@ export class FunctionTransformer extends TransformerPluginBase {
           resolver = context.api.host.addResolver(
             config.resolverTypeName,
             config.resolverFieldName,
-            MappingTemplate.inlineTemplateFromString(printBlock('Stash resolver specific context.')(compoundExpression(requestTemplate))),
+            MappingTemplate.inlineTemplateFromString(
+              vtlPrinter.printBlock('Stash resolver specific context.')(compoundExpression(requestTemplate)),
+            ),
             MappingTemplate.s3MappingTemplateFromString(
               '$util.toJson($ctx.prev.result)',
               `${config.resolverTypeName}.${config.resolverFieldName}.res.vtl`,

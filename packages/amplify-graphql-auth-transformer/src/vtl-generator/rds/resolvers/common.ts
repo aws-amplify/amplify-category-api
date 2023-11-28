@@ -15,13 +15,13 @@ import {
   obj,
   or,
   parens,
-  printBlock,
   qref,
   raw,
   ref,
   set,
   str,
   toJson,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import { FieldDefinitionNode } from 'graphql';
 import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
@@ -32,7 +32,7 @@ import { API_KEY_AUTH_TYPE, DEFAULT_UNIQUE_IDENTITY_CLAIM, IDENTITY_CLAIM_DELIMI
  */
 export const generateDefaultRDSExpression = (): string => {
   const exp = ref('util.unauthorized()');
-  return printBlock('Default RDS Auth Resolver')(compoundExpression([exp, toJson(obj({}))]));
+  return vtlPrinter.printBlock('Default RDS Auth Resolver')(compoundExpression([exp, toJson(obj({}))]));
 };
 
 export const generateAuthRulesFromRoles = (
@@ -215,7 +215,7 @@ export const generateSandboxExpressionForField = (sandboxEnabled: boolean): stri
   let exp: Expression;
   if (sandboxEnabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY_AUTH_TYPE)), methodCall(ref('util.unauthorized')));
   else exp = ref('util.unauthorized()');
-  return printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(compoundExpression([exp, toJson(obj({}))]));
+  return vtlPrinter.printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(compoundExpression([exp, toJson(obj({}))]));
 };
 
 export const emptyPayload = toJson(raw(JSON.stringify({ version: '2018-05-29', payload: {} })));
@@ -225,7 +225,7 @@ export const emptyPayload = toJson(raw(JSON.stringify({ version: '2018-05-29', p
  */
 export const setDeniedFieldFlag = (operation: string, subscriptionsEnabled: boolean): string => {
   if (subscriptionsEnabled) {
-    return printBlock('Check if subscriptions is protected')(
+    return vtlPrinter.printBlock('Check if subscriptions is protected')(
       compoundExpression([
         iff(
           equals(methodCall(ref('util.defaultIfNull'), methodCall(ref('ctx.source.get'), str(OPERATION_KEY)), nul()), str(operation)),
@@ -266,5 +266,5 @@ export const generateFieldResolverForOwner = (entity: string): string => {
     ),
   ];
 
-  return printBlock('Parse owner field auth for Get')(compoundExpression(expressions));
+  return vtlPrinter.printBlock('Parse owner field auth for Get')(compoundExpression(expressions));
 };

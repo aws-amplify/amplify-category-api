@@ -1,0 +1,107 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`create a put item resolver with the ast 1`] = `
+"{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"PutItem\\",
+  \\"key\\": {
+      \\"type\\": \\"Post\\",
+      \\"id\\": $util.autoId()
+  },
+  \\"attributeValues\\": {
+      \\"value\\":     $util.dynamodb.toMapJson($ctx.input)
+  },
+  \\"condition\\": 
+}"
+`;
+
+exports[`create a put item resolver with the ast 2`] = `
+"{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"PutItem\\",
+  \\"key\\": {
+      \\"type\\": \\"Post\\",
+      \\"id\\": util.autoId()
+  },
+  \\"attributeValues\\": {
+      \\"value\\":     util.dynamodb.toMapJson(ctx.input)
+  },
+  \\"condition\\": 
+}"
+`;
+
+exports[`create a query resolver with the ast 1`] = `
+"{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Query\\",
+  \\"query\\": {
+      \\"expression\\": \\"#typename = :typename\\",
+      \\"expressionNames\\": {
+          \\"#typename\\": \\"__typename\\"
+    },
+      \\"expressionValues\\": {
+          \\":typename\\": {
+              \\"S\\": \\"test\\"
+      }
+    }
+  },
+  \\"scanIndexForward\\": true,
+  \\"filter\\":   #if( $context.args.filter )
+    $util.transform.toDynamoDBFilterExpression($ctx.args.filter)
+  #else
+null
+  #end,
+  \\"limit\\": $limit,
+  \\"nextToken\\":   #if( $context.args.nextToken )
+$context.args.nextToken
+  #else
+null
+  #end
+}"
+`;
+
+exports[`create a query resolver with the ast 2`] = `
+"{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Query\\",
+  \\"query\\": {
+      \\"expression\\": \\"#typename = :typename\\",
+      \\"expressionNames\\": {
+          \\"#typename\\": \\"__typename\\"
+    },
+      \\"expressionValues\\": {
+          \\":typename\\": {
+              \\"S\\": \\"test\\"
+      }
+    }
+  },
+  \\"scanIndexForward\\": true,
+  \\"filter\\":   if( context.args.filter ) {
+    util.transform.toDynamoDBFilterExpression(ctx.args.filter)
+  } else {
+null
+  },
+  \\"limit\\": limit,
+  \\"nextToken\\":   if( context.args.nextToken ) {
+context.args.nextToken
+  } else {
+null
+  }
+}"
+`;
+
+exports[`create a response mapping template that merges a nested object 1`] = `
+"#set( $result = $util.map.copyAndRemoveAllKeys($context.result, [\\"value\\"]) )
+#foreach( $entry in $context.result.value.entrySet() )
+  $util.qr($result.put($entry.key, $entry.value))
+#end
+$util.toJson($result)"
+`;
+
+exports[`create a response mapping template that merges a nested object 2`] = `
+"result = util.map.copyAndRemoveAllKeys(context.result, [\\"value\\"])
+for ( const entry in context.result.value.entrySet() ) {
+  result.put(entry.key, entry.value)
+}
+util.toJson(result)"
+`;

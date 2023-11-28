@@ -1,5 +1,5 @@
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { compoundExpression, list, methodCall, obj, printBlock, qref, ref, set, str } from 'graphql-mapping-template';
+import { compoundExpression, list, methodCall, obj, qref, ref, set, str, vtlPrinter } from 'graphql-mapping-template';
 import {
   constructAuthFilterStatement,
   constructNonScalarFieldsStatement,
@@ -14,7 +14,7 @@ export const generateLambdaListRequestTemplate = (
   ctx: TransformerContextProvider,
 ): string => {
   const mappedTableName = ctx.resourceHelper.getModelNameMapping(tableName);
-  return printBlock('Invoke RDS Lambda data source')(
+  return vtlPrinter.printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
       set(ref('lambdaInput'), obj({})),
       set(ref('lambdaInput.args'), obj({})),

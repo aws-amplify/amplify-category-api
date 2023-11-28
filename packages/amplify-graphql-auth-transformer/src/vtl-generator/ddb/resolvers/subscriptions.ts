@@ -10,7 +10,6 @@ import {
   set,
   str,
   nul,
-  printBlock,
   or,
   and,
   ifElse,
@@ -20,6 +19,7 @@ import {
   raw,
   parens,
   int,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import { COGNITO_AUTH_TYPE, ConfiguredAuthProviders, IS_AUTHORIZED_FLAG, OIDC_AUTH_TYPE, RoleDefinition, splitRoles } from '../../../utils';
 import {
@@ -189,5 +189,5 @@ export const generateAuthExpressionForSubscriptions = (providers: ConfiguredAuth
     );
   }
   totalAuthExpressions.push(iff(not(ref(IS_AUTHORIZED_FLAG)), ref('util.unauthorized()')));
-  return printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
+  return vtlPrinter.printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
 };

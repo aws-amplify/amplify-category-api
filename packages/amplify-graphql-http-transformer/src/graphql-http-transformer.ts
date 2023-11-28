@@ -37,12 +37,12 @@ import {
   obj,
   or,
   parens,
-  printBlock,
   qref,
   raw,
   ref,
   set,
   str,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
@@ -300,7 +300,11 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
   requestTemplate.push(obj({}));
 
   const functionId = `${dataSourceId}${config.resolverTypeName}${config.resolverFieldName}Function`;
-  const functionRequestTemplateString = replaceEnvAndRegion(env, region, printBlock('Create request')(compoundExpression(reqCompoundExpr)));
+  const functionRequestTemplateString = replaceEnvAndRegion(
+    env,
+    region,
+    vtlPrinter.printBlock('Create request')(compoundExpression(reqCompoundExpr)),
+  );
   const functionRequestMappingTemplate = cdk.Token.isUnresolved(functionRequestTemplateString)
     ? MappingTemplate.inlineTemplateFromString(functionRequestTemplateString)
     : MappingTemplate.s3MappingTemplateFromString(
@@ -311,7 +315,7 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
     functionId,
     functionRequestMappingTemplate,
     MappingTemplate.s3MappingTemplateFromString(
-      printBlock('Process response')(
+      vtlPrinter.printBlock('Process response')(
         ifElse(
           supportsBody ? raw('$ctx.result.statusCode == 200 || $ctx.result.statusCode == 201') : raw('$ctx.result.statusCode == 200'),
           ifElse(
@@ -331,7 +335,9 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
   return context.api.host.addResolver(
     config.resolverTypeName,
     config.resolverFieldName,
-    MappingTemplate.inlineTemplateFromString(printBlock('Stash resolver specific context.')(compoundExpression(requestTemplate))),
+    MappingTemplate.inlineTemplateFromString(
+      vtlPrinter.printBlock('Stash resolver specific context.')(compoundExpression(requestTemplate)),
+    ),
     MappingTemplate.s3MappingTemplateFromString(
       '$util.toJson($ctx.prev.result)',
       `${config.resolverTypeName}.${config.resolverFieldName}.res.vtl`,

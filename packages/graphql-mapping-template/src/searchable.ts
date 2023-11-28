@@ -1,5 +1,5 @@
-import { print } from './print';
 import { obj, Expression, str, ObjectNode, raw, CompoundExpressionNode, ListNode, BooleanNode, bool } from './ast';
+import { vtlPrinter, Printer } from './printer';
 
 const RESOLVER_VERSION_ID = '2018-05-29';
 
@@ -39,6 +39,7 @@ export class SearchableMappingTemplate {
     path,
     sort,
     version = bool(false),
+    printer = vtlPrinter,
   }: {
     path: Expression;
     sort?: Expression | ObjectNode;
@@ -48,6 +49,7 @@ export class SearchableMappingTemplate {
     from?: Expression;
     version?: BooleanNode;
     aggs?: Expression | ObjectNode;
+    printer?: Printer;
   }): ObjectNode {
     return obj({
       version: str(RESOLVER_VERSION_ID),
@@ -55,12 +57,12 @@ export class SearchableMappingTemplate {
       path,
       params: obj({
         body: raw(`{
-                #if( $context.args.nextToken )"search_after": ${print(search_after)}, #end
-                #if( $context.args.from )"from": ${print(from)}, #end
-                "size": ${print(size)},
-                "sort": ${print(sort)},
-                "version": ${print(version)},
-                "query": ${print(query)}
+                #if( $context.args.nextToken )"search_after": ${printer.print(search_after)}, #end
+                #if( $context.args.from )"from": ${printer.print(from)}, #end
+                "size": ${printer.print(size)},
+                "sort": ${printer.print(sort)},
+                "version": ${printer.print(version)},
+                "query": ${printer.print(query)}
                 }`),
       }),
     });
@@ -83,6 +85,7 @@ export class SearchableMappingTemplate {
     sort,
     version = bool(false),
     aggs,
+    printer = vtlPrinter,
   }: {
     path: Expression;
     sort?: Expression | ObjectNode;
@@ -92,6 +95,7 @@ export class SearchableMappingTemplate {
     from?: Expression;
     version?: BooleanNode;
     aggs?: Expression | ObjectNode;
+    printer?: Printer;
   }): ObjectNode {
     return obj({
       version: str(RESOLVER_VERSION_ID),
@@ -99,13 +103,13 @@ export class SearchableMappingTemplate {
       path,
       params: obj({
         body: raw(`{
-                #if( $context.args.nextToken )"search_after": ${print(search_after)}, #end
-                #if( $context.args.from )"from": ${print(from)}, #end
-                "size": ${print(size)},
-                "sort": ${print(sort)},
-                "version": ${print(version)},
-                "query": ${print(query)},
-                "aggs": ${print(aggs)}
+                #if( $context.args.nextToken )"search_after": ${printer.print(search_after)}, #end
+                #if( $context.args.from )"from": ${printer.print(from)}, #end
+                "size": ${printer.print(size)},
+                "sort": ${printer.print(sort)},
+                "version": ${printer.print(version)},
+                "query": ${printer.print(query)},
+                "aggs": ${printer.print(aggs)}
                 }`),
       }),
     });

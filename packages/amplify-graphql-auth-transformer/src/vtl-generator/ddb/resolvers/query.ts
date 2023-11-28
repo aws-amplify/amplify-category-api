@@ -3,7 +3,6 @@ import {
   compoundExpression,
   Expression,
   obj,
-  printBlock,
   and,
   equals,
   iff,
@@ -21,8 +20,8 @@ import {
   nul,
   parens,
   or,
+  vtlPrinter,
 } from 'graphql-mapping-template';
-import { aws_dynamodb as dynamodb } from 'aws-cdk-lib';
 import {
   COGNITO_AUTH_TYPE,
   OIDC_AUTH_TYPE,
@@ -584,7 +583,7 @@ export const generateAuthExpressionForQueries = (
   totalAuthExpressions.push(
     iff(and([not(ref(IS_AUTHORIZED_FLAG)), methodCall(ref('util.isNull'), ref('ctx.stash.authFilter'))]), ref('util.unauthorized()')),
   );
-  return printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
+  return vtlPrinter.printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
 };
 
 const getKeySchemaAndPartitionKey = (
@@ -672,5 +671,5 @@ export const generateAuthExpressionForRelationQuery = (
   totalAuthExpressions.push(
     iff(and([not(ref(IS_AUTHORIZED_FLAG)), methodCall(ref('util.isNull'), ref('ctx.stash.authFilter'))]), ref('util.unauthorized()')),
   );
-  return printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
+  return vtlPrinter.printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
 };

@@ -3,13 +3,11 @@ import {
   obj,
   str,
   ref,
-  printBlock,
   compoundExpression,
   raw,
   qref,
   set,
   Expression,
-  print,
   ifElse,
   iff,
   block,
@@ -20,6 +18,7 @@ import {
   nul,
   RESOLVER_VERSION_ID,
   DynamoDBMappingTemplate,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import {
   ResolverResourceIDs,
@@ -102,12 +101,12 @@ export class KeyTransformer extends Transformer {
           if (syncVTLContent) {
             resource.Properties.RequestMappingTemplate = '';
             resource.Properties.RequestMappingTemplate = joinSnippets([
-              print(generateSyncResolverInit()),
+              vtlPrinter.print(generateSyncResolverInit()),
               syncVTLContent,
-              print(setSyncQueryFilterSnippet()),
-              print(setSyncKeyExpressionForHashKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
-              print(setSyncKeyExpressionForRangeKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
-              print(makeSyncQueryResolver()),
+              vtlPrinter.print(setSyncQueryFilterSnippet()),
+              vtlPrinter.print(setSyncKeyExpressionForHashKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
+              vtlPrinter.print(setSyncKeyExpressionForRangeKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
+              vtlPrinter.print(makeSyncQueryResolver()),
             ]);
           }
         });
@@ -186,7 +185,7 @@ export class KeyTransformer extends Transformer {
       }
       if (listResolver) {
         listResolver.Properties.RequestMappingTemplate = joinSnippets([
-          print(setQuerySnippet(definition, directive, ctx, true)),
+          vtlPrinter.print(setQuerySnippet(definition, directive, ctx, true)),
           listResolver.Properties.RequestMappingTemplate,
         ]);
       }
@@ -497,7 +496,7 @@ export class KeyTransformer extends Transformer {
   private setKeySnippet = (directive: DirectiveNode, isMutation: boolean = false) => {
     const directiveArgs = getDirectiveArguments(directive);
     const cmds: Expression[] = [set(ref(ResourceConstants.SNIPPETS.ModelObjectKey), modelObjectKey(directiveArgs, isMutation))];
-    return printBlock(`Set the primary @key`)(compoundExpression(cmds));
+    return vtlPrinter.printBlock(`Set the primary @key`)(compoundExpression(cmds));
   };
 
   // When issuing an create/update mutation that creates/changes one part of a composite sort key,
@@ -509,7 +508,7 @@ export class KeyTransformer extends Transformer {
     const directiveArgs: KeyArguments = getDirectiveArguments(directive);
     if (!this.isPrimaryKey(directive) && directiveArgs.fields.length > 2) {
       const sortKeyFields = directiveArgs.fields.slice(1);
-      return printBlock(`Validate ${keyOperation} mutation for @key '${directiveArgs.name}'`)(
+      return vtlPrinter.printBlock(`Validate ${keyOperation} mutation for @key '${directiveArgs.name}'`)(
         compoundExpression([
           set(ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg), bool(false)),
           set(ref('keyFieldNames'), list(sortKeyFields.map((f) => str(f)))),
@@ -946,7 +945,7 @@ function ensureCompositeKeySnippet(dir: DirectiveNode, conditionallySetSortKey: 
     const condensedSortKey = condenseRangeKey(rangeKeyFields);
     const dynamoDBFriendlySortKeyName = toCamelCase(rangeKeyFields.map((f) => graphqlName(f)));
     const condensedSortKeyValue = condenseRangeKey(rangeKeyFields.map((keyField) => `\${${argsPrefix}.${keyField}}`));
-    return print(
+    return vtlPrinter.print(
       compoundExpression([
         ifElse(
           raw(`$util.isNull($${ResourceConstants.SNIPPETS.DynamoDBNameOverrideMap})`),
@@ -986,7 +985,7 @@ function makeQueryResolver(definition: ObjectTypeDefinitionNode, directive: Dire
     DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
     FieldName: fieldName,
     TypeName: queryTypeName,
-    RequestMappingTemplate: print(
+    RequestMappingTemplate: vtlPrinter.print(
       compoundExpression([
         setQuerySnippet(definition, directive, ctx, false),
         set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${ResourceConstants.DEFAULT_PAGE_LIMIT})`)),
@@ -1015,7 +1014,7 @@ function makeQueryResolver(definition: ObjectTypeDefinitionNode, directive: Dire
         raw(`$util.toJson($${requestVariable})`),
       ]),
     ),
-    ResponseMappingTemplate: print(
+    ResponseMappingTemplate: vtlPrinter.print(
       compoundExpression([
         iff(ref('ctx.error'), raw('$util.error($ctx.error.message, $ctx.error.type)')),
         raw('$util.toJson($ctx.result)'),
@@ -1322,9 +1321,9 @@ function constructSyncResolver(directive: DirectiveNode, ctx: TransformerContext
     const resolverMap = ctx.metadata.get(ResourceConstants.SNIPPETS.SyncResolverKey);
     if (resolverMap.has(syncResolver)) {
       const prevSnippet = resolverMap.get(syncResolver);
-      resolverMap.set(syncResolver, joinSnippets([prevSnippet, print(setSyncQueryMapSnippet(directive, isTable))]));
+      resolverMap.set(syncResolver, joinSnippets([prevSnippet, vtlPrinter.print(setSyncQueryMapSnippet(directive, isTable))]));
     } else {
-      resolverMap.set(syncResolver, print(setSyncQueryMapSnippet(directive, isTable)));
+      resolverMap.set(syncResolver, vtlPrinter.print(setSyncQueryMapSnippet(directive, isTable)));
     }
   }
 }

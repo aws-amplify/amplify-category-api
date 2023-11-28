@@ -6,7 +6,6 @@ import { ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode } from 'graphql';
 import {
   DynamoDBMappingTemplate,
   str,
-  print,
   ref,
   obj,
   set,
@@ -21,6 +20,7 @@ import {
   Expression,
   or,
   list,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import {
   ResourceConstants,
@@ -161,7 +161,7 @@ export class ResourceFactory {
       DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(relatedType), 'Name'),
       FieldName: field,
       TypeName: type,
-      RequestMappingTemplate: print(
+      RequestMappingTemplate: vtlPrinter.print(
         ifElse(
           or([
             raw(`$util.isNull($ctx.source.${connectionAttribute})`),
@@ -173,7 +173,7 @@ export class ResourceFactory {
           }),
         ),
       ),
-      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(false)),
+      ResponseMappingTemplate: vtlPrinter.print(DynamoDBMappingTemplate.dynamoDBResponse(false)),
     }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID);
   }
 
@@ -217,7 +217,7 @@ export class ResourceFactory {
       DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(relatedType), 'Name'),
       FieldName: field,
       TypeName: type,
-      RequestMappingTemplate: print(
+      RequestMappingTemplate: vtlPrinter.print(
         ifElse(
           raw(`$util.isNull($context.source.${idFieldName})`),
           compoundExpression([set(ref('result'), obj({ items: list([]) })), raw('#return($result)')]),
@@ -238,7 +238,7 @@ export class ResourceFactory {
           ]),
         ),
       ),
-      ResponseMappingTemplate: print(
+      ResponseMappingTemplate: vtlPrinter.print(
         DynamoDBMappingTemplate.dynamoDBResponse(
           false,
           compoundExpression([iff(raw('!$result'), set(ref('result'), ref('ctx.result'))), raw('$util.toJson($result)')]),
@@ -295,7 +295,7 @@ export class ResourceFactory {
       DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(relatedType), 'Name'),
       FieldName: field,
       TypeName: type,
-      RequestMappingTemplate: print(
+      RequestMappingTemplate: vtlPrinter.print(
         ifElse(
           or(connectionAttributes.map((ca) => raw(`$util.isNull($ctx.source.${ca})`))),
           raw('#return'),
@@ -306,7 +306,7 @@ export class ResourceFactory {
           ]),
         ),
       ),
-      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(false)),
+      ResponseMappingTemplate: vtlPrinter.print(DynamoDBMappingTemplate.dynamoDBResponse(false)),
     }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID);
   }
 
@@ -378,14 +378,14 @@ export class ResourceFactory {
       DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(relatedType.name.value), 'Name'),
       FieldName: field,
       TypeName: type,
-      RequestMappingTemplate: print(
+      RequestMappingTemplate: vtlPrinter.print(
         ifElse(
           raw(`$util.isNull($ctx.source.${connectionAttributes[0]})`),
           compoundExpression([set(ref('result'), obj({ items: list([]) })), raw('#return($result)')]),
           compoundExpression([...setup, queryObj]),
         ),
       ),
-      ResponseMappingTemplate: print(
+      ResponseMappingTemplate: vtlPrinter.print(
         DynamoDBMappingTemplate.dynamoDBResponse(
           false,
           compoundExpression([iff(raw('!$result'), set(ref('result'), ref('ctx.result'))), raw('$util.toJson($result)')]),

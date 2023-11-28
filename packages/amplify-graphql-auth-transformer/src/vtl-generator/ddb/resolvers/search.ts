@@ -3,7 +3,6 @@ import {
   compoundExpression,
   Expression,
   obj,
-  printBlock,
   and,
   equals,
   notEquals,
@@ -19,6 +18,7 @@ import {
   raw,
   set,
   ifElse,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import {
   COGNITO_AUTH_TYPE,
@@ -308,5 +308,5 @@ export const generateAuthExpressionForSearchQueries = (
     qref(methodCall(ref('ctx.stash.put'), str(allowedAggFieldsList), ref(allowedAggFieldsList))),
     iff(and([not(ref(IS_AUTHORIZED_FLAG)), methodCall(ref('util.isNull'), ref('ctx.stash.authFilter'))]), ref('util.unauthorized()')),
   );
-  return printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
+  return vtlPrinter.printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
 };

@@ -7,7 +7,6 @@ import {
   set,
   methodCall,
   ifElse,
-  printBlock,
   qref,
   obj,
   str,
@@ -17,6 +16,7 @@ import {
   iff,
   not,
   raw,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from '../types';
 import { RelationalResolverGenerator } from './generator';
@@ -77,7 +77,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     operationName: string,
     joinCondition: Expression[],
   ): string => {
-    return printBlock('Invoke RDS Lambda data source')(
+    return vtlPrinter.printBlock('Invoke RDS Lambda data source')(
       compoundExpression([
         iff(ref('ctx.stash.deniedField'), raw('#return($util.toJson(null))')),
         set(ref('lambdaInput'), obj({})),
@@ -113,7 +113,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     joinCondition: Expression[],
     relatedTypePrimaryKeys: string[],
   ): string => {
-    return printBlock('Invoke RDS Lambda data source')(
+    return vtlPrinter.printBlock('Invoke RDS Lambda data source')(
       compoundExpression([
         iff(ref('ctx.stash.deniedField'), raw('#return($util.toJson(null))')),
         set(ref('lambdaInput'), obj({})),
@@ -144,7 +144,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     statements.push(
       ifElse(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type')), toJson(ref('ctx.result'))),
     );
-    return printBlock('ResponseTemplate')(compoundExpression(statements));
+    return vtlPrinter.printBlock('ResponseTemplate')(compoundExpression(statements));
   };
 
   /**

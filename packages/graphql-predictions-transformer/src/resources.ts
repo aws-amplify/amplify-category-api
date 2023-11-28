@@ -2,7 +2,6 @@ import { ResourceConstants, PredictionsResourceIDs } from 'graphql-transformer-c
 import {
   obj,
   str,
-  print,
   int,
   ref,
   iff,
@@ -17,6 +16,7 @@ import {
   toJson,
   comment,
   HttpMappingTemplate,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import { IAM, Fn, AppSync, Lambda } from 'cloudform-types';
 import DataSource, { HttpConfig, LambdaConfig } from 'cloudform-types/types/appSync/dataSource';
@@ -264,9 +264,9 @@ export class ResourceFactory {
       },
       RequestMappingTemplate: Fn.Join('\n', [
         this.addStorageInStash(bucketName),
-        print(compoundExpression([qref('$ctx.stash.put("isList", false)'), obj({})])),
+        vtlPrinter.print(compoundExpression([qref('$ctx.stash.put("isList", false)'), obj({})])),
       ]),
-      ResponseMappingTemplate: print(
+      ResponseMappingTemplate: vtlPrinter.print(
         compoundExpression([
           comment('If the result is a list return the result as a list'),
           ifElse(
@@ -441,8 +441,8 @@ export class ResourceFactory {
       Name: `${action}Function`,
       DataSourceName: datasourceName,
       FunctionVersion: '2018-05-29',
-      RequestMappingTemplate: print(resolver.request),
-      ResponseMappingTemplate: print(resolver.response),
+      RequestMappingTemplate: vtlPrinter.print(resolver.request),
+      ResponseMappingTemplate: vtlPrinter.print(resolver.response),
     }).dependsOn([iamRole, datasourceName]);
   }
 

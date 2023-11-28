@@ -1,5 +1,4 @@
 import * as fs from 'fs-extra';
-
 import {
   compoundExpression,
   forEach,
@@ -7,16 +6,15 @@ import {
   list,
   methodCall,
   obj,
-  print,
   ref,
   ret,
   set,
   str,
   ReferenceNode,
   StringNode,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import { graphqlName, plurality, toUpper } from 'graphql-transformer-common';
-
 import AppSync from 'cloudform-types/types/appSync';
 import { DocumentNode } from 'graphql';
 import { Fn } from 'cloudform-types';
@@ -104,7 +102,7 @@ export class RelationalDBResolverGenerator {
     const reqFileName = `${mutationTypeName}.${fieldName}.req.vtl`;
     const resFileName = `${mutationTypeName}.${fieldName}.res.vtl`;
 
-    const reqTemplate = print(
+    const reqTemplate = vtlPrinter.print(
       compoundExpression([
         set(ref('cols'), list([])),
         set(ref('vals'), list([])),
@@ -126,7 +124,7 @@ export class RelationalDBResolverGenerator {
       ]),
     );
 
-    const resTemplate = print(ref('utils.toJson($utils.parseJson($utils.rds.toJsonString($ctx.result))[1][0])'));
+    const resTemplate = vtlPrinter.print(ref('utils.toJson($utils.parseJson($utils.rds.toJsonString($ctx.result))[1][0])'));
 
     fs.writeFileSync(`${this.resolverFilePath}/${reqFileName}`, reqTemplate, 'utf8');
     fs.writeFileSync(`${this.resolverFilePath}/${resFileName}`, resTemplate, 'utf8');
@@ -166,7 +164,7 @@ export class RelationalDBResolverGenerator {
     const primaryKey = this.getTablePrimaryKey(type);
     const primaryKeyRef = this.getPrimaryKeyRef(type, operationType);
 
-    const reqTemplate = print(
+    const reqTemplate = vtlPrinter.print(
       compoundExpression([
         set(ref(this.variableMapRefName), obj({})),
         methodCall(ref('util.qr'), methodCall(ref(`${this.variableMapRefName}.put`), str(`:${primaryKey}`), primaryKeyRef)),
@@ -176,7 +174,7 @@ export class RelationalDBResolverGenerator {
         }),
       ]),
     );
-    const resTemplate: string = print(
+    const resTemplate: string = vtlPrinter.print(
       compoundExpression([
         set(ref('output'), ref('utils.rds.toJsonObject($ctx.result)')),
         iff(
@@ -227,7 +225,7 @@ export class RelationalDBResolverGenerator {
     const reqFileName = `${mutationTypeName}.${fieldName}.req.vtl`;
     const resFileName = `${mutationTypeName}.${fieldName}.res.vtl`;
 
-    const reqTemplate = print(
+    const reqTemplate = vtlPrinter.print(
       compoundExpression([
         set(ref('updateList'), obj({})),
         set(ref(this.variableMapRefName), obj({})),
@@ -246,7 +244,7 @@ export class RelationalDBResolverGenerator {
       ]),
     );
 
-    const resTemplate: string = print(
+    const resTemplate: string = vtlPrinter.print(
       compoundExpression([
         set(ref('output'), ref('utils.rds.toJsonObject($ctx.result)')),
         iff(
@@ -298,7 +296,7 @@ export class RelationalDBResolverGenerator {
     const primaryKey = this.getTablePrimaryKey(type);
     const primaryKeyRef = this.getPrimaryKeyRef(type, operationType);
 
-    const reqTemplate = print(
+    const reqTemplate = vtlPrinter.print(
       compoundExpression([
         set(ref(this.variableMapRefName), obj({})),
         methodCall(ref('util.qr'), methodCall(ref(`${this.variableMapRefName}.put`), str(`:${primaryKey}`), primaryKeyRef)),
@@ -308,7 +306,7 @@ export class RelationalDBResolverGenerator {
         }),
       ]),
     );
-    const resTemplate: string = print(
+    const resTemplate: string = vtlPrinter.print(
       compoundExpression([
         set(ref('output'), ref('utils.rds.toJsonObject($ctx.result)')),
         iff(
@@ -356,12 +354,12 @@ export class RelationalDBResolverGenerator {
     const selectSql = this.generateSelectStatement(type);
     const reqFileName = `${queryTypeName}.${fieldName}.req.vtl`;
     const resFileName = `${queryTypeName}.${fieldName}.res.vtl`;
-    const reqTemplate = print(
+    const reqTemplate = vtlPrinter.print(
       RelationalDBMappingTemplate.rdsQuery({
         statements: list([str(selectSql)]),
       }),
     );
-    const resTemplate = print(ref('utils.toJson($utils.rds.toJsonObject($ctx.result)[0])'));
+    const resTemplate = vtlPrinter.print(ref('utils.toJson($utils.rds.toJsonObject($ctx.result)[0])'));
 
     fs.writeFileSync(`${this.resolverFilePath}/${reqFileName}`, reqTemplate, 'utf8');
     fs.writeFileSync(`${this.resolverFilePath}/${resFileName}`, resTemplate, 'utf8');

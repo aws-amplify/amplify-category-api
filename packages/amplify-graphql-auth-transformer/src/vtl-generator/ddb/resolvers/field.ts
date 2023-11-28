@@ -8,7 +8,6 @@ import {
   equals,
   str,
   compoundExpression,
-  printBlock,
   toJson,
   set,
   methodCall,
@@ -22,6 +21,7 @@ import {
   obj,
   list,
   or,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import {
   RoleDefinition,
@@ -166,7 +166,7 @@ export const generateAuthExpressionForField = (
     );
   }
   totalAuthExpressions.push(iff(not(ref(IS_AUTHORIZED_FLAG)), ref('util.unauthorized()')));
-  return printBlock('Field Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
+  return vtlPrinter.printBlock('Field Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
 };
 
 /**
@@ -174,14 +174,14 @@ export const generateAuthExpressionForField = (
  */
 export const generateFieldAuthResponse = (operation: string, fieldName: string, subscriptionsEnabled: boolean): string => {
   if (subscriptionsEnabled) {
-    return printBlock('Checking for allowed operations which can return this field')(
+    return vtlPrinter.printBlock('Checking for allowed operations which can return this field')(
       compoundExpression([
         set(ref('operation'), methodCall(ref('util.defaultIfNull'), methodCall(ref('ctx.source.get'), str(OPERATION_KEY)), nul())),
         ifElse(equals(ref('operation'), str(operation)), toJson(nul()), toJson(ref(`context.source["${fieldName}"]`))),
       ]),
     );
   }
-  return printBlock('Return Source Field')(toJson(ref(`context.source["${fieldName}"]`)));
+  return vtlPrinter.printBlock('Return Source Field')(toJson(ref(`context.source["${fieldName}"]`)));
 };
 
 /**
@@ -189,7 +189,7 @@ export const generateFieldAuthResponse = (operation: string, fieldName: string, 
  */
 export const setDeniedFieldFlag = (operation: string, subscriptionsEnabled: boolean): string => {
   if (subscriptionsEnabled) {
-    return printBlock('Check if subscriptions is protected')(
+    return vtlPrinter.printBlock('Check if subscriptions is protected')(
       compoundExpression([
         iff(
           equals(methodCall(ref('util.defaultIfNull'), methodCall(ref('ctx.source.get'), str(OPERATION_KEY)), nul()), str(operation)),
@@ -208,5 +208,5 @@ export const generateSandboxExpressionForField = (sandboxEnabled: boolean): stri
   let exp: Expression;
   if (sandboxEnabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY_AUTH_TYPE)), methodCall(ref('util.unauthorized')));
   else exp = methodCall(ref('util.unauthorized'));
-  return printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(compoundExpression([exp, toJson(obj({}))]));
+  return vtlPrinter.printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(compoundExpression([exp, toJson(obj({}))]));
 };

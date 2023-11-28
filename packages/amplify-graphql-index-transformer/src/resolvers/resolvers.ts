@@ -32,8 +32,6 @@ import {
   methodCall,
   not,
   obj,
-  print,
-  printBlock,
   qref,
   raw,
   ref,
@@ -44,6 +42,7 @@ import {
   toJson,
   CompoundExpressionNode,
   ObjectNode,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import {
   applyKeyExpressionForCompositeKey,
@@ -132,7 +131,7 @@ export const updateResolvers = (
 
   if (listResolver) {
     addIndexToResolverSlot(listResolver, [
-      print(setQuerySnippet(config, ctx, true)),
+      vtlPrinter.print(setQuerySnippet(config, ctx, true)),
       `$util.qr($ctx.stash.put("${ResourceConstants.SNIPPETS.ModelQueryExpression}", $${ResourceConstants.SNIPPETS.ModelQueryExpression}))`,
     ]);
   }
@@ -248,7 +247,7 @@ const setPrimaryKeySnippet = (config: PrimaryKeyDirectiveConfiguration, isMutati
     ),
   ];
 
-  return printBlock('Set the primary key')(compoundExpression(cmds));
+  return vtlPrinter.printBlock('Set the primary key')(compoundExpression(cmds));
 };
 
 const modelObjectKeySnippet = (config: PrimaryKeyDirectiveConfiguration, isMutation: boolean): ObjectNode => {
@@ -286,7 +285,7 @@ export const ensureCompositeKeySnippet = (config: PrimaryKeyDirectiveConfigurati
     .map((keyField) => `\${${argsPrefix}.${keyField}}`)
     .join(ModelResourceIDs.ModelCompositeKeySeparator());
 
-  return print(
+  return vtlPrinter.print(
     compoundExpression([
       ifElse(
         raw(`$util.isNull($ctx.stash.metadata.${ResourceConstants.SNIPPETS.DynamoDBNameOverrideMap})`),
@@ -555,7 +554,7 @@ export const makeQueryResolver = (config: IndexDirectiveConfiguration, ctx: Tran
       `${queryTypeName}.${queryField}.req.vtl`,
     ),
     MappingTemplate.s3MappingTemplateFromString(
-      print(
+      vtlPrinter.print(
         compoundExpression([
           iff(ref('ctx.error'), raw('$util.error($ctx.error.message, $ctx.error.type)')),
           raw('$util.toJson($ctx.result)'),
@@ -594,7 +593,7 @@ const validateIndexArgumentSnippet = (config: IndexDirectiveConfiguration, keyOp
     return '';
   }
 
-  return printBlock(`Validate ${keyOperation} mutation for @index '${name}'`)(
+  return vtlPrinter.printBlock(`Validate ${keyOperation} mutation for @index '${name}'`)(
     compoundExpression([
       set(ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg), bool(false)),
       set(ref('keyFieldNames'), list(sortKeyFields.map((f) => str(f)))),
@@ -615,7 +614,7 @@ const validateIndexArgumentSnippet = (config: IndexDirectiveConfiguration, keyOp
 };
 
 export const mergeInputsAndDefaultsSnippet = (): string => {
-  return printBlock('Merge default values and inputs')(generateApplyDefaultsToInputTemplate('mergedValues'));
+  return vtlPrinter.printBlock('Merge default values and inputs')(generateApplyDefaultsToInputTemplate('mergedValues'));
 };
 
 export const addIndexToResolverSlot = (resolver: TransformerResolverProvider, lines: string[], isSync = false): void => {
@@ -641,9 +640,9 @@ const makeSyncResolver = (
 
   if (resolverMap.has(syncResolver)) {
     const prevSnippet = resolverMap.get(syncResolver)!;
-    resolverMap.set(syncResolver, joinSnippets([prevSnippet, print(setSyncQueryMapSnippet(name, config))]));
+    resolverMap.set(syncResolver, joinSnippets([prevSnippet, vtlPrinter.print(setSyncQueryMapSnippet(name, config))]));
   } else {
-    resolverMap.set(syncResolver, print(setSyncQueryMapSnippet(name, config)));
+    resolverMap.set(syncResolver, vtlPrinter.print(setSyncQueryMapSnippet(name, config)));
   }
 };
 
@@ -668,12 +667,12 @@ const setSyncQueryMapSnippet = (name: string, config: PrimaryKeyDirectiveConfigu
  */
 export const constructSyncVTL = (syncVTLContent: string, resolver: TransformerResolverProvider): void => {
   const checks = [
-    print(generateSyncResolverInit()),
+    vtlPrinter.print(generateSyncResolverInit()),
     syncVTLContent,
-    print(setSyncQueryFilterSnippet()),
-    print(setSyncKeyExpressionForHashKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
-    print(setSyncKeyExpressionForRangeKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
-    print(makeSyncQueryResolver()),
+    vtlPrinter.print(setSyncQueryFilterSnippet()),
+    vtlPrinter.print(setSyncKeyExpressionForHashKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
+    vtlPrinter.print(setSyncKeyExpressionForRangeKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
+    vtlPrinter.print(makeSyncQueryResolver()),
   ];
 
   addIndexToResolverSlot(resolver, checks, true);
@@ -911,7 +910,7 @@ export const generateAuthExpressionForSandboxMode = (enabled: boolean): string =
   if (enabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY)), methodCall(ref('util.unauthorized')));
   else exp = methodCall(ref('util.unauthorized'));
 
-  return printBlock(`Sandbox Mode ${enabled ? 'Enabled' : 'Disabled'}`)(
+  return vtlPrinter.printBlock(`Sandbox Mode ${enabled ? 'Enabled' : 'Disabled'}`)(
     compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), exp), toJson(obj({}))]),
   );
 };

@@ -23,7 +23,7 @@ import {
   StringValueNode,
   TypeNode,
 } from 'graphql';
-import { methodCall, printBlock, qref, raw, ref, str } from 'graphql-mapping-template';
+import { methodCall, qref, raw, ref, str, vtlPrinter } from 'graphql-mapping-template';
 import { getBaseType, isEnum, isListType, isScalarOrEnum, ModelResourceIDs, toCamelCase } from 'graphql-transformer-common';
 import { DefaultValueDirectiveConfiguration } from './types';
 import { TypeValidators } from './validators';
@@ -159,7 +159,7 @@ export class DefaultValueTransformer extends TransformerPluginBase {
   };
 
   private makeDefaultValueSnippet = (fieldName: string, defaultValue: string, isString: boolean): string =>
-    printBlock(`Setting "${fieldName}" to default value of "${defaultValue}"`)(
+    vtlPrinter.printBlock(`Setting "${fieldName}" to default value of "${defaultValue}"`)(
       qref(
         methodCall(
           ref('context.args.input.put'),

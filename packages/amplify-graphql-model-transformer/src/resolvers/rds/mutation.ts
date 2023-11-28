@@ -5,12 +5,12 @@ import {
   list,
   methodCall,
   obj,
-  printBlock,
   qref,
   ref,
   set,
   str,
   toJson,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelDirectiveConfiguration } from '../../directive';
@@ -52,12 +52,12 @@ export const generateCreateInitSlotTemplate = (modelConfig: ModelDirectiveConfig
       }),
     ),
   );
-  return printBlock('Initialization default values')(compoundExpression(statements));
+  return vtlPrinter.printBlock('Initialization default values')(compoundExpression(statements));
 };
 
 export const generateLambdaCreateRequestTemplate = (tableName: string, operationName: string, ctx: TransformerContextProvider): string => {
   const mappedTableName = ctx.resourceHelper.getModelNameMapping(tableName);
-  return printBlock('Invoke RDS Lambda data source')(
+  return vtlPrinter.printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
       set(ref('lambdaInput'), obj({})),
       set(ref('lambdaInput.table'), str(mappedTableName)),
@@ -116,7 +116,7 @@ export const generateUpdateInitSlotTemplate = (modelConfig: ModelDirectiveConfig
       }),
     ),
   );
-  return printBlock('Initialization default values')(compoundExpression(statements));
+  return vtlPrinter.printBlock('Initialization default values')(compoundExpression(statements));
 };
 
 /**
@@ -129,7 +129,7 @@ export const generateLambdaUpdateRequestTemplate = (
   ctx: TransformerContextProvider,
 ): string => {
   const mappedTableName = ctx.resourceHelper.getModelNameMapping(tableName);
-  return printBlock('Invoke RDS Lambda data source')(
+  return vtlPrinter.printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
       set(ref('lambdaInput'), obj({})),
       set(ref('lambdaInput.table'), str(mappedTableName)),
@@ -170,7 +170,7 @@ export const generateLambdaDeleteRequestTemplate = (
   ctx: TransformerContextProvider,
 ): string => {
   const mappedTableName = ctx.resourceHelper.getModelNameMapping(tableName);
-  return printBlock('Invoke RDS Lambda data source')(
+  return vtlPrinter.printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
       set(ref('lambdaInput'), obj({})),
       set(ref('lambdaInput.table'), str(mappedTableName)),

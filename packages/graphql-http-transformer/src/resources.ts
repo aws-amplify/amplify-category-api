@@ -9,11 +9,11 @@ import {
   obj,
   or,
   parens,
-  print,
   qref,
   raw,
   ref,
   set,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import { HttpResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import Template from 'cloudform-types/types/template';
@@ -106,7 +106,7 @@ export class ResourceFactory {
       FieldName: field,
       TypeName: type,
       RequestMappingTemplate: this.replaceEnvAndRegion(
-        print(
+        vtlPrinter.print(
           compoundExpression([
             set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
             qref('$headers.put("accept-encoding", "application/json")'),
@@ -121,7 +121,7 @@ export class ResourceFactory {
           ]),
         ),
       ),
-      ResponseMappingTemplate: print(
+      ResponseMappingTemplate: vtlPrinter.print(
         ifElse(
           raw('$ctx.result.statusCode == 200'),
           ifElse(
@@ -151,7 +151,7 @@ export class ResourceFactory {
       FieldName: field,
       TypeName: type,
       RequestMappingTemplate: this.replaceEnvAndRegion(
-        print(
+        vtlPrinter.print(
           compoundExpression([
             nonNullArgs.length > 0 ? this.makeNonNullChecks(nonNullArgs) : null,
             set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
@@ -169,7 +169,7 @@ export class ResourceFactory {
           ]),
         ),
       ),
-      ResponseMappingTemplate: print(
+      ResponseMappingTemplate: vtlPrinter.print(
         ifElse(
           raw('$ctx.result.statusCode == 200 || $ctx.result.statusCode == 201'),
           // check if the content type returned is XML, and convert to JSON if so
@@ -200,7 +200,7 @@ export class ResourceFactory {
       FieldName: field,
       TypeName: type,
       RequestMappingTemplate: this.replaceEnvAndRegion(
-        print(
+        vtlPrinter.print(
           compoundExpression([
             nonNullArgs.length > 0 ? this.makeNonNullChecks(nonNullArgs) : null,
             set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
@@ -218,7 +218,7 @@ export class ResourceFactory {
           ]),
         ),
       ),
-      ResponseMappingTemplate: print(
+      ResponseMappingTemplate: vtlPrinter.print(
         ifElse(
           raw('$ctx.result.statusCode == 200 || $ctx.result.statusCode == 201'),
           ifElse(
@@ -245,7 +245,7 @@ export class ResourceFactory {
       FieldName: field,
       TypeName: type,
       RequestMappingTemplate: this.replaceEnvAndRegion(
-        print(
+        vtlPrinter.print(
           compoundExpression([
             set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
             qref('$headers.put("accept-encoding", "application/json")'),
@@ -259,7 +259,7 @@ export class ResourceFactory {
           ]),
         ),
       ),
-      ResponseMappingTemplate: print(
+      ResponseMappingTemplate: vtlPrinter.print(
         ifElse(
           raw('$ctx.result.statusCode == 200'),
           ifElse(
@@ -289,7 +289,7 @@ export class ResourceFactory {
       FieldName: field,
       TypeName: type,
       RequestMappingTemplate: this.replaceEnvAndRegion(
-        print(
+        vtlPrinter.print(
           compoundExpression([
             nonNullArgs.length > 0 ? this.makeNonNullChecks(nonNullArgs) : null,
             set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
@@ -307,7 +307,7 @@ export class ResourceFactory {
           ]),
         ),
       ),
-      ResponseMappingTemplate: print(
+      ResponseMappingTemplate: vtlPrinter.print(
         ifElse(
           raw('$ctx.result.statusCode == 200 || $ctx.result.statusCode == 201'),
           ifElse(

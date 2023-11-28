@@ -12,7 +12,6 @@ import {
   obj,
   str,
   ref,
-  printBlock,
   compoundExpression,
   Expression,
   set,
@@ -22,6 +21,7 @@ import {
   iff,
   notEquals,
   not,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import { ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { DirectiveNode, ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
@@ -158,7 +158,7 @@ const generateAuthExpressionForSandboxMode = (enabled: boolean): string => {
   if (enabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY)), methodCall(ref('util.unauthorized')));
   else exp = methodCall(ref('util.unauthorized'));
 
-  return printBlock(`Sandbox Mode ${enabled ? 'Enabled' : 'Disabled'}`)(
+  return vtlPrinter.printBlock(`Sandbox Mode ${enabled ? 'Enabled' : 'Disabled'}`)(
     compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), exp), toJson(obj({}))]),
   );
 };
@@ -187,7 +187,7 @@ const getStatement = (config: SqlDirectiveConfiguration, customQueries: Map<stri
 };
 
 export const generateSqlLambdaRequestTemplate = (statement: string, operation: string, operationName: string): string => {
-  return printBlock('Invoke RDS Lambda data source')(
+  return vtlPrinter.printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
       set(ref('lambdaInput'), obj({})),
       set(ref('lambdaInput.parameters'), obj({})),
@@ -211,5 +211,5 @@ export const generateSqlLambdaResponseMappingTemplate = (): string => {
     ifElse(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type')), toJson(ref('ctx.result'))),
   );
 
-  return printBlock('ResponseTemplate')(compoundExpression(statements));
+  return vtlPrinter.printBlock('ResponseTemplate')(compoundExpression(statements));
 };

@@ -1,4 +1,4 @@
-import { list, str, ObjectNode, print } from 'graphql-mapping-template';
+import { list, str, ObjectNode, vtlPrinter } from 'graphql-mapping-template';
 import { RelationalDBMappingTemplate } from '../RelationalDBMappingTemplate';
 
 const sql = 'SELECT * FROM Pets';
@@ -21,12 +21,12 @@ test('RDS Query Mapping Template Creation', () => {
   expect(versionAttr).toBeDefined();
   expect(versionAttr[0]).toBe('version');
   expect(versionAttr[1].kind).toBe('String');
-  expect(print(versionAttr[1])).toBe('"2018-05-29"');
+  expect(vtlPrinter.print(versionAttr[1])).toBe('"2018-05-29"');
 
   // Verify the sql statement was created successfully
   const statementsAttr = queryObj.attributes[1];
   expect(statementsAttr).toBeDefined();
   expect(statementsAttr[0]).toBe('statements');
   expect(statementsAttr[1].kind).toBe('List');
-  expect(print(statementsAttr[1])).toBe('["SELECT * FROM Pets"]');
+  expect(vtlPrinter.print(statementsAttr[1])).toBe('["SELECT * FROM Pets"]');
 });

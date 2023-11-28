@@ -9,12 +9,12 @@ import {
   methodCall,
   not,
   obj,
-  printBlock,
   qref,
   ref,
   set,
   str,
   toJson,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import { ResourceConstants, isArrayOrObject, isListType } from 'graphql-transformer-common';
 import { RDSConnectionSecrets, setResourceName } from '@aws-amplify/graphql-transformer-core';
@@ -337,7 +337,7 @@ export const generateLambdaRequestTemplate = (
   ctx: TransformerContextProvider,
 ): string => {
   const mappedTableName = ctx.resourceHelper.getModelNameMapping(tableName);
-  return printBlock('Invoke RDS Lambda data source')(
+  return vtlPrinter.printBlock('Invoke RDS Lambda data source')(
     compoundExpression([
       set(ref('lambdaInput'), obj({})),
       set(ref('lambdaInput.args'), obj({})),
@@ -384,7 +384,7 @@ export const generateGetLambdaResponseTemplate = (isSyncEnabled: boolean): strin
     );
   }
 
-  return printBlock('ResponseTemplate')(compoundExpression(statements));
+  return vtlPrinter.printBlock('ResponseTemplate')(compoundExpression(statements));
 };
 
 /**
@@ -410,7 +410,7 @@ export const generateDefaultLambdaResponseMappingTemplate = (isSyncEnabled: bool
     );
   }
 
-  return printBlock('ResponseTemplate')(compoundExpression(statements));
+  return vtlPrinter.printBlock('ResponseTemplate')(compoundExpression(statements));
 };
 
 export const getNonScalarFields = (object: ObjectTypeDefinitionNode | undefined, ctx: TransformerContextProvider): string[] => {
