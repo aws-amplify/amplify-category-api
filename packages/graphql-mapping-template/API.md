@@ -248,6 +248,11 @@ export type IsNullOrEmptyNode = {
     expr: Expression;
 };
 
+// Warning: (ae-forgotten-export) The symbol "JsPrinter" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export const jsPrinter: JsPrinter;
+
 // @public (undocumented)
 export function list(expressions: Expression[]): ListNode;
 
@@ -339,14 +344,68 @@ export interface ParensNode {
 }
 
 // @public (undocumented)
-function print_2(expr: Expression): string;
-export { print_2 as print }
-
-// @public (undocumented)
-export function printBlock(name: string): (expr: Expression) => string;
-
-// @public (undocumented)
-export function printObject(node: ObjectNode, indent?: string): string;
+export abstract class Printer {
+    // (undocumented)
+    print(expr: Expression): string;
+    // (undocumented)
+    protected abstract printAnd(node: AndNode, indent: string): string;
+    // (undocumented)
+    printBlock(name: string): (expr: Expression) => string;
+    // (undocumented)
+    protected abstract printBool(node: BooleanNode): string;
+    // (undocumented)
+    protected abstract printComment(node: CommentNode, indent: string): string;
+    // (undocumented)
+    protected abstract printCompoundExpression(node: CompoundExpressionNode, indent: string): string;
+    // (undocumented)
+    protected abstract printEquals(node: EqualsNode, indent: string): string;
+    // (undocumented)
+    protected printExpr(expr: Expression, indent?: string): string;
+    // (undocumented)
+    protected abstract printFloat(node: FloatNode): string;
+    // (undocumented)
+    protected abstract printForEach(node: ForEachNode, indent: string): string;
+    // (undocumented)
+    protected abstract printIf(node: IfNode, indent: string): any;
+    // (undocumented)
+    protected abstract printIfElse(node: IfElseNode, indent: string): any;
+    // (undocumented)
+    protected abstract printInt(node: IntNode): string;
+    // (undocumented)
+    protected abstract printIsNullOrEmpty(node: IsNullOrEmptyNode, indent: string): string;
+    // (undocumented)
+    protected abstract printList(node: ListNode, indent: string): string;
+    // (undocumented)
+    protected abstract printNewLine(node: NewLineNode): string;
+    // (undocumented)
+    protected abstract printNot(node: NotNode, indent: string): string;
+    // (undocumented)
+    protected abstract printNotEquals(node: NotEqualsNode, indent: string): string;
+    // (undocumented)
+    protected abstract printNull(node: NullNode): string;
+    // (undocumented)
+    abstract printObject(node: ObjectNode, indent: string): string;
+    // (undocumented)
+    protected abstract printOr(node: OrNode, indent: string): string;
+    // (undocumented)
+    protected abstract printParens(node: ParensNode, indent: string): string;
+    // (undocumented)
+    protected abstract printQuietReference(node: QuietReferenceNode, indent: string): string;
+    // (undocumented)
+    protected abstract printQuotes(node: QuotesNode): string;
+    // (undocumented)
+    protected abstract printRaw(node: RawNode, indent: string): string;
+    // (undocumented)
+    protected abstract printReference(node: ReferenceNode): string;
+    // (undocumented)
+    protected abstract printReturn(node: ReturnNode, indent: string): string;
+    // (undocumented)
+    protected abstract printSet(node: SetNode, indent: string): string;
+    // (undocumented)
+    protected abstract printString(node: StringNode): string;
+    // (undocumented)
+    protected abstract printToJson(node: ToJsonNode, indent: string): string;
+}
 
 // @public (undocumented)
 export function qref(value: string | Expression): QuietReferenceNode;
@@ -415,7 +474,7 @@ export class SearchableMappingTemplate {
         params: Expression | ObjectNode | CompoundExpressionNode;
     }): ObjectNode;
     // (undocumented)
-    static searchItem({ query, size, search_after, from, path, sort, version, }: {
+    static searchItem({ query, size, search_after, from, path, sort, version, printer, }: {
         path: Expression;
         sort?: Expression | ObjectNode;
         query?: ObjectNode | Expression;
@@ -424,9 +483,10 @@ export class SearchableMappingTemplate {
         from?: Expression;
         version?: BooleanNode;
         aggs?: Expression | ObjectNode;
+        printer?: Printer;
     }): ObjectNode;
     // (undocumented)
-    static searchTemplate({ query, size, search_after, from, path, sort, version, aggs, }: {
+    static searchTemplate({ query, size, search_after, from, path, sort, version, aggs, printer, }: {
         path: Expression;
         sort?: Expression | ObjectNode;
         query?: ObjectNode | Expression;
@@ -435,6 +495,7 @@ export class SearchableMappingTemplate {
         from?: Expression;
         version?: BooleanNode;
         aggs?: Expression | ObjectNode;
+        printer?: Printer;
     }): ObjectNode;
 }
 
@@ -470,6 +531,11 @@ export type ToJsonNode = {
     kind: 'Util.ToJson';
     expr: Expression;
 };
+
+// Warning: (ae-forgotten-export) The symbol "VtlPrinter" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export const vtlPrinter: VtlPrinter;
 
 // (No @packageDocumentation comment for this package)
 

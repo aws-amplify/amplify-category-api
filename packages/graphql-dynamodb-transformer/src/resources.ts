@@ -2,9 +2,7 @@ import { DynamoDB, AppSync, IAM, Fn, StringParameter, NumberParameter, Refs, Int
 import Output from 'cloudform-types/types/output';
 import {
   DynamoDBMappingTemplate,
-  printBlock,
   str,
-  print,
   ref,
   obj,
   set,
@@ -22,6 +20,7 @@ import {
   and,
   RESOLVER_VERSION_ID,
   Expression,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import {
   ResourceConstants,
@@ -398,7 +397,7 @@ export class ResourceFactory {
       DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
       FieldName: fieldName,
       TypeName: mutationTypeName,
-      RequestMappingTemplate: printBlock('Prepare DynamoDB PutItem Request')(
+      RequestMappingTemplate: vtlPrinter.printBlock('Prepare DynamoDB PutItem Request')(
         compoundExpression([
           qref(`$context.args.input.put("__typename", "${type}")`),
           this.addDefaultConditionExpression('create'),
@@ -440,7 +439,7 @@ export class ResourceFactory {
           }),
         ]),
       ),
-      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(isSyncEnabled)),
+      ResponseMappingTemplate: vtlPrinter.print(DynamoDBMappingTemplate.dynamoDBResponse(isSyncEnabled)),
       ...(syncConfig && { SyncConfig: SyncUtils.syncResolverConfig(syncConfig) }),
     });
   }
@@ -449,7 +448,7 @@ export class ResourceFactory {
     const hasDefaultIdField = input.fields?.find(
       (field) => field.name.value === 'id' && ['ID', 'String'].includes(getBaseType(field.type)),
     );
-    return printBlock('Set default values')(
+    return vtlPrinter.printBlock('Set default values')(
       compoundExpression([
         ...(hasDefaultIdField ? [qref(`$context.args.input.put("id", $util.defaultIfNull($ctx.args.input.id, $util.autoId()))`)] : []),
         ...(timestamps && (timestamps.createdAtField || timestamps.updatedAtField)
@@ -492,7 +491,7 @@ export class ResourceFactory {
       DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
       FieldName: fieldName,
       TypeName: mutationTypeName,
-      RequestMappingTemplate: print(
+      RequestMappingTemplate: vtlPrinter.print(
         compoundExpression([
           set(ref('optionalNonNullableFields'), list(optionalNonNullableExpression)),
           forEach(ref('field'), ref('optionalNonNullableFields'), [
@@ -580,7 +579,7 @@ export class ResourceFactory {
           }),
         ]),
       ),
-      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(isSyncEnabled)),
+      ResponseMappingTemplate: vtlPrinter.print(DynamoDBMappingTemplate.dynamoDBResponse(isSyncEnabled)),
       ...(syncConfig && { SyncConfig: SyncUtils.syncResolverConfig(syncConfig) }),
     });
   }
@@ -596,7 +595,7 @@ export class ResourceFactory {
       DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
       FieldName: fieldName,
       TypeName: queryTypeName,
-      RequestMappingTemplate: print(
+      RequestMappingTemplate: vtlPrinter.print(
         DynamoDBMappingTemplate.getItem({
           key: ifElse(
             ref(ResourceConstants.SNIPPETS.ModelObjectKey),
@@ -609,7 +608,7 @@ export class ResourceFactory {
           isSyncEnabled,
         }),
       ),
-      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(isSyncEnabled)),
+      ResponseMappingTemplate: vtlPrinter.print(DynamoDBMappingTemplate.dynamoDBResponse(isSyncEnabled)),
     });
   }
 
@@ -624,7 +623,7 @@ export class ResourceFactory {
       DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
       FieldName: fieldName,
       TypeName: queryTypeName,
-      RequestMappingTemplate: print(
+      RequestMappingTemplate: vtlPrinter.print(
         DynamoDBMappingTemplate.syncItem({
           filter: ifElse(ref('context.args.filter'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'), nul()),
           limit: ref(`util.defaultIfNull($ctx.args.limit, ${ResourceConstants.DEFAULT_SYNC_QUERY_PAGE_LIMIT})`),
@@ -632,7 +631,7 @@ export class ResourceFactory {
           nextToken: ref('util.toJson($util.defaultIfNull($ctx.args.nextToken, null))'),
         }),
       ),
-      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(true)),
+      ResponseMappingTemplate: vtlPrinter.print(DynamoDBMappingTemplate.dynamoDBResponse(true)),
     });
   }
 
@@ -647,7 +646,7 @@ export class ResourceFactory {
       DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
       FieldName: fieldName,
       TypeName: queryTypeName,
-      RequestMappingTemplate: print(
+      RequestMappingTemplate: vtlPrinter.print(
         compoundExpression([
           set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${ResourceConstants.DEFAULT_PAGE_LIMIT})`)),
           DynamoDBMappingTemplate.query({
@@ -673,7 +672,7 @@ export class ResourceFactory {
           }),
         ]),
       ),
-      ResponseMappingTemplate: print(
+      ResponseMappingTemplate: vtlPrinter.print(
         DynamoDBMappingTemplate.dynamoDBResponse(
           isSyncEnabled,
           compoundExpression([iff(raw('!$result'), set(ref('result'), ref('ctx.result'))), raw('$util.toJson($result)')]),
@@ -701,7 +700,7 @@ export class ResourceFactory {
       DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
       FieldName: fieldName,
       TypeName: queryTypeName,
-      RequestMappingTemplate: print(
+      RequestMappingTemplate: vtlPrinter.print(
         compoundExpression([
           set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${ResourceConstants.DEFAULT_PAGE_LIMIT})`)),
           set(
@@ -733,7 +732,7 @@ export class ResourceFactory {
           raw(`$util.toJson($${requestVariable})`),
         ]),
       ),
-      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(isSyncEnabled)),
+      ResponseMappingTemplate: vtlPrinter.print(DynamoDBMappingTemplate.dynamoDBResponse(isSyncEnabled)),
     });
   }
 
@@ -750,7 +749,7 @@ export class ResourceFactory {
       DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
       FieldName: fieldName,
       TypeName: mutationTypeName,
-      RequestMappingTemplate: print(
+      RequestMappingTemplate: vtlPrinter.print(
         compoundExpression([
           ifElse(
             ref(ResourceConstants.SNIPPETS.AuthCondition),
@@ -823,7 +822,7 @@ export class ResourceFactory {
           }),
         ]),
       ),
-      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(isSyncEnabled)),
+      ResponseMappingTemplate: vtlPrinter.print(DynamoDBMappingTemplate.dynamoDBResponse(isSyncEnabled)),
       ...(syncConfig && { SyncConfig: SyncUtils.syncResolverConfig(syncConfig) }),
     });
   }

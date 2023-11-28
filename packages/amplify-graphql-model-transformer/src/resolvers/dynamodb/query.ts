@@ -9,7 +9,6 @@ import {
   methodCall,
   qref,
   toJson,
-  printBlock,
   iff,
   int,
   not,
@@ -21,6 +20,7 @@ import {
   forEach,
   nul,
   raw,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import { ResourceConstants, setArgs } from 'graphql-transformer-common';
 
@@ -73,7 +73,7 @@ export const generateGetRequestTemplate = (): string => {
     toJson(ref('GetRequest')),
   ];
 
-  return printBlock('Get Request template')(compoundExpression(statements));
+  return vtlPrinter.printBlock('Get Request template')(compoundExpression(statements));
 };
 
 export const generateGetResponseTemplate = (isSyncEnabled: boolean): string => {
@@ -95,7 +95,7 @@ export const generateGetResponseTemplate = (isSyncEnabled: boolean): string => {
       ]),
     ),
   );
-  return printBlock('Get Response template')(compoundExpression(statements));
+  return vtlPrinter.printBlock('Get Response template')(compoundExpression(statements));
 };
 
 export const generateListRequestTemplate = (): string => {
@@ -163,12 +163,12 @@ export const generateListRequestTemplate = (): string => {
     iff(not(methodCall(ref('util.isNull'), ref(indexNameVariable))), set(ref(`${requestVariable}.IndexName`), ref(indexNameVariable))),
     toJson(ref(requestVariable)),
   ]);
-  return printBlock('List Request')(expression);
+  return vtlPrinter.printBlock('List Request')(expression);
 };
 
 export const generateSyncRequestTemplate = (): string => {
   const requestVariable = 'ctx.stash.QueryRequest';
-  return printBlock('Sync Request template')(
+  return vtlPrinter.printBlock('Sync Request template')(
     compoundExpression([
       setArgs,
       set(ref('queryFilterContainsAuthField'), bool(false)),

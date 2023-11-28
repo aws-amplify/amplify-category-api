@@ -16,9 +16,9 @@ import {
   forEach,
   equals,
   str,
-  printBlock,
   ifElse,
   or,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
@@ -319,5 +319,5 @@ export const generateAuthExpressionForCreate = (
       ]),
     ),
   );
-  return printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
+  return vtlPrinter.printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
 };

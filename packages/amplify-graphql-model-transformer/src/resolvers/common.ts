@@ -1,4 +1,4 @@
-import { iff, ref, notEquals, methodCall, compoundExpression, obj, printBlock, toJson, str, not } from 'graphql-mapping-template';
+import { iff, ref, notEquals, methodCall, compoundExpression, obj, toJson, str, not, vtlPrinter } from 'graphql-mapping-template';
 
 const API_KEY = 'API Key Authorization';
 /**
@@ -10,7 +10,7 @@ export const generateAuthExpressionForSandboxMode = (enabled: boolean): string =
   if (enabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY)), methodCall(ref('util.unauthorized')));
   else exp = methodCall(ref('util.unauthorized'));
 
-  return printBlock(`Sandbox Mode ${enabled ? 'Enabled' : 'Disabled'}`)(
+  return vtlPrinter.printBlock(`Sandbox Mode ${enabled ? 'Enabled' : 'Disabled'}`)(
     compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), exp), toJson(obj({}))]),
   );
 };

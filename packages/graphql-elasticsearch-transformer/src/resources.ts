@@ -5,7 +5,6 @@ import Template from 'cloudform-types/types/template';
 import { Fn, StringParameter, NumberParameter, Lambda, Elasticsearch, Refs } from 'cloudform-types';
 import {
   ElasticsearchMappingTemplate,
-  print,
   str,
   ref,
   obj,
@@ -22,6 +21,7 @@ import {
   Expression,
   bool,
   methodCall,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import { toUpper, plurality, graphqlName, ResourceConstants, ModelResourceIDs } from 'graphql-transformer-common';
 import { MappingParameters } from 'graphql-transformer-core';
@@ -525,7 +525,7 @@ export class ResourceFactory {
       DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticsearchDataSourceLogicalID, 'Name'),
       FieldName: fieldName,
       TypeName: queryTypeName,
-      RequestMappingTemplate: print(
+      RequestMappingTemplate: vtlPrinter.print(
         compoundExpression([
           set(ref('indexPath'), str(`/${type.toLowerCase()}/doc/_search`)),
           set(ref('nonKeywordFields'), list(nonKeywordFields)),
@@ -559,7 +559,7 @@ export class ResourceFactory {
           }),
         ]),
       ),
-      ResponseMappingTemplate: print(
+      ResponseMappingTemplate: vtlPrinter.print(
         compoundExpression([
           set(ref('es_items'), list([])),
           forEach(ref('entry'), ref('context.result.hits.hits'), [

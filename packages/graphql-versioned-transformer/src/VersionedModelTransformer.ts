@@ -1,6 +1,6 @@
 import { Transformer, TransformerContext, InvalidDirectiveError, TransformerContractError, gql } from 'graphql-transformer-core';
 import { valueFromASTUntyped, ArgumentNode, ObjectTypeDefinitionNode, DirectiveNode, Kind } from 'graphql';
-import { printBlock, compoundExpression, set, ref, qref, obj, str, raw } from 'graphql-mapping-template';
+import { compoundExpression, set, ref, qref, obj, str, raw, vtlPrinter } from 'graphql-mapping-template';
 import {
   ResourceConstants,
   ModelResourceIDs,
@@ -74,7 +74,7 @@ export class VersionedModelTransformer extends Transformer {
    * @param versionInput
    */
   private augmentCreateMutation(ctx: TransformerContext, typeName: string, versionField: string, versionInput: string) {
-    const snippet = printBlock(`Setting "${versionField}" to 1`)(qref(`$ctx.args.input.put("${versionField}", 1)`));
+    const snippet = vtlPrinter.printBlock(`Setting "${versionField}" to 1`)(qref(`$ctx.args.input.put("${versionField}", 1)`));
     const mutationResolverLogicalId = ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName);
     const resolver = ctx.getResource(mutationResolverLogicalId);
     if (resolver) {
@@ -92,7 +92,7 @@ export class VersionedModelTransformer extends Transformer {
    */
   private augmentDeleteMutation(ctx: TransformerContext, typeName: string, versionField: string, versionInput: string) {
     const mutationResolverLogicalId = ResolverResourceIDs.DynamoDBDeleteResolverResourceID(typeName);
-    const snippet = printBlock(`Inject @versioned condition.`)(
+    const snippet = vtlPrinter.printBlock(`Inject @versioned condition.`)(
       compoundExpression([
         set(
           ref(ResourceConstants.SNIPPETS.VersionedCondition),
@@ -118,7 +118,7 @@ export class VersionedModelTransformer extends Transformer {
 
   private augmentUpdateMutation(ctx: TransformerContext, typeName: string, versionField: string, versionInput: string) {
     const mutationResolverLogicalId = ResolverResourceIDs.DynamoDBUpdateResolverResourceID(typeName);
-    const snippet = printBlock(`Inject @versioned condition.`)(
+    const snippet = vtlPrinter.printBlock(`Inject @versioned condition.`)(
       compoundExpression([
         set(
           ref(ResourceConstants.SNIPPETS.VersionedCondition),

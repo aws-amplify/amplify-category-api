@@ -20,13 +20,13 @@ import {
   parens,
   toJson,
   block,
-  print,
   ifElse,
   newline,
   methodCall,
   RESOLVER_VERSION_ID,
   isNullOrEmpty,
   ret,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import { ResourceConstants, NONE_VALUE } from 'graphql-transformer-common';
 import GraphQLApi, {
@@ -229,13 +229,13 @@ export class ResourceFactory {
       DataSourceName: 'NONE',
       FieldName: field,
       TypeName: type,
-      RequestMappingTemplate: print(
+      RequestMappingTemplate: vtlPrinter.print(
         obj({
           version: str(RESOLVER_VERSION_ID),
           payload: obj({}),
         }),
       ),
-      ResponseMappingTemplate: print(ref(`util.toJson($context.source.${field})`)),
+      ResponseMappingTemplate: vtlPrinter.print(ref(`util.toJson($context.source.${field})`)),
     });
   }
 
@@ -809,7 +809,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
       set(
         ref(ResourceConstants.SNIPPETS.AuthCondition),
         raw(
-          `$util.defaultIfNull($authCondition, ${print(
+          `$util.defaultIfNull($authCondition, ${vtlPrinter.print(
             obj({
               expression: str(''),
               expressionNames: obj({}),
@@ -908,13 +908,13 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
       DataSourceName: 'NONE',
       FieldName: fieldName,
       TypeName: subscriptionTypeName,
-      RequestMappingTemplate: print(
+      RequestMappingTemplate: vtlPrinter.print(
         raw(`{
     "version": "${RESOLVER_VERSION_ID}",
     "payload": {}
 }`),
       ),
-      ResponseMappingTemplate: print(raw(`$util.toJson(null)`)),
+      ResponseMappingTemplate: vtlPrinter.print(raw(`$util.toJson(null)`)),
     });
   }
 
@@ -929,7 +929,9 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
   }
 
   public setOperationExpression(operation: string): string {
-    return print(block('Setting the operation', [qref(print(methodCall(ref('ctx.result.put'), str('operation'), str(operation))))]));
+    return vtlPrinter.print(
+      block('Setting the operation', [qref(vtlPrinter.print(methodCall(ref('ctx.result.put'), str('operation'), str(operation))))]),
+    );
   }
 
   public getAuthModeCheckWrappedExpression(expectedAuthModes: Set<AuthProvider>, expression: Expression): Expression {

@@ -1,5 +1,5 @@
 import { TransformerContextProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { Expression, printBlock, compoundExpression, set, ref, list, qref, methodCall, str, obj } from 'graphql-mapping-template';
+import { Expression, compoundExpression, set, ref, list, qref, methodCall, str, obj, vtlPrinter } from 'graphql-mapping-template';
 import _ from 'lodash';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../../types';
 import { addIndexToResolverSlot, getResolverObject, validateSortDirectionInput } from '../resolvers';
@@ -13,7 +13,7 @@ export class RDSIndexVTLGenerator implements IndexVTLGenerator {
     operationName: string,
   ): string {
     const mappedTableName = ctx.resourceHelper.getModelNameMapping(tableName);
-    return printBlock('Invoke RDS Lambda data source')(
+    return vtlPrinter.printBlock('Invoke RDS Lambda data source')(
       compoundExpression([
         set(ref('lambdaInput'), obj({})),
         set(ref('lambdaInput.args'), obj({})),
@@ -69,7 +69,7 @@ export class RDSIndexVTLGenerator implements IndexVTLGenerator {
     }
 
     if (listResolver) {
-      const sortDirectionValidation = printBlock('Validate the sort direction input')(
+      const sortDirectionValidation = vtlPrinter.printBlock('Validate the sort direction input')(
         compoundExpression(validateSortDirectionInput(config, true)),
       );
       addIndexToResolverSlot(listResolver, [primaryKeySnippet, sortDirectionValidation]);
@@ -97,6 +97,6 @@ export class RDSIndexVTLGenerator implements IndexVTLGenerator {
 
     expressions.push(qref(methodCall(ref('ctx.stash.put'), str('keys'), ref('keys'))));
 
-    return printBlock('Set the primary key information in metadata')(compoundExpression(expressions));
+    return vtlPrinter.printBlock('Set the primary key information in metadata')(compoundExpression(expressions));
   };
 }

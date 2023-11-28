@@ -1,10 +1,10 @@
-import { compoundExpression, Expression, obj, printBlock, str, toJson, nul, iff, not, isNullOrEmpty, ref } from 'graphql-mapping-template';
+import { compoundExpression, Expression, obj, str, toJson, nul, iff, not, isNullOrEmpty, ref, vtlPrinter } from 'graphql-mapping-template';
 /**
  * Generates subscription request template
  */
 export const generateSubscriptionRequestTemplate = (): string => {
   const statements: Expression[] = [toJson(obj({ version: str('2018-05-29'), payload: obj({}) }))];
-  return printBlock('Subscription Request template')(compoundExpression(statements));
+  return vtlPrinter.printBlock('Subscription Request template')(compoundExpression(statements));
 };
 
 /**
@@ -18,5 +18,5 @@ export const generateSubscriptionResponseTemplate = (): string => {
     ),
     toJson(nul()),
   ];
-  return printBlock('Subscription Response template')(compoundExpression(statements));
+  return vtlPrinter.printBlock('Subscription Response template')(compoundExpression(statements));
 };

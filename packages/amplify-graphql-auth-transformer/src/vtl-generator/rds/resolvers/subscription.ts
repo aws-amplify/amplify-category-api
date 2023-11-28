@@ -1,4 +1,4 @@
-import { and, compoundExpression, ifElse, iff, list, methodCall, not, obj, printBlock, ref, set } from 'graphql-mapping-template';
+import { and, compoundExpression, ifElse, iff, list, methodCall, not, obj, ref, set, vtlPrinter } from 'graphql-mapping-template';
 import { ConfiguredAuthProviders, RoleDefinition } from '../../../utils';
 import { emptyPayload, generateAuthRulesFromRoles, validateAuthResult } from './common';
 
@@ -27,5 +27,5 @@ export const generateAuthExpressionForSubscriptions = (providers: ConfiguredAuth
 
   expressions.push(emptyPayload);
 
-  return printBlock('Authorization rules')(compoundExpression(expressions));
+  return vtlPrinter.printBlock('Authorization rules')(compoundExpression(expressions));
 };

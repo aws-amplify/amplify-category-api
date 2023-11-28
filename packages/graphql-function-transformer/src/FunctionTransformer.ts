@@ -1,5 +1,5 @@
 import { Transformer, gql, TransformerContext, getDirectiveArguments, TransformerContractError } from 'graphql-transformer-core';
-import { obj, str, ref, printBlock, compoundExpression, qref, raw, iff } from 'graphql-mapping-template';
+import { obj, str, ref, compoundExpression, qref, raw, iff, vtlPrinter } from 'graphql-mapping-template';
 import { ResolverResourceIDs, FunctionResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode } from 'graphql';
 import { AppSync, IAM, Fn } from 'cloudform-types';
@@ -135,7 +135,9 @@ export class FunctionTransformer extends Transformer {
       Name: FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region),
       DataSourceName: FunctionResourceIDs.FunctionDataSourceID(name, region),
       FunctionVersion: '2018-05-29',
-      RequestMappingTemplate: printBlock(`Invoke AWS Lambda data source: ${FunctionResourceIDs.FunctionDataSourceID(name, region)}`)(
+      RequestMappingTemplate: vtlPrinter.printBlock(
+        `Invoke AWS Lambda data source: ${FunctionResourceIDs.FunctionDataSourceID(name, region)}`,
+      )(
         obj({
           version: str('2018-05-29'),
           operation: str('Invoke'),
@@ -150,7 +152,7 @@ export class FunctionTransformer extends Transformer {
           }),
         }),
       ),
-      ResponseMappingTemplate: printBlock('Handle error or return result')(
+      ResponseMappingTemplate: vtlPrinter.printBlock('Handle error or return result')(
         compoundExpression([
           iff(ref('ctx.error'), raw('$util.error($ctx.error.message, $ctx.error.type)')),
           raw('$util.toJson($ctx.result)'),
@@ -171,7 +173,7 @@ export class FunctionTransformer extends Transformer {
       PipelineConfig: {
         Functions: [Fn.GetAtt(FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region), 'FunctionId')],
       },
-      RequestMappingTemplate: printBlock('Stash resolver specific context.')(
+      RequestMappingTemplate: vtlPrinter.printBlock('Stash resolver specific context.')(
         compoundExpression([qref(`$ctx.stash.put("typeName", "${type}")`), qref(`$ctx.stash.put("fieldName", "${field}")`), obj({})]),
       ),
       ResponseMappingTemplate: '$util.toJson($ctx.prev.result)',

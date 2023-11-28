@@ -13,11 +13,10 @@ import {
   obj,
   equals,
   ifElse,
-  printBlock,
   toJson,
   qref,
   str,
-  not,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import { OPERATION_KEY } from '../../definitions';
 
@@ -80,5 +79,5 @@ export const generateDefaultResponseMappingTemplate = (isSyncEnabled: boolean, m
     );
   }
 
-  return printBlock('ResponseTemplate')(compoundExpression(statements));
+  return vtlPrinter.printBlock('ResponseTemplate')(compoundExpression(statements));
 };

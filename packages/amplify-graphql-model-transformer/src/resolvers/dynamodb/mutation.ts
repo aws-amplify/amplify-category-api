@@ -16,7 +16,7 @@ import {
   raw,
   bool,
   toJson,
-  printBlock,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import { setArgs } from 'graphql-transformer-common';
 import { ModelDirectiveConfiguration } from '../../directive';
@@ -145,7 +145,7 @@ export const generateUpdateRequestTemplate = (modelName: string, isSyncEnabled: 
     ),
     toJson(ref('UpdateItem')),
   ];
-  return printBlock(`Mutation Update resolver`)(compoundExpression(statements));
+  return vtlPrinter.printBlock(`Mutation Update resolver`)(compoundExpression(statements));
 };
 
 /**
@@ -215,7 +215,7 @@ export const generateCreateRequestTemplate = (modelName: string, modelIndexField
     ),
     toJson(ref('PutObject')),
   ];
-  return printBlock('Create Request template')(compoundExpression(statements));
+  return vtlPrinter.printBlock('Create Request template')(compoundExpression(statements));
 };
 
 /**
@@ -252,7 +252,7 @@ export const generateCreateInitSlotTemplate = (modelConfig: ModelDirectiveConfig
       }),
     ),
   );
-  return printBlock('Initialization default values')(compoundExpression(statements));
+  return vtlPrinter.printBlock('Initialization default values')(compoundExpression(statements));
 };
 /**
  * Generates VTL template in delete mutation
@@ -292,7 +292,7 @@ export const generateDeleteRequestTemplate = (modelName: string, isSyncEnabled: 
 
   statements.push(toJson(ref('DeleteRequest')));
 
-  return printBlock('Delete Request template')(compoundExpression(statements));
+  return vtlPrinter.printBlock('Delete Request template')(compoundExpression(statements));
 };
 
 /**
@@ -324,7 +324,7 @@ export const generateUpdateInitSlotTemplate = (modelConfig: ModelDirectiveConfig
       }),
     ),
   );
-  return printBlock('Initialization default values')(compoundExpression(statements));
+  return vtlPrinter.printBlock('Initialization default values')(compoundExpression(statements));
 };
 
 /**

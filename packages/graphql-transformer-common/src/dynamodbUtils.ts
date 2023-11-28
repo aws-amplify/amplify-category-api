@@ -9,12 +9,9 @@ import {
   qref,
   obj,
   str,
-  printBlock,
-  list,
   forEach,
   Expression,
   newline,
-  ReferenceNode,
   ifElse,
 } from 'graphql-mapping-template';
 import {
@@ -27,7 +24,6 @@ import {
   isScalar,
 } from './definition';
 import { ModelResourceIDs } from './ModelResourceIDs';
-import { toCamelCase } from './util';
 
 // Key conditions
 const STRING_KEY_CONDITIONS = ['eq', 'le', 'lt', 'ge', 'gt', 'between', 'beginsWith'];

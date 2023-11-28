@@ -1,4 +1,4 @@
-import { print } from 'graphql-mapping-template';
+import { vtlPrinter } from 'graphql-mapping-template';
 import { sandboxMappingTemplate, generateAddAggregateValues, requestTemplate, responseTemplate } from '../generate-resolver-vtl';
 
 describe('sandboxMappingTemplate', () => {
@@ -13,7 +13,7 @@ describe('sandboxMappingTemplate', () => {
 
 describe('generateAddAggregateValues', () => {
   it('renders', () => {
-    expect(print(generateAddAggregateValues())).toMatchSnapshot();
+    expect(vtlPrinter.print(generateAddAggregateValues())).toMatchSnapshot();
   });
 });
 

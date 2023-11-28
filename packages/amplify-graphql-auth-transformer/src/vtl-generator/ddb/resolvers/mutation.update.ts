@@ -17,10 +17,10 @@ import {
   and,
   methodCall,
   toJson,
-  printBlock,
   ifElse,
   nul,
   or,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import {
   API_KEY_AUTH_TYPE,
@@ -333,7 +333,7 @@ export const generateAuthExpressionForUpdate = (
       methodCall(ref('util.error'), str(`Unauthorized on \${${DENIED_FIELDS}.keySet()}`), str('Unauthorized')),
     ),
   );
-  return printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, toJson(obj({}))]));
+  return vtlPrinter.printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, toJson(obj({}))]));
 };
 
 const addAllowedFieldsIfElse = (allowedFieldsKey: string, nullAllowedFieldsKey: string, condition: string, breakLoop = false): Expression =>

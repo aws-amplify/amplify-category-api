@@ -35,13 +35,13 @@ import {
   iff,
   int,
   obj,
-  print,
   qref,
   raw,
   ref,
   set,
   str,
   toJson,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import { actionToDataSourceMap, actionToRoleAction, allowedActions } from './utils/action-maps';
 import {
@@ -350,11 +350,11 @@ function createResolver(
     MappingTemplate.inlineTemplateFromString(
       cdk.Fn.join('\n', [
         setBucketLine,
-        print(compoundExpression([qref('$ctx.stash.put("isList", false)'), obj({})])),
+        vtlPrinter.print(compoundExpression([qref('$ctx.stash.put("isList", false)'), obj({})])),
       ]) as unknown as string,
     ),
     MappingTemplate.inlineTemplateFromString(
-      print(
+      vtlPrinter.print(
         compoundExpression([
           comment('If the result is a list return the result as a list'),
           ifElse(
@@ -692,8 +692,8 @@ function createActionFunction(context: TransformerContextProvider, stack: cdk.St
 
   return context.api.host.addAppSyncFunction(
     `${action}Function`,
-    MappingTemplate.inlineTemplateFromString(print(actionFunctionResolver.request)),
-    MappingTemplate.inlineTemplateFromString(print(actionFunctionResolver.response)),
+    MappingTemplate.inlineTemplateFromString(vtlPrinter.print(actionFunctionResolver.request)),
+    MappingTemplate.inlineTemplateFromString(vtlPrinter.print(actionFunctionResolver.response)),
     datasourceName,
     stack,
   );

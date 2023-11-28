@@ -10,7 +10,6 @@ import {
   methodCall,
   obj,
   or,
-  print,
   qref,
   raw,
   ref,
@@ -18,6 +17,7 @@ import {
   set,
   str,
   toJson,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import { setTransformedArgs } from 'graphql-transformer-common';
 
@@ -40,7 +40,7 @@ export const attachInputMappingSlot = ({ resolver, resolverTypeName, resolverFie
   resolver.addToSlot(
     'preUpdate',
     MappingTemplate.s3MappingTemplateFromString(
-      print(compoundExpression([createMultiRemapExpression('ctx.args.input', fieldMap, 'CURR_TO_ORIG'), toJson(raw('{}'))])),
+      vtlPrinter.print(compoundExpression([createMultiRemapExpression('ctx.args.input', fieldMap, 'CURR_TO_ORIG'), toJson(raw('{}'))])),
       `${resolverTypeName}.${resolverFieldName}.{slotName}.{slotIndex}.req.vtl`,
     ),
   );
@@ -54,7 +54,7 @@ export const attachFieldMappingSlot = ({ resolver, resolverTypeName, resolverFie
   resolver.addToSlot(
     'preAuth',
     MappingTemplate.s3MappingTemplateFromString(
-      print(compoundExpression([createFieldMapExpression(fieldMap), toJson(raw('{}'))])),
+      vtlPrinter.print(compoundExpression([createFieldMapExpression(fieldMap), toJson(raw('{}'))])),
       `${resolverTypeName}.${resolverFieldName}.{slotName}.{slotIndex}.req.vtl`,
     ),
   );
@@ -85,7 +85,7 @@ export const attachResponseMappingSlot = ({
     slotName,
     undefined,
     MappingTemplate.s3MappingTemplateFromString(
-      print(
+      vtlPrinter.print(
         compoundExpression([
           isList
             ? createListRemapExpression('ctx.prev.result.items', fieldMap, 'ORIG_TO_CURR')
@@ -123,7 +123,7 @@ export const attachFilterAndConditionInputMappingSlot = ({
   resolver.addToSlot(
     slotName,
     MappingTemplate.s3MappingTemplateFromString(
-      print(
+      vtlPrinter.print(
         compoundExpression([
           set(fieldMapRef, raw(JSON.stringify(fieldMapVtl))),
           iff(or([methodCall(ref('util.isNull'), fieldMapRef), raw('$fieldMap.keySet().size() <= 0')]), ret(ref('ctx.args'))),
@@ -152,7 +152,7 @@ export const attachFilterAndConditionInputMappingSlot = ({
       `${resolverTypeName}.${resolverFieldName}.{slotName}.{slotIndex}.req.vtl`,
     ),
     MappingTemplate.s3MappingTemplateFromString(
-      print(
+      vtlPrinter.print(
         compoundExpression([
           iff(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type'))),
           setTransformedArgs(ref('ctx.result')),

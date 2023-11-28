@@ -11,13 +11,13 @@ import {
   methodCall,
   not,
   obj,
-  print,
   qref,
   raw,
   ref,
   RESOLVER_VERSION_ID,
   set,
   str,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { replaceDdbPrimaryKey, updateResolvers, setQuerySnippet } from '../resolvers';
@@ -37,7 +37,7 @@ export class DynamoDBIndexVTLGenerator implements IndexVTLGenerator {
     }
     const authFilter = ref('ctx.stash.authFilter');
     const requestVariable = 'QueryRequest';
-    return print(
+    return vtlPrinter.print(
       compoundExpression([
         setQuerySnippet(config, ctx, false),
         set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${ResourceConstants.DEFAULT_PAGE_LIMIT})`)),

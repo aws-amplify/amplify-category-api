@@ -1,7 +1,6 @@
 /* eslint-disable no-template-curly-in-string */
 import {
   SearchableMappingTemplate,
-  print,
   str,
   ref,
   obj,
@@ -21,7 +20,7 @@ import {
   isNullOrEmpty,
   not,
   notEquals,
-  printBlock,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import { ResourceConstants, setArgs } from 'graphql-transformer-common';
 
@@ -40,7 +39,7 @@ export const sandboxMappingTemplate = (enabled: boolean, fields: Array<string>):
   } else {
     sandboxExp = methodCall(ref('util.unauthorized'));
   }
-  return printBlock(`Sandbox Mode ${enabled ? 'Enabled' : 'Disabled'}`)(
+  return vtlPrinter.printBlock(`Sandbox Mode ${enabled ? 'Enabled' : 'Disabled'}`)(
     compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), sandboxExp), toJson(obj({}))]),
   );
 };
@@ -63,7 +62,7 @@ export const requestTemplate = (
   indexName: string,
   keyFields: Expression[] = [],
 ): string =>
-  print(
+  vtlPrinter.print(
     compoundExpression([
       setArgs,
       set(ref('indexPath'), str(`/${indexName.toLowerCase()}/_search`)),
@@ -187,7 +186,7 @@ export const generateAddAggregateValues = (): Expression => {
 };
 
 export const responseTemplate = (includeVersion = false): string =>
-  print(
+  vtlPrinter.print(
     compoundExpression([
       set(ref('es_items'), list([])),
       set(ref('aggregateValues'), list([])),

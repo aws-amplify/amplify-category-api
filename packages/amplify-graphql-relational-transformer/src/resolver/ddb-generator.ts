@@ -18,13 +18,13 @@ import {
   nul,
   obj,
   or,
-  print,
   qref,
   raw,
   ref,
   set,
   str,
   toJson,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import {
   ModelResourceIDs,
@@ -180,7 +180,7 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
       resolverResourceId,
       dataSource as any,
       MappingTemplate.s3MappingTemplateFromString(
-        print(
+        vtlPrinter.print(
           compoundExpression([
             iff(ref('ctx.stash.deniedField'), raw('#return($util.toJson(null))')),
             set(
@@ -201,7 +201,7 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
         `${object.name.value}.${field.name.value}.req.vtl`,
       ),
       MappingTemplate.s3MappingTemplateFromString(
-        print(
+        vtlPrinter.print(
           DynamoDBMappingTemplate.dynamoDBResponse(
             false,
             compoundExpression([iff(raw('!$result'), set(ref('result'), ref('ctx.result'))), raw('$util.toJson($result)')]),
@@ -267,7 +267,7 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
       resolverResourceId,
       dataSource as any,
       MappingTemplate.s3MappingTemplateFromString(
-        print(
+        vtlPrinter.print(
           compoundExpression([
             iff(ref('ctx.stash.deniedField'), raw('#return($util.toJson(null))')),
             set(
@@ -315,7 +315,7 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
         `${object.name.value}.${field.name.value}.req.vtl`,
       ),
       MappingTemplate.s3MappingTemplateFromString(
-        print(
+        vtlPrinter.print(
           DynamoDBMappingTemplate.dynamoDBResponse(
             false,
             ifElse(

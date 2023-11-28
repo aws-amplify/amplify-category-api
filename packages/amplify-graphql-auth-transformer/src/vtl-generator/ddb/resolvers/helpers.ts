@@ -12,7 +12,6 @@ import {
   obj,
   bool,
   compoundExpression,
-  printBlock,
   toJson,
   forEach,
   list,
@@ -22,6 +21,7 @@ import {
   parens,
   notEquals,
   nul,
+  vtlPrinter,
 } from 'graphql-mapping-template';
 import {
   DEFAULT_COGNITO_IDENTITY_CLAIM,
@@ -206,7 +206,7 @@ export const generateAuthRequestExpression = (): string => {
     qref(methodCall(ref('GetRequest.put'), str('key'), ref('key'))),
     toJson(ref('GetRequest')),
   ];
-  return printBlock('Get Request template')(compoundExpression(statements));
+  return vtlPrinter.printBlock('Get Request template')(compoundExpression(statements));
 };
 
 export const emptyPayload = toJson(raw(JSON.stringify({ version: '2018-05-29', payload: {} })));
@@ -366,5 +366,5 @@ export const generateFieldResolverForOwner = (entity: string): string => {
     ),
   ];
 
-  return printBlock('Parse owner field auth for Get')(compoundExpression(expressions));
+  return vtlPrinter.printBlock('Parse owner field auth for Get')(compoundExpression(expressions));
 };

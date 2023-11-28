@@ -1,4 +1,4 @@
-import { compoundExpression, equals, ifElse, methodCall, nul, printBlock, ref, set, str, toJson } from 'graphql-mapping-template';
+import { compoundExpression, equals, ifElse, methodCall, nul, ref, set, str, toJson, vtlPrinter } from 'graphql-mapping-template';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
@@ -20,7 +20,7 @@ export const generateAuthExpressionForQueries = (
   expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, fields, providers.hasIdentityPoolId, true)));
   expressions.push(set(ref('authResult'), methodCall(ref('util.authRules.queryAuth'), ref('authRules'))));
   expressions.push(validateAuthResult(), constructAuthFilter(), emptyPayload);
-  return printBlock('Authorization rules')(compoundExpression(expressions));
+  return vtlPrinter.printBlock('Authorization rules')(compoundExpression(expressions));
 };
 
 export const generateAuthExpressionForField = (
@@ -34,7 +34,7 @@ export const generateAuthExpressionForField = (
   expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, fields, providers.hasIdentityPoolId, true)));
   expressions.push(set(ref('authResult'), methodCall(ref('util.authRules.queryAuth'), ref('authRules'))));
   expressions.push(validateAuthResult(), emptyPayload);
-  return printBlock('Authorization rules')(compoundExpression(expressions));
+  return vtlPrinter.printBlock('Authorization rules')(compoundExpression(expressions));
 };
 
 /**
@@ -42,14 +42,14 @@ export const generateAuthExpressionForField = (
  */
 export const generateFieldAuthResponse = (operation: string, fieldName: string, subscriptionsEnabled: boolean): string => {
   if (subscriptionsEnabled) {
-    return printBlock('Checking for allowed operations which can return this field')(
+    return vtlPrinter.printBlock('Checking for allowed operations which can return this field')(
       compoundExpression([
         set(ref('operation'), methodCall(ref('util.defaultIfNull'), methodCall(ref('ctx.source.get'), str(OPERATION_KEY)), nul())),
         ifElse(equals(ref('operation'), str(operation)), toJson(nul()), toJson(ref(`context.source["${fieldName}"]`))),
       ]),
     );
   }
-  return printBlock('Return Source Field')(toJson(ref(`context.source["${fieldName}"]`)));
+  return vtlPrinter.printBlock('Return Source Field')(toJson(ref(`context.source["${fieldName}"]`)));
 };
 
 /**
@@ -72,5 +72,5 @@ export const generateAuthExpressionForRelationQuery = (
   expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, fields, providers.hasIdentityPoolId, true)));
   expressions.push(set(ref('authResult'), methodCall(ref('util.authRules.queryAuth'), ref('authRules'))));
   expressions.push(validateAuthResult(), constructAuthFilter(), emptyPayload);
-  return printBlock('Authorization rules')(compoundExpression(expressions));
+  return vtlPrinter.printBlock('Authorization rules')(compoundExpression(expressions));
 };

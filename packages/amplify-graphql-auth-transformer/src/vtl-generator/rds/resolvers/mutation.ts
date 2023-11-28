@@ -1,4 +1,4 @@
-import { compoundExpression, list, methodCall, nul, obj, printBlock, qref, ref, set, str, Expression } from 'graphql-mapping-template';
+import { compoundExpression, list, methodCall, nul, obj, qref, ref, set, str, Expression, vtlPrinter } from 'graphql-mapping-template';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { ConfiguredAuthProviders, RoleDefinition } from '../../../utils';
@@ -48,14 +48,14 @@ const generateMutationExpression = (
     ),
   );
   expressions.push(validateAuthResult(), constructAuthorizedInputStatement('ctx.args.input'), emptyPayload);
-  return printBlock('Authorization rules')(compoundExpression(expressions));
+  return vtlPrinter.printBlock('Authorization rules')(compoundExpression(expressions));
 };
 
 export const generateAuthRequestExpression = (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode): string => {
   const mappedTableName = ctx.resourceHelper.getModelNameMapping(def.name.value);
   const operation = 'GET';
   const operationName = 'GET_EXISTING_RECORD';
-  return printBlock('Get existing record')(
+  return vtlPrinter.printBlock('Get existing record')(
     compoundExpression([
       set(ref('lambdaInput'), obj({})),
       set(ref('lambdaInput.args'), obj({})),
