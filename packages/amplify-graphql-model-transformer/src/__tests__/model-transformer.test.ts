@@ -1634,7 +1634,7 @@ describe('ModelTransformer:', () => {
       expect(sqlLambda.Properties?.VpcConfig?.SecurityGroupIds).toEqual(expect.arrayContaining(['sg-123']));
     });
 
-    it('should fail if RDS model has no primary key defined', async () => {
+    it('should fail if SQL model has no primary key defined', async () => {
       const invalidSchema = `
         type Note @model {
             id: ID!
@@ -1648,7 +1648,7 @@ describe('ModelTransformer:', () => {
           transformers: [new ModelTransformer()],
           dataSourceStrategies: constructDataSourceStrategies(invalidSchema, makeStrategy(dbType)),
         }),
-      ).toThrowError('RDS model "Note" must contain a primary key field');
+      ).toThrowError('SQL model "Note" must contain a primary key field');
     });
 
     it('should compute and render the array fields correctly in the resolver', () => {
@@ -1682,7 +1682,7 @@ describe('ModelTransformer:', () => {
     });
   });
 
-  it('should fail if multiple RDS engine types are used', () => {
+  it('should fail if multiple SQL engine types are used', () => {
     const invalidSchema = `
       type Note @model {
           id: ID! @primaryKey

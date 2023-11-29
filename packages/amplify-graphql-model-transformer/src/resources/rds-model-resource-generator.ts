@@ -37,27 +37,28 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       return;
     }
 
-    let strategies: SQLLambdaModelDataSourceStrategy[] = [];
+    const strategies: Record<string, SQLLambdaModelDataSourceStrategy> = {};
     if (strategyOverride) {
-      strategies = [strategyOverride];
+      strategies[strategyOverride.name] = strategyOverride;
     } else {
       const dataSourceStrategies = Object.values(context.dataSourceStrategies).filter(isSqlStrategy);
+      dataSourceStrategies.forEach((strategy) => (strategies[strategy.name] = strategy));
       const sqlDirectiveDataSourceStrategies = context.sqlDirectiveDataSourceStrategies?.map((dss) => dss.strategy) ?? [];
-      strategies = [...dataSourceStrategies, ...sqlDirectiveDataSourceStrategies];
+      sqlDirectiveDataSourceStrategies.forEach((strategy) => (strategies[strategy.name] = strategy));
     }
 
     // Unexpected, since we invoke the generateResources in response to generators that are initialized during a scan of models and custom
     // SQL, but we'll be defensive here.
-    if (strategies.length === 0) {
+    if (Object.keys(strategies).length === 0) {
       return;
     }
 
     // TODO: Remove this once we implement `combine`. For now, we only support one SQL engine
-    if (strategies.length > 1) {
+    if (Object.keys(strategies).length > 1) {
       throw new Error('Multiple imported SQL datasource types are detected. Only one type is supported.');
     }
 
-    const strategy = strategies[0];
+    const strategy: SQLLambdaModelDataSourceStrategy = Object.values(strategies)[0];
     const dbType = strategy.dbType;
     const engine = getImportedRDSTypeFromStrategyDbType(dbType);
     const secretEntry = strategy.dbConnectionConfig;
