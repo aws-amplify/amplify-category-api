@@ -501,7 +501,7 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
   });
 
   it('should allow field auth on mutation type', async () => {
-    const invalidSchema = `
+    const validSchema = `
       type Post @model
         @auth(rules: [
           {allow: private, provider: iam}
@@ -524,10 +524,10 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
     };
 
     const out = testTransform({
-      schema: invalidSchema,
+      schema: validSchema,
       transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
       authConfig,
-      dataSourceStrategies: constructDataSourceStrategies(invalidSchema, mysqlStrategy),
+      dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlStrategy),
     });
 
     expect(out).toBeDefined();
