@@ -28,6 +28,7 @@ import {
   getConfiguredAppsyncClientLambdaAuth,
 } from '../schema-api-directives';
 import { getUserPoolId } from '../schema-api-directives/authHelper';
+import { SQL_TESTS_USE_BETA } from './sql-e2e-config';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -158,7 +159,9 @@ export const testRdsIamAuth = (engine: ImportedRDSType, queries: string[]): void
         useVpc: true,
         apiExists: true,
       });
-      await amplifyPush(projRoot);
+      await amplifyPush(projRoot, false, {
+        useBetaSqlLayer: SQL_TESTS_USE_BETA,
+      });
 
       const schema = /* GraphQL */ `
         input AMPLIFY {
@@ -194,6 +197,7 @@ export const testRdsIamAuth = (engine: ImportedRDSType, queries: string[]): void
       await enableUserPoolUnauthenticatedAccess(projRoot);
       await amplifyPush(projRoot, false, {
         skipCodegen: true,
+        useBetaSqlLayer: SQL_TESTS_USE_BETA,
       });
     };
 

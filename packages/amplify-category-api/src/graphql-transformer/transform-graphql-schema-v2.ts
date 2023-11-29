@@ -51,6 +51,8 @@ const SCHEMA_FILENAME = 'schema.graphql';
 const SCHEMA_DIR_NAME = 'schema';
 const PROVIDER_NAME = 'awscloudformation';
 const LAYER_MAPPING_URL = 'https://amplify-rds-layer-resources.s3.amazonaws.com/rds-layer-mapping.json';
+const LAYER_MAPPING_URL_BETA = 'https://amplify-rds-layer-resources-beta.s3.amazonaws.com/rds-layer-mapping.json';
+const USE_BETA_SQL_LAYER = 'use-beta-sql-layer';
 
 /**
  * Transform GraphQL Schema
@@ -339,8 +341,8 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
 
   checkForUnsupportedDirectives(schema, { dataSourceStrategies });
 
-  const rdsLayerMapping = await getRDSLayerMapping();
-
+  const useBetaSqlLayer = context?.input?.options?.[USE_BETA_SQL_LAYER] ?? false;
+  const rdsLayerMapping = await getRDSLayerMapping(useBetaSqlLayer);
   const transformManager = new TransformManager(
     opts.overrideConfig,
     hasIamAuth(opts.authConfig),
@@ -394,8 +396,9 @@ export const getUserOverridenSlots = (userDefinedSlots: Record<string, UserDefin
     .flat()
     .filter((slotName) => slotName !== undefined);
 
-const getRDSLayerMapping = async (): Promise<RDSLayerMapping> => {
-  const response = await fetch(LAYER_MAPPING_URL);
+const getRDSLayerMapping = async (useBetaSqlLayer = false): Promise<RDSLayerMapping> => {
+  const url = useBetaSqlLayer ? LAYER_MAPPING_URL_BETA : LAYER_MAPPING_URL;
+  const response = await fetch(url);
   if (response.status === 200) {
     const result = await response.json();
     return result as RDSLayerMapping;
