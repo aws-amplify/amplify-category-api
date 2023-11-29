@@ -110,7 +110,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
 
   public getSchemaQuery(): string {
     return `
-      SELECT
+      SELECT DISTINCT
           INFORMATION_SCHEMA.COLUMNS.TABLE_NAME,
           INFORMATION_SCHEMA.COLUMNS.COLUMN_NAME,
           INFORMATION_SCHEMA.COLUMNS.COLUMN_DEFAULT,

@@ -113,7 +113,7 @@ export class PostgresDataSourceAdapter extends DataSourceAdapter {
 
   public getSchemaQuery(): string {
     return `
-    SELECT
+    SELECT DISTINCT
       ${expectedColumns.filter((column) => column != 'index_columns').join(',')},
       REPLACE(SUBSTRING(indexdef from '\\((.*)\\)'), '"', '') as index_columns
     FROM INFORMATION_SCHEMA.COLUMNS
