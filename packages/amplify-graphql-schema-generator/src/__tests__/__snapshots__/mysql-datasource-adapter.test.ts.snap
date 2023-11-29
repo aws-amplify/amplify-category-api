@@ -2,7 +2,7 @@
 
 exports[`MySQLDatasourceAdapter uses correct schema query 1`] = `
 "
-      SELECT
+      SELECT DISTINCT
           INFORMATION_SCHEMA.COLUMNS.TABLE_NAME,
           INFORMATION_SCHEMA.COLUMNS.COLUMN_NAME,
           INFORMATION_SCHEMA.COLUMNS.COLUMN_DEFAULT,

@@ -2,7 +2,7 @@
 
 exports[`PostgresDatasourceAdapter uses correct schema query 1`] = `
 "
-    SELECT
+    SELECT DISTINCT
       enum_name,enum_values,table_name,column_name,column_default,ordinal_position,data_type,udt_name,is_nullable,character_maximum_length,indexname,
       REPLACE(SUBSTRING(indexdef from '\\\\((.*)\\\\)'), '\\"', '') as index_columns
     FROM INFORMATION_SCHEMA.COLUMNS
