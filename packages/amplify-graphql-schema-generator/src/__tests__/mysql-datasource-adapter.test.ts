@@ -1,4 +1,5 @@
 import { DataSourceAdapter, MySQLDataSourceAdapter } from '../datasource-adapter';
+import { getMySQLSchemaQuery } from '../datasource-adapter/mysql-datasource-adapter';
 import { Engine, Field, FieldType, Index, Model, Schema } from '../schema-representation';
 import { generateGraphQLSchema, isComputeExpression } from '../schema-generator';
 import { gql } from 'graphql-transformer-core';
@@ -437,15 +438,8 @@ describe('testMySQLDataSourceAdapter', () => {
   });
 });
 
-describe('MySQLDatasourceAdapter', () => {
+describe('getMySQLSchemaQuery', () => {
   test('uses correct schema query', () => {
-    const adapter = new MySQLDataSourceAdapter({
-      host: 'fake-host',
-      port: 3306,
-      database: 'mydb',
-      username: 'fake-username',
-      password: 'fake-password',
-    });
-    expect(adapter.getSchemaQuery()).toMatchSnapshot();
+    expect(getMySQLSchemaQuery('mydb')).toMatchSnapshot();
   });
 });

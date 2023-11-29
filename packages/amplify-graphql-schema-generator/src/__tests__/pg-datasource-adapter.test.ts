@@ -1,4 +1,5 @@
 import { DataSourceAdapter, PostgresDataSourceAdapter } from '../datasource-adapter';
+import { getPostgresSchemaQuery } from '../datasource-adapter/pg-datasource-adapter';
 import { Engine, Field, FieldType, Index, Model, Schema } from '../schema-representation';
 import { generateGraphQLSchema, isComputeExpression } from '../schema-generator';
 import { gql } from 'graphql-transformer-core';
@@ -437,15 +438,8 @@ describe('testPostgresDataSourceAdapter', () => {
   });
 });
 
-describe('PostgresDatasourceAdapter', () => {
+describe('getPostgresSchemaQuery', () => {
   test('uses correct schema query', () => {
-    const adapter = new PostgresDataSourceAdapter({
-      host: 'fake-host',
-      port: 5432,
-      database: 'mydb',
-      username: 'fake-username',
-      password: 'fake-password',
-    });
-    expect(adapter.getSchemaQuery()).toMatchSnapshot();
+    expect(getPostgresSchemaQuery('mydb')).toMatchSnapshot();
   });
 });
