@@ -1,5 +1,29 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`PostgresDatasourceAdapter uses correct schema query 1`] = `
+"
+    SELECT
+      enum_name,enum_values,table_name,column_name,column_default,ordinal_position,data_type,udt_name,is_nullable,character_maximum_length,indexname,
+      REPLACE(SUBSTRING(indexdef from '\\\\((.*)\\\\)'), '\\"', '') as index_columns
+    FROM INFORMATION_SCHEMA.COLUMNS
+    LEFT JOIN pg_indexes
+    ON
+      INFORMATION_SCHEMA.COLUMNS.table_name = pg_indexes.tablename
+      AND INFORMATION_SCHEMA.COLUMNS.column_name = ANY(STRING_TO_ARRAY(REPLACE(SUBSTRING(indexdef from '\\\\((.*)\\\\)'), '\\"', ''), ', '))
+      LEFT JOIN (
+        SELECT
+          t.typname AS enum_name,
+          ARRAY_AGG(e.enumlabel) as enum_values
+        FROM    pg_type t JOIN
+          pg_enum e ON t.oid = e.enumtypid JOIN
+          pg_catalog.pg_namespace n ON n.oid = t.typnamespace
+        WHERE   n.nspname = 'public'
+    	GROUP BY enum_name
+      ) enums
+      ON enums.enum_name = INFORMATION_SCHEMA.COLUMNS.udt_name
+    WHERE table_schema = 'public' AND TABLE_CATALOG = 'mydb';"
+`;
+
 exports[`testPostgresDataSourceAdapter exclude option should not import the given tables 1`] = `
 "type Capital @model {
   id: Int! @primaryKey

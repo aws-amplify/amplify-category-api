@@ -96,7 +96,20 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
   }
 
   protected async querySchema(): Promise<string> {
-    const schemaQuery = `
+    const schemaQuery = this.getSchemaQuery();
+    const result =
+      this.useVPC && this.vpcSchemaInspectorLambda
+        ? await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, schemaQuery, this.vpcLambdaRegion)
+        : (await this.dbBuilder.raw(schemaQuery))[0];
+    return this.queryToCSV(result);
+  }
+
+  public cleanup(): void {
+    this.dbBuilder && this.dbBuilder.destroy();
+  }
+
+  public getSchemaQuery(): string {
+    return `
       SELECT
           INFORMATION_SCHEMA.COLUMNS.TABLE_NAME,
           INFORMATION_SCHEMA.COLUMNS.COLUMN_NAME,
@@ -114,14 +127,5 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
               LEFT JOIN INFORMATION_SCHEMA.STATISTICS ON INFORMATION_SCHEMA.COLUMNS.TABLE_NAME=INFORMATION_SCHEMA.STATISTICS.TABLE_NAME AND INFORMATION_SCHEMA.COLUMNS.COLUMN_NAME=INFORMATION_SCHEMA.STATISTICS.COLUMN_NAME
               WHERE INFORMATION_SCHEMA.COLUMNS.TABLE_SCHEMA = '${this.config.database}'
     `;
-    const result =
-      this.useVPC && this.vpcSchemaInspectorLambda
-        ? await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, schemaQuery, this.vpcLambdaRegion)
-        : (await this.dbBuilder.raw(schemaQuery))[0];
-    return this.queryToCSV(result);
-  }
-
-  public cleanup(): void {
-    this.dbBuilder && this.dbBuilder.destroy();
   }
 }

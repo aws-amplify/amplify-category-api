@@ -436,3 +436,16 @@ describe('testMySQLDataSourceAdapter', () => {
     expect(graphqlSchema).toMatchSnapshot();
   });
 });
+
+describe('MySQLDatasourceAdapter', () => {
+  test('uses correct schema query', () => {
+    const adapter = new MySQLDataSourceAdapter({
+      host: 'fake-host',
+      port: 3306,
+      database: 'mydb',
+      username: 'fake-username',
+      password: 'fake-password',
+    });
+    expect(adapter.getSchemaQuery()).toMatchSnapshot();
+  });
+});

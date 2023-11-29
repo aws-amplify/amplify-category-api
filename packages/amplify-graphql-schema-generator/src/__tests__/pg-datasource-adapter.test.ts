@@ -436,3 +436,16 @@ describe('testPostgresDataSourceAdapter', () => {
     expect(graphqlSchema).toMatchSnapshot();
   });
 });
+
+describe('PostgresDatasourceAdapter', () => {
+  test('uses correct schema query', () => {
+    const adapter = new PostgresDataSourceAdapter({
+      host: 'fake-host',
+      port: 5432,
+      database: 'mydb',
+      username: 'fake-username',
+      password: 'fake-password',
+    });
+    expect(adapter.getSchemaQuery()).toMatchSnapshot();
+  });
+});
