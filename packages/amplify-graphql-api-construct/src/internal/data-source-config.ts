@@ -1,12 +1,5 @@
 import { parse } from 'graphql';
-import {
-  isSqlStrategy,
-  isQueryNode,
-  isMutationNode,
-  fieldsWithSqlDirective,
-  MYSQL_DB_TYPE,
-  POSTGRES_DB_TYPE,
-} from '@aws-amplify/graphql-transformer-core';
+import { isSqlStrategy, isQueryNode, isMutationNode, fieldsWithSqlDirective } from '@aws-amplify/graphql-transformer-core';
 import { DataSourceStrategiesProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   CustomSqlDataSourceStrategy as ConstructCustomSqlDataSourceStrategy,
@@ -65,18 +58,11 @@ export const constructCustomSqlDataSourceStrategies = (
   return customSqlDataSourceStrategies;
 };
 
-const isConstructCustomSqlDataSourceStrategy = (obj: any): obj is ConstructCustomSqlDataSourceStrategy => {
-  return (
-    typeof obj === 'object' &&
-    (obj.dbType === MYSQL_DB_TYPE || obj.dbType === POSTGRES_DB_TYPE) &&
-    typeof obj.name === 'string' &&
-    typeof obj.dbConnectionConfig === 'object'
-  );
-};
-
 /**
  * Extracts the data source provider from the definition. This jumps through some hoops to avoid changing the public interface. If we decide
  * to change the public interface to simplify the structure, then this process gets a lot simpler.
+ *
+ * TODO: Verify that this supports combined definitions when we add combine support
  */
 export const getDataSourceStrategiesProvider = (definition: IAmplifyGraphqlDefinition): DataSourceStrategiesProvider => {
   const provider: DataSourceStrategiesProvider = {
@@ -90,9 +76,7 @@ export const getDataSourceStrategiesProvider = (definition: IAmplifyGraphqlDefin
   // SqlDirectiveDataSourceStrategies
   const customSqlStatements: Record<string, string> = {};
 
-  const constructSqlStrategies = Object.values(definition.dataSourceStrategies).filter(
-    isConstructCustomSqlDataSourceStrategy,
-  ) as unknown as ConstructCustomSqlDataSourceStrategy[];
+  const constructSqlStrategies = definition.customSqlDataSourceStrategies ?? [];
 
   // Note that we're relying on the `customSqlStatements` object reference to stay the same throughout this loop. Don't reassign it, or the
   // collected sqlDirectiveStrategies will break

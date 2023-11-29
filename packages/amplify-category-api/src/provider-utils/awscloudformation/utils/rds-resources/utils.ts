@@ -9,7 +9,6 @@ export const checkForUnsupportedDirectives = (schema: string, context: DataSourc
     return;
   }
 
-  // get all the models in the modelToDatasourceMap that are backed by SQL whose value is present in the db_type property inside the map
   const rdsModels = Object.entries(context.dataSourceStrategies)
     .filter(([key, value]) => isSqlStrategy(value))
     .map(([key, value]) => key);

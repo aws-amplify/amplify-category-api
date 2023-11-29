@@ -1,9 +1,17 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { ConflictHandlerType, DDB_DB_TYPE, MYSQL_DB_TYPE, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import {
+  ConflictHandlerType,
+  DDB_DB_TYPE,
+  DDB_DEFAULT_DATASOURCE_STRATEGY,
+  MYSQL_DB_TYPE,
+  constructDataSourceStrategies,
+  validateModelSchema,
+} from '@aws-amplify/graphql-transformer-core';
 import { Template as AssertionTemplate } from 'aws-cdk-lib/assertions';
 import { DocumentNode, parse } from 'graphql';
 import { testTransform, Template, AmplifyApiGraphQlResourceStackTemplate } from '@aws-amplify/graphql-transformer-test-utils';
 import { Construct } from 'constructs';
+import { SQLLambdaModelDataSourceStrategy, SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { IndexTransformer, PrimaryKeyTransformer } from '..';
 import * as resolverUtils from '../resolvers/resolvers';
 
@@ -1327,6 +1335,28 @@ describe('automatic name generation', () => {
 });
 
 describe('Index query resolver creation', () => {
+  const schema = /* GrahphQL */ `
+      type Test @model {
+        category: String! @index(name: null)
+      }
+    `;
+
+  const dbConnectionConfig: SqlModelDataSourceDbConnectionConfig = {
+    hostnameSsmPath: '/test/hostname',
+    portSsmPath: '/test/port',
+    usernameSsmPath: '/test/username',
+    passwordSsmPath: '/test/password',
+    databaseNameSsmPath: '/test/databaseName',
+  };
+
+  const mysqlStrategy: SQLLambdaModelDataSourceStrategy = {
+    name: 'mysqlStrategy',
+    dbType: 'MYSQL',
+    dbConnectionConfig,
+  };
+
+  const dataSourceStrategies = constructDataSourceStrategies(schema, mysqlStrategy);
+
   const modelName = 'User';
   const mockResolver = {
     addToSlot: jest.fn(),
@@ -1349,10 +1379,7 @@ describe('Index query resolver creation', () => {
   });
 
   it('sets appropriate resolver reference if field mappings are present for a RDS model', () => {
-    mockContext.modelToDatasourceMap.get.mockReturnValue({
-      dbType: MYSQL_DB_TYPE,
-      provisionDB: false,
-    });
+    mockContext.dataSourceStrategies = dataSourceStrategies;
     mockContext.api.host.getDataSource.mockReturnValue({});
     mockModelFieldMap.getMappedFields.mockReturnValue([{ details: 'description' }]);
     resolverUtils.makeQueryResolver(mockConfig as any, mockContext as any, MYSQL_DB_TYPE);
@@ -1366,10 +1393,7 @@ describe('Index query resolver creation', () => {
   });
 
   it('does not set resolver reference if field mappings are not present for a RDS model', () => {
-    mockContext.modelToDatasourceMap.get.mockReturnValue({
-      dbType: MYSQL_DB_TYPE,
-      provisionDB: false,
-    });
+    mockContext.dataSourceStrategies = dataSourceStrategies;
     mockContext.api.host.getDataSource.mockReturnValue({});
     mockModelFieldMap.getMappedFields.mockReturnValue([]);
     resolverUtils.makeQueryResolver(mockConfig as any, mockContext as any, MYSQL_DB_TYPE);
@@ -1384,10 +1408,9 @@ describe('Index query resolver creation', () => {
       generateIndexQueryRequestTemplate: jest.fn().mockReturnValue('mock template'),
       generatePrimaryKeyVTL: jest.fn().mockReturnValue('mock template'),
     });
-    mockContext.modelToDatasourceMap.get.mockReturnValueOnce({
-      dbType: DDB_DB_TYPE,
-      provisionDB: true,
-    });
+    mockContext.dataSourceStrategies = {
+      Test: DDB_DEFAULT_DATASOURCE_STRATEGY,
+    };
     const mockTable = {
       stack: {
         node: {
@@ -1410,9 +1433,6 @@ describe('Index query resolver creation', () => {
 
   const constructMockContext = () => {
     return {
-      modelToDatasourceMap: {
-        get: jest.fn(),
-      },
       api: {
         host: {
           getDataSource: jest.fn(),

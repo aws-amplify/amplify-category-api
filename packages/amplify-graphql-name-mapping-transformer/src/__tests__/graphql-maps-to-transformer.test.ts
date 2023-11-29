@@ -1,6 +1,5 @@
 import { DirectiveNode, Kind, ObjectTypeDefinitionNode, parse } from 'graphql';
 import {
-  DynamoDBProvisionStrategy,
   FieldMapEntry,
   ModelFieldMap,
   TransformerContextProvider,
@@ -8,7 +7,7 @@ import {
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { LambdaDataSource } from 'aws-cdk-lib/aws-appsync';
-import { DDB_DB_TYPE, constructDataSourceMap } from '@aws-amplify/graphql-transformer-core';
+import { DDB_DEFAULT_DATASOURCE_STRATEGY, constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
 import { MapsToTransformer } from '../graphql-maps-to-transformer';
 import { attachInputMappingSlot, attachResponseMappingSlot, attachFilterAndConditionInputMappingSlot } from '../field-mapping-resolvers';
 import { createMappingLambda } from '../field-mapping-lambda';
@@ -87,11 +86,7 @@ describe('@mapsTo directive', () => {
       {
         ...stubTransformerContextBase,
         inputDocument: ast,
-        modelToDatasourceMap: constructDataSourceMap(schema, {
-          dbType: DDB_DB_TYPE,
-          provisionDB: true,
-          provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
-        }),
+        dataSourceStrategies: constructDataSourceStrategies(schema, DDB_DEFAULT_DATASOURCE_STRATEGY),
       } as unknown as TransformerSchemaVisitStepContextProvider,
     ] as const;
   };
@@ -158,11 +153,7 @@ describe('@mapsTo directive', () => {
 
     const transformerContext = {
       ...stubTransformerContextBase,
-      modelToDatasourceMap: constructDataSourceMap(simpleSchema, {
-        dbType: DDB_DB_TYPE,
-        provisionDB: true,
-        provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
-      }),
+      dataSourceStrategies: constructDataSourceStrategies(simpleSchema, DDB_DEFAULT_DATASOURCE_STRATEGY),
     };
 
     // test
@@ -223,11 +214,7 @@ describe('@mapsTo directive', () => {
 
     const transformerContext = {
       ...stubTransformerContextBase,
-      modelToDatasourceMap: constructDataSourceMap(simpleSchema, {
-        dbType: DDB_DB_TYPE,
-        provisionDB: true,
-        provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
-      }),
+      dataSourceStrategies: constructDataSourceStrategies(simpleSchema, DDB_DEFAULT_DATASOURCE_STRATEGY),
     };
 
     // test
@@ -279,11 +266,7 @@ describe('@mapsTo directive', () => {
 
     const transformerContext = {
       ...stubTransformerContextBase,
-      modelToDatasourceMap: constructDataSourceMap(simpleSchema, {
-        dbType: DDB_DB_TYPE,
-        provisionDB: true,
-        provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
-      }),
+      dataSourceStrategies: constructDataSourceStrategies(simpleSchema, DDB_DEFAULT_DATASOURCE_STRATEGY),
     };
 
     // test
@@ -313,11 +296,7 @@ describe('@mapsTo directive', () => {
 
     const transformerContext = {
       ...stubTransformerContextBase,
-      modelToDatasourceMap: constructDataSourceMap(simpleSchema, {
-        dbType: DDB_DB_TYPE,
-        provisionDB: true,
-        provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
-      }),
+      dataSourceStrategies: constructDataSourceStrategies(simpleSchema, DDB_DEFAULT_DATASOURCE_STRATEGY),
     };
 
     // test

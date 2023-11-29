@@ -6,7 +6,7 @@ import {
   TransformerLogLevel,
   TransformerPluginProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { DDB_DEFAULT_DATASOURCE_TYPE, GraphQLTransform, constructDataSourceMap } from '@aws-amplify/graphql-transformer-core';
+import { DDB_DEFAULT_DATASOURCE_STRATEGY, GraphQLTransform, constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
 import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces/src';
 import { NestedStack, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
@@ -151,7 +151,7 @@ describe('executeTransform', () => {
       printTransformerLog: (): void => {
         didLog = true;
       },
-      modelToDatasourceMap: constructDataSourceMap(schema, DDB_DEFAULT_DATASOURCE_TYPE),
+      dataSourceStrategies: constructDataSourceStrategies(schema, DDB_DEFAULT_DATASOURCE_STRATEGY),
     });
     expect(didLog).toEqual(true);
   });

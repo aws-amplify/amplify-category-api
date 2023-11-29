@@ -1,11 +1,11 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { DDB_DB_TYPE, MYSQL_DB_TYPE, constructDataSourceMap, isDynamoDbType } from '@aws-amplify/graphql-transformer-core';
+import { DDB_DEFAULT_DATASOURCE_STRATEGY, constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
 import {
-  DynamoDBProvisionStrategy,
-  ModelDataSourceStrategyDbType,
-  SQLLambdaModelProvisionStrategy,
+  ModelDataSourceStrategy,
+  SQLLambdaModelDataSourceStrategy,
+  SqlModelDataSourceDbConnectionConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { RefersToTransformer } from '../../graphql-refers-to-transformer';
@@ -40,15 +40,10 @@ const refersToHasMany = /* GraphQL */ `
 
 const transformSchema = (
   schema: string,
-  dbType: ModelDataSourceStrategyDbType,
+  strategy: ModelDataSourceStrategy,
 ): DeploymentResources & {
   logs: any[];
 } => {
-  const modelToDatasourceMap = constructDataSourceMap(schema, {
-    dbType,
-    provisionDB: isDynamoDbType(dbType),
-    provisionStrategy: isDynamoDbType(dbType) ? DynamoDBProvisionStrategy.DEFAULT : SQLLambdaModelProvisionStrategy.DEFAULT,
-  });
   return testTransform({
     schema,
     transformers: [
@@ -59,7 +54,7 @@ const transformSchema = (
       new MapsToTransformer(),
       new RefersToTransformer(),
     ],
-    modelToDatasourceMap,
+    dataSourceStrategies: constructDataSourceStrategies(schema, strategy),
     transformParameters: {
       sandboxModeEnabled: true,
     },
@@ -68,7 +63,7 @@ const transformSchema = (
 
 describe('@mapsTo with @hasMany', () => {
   it('adds CRUD input and output mappings on related type and maps related type in hasMany field resolver', () => {
-    const out = transformSchema(mappedHasMany, DDB_DB_TYPE);
+    const out = transformSchema(mappedHasMany, DDB_DEFAULT_DATASOURCE_STRATEGY);
     const expectedResolvers: string[] = expectedResolversForModelWithRenamedField('Task').concat('Employee.tasks.postDataLoad.1.res.vtl');
     expectedResolvers.forEach((resolver) => {
       expect(out.resolvers[resolver]).toMatchSnapshot();
@@ -78,7 +73,20 @@ describe('@mapsTo with @hasMany', () => {
 
 describe('@refersTo with @hasMany for RDS Models', () => {
   it('model table names are mapped', () => {
-    const out = transformSchema(refersToHasMany, MYSQL_DB_TYPE);
+    const dbConnectionConfig: SqlModelDataSourceDbConnectionConfig = {
+      hostnameSsmPath: '/test/hostname',
+      portSsmPath: '/test/port',
+      usernameSsmPath: '/test/username',
+      passwordSsmPath: '/test/password',
+      databaseNameSsmPath: '/test/databaseName',
+    };
+    const mysqlStrategy: SQLLambdaModelDataSourceStrategy = {
+      name: 'mysqlStrategy',
+      dbType: 'MYSQL',
+      dbConnectionConfig,
+    };
+
+    const out = transformSchema(refersToHasMany, mysqlStrategy);
     testTableNameMapping('Employee', 'Person', out);
     testTableNameMapping('Task', 'Todo', out);
     testRelationalFieldMapping('Employee.tasks.req.vtl', 'Todo', out);

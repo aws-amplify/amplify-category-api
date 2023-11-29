@@ -61,6 +61,7 @@ describe('transformGraphQLSchemaV2', () => {
         // schema that will generate auth warnings
         schema,
         config: { StackMapping: {} },
+        // Intentionally generating the V1 flavor of the project config to emulate the Gen1 CLI flow. This is fixed up in the transformer
         modelToDatasourceMap: constructDataSourceMap(schema, DDB_DEFAULT_DATASOURCE_TYPE),
       },
       transformersFactory: constructTransformerChain(),

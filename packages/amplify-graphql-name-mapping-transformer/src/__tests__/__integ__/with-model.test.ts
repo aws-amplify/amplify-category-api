@@ -3,7 +3,6 @@ import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transfo
 import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { DDB_DEFAULT_DATASOURCE_STRATEGY, MYSQL_DB_TYPE, constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
-import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelDataSourceStrategy, SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { RefersToTransformer } from '../../graphql-refers-to-transformer';
 import { testTableNameMapping, testColumnNameMapping } from './common';

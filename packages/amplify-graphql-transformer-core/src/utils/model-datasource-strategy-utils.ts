@@ -39,7 +39,8 @@ export const isDynamoDbStrategy = (
 // Exported utils
 
 /**
- * Map the database type that is set in the modelToDatasourceMap to the engine represented by ImportedRDSType
+ * Map the database type that is set in the dataSourceStrategies to the engine represented by ImportedRDSType. This is used to generate
+ * parameters for invoking the SQL Lambda.
  */
 export const getImportedRDSTypeFromStrategyDbType = (dbType: ModelDataSourceStrategyDbType): ImportedRDSType => {
   switch (dbType) {
