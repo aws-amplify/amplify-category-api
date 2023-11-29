@@ -1,4 +1,3 @@
-import { parse } from 'csv-parse/sync';
 import { EnumType, Field, FieldDataType, FieldType, Index } from '../schema-representation';
 import { StringDataSourceAdapter, EmptySchemaError, InvalidSchemaError } from './string-datasource-adapter';
 
@@ -6,6 +5,7 @@ export interface PostgresIndex {
   tableName: string;
   indexName: string;
   columns: string[];
+  columnName: string;
 }
 
 export interface PostgresColumn {
@@ -118,7 +118,9 @@ export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
   }
 
   public getPrimaryKey(tableName: string): Index | null {
-    const key = this.indexes.find((index) => index.tableName === tableName && index.indexName === `${tableName}_pkey`);
+    const key = this.indexes.find(
+      (index) => index.tableName === tableName && index.indexName.match(/.*_pkey/) && index.columns.includes(index.columnName),
+    );
 
     if (!key || key.columns.length == 0) {
       return null;
@@ -132,11 +134,17 @@ export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
 
   public getIndexes(tableName: string): Index[] {
     const indexNames: string[] = [
-      ...new Set(this.indexes.filter((i) => i.tableName === tableName && i.indexName !== `${tableName}_pkey`).map((i) => i.indexName)),
+      ...new Set(
+        this.indexes
+          .filter((i) => i.tableName === tableName && !i.indexName.match(/.*_pkey/) && i.columns.includes(i.columnName))
+          .map((i) => i.indexName),
+      ),
     ];
 
     const tableIndexes = indexNames.map((indexName: string) => {
-      const key = this.indexes.find((index) => index.tableName == tableName && index.indexName === indexName);
+      const key = this.indexes.find(
+        (index) => index.tableName == tableName && index.indexName === indexName && index.columns.includes(index.columnName),
+      );
       const index: Index = new Index(indexName);
       index.setFields(key.columns);
       return index;
@@ -186,6 +194,7 @@ export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
         tableName: item.table_name,
         columns: item.index_columns.split(', '),
         indexName: item.indexname,
+        columnName: item.column_name,
       }));
   }
 

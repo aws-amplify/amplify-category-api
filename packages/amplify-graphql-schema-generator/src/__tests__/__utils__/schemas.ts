@@ -102,5 +102,25 @@ def,blog_database,stories,pub_type,2,S,NO,char,1,4,NULL,NULL,NULL,utf8mb4,utf8mb
      */
 
     news: `enum_name,enum_values,table_name,column_name,column_default,ordinal_position,data_type,udt_name,is_nullable,character_maximum_length,indexname,index_columns\n,,publications,pub_id,,1,integer,int4,NO,,publications_pkey,pub_id\n,,publications,pub_url,,3,character varying,varchar,NO,64,publications_pub_url_key,pub_url\n,,publications,pub_type,,2,character,bpchar,YES,1,publications_superkey,\"pub_id, pub_type\"\n,,publications,pub_id,,1,integer,int4,NO,,publications_superkey,\"pub_id, pub_type\"\n,,articles,pub_type,'A'::bpchar,2,character,bpchar,NO,1,articles_pkey,\"pub_id, pub_type\"\n,,articles,pub_id,,1,integer,int4,NO,,articles_pkey,\"pub_id, pub_type\"\n,,stories,pub_type,'S'::bpchar,2,character,bpchar,NO,1,stories_pkey,\"pub_id, pub_type\"\n,,stories,pub_id,,1,integer,int4,NO,,stories_pkey,\"pub_id, pub_type\"\n,,comments,commenter_email,,3,character varying,varchar,NO,10,comments_pkey,\"pub_id, comment_timestamp, commenter_email\"\n,,comments,comment_timestamp,now(),2,timestamp without time zone,timestamp,NO,,comments_pkey,\"pub_id, comment_timestamp, commenter_email\"\n,,comments,pub_id,,1,integer,int4,NO,,comments_pkey,\"pub_id, comment_timestamp, commenter_email\"\n,,articles,placeholder,,3,character,bpchar,NO,1,,\n,,stories,placeholder,,3,character,bpchar,NO,1,,`,
+    /*
+     * CREATE TABLE Blog (
+     *   id INT PRIMARY KEY,
+     *   title VARCHAR(255) NOT NULL
+     * );
+     */
+    nameChangeOriginal: `"enum_name","enum_values","table_name","column_name","column_default","ordinal_position","data_type","udt_name","is_nullable","character_maximum_length","indexname","index_columns"
+NULL,NULL,"blog","id",NULL,1,"integer","int4","NO",NULL,"blog_pkey","id"
+NULL,NULL,"blog","title",NULL,2,"character varying","varchar","NO",255,NULL,NULL`,
+    /*
+     * CREATE TABLE Blog (
+     *   id INT PRIMARY KEY,
+     *   title VARCHAR(255) NOT NULL
+     * );
+     *
+     * ALTER TABLE Blog RENAME TO Blogs
+     */
+    nameChangeNew: `"enum_name","enum_values","table_name","column_name","column_default","ordinal_position","data_type","udt_name","is_nullable","character_maximum_length","indexname","index_columns"
+NULL,NULL,"blogs","id",NULL,1,"integer","int4","NO",NULL,"blog_pkey","id"
+NULL,NULL,"blogs","title",NULL,2,"character varying","varchar","NO",255,NULL,NULL`,
   },
 };

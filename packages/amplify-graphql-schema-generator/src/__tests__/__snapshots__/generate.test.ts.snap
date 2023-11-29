@@ -48,6 +48,32 @@ type Todo @model {
 "
 `;
 
+exports[`generate graphqlSchemaFromSQLSchema creates graphql schema from "postgres" "nameChangeNew" schema 1`] = `
+"input AMPLIFY {
+ engine: String = \\"postgres\\"  
+}
+
+
+type Blog @refersTo(name: \\"blogs\\") @model {
+  id: Int! @primaryKey
+  title: String!
+}
+"
+`;
+
+exports[`generate graphqlSchemaFromSQLSchema creates graphql schema from "postgres" "nameChangeOriginal" schema 1`] = `
+"input AMPLIFY {
+ engine: String = \\"postgres\\"  
+}
+
+
+type Blog @refersTo(name: \\"blog\\") @model {
+  id: Int! @primaryKey
+  title: String!
+}
+"
+`;
+
 exports[`generate graphqlSchemaFromSQLSchema creates graphql schema from "postgres" "news" schema 1`] = `
 "input AMPLIFY {
  engine: String = \\"postgres\\"  
