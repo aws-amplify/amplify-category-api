@@ -44,20 +44,40 @@ Todo,title,NULL,2,varchar,varchar(255),NO,255,NULL,NULL,NULL,NULL`,
      * );
      */
     news: `TABLE_NAME,COLUMN_NAME,COLUMN_DEFAULT,ORDINAL_POSITION,DATA_TYPE,COLUMN_TYPE,IS_NULLABLE,CHARACTER_MAXIMUM_LENGTH,INDEX_NAME,NON_UNIQUE,SEQ_IN_INDEX,NULLABLE
-articles,placeholder,NULL,3,char,char(1),NO,1,NULL,NULL,NULL,NULL
-articles,pub_id,NULL,1,int,int,NO,NULL,PRIMARY,0,1,
-articles,pub_type,A,2,char,char(1),NO,1,PRIMARY,0,2,
 comments,comment_timestamp,CURRENT_TIMESTAMP,2,timestamp,timestamp,NO,NULL,PRIMARY,0,2,
-comments,commenter_email,NULL,3,varchar,varchar(10),NO,10,PRIMARY,0,3,
-comments,comment_text,NULL,4,varchar,varchar(30),NO,30,NULL,NULL,NULL,
-comments,pub_id,NULL,1,int,int,NO,NULL,PRIMARY,0,1,
 publications,pub_id,NULL,1,int,int,NO,NULL,PRIMARY,0,1,
 publications,pub_id,NULL,1,int,int,NO,NULL,publications_superkey,0,1,
 publications,pub_type,NULL,2,char,char(1),YES,1,publications_superkey,0,2,YES
 publications,pub_url,NULL,3,varchar,varchar(64),NO,64,pub_url,0,1,
-stories,placeholder,NULL,3,char,char(1),NO,1,NULL,NULL,NULL,NULL
+articles,pub_id,NULL,1,int,int,NO,NULL,PRIMARY,0,1,
+articles,pub_type,A,2,char,char(1),NO,1,PRIMARY,0,2,
+articles,placeholder,NULL,3,char,char(1),NO,1,NULL,NULL,NULL,NULL
 stories,pub_id,NULL,1,int,int,NO,NULL,PRIMARY,0,1,
-stories,pub_type,S,2,char,char(1),NO,1,PRIMARY,0,2,`,
+stories,pub_type,S,2,char,char(1),NO,1,PRIMARY,0,2,
+stories,placeholder,NULL,3,char,char(1),NO,1,NULL,NULL,NULL,NULL
+comments,pub_id,NULL,1,int,int,NO,NULL,PRIMARY,0,1,
+comments,commenter_email,NULL,3,varchar,varchar(10),NO,10,PRIMARY,0,3,
+comments,comment_text,NULL,4,varchar,varchar(30),NO,30,NULL,NULL,NULL,NULL`,
+    /*
+     * Create table statements from news followed by:
+     *
+     * ALTER TABLE publications RENAME TO pub
+     */
+    newsNameChange: `TABLE_NAME,COLUMN_NAME,COLUMN_DEFAULT,ORDINAL_POSITION,DATA_TYPE,COLUMN_TYPE,IS_NULLABLE,CHARACTER_MAXIMUM_LENGTH,INDEX_NAME,NON_UNIQUE,SEQ_IN_INDEX,NULLABLE
+comments,comment_timestamp,CURRENT_TIMESTAMP,2,timestamp,timestamp,NO,NULL,PRIMARY,0,2,
+pub,pub_id,NULL,1,int,int,NO,NULL,PRIMARY,0,1,
+pub,pub_id,NULL,1,int,int,NO,NULL,publications_superkey,0,1,
+pub,pub_type,NULL,2,char,char(1),YES,1,publications_superkey,0,2,YES
+pub,pub_url,NULL,3,varchar,varchar(64),NO,64,pub_url,0,1,
+articles,pub_id,NULL,1,int,int,NO,NULL,PRIMARY,0,1,
+articles,pub_type,A,2,char,char(1),NO,1,PRIMARY,0,2,
+articles,placeholder,NULL,3,char,char(1),NO,1,NULL,NULL,NULL,NULL
+stories,pub_id,NULL,1,int,int,NO,NULL,PRIMARY,0,1,
+stories,pub_type,S,2,char,char(1),NO,1,PRIMARY,0,2,
+stories,placeholder,NULL,3,char,char(1),NO,1,NULL,NULL,NULL,NULL
+comments,pub_id,NULL,1,int,int,NO,NULL,PRIMARY,0,1,
+comments,commenter_email,NULL,3,varchar,varchar(10),NO,10,PRIMARY,0,3,
+comments,comment_text,NULL,4,varchar,varchar(30),NO,30,NULL,NULL,NULL,NULL`,
   },
   postgres: {
     /*
@@ -117,10 +137,10 @@ NULL,NULL,"publications","pub_url",NULL,3,"character varying","varchar","NO",64,
 NULL,NULL,"stories","placeholder",NULL,3,"character","bpchar","NO",1,NULL,NULL
 NULL,NULL,"stories","pub_id",NULL,1,"integer","int4","NO",NULL,"stories_pkey","pub_id, pub_type"
 NULL,NULL,"stories","pub_type","'S'::bpchar",2,"character","bpchar","NO",1,"stories_pkey","pub_id, pub_type"`,
-    /* Create table statements from news followed by:
+    /*
+     * Create table statements from news followed by:
      *
      * ALTER TABLE publications RENAME TO pub
-     *
      */
     newsNameChange: `"enum_name","enum_values","table_name","column_name","column_default","ordinal_position","data_type","udt_name","is_nullable","character_maximum_length","indexname","index_columns"
 NULL,NULL,"articles","placeholder",NULL,3,"character","bpchar","NO",1,NULL,NULL
