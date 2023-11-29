@@ -6,7 +6,7 @@ Array [
     "fields": Array [
       Object {
         "default": undefined,
-        "length": "",
+        "length": null,
         "name": "pub_id",
         "type": Object {
           "kind": "NonNull",
@@ -65,7 +65,7 @@ Array [
     "fields": Array [
       Object {
         "default": undefined,
-        "length": "",
+        "length": null,
         "name": "pub_id",
         "type": Object {
           "kind": "NonNull",
@@ -117,7 +117,7 @@ Array [
     "fields": Array [
       Object {
         "default": undefined,
-        "length": "",
+        "length": null,
         "name": "pub_id",
         "type": Object {
           "kind": "NonNull",
@@ -169,7 +169,7 @@ Array [
     "fields": Array [
       Object {
         "default": undefined,
-        "length": "",
+        "length": null,
         "name": "pub_id",
         "type": Object {
           "kind": "NonNull",
@@ -184,7 +184,7 @@ Array [
           "kind": "DB_GENERATED",
           "value": "now()",
         },
-        "length": "",
+        "length": null,
         "name": "comment_timestamp",
         "type": Object {
           "kind": "NonNull",
