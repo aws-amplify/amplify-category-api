@@ -462,7 +462,7 @@ const constructDataSourceType = (
  * @param datasourceType the datasource type for each model to be associated with
  * @returns a map of model names to datasource types
  */
-export const constructDataSourceMap = (schema: string, datasourceType: DataSourceType): Map<string, DataSourceType> => {
+const constructDataSourceMap = (schema: string, datasourceType: DataSourceType): Map<string, DataSourceType> => {
   const parsedSchema = parse(schema);
   const result = new Map<string, DataSourceType>();
   parsedSchema.definitions
