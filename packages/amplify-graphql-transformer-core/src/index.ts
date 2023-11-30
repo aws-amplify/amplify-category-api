@@ -29,7 +29,6 @@ export {
   fieldsWithSqlDirective,
   generateGetArgumentsInput,
   GetArgumentsOptions,
-  getStrategyDbTypeFromTypeNode,
   getImportedRDSTypeFromStrategyDbType,
   getKeySchema,
   getModelDataSourceStrategy,
@@ -37,9 +36,11 @@ export {
   getPrimaryKeyFields,
   getResourceName,
   getSortKeyFieldNames,
+  getStrategyDbTypeFromTypeNode,
   getTable,
   isAmplifyDynamoDbModelDataSourceStrategy,
   isDefaultDynamoDbModelDataSourceStrategy,
+  isDynamoDbModel,
   isDynamoDbType,
   isMutationNode,
   isObjectTypeDefinitionNode,
@@ -51,7 +52,6 @@ export {
 
   // Exported but possibly unused
   // TODO: Revisit these after the combine feature work. If they're not used, remove them
-  isDynamoDbModel,
   isDynamoDbStrategy,
 } from './utils';
 export type { SetResourceNameProps } from './utils';

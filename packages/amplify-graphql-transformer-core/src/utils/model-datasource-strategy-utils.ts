@@ -14,20 +14,6 @@ import { isBuiltInGraphqlType } from './graphql-utils';
 // TODO: Revisit these after the combine feature work. If they're not used, remove them
 
 /**
- * Checks if the given model is a DynamoDB model
- * @param ctx Transformer Context
- * @param typename Model name
- * @returns boolean
- */
-export const isDynamoDbModel = (ctx: DataSourceStrategiesProvider, typename: string): boolean => {
-  if (isBuiltInGraphqlType(typename)) {
-    return false;
-  }
-  const modelDataSourceType = getModelDataSourceStrategy(ctx, typename);
-  return isDynamoDbType(modelDataSourceType.dbType);
-};
-
-/**
  * Type predicate that returns true if `obj` is one of the known DynamoDB-based strategies
  */
 export const isDynamoDbStrategy = (
@@ -91,6 +77,20 @@ export const isDefaultDynamoDbModelDataSourceStrategy = (
     typeof (strategy as any)['provisionStrategy'] === 'string' &&
     (strategy as any)['provisionStrategy'] === 'DEFAULT'
   );
+};
+
+/**
+ * Checks if the given model is a DynamoDB model
+ * @param ctx Transformer Context
+ * @param typename Model name
+ * @returns boolean
+ */
+export const isDynamoDbModel = (ctx: DataSourceStrategiesProvider, typename: string): boolean => {
+  if (isBuiltInGraphqlType(typename)) {
+    return false;
+  }
+  const modelDataSourceType = getModelDataSourceStrategy(ctx, typename);
+  return isDynamoDbType(modelDataSourceType.dbType);
 };
 
 /**
