@@ -35,6 +35,7 @@ export {
   getParameterStoreSecretPath,
   getPrimaryKeyFields,
   getResourceName,
+  getResourceNamesForStrategy,
   getSortKeyFieldNames,
   getStrategyDbTypeFromTypeNode,
   getTable,
@@ -49,6 +50,7 @@ export {
   isSqlModel,
   isSqlStrategy,
   setResourceName,
+  SQLLambdaResourceNames,
 
   // Exported but possibly unused
   // TODO: Revisit these after the combine feature work. If they're not used, remove them

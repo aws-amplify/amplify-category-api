@@ -2,7 +2,7 @@ import * as os from 'os';
 import { SchemaFile } from 'aws-cdk-lib/aws-appsync';
 import { IAmplifyGraphqlDefinition } from './types';
 import { constructDataSourceStrategies } from './internal';
-import { ModelDataSourceStrategy } from './model-datasource-strategy-types';
+import { CustomSqlDataSourceStrategy, ModelDataSourceStrategy } from './model-datasource-strategy-types';
 import { constructCustomSqlDataSourceStrategies } from './internal/data-source-config';
 
 export const DEFAULT_MODEL_DATA_SOURCE_STRATEGY: ModelDataSourceStrategy = {
@@ -88,11 +88,31 @@ export class AmplifyGraphqlDefinition {
     if (definitions.length === 1) {
       return definitions[0];
     }
+
+    const sqlStrategyNames = definitions
+      .map((def) =>
+        Object.values(def.dataSourceStrategies)
+          .filter((strategy) => typeof (strategy as any).name === 'string')
+          .map((strategy) => (strategy as any).name),
+      )
+      .flat();
+    if (sqlStrategyNames.length !== new Set(sqlStrategyNames).size) {
+      throw new Error(
+        'A SQL-based ModelDataSourceStrategy name cannot be shared between definitions. To specify a SQL-based API with schemas across multiple files, use `fromFilesAndStrategy`',
+      );
+    }
+
+    const customSqlDataSourceStrategies = definitions.reduce(
+      (acc, cur) => [...acc, ...(cur.customSqlDataSourceStrategies ?? [])],
+      [] as CustomSqlDataSourceStrategy[],
+    );
+
     return {
       schema: definitions.map((def) => def.schema).join(os.EOL),
       functionSlots: [],
       referencedLambdaFunctions: definitions.reduce((acc, cur) => ({ ...acc, ...cur.referencedLambdaFunctions }), {}),
       dataSourceStrategies: definitions.reduce((acc, cur) => ({ ...acc, ...cur.dataSourceStrategies }), {}),
+      customSqlDataSourceStrategies,
     };
   }
 }

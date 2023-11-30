@@ -1,4 +1,6 @@
+import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct, MetadataEntry } from 'constructs';
+import { ResourceConstants } from 'graphql-transformer-common';
 
 const resourceNameKey = 'graphqltransformer:resourceName';
 
@@ -44,4 +46,65 @@ export const getResourceName = (scope: Construct): string | undefined => {
   const referencesWithName = scope.node.metadata.map(tryAndRetrieveResourceName).filter(isDefined);
   if (referencesWithName.length > 1) throw new Error('Multiple metadata entries specifying a resource name were found, expected 0 or 1.');
   return referencesWithName.length === 1 ? referencesWithName[0] : undefined;
+};
+
+export interface SQLLambdaResourceNames {
+  SQLLambdaAliasLogicalID: string;
+  SQLLambdaDataSourceLogicalID: string;
+  SQLLambdaIAMRoleLogicalID: string;
+  SQLLambdaLayerVersionLogicalID: string;
+  SQLLambdaLogAccessPolicy: string;
+  SQLLambdaLogicalID: string;
+  SQLLayerMappingID: string;
+  SQLLayerVersionCustomResourceID: string;
+  SQLPatchingLambdaIAMRoleLogicalID: string;
+  SQLPatchingLambdaLogAccessPolicy: string;
+  SQLPatchingLambdaLogicalID: string;
+  SQLPatchingSubscriptionLogicalID: string;
+  SQLPatchingTopicLogicalID: string;
+  SQLStackName: string;
+  SQLVpcEndpointLogicalIDPrefix: string;
+}
+
+/**
+ * Returns resource names created for the given strategy. These are also used as the logical IDs for the CDK resources themselves.
+ */
+export const getResourceNamesForStrategy = (strategy: SQLLambdaModelDataSourceStrategy): SQLLambdaResourceNames => {
+  const {
+    SQLLambdaAliasLogicalID,
+    SQLLambdaDataSourceLogicalID,
+    SQLLambdaIAMRoleLogicalID,
+    SQLLambdaLayerVersionLogicalID,
+    SQLLambdaLogAccessPolicy,
+    SQLLambdaLogicalID,
+    SQLLayerMappingID,
+    SQLLayerVersionCustomResourceID,
+    SQLPatchingLambdaIAMRoleLogicalID,
+    SQLPatchingLambdaLogAccessPolicy,
+    SQLPatchingLambdaLogicalID,
+    SQLPatchingSubscriptionLogicalID,
+    SQLPatchingTopicLogicalID,
+    SQLStackName,
+    SQLVpcEndpointLogicalIDPrefix,
+  } = ResourceConstants.RESOURCES;
+
+  const resourceNames: SQLLambdaResourceNames = {
+    SQLLambdaAliasLogicalID: `${SQLLambdaAliasLogicalID}${strategy.name}`,
+    SQLLambdaDataSourceLogicalID: `${SQLLambdaDataSourceLogicalID}${strategy.name}`,
+    SQLLambdaIAMRoleLogicalID: `${SQLLambdaIAMRoleLogicalID}${strategy.name}`,
+    SQLLambdaLayerVersionLogicalID: `${SQLLambdaLayerVersionLogicalID}${strategy.name}`,
+    SQLLambdaLogAccessPolicy: `${SQLLambdaLogAccessPolicy}${strategy.name}`,
+    SQLLambdaLogicalID: `${SQLLambdaLogicalID}${strategy.name}`,
+    SQLLayerMappingID: `${SQLLayerMappingID}${strategy.name}`,
+    SQLLayerVersionCustomResourceID: `${SQLLayerVersionCustomResourceID}${strategy.name}`,
+    SQLPatchingLambdaIAMRoleLogicalID: `${SQLPatchingLambdaIAMRoleLogicalID}${strategy.name}`,
+    SQLPatchingLambdaLogAccessPolicy: `${SQLPatchingLambdaLogAccessPolicy}${strategy.name}`,
+    SQLPatchingLambdaLogicalID: `${SQLPatchingLambdaLogicalID}${strategy.name}`,
+    SQLPatchingSubscriptionLogicalID: `${SQLPatchingSubscriptionLogicalID}${strategy.name}`,
+    SQLPatchingTopicLogicalID: `${SQLPatchingTopicLogicalID}${strategy.name}`,
+    SQLStackName: `${SQLStackName}${strategy.name}`,
+    SQLVpcEndpointLogicalIDPrefix: `${SQLVpcEndpointLogicalIDPrefix}${strategy.name}`,
+  };
+
+  return resourceNames;
 };

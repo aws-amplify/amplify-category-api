@@ -21,7 +21,7 @@ describe('datasource config', () => {
         myCustomQuery: [Int] @sql(statement: "SELECT 1")
       }
       type Mutation {
-        myCustomMutation: [Int] @sql(statement: "UPDATE mytable SET id=1; return 1;")
+        myCustomMutation: [Int] @sql(statement: "UPDATE mytable SET id=1; SELECT 1;")
       }
     `;
 
@@ -68,7 +68,7 @@ describe('datasource config', () => {
       dbConnectionConfig,
       customSqlStatements: {
         myCustomQuery: 'SELECT 1;',
-        myCustomMutation: 'UPDATE mytable SET id=1; return 1;',
+        myCustomMutation: 'UPDATE mytable SET id=1; SELECT 1;',
       },
     };
 
@@ -106,7 +106,7 @@ describe('datasource config', () => {
           strategy: strategy,
           customSqlStatements: {
             myCustomQuery: 'SELECT 1;',
-            myCustomMutation: 'UPDATE mytable SET id=1; return 1;',
+            myCustomMutation: 'UPDATE mytable SET id=1; SELECT 1;',
           },
         },
         {
@@ -115,7 +115,7 @@ describe('datasource config', () => {
           strategy: strategy,
           customSqlStatements: {
             myCustomQuery: 'SELECT 1;',
-            myCustomMutation: 'UPDATE mytable SET id=1; return 1;',
+            myCustomMutation: 'UPDATE mytable SET id=1; SELECT 1;',
           },
         },
       ]),

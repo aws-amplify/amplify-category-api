@@ -25,7 +25,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import * as fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { sanityCheckProject } from 'graphql-transformer-core';
+import { DataSourceType, sanityCheckProject } from 'graphql-transformer-core';
 import _ from 'lodash';
 import { executeTransform } from '@aws-amplify/graphql-transformer';
 import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
