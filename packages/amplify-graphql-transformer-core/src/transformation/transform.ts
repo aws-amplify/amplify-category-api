@@ -185,12 +185,13 @@ export class GraphQLTransform {
    */
   public transform({
     assetProvider,
-    sqlDirectiveDataSourceStrategies,
     dataSourceStrategies,
     nestedStackProvider,
     parameterProvider,
+    rdsLayerMapping,
     schema,
     scope,
+    sqlDirectiveDataSourceStrategies,
     synthParameters,
   }: TransformOption): void {
     this.seenTransformations = {};
@@ -198,13 +199,14 @@ export class GraphQLTransform {
     const context = new TransformerContext({
       assetProvider,
       authConfig: this.authConfig,
-      sqlDirectiveDataSourceStrategies: sqlDirectiveDataSourceStrategies ?? [],
       dataSourceStrategies: dataSourceStrategies,
       inputDocument: parsedDocument,
       nestedStackProvider,
       parameterProvider,
+      rdsLayerMapping,
       resolverConfig: this.resolverConfig,
       scope,
+      sqlDirectiveDataSourceStrategies: sqlDirectiveDataSourceStrategies ?? [],
       stackMapping: this.stackMappingOverrides,
       synthParameters,
       transformParameters: this.transformParameters,

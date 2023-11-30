@@ -182,7 +182,7 @@ export function ensureReferencesArray(
   }
 
   if (!config.references) {
-    throw new InvalidDirectiveError(`Reference fields must be passed to @${config.directiveName} directive for RDS models.`);
+    throw new InvalidDirectiveError(`Reference fields must be passed to @${config.directiveName} directive for SQL models.`);
   } else if (!Array.isArray(config.references)) {
     config.references = [config.references];
   } else if (config.references.length === 0) {
