@@ -282,6 +282,7 @@ export const constructDataSourceStrategies = (
 export const constructSqlDirectiveDataSourceStrategies = (
   schema: string,
   dataSourceStrategy: ModelDataSourceStrategy,
+  customSqlStatements?: Record<string, string>,
 ): SqlDirectiveDataSourceStrategy[] => {
   if (!isSqlStrategy(dataSourceStrategy)) {
     return [];
@@ -304,6 +305,7 @@ export const constructSqlDirectiveDataSourceStrategies = (
         typeName: 'Query',
         fieldName: field.name.value,
         strategy: dataSourceStrategy,
+        customSqlStatements,
       });
     }
   }
@@ -315,6 +317,7 @@ export const constructSqlDirectiveDataSourceStrategies = (
         typeName: 'Mutation',
         fieldName: field.name.value,
         strategy: dataSourceStrategy,
+        customSqlStatements,
       });
     }
   }

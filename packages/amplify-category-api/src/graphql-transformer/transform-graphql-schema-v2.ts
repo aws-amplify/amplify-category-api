@@ -275,7 +275,16 @@ const fixUpDataSourceStrategiesProvider = async (context: $TSContext, projectCon
       }
       dataSourceStrategies[key] = strategy;
     });
-    sqlDirectiveDataSourceStrategies = constructSqlDirectiveDataSourceStrategies(projectConfig.schema, strategy);
+
+    let customSqlStatements: Record<string, string> | undefined;
+    if (typeof projectConfig.customQueries === 'object') {
+      customSqlStatements = {};
+      (projectConfig.customQueries as Map<string, string>).forEach((value, key) => {
+        customSqlStatements[key] = value;
+      });
+    }
+
+    sqlDirectiveDataSourceStrategies = constructSqlDirectiveDataSourceStrategies(projectConfig.schema, strategy, customSqlStatements);
   }
 
   return {

@@ -123,7 +123,7 @@ export const enum ConflictHandlerType {
 export const constructDataSourceStrategies: (schema: string, dataSourceStrategy: ModelDataSourceStrategy) => Record<string, ModelDataSourceStrategy>;
 
 // @public (undocumented)
-export const constructSqlDirectiveDataSourceStrategies: (schema: string, dataSourceStrategy: ModelDataSourceStrategy) => SqlDirectiveDataSourceStrategy[];
+export const constructSqlDirectiveDataSourceStrategies: (schema: string, dataSourceStrategy: ModelDataSourceStrategy, customSqlStatements?: Record<string, string>) => SqlDirectiveDataSourceStrategy[];
 
 // @public (undocumented)
 function createSyncLambdaIAMPolicy(context: TransformerContextProvider, scope: Construct, name: string, region?: string): iam.Policy;
