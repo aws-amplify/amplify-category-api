@@ -50,7 +50,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
     // Unexpected, since we invoke the generateResources in response to generators that are initialized during a scan of models and custom
     // SQL, but we'll be defensive here.
     if (Object.keys(strategies).length === 0) {
-      return;
+      throw new Error('No SQL datasource types are detected. This is an unexpected error.');
     }
 
     // TODO: Remove this once we implement `combine`. For now, we only support one SQL engine

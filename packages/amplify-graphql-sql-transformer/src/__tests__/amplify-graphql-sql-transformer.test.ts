@@ -144,7 +144,38 @@ describe('sql directive tests', () => {
     };
 
     expect(() => testTransform(transformConfig)).toThrowError(
-      '@sql directive can have either \'statement\' or \'reference\' argument but not both. Check type "Query" and field "calculateTaxRate".',
+      '@sql directive can have either a \'statement\' or a \'reference\' argument but not both. Check type "Query" and field "calculateTaxRate".',
+    );
+  });
+
+  it('should throw error if neither statement and argument provided', () => {
+    const doc = /* GraphQL */ `
+      type Query {
+        calculateTaxRate(zip: String): Int @sql
+      }
+    `;
+
+    const customQueries = new Map<string, string>();
+    customQueries.set('calculate-tax', 'SELECT * FROM TAXRATE WHERE ZIP = :zip');
+
+    const transformConfig: TestTransformParameters = {
+      schema: doc,
+      transformers: [new ModelTransformer(), new SqlTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(doc, mySqlStrategy),
+      sqlDirectiveDataSourceStrategies: [
+        {
+          typeName: 'Query',
+          fieldName: 'calculateTaxRate',
+          strategy: mySqlStrategy,
+          customSqlStatements: {
+            'calculate-tax': 'SELECT * FROM TAXRATE WHERE ZIP = :zip',
+          },
+        },
+      ],
+    };
+
+    expect(() => testTransform(transformConfig)).toThrowError(
+      '@sql directive must have either a \'statement\' or a \'reference\' argument. Check type "Query" and field "calculateTaxRate".',
     );
   });
 
