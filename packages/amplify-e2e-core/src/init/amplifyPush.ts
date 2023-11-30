@@ -54,7 +54,11 @@ export function amplifyPush(
     if (settings?.useBetaSqlLayer) {
       pushOptions.push('--use-beta-sql-layer');
     }
-    const pushCommands = spawn(getCLIPath(testingWithLatestCodebase), pushOptions, { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    const pushCommands = spawn(getCLIPath(testingWithLatestCodebase), pushOptions, {
+      cwd,
+      stripColors: true,
+      noOutputTimeout: pushTimeoutMS,
+    })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes();
 

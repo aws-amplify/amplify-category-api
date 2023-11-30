@@ -128,7 +128,7 @@ describe('RDS OIDC provider Auth tests', () => {
     await amplifyPush(projRoot, false, {
       skipCodegen: true,
       useBetaSqlLayer: SQL_TESTS_USE_BETA,
-    })
+    });
 
     await addApi(projRoot, {
       'OpenID Connect': {
