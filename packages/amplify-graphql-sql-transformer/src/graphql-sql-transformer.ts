@@ -113,15 +113,6 @@ export class SqlTransformer extends TransformerPluginBase {
         const { SQLLambdaDataSourceLogicalID: dataSourceId } = ResourceConstants.RESOURCES;
         const dataSource = context.api.host.getDataSource(dataSourceId);
 
-        // // Generate resources for schemas without @models, or schemas that use different data sources for custom SQL than for models.
-        // // Currently this is handled in the ModelTransformer, which explicitly checks the declared sqlDirectiveDataSourceStrategies, but we're adding this here defensively
-        // if (!dataSource) {
-        //   const generator = new RdsModelResourceGenerator();
-        //   generator.enableGenerator();
-        //   generator.generateResources(context, strategy.strategy);
-        //   dataSource = context.api.host.getDataSource(dataSourceId);
-        // }
-
         const statement = getStatement(config, strategy.customSqlStatements);
         const resolverResourceId = ResolverResourceIDs.ResolverResourceID(config.resolverTypeName, config.resolverFieldName);
         const resolver = context.resolvers.generateQueryResolver(
