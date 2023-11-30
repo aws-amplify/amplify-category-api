@@ -1,9 +1,11 @@
 import { SSMClient, GetParameterCommand, GetParameterCommandOutput } from '@aws-sdk/client-ssm';
+import { SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
 // @ts-ignore
 import { DBAdapter, DBConfig, getDBAdapter } from 'rds-query-processor';
 
 let adapter: DBAdapter;
-let secretsClient: SSMClient;
+let ssmClient: SSMClient;
+let secretsManagerClient: SecretsManagerClient;
 
 const delay = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 const WAIT_COMPLETE = 'WAIT_COMPLETE';
@@ -21,10 +23,19 @@ export const run = async (event): Promise<any> => {
 const createSSMClient = (): void => {
   const DNS_SEPERATOR = ':';
   const endpoint = process.env.SSM_ENDPOINT?.split(DNS_SEPERATOR).pop();
-  secretsClient = new SSMClient({
+  ssmClient = new SSMClient({
     endpoint: `https://${endpoint}`,
   });
 };
+
+const createSecretsManagerClient = (): void => {
+  const DNS_SEPERATOR = ':';
+  const endpoint = process.env.SECRETS_MANAGER_ENDPOINT?.split(DNS_SEPERATOR).pop();
+  secretsManagerClient = new SecretsManagerClient({
+    endpoint: `https://${endpoint}`,
+  });
+};
+
 
 const wait10Seconds = async (): Promise<string> => {
   await delay(10000);
@@ -44,7 +55,7 @@ const getSSMValue = async (key: string | undefined): Promise<string> => {
   // the security group's inbound rule for port 443 is not defined,
   // the SSM client waits for the entire lambda execution time and times out.
   // If the parameter is not retrieved within 10 seconds, throw an error.
-  const data = await Promise.race([secretsClient.send(parameterCommand), wait10Seconds()]);
+  const data = await Promise.race([ssmClient.send(parameterCommand), wait10Seconds()]);
 
   // If string is returned, throw error.
   if (
@@ -64,18 +75,34 @@ const getSSMValue = async (key: string | undefined): Promise<string> => {
 };
 
 const getDBConfig = async (): DBConfig => {
-  if (!secretsClient) {
-    createSSMClient();
-  }
-
-  const config = {
+  const config: DBConfig = {
     engine: getDBEngine(),
-    host: await getSSMValue(process.env.host),
-    port: Number.parseInt(await getSSMValue(process.env.port)) || 3306,
-    username: await getSSMValue(process.env.username),
-    password: await getSSMValue(process.env.password),
-    database: await getSSMValue(process.env.database),
   };
+  const useSsmCredentials = !!process.env.USE_SSM_CREDENTIALS;
+  const useSecretsManagerCredentials = !!process.env.USE_SECRETS_MANAGER_CREDENTIALS;
+  if (useSsmCredentials) {
+    if (!ssmClient) {
+      createSSMClient();
+    }
+
+    config.host = await getSSMValue(process.env.host);
+    config.port = Number.parseInt(await getSSMValue(process.env.port)) || 3306;
+    config.username = await getSSMValue(process.env.username);
+    config.password = await getSSMValue(process.env.password);
+    config.database = await getSSMValue(process.env.database);
+  } else if (useSecretsManagerCredentials) {
+    if (!secretsManagerClient) {
+      createSecretsManagerClient();
+    }
+    
+    config.port = Number.parseInt(process.env.port || '3306');
+    config.database = process.env.database;
+
+    // TODO: get secrets manager value
+    config.host = await getSSMValue(process.env.host);
+    config.username = await getSSMValue(process.env.username);
+    config.password = await getSSMValue(process.env.password);
+  }
 
   if (!config.host || !config.port || !config.username || !config.password || !config.database) {
     throw Error('Missing database connection configuration');

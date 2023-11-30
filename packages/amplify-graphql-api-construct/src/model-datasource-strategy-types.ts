@@ -116,12 +116,38 @@ export interface SubnetAvailabilityZone {
   readonly availabilityZone: string;
 }
 
+/*
+ * The credentials the lambda data source will use to connect to the database.
+ *
+ * @experimental
+ */
+export type SqlModelDataSourceDbConnectionConfig =
+  | SqlModelDataSourceSecretsManagerDbConnectionConfig
+  | SqlModelDataSourceSsmDbConnectionConfig;
+
+/*
+ * The credentials stored in Secrets Manager that the lambda data source will use to connect to the database.
+ *
+ * The managed secret should be in the same region as the lambda.
+ * @experimental
+ */
+export interface SqlModelDataSourceSecretsManagerDbConnectionConfig {
+  /** The arn of the managed secret with username, password, and hostname to use when connecting to the database. **/
+  readonly secretArn: string;
+
+  /** port number of the database proxy, cluster, or instance. */
+  readonly port: number;
+
+  /** database name. */
+  readonly databaseName: string;
+}
+
 /**
  * The Secure Systems Manager parameter paths the Lambda data source will use to connect to the database.
  *
  * These parameters are retrieved from Secure Systems Manager in the same region as the Lambda.
  */
-export interface SqlModelDataSourceDbConnectionConfig {
+export interface SqlModelDataSourceSsmDbConnectionConfig {
   /** The Secure Systems Manager parameter containing the hostname of the database. For RDS-based SQL data sources, this can be the hostname
    * of a database proxy, cluster, or instance.
    */

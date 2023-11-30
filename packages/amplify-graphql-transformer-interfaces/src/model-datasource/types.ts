@@ -114,12 +114,39 @@ export interface SubnetAvailabilityZone {
   readonly availabilityZone: string;
 }
 
+/*
+ * The credentials the lambda data source will use to connect to the database.
+ *
+ * @experimental
+ */
+export type SqlModelDataSourceDbConnectionConfig =
+  | SqlModelDataSourceSecretsManagerDbConnectionConfig
+  | SqlModelDataSourceSsmDbConnectionConfig;
+
+/*
+ * The credentials stored in Secrets Manager that the lambda data source will use to connect to the database.
+ *
+ * The managed secret should be in the same region as the lambda.
+ * @experimental
+ */
+export interface SqlModelDataSourceSecretsManagerDbConnectionConfig {
+  /** The arn of the managed secret with username, password, and hostname to use when connecting to the database. **/
+  readonly secretArn: string;
+
+  /** port number of the database proxy, cluster, or instance. */
+  readonly port: number;
+
+  /** database name. */
+  readonly databaseName: string;
+}
+
 /**
  * The Secure Systems Manager parameter paths the Lambda data source will use to connect to the database.
  *
  * These parameters are retrieved from Secure Systems Manager in the same region as the Lambda.
+ * @experimental
  */
-export interface SqlModelDataSourceDbConnectionConfig {
+export interface SqlModelDataSourceSsmDbConnectionConfig {
   /** The Secure Systems Manager parameter containing the hostname of the database. For RDS-based SQL data sources, this can be the hostname
    * of a database proxy, cluster, or instance.
    */
@@ -193,3 +220,46 @@ export interface RDSLayerMapping {
 export interface RDSLayerMappingProvider {
   rdsLayerMapping?: RDSLayerMapping;
 }
+
+// TODO: move somewhere else
+
+/**
+ * Type predicate that returns true if the object is a SqlModelDataSourceDbConnectionConfig.
+ * @param obj the object to inspect
+ * @returns true if the object is shaped like a SqlModelDataSourceDbConnectionConfig
+ */
+export const isSqlModelDataSourceDbConnectionConfig = (obj: any): obj is SqlModelDataSourceDbConnectionConfig => {
+  return isSqlModelDataSourceSsmDbConnectionConfig(obj) || isSqlModelDataSourceSecretsManagerDbConnectionConfig(obj);
+};
+
+/**
+ * Type predicate that returns true if the object is a SqlModelDataSourceSsmDbConnectionConfig.
+ * @param obj the object to inspect
+ * @returns true if the object is shaped like a SqlModelDataSourceDbConnectionConfig
+ */
+export const isSqlModelDataSourceSsmDbConnectionConfig = (obj: any): obj is SqlModelDataSourceSsmDbConnectionConfig => {
+  return (
+    (typeof obj === 'object' || typeof obj === 'function') &&
+    typeof obj.hostnameSsmPath === 'string' &&
+    typeof obj.portSsmPath === 'string' &&
+    typeof obj.usernameSsmPath === 'string' &&
+    typeof obj.passwordSsmPath === 'string' &&
+    typeof obj.databaseNameSsmPath === 'string'
+  );
+};
+
+/**
+ * Type predicate that returns true if the object is a SqlModelDataSourceSecretsManagerDbConnectionConfig.
+ * @param obj the object to inspect
+ * @returns true if the object is shaped like a SqlModelDataSourceDbConnectionConfig
+ */
+export const isSqlModelDataSourceSecretsManagerDbConnectionConfig = (
+  obj: any,
+): obj is SqlModelDataSourceSecretsManagerDbConnectionConfig => {
+  return (
+    (typeof obj === 'object' || typeof obj === 'function') &&
+    typeof obj.secretArn === 'string' &&
+    typeof obj.port === 'number' &&
+    typeof obj.databaseName === 'string'
+  );
+};

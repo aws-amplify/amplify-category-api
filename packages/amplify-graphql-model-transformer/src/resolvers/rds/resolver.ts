@@ -26,6 +26,8 @@ import {
   VpcConfig,
   ProvisionedConcurrencyConfig,
   SqlModelDataSourceDbConnectionConfig,
+  isSqlModelDataSourceSsmDbConnectionConfig,
+  isSqlModelDataSourceSecretsManagerDbConnectionConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction, LayerVersion, Runtime, Alias, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
@@ -69,13 +71,27 @@ export const createRdsLambda = (
   sqlLambdaVpcConfig?: VpcConfig,
   sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig,
 ): IFunction => {
-  let ssmEndpoint = Fn.join('', ['ssm.', Fn.ref('AWS::Region'), '.amazonaws.com']); // Default SSM endpoint
-  if (sqlLambdaVpcConfig) {
-    const endpoints = addVpcEndpointForSecretsManager(scope, sqlLambdaVpcConfig, resourceNames);
-    const ssmEndpointEntries = endpoints.find((endpoint) => endpoint.service === 'ssm')?.endpoint.attrDnsEntries;
-    if (ssmEndpointEntries) {
-      ssmEndpoint = Fn.select(0, ssmEndpointEntries);
+  const lambdaEnvironment = {
+    ...environment,
+  };
+
+  if (environment?.USE_SSM_CREDENTIALS) {
+    let ssmEndpoint = Fn.join('', ['ssm.', Fn.ref('AWS::Region'), '.amazonaws.com']); // Default SSM endpoint
+    if (sqlLambdaVpcConfig) {
+      const endpoints = addVpcEndpointForSecretsManager(scope, sqlLambdaVpcConfig, resourceNames);
+      const ssmEndpointEntries = endpoints.find((endpoint) => endpoint.service === 'ssm')?.endpoint.attrDnsEntries;
+      if (ssmEndpointEntries) {
+        ssmEndpoint = Fn.select(0, ssmEndpointEntries);
+      }
     }
+
+    lambdaEnvironment.SSM_ENDPOINT = ssmEndpoint;
+  } else if (environment?.USE_SECRETS_MANAGER_CREDENTIALS) {
+    // TODO: secrets manager vpc endpoint
+    lambdaEnvironment.SECRETS_MANAGER_ENDPOINT = '';
+  } else {
+    // TODO: better error message
+    throw new Error('no credentials');
   }
 
   const fn = apiGraphql.host.addLambdaFunction(
@@ -86,10 +102,7 @@ export const createRdsLambda = (
     Runtime.NODEJS_18_X,
     [LayerVersion.fromLayerVersionArn(scope, resourceNames.sqlLambdaLayerVersion, layerVersionArn)],
     lambdaRole,
-    {
-      ...environment,
-      SSM_ENDPOINT: ssmEndpoint,
-    },
+    lambdaEnvironment,
     Duration.seconds(30),
     scope,
     sqlLambdaVpcConfig,
@@ -260,19 +273,32 @@ export const createRdsLambdaRole = (
     }),
   ];
   if (secretEntry) {
-    policyStatements.push(
-      new PolicyStatement({
-        actions: ['ssm:GetParameter', 'ssm:GetParameters'],
-        effect: Effect.ALLOW,
-        resources: [
-          `arn:aws:ssm:*:*:parameter${secretEntry.usernameSsmPath}`,
-          `arn:aws:ssm:*:*:parameter${secretEntry.passwordSsmPath}`,
-          `arn:aws:ssm:*:*:parameter${secretEntry.hostnameSsmPath}`,
-          `arn:aws:ssm:*:*:parameter${secretEntry.databaseNameSsmPath}`,
-          `arn:aws:ssm:*:*:parameter${secretEntry.portSsmPath}`,
-        ],
-      }),
-    );
+    if (isSqlModelDataSourceSsmDbConnectionConfig(secretEntry)) {
+      policyStatements.push(
+        new PolicyStatement({
+          actions: ['ssm:GetParameter', 'ssm:GetParameters'],
+          effect: Effect.ALLOW,
+          resources: [
+            `arn:aws:ssm:*:*:parameter${secretEntry.usernameSsmPath}`,
+            `arn:aws:ssm:*:*:parameter${secretEntry.passwordSsmPath}`,
+            `arn:aws:ssm:*:*:parameter${secretEntry.hostnameSsmPath}`,
+            `arn:aws:ssm:*:*:parameter${secretEntry.databaseNameSsmPath}`,
+            `arn:aws:ssm:*:*:parameter${secretEntry.portSsmPath}`,
+          ],
+        }),
+      );
+    } else if (isSqlModelDataSourceSecretsManagerDbConnectionConfig(secretEntry)) {
+      policyStatements.push(
+        new PolicyStatement({
+          actions: ['secretsmanager:GetSecretValue'],
+          effect: Effect.ALLOW,
+          resources: [secretEntry.secretArn],
+        }),
+      );
+    } else {
+      // TODO: better message
+      throw new Error('unable to get db secrets');
+    }
   }
 
   role.attachInlinePolicy(

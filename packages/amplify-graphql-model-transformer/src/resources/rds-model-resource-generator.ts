@@ -8,7 +8,13 @@ import {
   getResourceNamesForStrategy,
   isSqlStrategy,
 } from '@aws-amplify/graphql-transformer-core';
-import { QueryFieldType, SQLLambdaModelDataSourceStrategy, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  QueryFieldType,
+  SQLLambdaModelDataSourceStrategy,
+  TransformerContextProvider,
+  isSqlModelDataSourceSsmDbConnectionConfig,
+  isSqlModelDataSourceSecretsManagerDbConnectionConfig,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { LambdaDataSource } from 'aws-cdk-lib/aws-appsync';
 import { ObjectTypeDefinitionNode } from 'graphql';
@@ -93,6 +99,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
     const dbType = strategy.dbType;
     const engine = getImportedRDSTypeFromStrategyDbType(dbType);
     const dbConnectionConfig = strategy.dbConnectionConfig;
+    const secretEntry = strategy.dbConnectionConfig;
     const { AmplifySQLLayerNotificationTopicAccount, AmplifySQLLayerNotificationTopicName } = ResourceConstants.RESOURCES;
 
     const lambdaRoleScope = context.stackManager.getScopeFor(resourceNames.sqlLambdaExecutionRole, resourceNames.sqlStack);
@@ -107,14 +114,23 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       resourceNames,
     );
 
-    const environment = {
-      engine: engine,
-      username: dbConnectionConfig.usernameSsmPath,
-      password: dbConnectionConfig.passwordSsmPath,
-      host: dbConnectionConfig.hostnameSsmPath,
-      port: dbConnectionConfig.portSsmPath,
-      database: dbConnectionConfig.databaseNameSsmPath,
+    const environment: { [key: string]: string } = {
+      engine,
     };
+
+    if (isSqlModelDataSourceSsmDbConnectionConfig(secretEntry)) {
+      environment.USE_SSM_CREDENTIALS = 'true';
+      environment.username = secretEntry.usernameSsmPath;
+      environment.password = secretEntry.passwordSsmPath;
+      environment.host = secretEntry.hostnameSsmPath;
+      environment.port = secretEntry.portSsmPath;
+      environment.database = secretEntry.databaseNameSsmPath;
+    } else if (isSqlModelDataSourceSecretsManagerDbConnectionConfig(secretEntry)) {
+      environment.USE_SECRETS_MANAGER_CREDENTIALS = 'true';
+      environment.secretArn = secretEntry.secretArn;
+      environment.port = secretEntry.port.toString();
+      environment.database = secretEntry.databaseName;
+    }
 
     const lambda = createRdsLambda(
       lambdaScope,
