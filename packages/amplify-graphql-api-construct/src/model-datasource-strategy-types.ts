@@ -116,7 +116,7 @@ export interface SubnetAvailabilityZone {
   readonly availabilityZone: string;
 }
 
-/*
+/**
  * The credentials the lambda data source will use to connect to the database.
  *
  * @experimental
@@ -125,20 +125,20 @@ export type SqlModelDataSourceDbConnectionConfig =
   | SqlModelDataSourceSecretsManagerDbConnectionConfig
   | SqlModelDataSourceSsmDbConnectionConfig;
 
-/*
+/**
  * The credentials stored in Secrets Manager that the lambda data source will use to connect to the database.
  *
  * The managed secret should be in the same region as the lambda.
  * @experimental
  */
 export interface SqlModelDataSourceSecretsManagerDbConnectionConfig {
-  /** The arn of the managed secret with username, password, and hostname to use when connecting to the database. **/
+  /** The ARN of the managed secret with username, password, and hostname to use when connecting to the database. **/
   readonly secretArn: string;
 
-  /** port number of the database proxy, cluster, or instance. */
+  /** The port number of the database proxy, cluster, or instance. */
   readonly port: number;
 
-  /** database name. */
+  /** The database name. */
   readonly databaseName: string;
 }
 

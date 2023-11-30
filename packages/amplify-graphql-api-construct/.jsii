@@ -7318,7 +7318,9 @@
       "assembly": "@aws-amplify/graphql-api-construct",
       "datatype": true,
       "docs": {
-        "stability": "stable"
+        "remarks": "The managed secret should be in the same region as the lambda.",
+        "stability": "experimental",
+        "summary": "The credentials stored in Secrets Manager that the lambda data source will use to connect to the database."
       },
       "fqn": "@aws-amplify/graphql-api-construct.SqlModelDataSourceSecretsManagerDbConnectionConfig",
       "kind": "interface",
@@ -7331,8 +7333,8 @@
         {
           "abstract": true,
           "docs": {
-            "stability": "stable",
-            "summary": "database name."
+            "stability": "experimental",
+            "summary": "The database name."
           },
           "immutable": true,
           "locationInModule": {
@@ -7347,8 +7349,8 @@
         {
           "abstract": true,
           "docs": {
-            "stability": "stable",
-            "summary": "port number of the database proxy, cluster, or instance."
+            "stability": "experimental",
+            "summary": "The port number of the database proxy, cluster, or instance."
           },
           "immutable": true,
           "locationInModule": {
@@ -7364,8 +7366,8 @@
           "abstract": true,
           "docs": {
             "remarks": "*",
-            "stability": "stable",
-            "summary": "The arn of the managed secret with username, password, and hostname to use when connecting to the database."
+            "stability": "experimental",
+            "summary": "The ARN of the managed secret with username, password, and hostname to use when connecting to the database."
           },
           "immutable": true,
           "locationInModule": {
@@ -8035,5 +8037,5 @@
     }
   },
   "version": "1.5.5",
-  "fingerprint": "2mqQcYoaLm2VzBQyY15QcbjgiE9nkCsUpVcsNgTB5Es="
+  "fingerprint": "l9GllyWX/rMqORRF6mHBVG/IV8CXZOJWQFRVjcrQpb4="
 }

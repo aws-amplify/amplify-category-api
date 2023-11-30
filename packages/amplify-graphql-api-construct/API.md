@@ -339,10 +339,10 @@ export class SQLLambdaModelDataSourceStrategyFactory {
     static fromCustomSqlFiles(sqlFiles: string[], options: Exclude<SQLLambdaModelDataSourceStrategy, 'customSqlStatements'>): SQLLambdaModelDataSourceStrategy;
 }
 
-// @public (undocumented)
+// @public
 export type SqlModelDataSourceDbConnectionConfig = SqlModelDataSourceSecretsManagerDbConnectionConfig | SqlModelDataSourceSsmDbConnectionConfig;
 
-// @public (undocumented)
+// @public
 export interface SqlModelDataSourceSecretsManagerDbConnectionConfig {
     readonly databaseName: string;
     readonly port: number;
