@@ -252,7 +252,7 @@ export class GraphQLTransform {
     // Warning: (ae-forgotten-export) The symbol "TransformOption" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    transform({ assetProvider, sqlDirectiveDataSourceStrategies, dataSourceStrategies, nestedStackProvider, parameterProvider, schema, scope, synthParameters, }: TransformOption): void;
+    transform({ assetProvider, dataSourceStrategies, nestedStackProvider, parameterProvider, rdsLayerMapping, schema, scope, sqlDirectiveDataSourceStrategies, synthParameters, }: TransformOption): void;
 }
 
 // @public (undocumented)
