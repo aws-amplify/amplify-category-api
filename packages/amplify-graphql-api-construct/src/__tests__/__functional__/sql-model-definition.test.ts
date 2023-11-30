@@ -3,7 +3,7 @@ import * as cognito from 'aws-cdk-lib/aws-cognito';
 import { CfnFunction, CfnAlias } from 'aws-cdk-lib/aws-lambda';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
-import { SqlModelDataSourceDbConnectionConfig, VpcConfig } from '../../model-datasource-strategy';
+import { SqlModelDataSourceDbConnectionConfig, VpcConfig } from '../../model-datasource-strategy-types';
 
 const defaultSchema = /* GraphQL */ `
   type Todo @model @auth(rules: [{ allow: owner }]) {
