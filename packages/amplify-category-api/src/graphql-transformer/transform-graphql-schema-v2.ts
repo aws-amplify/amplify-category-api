@@ -6,12 +6,15 @@ import {
   DDB_DEFAULT_DATASOURCE_STRATEGY,
   constructDataSourceStrategies,
   constructSqlDirectiveDataSourceStrategies,
+  isDynamoDbType,
+  DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncAuthConfiguration,
   DataSourceStrategiesProvider,
   ModelDataSourceStrategy,
   ModelDataSourceStrategyDbType,
+  ModelDataSourceStrategySqlDbType,
   RDSLayerMapping,
   SQLLambdaModelDataSourceStrategy,
   SqlDirectiveDataSourceStrategy,
@@ -201,19 +204,21 @@ const hasUserPoolAuth = (authConfig?: AppSyncAuthConfiguration): boolean =>
   getAuthenticationTypesForAuthConfig(authConfig).some((authType) => authType === 'AMAZON_COGNITO_USER_POOLS');
 
 /**
- * Given an array of DataSourceType shapes from the Gen1 CLI import flow, finds the database type.
- * Throws an error if more than one database type is detected.
+ * Given an array of DataSourceType shapes from the Gen1 CLI import flow, finds the single SQL database type. Throws an error if more than
+ * one SQL database type is detected.
  */
-const getDbTypeFromDataSourceTypes = (
+const getSqlDbTypeFromDataSourceTypes = (
   dataSourceTypes: Array<{
     dbType: ModelDataSourceStrategyDbType;
     provisionDB: boolean;
     provisionStrategy: 'DEFAULT' | 'AMPLIFY_TABLE';
   }>,
-): ModelDataSourceStrategyDbType => {
-  const dbTypes = Object.values(dataSourceTypes).map((dsType) => dsType.dbType);
+): ModelDataSourceStrategySqlDbType | undefined => {
+  const dbTypes = Object.values(dataSourceTypes)
+    .map((dsType) => dsType.dbType)
+    .filter(isSqlDbType);
   if (dbTypes.length === 0) {
-    throw new Error('No datasource type detected.');
+    return undefined;
   }
   if (new Set(dbTypes).size > 1) {
     throw new Error(`Multiple imported SQL datasource types ${Array.from(dbTypes)} are detected. Only one type is supported.`);
@@ -227,29 +232,50 @@ const getDbTypeFromDataSourceTypes = (
  * values to discover VPC configurations for the database.
  */
 const fixUpDataSourceStrategiesProvider = async (context: $TSContext, projectConfig: any): Promise<DataSourceStrategiesProvider> => {
-  const { modelToDatasourceMap } = projectConfig;
+  const modelToDatasourceMap = projectConfig.modelToDatasourceMap ?? new Map();
   const datasourceMapValues: Array<{
     dbType: ModelDataSourceStrategyDbType;
     provisionDB: boolean;
     provisionStrategy: 'DEFAULT' | 'AMPLIFY_TABLE';
   }> = modelToDatasourceMap ? Array.from(modelToDatasourceMap.values()) : [];
 
-  const dbType = getDbTypeFromDataSourceTypes(datasourceMapValues);
-  let dataSourceStrategies: Record<string, ModelDataSourceStrategy> = {};
+  // We allow a DynamoDB and SQL data source to live alongside each other, although we don't (yet) support relationships between them. We'll
+  // process the dbTypes separately so we can validate that there is only one SQL source.
+  const dataSourceStrategies: Record<string, ModelDataSourceStrategy> = {};
+  modelToDatasourceMap.forEach((value, key) => {
+    if (!isDynamoDbType(value.dbType)) {
+      return;
+    }
+    switch (value.provisionStrategy) {
+      case 'DEFAULT':
+        dataSourceStrategies[key] = DDB_DEFAULT_DATASOURCE_STRATEGY;
+        break;
+      case 'AMPLIFY_TABLE':
+        dataSourceStrategies[key] = DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY;
+        break;
+      default:
+        throw new Error(`Unsupported provisionStrategy ${value.provisionStrategy}`);
+    }
+  });
+
+  const sqlDbType = getSqlDbTypeFromDataSourceTypes(datasourceMapValues);
   let sqlDirectiveDataSourceStrategies: SqlDirectiveDataSourceStrategy[] | undefined;
-  if (isSqlDbType(dbType)) {
+  if (sqlDbType) {
     const dbConnectionConfig = getDbConnectionConfig();
-    const vpcConfiguration = await isSqlLambdaVpcConfigRequired(context, dbType);
+    const vpcConfiguration = await isSqlLambdaVpcConfigRequired(context, sqlDbType);
     const strategy: SQLLambdaModelDataSourceStrategy = {
-      name: `${dbType}DataSourceStrategy`,
-      dbType,
+      name: `${sqlDbType}DataSourceStrategy`,
+      dbType: sqlDbType,
       dbConnectionConfig,
       vpcConfiguration,
     };
-    dataSourceStrategies = constructDataSourceStrategies(projectConfig.schema, strategy);
+    modelToDatasourceMap.forEach((value, key) => {
+      if (!isSqlDbType(value.dbType)) {
+        return;
+      }
+      dataSourceStrategies[key] = strategy;
+    });
     sqlDirectiveDataSourceStrategies = constructSqlDirectiveDataSourceStrategies(projectConfig.schema, strategy);
-  } else {
-    dataSourceStrategies = constructDataSourceStrategies(projectConfig.schema, DDB_DEFAULT_DATASOURCE_STRATEGY);
   }
 
   return {
