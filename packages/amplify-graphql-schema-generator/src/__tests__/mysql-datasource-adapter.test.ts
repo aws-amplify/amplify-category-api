@@ -1,4 +1,5 @@
 import { DataSourceAdapter, MySQLDataSourceAdapter } from '../datasource-adapter';
+import { getMySQLSchemaQuery } from '../datasource-adapter/mysql-datasource-adapter';
 import { Engine, Field, FieldType, Index, Model, Schema } from '../schema-representation';
 import { generateGraphQLSchema, isComputeExpression } from '../schema-generator';
 import { gql } from 'graphql-transformer-core';
@@ -434,5 +435,11 @@ describe('testMySQLDataSourceAdapter', () => {
     dbschema.addModel(model);
     const graphqlSchema = generateGraphQLSchema(dbschema);
     expect(graphqlSchema).toMatchSnapshot();
+  });
+});
+
+describe('getMySQLSchemaQuery', () => {
+  test('uses correct schema query', () => {
+    expect(getMySQLSchemaQuery('mydb')).toMatchSnapshot();
   });
 });

@@ -8,12 +8,11 @@ export const schemas = {
      *   due_date DATE
      * );
      */
-    todo: `TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME,COLUMN_NAME,ORDINAL_POSITION,COLUMN_DEFAULT,IS_NULLABLE,DATA_TYPE,CHARACTER_MAXIMUM_LENGTH,CHARACTER_OCTET_LENGTH,NUMERIC_PRECISION,NUMERIC_SCALE,DATETIME_PRECISION,CHARACTER_SET_NAME,COLLATION_NAME,COLUMN_TYPE,COLUMN_KEY,EXTRA,PRIVILEGES,COLUMN_COMMENT,GENERATION_EXPRESSION,SRS_ID,INDEX_NAME,NON_UNIQUE,SEQ_IN_INDEX,NULLABLE
-def,todo_database,Todo,due_date,4,NULL,YES,date,NULL,NULL,NULL,NULL,NULL,NULL,NULL,date,,,"select,insert,update,references",,,NULL,NULL,NULL,NULL,NULL
-def,todo_database,Todo,id,1,NULL,NO,int,NULL,NULL,10,0,NULL,NULL,NULL,int,PRI,,"select,insert,update,references",,,NULL,PRIMARY,0,1,
-def,todo_database,Todo,start_date,3,NULL,YES,date,NULL,NULL,NULL,NULL,NULL,NULL,NULL,date,,,"select,insert,update,references",,,NULL,NULL,NULL,NULL,NULL
-def,todo_database,Todo,title,2,NULL,NO,varchar,255,1020,NULL,NULL,NULL,utf8mb4,utf8mb4_0900_ai_ci,varchar(255),,,"select,insert,update,references",,,NULL,NULL,NULL,NULL,NULL
-`,
+    todo: `TABLE_NAME,COLUMN_NAME,COLUMN_DEFAULT,ORDINAL_POSITION,DATA_TYPE,COLUMN_TYPE,IS_NULLABLE,CHARACTER_MAXIMUM_LENGTH,INDEX_NAME,NON_UNIQUE,SEQ_IN_INDEX,NULLABLE
+Todo,due_date,NULL,4,date,date,YES,NULL,NULL,NULL,NULL,NULL
+Todo,id,NULL,1,int,int,NO,NULL,PRIMARY,0,1,
+Todo,start_date,NULL,3,date,date,YES,NULL,NULL,NULL,NULL,NULL
+Todo,title,NULL,2,varchar,varchar(255),NO,255,NULL,NULL,NULL,NULL`,
     /*
      * CREATE TABLE publications (
      *   pub_id INTEGER NOT NULL PRIMARY KEY,
@@ -44,22 +43,41 @@ def,todo_database,Todo,title,2,NULL,NO,varchar,255,1020,NULL,NULL,NULL,utf8mb4,u
      *   PRIMARY KEY (pub_id, comment_timestamp, commenter_email)
      * );
      */
-    news: `TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME,COLUMN_NAME,ORDINAL_POSITION,COLUMN_DEFAULT,IS_NULLABLE,DATA_TYPE,CHARACTER_MAXIMUM_LENGTH,CHARACTER_OCTET_LENGTH,NUMERIC_PRECISION,NUMERIC_SCALE,DATETIME_PRECISION,CHARACTER_SET_NAME,COLLATION_NAME,COLUMN_TYPE,COLUMN_KEY,EXTRA,PRIVILEGES,COLUMN_COMMENT,GENERATION_EXPRESSION,SRS_ID,INDEX_NAME,NON_UNIQUE,SEQ_IN_INDEX,NULLABLE
-def,blog_database,articles,placeholder,3,NULL,NO,char,1,4,NULL,NULL,NULL,utf8mb4,utf8mb4_0900_ai_ci,char(1),,,"select,insert,update,references",,,NULL,NULL,NULL,NULL,NULL
-def,blog_database,articles,pub_id,1,NULL,NO,int,NULL,NULL,10,0,NULL,NULL,NULL,int,PRI,,"select,insert,update,references",,,NULL,PRIMARY,0,1,
-def,blog_database,articles,pub_type,2,A,NO,char,1,4,NULL,NULL,NULL,utf8mb4,utf8mb4_0900_ai_ci,char(1),PRI,,"select,insert,update,references",,,NULL,PRIMARY,0,2,
-def,blog_database,comments,comment_text,4,NULL,NO,varchar,30,120,NULL,NULL,NULL,utf8mb4,utf8mb4_0900_ai_ci,varchar(30),,,"select,insert,update,references",,,NULL,NULL,NULL,NULL,NULL
-def,blog_database,comments,comment_timestamp,2,CURRENT_TIMESTAMP,NO,timestamp,NULL,NULL,NULL,NULL,0,NULL,NULL,timestamp,PRI,DEFAULT_GENERATED,"select,insert,update,references",,,NULL,PRIMARY,0,2,
-def,blog_database,comments,commenter_email,3,NULL,NO,varchar,10,40,NULL,NULL,NULL,utf8mb4,utf8mb4_0900_ai_ci,varchar(10),PRI,,"select,insert,update,references",,,NULL,PRIMARY,0,3,
-def,blog_database,comments,pub_id,1,NULL,NO,int,NULL,NULL,10,0,NULL,NULL,NULL,int,PRI,,"select,insert,update,references",,,NULL,PRIMARY,0,1,
-def,blog_database,publications,pub_id,1,NULL,NO,int,NULL,NULL,10,0,NULL,NULL,NULL,int,PRI,,"select,insert,update,references",,,NULL,PRIMARY,0,1,
-def,blog_database,publications,pub_id,1,NULL,NO,int,NULL,NULL,10,0,NULL,NULL,NULL,int,PRI,,"select,insert,update,references",,,NULL,publications_superkey,0,1,
-def,blog_database,publications,pub_type,2,NULL,YES,char,1,4,NULL,NULL,NULL,utf8mb4,utf8mb4_0900_ai_ci,char(1),,,"select,insert,update,references",,,NULL,publications_superkey,0,2,YES
-def,blog_database,publications,pub_url,3,NULL,NO,varchar,64,256,NULL,NULL,NULL,utf8mb4,utf8mb4_0900_ai_ci,varchar(64),UNI,,"select,insert,update,references",,,NULL,pub_url,0,1,
-def,blog_database,stories,placeholder,3,NULL,NO,char,1,4,NULL,NULL,NULL,utf8mb4,utf8mb4_0900_ai_ci,char(1),,,"select,insert,update,references",,,NULL,NULL,NULL,NULL,NULL
-def,blog_database,stories,pub_id,1,NULL,NO,int,NULL,NULL,10,0,NULL,NULL,NULL,int,PRI,,"select,insert,update,references",,,NULL,PRIMARY,0,1,
-def,blog_database,stories,pub_type,2,S,NO,char,1,4,NULL,NULL,NULL,utf8mb4,utf8mb4_0900_ai_ci,char(1),PRI,,"select,insert,update,references",,,NULL,PRIMARY,0,2,
-`,
+    news: `TABLE_NAME,COLUMN_NAME,COLUMN_DEFAULT,ORDINAL_POSITION,DATA_TYPE,COLUMN_TYPE,IS_NULLABLE,CHARACTER_MAXIMUM_LENGTH,INDEX_NAME,NON_UNIQUE,SEQ_IN_INDEX,NULLABLE
+comments,comment_timestamp,CURRENT_TIMESTAMP,2,timestamp,timestamp,NO,NULL,PRIMARY,0,2,
+publications,pub_id,NULL,1,int,int,NO,NULL,PRIMARY,0,1,
+publications,pub_id,NULL,1,int,int,NO,NULL,publications_superkey,0,1,
+publications,pub_type,NULL,2,char,char(1),YES,1,publications_superkey,0,2,YES
+publications,pub_url,NULL,3,varchar,varchar(64),NO,64,pub_url,0,1,
+articles,pub_id,NULL,1,int,int,NO,NULL,PRIMARY,0,1,
+articles,pub_type,A,2,char,char(1),NO,1,PRIMARY,0,2,
+articles,placeholder,NULL,3,char,char(1),NO,1,NULL,NULL,NULL,NULL
+stories,pub_id,NULL,1,int,int,NO,NULL,PRIMARY,0,1,
+stories,pub_type,S,2,char,char(1),NO,1,PRIMARY,0,2,
+stories,placeholder,NULL,3,char,char(1),NO,1,NULL,NULL,NULL,NULL
+comments,pub_id,NULL,1,int,int,NO,NULL,PRIMARY,0,1,
+comments,commenter_email,NULL,3,varchar,varchar(10),NO,10,PRIMARY,0,3,
+comments,comment_text,NULL,4,varchar,varchar(30),NO,30,NULL,NULL,NULL,NULL`,
+    /*
+     * Create table statements from news followed by:
+     *
+     * ALTER TABLE publications RENAME TO pub
+     */
+    newsNameChange: `TABLE_NAME,COLUMN_NAME,COLUMN_DEFAULT,ORDINAL_POSITION,DATA_TYPE,COLUMN_TYPE,IS_NULLABLE,CHARACTER_MAXIMUM_LENGTH,INDEX_NAME,NON_UNIQUE,SEQ_IN_INDEX,NULLABLE
+comments,comment_timestamp,CURRENT_TIMESTAMP,2,timestamp,timestamp,NO,NULL,PRIMARY,0,2,
+pub,pub_id,NULL,1,int,int,NO,NULL,PRIMARY,0,1,
+pub,pub_id,NULL,1,int,int,NO,NULL,publications_superkey,0,1,
+pub,pub_type,NULL,2,char,char(1),YES,1,publications_superkey,0,2,YES
+pub,pub_url,NULL,3,varchar,varchar(64),NO,64,pub_url,0,1,
+articles,pub_id,NULL,1,int,int,NO,NULL,PRIMARY,0,1,
+articles,pub_type,A,2,char,char(1),NO,1,PRIMARY,0,2,
+articles,placeholder,NULL,3,char,char(1),NO,1,NULL,NULL,NULL,NULL
+stories,pub_id,NULL,1,int,int,NO,NULL,PRIMARY,0,1,
+stories,pub_type,S,2,char,char(1),NO,1,PRIMARY,0,2,
+stories,placeholder,NULL,3,char,char(1),NO,1,NULL,NULL,NULL,NULL
+comments,pub_id,NULL,1,int,int,NO,NULL,PRIMARY,0,1,
+comments,commenter_email,NULL,3,varchar,varchar(10),NO,10,PRIMARY,0,3,
+comments,comment_text,NULL,4,varchar,varchar(30),NO,30,NULL,NULL,NULL,NULL`,
   },
   postgres: {
     /*
@@ -70,13 +88,17 @@ def,blog_database,stories,pub_type,2,S,NO,char,1,4,NULL,NULL,NULL,utf8mb4,utf8mb
      *   due_date DATE
      * );
      */
-    todo: `enum_name,enum_values,table_name,column_name,column_default,ordinal_position,data_type,udt_name,is_nullable,character_maximum_length,indexname,index_columns\n,,todo,id,,1,integer,int4,NO,,todo_pkey,id\n,,todo,title,,2,character varying,varchar,NO,255,,\n,,todo,due_date,,4,date,date,YES,,,\n,,todo,start_date,,3,date,date,YES,,,`,
+    todo: `"table_name","enum_name","enum_values","column_name","column_default","ordinal_position","data_type","udt_name","is_nullable","character_maximum_length","indexname","constraint_type","index_columns"
+"todo",NULL,NULL,"due_date",NULL,4,"date","date","YES",NULL,NULL,NULL,NULL
+"todo",NULL,NULL,"id",NULL,1,"integer","int4","NO",NULL,"todo_pkey","PRIMARY KEY","id"
+"todo",NULL,NULL,"start_date",NULL,3,"date","date","YES",NULL,NULL,NULL,NULL
+"todo",NULL,NULL,"title",NULL,2,"character varying","varchar","NO",255,NULL,NULL,NULL`,
     /*
      * CREATE TABLE publications (
      *   pub_id INTEGER NOT NULL PRIMARY KEY,
      *   pub_type CHAR(1) CHECK (pub_type IN ('A', 'B', 'P', 'S')),
      *   pub_url VARCHAR(64) NOT NULL UNIQUE,
-     *   CONSTRAINT publications_superkey UNIQUE (pub_id, pub_type)
+     *   CONSTRAINT fake_pkey UNIQUE (pub_id, pub_type)
      * );
      * CREATE TABLE articles (
      *   pub_id INTEGER NOT NULL,
@@ -100,7 +122,38 @@ def,blog_database,stories,pub_type,2,S,NO,char,1,4,NULL,NULL,NULL,utf8mb4,utf8mb
      *   PRIMARY KEY (pub_id, comment_timestamp, commenter_email)
      * );
      */
-
-    news: `enum_name,enum_values,table_name,column_name,column_default,ordinal_position,data_type,udt_name,is_nullable,character_maximum_length,indexname,index_columns\n,,publications,pub_id,,1,integer,int4,NO,,publications_pkey,pub_id\n,,publications,pub_url,,3,character varying,varchar,NO,64,publications_pub_url_key,pub_url\n,,publications,pub_type,,2,character,bpchar,YES,1,publications_superkey,\"pub_id, pub_type\"\n,,publications,pub_id,,1,integer,int4,NO,,publications_superkey,\"pub_id, pub_type\"\n,,articles,pub_type,'A'::bpchar,2,character,bpchar,NO,1,articles_pkey,\"pub_id, pub_type\"\n,,articles,pub_id,,1,integer,int4,NO,,articles_pkey,\"pub_id, pub_type\"\n,,stories,pub_type,'S'::bpchar,2,character,bpchar,NO,1,stories_pkey,\"pub_id, pub_type\"\n,,stories,pub_id,,1,integer,int4,NO,,stories_pkey,\"pub_id, pub_type\"\n,,comments,commenter_email,,3,character varying,varchar,NO,10,comments_pkey,\"pub_id, comment_timestamp, commenter_email\"\n,,comments,comment_timestamp,now(),2,timestamp without time zone,timestamp,NO,,comments_pkey,\"pub_id, comment_timestamp, commenter_email\"\n,,comments,pub_id,,1,integer,int4,NO,,comments_pkey,\"pub_id, comment_timestamp, commenter_email\"\n,,articles,placeholder,,3,character,bpchar,NO,1,,\n,,stories,placeholder,,3,character,bpchar,NO,1,,`,
+    news: `"table_name","enum_name","enum_values","column_name","column_default","ordinal_position","data_type","udt_name","is_nullable","character_maximum_length","indexname","constraint_type","index_columns"
+"articles",NULL,NULL,"placeholder",NULL,3,"character","bpchar","NO",1,NULL,NULL,NULL
+"articles",NULL,NULL,"pub_id",NULL,1,"integer","int4","NO",NULL,"articles_pkey","PRIMARY KEY","pub_id, pub_type"
+"articles",NULL,NULL,"pub_type","'A'::bpchar",2,"character","bpchar","NO",1,"articles_pkey","PRIMARY KEY","pub_id, pub_type"
+"comments",NULL,NULL,"comment_timestamp","now()",2,"timestamp without time zone","timestamp","NO",NULL,"comments_pkey","PRIMARY KEY","pub_id, comment_timestamp, commenter_email"
+"comments",NULL,NULL,"commenter_email",NULL,3,"character varying","varchar","NO",10,"comments_pkey","PRIMARY KEY","pub_id, comment_timestamp, commenter_email"
+"comments",NULL,NULL,"pub_id",NULL,1,"integer","int4","NO",NULL,"comments_pkey","PRIMARY KEY","pub_id, comment_timestamp, commenter_email"
+"publications",NULL,NULL,"pub_id",NULL,1,"integer","int4","NO",NULL,"fake_pkey","UNIQUE","pub_id, pub_type"
+"publications",NULL,NULL,"pub_id",NULL,1,"integer","int4","NO",NULL,"publications_pkey","PRIMARY KEY","pub_id"
+"publications",NULL,NULL,"pub_type",NULL,2,"character","bpchar","YES",1,"fake_pkey","UNIQUE","pub_id, pub_type"
+"publications",NULL,NULL,"pub_url",NULL,3,"character varying","varchar","NO",64,"publications_pub_url_key","UNIQUE","pub_url"
+"stories",NULL,NULL,"placeholder",NULL,3,"character","bpchar","NO",1,NULL,NULL,NULL
+"stories",NULL,NULL,"pub_id",NULL,1,"integer","int4","NO",NULL,"stories_pkey","PRIMARY KEY","pub_id, pub_type"
+"stories",NULL,NULL,"pub_type","'S'::bpchar",2,"character","bpchar","NO",1,"stories_pkey","PRIMARY KEY","pub_id, pub_type"`,
+    /*
+     * Create table statements from news followed by:
+     *
+     * ALTER TABLE publications RENAME TO pub
+     */
+    newsNameChange: `"table_name","enum_name","enum_values","column_name","column_default","ordinal_position","data_type","udt_name","is_nullable","character_maximum_length","indexname","constraint_type","index_columns"
+"articles",NULL,NULL,"placeholder",NULL,3,"character","bpchar","NO",1,NULL,NULL,NULL
+"articles",NULL,NULL,"pub_id",NULL,1,"integer","int4","NO",NULL,"articles_pkey","PRIMARY KEY","pub_id, pub_type"
+"articles",NULL,NULL,"pub_type","'A'::bpchar",2,"character","bpchar","NO",1,"articles_pkey","PRIMARY KEY","pub_id, pub_type"
+"comments",NULL,NULL,"comment_timestamp","now()",2,"timestamp without time zone","timestamp","NO",NULL,"comments_pkey","PRIMARY KEY","pub_id, comment_timestamp, commenter_email"
+"comments",NULL,NULL,"commenter_email",NULL,3,"character varying","varchar","NO",10,"comments_pkey","PRIMARY KEY","pub_id, comment_timestamp, commenter_email"
+"comments",NULL,NULL,"pub_id",NULL,1,"integer","int4","NO",NULL,"comments_pkey","PRIMARY KEY","pub_id, comment_timestamp, commenter_email"
+"pub",NULL,NULL,"pub_id",NULL,1,"integer","int4","NO",NULL,"fake_pkey","UNIQUE","pub_id, pub_type"
+"pub",NULL,NULL,"pub_id",NULL,1,"integer","int4","NO",NULL,"publications_pkey","PRIMARY KEY","pub_id"
+"pub",NULL,NULL,"pub_type",NULL,2,"character","bpchar","YES",1,"fake_pkey","UNIQUE","pub_id, pub_type"
+"pub",NULL,NULL,"pub_url",NULL,3,"character varying","varchar","NO",64,"publications_pub_url_key","UNIQUE","pub_url"
+"stories",NULL,NULL,"placeholder",NULL,3,"character","bpchar","NO",1,NULL,NULL,NULL
+"stories",NULL,NULL,"pub_id",NULL,1,"integer","int4","NO",NULL,"stories_pkey","PRIMARY KEY","pub_id, pub_type"
+"stories",NULL,NULL,"pub_type","'S'::bpchar",2,"character","bpchar","NO",1,"stories_pkey","PRIMARY KEY","pub_id, pub_type"`,
   },
 };

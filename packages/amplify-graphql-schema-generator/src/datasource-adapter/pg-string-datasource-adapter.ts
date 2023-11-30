@@ -1,4 +1,3 @@
-import { parse } from 'csv-parse/sync';
 import { EnumType, Field, FieldDataType, FieldType, Index } from '../schema-representation';
 import { StringDataSourceAdapter, EmptySchemaError, InvalidSchemaError } from './string-datasource-adapter';
 
@@ -6,6 +5,7 @@ export interface PostgresIndex {
   tableName: string;
   indexName: string;
   columns: string[];
+  constraintType: string;
 }
 
 export interface PostgresColumn {
@@ -27,13 +27,14 @@ type PostgresSchemaField = {
   table_name: string;
   column_name: string;
   column_default: string;
-  ordinal_position: string;
+  ordinal_position: number;
   data_type: string;
   udt_name: string;
   is_nullable: string;
-  character_maximum_length: string;
+  character_maximum_length: number;
   index_columns: string;
   indexname: string;
+  constraint_type: string;
 };
 
 export const expectedColumns = [
@@ -49,6 +50,7 @@ export const expectedColumns = [
   'character_maximum_length',
   'index_columns',
   'indexname',
+  'constraint_type',
 ];
 
 export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
@@ -118,7 +120,7 @@ export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
   }
 
   public getPrimaryKey(tableName: string): Index | null {
-    const key = this.indexes.find((index) => index.tableName === tableName && index.indexName === `${tableName}_pkey`);
+    const key = this.indexes.find((index) => index.tableName === tableName && index.constraintType === 'PRIMARY KEY');
 
     if (!key || key.columns.length == 0) {
       return null;
@@ -132,7 +134,7 @@ export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
 
   public getIndexes(tableName: string): Index[] {
     const indexNames: string[] = [
-      ...new Set(this.indexes.filter((i) => i.tableName === tableName && i.indexName !== `${tableName}_pkey`).map((i) => i.indexName)),
+      ...new Set(this.indexes.filter((i) => i.tableName === tableName && i.constraintType !== 'PRIMARY KEY').map((i) => i.indexName)),
     ];
 
     const tableIndexes = indexNames.map((indexName: string) => {
@@ -149,7 +151,7 @@ export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
     this.enums = new Map<string, EnumType>();
     parsedSchema
       .filter(({ enum_name }) => !!enum_name)
-      .forEach((row: any) => {
+      .forEach((row) => {
         const enumName = row.enum_name;
         const enumValues = row.enum_values.substring(1, row.enum_values.length - 1).split(',');
         const enumType: EnumType = {
@@ -167,7 +169,7 @@ export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
   }
 
   protected setFields(fields: PostgresSchema): void {
-    this.fields = fields.map((item: any) => ({
+    this.fields = fields.map((item) => ({
       tableName: item.table_name,
       columnName: item.column_name,
       default: item.column_default,
@@ -182,10 +184,12 @@ export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
   protected setIndexes(indexes: PostgresSchema): void {
     this.indexes = indexes
       .filter(({ index_columns }) => !!index_columns)
-      .map((item: any) => ({
+      .map((item) => ({
         tableName: item.table_name,
         columns: item.index_columns.split(', '),
         indexName: item.indexname,
+        columnName: item.column_name,
+        constraintType: item.constraint_type,
       }));
   }
 

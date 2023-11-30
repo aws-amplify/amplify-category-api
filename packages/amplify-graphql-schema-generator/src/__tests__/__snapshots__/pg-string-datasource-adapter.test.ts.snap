@@ -6,66 +6,7 @@ Array [
     "fields": Array [
       Object {
         "default": undefined,
-        "length": "",
-        "name": "pub_id",
-        "type": Object {
-          "kind": "NonNull",
-          "type": Object {
-            "kind": "Scalar",
-            "name": "Int",
-          },
-        },
-      },
-      Object {
-        "default": undefined,
-        "length": "1",
-        "name": "pub_type",
-        "type": Object {
-          "kind": "Scalar",
-          "name": "String",
-        },
-      },
-      Object {
-        "default": undefined,
-        "length": "64",
-        "name": "pub_url",
-        "type": Object {
-          "kind": "NonNull",
-          "type": Object {
-            "kind": "Scalar",
-            "name": "String",
-          },
-        },
-      },
-    ],
-    "indexes": Array [
-      Index {
-        "fields": Array [
-          "pub_url",
-        ],
-        "name": "publications_pub_url_key",
-      },
-      Index {
-        "fields": Array [
-          "pub_id",
-          "pub_type",
-        ],
-        "name": "publications_superkey",
-      },
-    ],
-    "name": "publications",
-    "primaryKey": Index {
-      "fields": Array [
-        "pub_id",
-      ],
-      "name": "PRIMARY_KEY",
-    },
-  },
-  Model {
-    "fields": Array [
-      Object {
-        "default": undefined,
-        "length": "",
+        "length": null,
         "name": "pub_id",
         "type": Object {
           "kind": "NonNull",
@@ -117,7 +58,119 @@ Array [
     "fields": Array [
       Object {
         "default": undefined,
-        "length": "",
+        "length": null,
+        "name": "pub_id",
+        "type": Object {
+          "kind": "NonNull",
+          "type": Object {
+            "kind": "Scalar",
+            "name": "Int",
+          },
+        },
+      },
+      Object {
+        "default": Object {
+          "kind": "DB_GENERATED",
+          "value": "now()",
+        },
+        "length": null,
+        "name": "comment_timestamp",
+        "type": Object {
+          "kind": "NonNull",
+          "type": Object {
+            "kind": "Scalar",
+            "name": "AWSDateTime",
+          },
+        },
+      },
+      Object {
+        "default": undefined,
+        "length": "10",
+        "name": "commenter_email",
+        "type": Object {
+          "kind": "NonNull",
+          "type": Object {
+            "kind": "Scalar",
+            "name": "String",
+          },
+        },
+      },
+    ],
+    "indexes": Array [],
+    "name": "comments",
+    "primaryKey": Index {
+      "fields": Array [
+        "pub_id",
+        "comment_timestamp",
+        "commenter_email",
+      ],
+      "name": "PRIMARY_KEY",
+    },
+  },
+  Model {
+    "fields": Array [
+      Object {
+        "default": undefined,
+        "length": null,
+        "name": "pub_id",
+        "type": Object {
+          "kind": "NonNull",
+          "type": Object {
+            "kind": "Scalar",
+            "name": "Int",
+          },
+        },
+      },
+      Object {
+        "default": undefined,
+        "length": "1",
+        "name": "pub_type",
+        "type": Object {
+          "kind": "Scalar",
+          "name": "String",
+        },
+      },
+      Object {
+        "default": undefined,
+        "length": "64",
+        "name": "pub_url",
+        "type": Object {
+          "kind": "NonNull",
+          "type": Object {
+            "kind": "Scalar",
+            "name": "String",
+          },
+        },
+      },
+    ],
+    "indexes": Array [
+      Index {
+        "fields": Array [
+          "pub_id",
+          "pub_type",
+        ],
+        "name": "fake_pkey",
+      },
+      Index {
+        "fields": Array [
+          "pub_url",
+        ],
+        "name": "publications_pub_url_key",
+      },
+    ],
+    "name": "publications",
+    "primaryKey": Index {
+      "fields": Array [
+        "pub_id",
+      ],
+      "name": "PRIMARY_KEY",
+    },
+  },
+  Model {
+    "fields": Array [
+      Object {
+        "default": undefined,
+        "length": null,
         "name": "pub_id",
         "type": Object {
           "kind": "NonNull",
@@ -165,59 +218,6 @@ Array [
       "name": "PRIMARY_KEY",
     },
   },
-  Model {
-    "fields": Array [
-      Object {
-        "default": undefined,
-        "length": "",
-        "name": "pub_id",
-        "type": Object {
-          "kind": "NonNull",
-          "type": Object {
-            "kind": "Scalar",
-            "name": "Int",
-          },
-        },
-      },
-      Object {
-        "default": Object {
-          "kind": "DB_GENERATED",
-          "value": "now()",
-        },
-        "length": "",
-        "name": "comment_timestamp",
-        "type": Object {
-          "kind": "NonNull",
-          "type": Object {
-            "kind": "Scalar",
-            "name": "AWSDateTime",
-          },
-        },
-      },
-      Object {
-        "default": undefined,
-        "length": "10",
-        "name": "commenter_email",
-        "type": Object {
-          "kind": "NonNull",
-          "type": Object {
-            "kind": "Scalar",
-            "name": "String",
-          },
-        },
-      },
-    ],
-    "indexes": Array [],
-    "name": "comments",
-    "primaryKey": Index {
-      "fields": Array [
-        "pub_id",
-        "comment_timestamp",
-        "commenter_email",
-      ],
-      "name": "PRIMARY_KEY",
-    },
-  },
 ]
 `;
 
@@ -227,7 +227,7 @@ Array [
     "fields": Array [
       Object {
         "default": undefined,
-        "length": "",
+        "length": null,
         "name": "id",
         "type": Object {
           "kind": "NonNull",
@@ -251,7 +251,7 @@ Array [
       },
       Object {
         "default": undefined,
-        "length": "",
+        "length": null,
         "name": "start_date",
         "type": Object {
           "kind": "Scalar",
@@ -260,7 +260,7 @@ Array [
       },
       Object {
         "default": undefined,
-        "length": "",
+        "length": null,
         "name": "due_date",
         "type": Object {
           "kind": "Scalar",
