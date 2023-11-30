@@ -115,7 +115,8 @@ export class PostgresDataSourceAdapter extends DataSourceAdapter {
 export function getPostgresSchemaQuery(databaseName: string): string {
   return `
 SELECT DISTINCT
-  ${expectedColumns.filter((column) => column != 'index_columns').join(',')},
+  INFORMATION_SCHEMA.COLUMNS.table_name,
+  ${expectedColumns.filter((column) => !(column === 'index_columns' || column === 'table_name')).join(',')},
   REPLACE(SUBSTRING(indexdef from '\\((.*)\\)'), '"', '') as index_columns
 FROM INFORMATION_SCHEMA.COLUMNS
 LEFT JOIN pg_indexes
@@ -133,6 +134,9 @@ ON
     GROUP BY enum_name
   ) enums
   ON enums.enum_name = INFORMATION_SCHEMA.COLUMNS.udt_name
-WHERE table_schema = 'public' AND TABLE_CATALOG = '${databaseName}';
+  LEFT JOIN information_schema.table_constraints
+  ON INFORMATION_SCHEMA.table_constraints.constraint_name = indexname
+  AND INFORMATION_SCHEMA.COLUMNS.table_name = INFORMATION_SCHEMA.table_constraints.table_name
+WHERE INFORMATION_SCHEMA.COLUMNS.table_schema = 'public' AND TINFORMATION_SCHEMA.COLUMNS.TABLE_CATALOG = '${databaseName}';
 `;
 }

@@ -149,7 +149,7 @@ Array [
           "pub_id",
           "pub_type",
         ],
-        "name": "publications_superkey",
+        "name": "fake_pkey",
       },
       Index {
         "fields": Array [

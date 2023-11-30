@@ -100,7 +100,7 @@ type Comment @refersTo(name: \\"comments\\") @model {
 }
 
 type Publication @refersTo(name: \\"publications\\") @model {
-  pubId: Int! @refersTo(name: \\"pub_id\\") @primaryKey @index(name: \\"publications_superkey\\", sortKeyFields: [\\"pubType\\"])
+  pubId: Int! @refersTo(name: \\"pub_id\\") @primaryKey @index(name: \\"fake_pkey\\", sortKeyFields: [\\"pubType\\"])
   pubType: String @refersTo(name: \\"pub_type\\")
   pubUrl: String! @refersTo(name: \\"pub_url\\") @index(name: \\"publications_pub_url_key\\")
 }
@@ -132,7 +132,7 @@ type Comment @refersTo(name: \\"comments\\") @model {
 }
 
 type Pub @refersTo(name: \\"pub\\") @model {
-  pubId: Int! @refersTo(name: \\"pub_id\\") @primaryKey @index(name: \\"publications_superkey\\", sortKeyFields: [\\"pubType\\"])
+  pubId: Int! @refersTo(name: \\"pub_id\\") @primaryKey @index(name: \\"fake_pkey\\", sortKeyFields: [\\"pubType\\"])
   pubType: String @refersTo(name: \\"pub_type\\")
   pubUrl: String! @refersTo(name: \\"pub_url\\") @index(name: \\"publications_pub_url_key\\")
 }

@@ -3,7 +3,8 @@
 exports[`getPostgresSchemaQuery uses correct schema query 1`] = `
 "
 SELECT DISTINCT
-  enum_name,enum_values,table_name,column_name,column_default,ordinal_position,data_type,udt_name,is_nullable,character_maximum_length,indexname,
+  INFORMATION_SCHEMA.COLUMNS.table_name,
+  enum_name,enum_values,column_name,column_default,ordinal_position,data_type,udt_name,is_nullable,character_maximum_length,indexname,constraint_type,
   REPLACE(SUBSTRING(indexdef from '\\\\((.*)\\\\)'), '\\"', '') as index_columns
 FROM INFORMATION_SCHEMA.COLUMNS
 LEFT JOIN pg_indexes
@@ -21,7 +22,10 @@ ON
     GROUP BY enum_name
   ) enums
   ON enums.enum_name = INFORMATION_SCHEMA.COLUMNS.udt_name
-WHERE table_schema = 'public' AND TABLE_CATALOG = 'mydb';
+  LEFT JOIN information_schema.table_constraints
+  ON INFORMATION_SCHEMA.table_constraints.constraint_name = indexname
+  AND INFORMATION_SCHEMA.COLUMNS.table_name = INFORMATION_SCHEMA.table_constraints.table_name
+WHERE INFORMATION_SCHEMA.COLUMNS.table_schema = 'public' AND TINFORMATION_SCHEMA.COLUMNS.TABLE_CATALOG = 'mydb';
 "
 `;
 
