@@ -406,7 +406,7 @@ const getRDSLayerMapping = async (context: $TSContext, useBetaSqlLayer = false):
       [region]: {
         layerRegion: result,
       },
-    }
+    };
     return mapping as RDSLayerMapping;
   } else {
     throw new Error(`Unable to retrieve layer mapping from ${url} with status code ${response.status}.`);
