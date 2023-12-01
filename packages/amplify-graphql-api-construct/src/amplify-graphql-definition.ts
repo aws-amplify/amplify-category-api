@@ -1,5 +1,6 @@
 import * as os from 'os';
 import { SchemaFile } from 'aws-cdk-lib/aws-appsync';
+import { isSqlStrategy } from '@aws-amplify/graphql-transformer-core';
 import { IAmplifyGraphqlDefinition } from './types';
 import { constructDataSourceStrategies } from './internal';
 import { CustomSqlDataSourceStrategy, ModelDataSourceStrategy } from './model-datasource-strategy-types';
@@ -89,17 +90,24 @@ export class AmplifyGraphqlDefinition {
       return definitions[0];
     }
 
-    const sqlStrategyNames = definitions
-      .map((def) =>
-        Object.values(def.dataSourceStrategies)
-          .filter((strategy) => typeof (strategy as any).name === 'string')
-          .map((strategy) => (strategy as any).name),
-      )
-      .flat();
-    if (sqlStrategyNames.length !== new Set(sqlStrategyNames).size) {
-      throw new Error(
-        'A SQL-based ModelDataSourceStrategy name cannot be shared between definitions. To specify a SQL-based API with schemas across multiple files, use `fromFilesAndStrategy`',
-      );
+    // A strategy will be present multiple times in a given definition: once per model. We'll create a unique list per definition to ensure
+    // no reuse across definitions.
+    let combinedStrategyNames: string[] = [];
+    for (const definition of definitions) {
+      const definitionStrategyNames = new Set<string>();
+      for (const strategy of Object.values(definition.dataSourceStrategies)) {
+        if (!isSqlStrategy(strategy)) {
+          continue;
+        }
+        const strategyName = strategy.name;
+        if (combinedStrategyNames.includes(strategyName)) {
+          throw new Error(
+            `A SQL-based ModelDataSourceStrategy name ('${strategyName}') cannot be shared between definitions. To specify a SQL-based API with schemas across multiple files, use 'fromFilesAndStrategy'`,
+          );
+        }
+        definitionStrategyNames.add(strategyName);
+      }
+      combinedStrategyNames = [...combinedStrategyNames, ...definitionStrategyNames];
     }
 
     const customSqlDataSourceStrategies = definitions.reduce(

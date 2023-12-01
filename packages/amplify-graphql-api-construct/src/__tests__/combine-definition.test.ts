@@ -373,5 +373,59 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
         ]),
       );
     });
+
+    it('supports a schema with a mix of models and custom sql', () => {
+      const ddbSchema = /* GraphQL */ `
+        type Post @model {
+          id: ID!
+          title: String!
+          comments: [Comment] @hasMany
+        }
+
+        type Comment @model {
+          id: ID!
+          content: String!
+          post: Post @belongsTo
+        }
+      `;
+      const mysqlSchema = /* GraphQL */ `
+        type Project @model {
+          id: ID! @primaryKey
+          name: String
+          team: Team @hasOne(references: "projectId")
+        }
+        type Team @model {
+          id: ID! @primaryKey
+          name: String!
+          projectId: ID!
+          project: Project @belongsTo(references: "projectId")
+        }
+        type Query {
+          selectOne: [String] @sql(statement: "SELECT 'mysql=1'")
+        }
+      `;
+
+      const sqlStrategy = mockSqlDataSourceStrategy();
+      const definition1 = AmplifyGraphqlDefinition.fromString(ddbSchema);
+      const definition2 = AmplifyGraphqlDefinition.fromString(mysqlSchema, sqlStrategy);
+      const combinedDefinition = AmplifyGraphqlDefinition.combine([definition1, definition2]);
+      expect(combinedDefinition.schema).toEqual([ddbSchema, mysqlSchema].join(os.EOL));
+      expect(combinedDefinition.functionSlots.length).toEqual(0);
+      expect(combinedDefinition.dataSourceStrategies).toEqual({
+        Post: DDB_DEFAULT_DATASOURCE_STRATEGY,
+        Comment: DDB_DEFAULT_DATASOURCE_STRATEGY,
+        Project: sqlStrategy,
+        Team: sqlStrategy,
+      });
+      expect(combinedDefinition.customSqlDataSourceStrategies).toEqual(
+        expect.arrayContaining([
+          {
+            typeName: 'Query',
+            fieldName: 'selectOne',
+            strategy: sqlStrategy,
+          },
+        ]),
+      );
+    });
   });
 });
