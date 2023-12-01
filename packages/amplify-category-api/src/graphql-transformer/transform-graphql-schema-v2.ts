@@ -50,8 +50,7 @@ const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
 const SCHEMA_DIR_NAME = 'schema';
 const PROVIDER_NAME = 'awscloudformation';
-const LAYER_MAPPING_URL = 'https://amplify-rds-layer-resources.s3.amazonaws.com/rds-layer-mapping.json';
-const LAYER_MAPPING_URL_BETA = 'https://amplify-rds-layer-resources-beta.s3.amazonaws.com/rds-layer-mapping.json';
+const LAYER_MAPPING_S3_BUCKET = 'amplify-rds-layer-resources';
 const USE_BETA_SQL_LAYER = 'use-beta-sql-layer';
 
 /**
@@ -342,7 +341,7 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
   checkForUnsupportedDirectives(schema, { dataSourceStrategies });
 
   const useBetaSqlLayer = context?.input?.options?.[USE_BETA_SQL_LAYER] ?? false;
-  const rdsLayerMapping = await getRDSLayerMapping(useBetaSqlLayer);
+  const rdsLayerMapping = await getRDSLayerMapping(context, useBetaSqlLayer);
   const transformManager = new TransformManager(
     opts.overrideConfig,
     hasIamAuth(opts.authConfig),
@@ -396,14 +395,21 @@ export const getUserOverridenSlots = (userDefinedSlots: Record<string, UserDefin
     .flat()
     .filter((slotName) => slotName !== undefined);
 
-const getRDSLayerMapping = async (useBetaSqlLayer = false): Promise<RDSLayerMapping> => {
-  const url = useBetaSqlLayer ? LAYER_MAPPING_URL_BETA : LAYER_MAPPING_URL;
+const getRDSLayerMapping = async (context: $TSContext, useBetaSqlLayer = false): Promise<RDSLayerMapping> => {
+  const bucket = `${LAYER_MAPPING_S3_BUCKET}${useBetaSqlLayer ? '-beta' : ''}`;
+  const region = context.amplify.getProjectMeta().providers.awscloudformation.Region;
+  const url = `https://${bucket}.s3.${region}.amazonaws.com/sql-layer-versions/${region}`;
   const response = await fetch(url);
   if (response.status === 200) {
-    const result = await response.json();
-    return result as RDSLayerMapping;
+    const result = await response.text();
+    const mapping = {
+      [region]: {
+        layerRegion: result,
+      },
+    }
+    return mapping as RDSLayerMapping;
   } else {
-    throw new Error(`Unable to retrieve layer mapping from ${LAYER_MAPPING_URL} with status code ${response.status}.`);
+    throw new Error(`Unable to retrieve layer mapping from ${url} with status code ${response.status}.`);
   }
 };
 
