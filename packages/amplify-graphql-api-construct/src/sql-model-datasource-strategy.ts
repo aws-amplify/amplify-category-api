@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { SQLLambdaModelDataSourceStrategy, SqlModelDataSourceDbConnectionConfig } from './model-datasource-strategy';
+import { SQLLambdaModelDataSourceStrategy, SqlModelDataSourceDbConnectionConfig } from './model-datasource-strategy-types';
 
 /**
  * Type predicate that returns true if the object is a SQLLambdaModelDataSourceStrategy.

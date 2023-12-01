@@ -3,7 +3,7 @@ import {
   DDB_DB_TYPE,
   DirectiveWrapper,
   generateGetArgumentsInput,
-  getDataSourceType,
+  getStrategyDbTypeFromTypeNode,
   InvalidDirectiveError,
   isSqlDbType,
   TransformerPluginBase,
@@ -161,7 +161,7 @@ export class HasManyTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      const dbType = getDataSourceType(config.field.type, context);
+      const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
       if (dbType === DDB_DB_TYPE) {
         config.relatedTypeIndex = getRelatedTypeIndex(config, context, config.indexName);
       } else if (isSqlDbType(dbType)) {
@@ -176,7 +176,7 @@ export class HasManyTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      const dbType = getDataSourceType(config.field.type, context);
+      const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
       if (dbType === DDB_DB_TYPE) {
         updateTableForConnection(config, context);
       }
@@ -197,7 +197,7 @@ const makeQueryResolver = (
 const validate = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field } = config;
 
-  const dbType = getDataSourceType(field.type, ctx);
+  const dbType = getStrategyDbTypeFromTypeNode(field.type, ctx);
   config.relatedType = getRelatedType(config, ctx);
 
   if (dbType === DDB_DB_TYPE) {

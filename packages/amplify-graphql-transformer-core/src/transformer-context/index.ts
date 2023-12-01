@@ -2,12 +2,13 @@
 import {
   AppSyncAuthConfiguration,
   AssetProvider,
-  CustomSqlDataSourceStrategy,
-  DataSourceType,
+  SqlDirectiveDataSourceStrategy,
+  DataSourceStrategiesProvider,
   GraphQLAPIProvider,
+  ModelDataSourceStrategy,
   NestedStackProvider,
-  ProvisionedConcurrencyConfig,
   RDSLayerMapping,
+  RDSLayerMappingProvider,
   StackManagerProvider,
   SynthParameters,
   TransformerContextMetadataProvider,
@@ -16,12 +17,10 @@ import {
   TransformerDataSourceManagerProvider,
   TransformParameterProvider,
   TransformParameters,
-  VpcConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode } from 'graphql';
 import { Construct } from 'constructs';
 import { ResolverConfig } from '../config/transformer-config';
-import { RDSConnectionSecrets } from '../types';
 import { TransformerDataSourceManager } from './datasource';
 import { TransformerOutput } from './output';
 import { TransformerContextProviderRegistry } from './provider-registry';
@@ -51,24 +50,17 @@ export class TransformerContextMetadata implements TransformerContextMetadataPro
   }
 }
 
-export interface TransformerContextConstructorOptions {
-  scope: Construct;
+export interface TransformerContextConstructorOptions extends DataSourceStrategiesProvider, RDSLayerMappingProvider {
+  assetProvider: AssetProvider;
+  authConfig: AppSyncAuthConfiguration;
+  inputDocument: DocumentNode;
   nestedStackProvider: NestedStackProvider;
   parameterProvider: TransformParameterProvider | undefined;
-  assetProvider: AssetProvider;
-  synthParameters: SynthParameters;
-  inputDocument: DocumentNode;
-  modelToDatasourceMap: Map<string, DataSourceType>;
-  customSqlDataSourceStrategies: CustomSqlDataSourceStrategy[];
-  customQueries: Map<string, string>;
-  stackMapping: Record<string, string>;
-  authConfig: AppSyncAuthConfiguration;
-  transformParameters: TransformParameters;
   resolverConfig?: ResolverConfig;
-  datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
-  sqlLambdaVpcConfig?: VpcConfig;
-  rdsLayerMapping?: RDSLayerMapping;
-  sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
+  scope: Construct;
+  stackMapping: Record<string, string>;
+  synthParameters: SynthParameters;
+  transformParameters: TransformParameters;
 }
 
 export class TransformerContext implements TransformerContextProvider {
@@ -92,19 +84,11 @@ export class TransformerContext implements TransformerContextProvider {
 
   private resolverConfig: ResolverConfig | undefined;
 
-  public readonly modelToDatasourceMap: Map<string, DataSourceType>;
+  public readonly dataSourceStrategies: Record<string, ModelDataSourceStrategy>;
 
-  public readonly customSqlDataSourceStrategies: CustomSqlDataSourceStrategy[];
-
-  public readonly datasourceSecretParameterLocations: Map<string, RDSConnectionSecrets>;
-
-  public readonly sqlLambdaVpcConfig?: VpcConfig;
+  public readonly sqlDirectiveDataSourceStrategies: SqlDirectiveDataSourceStrategy[];
 
   public readonly rdsLayerMapping?: RDSLayerMapping;
-
-  public readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
-
-  public readonly customQueries: Map<string, string>;
 
   public metadata: TransformerContextMetadata;
 
@@ -116,39 +100,31 @@ export class TransformerContext implements TransformerContextProvider {
     const {
       assetProvider,
       authConfig,
-      customQueries,
-      customSqlDataSourceStrategies,
-      datasourceSecretParameterLocations,
+      sqlDirectiveDataSourceStrategies,
+      dataSourceStrategies,
       inputDocument,
-      modelToDatasourceMap,
       nestedStackProvider,
       parameterProvider,
       rdsLayerMapping,
       resolverConfig,
       scope,
-      sqlLambdaProvisionedConcurrencyConfig,
-      sqlLambdaVpcConfig,
       stackMapping,
       synthParameters,
       transformParameters,
     } = options;
     assetManager.setAssetProvider(assetProvider);
     this.authConfig = authConfig;
-    this.customQueries = customQueries;
-    this.customSqlDataSourceStrategies = customSqlDataSourceStrategies;
+    this.sqlDirectiveDataSourceStrategies = sqlDirectiveDataSourceStrategies ?? [];
     this.dataSources = new TransformerDataSourceManager();
-    this.datasourceSecretParameterLocations = datasourceSecretParameterLocations ?? new Map<string, RDSConnectionSecrets>();
+    this.dataSourceStrategies = dataSourceStrategies;
     this.inputDocument = inputDocument;
     this.metadata = new TransformerContextMetadata();
-    this.modelToDatasourceMap = modelToDatasourceMap;
     this.output = new TransformerOutput(inputDocument);
     this.providerRegistry = new TransformerContextProviderRegistry();
     this.rdsLayerMapping = rdsLayerMapping;
     this.resolverConfig = resolverConfig;
     this.resolvers = new ResolverManager();
     this.resourceHelper = new TransformerResourceHelper(synthParameters);
-    this.sqlLambdaProvisionedConcurrencyConfig = sqlLambdaProvisionedConcurrencyConfig;
-    this.sqlLambdaVpcConfig = sqlLambdaVpcConfig;
     this.stackManager = new StackManager(scope, nestedStackProvider, parameterProvider, stackMapping);
     this.synthParameters = synthParameters;
     this.transformParameters = transformParameters;

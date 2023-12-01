@@ -4,7 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
-import { SQLLambdaModelDataSourceStrategy } from '../../model-datasource-strategy';
+import { SQLLambdaModelDataSourceStrategy } from '../../model-datasource-strategy-types';
 
 const NO_MODEL_SCHEMA = /* GraphQL */ `
   type Todo {

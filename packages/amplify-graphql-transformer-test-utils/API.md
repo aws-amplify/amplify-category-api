@@ -21,18 +21,17 @@ import { CfnRole } from 'aws-cdk-lib/aws-iam';
 import { CfnStack } from 'aws-cdk-lib';
 import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
-import type { CustomSqlDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
-import type { DataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
 import { ISynthesisSession } from 'aws-cdk-lib';
+import type { ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import type { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
+import type { RDSLayerMappingProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
+import type { SqlDirectiveDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { Stack } from 'aws-cdk-lib';
 import type { SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
-import type { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
 export interface AmplifyApiGraphQlResourceStackTemplate {
@@ -131,21 +130,18 @@ export const testTransform: (params: TestTransformParameters) => DeploymentResou
 };
 
 // @public (undocumented)
-export type TestTransformParameters = {
-    transformers: TransformerPluginProvider[];
-    schema: string;
-    transformParameters?: Partial<TransformParameters>;
-    resolverConfig?: ResolverConfig;
+export type TestTransformParameters = RDSLayerMappingProvider & {
     authConfig?: AppSyncAuthConfiguration;
-    userDefinedSlots?: Record<string, UserDefinedSlot[]>;
-    stackMapping?: Record<string, string>;
-    modelToDatasourceMap?: Map<string, DataSourceType>;
-    customSqlDataSourceStrategies?: CustomSqlDataSourceStrategy[];
-    datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
-    customQueries?: Map<string, string>;
+    dataSourceStrategies?: Record<string, ModelDataSourceStrategy>;
     overrideConfig?: OverrideConfig;
-    sqlLambdaVpcConfig?: VpcConfig;
+    resolverConfig?: ResolverConfig;
+    schema: string;
+    sqlDirectiveDataSourceStrategies?: SqlDirectiveDataSourceStrategy[];
+    stackMapping?: Record<string, string>;
     synthParameters?: Partial<SynthParameters>;
+    transformers: TransformerPluginProvider[];
+    transformParameters?: Partial<TransformParameters>;
+    userDefinedSlots?: Record<string, UserDefinedSlot[]>;
 };
 
 // @public (undocumented)
@@ -169,7 +165,7 @@ export class TransformManager {
 
 // Warnings were encountered during analysis:
 //
-// src/test-transform.ts:32:3 - (ae-forgotten-export) The symbol "OverrideConfig" needs to be exported by the entry point index.d.ts
+// src/test-transform.ts:23:3 - (ae-forgotten-export) The symbol "OverrideConfig" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

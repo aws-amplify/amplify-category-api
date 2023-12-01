@@ -18,6 +18,7 @@ module.exports = {
   collectCoverageFrom: ['src/**/.(ts|tsx|js|jsx)$', '!src/**/*.test.(ts|tsx|js|jsx)$', '!src/**/*.d.ts'],
   coverageDirectory: 'coverage',
   projects: [
+    // '<rootDir>/packages/amplify-category-api',
     '<rootDir>/packages/amplify-graphql-api-construct',
     '<rootDir>/packages/amplify-graphql-auth-transformer',
     '<rootDir>/packages/amplify-graphql-default-value-transformer',

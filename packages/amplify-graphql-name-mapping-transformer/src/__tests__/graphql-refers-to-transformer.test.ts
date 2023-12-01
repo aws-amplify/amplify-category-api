@@ -1,13 +1,11 @@
 import { DirectiveNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode, parse } from 'graphql';
 import {
-  DataSourceType,
-  DynamoDBProvisionStrategy,
-  SQLLambdaModelProvisionStrategy,
+  SQLLambdaModelDataSourceStrategy,
   TransformerContextProvider,
   TransformerPreProcessContextProvider,
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { DDB_DEFAULT_DATASOURCE_TYPE, MYSQL_DB_TYPE, constructDataSourceMap } from '@aws-amplify/graphql-transformer-core';
+import { DDB_DEFAULT_DATASOURCE_STRATEGY, MYSQL_DB_TYPE, constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
 import { RefersToTransformer } from '../graphql-refers-to-transformer';
 import { attachFieldMappingSlot } from '../field-mapping-resolvers';
 
@@ -17,10 +15,16 @@ type DeepWriteable<T> = { -readonly [P in keyof T]: DeepWriteable<T[P]> };
 
 const refersToTransformer = new RefersToTransformer();
 
-const MYSQL_DATASOURCE_TYPE: DataSourceType = {
+const mySqlStrategy: SQLLambdaModelDataSourceStrategy = {
+  name: 'mySqlStrategy',
   dbType: MYSQL_DB_TYPE,
-  provisionDB: false,
-  provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
+  dbConnectionConfig: {
+    databaseNameSsmPath: '/databaseNameSsmPath',
+    hostnameSsmPath: '/hostnameSsmPath',
+    passwordSsmPath: '/passwordSsmPath',
+    portSsmPath: '/portSsmPath',
+    usernameSsmPath: '/usernameSsmPath',
+  },
 };
 
 describe('@refersTo directive on models', () => {
@@ -89,7 +93,7 @@ describe('@refersTo directive on models', () => {
       {
         ...stubTransformerContextBase,
         inputDocument: ast,
-        modelToDatasourceMap: constructDataSourceMap(schema, MYSQL_DATASOURCE_TYPE),
+        dataSourceStrategies: constructDataSourceStrategies(schema, mySqlStrategy),
       } as unknown as TransformerSchemaVisitStepContextProvider,
     ] as const;
   };
@@ -118,7 +122,7 @@ describe('@refersTo directive on models', () => {
       }
     `;
     const [stubDefinition, stubDirective, stubTransformerContext] = getTransformerInputsFromSchema(schema, 'DDBModel');
-    stubTransformerContext.modelToDatasourceMap.set('DDBModel', DDB_DEFAULT_DATASOURCE_TYPE);
+    stubTransformerContext.dataSourceStrategies.DDBModel = DDB_DEFAULT_DATASOURCE_STRATEGY;
     stubDirective.arguments = [];
     expect(() =>
       refersToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
@@ -248,7 +252,7 @@ describe('@refersTo directive on fields', () => {
       {
         ...stubTransformerContextBase,
         inputDocument: ast,
-        modelToDatasourceMap: constructDataSourceMap(schema, MYSQL_DATASOURCE_TYPE),
+        dataSourceStrategies: constructDataSourceStrategies(schema, mySqlStrategy),
       } as unknown as TransformerSchemaVisitStepContextProvider,
     ] as const;
   };
@@ -279,7 +283,7 @@ describe('@refersTo directive on fields', () => {
       }
     `;
     const [parent, field, directive, context] = getTransformerInputsFromSchema(schema, modelName);
-    context.modelToDatasourceMap.set(modelName, DDB_DEFAULT_DATASOURCE_TYPE);
+    context.dataSourceStrategies[modelName] = DDB_DEFAULT_DATASOURCE_STRATEGY;
     expect(() =>
       refersToTransformer.field(parent as ObjectTypeDefinitionNode, field as FieldDefinitionNode, directive as DirectiveNode, context),
     ).toThrowErrorMatchingInlineSnapshot('"@refersTo is only supported on RDS models. DDBModel is not an RDS model."');
@@ -374,7 +378,7 @@ describe('@refersTo directive on fields', () => {
 
   it('does not attach resolver slot even if field mapping exists for DDB Model', () => {
     const [parent, field, directive, context] = getTransformerInputsFromSchema(simpleSchema, modelName);
-    context.modelToDatasourceMap.set(modelName, DDB_DEFAULT_DATASOURCE_TYPE);
+    context.dataSourceStrategies[modelName] = DDB_DEFAULT_DATASOURCE_STRATEGY;
     expect(attachFieldMappingSlot_mock).toBeCalledTimes(0);
   });
 

@@ -1,8 +1,9 @@
 import { Kind, ObjectTypeDefinitionNode, StringValueNode, parse } from 'graphql';
-import { ModelDataSourceStrategy } from '../model-datasource-strategy';
+import { ModelDataSourceStrategy } from '../model-datasource-strategy-types';
 
 const MODEL_DIRECTIVE_NAME = 'model';
 const MANY_TO_MANY_DIRECTIVE_NAME = 'manyToMany';
+
 /**
  * Get the type names with model directives in the GraphQL schema in SDL
  * @param schema graphql schema in SDL
@@ -30,7 +31,7 @@ export const getModelTypeNames = (schema: string): string[] => {
   return modelKeys.filter((key, idx) => modelKeys.indexOf(key) === idx);
 };
 
-export const constructDataSourceStrategyMap = (
+export const constructDataSourceStrategies = (
   schema: string,
   dataSourceStrategy: ModelDataSourceStrategy,
 ): Record<string, ModelDataSourceStrategy> => {

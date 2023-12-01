@@ -1,37 +1,11 @@
 import { parse } from 'graphql';
+import { isSqlStrategy, isQueryNode, isMutationNode, fieldsWithSqlDirective } from '@aws-amplify/graphql-transformer-core';
+import { DataSourceStrategiesProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
-  CustomSqlDataSourceStrategy as ImplementationCustomSqlDataSourceStrategy,
-  DataSourceType,
-  SQLLambdaModelProvisionStrategy,
-} from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  dataSourceStrategyToDataSourceType,
-  isSqlStrategy,
-  isQueryNode,
-  isMutationNode,
-  fieldsWithSqlDirective,
-} from '@aws-amplify/graphql-transformer-core';
-import { normalizeDbType } from '@aws-amplify/graphql-transformer-core/lib/utils';
-import { CustomSqlDataSourceStrategy as InterfaceCustomSqlDataSourceStrategy, ModelDataSourceStrategy } from '../model-datasource-strategy';
-
-type DataSourceConfig = {
-  modelToDatasourceMap: Map<string, DataSourceType>;
-};
-
-/**
- * An internal helper to convert from a map of model-to-ModelDataSourceStrategies to the map of model-to-DataSourceTypes that internal
- * transform processing requires. TODO: We can remove this once we refactor the internals to use ModelDataSourceStrategies natively.
- */
-export const parseDataSourceConfig = (dataSourceDefinitionMap: Record<string, ModelDataSourceStrategy>): DataSourceConfig => {
-  const modelToDatasourceMap = new Map<string, DataSourceType>();
-  for (const [key, value] of Object.entries(dataSourceDefinitionMap)) {
-    const dataSourceType = dataSourceStrategyToDataSourceType(value);
-    modelToDatasourceMap.set(key, dataSourceType);
-  }
-  return {
-    modelToDatasourceMap,
-  };
-};
+  CustomSqlDataSourceStrategy as ConstructCustomSqlDataSourceStrategy,
+  ModelDataSourceStrategy as ConstructModelDataSourceStrategy,
+} from '../model-datasource-strategy-types';
+import { IAmplifyGraphqlDefinition } from '../types';
 
 /**
  * Creates an interface flavor of customSqlDataSourceStrategies from a factory method's schema and data source. Internally, this function
@@ -40,13 +14,11 @@ export const parseDataSourceConfig = (dataSourceDefinitionMap: Record<string, Mo
  *
  * Note that we do not scan for `Subscription` fields: `@sql` directives are not allowed on those, and it wouldn't make sense to do so
  * anyway, since subscriptions are processed from an incoming Mutation, not as the result of a direct datasource access.
- *
- * TODO: Reword this when we refactor to use Strategies throughout the implementation rather than DataSources.
  */
 export const constructCustomSqlDataSourceStrategies = (
   schema: string,
-  dataSourceStrategy: ModelDataSourceStrategy,
-): InterfaceCustomSqlDataSourceStrategy[] => {
+  dataSourceStrategy: ConstructModelDataSourceStrategy,
+): ConstructCustomSqlDataSourceStrategy[] => {
   if (!isSqlStrategy(dataSourceStrategy)) {
     return [];
   }
@@ -59,7 +31,7 @@ export const constructCustomSqlDataSourceStrategies = (
     return [];
   }
 
-  const customSqlDataSourceStrategies: InterfaceCustomSqlDataSourceStrategy[] = [];
+  const customSqlDataSourceStrategies: ConstructCustomSqlDataSourceStrategy[] = [];
 
   if (queryNode) {
     const fields = fieldsWithSqlDirective(queryNode);
@@ -87,25 +59,39 @@ export const constructCustomSqlDataSourceStrategies = (
 };
 
 /**
- * We currently use a different type structure to model strategies in the interface than we do in the implementation. This maps the
- * interface CustomSqlDataSourceStrategy (which uses SQLLambdaModelDataSourceStrategy) to the implementation flavor (which uses
- * DataSourceType).
+ * Extracts the data source provider from the definition. This jumps through some hoops to avoid changing the public interface. If we decide
+ * to change the public interface to simplify the structure, then this process gets a lot simpler.
  *
- * TODO: Remove this once we refactor the internals to use strategies rather than DataSourceTypes
+ * TODO: Verify that this supports combined definitions when we add combine support
  */
-export const mapInterfaceCustomSqlStrategiesToImplementationStrategies = (
-  strategies?: InterfaceCustomSqlDataSourceStrategy[],
-): ImplementationCustomSqlDataSourceStrategy[] => {
-  if (!strategies) {
-    return [];
-  }
-  return strategies.map((interfaceStrategy) => ({
-    fieldName: interfaceStrategy.fieldName,
-    typeName: interfaceStrategy.typeName,
-    dataSourceType: {
-      dbType: normalizeDbType(interfaceStrategy.strategy.dbType),
-      provisionDB: false,
-      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-    },
-  }));
+export const getDataSourceStrategiesProvider = (definition: IAmplifyGraphqlDefinition): DataSourceStrategiesProvider => {
+  const provider: DataSourceStrategiesProvider = {
+    // We can directly use the interface strategies, even though the SQL strategies have the customSqlStatements field that is unused by the
+    // transformer flavor of this type
+    dataSourceStrategies: definition.dataSourceStrategies,
+    sqlDirectiveDataSourceStrategies: [],
+  };
+
+  // We'll collect all the custom SQL statements from the definition into a single map, and use that to make our
+  // SqlDirectiveDataSourceStrategies
+  const customSqlStatements: Record<string, string> = {};
+
+  const constructSqlStrategies = definition.customSqlDataSourceStrategies ?? [];
+
+  // Note that we're relying on the `customSqlStatements` object reference to stay the same throughout this loop. Don't reassign it, or the
+  // collected sqlDirectiveStrategies will break
+  constructSqlStrategies.forEach((sqlStrategy) => {
+    if (sqlStrategy.strategy.customSqlStatements) {
+      Object.assign(customSqlStatements, sqlStrategy.strategy.customSqlStatements);
+    }
+
+    provider.sqlDirectiveDataSourceStrategies!.push({
+      typeName: sqlStrategy.typeName,
+      fieldName: sqlStrategy.fieldName,
+      strategy: sqlStrategy.strategy,
+      customSqlStatements,
+    });
+  });
+
+  return provider;
 };

@@ -155,7 +155,12 @@ export interface SqlModelDataSourceDbConnectionConfig {
  * `fromFilesAndStrategy`) will automatically construct this structure for you.
  */
 export interface CustomSqlDataSourceStrategy {
+  /** The built-in type (either "Query" or "Mutation") with which the custom SQL is associated */
   readonly typeName: 'Query' | 'Mutation';
+
+  /** The field name with which the custom SQL is associated */
   readonly fieldName: string;
+
+  /** The strategy used to create the datasource that will resolve the custom SQL statement. */
   readonly strategy: SQLLambdaModelDataSourceStrategy;
 }

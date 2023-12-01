@@ -2,13 +2,10 @@ import {
   DirectiveWrapper,
   generateGetArgumentsInput,
   InvalidDirectiveError,
-  isSqlDbType,
-  isSqlStrategy,
   MappingTemplate,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { RdsModelResourceGenerator } from '@aws-amplify/graphql-model-transformer';
 import * as cdk from 'aws-cdk-lib';
 import {
   obj,
@@ -67,7 +64,7 @@ export class SqlTransformer extends TransformerPluginBase {
       !directive?.arguments?.find((arg) => arg.name.value === 'reference')
     ) {
       throw new InvalidDirectiveError(
-        `@sql directive must have either a 'statement' or 'reference' argument. Check type "${parent.name.value}" and field "${definition.name.value}".`,
+        `@sql directive must have either a 'statement' or a 'reference' argument. Check type "${parent.name.value}" and field "${definition.name.value}".`,
       );
     }
 
@@ -105,26 +102,17 @@ export class SqlTransformer extends TransformerPluginBase {
 
     this.sqlDirectiveFields.forEach((resolverFns) => {
       resolverFns.forEach((config) => {
-        const { SQLLambdaDataSourceLogicalID: dataSourceId } = ResourceConstants.RESOURCES;
-        let dataSource = context.api.host.getDataSource(dataSourceId);
-
-        // Generate resources for schemas without @models, or schemas that use different data sources for custom SQL than for models
-        if (!dataSource) {
-          const generator = new RdsModelResourceGenerator();
-          generator.enableGenerator();
-          const typeName = config.resolverTypeName;
-          const fieldName = config.resolverFieldName;
-          const strategy = context.customSqlDataSourceStrategies?.find((css) => css.typeName === typeName && css.fieldName === fieldName);
-          // TODO: The isSqlDbType is redundant, but since the internals still use DataSourceType, we have to add a separate check for SQL
-          // db type. Remove this check once we refactor the internals to use ModelDataSourceStrategy
-          if (!strategy || !isSqlDbType(strategy.dataSourceType.dbType)) {
-            throw new Error(`Could not find custom SQL strategy for ${typeName}.${fieldName}`);
-          }
-          generator.generateResources(context, strategy.dataSourceType.dbType);
-          dataSource = context.api.host.getDataSource(dataSourceId);
+        const typeName = config.resolverTypeName;
+        const fieldName = config.resolverFieldName;
+        const strategy = context.sqlDirectiveDataSourceStrategies?.find((css) => css.typeName === typeName && css.fieldName === fieldName);
+        if (!strategy) {
+          throw new Error(`Could not find custom SQL strategy for ${typeName}.${fieldName}`);
         }
 
-        const statement = getStatement(config, context.customQueries);
+        const { SQLLambdaDataSourceLogicalID: dataSourceId } = ResourceConstants.RESOURCES;
+        const dataSource = context.api.host.getDataSource(dataSourceId);
+
+        const statement = getStatement(config, strategy.customSqlStatements);
         const resolverResourceId = ResolverResourceIDs.ResolverResourceID(config.resolverTypeName, config.resolverFieldName);
         const resolver = context.resolvers.generateQueryResolver(
           config.resolverTypeName,
@@ -167,27 +155,45 @@ const generateAuthExpressionForSandboxMode = (enabled: boolean): string => {
   );
 };
 
-const getStatement = (config: SqlDirectiveConfiguration, customQueries: Map<string, string>): string => {
-  if (config.reference && !customQueries.has(config.reference)) {
-    throw new InvalidDirectiveError(
-      `@sql directive 'reference' argument must be a valid custom query name. Check type "${config.resolverTypeName}" and field "${config.resolverFieldName}". The custom query "${config.reference}" does not exist in "sql-statements" directory.`,
-    );
-  }
-
-  if (config.reference && config.statement) {
-    throw new InvalidDirectiveError(
-      `@sql directive can have either 'statement' or 'reference' argument but not both. Check type "${config.resolverTypeName}" and field "${config.resolverFieldName}".`,
-    );
-  }
-
-  if (config.statement !== undefined && config.statement.trim().length === 0) {
+const getStatementFromStatementAttribute = (config: SqlDirectiveConfiguration): string => {
+  const statement = config.statement;
+  if (statement === undefined || statement.trim().length === 0) {
     throw new InvalidDirectiveError(
       `@sql directive 'statement' argument must not be empty. Check type "${config.resolverTypeName}" and field "${config.resolverFieldName}".`,
     );
   }
+  return statement;
+};
 
-  const statement = config.statement ?? customQueries.get(config.reference!);
-  return statement!;
+const getStatementFromReferenceAttribute = (config: SqlDirectiveConfiguration, customQueries?: Record<string, string>): string => {
+  if (!config.reference || !customQueries || !customQueries[config.reference]) {
+    throw new InvalidDirectiveError(
+      `@sql directive 'reference' argument must be a valid custom query name. Check type "${config.resolverTypeName}" and field "${config.resolverFieldName}". The custom query "${config.reference}" does not exist in "sql-statements" directory.`,
+    );
+  }
+  return customQueries[config.reference];
+};
+
+const getStatement = (config: SqlDirectiveConfiguration, customQueries?: Record<string, string>): string => {
+  if (config.reference && config.statement) {
+    throw new InvalidDirectiveError(
+      `@sql directive can have either a 'statement' or a 'reference' argument but not both. Check type "${config.resolverTypeName}" and field "${config.resolverFieldName}".`,
+    );
+  }
+
+  if (typeof config.statement === 'string') {
+    return getStatementFromStatementAttribute(config);
+  }
+
+  if (typeof config.reference === 'string') {
+    return getStatementFromReferenceAttribute(config, customQueries);
+  }
+
+  // This should never happen -- it will be picked up during schema validation -- but we'll be defensive and ensure the type safety of the
+  // function
+  throw new InvalidDirectiveError(
+    `@sql directive must have either a 'statement' or a 'reference' argument. Check type "${config.resolverTypeName}" and field "${config.resolverFieldName}".`,
+  );
 };
 
 export const generateSqlLambdaRequestTemplate = (statement: string, operation: string, operationName: string): string => {

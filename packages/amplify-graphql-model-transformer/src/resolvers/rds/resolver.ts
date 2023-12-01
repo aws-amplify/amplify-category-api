@@ -17,7 +17,7 @@ import {
   toJson,
 } from 'graphql-mapping-template';
 import { ResourceConstants, isArrayOrObject, isListType } from 'graphql-transformer-common';
-import { RDSConnectionSecrets, setResourceName } from '@aws-amplify/graphql-transformer-core';
+import { setResourceName } from '@aws-amplify/graphql-transformer-core';
 import {
   GraphQLAPIProvider,
   RDSLayerMapping,
@@ -25,6 +25,7 @@ import {
   TransformerContextProvider,
   VpcConfig,
   ProvisionedConcurrencyConfig,
+  SqlModelDataSourceDbConnectionConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction, LayerVersion, Runtime, Alias, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
@@ -227,7 +228,7 @@ export const createRdsPatchingLambda = (
  * @param scope Construct
  * @param secretEntry RDSConnectionSecrets
  */
-export const createRdsLambdaRole = (roleName: string, scope: Construct, secretEntry: RDSConnectionSecrets): IRole => {
+export const createRdsLambdaRole = (roleName: string, scope: Construct, secretEntry: SqlModelDataSourceDbConnectionConfig): IRole => {
   const { SQLLambdaIAMRoleLogicalID, SQLLambdaLogAccessPolicy } = ResourceConstants.RESOURCES;
   const role = new Role(scope, SQLLambdaIAMRoleLogicalID, {
     assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
@@ -247,11 +248,11 @@ export const createRdsLambdaRole = (roleName: string, scope: Construct, secretEn
         actions: ['ssm:GetParameter', 'ssm:GetParameters'],
         effect: Effect.ALLOW,
         resources: [
-          `arn:aws:ssm:*:*:parameter${secretEntry.username}`,
-          `arn:aws:ssm:*:*:parameter${secretEntry.password}`,
-          `arn:aws:ssm:*:*:parameter${secretEntry.host}`,
-          `arn:aws:ssm:*:*:parameter${secretEntry.database}`,
-          `arn:aws:ssm:*:*:parameter${secretEntry.port}`,
+          `arn:aws:ssm:*:*:parameter${secretEntry.usernameSsmPath}`,
+          `arn:aws:ssm:*:*:parameter${secretEntry.passwordSsmPath}`,
+          `arn:aws:ssm:*:*:parameter${secretEntry.hostnameSsmPath}`,
+          `arn:aws:ssm:*:*:parameter${secretEntry.databaseNameSsmPath}`,
+          `arn:aws:ssm:*:*:parameter${secretEntry.portSsmPath}`,
         ],
       }),
     );

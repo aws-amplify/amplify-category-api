@@ -1,5 +1,5 @@
 import {
-  DDB_DEFAULT_DATASOURCE_TYPE,
+  DDB_DEFAULT_DATASOURCE_STRATEGY,
   DirectiveWrapper,
   InvalidDirectiveError,
   TransformerPluginBase,
@@ -129,7 +129,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
     addDirectiveToRelationMap(this.relationMap, args);
     this.directiveList.push(args);
 
-    this.relationMap.forEach((_, relationName) => addJoinTableToModelToDatasourceMap(context, relationName));
+    this.relationMap.forEach((_, relationName) => addJoinTableToDatasourceStrategies(context, relationName));
   };
 
   /** During the preProcess step, modify the document node and return it
@@ -508,12 +508,12 @@ export class ManyToManyTransformer extends TransformerPluginBase {
 }
 
 /**
- * Adds the join table created by the transformer to the context's `modelToDatasourceMap`. NOTE: This is the only place in the transformer
- * chain where we use a default value for the DataSourceType. All other models must be explicitly set by the caller in the transformer
- * context, but the many to many join table will always be created using the DynamoDB default provisioning strategy.
+ * Adds the join table created by the transformer to the context's `dataSourceStrategies`. NOTE: This is the only place in the transformer
+ * chain where we use a default value for the ModelDataSourceStrategy. All other models must be explicitly set by the caller in the
+ * transformer context, but the many to many join table will always be created using the DynamoDB default provisioning strategy.
  */
-const addJoinTableToModelToDatasourceMap = (ctx: DataSourceStrategiesProvider, relationName: string): void => {
-  ctx.modelToDatasourceMap.set(relationName, DDB_DEFAULT_DATASOURCE_TYPE);
+const addJoinTableToDatasourceStrategies = (ctx: DataSourceStrategiesProvider, relationName: string): void => {
+  ctx.dataSourceStrategies[relationName] = DDB_DEFAULT_DATASOURCE_STRATEGY;
 };
 
 function addDirectiveToRelationMap(map: Map<string, ManyToManyRelation>, directive: ManyToManyDirectiveConfiguration): void {

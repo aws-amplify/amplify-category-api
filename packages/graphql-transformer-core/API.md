@@ -112,9 +112,6 @@ export const enum ConflictHandlerType {
 }
 
 // @public (undocumented)
-export const constructDataSourceMap: (schema: string, datasourceType: DataSourceType) => Map<string, DataSourceType>;
-
-// @public (undocumented)
 export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy;
 
 // @public (undocumented)

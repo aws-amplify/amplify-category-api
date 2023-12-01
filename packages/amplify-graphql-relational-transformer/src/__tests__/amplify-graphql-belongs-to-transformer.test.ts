@@ -1,7 +1,7 @@
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { DDB_DB_TYPE, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { DataSourceType, DynamoDBProvisionStrategy, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { GraphQLTransform, MYSQL_DB_TYPE, constructDataSourceStrategies, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, Kind, parse } from 'graphql';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
@@ -742,19 +742,19 @@ describe('@belongsTo connection field nullability tests', () => {
 });
 
 describe('@belongsTo directive with RDS datasource', () => {
-  test('happy case should generate correct resolvers', () => {
-    const modelToDatasourceMap = new Map<string, DataSourceType>();
-    modelToDatasourceMap.set('User', {
-      dbType: 'MYSQL',
-      provisionDB: false,
-      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-    });
-    modelToDatasourceMap.set('Profile', {
-      dbType: 'MYSQL',
-      provisionDB: false,
-      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-    });
+  const mySqlStrategy: SQLLambdaModelDataSourceStrategy = {
+    name: 'mySqlStrategy',
+    dbType: MYSQL_DB_TYPE,
+    dbConnectionConfig: {
+      databaseNameSsmPath: '/databaseNameSsmPath',
+      hostnameSsmPath: '/hostnameSsmPath',
+      passwordSsmPath: '/passwordSsmPath',
+      portSsmPath: '/portSsmPath',
+      usernameSsmPath: '/usernameSsmPath',
+    },
+  };
 
+  test('happy case should generate correct resolvers', () => {
     const inputSchema = `
       type User @model {
         id: String! @primaryKey
@@ -772,7 +772,7 @@ describe('@belongsTo directive with RDS datasource', () => {
     const out = testTransform({
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
-      modelToDatasourceMap,
+      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
     });
     expect(out).toBeDefined();
     const schema = parse(out.schema);
@@ -785,18 +785,6 @@ describe('@belongsTo directive with RDS datasource', () => {
   });
 
   test('composite key should generate correct resolvers', () => {
-    const modelToDatasourceMap = new Map<string, DataSourceType>();
-    modelToDatasourceMap.set('User', {
-      dbType: 'MYSQL',
-      provisionDB: false,
-      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-    });
-    modelToDatasourceMap.set('Profile', {
-      dbType: 'MYSQL',
-      provisionDB: false,
-      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-    });
-
     const inputSchema = `
       type User @model {
         firstName: String! @primaryKey(sortKeyFields: ["lastName"])
@@ -814,7 +802,7 @@ describe('@belongsTo directive with RDS datasource', () => {
     const out = testTransform({
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
-      modelToDatasourceMap,
+      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
     });
     expect(out).toBeDefined();
     const schema = parse(out.schema);

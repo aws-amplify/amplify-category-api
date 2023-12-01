@@ -1,27 +1,35 @@
 import {
+  DefinitionNode,
+  DirectiveDefinitionNode,
   DirectiveNode,
-  TypeDefinitionNode,
+  EnumValueDefinitionNode,
   FieldDefinitionNode,
   InputValueDefinitionNode,
-  EnumValueDefinitionNode,
-  DirectiveDefinitionNode,
-  TypeSystemDefinitionNode,
   Kind,
+  ObjectTypeDefinitionNode,
   parse,
   print,
-  DefinitionNode,
-  ObjectTypeDefinitionNode,
+  StringValueNode,
+  TypeDefinitionNode,
+  TypeSystemDefinitionNode,
 } from 'graphql';
-import { DataSourceType, TransformerPluginProvider, TransformerPluginType } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  ModelDataSourceStrategy,
+  SqlDirectiveDataSourceStrategy,
+  SQLLambdaModelDataSourceStrategy,
+  TransformerPluginProvider,
+  TransformerPluginType,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import _ from 'lodash';
+import { fieldsWithSqlDirective, isMutationNode, isQueryNode, isSqlStrategy } from '../utils';
 
-export function makeSeenTransformationKey(
+export const makeSeenTransformationKey = (
   directive: DirectiveNode,
   type: TypeDefinitionNode,
   field?: FieldDefinitionNode | InputValueDefinitionNode | EnumValueDefinitionNode,
   arg?: InputValueDefinitionNode,
   index?: number,
-): string {
+): string => {
   let key = '';
   if (directive && type && field && arg) {
     key = `${type.name.value}.${field.name.value}.${arg.name.value}@${directive.name.value}`;
@@ -35,7 +43,7 @@ export function makeSeenTransformationKey(
     key += `[${index}]`;
   }
   return key;
-}
+};
 
 /**
  * If this instance of the directive validates against its definition return true.
@@ -43,7 +51,7 @@ export function makeSeenTransformationKey(
  * @param directive The directive definition to validate against.
  * @param nodeKind The kind of the current node where the directive was found.
  */
-export function matchDirective(definition: DirectiveDefinitionNode, directive: DirectiveNode, node: TypeSystemDefinitionNode) {
+export const matchDirective = (definition: DirectiveDefinitionNode, directive: DirectiveNode, node: TypeSystemDefinitionNode): boolean => {
   if (!directive) {
     return false;
   }
@@ -55,37 +63,37 @@ export function matchDirective(definition: DirectiveDefinitionNode, directive: D
   for (const location of definition.locations) {
     // tslint:disable-next-line: switch-default
     switch (location.value) {
-      case `SCHEMA`:
+      case 'SCHEMA':
         isValidLocation = node.kind === Kind.SCHEMA_DEFINITION || isValidLocation;
         break;
-      case `SCALAR`:
+      case 'SCALAR':
         isValidLocation = node.kind === Kind.SCALAR_TYPE_DEFINITION || isValidLocation;
         break;
-      case `OBJECT`:
+      case 'OBJECT':
         isValidLocation = node.kind === Kind.OBJECT_TYPE_DEFINITION || isValidLocation;
         break;
-      case `FIELD_DEFINITION`:
+      case 'FIELD_DEFINITION':
         isValidLocation = (node.kind as string) === Kind.FIELD_DEFINITION || isValidLocation;
         break;
-      case `ARGUMENT_DEFINITION`:
+      case 'ARGUMENT_DEFINITION':
         isValidLocation = (node.kind as string) === Kind.INPUT_VALUE_DEFINITION || isValidLocation;
         break;
-      case `INTERFACE`:
+      case 'INTERFACE':
         isValidLocation = node.kind === Kind.INTERFACE_TYPE_DEFINITION || isValidLocation;
         break;
-      case `UNION`:
+      case 'UNION':
         isValidLocation = node.kind === Kind.UNION_TYPE_DEFINITION || isValidLocation;
         break;
-      case `ENUM`:
+      case 'ENUM':
         isValidLocation = node.kind === Kind.ENUM_TYPE_DEFINITION || isValidLocation;
         break;
-      case `ENUM_VALUE`:
+      case 'ENUM_VALUE':
         isValidLocation = (node.kind as string) === Kind.ENUM_VALUE_DEFINITION || isValidLocation;
         break;
-      case `INPUT_OBJECT`:
+      case 'INPUT_OBJECT':
         isValidLocation = node.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION || isValidLocation;
         break;
-      case `INPUT_FIELD_DEFINITION`:
+      case 'INPUT_FIELD_DEFINITION':
         isValidLocation = (node.kind as string) === Kind.INPUT_VALUE_DEFINITION || isValidLocation;
         break;
       default:
@@ -93,9 +101,9 @@ export function matchDirective(definition: DirectiveDefinitionNode, directive: D
     }
   }
   return isValidLocation;
-}
+};
 
-export function matchFieldDirective(definition: DirectiveDefinitionNode, directive: DirectiveNode, node: FieldDefinitionNode) {
+export const matchFieldDirective = (definition: DirectiveDefinitionNode, directive: DirectiveNode, node: FieldDefinitionNode): boolean => {
   if (definition.name.value !== directive.name.value) {
     // The definition is for the wrong directive. Do not match.
     return false;
@@ -103,7 +111,7 @@ export function matchFieldDirective(definition: DirectiveDefinitionNode, directi
   let isValidLocation = false;
   for (const location of definition.locations) {
     switch (location.value) {
-      case `FIELD_DEFINITION`:
+      case 'FIELD_DEFINITION':
         isValidLocation = node.kind === Kind.FIELD_DEFINITION || isValidLocation;
         break;
       default:
@@ -111,9 +119,13 @@ export function matchFieldDirective(definition: DirectiveDefinitionNode, directi
     }
   }
   return isValidLocation;
-}
+};
 
-export function matchInputFieldDirective(definition: DirectiveDefinitionNode, directive: DirectiveNode, node: InputValueDefinitionNode) {
+export const matchInputFieldDirective = (
+  definition: DirectiveDefinitionNode,
+  directive: DirectiveNode,
+  node: InputValueDefinitionNode,
+): boolean => {
   if (definition.name.value !== directive.name.value) {
     // The definition is for the wrong directive. Do not match.
     return false;
@@ -121,7 +133,7 @@ export function matchInputFieldDirective(definition: DirectiveDefinitionNode, di
   let isValidLocation = false;
   for (const location of definition.locations) {
     switch (location.value) {
-      case `INPUT_FIELD_DEFINITION`:
+      case 'INPUT_FIELD_DEFINITION':
         isValidLocation = node.kind === Kind.INPUT_VALUE_DEFINITION || isValidLocation;
         break;
       default:
@@ -129,9 +141,13 @@ export function matchInputFieldDirective(definition: DirectiveDefinitionNode, di
     }
   }
   return isValidLocation;
-}
+};
 
-export function matchArgumentDirective(definition: DirectiveDefinitionNode, directive: DirectiveNode, node: InputValueDefinitionNode) {
+export const matchArgumentDirective = (
+  definition: DirectiveDefinitionNode,
+  directive: DirectiveNode,
+  node: InputValueDefinitionNode,
+): boolean => {
   if (definition.name.value !== directive.name.value) {
     // The definition is for the wrong directive. Do not match.
     return false;
@@ -139,7 +155,7 @@ export function matchArgumentDirective(definition: DirectiveDefinitionNode, dire
   let isValidLocation = false;
   for (const location of definition.locations) {
     switch (location.value) {
-      case `ARGUMENT_DEFINITION`:
+      case 'ARGUMENT_DEFINITION':
         isValidLocation = node.kind === Kind.INPUT_VALUE_DEFINITION || isValidLocation;
         break;
       default:
@@ -147,9 +163,13 @@ export function matchArgumentDirective(definition: DirectiveDefinitionNode, dire
     }
   }
   return isValidLocation;
-}
+};
 
-export function matchEnumValueDirective(definition: DirectiveDefinitionNode, directive: DirectiveNode, node: EnumValueDefinitionNode) {
+export const matchEnumValueDirective = (
+  definition: DirectiveDefinitionNode,
+  directive: DirectiveNode,
+  node: EnumValueDefinitionNode,
+): boolean => {
   if (definition.name.value !== directive.name.value) {
     // The definition is for the wrong directive. Do not match.
     return false;
@@ -157,7 +177,7 @@ export function matchEnumValueDirective(definition: DirectiveDefinitionNode, dir
   let isValidLocation = false;
   for (const location of definition.locations) {
     switch (location.value) {
-      case `ENUM_VALUE`:
+      case 'ENUM_VALUE':
         isValidLocation = node.kind === Kind.ENUM_VALUE_DEFINITION || isValidLocation;
         break;
       default:
@@ -165,13 +185,13 @@ export function matchEnumValueDirective(definition: DirectiveDefinitionNode, dir
     }
   }
   return isValidLocation;
-}
+};
 
 /**
  * Sort the plugin such that the DataSourceProviders are executed before dataSourceEnhancement plugins are executed
  * @param plugins plugin instances passed to the transformer
  */
-export function sortTransformerPlugins(plugins: TransformerPluginProvider[]): TransformerPluginProvider[] {
+export const sortTransformerPlugins = (plugins: TransformerPluginProvider[]): TransformerPluginProvider[] => {
   const SORT_ORDER: TransformerPluginType[] = [
     TransformerPluginType.DATA_SOURCE_PROVIDER,
     TransformerPluginType.DATA_SOURCE_ENHANCER,
@@ -183,7 +203,7 @@ export function sortTransformerPlugins(plugins: TransformerPluginProvider[]): Tr
     const bIdx = SORT_ORDER.indexOf(b.pluginType);
     return aIdx - bIdx;
   });
-}
+};
 
 /**
  * Return the input schema with the `Amplify` input node stripped.
@@ -206,19 +226,101 @@ export const removeAmplifyInputDefinition = (schema: string): string => {
   });
 };
 
+const MODEL_DIRECTIVE_NAME = 'model';
+const MANY_TO_MANY_DIRECTIVE_NAME = 'manyToMany';
+
 /**
- * Return the datasource map for the input schema with the provided datasource type
- * @param schema input schema
- * @param datasourceType input datasoure type
- * @returns a map of datasource type per model
+ * Get the type names with model directives in the GraphQL schema in SDL
+ * @param schema graphql schema in SDL
+ * @returns type names which model diretives are attached
  */
-export function constructDataSourceMap(schema: string, datasourceType: DataSourceType): Map<string, DataSourceType> {
+export const getModelTypeNames = (schema: string): string[] => {
   const parsedSchema = parse(schema);
-  const result = new Map<string, DataSourceType>();
-  parsedSchema.definitions
-    .filter((obj) => obj.kind === Kind.OBJECT_TYPE_DEFINITION && obj.directives?.some((dir) => dir.name.value === 'model'))
-    .forEach((type) => {
-      result.set((type as ObjectTypeDefinitionNode).name.value, datasourceType);
+  const nodesWithModelDirective = parsedSchema.definitions.filter(
+    (obj) => obj.kind === Kind.OBJECT_TYPE_DEFINITION && obj.directives?.some((dir) => dir.name.value === MODEL_DIRECTIVE_NAME),
+  );
+  const modelKeys = nodesWithModelDirective.map((type) => (type as ObjectTypeDefinitionNode).name.value);
+  nodesWithModelDirective.forEach((obj) => {
+    const { fields } = obj as ObjectTypeDefinitionNode;
+    fields?.forEach((field) => {
+      field.directives?.forEach((dir) => {
+        if (dir.name.value === MANY_TO_MANY_DIRECTIVE_NAME) {
+          const relationArg = dir.arguments?.find((arg) => arg.name.value === 'relationName');
+          if (relationArg) {
+            modelKeys.push((relationArg.value as StringValueNode).value);
+          }
+        }
+      });
     });
-  return result;
-}
+  });
+  return modelKeys.filter((key, idx) => modelKeys.indexOf(key) === idx);
+};
+
+/**
+ * Return a Record associating the ModelDataSourceStrategy with each `@model`-annotated type in the schema.
+ * @param schema the schema to parse
+ * @param dataSourceStrategy the strategy to associate with each `@model` in the schema
+ */
+export const constructDataSourceStrategies = (
+  schema: string,
+  dataSourceStrategy: ModelDataSourceStrategy,
+): Record<string, ModelDataSourceStrategy> => {
+  const modelKeys = getModelTypeNames(schema);
+  return modelKeys.reduce((acc, cur) => ({ ...acc, [cur]: dataSourceStrategy }), {});
+};
+
+/**
+ * Creates a customSqlDataSourceStrategies array from a schema and strategy. Internally, this function scans the fields of `Query` and
+ * `Mutation` looking for fields annotated with the `@sql` directive and designates the specified dataSourceStrategy to fulfill those custom
+ * queries.
+ *
+ * Note that we do not scan for `Subscription` fields: `@sql` directives are not allowed on those, and it wouldn't make sense to do so
+ * anyway, since subscriptions are processed from an incoming Mutation, not as the result of a direct datasource access.
+ *
+ * This method is largely the same as the utility in amplify-graphql-api-construct, but targeted toward the transformer type.
+ */
+export const constructSqlDirectiveDataSourceStrategies = (
+  schema: string,
+  dataSourceStrategy: ModelDataSourceStrategy,
+  customSqlStatements?: Record<string, string>,
+): SqlDirectiveDataSourceStrategy[] => {
+  if (!isSqlStrategy(dataSourceStrategy)) {
+    return [];
+  }
+
+  const parsedSchema = parse(schema);
+
+  const queryNode = parsedSchema.definitions.find(isQueryNode);
+  const mutationNode = parsedSchema.definitions.find(isMutationNode);
+  if (!queryNode && !mutationNode) {
+    return [];
+  }
+
+  const sqlDirectiveDataSourceStrategies: SqlDirectiveDataSourceStrategy[] = [];
+
+  if (queryNode) {
+    const fields = fieldsWithSqlDirective(queryNode);
+    for (const field of fields) {
+      sqlDirectiveDataSourceStrategies.push({
+        typeName: 'Query',
+        fieldName: field.name.value,
+        strategy: dataSourceStrategy,
+        customSqlStatements,
+      });
+    }
+  }
+
+  if (mutationNode) {
+    const fields = fieldsWithSqlDirective(mutationNode);
+    for (const field of fields) {
+      sqlDirectiveDataSourceStrategies.push({
+        typeName: 'Mutation',
+        fieldName: field.name.value,
+        strategy: dataSourceStrategy,
+        customSqlStatements,
+      });
+    }
+  }
+
+  return sqlDirectiveDataSourceStrategies;
+};

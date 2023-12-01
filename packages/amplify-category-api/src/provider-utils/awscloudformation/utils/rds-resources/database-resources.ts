@@ -10,11 +10,19 @@ import { MySQLDataSourceAdapter, DataSourceAdapter, MySQLDataSourceConfig } from
 import { printer } from '@aws-amplify/amplify-prompts';
 import { DeleteFunctionCommand, LambdaClient } from '@aws-sdk/client-lambda';
 import { DeleteRoleCommand, IAMClient } from '@aws-sdk/client-iam';
+import { SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { getAppSyncAPIName } from '../amplify-meta-utils';
 import { databaseConfigurationInputWalkthrough } from '../../service-walkthroughs/appSync-rds-db-config';
 import { SSMClient } from './ssmClient';
 
 const secretNames = ['database', 'host', 'port', 'username', 'password'];
+const secretNamesToDbConnectionConfigFields: Record<string, keyof SqlModelDataSourceDbConnectionConfig> = {
+  database: 'databaseNameSsmPath',
+  host: 'hostnameSsmPath',
+  port: 'portSsmPath',
+  username: 'usernameSsmPath',
+  password: 'passwordSsmPath',
+};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isConnectionSecrets = (obj: any): obj is RDSConnectionSecrets => {
@@ -91,6 +99,20 @@ export const getExistingConnectionSecrets = async (
   } catch (error) {
     return undefined;
   }
+};
+
+/**
+ * Derives expected path names for database connection config parameters stored during the Gen1 CLI import flow.
+ */
+export const getExistingConnectionDbConnectionConfig = (apiName: string, secretsKey: string): SqlModelDataSourceDbConnectionConfig => {
+  const environmentName = stateManager.getCurrentEnvName();
+  const appId = stateManager.getAppID();
+  const dbConnectionConfig: any = {};
+  secretNames.forEach((name) => {
+    const path = getParameterStoreSecretPath(name, secretsKey, apiName, environmentName, appId);
+    dbConnectionConfig[secretNamesToDbConnectionConfigFields[name]] = path;
+  });
+  return dbConnectionConfig;
 };
 
 /**

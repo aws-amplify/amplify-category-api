@@ -1,8 +1,7 @@
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import {
-  DDB_AMPLIFY_MANAGED_DATASOURCE_TYPE,
-  DDB_DEFAULT_DATASOURCE_TYPE,
-  constructDataSourceMap,
+  DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
+  DDB_DEFAULT_DATASOURCE_STRATEGY,
   validateModelSchema,
 } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
@@ -22,12 +21,13 @@ describe('ModelTransformer:', () => {
         content: String
       }
     `;
-    const modelToDatasourceMap = constructDataSourceMap(validSchema, DDB_DEFAULT_DATASOURCE_TYPE);
-    modelToDatasourceMap.set('Post', DDB_AMPLIFY_MANAGED_DATASOURCE_TYPE);
     const out = testTransform({
       schema: validSchema,
       transformers: [new ModelTransformer()],
-      modelToDatasourceMap,
+      dataSourceStrategies: {
+        Comment: DDB_DEFAULT_DATASOURCE_STRATEGY,
+        Post: DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
+      },
     });
     expect(out).toBeDefined();
     const amplifyTableManagerStack = out.stacks[ITERATIVE_TABLE_STACK_NAME];

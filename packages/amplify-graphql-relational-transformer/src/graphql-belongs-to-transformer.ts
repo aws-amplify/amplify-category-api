@@ -3,7 +3,7 @@ import {
   DDB_DB_TYPE,
   DirectiveWrapper,
   generateGetArgumentsInput,
-  getDataSourceType,
+  getStrategyDbTypeFromTypeNode,
   InvalidDirectiveError,
   TransformerPluginBase,
   isSqlModel,
@@ -162,7 +162,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      const dbType = getDataSourceType(config.field.type, context);
+      const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
       if (dbType === DDB_DB_TYPE) {
         config.relatedTypeIndex = getRelatedTypeIndex(config, context);
       } else if (isSqlDbType(dbType)) {
@@ -176,7 +176,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      const dbType = getDataSourceType(config.field.type, context);
+      const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
       const generator = getGenerator(dbType);
       generator.makeBelongsToGetItemConnectionWithKeyResolver(config, context);
     }
@@ -188,11 +188,11 @@ const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerConte
 
   let dbType: ModelDataSourceStrategyDbType;
   try {
-    // getDataSourceType throws if a datasource is not found for the model. We want to catch that condition here to provide a friendlier
+    // getStrategyDbTypeFromTypeNode throws if a datasource is not found for the model. We want to catch that condition here to provide a friendlier
     // error message, since the most likely error scenario is that the customer neglected to annotate one of the types with `@model`. Since
     // this transformer gets invoked on both sides of the `belongsTo` relationship, a failure at this point is about the field itself, not
     // the related type.
-    dbType = getDataSourceType(field.type, ctx);
+    dbType = getStrategyDbTypeFromTypeNode(field.type, ctx);
   } catch {
     throw new InvalidDirectiveError(
       `Object type ${(field.type as NamedTypeNode)?.name.value ?? field.name} must be annotated with @model.`,

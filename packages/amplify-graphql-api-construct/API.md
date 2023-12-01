@@ -198,11 +198,8 @@ export interface CustomConflictResolutionStrategy extends ConflictResolutionStra
 
 // @public
 export interface CustomSqlDataSourceStrategy {
-    // (undocumented)
     readonly fieldName: string;
-    // (undocumented)
     readonly strategy: SQLLambdaModelDataSourceStrategy;
-    // (undocumented)
     readonly typeName: 'Query' | 'Mutation';
 }
 

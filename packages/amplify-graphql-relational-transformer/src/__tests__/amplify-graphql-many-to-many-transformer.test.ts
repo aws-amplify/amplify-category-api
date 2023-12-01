@@ -2,12 +2,17 @@
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { DDB_DB_TYPE, GraphQLTransform, constructDataSourceMap, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import {
+  DDB_DEFAULT_DATASOURCE_STRATEGY,
+  GraphQLTransform,
+  MYSQL_DB_TYPE,
+  constructDataSourceStrategies,
+  validateModelSchema,
+} from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncAuthConfiguration,
-  DataSourceType,
-  DynamoDBProvisionStrategy,
-  SQLLambdaModelProvisionStrategy,
+  ModelDataSourceStrategy,
+  SQLLambdaModelDataSourceStrategy,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, ObjectTypeDefinitionNode, parse } from 'graphql';
 import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
@@ -172,12 +177,21 @@ test('fails if used on a SQL model', () => {
       id: ID! @primaryKey
       foos: [Foo] @manyToMany(relationName: "FooBar")
     }`;
-  const modelToDatasourceMap = constructDataSourceMap(inputSchema, {
-    dbType: 'MYSQL',
-    provisionDB: false,
-    provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-  });
-  const transformer = createTransformer(undefined, modelToDatasourceMap);
+
+  const mySqlStrategy: SQLLambdaModelDataSourceStrategy = {
+    name: 'mySqlStrategy',
+    dbType: MYSQL_DB_TYPE,
+    dbConnectionConfig: {
+      databaseNameSsmPath: '/databaseNameSsmPath',
+      hostnameSsmPath: '/hostnameSsmPath',
+      passwordSsmPath: '/passwordSsmPath',
+      portSsmPath: '/portSsmPath',
+      usernameSsmPath: '/usernameSsmPath',
+    },
+  };
+
+  const dataSourceStrategies = constructDataSourceStrategies(inputSchema, mySqlStrategy);
+  const transformer = createTransformer(undefined, dataSourceStrategies);
   expect(() => transformer.transform(inputSchema)).toThrowError('@manyToMany directive cannot be used on a SQL model.');
 });
 
@@ -669,7 +683,7 @@ describe('Pre Processing Many To Many Tests', () => {
 
 function createTransformer(
   overrideAuthConfig?: AppSyncAuthConfiguration,
-  overrideModelToDatasourceMap?: Map<string, DataSourceType>,
+  overrideDataSourceStrategies?: Record<string, ModelDataSourceStrategy>,
 ): {
   transform: (schema: string) => DeploymentResources & { logs: any[] };
   preProcessSchema: (schema: DocumentNode) => DocumentNode;
@@ -701,21 +715,15 @@ function createTransformer(
     populateOwnerFieldForStaticGroupAuth: false,
   };
 
-  const DDB_DATASOURCE_TYPE: DataSourceType = {
-    dbType: DDB_DB_TYPE,
-    provisionDB: true,
-    provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
-  };
-
   return {
     transform: (schema: string) => {
-      const modelToDatasourceMap = overrideModelToDatasourceMap ?? constructDataSourceMap(schema, DDB_DATASOURCE_TYPE);
+      const dataSourceStrategies = overrideDataSourceStrategies ?? constructDataSourceStrategies(schema, DDB_DEFAULT_DATASOURCE_STRATEGY);
       return testTransform({
         schema,
         authConfig,
         transformers,
         transformParameters,
-        modelToDatasourceMap,
+        dataSourceStrategies,
       });
     },
     preProcessSchema: (schema: DocumentNode) =>
