@@ -1,10 +1,9 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { MYSQL_DB_TYPE, constructDataSourceStrategies, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { constructDataSourceStrategies, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Kind, parse } from 'graphql';
 import _ from 'lodash';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { PrimaryKeyTransformer } from '..';
 
 test('throws if multiple primary keys are defined on an object', () => {
@@ -727,17 +726,7 @@ test('lowercase model names generate the correct get/list query arguments', () =
 });
 
 describe('SQL primary key transformer tests', () => {
-  const mySqlStrategy: SQLLambdaModelDataSourceStrategy = {
-    name: 'mySqlStrategy',
-    dbType: MYSQL_DB_TYPE,
-    dbConnectionConfig: {
-      databaseNameSsmPath: '/databaseNameSsmPath',
-      hostnameSsmPath: '/hostnameSsmPath',
-      passwordSsmPath: '/passwordSsmPath',
-      portSsmPath: '/portSsmPath',
-      usernameSsmPath: '/usernameSsmPath',
-    },
-  };
+  const mySqlStrategy = mockSqlDataSourceStrategy();
 
   it('a primary key with a single sort key field is properly configured', () => {
     const inputSchema = `

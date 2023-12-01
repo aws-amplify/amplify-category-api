@@ -1612,6 +1612,7 @@ describe('ModelTransformer:', () => {
         ...makeStrategy(dbType),
         vpcConfiguration,
       };
+      const strategyName = `${dbType}Strategy`;
       const out = testTransform({
         schema: validSchema,
         transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
@@ -1621,10 +1622,11 @@ describe('ModelTransformer:', () => {
 
       validateModelSchema(parse(out.schema));
       expect(out.stacks).toBeDefined();
-      expect(out.stacks.SqlApiStack).toBeDefined();
-      expect(out.stacks.SqlApiStack.Resources).toBeDefined();
-      const resourcesIds = Object.keys(out.stacks.SqlApiStack.Resources!) as string[];
-      const sqlLambda = out.stacks.SqlApiStack.Resources![resourcesIds.find((resource) => resource.startsWith('SQLLambdaFunction'))!];
+      expect(out.stacks[`SqlApiStack${strategyName}`]).toBeDefined();
+      expect(out.stacks[`SqlApiStack${strategyName}`].Resources).toBeDefined();
+      const resourcesIds = Object.keys(out.stacks[`SqlApiStack${strategyName}`].Resources!) as string[];
+      const sqlLambda =
+        out.stacks[`SqlApiStack${strategyName}`].Resources![resourcesIds.find((resource) => resource.startsWith('SQLLambdaFunction'))!];
       expect(sqlLambda).toBeDefined();
       expect(sqlLambda.Properties).toBeDefined();
       expect(sqlLambda.Properties?.VpcConfig).toBeDefined();

@@ -226,6 +226,9 @@ export const getPrimaryKeyFields: (type: ObjectTypeDefinitionNode) => string[];
 export const getResourceName: (scope: Construct) => string | undefined;
 
 // @public (undocumented)
+export const getResourceNamesForStrategy: (strategy: SQLLambdaModelDataSourceStrategy) => SQLLambdaResourceNames;
+
+// @public (undocumented)
 export const getSortKeyFieldNames: (type: ObjectTypeDefinitionNode) => string[];
 
 // @public (undocumented)
@@ -483,6 +486,40 @@ export type SetResourceNameProps = {
 
 // @public (undocumented)
 export const SQL_SCHEMA_FILE_NAME = "schema.sql.graphql";
+
+// @public (undocumented)
+export interface SQLLambdaResourceNames {
+    // (undocumented)
+    SQLLambdaAliasLogicalID: string;
+    // (undocumented)
+    SQLLambdaDataSourceLogicalID: string;
+    // (undocumented)
+    SQLLambdaIAMRoleLogicalID: string;
+    // (undocumented)
+    SQLLambdaLayerVersionLogicalID: string;
+    // (undocumented)
+    SQLLambdaLogAccessPolicy: string;
+    // (undocumented)
+    SQLLambdaLogicalID: string;
+    // (undocumented)
+    SQLLayerMappingID: string;
+    // (undocumented)
+    SQLLayerVersionCustomResourceID: string;
+    // (undocumented)
+    SQLPatchingLambdaIAMRoleLogicalID: string;
+    // (undocumented)
+    SQLPatchingLambdaLogAccessPolicy: string;
+    // (undocumented)
+    SQLPatchingLambdaLogicalID: string;
+    // (undocumented)
+    SQLPatchingSubscriptionLogicalID: string;
+    // (undocumented)
+    SQLPatchingTopicLogicalID: string;
+    // (undocumented)
+    SQLStackName: string;
+    // (undocumented)
+    SQLVpcEndpointLogicalIDPrefix: string;
+}
 
 // @public (undocumented)
 export class StackManager implements StackManagerProvider {

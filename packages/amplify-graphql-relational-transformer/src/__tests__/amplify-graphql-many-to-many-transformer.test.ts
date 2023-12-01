@@ -5,17 +5,12 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import {
   DDB_DEFAULT_DATASOURCE_STRATEGY,
   GraphQLTransform,
-  MYSQL_DB_TYPE,
   constructDataSourceStrategies,
   validateModelSchema,
 } from '@aws-amplify/graphql-transformer-core';
-import {
-  AppSyncAuthConfiguration,
-  ModelDataSourceStrategy,
-  SQLLambdaModelDataSourceStrategy,
-} from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncAuthConfiguration, ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, ObjectTypeDefinitionNode, parse } from 'graphql';
-import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { DeploymentResources, mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { HasOneTransformer, ManyToManyTransformer } from '..';
 import { hasGeneratedDirective, hasGeneratedField } from './test-helpers';
 
@@ -178,17 +173,7 @@ test('fails if used on a SQL model', () => {
       foos: [Foo] @manyToMany(relationName: "FooBar")
     }`;
 
-  const mySqlStrategy: SQLLambdaModelDataSourceStrategy = {
-    name: 'mySqlStrategy',
-    dbType: MYSQL_DB_TYPE,
-    dbConnectionConfig: {
-      databaseNameSsmPath: '/databaseNameSsmPath',
-      hostnameSsmPath: '/hostnameSsmPath',
-      passwordSsmPath: '/passwordSsmPath',
-      portSsmPath: '/portSsmPath',
-      usernameSsmPath: '/usernameSsmPath',
-    },
-  };
+  const mySqlStrategy = mockSqlDataSourceStrategy();
 
   const dataSourceStrategies = constructDataSourceStrategies(inputSchema, mySqlStrategy);
   const transformer = createTransformer(undefined, dataSourceStrategies);

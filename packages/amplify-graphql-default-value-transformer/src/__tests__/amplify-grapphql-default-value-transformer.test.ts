@@ -1,9 +1,8 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { MYSQL_DB_TYPE, constructDataSourceStrategies, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { constructDataSourceStrategies, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DefaultValueTransformer } from '..';
 
 describe('DefaultValueModelTransformer:', () => {
@@ -323,17 +322,7 @@ describe('DefaultValueModelTransformer:', () => {
       }
     `;
 
-    const mySqlStrategy: SQLLambdaModelDataSourceStrategy = {
-      name: 'mySqlStrategy',
-      dbType: MYSQL_DB_TYPE,
-      dbConnectionConfig: {
-        databaseNameSsmPath: '/databaseNameSsmPath',
-        hostnameSsmPath: '/hostnameSsmPath',
-        passwordSsmPath: '/passwordSsmPath',
-        portSsmPath: '/portSsmPath',
-        usernameSsmPath: '/usernameSsmPath',
-      },
-    };
+    const mySqlStrategy = mockSqlDataSourceStrategy({ name: 'MockStrategy' });
     const out = testTransform({
       schema: validSchema,
       transformers: [new ModelTransformer(), new DefaultValueTransformer(), new PrimaryKeyTransformer()],
@@ -343,8 +332,8 @@ describe('DefaultValueModelTransformer:', () => {
 
     validateModelSchema(parse(out.schema));
     expect(out.stacks).toBeDefined();
-    expect(out.stacks.SqlApiStack).toBeDefined();
-    expect(out.stacks.SqlApiStack.Resources).toBeDefined();
+    expect(out.stacks['SqlApiStackMockStrategy']).toBeDefined();
+    expect(out.stacks['SqlApiStackMockStrategy'].Resources).toBeDefined();
     expect(out.resolvers['Mutation.createNote.init.1.req.vtl']).toBeDefined();
     expect(out.resolvers['Mutation.createNote.init.2.req.vtl']).toBeUndefined();
   });

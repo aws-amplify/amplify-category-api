@@ -2,31 +2,20 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as cdk from 'aws-cdk-lib';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
+import { SCHEMAS, mockSqlDataSourceStrategy } from '@aws-amplify/graphql-transformer-test-utils';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
-import { SQLLambdaModelDataSourceStrategy } from '../../model-datasource-strategy-types';
 
-const NO_MODEL_SCHEMA = /* GraphQL */ `
+const NO_MODEL_SCHEMA =
+  /* GraphQL */ `
   type Todo {
     id: ID!
     content: String!
   }
-  type Query {
-    listTodos: [Todo] @sql(statement: "SELECT * FROM todos")
-  }
-`;
+` + SCHEMAS.customSqlQueryStatement;
 
-const MOCK_SQL_STRATEGY: SQLLambdaModelDataSourceStrategy = {
-  dbType: 'MYSQL',
-  name: 'mockSqlStrategy',
-  dbConnectionConfig: {
-    databaseNameSsmPath: '/dbname',
-    hostnameSsmPath: '/hostname',
-    passwordSsmPath: '/password',
-    portSsmPath: '/port',
-    usernameSsmPath: '/username',
-  },
-};
+const MOCK_SQL_STRATEGY_NAME = 'MockSqlStrategy';
+const MOCK_SQL_STRATEGY = mockSqlDataSourceStrategy({ name: MOCK_SQL_STRATEGY_NAME });
 
 describe('SQLLambdaModelDataSourceStrategy', () => {
   let tmpDir: string;
@@ -73,7 +62,7 @@ describe('SQLLambdaModelDataSourceStrategy', () => {
     expect(lambdaDataSource?.lambdaConfig).toBeDefined();
 
     expect(functions).toBeDefined();
-    const sqlLambda = functions['SQLLambdaFunction'];
+    const sqlLambda = functions[`SQLLambdaFunction${MOCK_SQL_STRATEGY_NAME}`];
     expect(sqlLambda).toBeDefined();
   });
 
@@ -108,7 +97,7 @@ describe('SQLLambdaModelDataSourceStrategy', () => {
     expect(lambdaDataSource?.lambdaConfig).toBeDefined();
 
     expect(functions).toBeDefined();
-    const sqlLambda = functions['SQLLambdaFunction'];
+    const sqlLambda = functions[`SQLLambdaFunction${MOCK_SQL_STRATEGY_NAME}`];
     expect(sqlLambda).toBeDefined();
   });
 
@@ -157,7 +146,7 @@ describe('SQLLambdaModelDataSourceStrategy', () => {
     expect(lambdaDataSource?.lambdaConfig).toBeDefined();
 
     expect(functions).toBeDefined();
-    const sqlLambda = functions['SQLLambdaFunction'];
+    const sqlLambda = functions[`SQLLambdaFunction${MOCK_SQL_STRATEGY_NAME}`];
     expect(sqlLambda).toBeDefined();
   });
 });

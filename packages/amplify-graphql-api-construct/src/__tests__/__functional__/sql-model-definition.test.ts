@@ -61,7 +61,7 @@ describe('sql-bound API generated resource access', () => {
         expect(lambdaDataSource?.lambdaConfig).toBeDefined();
 
         expect(functions).toBeDefined();
-        const sqlLambda = functions['SQLLambdaFunction'];
+        const sqlLambda = functions['SQLLambdaFunctionMySQLDefinition'];
         expect(sqlLambda).toBeDefined();
 
         // TODO: Why does IFunction.isBoundToVpc return false even though VPC is configured?
@@ -136,7 +136,7 @@ describe('sql-bound API generated resource access', () => {
         expect(lambdaDataSource?.lambdaConfig).toBeDefined();
 
         expect(functions).toBeDefined();
-        const sqlLambda = functions['SQLLambdaFunction'];
+        const sqlLambda = functions['SQLLambdaFunctionMySQLDefinition'];
         expect(sqlLambda).toBeDefined();
 
         const cfnFn = sqlLambda.node.defaultChild as CfnFunction;
@@ -178,10 +178,10 @@ describe('sql-bound API generated resource access', () => {
         expect(lambdaDataSource?.lambdaConfig).toBeDefined();
 
         expect(functions).toBeDefined();
-        const sqlLambda = functions['SQLLambdaFunction'];
+        const sqlLambda = functions['SQLLambdaFunctionMySQLDefinition'];
         expect(sqlLambda).toBeDefined();
 
-        const alias = additionalCfnResources['SQLLambdaFunctionAlias'] as CfnAlias;
+        const alias = additionalCfnResources['SQLLambdaAliasMySQLDefinition'] as CfnAlias;
 
         expect(alias).toBeDefined();
         expect(alias.provisionedConcurrencyConfig).toEqual({ provisionedConcurrentExecutions: 2 });
@@ -219,12 +219,10 @@ describe('sql-bound API generated resource access', () => {
         expect(lambdaDataSource?.lambdaConfig).toBeDefined();
 
         expect(functions).toBeDefined();
-        const sqlLambda = functions['SQLLambdaFunction'];
+        const sqlLambda = functions['SQLLambdaFunctionMySQLDefinition'];
         expect(sqlLambda).toBeDefined();
 
-        const alias = additionalCfnResources['SQLLambdaFunctionAlias'] as CfnAlias;
-
-        expect(alias).toBeUndefined();
+        expect(additionalCfnResources).toMatchObject({});
       });
     });
   });

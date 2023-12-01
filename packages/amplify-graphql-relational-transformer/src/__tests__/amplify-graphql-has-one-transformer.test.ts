@@ -4,13 +4,11 @@ import {
   ConflictHandlerType,
   DDB_DEFAULT_DATASOURCE_STRATEGY,
   GraphQLTransform,
-  MYSQL_DB_TYPE,
   constructDataSourceStrategies,
   validateModelSchema,
 } from '@aws-amplify/graphql-transformer-core';
-import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, Kind, parse } from 'graphql';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { HasManyTransformer, HasOneTransformer } from '..';
 import { hasGeneratedField } from './test-helpers';
 
@@ -757,17 +755,7 @@ describe('@hasOne connection field nullability tests', () => {
 });
 
 describe('@hasOne directive with RDS datasource', () => {
-  const mySqlStrategy: SQLLambdaModelDataSourceStrategy = {
-    name: 'mySqlStrategy',
-    dbType: MYSQL_DB_TYPE,
-    dbConnectionConfig: {
-      databaseNameSsmPath: '/databaseNameSsmPath',
-      hostnameSsmPath: '/hostnameSsmPath',
-      passwordSsmPath: '/passwordSsmPath',
-      portSsmPath: '/portSsmPath',
-      usernameSsmPath: '/usernameSsmPath',
-    },
-  };
+  const mySqlStrategy = mockSqlDataSourceStrategy();
 
   test('happy case should generate correct resolvers', () => {
     const inputSchema = `
