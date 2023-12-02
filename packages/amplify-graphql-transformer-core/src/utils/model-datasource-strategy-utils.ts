@@ -24,7 +24,7 @@ export const getModelDataSourceNameForTypeName = (ctx: DataSourceStrategiesProvi
   const strategy = getModelDataSourceStrategy(ctx, typeName);
   if (isSqlStrategy(strategy)) {
     const resourceNames = getResourceNamesForStrategy(strategy);
-    dataSourceName = resourceNames.SQLLambdaDataSourceLogicalID;
+    dataSourceName = resourceNames.sqlLambdaDataSource;
   } else {
     dataSourceName = `${typeName}Table`;
   }

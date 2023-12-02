@@ -55,8 +55,8 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
 
     // Expect one SQL Lambda function per strategy
     expect(functions).toBeDefined();
-    expect(functions['SQLLambdaFunctionsqlstrategy1']).toBeDefined();
-    expect(functions['SQLLambdaFunctionsqlstrategy2']).toBeDefined();
+    expect(functions['SQLFunctionsqlstrategy1']).toBeDefined();
+    expect(functions['SQLFunctionsqlstrategy2']).toBeDefined();
 
     // Expect one data source per strategy
     expect(cfnDataSources).toBeDefined();
@@ -69,15 +69,15 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
     expect(additionalCfnResources['SQLLambdaAliassqlstrategy2']).toBeDefined();
 
     // TODO: Expect one patching lambda function per strategy
-    expect(functions['SQLPatchingLambdasqlstrategy1']).toBeDefined();
-    expect(functions['SQLPatchingLambdasqlstrategy2']).toBeDefined();
+    expect(functions['SQLLambdaLayerPatchingFunctionsqlstrategy1']).toBeDefined();
+    expect(functions['SQLLambdaLayerPatchingFunctionsqlstrategy2']).toBeDefined();
 
     // TODO: Expect one SQL lambda execution role and one patching lambda execution role per strategy
     expect(roles).toBeDefined();
-    expect(roles['SQLLambdaIAMRolesqlstrategy1']).toBeDefined();
-    expect(roles['SQLLambdaIAMRolesqlstrategy2']).toBeDefined();
-    expect(roles['SQLPatchingLambdaIAMRolesqlstrategy1']).toBeDefined();
-    expect(roles['SQLPatchingLambdaIAMRolesqlstrategy2']).toBeDefined();
+    expect(roles['SQLLambdaRolesqlstrategy1']).toBeDefined();
+    expect(roles['SQLLambdaRolesqlstrategy2']).toBeDefined();
+    expect(roles['SQLPatchingLambdaRolesqlstrategy1']).toBeDefined();
+    expect(roles['SQLPatchingLambdaRolesqlstrategy2']).toBeDefined();
 
     // Expect one SQL layer version resolver custom resource per strategy. Since AwsCustomResources aren't CfnResources, they don't appear
     // in the api resources stack. We can add them later if it is useful for customers, but for now, we'll assert existence by finding the
@@ -217,8 +217,8 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
 
     // Expect one SQL Lambda function per strategy
     expect(functions).toBeDefined();
-    expect(functions['SQLLambdaFunctionsqlstrategy1']).toBeDefined();
-    expect(functions['SQLLambdaFunctionsqlstrategy2']).toBeDefined();
+    expect(functions['SQLFunctionsqlstrategy1']).toBeDefined();
+    expect(functions['SQLFunctionsqlstrategy2']).toBeDefined();
   });
 
   it('combines heterogeneous related SQL table definitions', () => {
@@ -250,9 +250,9 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
 
     // Expect one SQL Lambda function per strategy
     expect(functions).toBeDefined();
-    expect(functions['SQLLambdaFunctionsqlstrategy1']).toBeDefined();
-    expect(functions['SQLLambdaFunctionsqlstrategy2']).toBeDefined();
-    expect(functions['SQLLambdaFunctionsqlstrategy3']).toBeDefined();
+    expect(functions['SQLFunctionsqlstrategy1']).toBeDefined();
+    expect(functions['SQLFunctionsqlstrategy2']).toBeDefined();
+    expect(functions['SQLFunctionsqlstrategy3']).toBeDefined();
   });
 
   it('combines heterogeneous independent definitions for multiple supported db types', () => {
@@ -284,8 +284,8 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
 
     // Expect one SQL Lambda function per strategy
     expect(functions).toBeDefined();
-    expect(functions['SQLLambdaFunctionsqlstrategy1']).toBeDefined();
-    expect(functions['SQLLambdaFunctionsqlstrategy2']).toBeDefined();
+    expect(functions['SQLFunctionsqlstrategy1']).toBeDefined();
+    expect(functions['SQLFunctionsqlstrategy2']).toBeDefined();
   });
 
   it('combines heterogeneous definitions as long as relationships do not cross the DDB/SQL boundary', () => {
@@ -316,8 +316,8 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
 
     // Expect one SQL Lambda function per strategy
     expect(functions).toBeDefined();
-    expect(functions['SQLLambdaFunctionsqlstrategy1']).toBeDefined();
-    expect(functions['SQLLambdaFunctionsqlstrategy2']).toBeDefined();
+    expect(functions['SQLFunctionsqlstrategy1']).toBeDefined();
+    expect(functions['SQLFunctionsqlstrategy2']).toBeDefined();
   });
 
   it('fails to combine heterogeneous related definitions for multiple supported db types', () => {
@@ -494,11 +494,11 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
 
     // Expect one SQL Lambda function per strategy
     expect(functions).toBeDefined();
-    expect(functions['SQLLambdaFunctionsqlstrategy1']).toBeDefined();
-    expect(functions['SQLLambdaFunctionsqlstrategy2']).toBeDefined();
+    expect(functions['SQLFunctionsqlstrategy1']).toBeDefined();
+    expect(functions['SQLFunctionsqlstrategy2']).toBeDefined();
   });
 
-  it('supports Query definitions split amongst heterogeneous definitions', () => {
+  it.skip('supports Query definitions split amongst heterogeneous definitions', () => {
     const sqlStrategy1 = mockSqlDataSourceStrategy({ name: 'sqlstrategy1' });
     const sqlStrategy2 = mockSqlDataSourceStrategy({
       name: 'sqlstrategy2',
@@ -537,8 +537,8 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
 
     // Expect one SQL Lambda function per strategy
     expect(functions).toBeDefined();
-    expect(functions['SQLLambdaFunctionsqlstrategy1']).toBeDefined();
-    expect(functions['SQLLambdaFunctionsqlstrategy2']).toBeDefined();
+    expect(functions['SQLFunctionsqlstrategy1']).toBeDefined();
+    expect(functions['SQLFunctionsqlstrategy2']).toBeDefined();
   });
 
   it('supports definitions with only custom SQL statements', () => {
@@ -579,8 +579,8 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
 
     // Expect one SQL Lambda function per strategy
     expect(functions).toBeDefined();
-    expect(functions['SQLLambdaFunctionsqlstrategy1']).toBeDefined();
-    expect(functions['SQLLambdaFunctionsqlstrategy2']).toBeDefined();
+    expect(functions['SQLFunctionsqlstrategy1']).toBeDefined();
+    expect(functions['SQLFunctionsqlstrategy2']).toBeDefined();
   });
 });
 

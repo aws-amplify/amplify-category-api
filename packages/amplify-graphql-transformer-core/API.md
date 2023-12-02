@@ -214,6 +214,9 @@ export const getImportedRDSTypeFromStrategyDbType: (dbType: ModelDataSourceStrat
 export const getKeySchema: (table: any, indexName?: string) => any;
 
 // @public (undocumented)
+export const getModelDataSourceNameForTypeName: (ctx: DataSourceStrategiesProvider, typeName: string) => string;
+
+// @public (undocumented)
 export const getModelDataSourceStrategy: (ctx: DataSourceStrategiesProvider, typename: string) => ModelDataSourceStrategy;
 
 // @public (undocumented)
@@ -381,9 +384,6 @@ export const isDefaultDynamoDbModelDataSourceStrategy: (strategy: ModelDataSourc
 export const isDynamoDbModel: (ctx: DataSourceStrategiesProvider, typename: string) => boolean;
 
 // @public (undocumented)
-export const isDynamoDbStrategy: (strategy: ModelDataSourceStrategy) => strategy is DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy;
-
-// @public (undocumented)
 export const isDynamoDbType: (dbType: ModelDataSourceStrategyDbType) => dbType is "DYNAMODB";
 
 // @public (undocumented)
@@ -499,35 +499,35 @@ export const SQL_SCHEMA_FILE_NAME = "schema.sql.graphql";
 // @public (undocumented)
 export interface SQLLambdaResourceNames {
     // (undocumented)
-    SQLLambdaAliasLogicalID: string;
+    sqlLambdaAlias: string;
     // (undocumented)
-    SQLLambdaDataSourceLogicalID: string;
+    sqlLambdaDataSource: string;
     // (undocumented)
-    SQLLambdaIAMRoleLogicalID: string;
+    sqlLambdaExecutionRole: string;
     // (undocumented)
-    SQLLambdaLayerVersionLogicalID: string;
+    sqlLambdaLayerVersion: string;
     // (undocumented)
-    SQLLambdaLogAccessPolicy: string;
+    sqlLambdaExecutionRolePolicy: string;
     // (undocumented)
-    SQLLambdaLogicalID: string;
+    sqlLambdaFunction: string;
     // (undocumented)
-    SQLLayerMappingID: string;
+    sqlLayerVersionMapping: string;
     // (undocumented)
-    SQLLayerVersionCustomResourceID: string;
+    sqlLayerVersionResolverCustomResource: string;
     // (undocumented)
-    SQLPatchingLambdaIAMRoleLogicalID: string;
+    sqlPatchingLambdaExecutionRole: string;
     // (undocumented)
-    SQLPatchingLambdaLogAccessPolicy: string;
+    sqlPatchingLambdaExecutionRolePolicy: string;
     // (undocumented)
-    SQLPatchingLambdaLogicalID: string;
+    sqlPatchingLambdaFunction: string;
     // (undocumented)
-    SQLPatchingSubscriptionLogicalID: string;
+    sqlPatchingSubscription: string;
     // (undocumented)
-    SQLPatchingTopicLogicalID: string;
+    sqlPatchingTopic: string;
     // (undocumented)
-    SQLStackName: string;
+    sqlStack: string;
     // (undocumented)
-    SQLVpcEndpointLogicalIDPrefix: string;
+    sqlVpcEndpointPrefix: string;
 }
 
 // @public (undocumented)

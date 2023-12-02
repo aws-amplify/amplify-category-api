@@ -51,7 +51,7 @@ describe('sql-bound API generated resource access', () => {
         expect(lambdaDataSource?.lambdaConfig).toBeDefined();
 
         expect(functions).toBeDefined();
-        const sqlLambda = functions[resourceNames.SQLLambdaLogicalID];
+        const sqlLambda = functions[resourceNames.sqlLambdaFunction];
         expect(sqlLambda).toBeDefined();
 
         // TODO: Why does IFunction.isBoundToVpc return false even though VPC is configured?
@@ -127,7 +127,7 @@ describe('sql-bound API generated resource access', () => {
         expect(lambdaDataSource?.lambdaConfig).toBeDefined();
 
         expect(functions).toBeDefined();
-        const sqlLambda = functions[resourceNames.SQLLambdaLogicalID];
+        const sqlLambda = functions[resourceNames.sqlLambdaFunction];
         expect(sqlLambda).toBeDefined();
 
         const cfnFn = sqlLambda.node.defaultChild as CfnFunction;
@@ -166,10 +166,10 @@ describe('sql-bound API generated resource access', () => {
         expect(lambdaDataSource?.lambdaConfig).toBeDefined();
 
         expect(functions).toBeDefined();
-        const sqlLambda = functions[resourceNames.SQLLambdaLogicalID];
+        const sqlLambda = functions[resourceNames.sqlLambdaFunction];
         expect(sqlLambda).toBeDefined();
 
-        const alias = additionalCfnResources[resourceNames.SQLLambdaAliasLogicalID] as CfnAlias;
+        const alias = additionalCfnResources[resourceNames.sqlLambdaAlias] as CfnAlias;
 
         expect(alias).toBeDefined();
         expect(alias.provisionedConcurrencyConfig).toEqual({ provisionedConcurrentExecutions: 2 });
@@ -205,7 +205,7 @@ describe('sql-bound API generated resource access', () => {
         expect(lambdaDataSource?.lambdaConfig).toBeDefined();
 
         expect(functions).toBeDefined();
-        const sqlLambda = functions[resourceNames.SQLLambdaLogicalID];
+        const sqlLambda = functions[resourceNames.sqlLambdaFunction];
         expect(sqlLambda).toBeDefined();
 
         expect(additionalCfnResources).toMatchObject({});

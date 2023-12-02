@@ -43,10 +43,10 @@ describe('ModelTransformer with SQL data sources:', () => {
     });
     expect(out).toBeDefined();
     const resourceNames = getResourceNamesForStrategy(mysqlStrategy);
-    const sqlApiStack = out.stacks[resourceNames.SQLStackName];
+    const sqlApiStack = out.stacks[resourceNames.sqlStack];
     expect(sqlApiStack).toBeDefined();
-    expect(out.functions[`${resourceNames.SQLLambdaLogicalID}.zip`]).toBeDefined();
-    expect(out.functions[`${resourceNames.SQLPatchingLambdaLogicalID}.zip`]).toBeDefined();
+    expect(out.functions[`${resourceNames.sqlLambdaFunction}.zip`]).toBeDefined();
+    expect(out.functions[`${resourceNames.sqlPatchingLambdaFunction}.zip`]).toBeDefined();
     validateModelSchema(parse(out.schema));
   });
 });

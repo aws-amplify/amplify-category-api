@@ -144,13 +144,13 @@ describe('RDS Tests', () => {
     // Validate the generated resources in the CloudFormation template
     const apisDirectory = path.join(projRoot, 'amplify', 'backend', 'api');
     const apiDirectory = path.join(apisDirectory, apiName);
-    const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', `${resourceNames.SQLStackName}.json`);
+    const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', `${resourceNames.sqlStack}.json`);
     const cfnTemplate = JSON.parse(readFileSync(cfnRDSTemplateFile, 'utf8'));
     expect(cfnTemplate.Resources).toBeDefined();
     const resources = cfnTemplate.Resources;
 
     // Validate if the SQL lambda function has VPC configuration
-    const rdsLambdaFunction = getResource(resources, resourceNames.SQLLambdaLogicalID, CDK_FUNCTION_TYPE);
+    const rdsLambdaFunction = getResource(resources, resourceNames.sqlLambdaFunction, CDK_FUNCTION_TYPE);
     expect(rdsLambdaFunction).toBeDefined();
     expect(rdsLambdaFunction.Properties).toBeDefined();
     expect(rdsLambdaFunction.Properties.VpcConfig).toBeDefined();
@@ -159,20 +159,20 @@ describe('RDS Tests', () => {
     expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds).toBeDefined();
     expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds.length).toBeGreaterThan(0);
 
-    expect(getResource(resources, `${resourceNames.SQLVpcEndpointLogicalIDPrefix}ssm`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-    expect(getResource(resources, `${resourceNames.SQLVpcEndpointLogicalIDPrefix}ssmmessages`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-    expect(getResource(resources, `${resourceNames.SQLVpcEndpointLogicalIDPrefix}kms`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-    expect(getResource(resources, `${resourceNames.SQLVpcEndpointLogicalIDPrefix}ec2`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-    expect(getResource(resources, `${resourceNames.SQLVpcEndpointLogicalIDPrefix}ec2messages`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ssm`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ssmmessages`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}kms`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ec2`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ec2messages`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
 
     // Validate patching lambda and subscription
-    const rdsPatchingLambdaFunction = getResource(resources, resourceNames.SQLPatchingLambdaLogicalID, CDK_FUNCTION_TYPE);
+    const rdsPatchingLambdaFunction = getResource(resources, resourceNames.sqlPatchingLambdaFunction, CDK_FUNCTION_TYPE);
     expect(rdsPatchingLambdaFunction).toBeDefined();
     expect(rdsPatchingLambdaFunction.Properties).toBeDefined();
     expect(rdsPatchingLambdaFunction.Properties.Environment).toBeDefined();
     expect(rdsPatchingLambdaFunction.Properties.Environment.Variables).toBeDefined();
     expect(rdsPatchingLambdaFunction.Properties.Environment.Variables.LAMBDA_FUNCTION_ARN).toBeDefined();
-    const rdsDataSourceLambda = getResource(resources, resourceNames.SQLLambdaDataSourceLogicalID, APPSYNC_DATA_SOURCE_TYPE);
+    const rdsDataSourceLambda = getResource(resources, resourceNames.sqlLambdaDataSource, APPSYNC_DATA_SOURCE_TYPE);
     expect(rdsPatchingLambdaFunction.Properties.Environment.Variables.LAMBDA_FUNCTION_ARN).toEqual(
       rdsDataSourceLambda.Properties.LambdaConfig.LambdaFunctionArn,
     );
@@ -186,7 +186,7 @@ describe('RDS Tests', () => {
     };
     // Counterintuitively, the subscription actually gets created with the resource prefix of the FUNCTION that gets triggered, rather than
     // the scope created specifically for the subscription
-    const rdsPatchingSubscription = getResource(resources, resourceNames.SQLPatchingLambdaLogicalID, CDK_SUBSCRIPTION_TYPE);
+    const rdsPatchingSubscription = getResource(resources, resourceNames.sqlPatchingLambdaFunction, CDK_SUBSCRIPTION_TYPE);
     expect(rdsPatchingSubscription).toBeDefined();
     expect(rdsPatchingSubscription.Properties).toBeDefined();
     expect(rdsPatchingSubscription.Properties.Protocol).toBeDefined();

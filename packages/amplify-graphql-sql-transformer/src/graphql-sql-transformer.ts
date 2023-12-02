@@ -112,7 +112,7 @@ export class SqlTransformer extends TransformerPluginBase {
         }
 
         const resourceNames = getResourceNamesForStrategy(strategy.strategy);
-        const dataSourceId = resourceNames.SQLLambdaDataSourceLogicalID;
+        const dataSourceId = resourceNames.sqlLambdaDataSource;
         const dataSource = context.api.host.getDataSource(dataSourceId);
 
         const statement = getStatement(config, strategy.customSqlStatements);

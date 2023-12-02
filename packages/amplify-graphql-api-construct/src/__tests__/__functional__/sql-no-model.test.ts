@@ -63,7 +63,7 @@ describe('SQLLambdaModelDataSourceStrategy', () => {
     expect(lambdaDataSource?.lambdaConfig).toBeDefined();
 
     expect(functions).toBeDefined();
-    const sqlLambda = functions[resourceNames.SQLLambdaLogicalID];
+    const sqlLambda = functions[resourceNames.sqlLambdaFunction];
     expect(sqlLambda).toBeDefined();
   });
 
@@ -98,7 +98,7 @@ describe('SQLLambdaModelDataSourceStrategy', () => {
     expect(lambdaDataSource?.lambdaConfig).toBeDefined();
 
     expect(functions).toBeDefined();
-    const sqlLambda = functions[resourceNames.SQLLambdaLogicalID];
+    const sqlLambda = functions[resourceNames.sqlLambdaFunction];
     expect(sqlLambda).toBeDefined();
   });
 
@@ -147,7 +147,7 @@ describe('SQLLambdaModelDataSourceStrategy', () => {
     expect(lambdaDataSource?.lambdaConfig).toBeDefined();
 
     expect(functions).toBeDefined();
-    const sqlLambda = functions[resourceNames.SQLLambdaLogicalID];
+    const sqlLambda = functions[resourceNames.sqlLambdaFunction];
     expect(sqlLambda).toBeDefined();
   });
 });

@@ -29,55 +29,7 @@ export class ResourceConstants {
     OpenSearchStreamingLambdaFunctionLogicalID: 'OpenSearchStreamingLambdaFunction',
     OpenSearchDataSourceLogicalID: 'OpenSearchDataSource',
 
-    // SQL Lambda
-    /** The alias created if a customer specifies a provisioned concurrency configuration */
-    SQLLambdaAliasLogicalID: 'SQLLambdaAlias',
-
-    /** The SQL Lambda execution role */
-    SQLLambdaIAMRoleLogicalID: 'SQLLambdaIAMRole',
-
-    /**
-     * The inline policy attached SQL Lambda execution role. Despite the name, this policy grants not only log access, but also read access
-     * to SSM so the Lambda can retrieve database connection parameters.
-     */
-    SQLLambdaLogAccessPolicy: 'SQLLambdaLogAccessPolicy',
-
-    /** The function that actually makes SQL requests to the backing database */
-    SQLLambdaLogicalID: 'SQLLambdaFunction',
-
-    /** The name of the stack holding the SQL Lambda and associated resources */
-    SQLStackName: 'SqlApiStack',
-
-    /**
-     * A prefix for VPC service endpoints that allow the SQL Lambda to retrieve SSM parameters without sending traffic to the public SSM
-     * endpoints.
-     */
-    SQLVpcEndpointLogicalIDPrefix: 'SQLVpcEndpoint',
-
-    // SQL AppSync DataSource
-    SQLLambdaDataSourceLogicalID: 'SQLLambdaDataSource',
-
-    // SQL Patching Lambda
-    /** The patching Lambda execution role */
-    SQLPatchingLambdaIAMRoleLogicalID: 'SQLPatchingLambdaIAMRole',
-
-    /**
-     * The inline policy of the patching Lambda execution role. Despite the name, this policy also grants UpdateFunctionConfiguration on the
-     * SQL Lambda, and allows the patching Lambda to get current layer versions of the SQL Lambda Layer.
-     */
-    SQLPatchingLambdaLogAccessPolicy: 'SQLPatchingLambdaLogAccessPolicy',
-
-    /**
-     * The patching Lambda function. When triggered by messages on the SQLPatchingTopic, this function updates the SQL Lambda with the
-     * latest version of the SQL Lambda Layer.
-     */
-    SQLPatchingLambdaLogicalID: 'SQLPatchingLambda',
-
-    /** The customer subscription to the Amplify Notification Topic */
-    SQLPatchingSubscriptionLogicalID: 'SQLPatchingSubscription',
-
-    /** The CDK logical ID of the topic imported from the Amplify Notification Topic ARN */
-    SQLPatchingTopicLogicalID: 'SQLPatchingTopic',
+    // SQL Lambda global resources
 
     /**
      * The topic name to which Amplify publishes new layer notification messages. Amplify subscribes customers to this topic, which triggers
@@ -99,33 +51,24 @@ export class ResourceConstants {
 
     /**
      * The bucket name where the manifest files are stored.
+     *
+     * DO NOT CHANGE THIS VALUE. It is a well-known value shared amongst multiple components of the patching infrastructure.
      */
     SQLLayerVersionManifestBucket: 'amplify-rds-layer-resources',
 
     /**
      * The region in which the version manifest bucket was created.
+     *
+     * DO NOT CHANGE THIS VALUE. It is a well-known value shared amongst multiple components of the patching infrastructure.
      */
     SQLLayerVersionManifestBucketRegion: 'us-east-1',
 
-    /** The prefix of the manifest file */
-    SQLLayerVersionManifestKeyPrefix: 'sql-layer-versions/',
-
-    /** The Lambda LayerVersion of the latest SQL Lambda that manages connections and SQL requests to the backing database */
-    SQLLambdaLayerVersionLogicalID: 'SQLLambdaLayerVersion',
-
-    // Gen 1 CLI fetches the latest layer mapping at runtime and stores it in a CfnMapping in the stack
-
     /**
-     * A mapping that stores LayerVersion ARNs by region. The resource generator has a hardcoded map of versions that is kept up to date as
-     * Amplify publishes new layer versions. This hardcoded map is used during initial deployment, but the layer version will be updated by
-     * the patching Lambda as new versions are published.
+     * The prefix of the manifest file
+     *
+     * DO NOT CHANGE THIS VALUE. It is a well-known value shared amongst multiple components of the patching infrastructure.
      */
-    SQLLayerMappingID: 'SQLLayerResourceMapping',
-
-    // CDK Construct uses a custom resource to retrieve the latest version from S3 during CDK deployment
-
-    /** The CDK name of Lambda LayerVersion custom resource */
-    SQLLayerVersionCustomResourceID: 'SQLLayerVersionCustomResource',
+    SQLLayerVersionManifestKeyPrefix: 'sql-layer-versions/',
 
     // Local. Try not to collide with model data sources.
     NoneDataSource: 'NoneDataSource',

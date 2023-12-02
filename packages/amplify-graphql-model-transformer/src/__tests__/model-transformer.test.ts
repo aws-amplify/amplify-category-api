@@ -1619,12 +1619,12 @@ describe('ModelTransformer:', () => {
 
       validateModelSchema(parse(out.schema));
       expect(out.stacks).toBeDefined();
-      expect(out.stacks[resourceNames.SQLStackName]).toBeDefined();
-      expect(out.stacks[resourceNames.SQLStackName].Resources).toBeDefined();
-      const resourcesIds = Object.keys(out.stacks[resourceNames.SQLStackName].Resources!) as string[];
+      expect(out.stacks[resourceNames.sqlStack]).toBeDefined();
+      expect(out.stacks[resourceNames.sqlStack].Resources).toBeDefined();
+      const resourcesIds = Object.keys(out.stacks[resourceNames.sqlStack].Resources!) as string[];
       const sqlLambda =
-        out.stacks[resourceNames.SQLStackName].Resources![
-          resourcesIds.find((resource) => resource.startsWith(resourceNames.SQLLambdaLogicalID))!
+        out.stacks[resourceNames.sqlStack].Resources![
+          resourcesIds.find((resource) => resource.startsWith(resourceNames.sqlLambdaFunction))!
         ];
       expect(sqlLambda).toBeDefined();
       expect(sqlLambda.Properties).toBeDefined();

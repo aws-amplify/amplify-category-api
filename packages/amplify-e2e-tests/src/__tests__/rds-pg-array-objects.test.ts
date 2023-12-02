@@ -118,13 +118,13 @@ describe('RDS Model Directive', () => {
     // Validate the generated resources in the CloudFormation template
     const apisDirectory = path.join(projRoot, 'amplify', 'backend', 'api');
     const apiDirectory = path.join(apisDirectory, 'rdsapi');
-    const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', `${resourceNames.SQLStackName}.json`);
+    const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', `${resourceNames.sqlStack}.json`);
     const cfnTemplate = JSON.parse(readFileSync(cfnRDSTemplateFile, 'utf8'));
     expect(cfnTemplate.Resources).toBeDefined();
     const resources = cfnTemplate.Resources;
 
     // Validate if the SQL lambda function has VPC configuration even if the database is accessible through internet
-    const rdsLambdaFunction = getResource(resources, resourceNames.SQLLambdaLogicalID, CDK_FUNCTION_TYPE);
+    const rdsLambdaFunction = getResource(resources, resourceNames.sqlLambdaFunction, CDK_FUNCTION_TYPE);
     expect(rdsLambdaFunction).toBeDefined();
     expect(rdsLambdaFunction.Properties).toBeDefined();
     expect(rdsLambdaFunction.Properties.VpcConfig).toBeDefined();
@@ -133,11 +133,11 @@ describe('RDS Model Directive', () => {
     expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds).toBeDefined();
     expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds.length).toBeGreaterThan(0);
 
-    expect(getResource(resources, `${resourceNames.SQLVpcEndpointLogicalIDPrefix}ssm`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-    expect(getResource(resources, `${resourceNames.SQLVpcEndpointLogicalIDPrefix}ssmmessages`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-    expect(getResource(resources, `${resourceNames.SQLVpcEndpointLogicalIDPrefix}kms`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-    expect(getResource(resources, `${resourceNames.SQLVpcEndpointLogicalIDPrefix}ec2`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-    expect(getResource(resources, `${resourceNames.SQLVpcEndpointLogicalIDPrefix}ec2messages`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ssm`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ssmmessages`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}kms`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ec2`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ec2messages`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
   };
 
   afterAll(async () => {

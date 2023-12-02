@@ -95,13 +95,13 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
     const dbConnectionConfig = strategy.dbConnectionConfig;
     const { AmplifySQLLayerNotificationTopicAccount, AmplifySQLLayerNotificationTopicName } = ResourceConstants.RESOURCES;
 
-    const lambdaRoleScope = context.stackManager.getScopeFor(resourceNames.SQLLambdaIAMRoleLogicalID, resourceNames.SQLStackName);
-    const lambdaScope = context.stackManager.getScopeFor(resourceNames.SQLLambdaLogicalID, resourceNames.SQLStackName);
+    const lambdaRoleScope = context.stackManager.getScopeFor(resourceNames.sqlLambdaExecutionRole, resourceNames.sqlStack);
+    const lambdaScope = context.stackManager.getScopeFor(resourceNames.sqlLambdaFunction, resourceNames.sqlStack);
 
     const layerVersionArn = resolveLayerVersion(lambdaScope, context, resourceNames);
 
     const role = createRdsLambdaRole(
-      context.resourceHelper.generateIAMRoleName(resourceNames.SQLLambdaIAMRoleLogicalID),
+      context.resourceHelper.generateIAMRoleName(resourceNames.sqlLambdaExecutionRole),
       lambdaRoleScope,
       dbConnectionConfig,
       resourceNames,
@@ -128,17 +128,17 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
     );
 
     const patchingLambdaRoleScope = context.stackManager.getScopeFor(
-      resourceNames.SQLPatchingLambdaIAMRoleLogicalID,
-      resourceNames.SQLStackName,
+      resourceNames.sqlPatchingLambdaExecutionRole,
+      resourceNames.sqlStack,
     );
     const patchingLambdaRole = createRdsPatchingLambdaRole(
-      context.resourceHelper.generateIAMRoleName(resourceNames.SQLPatchingLambdaIAMRoleLogicalID),
+      context.resourceHelper.generateIAMRoleName(resourceNames.sqlPatchingLambdaExecutionRole),
       patchingLambdaRoleScope,
       lambda.functionArn,
       resourceNames,
     );
 
-    const patchingLambdaScope = context.stackManager.getScopeFor(resourceNames.SQLPatchingLambdaLogicalID, resourceNames.SQLStackName);
+    const patchingLambdaScope = context.stackManager.getScopeFor(resourceNames.sqlPatchingLambdaFunction, resourceNames.sqlStack);
     const patchingLambda = createRdsPatchingLambda(patchingLambdaScope, context.api, patchingLambdaRole, resourceNames, {
       LAMBDA_FUNCTION_ARN: lambda.functionArn,
     });
@@ -154,10 +154,10 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
     ]);
 
     const patchingSubscriptionScope = context.stackManager.getScopeFor(
-      resourceNames.SQLPatchingSubscriptionLogicalID,
-      resourceNames.SQLStackName,
+      resourceNames.sqlPatchingSubscription,
+      resourceNames.sqlStack,
     );
-    const snsTopic = Topic.fromTopicArn(patchingSubscriptionScope, resourceNames.SQLPatchingTopicLogicalID, topicArn);
+    const snsTopic = Topic.fromTopicArn(patchingSubscriptionScope, resourceNames.sqlPatchingTopic, topicArn);
     const subscription = new LambdaSubscription(patchingLambda, {
       filterPolicy: {
         Region: SubscriptionFilter.stringFilter({
@@ -167,9 +167,9 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
     });
     snsTopic.addSubscription(subscription);
 
-    const lambdaDataSourceScope = context.stackManager.getScopeFor(resourceNames.SQLLambdaDataSourceLogicalID, resourceNames.SQLStackName);
+    const lambdaDataSourceScope = context.stackManager.getScopeFor(resourceNames.sqlLambdaDataSource, resourceNames.sqlStack);
     const sqlDatasource = context.api.host.addLambdaDataSource(
-      resourceNames.SQLLambdaDataSourceLogicalID,
+      resourceNames.sqlLambdaDataSource,
       lambda,
       {},
       lambdaDataSourceScope,
@@ -222,7 +222,7 @@ const resolveLayerVersion = (scope: Construct, context: TransformerContextProvid
   let layerVersionArn: string;
   if (context.rdsLayerMapping) {
     setRDSLayerMappings(scope, context.rdsLayerMapping, resourceNames);
-    layerVersionArn = Fn.findInMap(resourceNames.SQLLayerMappingID, Fn.ref('AWS::Region'), 'layerRegion');
+    layerVersionArn = Fn.findInMap(resourceNames.sqlLayerVersionMapping, Fn.ref('AWS::Region'), 'layerRegion');
   } else {
     const layerVersionCustomResource = createLayerVersionCustomResource(scope, resourceNames);
     layerVersionArn = layerVersionCustomResource.getResponseField('Body');
