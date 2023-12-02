@@ -192,7 +192,7 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
 
   it('combines heterogeneous independent SQL table definitions', () => {
     const sqlstrategy1 = mockSqlDataSourceStrategy({ name: 'sqlstrategy1' });
-    const sqlstrategy2 = mockSqlDataSourceStrategy({ name: 'sqlstrategy2' });
+    const sqlstrategy2 = mockSqlDataSourceStrategy({ name: 'sqlstrategy2', dbType: 'POSTGRES' });
     const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo.sql, sqlstrategy1);
     const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo2.sql, sqlstrategy2);
     const api = makeApiByCombining(definition1, definition2);
@@ -224,7 +224,7 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
   it('combines heterogeneous related SQL table definitions', () => {
     const sqlstrategy1 = mockSqlDataSourceStrategy({ name: 'sqlstrategy1' });
     const sqlstrategy2 = mockSqlDataSourceStrategy({ name: 'sqlstrategy2' });
-    const sqlstrategy3 = mockSqlDataSourceStrategy({ name: 'sqlstrategy3' });
+    const sqlstrategy3 = mockSqlDataSourceStrategy({ name: 'sqlstrategy3', dbType: 'POSTGRES' });
     const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.blog.sql, sqlstrategy1);
     const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.post.sql, sqlstrategy2);
     const definition3 = AmplifyGraphqlDefinition.fromString(SCHEMAS.comment.sql, sqlstrategy3);
@@ -412,7 +412,7 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
     const ddbdefinition = AmplifyGraphqlDefinition.fromString(postSchemaDdb);
     const sqlStrategy1 = mockSqlDataSourceStrategy({ name: 'sqlDefinition1' });
     const sqldefinition = AmplifyGraphqlDefinition.fromString(tagSchemaSql, sqlStrategy1);
-    expect(() => AmplifyGraphqlDefinition.combine([ddbdefinition, sqldefinition])).toThrow();
+    expect(() => makeApiByCombining(ddbdefinition, sqldefinition)).toThrow();
   });
 
   it('fails if a many-to-many relationship is declared across a SQL boundary', () => {
@@ -436,10 +436,48 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
     const sqlStrategy2 = mockSqlDataSourceStrategy({ name: 'sqlDefinition2' });
     const definition1 = AmplifyGraphqlDefinition.fromString(postSchemaSql, sqlStrategy1);
     const definition2 = AmplifyGraphqlDefinition.fromString(tagSchemaSql, sqlStrategy2);
-    expect(() => AmplifyGraphqlDefinition.combine([definition1, definition2])).toThrow();
+    expect(() => makeApiByCombining(definition1, definition2)).toThrow();
   });
 
   it('supports definitions with both models and custom SQL statements', () => {
+    const sqlStrategy1 = mockSqlDataSourceStrategy({ name: 'sqlstrategy1' });
+    const sqlStrategy2 = mockSqlDataSourceStrategy({
+      name: 'sqlstrategy2',
+      dbType: 'POSTGRES',
+      customSqlStatements: {
+        customSqlQueryReference: 'SELECT 1',
+      },
+    });
+    const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo.sql, sqlStrategy1);
+    const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlQueryReference, sqlStrategy2);
+
+    const api = makeApiByCombining(definition1, definition2);
+
+    const {
+      resources: {
+        cfnResources: { cfnGraphqlApi, cfnGraphqlSchema, cfnApiKey, cfnDataSources },
+        functions,
+      },
+    } = api;
+
+    expect(cfnGraphqlApi).toBeDefined();
+    expect(cfnGraphqlSchema).toBeDefined();
+    expect(cfnApiKey).toBeDefined();
+    expect(cfnDataSources).toBeDefined();
+
+    const ddbDataSources = Object.values(cfnDataSources).filter((dataSource) => dataSource.type === 'AMAZON_DYNAMODB');
+    expect(ddbDataSources.length).toEqual(0);
+
+    const lambdaDataSources = Object.values(cfnDataSources).filter((dataSource) => dataSource.type === 'AWS_LAMBDA');
+    expect(lambdaDataSources.length).toEqual(2);
+
+    // Expect one SQL Lambda function per strategy
+    expect(functions).toBeDefined();
+    expect(functions['SQLLambdaFunctionsqlstrategy1']).toBeDefined();
+    expect(functions['SQLLambdaFunctionsqlstrategy2']).toBeDefined();
+  });
+
+  it.skip('supports Query definitions split amongst heterogeneous definitions', () => {
     const sqlStrategy1 = mockSqlDataSourceStrategy({ name: 'sqlstrategy1' });
     const sqlStrategy2 = mockSqlDataSourceStrategy({
       name: 'sqlstrategy2',
@@ -447,8 +485,14 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
         customSqlQueryReference: 'SELECT 1',
       },
     });
-    const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo.sql, sqlStrategy1);
-    const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlQueryReference, sqlStrategy2);
+    const schema2 = /* GraphQL */ `
+      type Query {
+        customSqlQueryReference: [Int] @sql(reference: "customSqlQueryReference")
+      }
+    `;
+
+    const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlQueryStatement, sqlStrategy1);
+    const definition2 = AmplifyGraphqlDefinition.fromString(schema2, sqlStrategy2);
 
     const api = makeApiByCombining(definition1, definition2);
 
@@ -517,6 +561,7 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
     expect(functions['SQLLambdaFunctionsqlstrategy1']).toBeDefined();
     expect(functions['SQLLambdaFunctionsqlstrategy2']).toBeDefined();
   });
+
 });
 
 /**

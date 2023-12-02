@@ -1686,29 +1686,7 @@ describe('ModelTransformer:', () => {
     });
   });
 
-  it('should fail if multiple SQL engine types are used', () => {
-    const invalidSchema = `
-      type Note @model {
-          id: ID! @primaryKey
-          content: String!
-      }
-      type Post @model {
-        id: ID! @primaryKey
-        content: String!
-    }
-    `;
-
-    const dataSourceStrategies: Record<string, ModelDataSourceStrategy> = {
-      Note: makeStrategy(MYSQL_DB_TYPE),
-      Post: makeStrategy(POSTGRES_DB_TYPE),
-    };
-
-    expect(() =>
-      testTransform({
-        schema: invalidSchema,
-        transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-        dataSourceStrategies,
-      }),
-    ).toThrowError();
+  it('generates the correct resolvers for heterogeneous SQL data sources', () => {
+    throw new Error('not yet implemented');
   });
 });
