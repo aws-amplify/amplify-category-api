@@ -5,6 +5,7 @@ import {
   MYSQL_DB_TYPE,
   POSTGRES_DB_TYPE,
   constructDataSourceStrategies,
+  getResourceNamesForStrategy,
 } from '@aws-amplify/graphql-transformer-core';
 import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, NamedTypeNode, parse } from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
@@ -1612,7 +1613,6 @@ describe('ModelTransformer:', () => {
         ...makeStrategy(dbType),
         vpcConfiguration,
       };
-      const strategyName = `${dbType}Strategy`;
       const out = testTransform({
         schema: validSchema,
         transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
@@ -1620,13 +1620,15 @@ describe('ModelTransformer:', () => {
       });
       expect(out).toBeDefined();
 
+      const resourceNames = getResourceNamesForStrategy(vpcStrategy);
+
       validateModelSchema(parse(out.schema));
       expect(out.stacks).toBeDefined();
-      expect(out.stacks[`SqlApiStack${strategyName}`]).toBeDefined();
-      expect(out.stacks[`SqlApiStack${strategyName}`].Resources).toBeDefined();
-      const resourcesIds = Object.keys(out.stacks[`SqlApiStack${strategyName}`].Resources!) as string[];
+      expect(out.stacks[resourceNames.SQLStackName]).toBeDefined();
+      expect(out.stacks[resourceNames.SQLStackName].Resources).toBeDefined();
+      const resourcesIds = Object.keys(out.stacks[resourceNames.SQLStackName].Resources!) as string[];
       const sqlLambda =
-        out.stacks[`SqlApiStack${strategyName}`].Resources![resourcesIds.find((resource) => resource.startsWith('SQLLambdaFunction'))!];
+        out.stacks[resourceNames.SQLStackName].Resources![resourcesIds.find((resource) => resource.startsWith('SQLLambdaFunction'))!];
       expect(sqlLambda).toBeDefined();
       expect(sqlLambda.Properties).toBeDefined();
       expect(sqlLambda.Properties?.VpcConfig).toBeDefined();

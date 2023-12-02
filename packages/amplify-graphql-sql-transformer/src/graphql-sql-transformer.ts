@@ -1,7 +1,9 @@
 import {
   DirectiveWrapper,
   generateGetArgumentsInput,
+  getResourceNamesForStrategy,
   InvalidDirectiveError,
+  isSqlStrategy,
   MappingTemplate,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
@@ -109,7 +111,8 @@ export class SqlTransformer extends TransformerPluginBase {
           throw new Error(`Could not find custom SQL strategy for ${typeName}.${fieldName}`);
         }
 
-        const { SQLLambdaDataSourceLogicalID: dataSourceId } = ResourceConstants.RESOURCES;
+        const resourceNames = getResourceNamesForStrategy(strategy.strategy);
+        const dataSourceId = resourceNames.SQLLambdaDataSourceLogicalID;
         const dataSource = context.api.host.getDataSource(dataSourceId);
 
         const statement = getStatement(config, strategy.customSqlStatements);

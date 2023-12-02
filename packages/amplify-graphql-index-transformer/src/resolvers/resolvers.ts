@@ -2,7 +2,9 @@ import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model
 import {
   DDB_DB_TYPE,
   getModelDataSourceStrategy,
+  getResourceNamesForStrategy,
   isAmplifyDynamoDbModelDataSourceStrategy,
+  isSqlStrategy,
   MappingTemplate,
   MYSQL_DB_TYPE,
   POSTGRES_DB_TYPE,
@@ -518,17 +520,23 @@ export const makeQueryResolver = (
   ctx: TransformerContextProvider,
   dbType: ModelDataSourceStrategyDbType,
 ): void => {
-  const { SQLLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
-  const isDynamoDB = isDynamoDbType(dbType);
   const { name, object, queryField } = config;
   if (!(name && queryField)) {
     throw new Error('Expected name and queryField to be defined while generating resolver.');
   }
   const modelName = object.name.value;
-  let dataSourceName = `${object.name.value}Table`;
-  if (!isDynamoDB) {
-    dataSourceName = SQLLambdaDataSourceLogicalID;
+
+  // TODO: Refactor this into a utility method to retrieve data source by type name
+  let dataSourceName: string;
+  const strategy = getModelDataSourceStrategy(ctx, modelName);
+  if (isSqlStrategy(strategy)) {
+    const resourceNames = getResourceNamesForStrategy(strategy);
+    dataSourceName = resourceNames.SQLLambdaDataSourceLogicalID;
+  } else {
+    dataSourceName = `${modelName}Table`;
   }
+
+  const isDynamoDB = isDynamoDbType(dbType);
   const dataSource = ctx.api.host.getDataSource(dataSourceName);
   const queryTypeName = ctx.output.getQueryTypeName() as string;
 

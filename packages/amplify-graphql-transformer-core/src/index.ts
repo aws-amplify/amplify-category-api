@@ -29,6 +29,7 @@ export {
   fieldsWithSqlDirective,
   generateGetArgumentsInput,
   GetArgumentsOptions,
+  getDefaultStrategyNameForDbType,
   getImportedRDSTypeFromStrategyDbType,
   getKeySchema,
   getModelDataSourceStrategy,
@@ -36,6 +37,7 @@ export {
   getPrimaryKeyFields,
   getResourceName,
   getResourceNamesForStrategy,
+  getResourceNamesForStrategyName,
   getSortKeyFieldNames,
   getStrategyDbTypeFromTypeNode,
   getTable,
@@ -49,6 +51,7 @@ export {
   isSqlDbType,
   isSqlModel,
   isSqlStrategy,
+  normalizeDbType,
   setResourceName,
   SQLLambdaResourceNames,
 

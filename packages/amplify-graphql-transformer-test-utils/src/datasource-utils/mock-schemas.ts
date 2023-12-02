@@ -97,7 +97,7 @@ export const SCHEMAS = {
       type Blog @model {
         id: ID! @primaryKey
         name: String!
-        posts: [Post] @hasMany(references: "blogId")
+        posts: [Post] @hasMany(references: ["blogId"])
       }
     `,
   },
@@ -120,8 +120,8 @@ export const SCHEMAS = {
         id: ID! @primaryKey
         title: String!
         blogId: ID!
-        blog: Blog @belongsTo(references: "blogId")
-        comments: [Comment] @hasMany(references: "postId")
+        blog: Blog @belongsTo(references: ["blogId"])
+        comments: [Comment] @hasMany(references: ["postId"])
       }
     `,
   },
@@ -142,7 +142,7 @@ export const SCHEMAS = {
       type Comment @model {
         id: ID! @primaryKey
         postId: ID!
-        post: Post @belongsTo(references: "postId")
+        post: Post @belongsTo(references: ["postId"])
         content: String!
       }
     `,
@@ -165,7 +165,7 @@ export const SCHEMAS = {
       type Order @model {
         id: ID! @primaryKey
         content: String
-        lineItem: [LineItem] @hasMany(references: "orderId")
+        lineItem: [LineItem] @hasMany(references: ["orderId"])
       }
     `,
   },
@@ -189,7 +189,7 @@ export const SCHEMAS = {
         id: ID! @primaryKey
         name: String!
         orderId: ID!
-        order: Order @belongsTo(references: "orderId")
+        order: Order @belongsTo(references: ["orderId"])
       }
     `,
   },

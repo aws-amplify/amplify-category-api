@@ -1,13 +1,13 @@
 import path from 'path';
 import {
+  constructSqlDirectiveDataSourceStrategies,
+  DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
+  DDB_DEFAULT_DATASOURCE_STRATEGY,
+  getDefaultStrategyNameForDbType,
   getImportedRDSTypeFromStrategyDbType,
+  isDynamoDbType,
   isSqlDbType,
   UserDefinedSlot,
-  DDB_DEFAULT_DATASOURCE_STRATEGY,
-  constructDataSourceStrategies,
-  constructSqlDirectiveDataSourceStrategies,
-  isDynamoDbType,
-  DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncAuthConfiguration,
@@ -25,7 +25,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import * as fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { DataSourceType, sanityCheckProject } from 'graphql-transformer-core';
+import { sanityCheckProject } from 'graphql-transformer-core';
 import _ from 'lodash';
 import { executeTransform } from '@aws-amplify/graphql-transformer';
 import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
@@ -285,7 +285,7 @@ const fixUpDataSourceStrategiesProvider = async (
     const dbConnectionConfig = getDbConnectionConfig();
     const vpcConfiguration = await isSqlLambdaVpcConfigRequired(context, sqlDbType);
     const strategy: SQLLambdaModelDataSourceStrategy = {
-      name: `${sqlDbType}DataSourceStrategy`,
+      name: getDefaultStrategyNameForDbType(sqlDbType),
       dbType: sqlDbType,
       dbConnectionConfig,
       vpcConfiguration,

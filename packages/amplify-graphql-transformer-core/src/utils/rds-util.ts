@@ -1,8 +1,6 @@
 import path from 'path';
 import _ from 'lodash';
 import { APICategory } from './api-category';
-import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
-import { ResourceConstants } from 'graphql-transformer-common';
 
 const getParameterNameForDBSecret = (secret: string, secretsKey: string): string => {
   return `${secretsKey}_${secret}`;

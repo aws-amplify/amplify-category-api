@@ -392,13 +392,13 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
         type Project @model {
           id: ID! @primaryKey
           name: String
-          team: Team @hasOne(references: "projectId")
+          team: Team @hasOne(references: ["projectId"])
         }
         type Team @model {
           id: ID! @primaryKey
           name: String!
           projectId: ID!
-          project: Project @belongsTo(references: "projectId")
+          project: Project @belongsTo(references: ["projectId"])
         }
         type Query {
           selectOne: [String] @sql(statement: "SELECT 'mysql=1'")

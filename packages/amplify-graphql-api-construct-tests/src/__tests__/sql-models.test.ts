@@ -13,6 +13,7 @@ import { LambdaClient, GetProvisionedConcurrencyConfigCommand } from '@aws-sdk/c
 import generator from 'generate-password';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { graphql } from '../graphql-request';
+import { getResourceNamesForStrategyName } from '@aws-amplify/graphql-transformer-core';
 
 jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
 
@@ -48,6 +49,10 @@ describe('CDK GraphQL Transformer', () => {
   const dbname = 'default_db';
 
   let dbDetails: DBDetails;
+
+  // DO NOT CHANGE THIS VALUE: The test uses it to find resources by name. It is hardcoded in the sql-models backend app
+  const strategyName = 'MySqlDBStrategy';
+  const resourceNames = getResourceNamesForStrategyName(strategyName);
 
   beforeAll(async () => {
     dbDetails = await setupDatabase({
@@ -124,7 +129,7 @@ describe('CDK GraphQL Transformer', () => {
     expect(todo.id).toEqual(listResult.body.data.listTodos.items[0].id);
     const client = new LambdaClient({ region });
     const functionName = outputs[name].SQLLambdaFunctionName;
-    const functionAlias = 'SQLLambdaFunctionAlias';
+    const functionAlias = resourceNames.SQLLambdaAliasLogicalID;
     const command = new GetProvisionedConcurrencyConfigCommand({
       FunctionName: functionName,
       Qualifier: functionAlias,

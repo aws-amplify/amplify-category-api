@@ -51,6 +51,7 @@
     "@aws-amplify/amplify-cli-core": "^4.2.10"
   },
   "devDependencies": {
+    "@aws-amplify/graphql-transformer-interfaces": "3.3.1",
     "@types/lodash": "^4.14.149",
     "@types/ws": "^7.4.4",
     "ts-node": "^8.10.2"
