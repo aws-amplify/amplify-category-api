@@ -1349,7 +1349,7 @@ describe('Index query resolver creation', () => {
 
   const dataSourceStrategies = constructDataSourceStrategies(schema, mysqlStrategy);
 
-  const modelName = 'User';
+  const modelName = 'Test';
   const mockResolver = {
     addToSlot: jest.fn(),
     setScope: jest.fn(),

@@ -16,7 +16,6 @@ import {
   VpcConfig,
   ModelDataSourceStrategySqlDbType,
   SQLLambdaModelDataSourceStrategy,
-  ModelDataSourceStrategy,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   doNotExpectFields,
@@ -1684,9 +1683,5 @@ describe('ModelTransformer:', () => {
         expect(out.resolvers['Query.listPosts.req.vtl']).toContain(snippet);
       });
     });
-  });
-
-  it('generates the correct resolvers for heterogeneous SQL data sources', () => {
-    throw new Error('not yet implemented');
   });
 });
