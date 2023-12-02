@@ -8,9 +8,7 @@ import {
   getSortKeyFieldNames,
   generateGetArgumentsInput,
   isSqlModel,
-  getModelDataSourceStrategy,
-  isSqlStrategy,
-  getResourceNamesForStrategy,
+  getModelDataSourceNameForTypeName,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
@@ -940,16 +938,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       return roleDefinition;
     });
 
-    // TODO: Refactor this into a utility method to retrieve data source by type name
-    let dataSourceName: string;
-    const strategy = getModelDataSourceStrategy(ctx, def.name.value);
-    if (isSqlStrategy(strategy)) {
-      const resourceNames = getResourceNamesForStrategy(strategy);
-      dataSourceName = resourceNames.SQLLambdaDataSourceLogicalID;
-    } else {
-      dataSourceName = `${def.name.value}Table`;
-    }
-
+    const dataSourceName = getModelDataSourceNameForTypeName(ctx, def.name.value);
     const dataSource = ctx.api.host.getDataSource(dataSourceName) as DataSourceProvider;
     const requestExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthRequestExpression(ctx, def);
     const authExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForUpdate(
@@ -983,16 +972,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       return roleDefinition;
     });
 
-    // TODO: Refactor this into a utility method to retrieve data source by type name
-    let dataSourceName: string;
-    const strategy = getModelDataSourceStrategy(ctx, def.name.value);
-    if (isSqlStrategy(strategy)) {
-      const resourceNames = getResourceNamesForStrategy(strategy);
-      dataSourceName = resourceNames.SQLLambdaDataSourceLogicalID;
-    } else {
-      dataSourceName = `${def.name.value}Table`;
-    }
-
+    const dataSourceName = getModelDataSourceNameForTypeName(ctx, def.name.value);
     const dataSource = ctx.api.host.getDataSource(dataSourceName) as DataSourceProvider;
     const requestExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthRequestExpression(ctx, def);
     const authExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForDelete(

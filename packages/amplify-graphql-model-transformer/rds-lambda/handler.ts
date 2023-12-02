@@ -9,7 +9,6 @@ const delay = (ms: number): Promise<void> => new Promise((resolve) => setTimeout
 const WAIT_COMPLETE = 'WAIT_COMPLETE';
 
 export const run = async (event): Promise<any> => {
-  console.log('#### Event: ', JSON.stringify(event));
   if (!adapter) {
     const config = await getDBConfig();
     adapter = await getDBAdapter(config);

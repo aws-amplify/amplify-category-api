@@ -1,10 +1,9 @@
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
 import {
   DDB_DB_TYPE,
+  getModelDataSourceNameForTypeName,
   getModelDataSourceStrategy,
-  getResourceNamesForStrategy,
   isAmplifyDynamoDbModelDataSourceStrategy,
-  isSqlStrategy,
   MappingTemplate,
   MYSQL_DB_TYPE,
   POSTGRES_DB_TYPE,
@@ -526,16 +525,7 @@ export const makeQueryResolver = (
   }
   const modelName = object.name.value;
 
-  // TODO: Refactor this into a utility method to retrieve data source by type name
-  let dataSourceName: string;
-  const strategy = getModelDataSourceStrategy(ctx, modelName);
-  if (isSqlStrategy(strategy)) {
-    const resourceNames = getResourceNamesForStrategy(strategy);
-    dataSourceName = resourceNames.SQLLambdaDataSourceLogicalID;
-  } else {
-    dataSourceName = `${modelName}Table`;
-  }
-
+  const dataSourceName = getModelDataSourceNameForTypeName(ctx, modelName);
   const isDynamoDB = isDynamoDbType(dbType);
   const dataSource = ctx.api.host.getDataSource(dataSourceName);
   const queryTypeName = ctx.output.getQueryTypeName() as string;

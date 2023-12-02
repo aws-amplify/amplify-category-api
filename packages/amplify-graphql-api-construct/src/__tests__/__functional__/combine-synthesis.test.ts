@@ -23,7 +23,7 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
    * This is technically redundant, since we assert on the function names in tests below. We're keeping this as a separate test to capture
    * the scoping requirements for resources created for a data source.
    */
-  it('creates SQL resources named after the associated ModelDataSourceStrategy, except for the Lambda layer custom resource', () => {
+  it('creates SQL resources named after the associated ModelDataSourceStrategy', () => {
     const sqlstrategy1 = mockSqlDataSourceStrategy({
       name: 'sqlstrategy1',
       sqlLambdaProvisionedConcurrencyConfig: { provisionedConcurrentExecutions: 10 },
@@ -79,9 +79,9 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
     expect(roles['SQLPatchingLambdaIAMRolesqlstrategy1']).toBeDefined();
     expect(roles['SQLPatchingLambdaIAMRolesqlstrategy2']).toBeDefined();
 
-    // TODO: Expect one SQL layer version resolver custom resource per strategy. Since AwsCustomResources aren't CfnResources, they don't
-    // appear in the api resources stack. We can add them later if it seems useful for customers, but for now, we'll assert existence by
-    // finding the resource ID in the construct tree
+    // Expect one SQL layer version resolver custom resource per strategy. Since AwsCustomResources aren't CfnResources, they don't appear
+    // in the api resources stack. We can add them later if it is useful for customers, but for now, we'll assert existence by finding the
+    // resource ID in the construct tree
     expect(tryFindChildRecursive(api, 'SQLLayerVersionCustomResourcesqlstrategy1')).toBeDefined();
     expect(tryFindChildRecursive(api, 'SQLLayerVersionCustomResourcesqlstrategy2')).toBeDefined();
   });
@@ -330,8 +330,8 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
   });
 
   // We could technically implement checks for some of these in the `combine` factory method itself, but it would be a fairly naive check
-  // matching the declared model name. Instead, we'll catch this during transformation, so that the `refersTo` transformer can validate
-  // mapped model names.
+  // matching only the declared model name. Instead, we'll catch this during transformation, so that the transformer validations can catch
+  // things like remapped names.
   it('fails if a model is shared across DynamoDB definitions', () => {
     const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo.ddb);
     const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo.ddb, DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY);
@@ -437,6 +437,27 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
     const definition1 = AmplifyGraphqlDefinition.fromString(postSchemaSql, sqlStrategy1);
     const definition2 = AmplifyGraphqlDefinition.fromString(tagSchemaSql, sqlStrategy2);
     expect(() => makeApiByCombining(definition1, definition2)).toThrow();
+  });
+
+  // This is technically redundant with tests in the relational transformer (the test only uses a single data source, so it's not really a
+  // `combine` test), but it makes sense to add it here since we're testing other combinations
+  it('fails if a many-to-many relationship is declared in a single SQL data source', () => {
+    const schema = /* GraphQL */ `
+      type Post @model {
+        id: ID! @primaryKey
+        title: String!
+        content: String
+        tags: [Tag] @manyToMany(relationName: "PostTags")
+      }
+      type Tag @model {
+        id: ID! @primaryKey
+        label: String!
+        posts: [Post] @manyToMany(relationName: "PostTags")
+      }
+    `;
+    const sqlStrategy1 = mockSqlDataSourceStrategy({ name: 'sqlDefinition1' });
+    const definition1 = AmplifyGraphqlDefinition.fromString(schema, sqlStrategy1);
+    expect(() => makeApiByCombining(definition1)).toThrow();
   });
 
   it('supports definitions with both models and custom SQL statements', () => {

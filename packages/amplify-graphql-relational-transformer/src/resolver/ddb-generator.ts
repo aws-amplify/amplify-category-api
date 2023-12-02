@@ -1,4 +1,4 @@
-import { MappingTemplate, getKeySchema, getTable } from '@aws-amplify/graphql-transformer-core';
+import { MappingTemplate, getModelDataSourceNameForTypeName, getKeySchema, getTable } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   DynamoDBMappingTemplate,
@@ -38,8 +38,8 @@ import {
 } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from '../types';
-import { RelationalResolverGenerator } from './generator';
 import { condenseRangeKey } from '../resolvers';
+import { RelationalResolverGenerator } from './generator';
 
 const SORT_KEY_VALUE = 'sortKeyValue';
 const CONNECTION_STACK = 'ConnectionStack';
@@ -95,7 +95,8 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
       throw new Error('Either connection fields or local fields should be populated.');
     }
     const table = getTable(ctx, relatedType);
-    const dataSource = ctx.api.host.getDataSource(`${relatedType.name.value}Table`);
+    const dataSourceName = getModelDataSourceNameForTypeName(ctx, relatedType.name.value);
+    const dataSource = ctx.api.host.getDataSource(dataSourceName);
     const keySchema = getKeySchema(table, indexName);
     const setup: Expression[] = [
       set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${limit})`)),
@@ -231,7 +232,8 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
     const localFields = fields.length > 0 ? fields : connectionFields;
     const table = getTable(ctx, relatedType);
     const { keySchema } = table as any;
-    const dataSource = ctx.api.host.getDataSource(`${relatedType.name.value}Table`);
+    const dataSourceName = getModelDataSourceNameForTypeName(ctx, relatedType.name.value);
+    const dataSource = ctx.api.host.getDataSource(dataSourceName);
     const partitionKeyName = keySchema[0].attributeName;
     const totalExpressions = ['#partitionKey = :partitionValue'];
     const totalExpressionNames: Record<string, Expression> = {

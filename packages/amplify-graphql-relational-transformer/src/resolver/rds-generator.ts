@@ -2,9 +2,9 @@ import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-int
 import { ResolverResourceIDs } from 'graphql-transformer-common';
 import {
   MappingTemplate,
+  getModelDataSourceNameForTypeName,
   getModelDataSourceStrategy,
   getPrimaryKeyFields,
-  getResourceNamesForStrategy,
   isSqlStrategy,
 } from '@aws-amplify/graphql-transformer-core';
 import {
@@ -41,8 +41,8 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     if (!isSqlStrategy(relatedStrategy)) {
       throw new Error('The @hasMany directive is only supported for SQL data sources.');
     }
-    const relatedTypeResourceNames = getResourceNamesForStrategy(relatedStrategy);
-    const dataSource = ctx.api.host.getDataSource(relatedTypeResourceNames.SQLLambdaDataSourceLogicalID);
+    const dataSourceName = getModelDataSourceNameForTypeName(ctx, relatedType.name.value);
+    const dataSource = ctx.api.host.getDataSource(dataSourceName);
     const mappedTableName = ctx.resourceHelper.getModelNameMapping(relatedType.name.value);
 
     const connectionCondition: Expression[] = [];
@@ -171,8 +171,8 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     if (!isSqlStrategy(relatedStrategy)) {
       throw new Error('The @hasMany directive is only supported for SQL data sources.');
     }
-    const relatedTypeResourceNames = getResourceNamesForStrategy(relatedStrategy);
-    const dataSource = ctx.api.host.getDataSource(relatedTypeResourceNames.SQLLambdaDataSourceLogicalID);
+    const dataSourceName = getModelDataSourceNameForTypeName(ctx, relatedType.name.value);
+    const dataSource = ctx.api.host.getDataSource(dataSourceName);
     const mappedTableName = ctx.resourceHelper.getModelNameMapping(relatedType.name.value);
 
     const connectionCondition: Expression[] = [];
@@ -221,8 +221,8 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     if (!isSqlStrategy(relatedStrategy)) {
       throw new Error('The @hasMany directive is only supported for SQL data sources.');
     }
-    const relatedTypeResourceNames = getResourceNamesForStrategy(relatedStrategy);
-    const dataSource = ctx.api.host.getDataSource(relatedTypeResourceNames.SQLLambdaDataSourceLogicalID);
+    const dataSourceName = getModelDataSourceNameForTypeName(ctx, relatedType.name.value);
+    const dataSource = ctx.api.host.getDataSource(dataSourceName);
     const mappedTableName = ctx.resourceHelper.getModelNameMapping(relatedType.name.value);
 
     const connectionCondition: Expression[] = [];

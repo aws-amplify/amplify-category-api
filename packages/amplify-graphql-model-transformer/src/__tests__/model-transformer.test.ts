@@ -1623,7 +1623,9 @@ describe('ModelTransformer:', () => {
       expect(out.stacks[resourceNames.SQLStackName].Resources).toBeDefined();
       const resourcesIds = Object.keys(out.stacks[resourceNames.SQLStackName].Resources!) as string[];
       const sqlLambda =
-        out.stacks[resourceNames.SQLStackName].Resources![resourcesIds.find((resource) => resource.startsWith('SQLLambdaFunction'))!];
+        out.stacks[resourceNames.SQLStackName].Resources![
+          resourcesIds.find((resource) => resource.startsWith(resourceNames.SQLLambdaLogicalID))!
+        ];
       expect(sqlLambda).toBeDefined();
       expect(sqlLambda.Properties).toBeDefined();
       expect(sqlLambda.Properties?.VpcConfig).toBeDefined();

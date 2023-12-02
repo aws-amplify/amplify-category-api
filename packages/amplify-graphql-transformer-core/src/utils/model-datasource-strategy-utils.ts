@@ -9,20 +9,27 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DDB_DB_TYPE, ImportedRDSType, MYSQL_DB_TYPE, POSTGRES_DB_TYPE } from '../types';
 import { isBuiltInGraphqlType } from './graphql-utils';
-
-// Exported but possibly unused
-// TODO: Revisit these after the combine feature work. If they're not used, remove them
+import { getResourceNamesForStrategy } from './resource-name';
 
 /**
- * Type predicate that returns true if `obj` is one of the known DynamoDB-based strategies
+ * Return the data source name for a given `@model` Type name. The strategy for deriving a data source name differs depending on whether the
+ * type's associated ModelDataSourceStrategy uses DynamoDB or SQL. DynamoDB data sources are named `<modelName>Table`, while SQL sources use
+ * the resource constant of the SQL Lambda Data Source.
+ *
+ * Note: This utility is not suitable for deriving data source names for non-model types such as Query or Mutation custom SQL fields, HTTP
+ * data sources, etc.
  */
-export const isDynamoDbStrategy = (
-  strategy: ModelDataSourceStrategy,
-): strategy is AmplifyDynamoDbModelDataSourceStrategy | DefaultDynamoDbModelDataSourceStrategy => {
-  return isDefaultDynamoDbModelDataSourceStrategy(strategy) || isAmplifyDynamoDbModelDataSourceStrategy(strategy);
+export const getModelDataSourceNameForTypeName = (ctx: DataSourceStrategiesProvider, typeName: string): string => {
+  let dataSourceName: string;
+  const strategy = getModelDataSourceStrategy(ctx, typeName);
+  if (isSqlStrategy(strategy)) {
+    const resourceNames = getResourceNamesForStrategy(strategy);
+    dataSourceName = resourceNames.SQLLambdaDataSourceLogicalID;
+  } else {
+    dataSourceName = `${typeName}Table`;
+  }
+  return dataSourceName;
 };
-
-// Exported utils
 
 /**
  * Map the database type that is set in the dataSourceStrategies to the engine represented by ImportedRDSType. This is used to generate

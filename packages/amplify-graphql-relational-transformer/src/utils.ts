@@ -428,9 +428,9 @@ export const registerHasOneForeignKeyMappings = ({
 };
 
 /**
- * This function is similar to registerHasOneForeignKeyMappings but subtly different Because hasMany creates a foreign key field on the
+ * This function is similar to registerHasOneForeignKeyMappings but subtly different. Because hasMany creates a foreign key field on the
  * related type, this function registers the mapping on the related type. It attaches a resolver reference to the hasMany field so the
- * renamed foreign key is mapped when fetching the related object through the hasMany field
+ * renamed foreign key is mapped when fetching the related object through the hasMany field.
  */
 export const registerHasManyForeignKeyMappings = ({
   transformParameters,

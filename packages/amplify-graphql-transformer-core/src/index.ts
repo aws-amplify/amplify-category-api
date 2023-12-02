@@ -29,6 +29,7 @@ export {
   fieldsWithSqlDirective,
   generateGetArgumentsInput,
   GetArgumentsOptions,
+  getModelDataSourceNameForTypeName,
   getDefaultStrategyNameForDbType,
   getImportedRDSTypeFromStrategyDbType,
   getKeySchema,
@@ -54,10 +55,6 @@ export {
   normalizeDbType,
   setResourceName,
   SQLLambdaResourceNames,
-
-  // Exported but possibly unused
-  // TODO: Revisit these after the combine feature work. If they're not used, remove them
-  isDynamoDbStrategy,
 } from './utils';
 export type { SetResourceNameProps } from './utils';
 export * from './utils/operation-names';

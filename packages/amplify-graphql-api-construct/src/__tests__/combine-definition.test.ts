@@ -388,12 +388,19 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
           post: Post @belongsTo
         }
       `;
+
       const mysqlSchema = /* GraphQL */ `
         type Project @model {
           id: ID! @primaryKey
           name: String
           team: Team @hasOne(references: ["projectId"])
         }
+        type Query {
+          selectOne: [String] @sql(statement: "SELECT 'mysql=1'")
+        }
+      `;
+
+      const postgresSchema = /* GraphQL */ `
         type Team @model {
           id: ID! @primaryKey
           name: String!
@@ -401,28 +408,35 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
           project: Project @belongsTo(references: ["projectId"])
         }
         type Query {
-          selectOne: [String] @sql(statement: "SELECT 'mysql=1'")
+          selectTwo: [String] @sql(statement: "SELECT 'postgres=2'")
         }
       `;
 
-      const sqlStrategy = mockSqlDataSourceStrategy();
+      const mysqlStrategy = mockSqlDataSourceStrategy();
+      const postgresStrategy = mockSqlDataSourceStrategy({ dbType: 'POSTGRES' });
       const definition1 = AmplifyGraphqlDefinition.fromString(ddbSchema);
-      const definition2 = AmplifyGraphqlDefinition.fromString(mysqlSchema, sqlStrategy);
-      const combinedDefinition = AmplifyGraphqlDefinition.combine([definition1, definition2]);
-      expect(combinedDefinition.schema).toEqual([ddbSchema, mysqlSchema].join(os.EOL));
+      const definition2 = AmplifyGraphqlDefinition.fromString(mysqlSchema, mysqlStrategy);
+      const definition3 = AmplifyGraphqlDefinition.fromString(postgresSchema, postgresStrategy);
+      const combinedDefinition = AmplifyGraphqlDefinition.combine([definition1, definition2, definition3]);
+      expect(combinedDefinition.schema).toEqual([ddbSchema, mysqlSchema, postgresSchema].join(os.EOL));
       expect(combinedDefinition.functionSlots.length).toEqual(0);
       expect(combinedDefinition.dataSourceStrategies).toEqual({
         Post: DDB_DEFAULT_DATASOURCE_STRATEGY,
         Comment: DDB_DEFAULT_DATASOURCE_STRATEGY,
-        Project: sqlStrategy,
-        Team: sqlStrategy,
+        Project: mysqlStrategy,
+        Team: postgresStrategy,
       });
       expect(combinedDefinition.customSqlDataSourceStrategies).toEqual(
         expect.arrayContaining([
           {
             typeName: 'Query',
             fieldName: 'selectOne',
-            strategy: sqlStrategy,
+            strategy: mysqlStrategy,
+          },
+          {
+            typeName: 'Query',
+            fieldName: 'selectTwo',
+            strategy: postgresStrategy,
           },
         ]),
       );

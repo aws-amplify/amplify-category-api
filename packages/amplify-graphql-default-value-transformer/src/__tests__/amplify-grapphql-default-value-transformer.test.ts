@@ -1,5 +1,5 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { constructDataSourceStrategies, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { constructDataSourceStrategies, getResourceNamesForStrategy, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
 import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
@@ -322,7 +322,8 @@ describe('DefaultValueModelTransformer:', () => {
       }
     `;
 
-    const mySqlStrategy = mockSqlDataSourceStrategy({ name: 'MockStrategy' });
+    const mySqlStrategy = mockSqlDataSourceStrategy();
+    const resourceNames = getResourceNamesForStrategy(mySqlStrategy);
     const out = testTransform({
       schema: validSchema,
       transformers: [new ModelTransformer(), new DefaultValueTransformer(), new PrimaryKeyTransformer()],
@@ -332,8 +333,8 @@ describe('DefaultValueModelTransformer:', () => {
 
     validateModelSchema(parse(out.schema));
     expect(out.stacks).toBeDefined();
-    expect(out.stacks['SqlApiStackMockStrategy']).toBeDefined();
-    expect(out.stacks['SqlApiStackMockStrategy'].Resources).toBeDefined();
+    expect(out.stacks[resourceNames.SQLStackName]).toBeDefined();
+    expect(out.stacks[resourceNames.SQLStackName].Resources).toBeDefined();
     expect(out.resolvers['Mutation.createNote.init.1.req.vtl']).toBeDefined();
     expect(out.resolvers['Mutation.createNote.init.2.req.vtl']).toBeUndefined();
   });
