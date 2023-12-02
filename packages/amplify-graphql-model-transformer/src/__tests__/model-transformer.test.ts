@@ -12,11 +12,7 @@ import { getBaseType } from 'graphql-transformer-common';
 import { Template } from 'aws-cdk-lib/assertions';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import {
-  VpcConfig,
-  ModelDataSourceStrategySqlDbType,
-  SQLLambdaModelDataSourceStrategy,
-} from '@aws-amplify/graphql-transformer-interfaces';
+import { VpcConfig, ModelDataSourceStrategySqlDbType, SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   doNotExpectFields,
   expectFields,

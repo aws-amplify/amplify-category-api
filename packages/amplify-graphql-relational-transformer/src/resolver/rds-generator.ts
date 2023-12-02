@@ -1,6 +1,12 @@
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResolverResourceIDs } from 'graphql-transformer-common';
-import { MappingTemplate, getModelDataSourceStrategy, getPrimaryKeyFields, getResourceNamesForStrategy, isSqlStrategy } from '@aws-amplify/graphql-transformer-core';
+import {
+  MappingTemplate,
+  getModelDataSourceStrategy,
+  getPrimaryKeyFields,
+  getResourceNamesForStrategy,
+  isSqlStrategy,
+} from '@aws-amplify/graphql-transformer-core';
 import {
   compoundExpression,
   ref,

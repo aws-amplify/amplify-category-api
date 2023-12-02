@@ -199,6 +199,9 @@ export type GetArgumentsOptions = {
     deepMergeArguments?: boolean;
 };
 
+// @public (undocumented)
+export const getDefaultStrategyNameForDbType: (dbType: ModelDataSourceStrategySqlDbType) => string;
+
 // Warning: (ae-forgotten-export) The symbol "Operation" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -227,6 +230,9 @@ export const getResourceName: (scope: Construct) => string | undefined;
 
 // @public (undocumented)
 export const getResourceNamesForStrategy: (strategy: SQLLambdaModelDataSourceStrategy) => SQLLambdaResourceNames;
+
+// @public (undocumented)
+export const getResourceNamesForStrategyName: (strategyName: string) => SQLLambdaResourceNames;
 
 // @public (undocumented)
 export const getSortKeyFieldNames: (type: ObjectTypeDefinitionNode) => string[];
@@ -423,6 +429,9 @@ export class MappingTemplate {
 
 // @public (undocumented)
 export const MYSQL_DB_TYPE: ModelDataSourceStrategySqlDbType;
+
+// @public (undocumented)
+export const normalizeDbType: (candidate: string) => ModelDataSourceStrategyDbType;
 
 // @public (undocumented)
 export class ObjectDefinitionWrapper {

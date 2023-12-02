@@ -477,7 +477,7 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
     expect(functions['SQLLambdaFunctionsqlstrategy2']).toBeDefined();
   });
 
-  it.skip('supports Query definitions split amongst heterogeneous definitions', () => {
+  it('supports Query definitions split amongst heterogeneous definitions', () => {
     const sqlStrategy1 = mockSqlDataSourceStrategy({ name: 'sqlstrategy1' });
     const sqlStrategy2 = mockSqlDataSourceStrategy({
       name: 'sqlstrategy2',
@@ -561,7 +561,6 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
     expect(functions['SQLLambdaFunctionsqlstrategy1']).toBeDefined();
     expect(functions['SQLLambdaFunctionsqlstrategy2']).toBeDefined();
   });
-
 });
 
 /**
