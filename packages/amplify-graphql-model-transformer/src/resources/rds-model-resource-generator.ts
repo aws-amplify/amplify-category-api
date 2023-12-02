@@ -127,10 +127,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       strategy.sqlLambdaProvisionedConcurrencyConfig,
     );
 
-    const patchingLambdaRoleScope = context.stackManager.getScopeFor(
-      resourceNames.sqlPatchingLambdaExecutionRole,
-      resourceNames.sqlStack,
-    );
+    const patchingLambdaRoleScope = context.stackManager.getScopeFor(resourceNames.sqlPatchingLambdaExecutionRole, resourceNames.sqlStack);
     const patchingLambdaRole = createRdsPatchingLambdaRole(
       context.resourceHelper.generateIAMRoleName(resourceNames.sqlPatchingLambdaExecutionRole),
       patchingLambdaRoleScope,
@@ -153,10 +150,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       AmplifySQLLayerNotificationTopicName,
     ]);
 
-    const patchingSubscriptionScope = context.stackManager.getScopeFor(
-      resourceNames.sqlPatchingSubscription,
-      resourceNames.sqlStack,
-    );
+    const patchingSubscriptionScope = context.stackManager.getScopeFor(resourceNames.sqlPatchingSubscription, resourceNames.sqlStack);
     const snsTopic = Topic.fromTopicArn(patchingSubscriptionScope, resourceNames.sqlPatchingTopic, topicArn);
     const subscription = new LambdaSubscription(patchingLambda, {
       filterPolicy: {
@@ -168,12 +162,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
     snsTopic.addSubscription(subscription);
 
     const lambdaDataSourceScope = context.stackManager.getScopeFor(resourceNames.sqlLambdaDataSource, resourceNames.sqlStack);
-    const sqlDatasource = context.api.host.addLambdaDataSource(
-      resourceNames.sqlLambdaDataSource,
-      lambda,
-      {},
-      lambdaDataSourceScope,
-    );
+    const sqlDatasource = context.api.host.addLambdaDataSource(resourceNames.sqlLambdaDataSource, lambda, {}, lambdaDataSourceScope);
 
     return sqlDatasource;
   };

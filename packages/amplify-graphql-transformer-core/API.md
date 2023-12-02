@@ -505,11 +505,11 @@ export interface SQLLambdaResourceNames {
     // (undocumented)
     sqlLambdaExecutionRole: string;
     // (undocumented)
-    sqlLambdaLayerVersion: string;
-    // (undocumented)
     sqlLambdaExecutionRolePolicy: string;
     // (undocumented)
     sqlLambdaFunction: string;
+    // (undocumented)
+    sqlLambdaLayerVersion: string;
     // (undocumented)
     sqlLayerVersionMapping: string;
     // (undocumented)
