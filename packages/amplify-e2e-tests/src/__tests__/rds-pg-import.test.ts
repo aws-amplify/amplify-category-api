@@ -53,7 +53,6 @@ describe('RDS Model Directive', () => {
     projRoot = await createNewProjectDir('rdsmodelapi');
     await initProjectAndImportSchema();
 
-    // TODO: Enable once we have the adapter layer on the SQL lambda
     await amplifyPush(projRoot);
     await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.
     await verifyApiEndpointAndCreateClient();

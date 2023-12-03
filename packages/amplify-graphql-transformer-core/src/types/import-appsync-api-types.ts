@@ -22,10 +22,9 @@ export type ImportAppSyncAPIInputs = {
 
 export const SQL_SCHEMA_FILE_NAME = 'schema.sql.graphql';
 
-// TODO: Fix RDSConnectionSecrets type. It is currently used as both an input type for interactive DB discovery, where each value is
-// expected to be the actual value used to connect to the database; and as a configuration holder for the Lambda environment variables,
-// where the values are expected to be paths to SSM parameters containing the actual values. Notably, `port` causes type problems since the
-// actual value is a number and the path value is a string.
+/** RDSConnectionSecrets is an input type for interactive DB discovery in the Gen 1 CLI import flow, where each value is
+ * expected to be the actual value used to connect to the database. TODO: Remove this once we remove SQL support for Gen1 CLI.
+ */
 export type RDSConnectionSecrets = TransformerSecrets & {
   username: string;
   password: string;

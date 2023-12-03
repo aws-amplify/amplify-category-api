@@ -48,7 +48,7 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
     const lambdaDataSources = Object.values(cfnDataSources).filter((dataSource) => dataSource.type === 'AWS_LAMBDA');
     expect(lambdaDataSources.length).toEqual(2);
 
-    // TODO: Expect one 'SqlApiStack' per strategy
+    // Expect one 'SqlApiStack' per strategy
     expect(nestedStacks).toBeDefined();
     expect(nestedStacks['SqlApiStacksqlstrategy1']).toBeDefined();
     expect(nestedStacks['SqlApiStacksqlstrategy2']).toBeDefined();
@@ -63,16 +63,16 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
     expect(cfnDataSources['SQLLambdaDataSourcesqlstrategy1']).toBeDefined();
     expect(cfnDataSources['SQLLambdaDataSourcesqlstrategy2']).toBeDefined();
 
-    // TODO: Expect one SQL lambda alias per strategy if provisioned concurrency is configured
+    // Expect one SQL lambda alias per strategy if provisioned concurrency is configured
     expect(additionalCfnResources).toBeDefined();
     expect(additionalCfnResources['SQLLambdaAliassqlstrategy1']).toBeDefined();
     expect(additionalCfnResources['SQLLambdaAliassqlstrategy2']).toBeDefined();
 
-    // TODO: Expect one patching lambda function per strategy
+    // Expect one patching lambda function per strategy
     expect(functions['SQLLambdaLayerPatchingFunctionsqlstrategy1']).toBeDefined();
     expect(functions['SQLLambdaLayerPatchingFunctionsqlstrategy2']).toBeDefined();
 
-    // TODO: Expect one SQL lambda execution role and one patching lambda execution role per strategy
+    // Expect one SQL lambda execution role and one patching lambda execution role per strategy
     expect(roles).toBeDefined();
     expect(roles['SQLLambdaRolesqlstrategy1']).toBeDefined();
     expect(roles['SQLLambdaRolesqlstrategy2']).toBeDefined();

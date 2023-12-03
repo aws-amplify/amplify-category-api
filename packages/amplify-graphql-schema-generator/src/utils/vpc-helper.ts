@@ -51,7 +51,6 @@ export const getHostVpc = async (hostname: string, region: string): Promise<VpcC
     return proxyResult;
   }
 
-  // TODO: Confirm warning messaging
   const warning = (clusterOrInstance: string): string => {
     return (
       `The host you provided is for an RDS ${clusterOrInstance}. Consider using an RDS Proxy as your data source instead.\n` +
