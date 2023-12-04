@@ -41,6 +41,14 @@
   ],
   "jest": {
     "collectCoverage": true,
+    "coverageProvider": "v8",
+    "coverageThreshold": {
+      "global": {
+        "branches": 77,
+        "functions": 100,
+        "lines": 100
+      }
+    },
     "coverageReporters": [
       "clover",
       "text"

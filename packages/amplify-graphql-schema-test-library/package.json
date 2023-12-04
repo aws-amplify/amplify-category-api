@@ -55,6 +55,14 @@
       "node"
     ],
     "collectCoverage": true,
+    "coverageProvider": "v8",
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100
+      }
+    },
     "coverageReporters": [
       "clover",
       "text"

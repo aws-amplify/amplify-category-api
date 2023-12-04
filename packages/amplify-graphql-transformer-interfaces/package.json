@@ -48,6 +48,7 @@
       "node"
     ],
     "collectCoverage": true,
+    "coverageProvider": "v8",
     "coverageReporters": [
       "clover",
       "text"

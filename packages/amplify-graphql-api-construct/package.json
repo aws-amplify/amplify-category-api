@@ -156,11 +156,12 @@
       "node"
     ],
     "collectCoverage": true,
+    "coverageProvider": "v8",
     "coverageThreshold": {
       "global": {
-        "branches": 80,
-        "functions": 80,
-        "lines": 80
+        "branches": 90,
+        "functions": 95,
+        "lines": 95
       }
     },
     "coverageReporters": [
