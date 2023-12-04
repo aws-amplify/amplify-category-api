@@ -102,7 +102,8 @@ export class AmplifyGraphqlDefinition {
         const strategyName = strategy.name;
         if (combinedStrategyNames.includes(strategyName)) {
           throw new Error(
-            `A SQL-based ModelDataSourceStrategy name ('${strategyName}') cannot be shared between definitions. To specify a SQL-based API with schemas across multiple files, use 'fromFilesAndStrategy'`,
+            `The SQL-based ModelDataSourceStrategy '${strategyName}' was found in multiple definitions, but a strategy name cannot be ` +
+              "shared between definitions. To specify a SQL-based API with schemas across multiple files, use 'fromFilesAndStrategy'",
           );
         }
         definitionStrategyNames.add(strategyName);
