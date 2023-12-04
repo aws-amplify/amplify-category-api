@@ -169,7 +169,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     const { field, references, object, relatedType } = config;
     const relatedStrategy = getModelDataSourceStrategy(ctx, relatedType.name.value);
     if (!isSqlStrategy(relatedStrategy)) {
-      throw new Error('The @hasMany directive is only supported for SQL data sources.');
+      throw new Error('The @hasOne directive is only supported for SQL data sources.');
     }
     const dataSourceName = getModelDataSourceNameForTypeName(ctx, relatedType.name.value);
     const dataSource = ctx.api.host.getDataSource(dataSourceName);
