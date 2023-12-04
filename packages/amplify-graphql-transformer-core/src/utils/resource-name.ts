@@ -142,7 +142,7 @@ export const getResourceNamesForStrategyName = (strategyName: string): SQLLambda
     sqlPatchingLambdaFunction: `SQLLambdaLayerPatchingFunction${strategyName}`,
     sqlPatchingSubscription: `SQLLambdaLayerPatchingSubscription${strategyName}`,
     sqlPatchingTopic: `SQLLambdaLayerPatchingTopic${strategyName}`,
-    sqlStack: `SqlApiStack${strategyName}`,
+    sqlStack: `SQLApiStack${strategyName}`,
     sqlVpcEndpointPrefix: `SQLVpcEndpoint${strategyName}`,
   };
 

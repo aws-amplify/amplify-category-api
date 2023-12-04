@@ -48,10 +48,10 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
     const lambdaDataSources = Object.values(cfnDataSources).filter((dataSource) => dataSource.type === 'AWS_LAMBDA');
     expect(lambdaDataSources.length).toEqual(2);
 
-    // Expect one 'SqlApiStack' per strategy
+    // Expect one 'SQLApiStack' per strategy
     expect(nestedStacks).toBeDefined();
-    expect(nestedStacks['SqlApiStacksqlstrategy1']).toBeDefined();
-    expect(nestedStacks['SqlApiStacksqlstrategy2']).toBeDefined();
+    expect(nestedStacks['SQLApiStacksqlstrategy1']).toBeDefined();
+    expect(nestedStacks['SQLApiStacksqlstrategy2']).toBeDefined();
 
     // Expect one SQL Lambda function per strategy
     expect(functions).toBeDefined();

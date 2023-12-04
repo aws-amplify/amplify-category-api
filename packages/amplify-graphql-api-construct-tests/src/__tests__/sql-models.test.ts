@@ -11,9 +11,9 @@ import {
 } from 'amplify-category-api-e2e-core';
 import { LambdaClient, GetProvisionedConcurrencyConfigCommand } from '@aws-sdk/client-lambda';
 import generator from 'generate-password';
+import { getResourceNamesForStrategyName } from '@aws-amplify/graphql-transformer-core';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { graphql } from '../graphql-request';
-import { getResourceNamesForStrategyName } from '@aws-amplify/graphql-transformer-core';
 
 jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
 
