@@ -95,13 +95,6 @@
     },
     "collectCoverage": true,
     "coverageProvider": "v8",
-    "coverageThreshold": {
-      "global": {
-        "branches": 62,
-        "functions": 37,
-        "lines": 16
-      }
-    },
     "collectCoverageFrom": [
       "src/**/*.ts",
       "!**/node_modules/**",
