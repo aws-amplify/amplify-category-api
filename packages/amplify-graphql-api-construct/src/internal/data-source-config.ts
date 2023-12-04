@@ -1,5 +1,11 @@
-import { parse } from 'graphql';
-import { isSqlStrategy, isQueryNode, isMutationNode, fieldsWithSqlDirective } from '@aws-amplify/graphql-transformer-core';
+import { DefinitionNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode, parse, print } from 'graphql';
+import {
+  isBuiltInGraphqlNode,
+  isSqlStrategy,
+  isQueryNode,
+  isMutationNode,
+  fieldsWithSqlDirective,
+} from '@aws-amplify/graphql-transformer-core';
 import { DataSourceStrategiesProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   CustomSqlDataSourceStrategy as ConstructCustomSqlDataSourceStrategy,
@@ -92,4 +98,66 @@ export const getDataSourceStrategiesProvider = (definition: IAmplifyGraphqlDefin
   });
 
   return provider;
+};
+
+/**
+ * Creates a new schema by merging the individual schemas contained in the definitions, combining fields of the Query and Mutation types in
+ * individual definitions into a single combined definition. Adding directives to `Query` and `Mutation` types participating in a
+ * combination is not supported (the behavior is undefined whether those directives are migrated).
+ */
+export const schemaByMergingDefinitions = (definitions: IAmplifyGraphqlDefinition[]): string => {
+  const schema = definitions.map((def) => def.schema).join('\n');
+  const parsedSchema = parse(schema);
+
+  // We store the Query & Mutation definitions separately. Since the interfaces are readonly, we'll have to re-compose the types after we've
+  // collected all the fields
+  const queryAndMutationDefinitions: Record<
+    string,
+    {
+      node: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode;
+      fields: FieldDefinitionNode[];
+    }
+  > = {};
+
+  // Transform the schema by reducing Mutation & Query types:
+  // - Collect Mutation and Query definitions
+  // - Alter the parsed schema by filtering out Mutation & Query types
+  // - Add the combined Mutation & Query definitions to the filtered schema
+  parsedSchema.definitions.filter(isBuiltInGraphqlNode).forEach((def) => {
+    const typeName = def.name.value;
+    if (!queryAndMutationDefinitions[typeName]) {
+      queryAndMutationDefinitions[typeName] = {
+        node: def,
+        // `ObjectTypeDefinitionNode.fields` is a ReadonlyArray; so we have to create a new mutable array to collect all the fields
+        fields: [...(def.fields ?? [])],
+      };
+      return;
+    }
+
+    queryAndMutationDefinitions[typeName].fields = [...queryAndMutationDefinitions[typeName].fields, ...(def.fields ?? [])];
+  });
+
+  // Gather the collected Query & Mutation fields into <=2 new definitions
+  const combinedDefinitions = Object.values(queryAndMutationDefinitions)
+    .sort((a, b) => a.node.name.value.localeCompare(b.node.name.value))
+    .reduce((acc, cur) => {
+      const definitionNode = {
+        ...cur.node,
+        fields: cur.fields,
+      };
+      return [...acc, definitionNode];
+    }, [] as DefinitionNode[]);
+
+  // Filter out the old Query & Mutation definitions
+  const filteredDefinitions = parsedSchema.definitions.filter((def) => !isBuiltInGraphqlNode(def));
+
+  // Compose the new schema by appending the collected definitions to the filtered definitions. This means that every query will be
+  // rewritten such that the Mutation and Query types appear at the end of the schema.
+  const newSchema = {
+    ...parsedSchema,
+    definitions: [...filteredDefinitions, ...combinedDefinitions],
+  };
+
+  const combinedSchemaString = print(newSchema);
+  return combinedSchemaString;
 };

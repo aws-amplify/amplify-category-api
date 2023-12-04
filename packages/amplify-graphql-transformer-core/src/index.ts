@@ -43,6 +43,7 @@ export {
   getStrategyDbTypeFromTypeNode,
   getTable,
   isAmplifyDynamoDbModelDataSourceStrategy,
+  isBuiltInGraphqlNode,
   isDefaultDynamoDbModelDataSourceStrategy,
   isDynamoDbModel,
   isDynamoDbType,
