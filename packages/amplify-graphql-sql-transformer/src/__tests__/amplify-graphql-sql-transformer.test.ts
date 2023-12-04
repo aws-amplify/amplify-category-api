@@ -1,22 +1,11 @@
-import { MYSQL_DB_TYPE, constructDataSourceStrategies, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { constructDataSourceStrategies, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
-import { TestTransformParameters, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { TestTransformParameters, mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { SqlTransformer } from '../graphql-sql-transformer';
 
 describe('sql directive tests', () => {
-  const mySqlStrategy: SQLLambdaModelDataSourceStrategy = {
-    name: 'mySqlStrategy',
-    dbType: MYSQL_DB_TYPE,
-    dbConnectionConfig: {
-      databaseNameSsmPath: '/databaseNameSsmPath',
-      hostnameSsmPath: '/hostnameSsmPath',
-      passwordSsmPath: '/passwordSsmPath',
-      portSsmPath: '/portSsmPath',
-      usernameSsmPath: '/usernameSsmPath',
-    },
-  };
+  const mySqlStrategy = mockSqlDataSourceStrategy();
 
   it('should compile happy case with statement argument', () => {
     const doc = /* GraphQL */ `
@@ -113,7 +102,7 @@ describe('sql directive tests', () => {
     };
 
     expect(() => testTransform(transformConfig)).toThrowError(
-      '@sql directive \'reference\' argument must be a valid custom query name. Check type "Query" and field "calculateTaxRate". The custom query "calculate-tax" does not exist in "sql-statements" directory.',
+      'The Query field "calculateTaxRate" references a custom SQL statement "calculate-tax" that doesn\'t exist. Verify that "calculate-tax" is a key in the customSqlStatements property.',
     );
   });
 

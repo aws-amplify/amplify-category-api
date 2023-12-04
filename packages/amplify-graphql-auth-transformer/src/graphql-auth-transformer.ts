@@ -8,6 +8,7 @@ import {
   getSortKeyFieldNames,
   generateGetArgumentsInput,
   isSqlModel,
+  getModelDataSourceNameForTypeName,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
@@ -936,12 +937,9 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
 
       return roleDefinition;
     });
-    const { SQLLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
-    const dataSource = (
-      isSqlModel(ctx, def.name.value)
-        ? ctx.api.host.getDataSource(SQLLambdaDataSourceLogicalID)
-        : ctx.api.host.getDataSource(`${def.name.value}Table`)
-    ) as DataSourceProvider;
+
+    const dataSourceName = getModelDataSourceNameForTypeName(ctx, def.name.value);
+    const dataSource = ctx.api.host.getDataSource(dataSourceName) as DataSourceProvider;
     const requestExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthRequestExpression(ctx, def);
     const authExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForUpdate(
       this.configuredAuthProviders,
@@ -973,12 +971,9 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       roleDefinition.allowedFields = allowedFields;
       return roleDefinition;
     });
-    const { SQLLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
-    const dataSource = (
-      isSqlModel(ctx, def.name.value)
-        ? ctx.api.host.getDataSource(SQLLambdaDataSourceLogicalID)
-        : ctx.api.host.getDataSource(`${def.name.value}Table`)
-    ) as DataSourceProvider;
+
+    const dataSourceName = getModelDataSourceNameForTypeName(ctx, def.name.value);
+    const dataSource = ctx.api.host.getDataSource(dataSourceName) as DataSourceProvider;
     const requestExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthRequestExpression(ctx, def);
     const authExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForDelete(
       this.configuredAuthProviders,

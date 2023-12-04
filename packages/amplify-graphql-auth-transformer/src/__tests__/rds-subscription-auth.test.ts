@@ -1,29 +1,13 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { constructDataSourceStrategies, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { parse } from 'graphql';
-import {
-  AppSyncAuthConfiguration,
-  SQLLambdaModelDataSourceStrategy,
-  SqlModelDataSourceDbConnectionConfig,
-} from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { AuthTransformer } from '../graphql-auth-transformer';
 
 describe('Verify RDS Model level Auth rules on subscriptions:', () => {
-  const dbConnectionConfig: SqlModelDataSourceDbConnectionConfig = {
-    hostnameSsmPath: '/test/hostname',
-    portSsmPath: '/test/port',
-    usernameSsmPath: '/test/username',
-    passwordSsmPath: '/test/password',
-    databaseNameSsmPath: '/test/databaseName',
-  };
-
-  const mysqlStrategy: SQLLambdaModelDataSourceStrategy = {
-    name: 'mysqlStrategy',
-    dbType: 'MYSQL',
-    dbConnectionConfig,
-  };
+  const mysqlStrategy = mockSqlDataSourceStrategy();
 
   it('should successfully transform apiKey auth rule', async () => {
     const validSchema = `

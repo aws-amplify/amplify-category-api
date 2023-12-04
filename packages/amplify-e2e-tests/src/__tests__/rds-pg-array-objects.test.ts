@@ -20,12 +20,18 @@ import { ObjectTypeDefinitionNode, parse, print } from 'graphql';
 import path from 'path';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
+import { getDefaultStrategyNameForDbType, getResourceNamesForStrategyName, normalizeDbType } from '@aws-amplify/graphql-transformer-core';
+import { ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-transformer-interfaces';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 
 const CDK_FUNCTION_TYPE = 'AWS::Lambda::Function';
 const CDK_VPC_ENDPOINT_TYPE = 'AWS::EC2::VPCEndpoint';
+
+const engine = 'postgres';
+const strategyName = getDefaultStrategyNameForDbType(normalizeDbType(engine) as ModelDataSourceStrategySqlDbType);
+const resourceNames = getResourceNamesForStrategyName(strategyName);
 
 describe('RDS Model Directive', () => {
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
@@ -112,13 +118,13 @@ describe('RDS Model Directive', () => {
     // Validate the generated resources in the CloudFormation template
     const apisDirectory = path.join(projRoot, 'amplify', 'backend', 'api');
     const apiDirectory = path.join(apisDirectory, 'rdsapi');
-    const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', 'SqlApiStack.json');
+    const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', `${resourceNames.sqlStack}.json`);
     const cfnTemplate = JSON.parse(readFileSync(cfnRDSTemplateFile, 'utf8'));
     expect(cfnTemplate.Resources).toBeDefined();
     const resources = cfnTemplate.Resources;
 
     // Validate if the SQL lambda function has VPC configuration even if the database is accessible through internet
-    const rdsLambdaFunction = getResource(resources, 'SQLLambdaFunction', CDK_FUNCTION_TYPE);
+    const rdsLambdaFunction = getResource(resources, resourceNames.sqlLambdaFunction, CDK_FUNCTION_TYPE);
     expect(rdsLambdaFunction).toBeDefined();
     expect(rdsLambdaFunction.Properties).toBeDefined();
     expect(rdsLambdaFunction.Properties.VpcConfig).toBeDefined();
@@ -127,11 +133,11 @@ describe('RDS Model Directive', () => {
     expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds).toBeDefined();
     expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds.length).toBeGreaterThan(0);
 
-    expect(getResource(resources, 'SQLVpcEndpointssm', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-    expect(getResource(resources, 'SQLVpcEndpointssmmessages', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-    expect(getResource(resources, 'SQLVpcEndpointkms', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-    expect(getResource(resources, 'SQLVpcEndpointec2', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-    expect(getResource(resources, 'SQLVpcEndpointec2messages', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ssm`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ssmmessages`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}kms`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ec2`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ec2messages`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
   };
 
   afterAll(async () => {

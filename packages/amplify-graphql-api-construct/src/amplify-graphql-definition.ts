@@ -1,8 +1,9 @@
 import * as os from 'os';
 import { SchemaFile } from 'aws-cdk-lib/aws-appsync';
+import { isSqlStrategy } from '@aws-amplify/graphql-transformer-core';
 import { IAmplifyGraphqlDefinition } from './types';
 import { constructDataSourceStrategies } from './internal';
-import { ModelDataSourceStrategy } from './model-datasource-strategy-types';
+import { CustomSqlDataSourceStrategy, ModelDataSourceStrategy } from './model-datasource-strategy-types';
 import { constructCustomSqlDataSourceStrategies } from './internal/data-source-config';
 
 export const DEFAULT_MODEL_DATA_SOURCE_STRATEGY: ModelDataSourceStrategy = {
@@ -88,11 +89,39 @@ export class AmplifyGraphqlDefinition {
     if (definitions.length === 1) {
       return definitions[0];
     }
+
+    // A strategy will be present multiple times in a given definition: once per model. We'll create a unique list per definition to ensure
+    // no reuse across definitions.
+    let combinedStrategyNames: string[] = [];
+    for (const definition of definitions) {
+      const definitionStrategyNames = new Set<string>();
+      for (const strategy of Object.values(definition.dataSourceStrategies)) {
+        if (!isSqlStrategy(strategy)) {
+          continue;
+        }
+        const strategyName = strategy.name;
+        if (combinedStrategyNames.includes(strategyName)) {
+          throw new Error(
+            `The SQL-based ModelDataSourceStrategy '${strategyName}' was found in multiple definitions, but a strategy name cannot be ` +
+              "shared between definitions. To specify a SQL-based API with schemas across multiple files, use 'fromFilesAndStrategy'",
+          );
+        }
+        definitionStrategyNames.add(strategyName);
+      }
+      combinedStrategyNames = [...combinedStrategyNames, ...definitionStrategyNames];
+    }
+
+    const customSqlDataSourceStrategies = definitions.reduce(
+      (acc, cur) => [...acc, ...(cur.customSqlDataSourceStrategies ?? [])],
+      [] as CustomSqlDataSourceStrategy[],
+    );
+
     return {
       schema: definitions.map((def) => def.schema).join(os.EOL),
       functionSlots: [],
       referencedLambdaFunctions: definitions.reduce((acc, cur) => ({ ...acc, ...cur.referencedLambdaFunctions }), {}),
       dataSourceStrategies: definitions.reduce((acc, cur) => ({ ...acc, ...cur.dataSourceStrategies }), {}),
+      customSqlDataSourceStrategies,
     };
   }
 }

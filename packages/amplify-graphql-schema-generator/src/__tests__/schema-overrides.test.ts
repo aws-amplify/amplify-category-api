@@ -338,26 +338,26 @@ describe('apply schema overrides for models with refersTo', () => {
             id: String! @primaryKey
             details: String
             userId: String
-            user: User @belongsTo(references: "userId")
+            user: User @belongsTo(references: ["userId"])
         }
     
         type User @refersTo(name: "Users") @model {
             id: String! @primaryKey
             name: String
-            portfolio: Portfolio @hasOne(references: "userId")
+            portfolio: Portfolio @hasOne(references: ["userId"])
         }`,
 
       `type Profile @model {
             id: String! @primaryKey
             details: String
             userId: String
-            user: User @belongsTo(references: "userId")
+            user: User @belongsTo(references: ["userId"])
         }
     
         type User @refersTo(name: "Users") @model {
             id: String! @primaryKey
             name: String
-            profile: Profile @hasOne(references: "userId")
+            profile: Profile @hasOne(references: ["userId"])
         }`,
     ];
     documents.forEach((document, index) => {
@@ -385,13 +385,13 @@ describe('apply schema overrides for models with refersTo', () => {
             id: String! @primaryKey
             details: String
             userId: String
-            user: User @belongsTo(references: "userId")
+            user: User @belongsTo(references: ["userId"])
         }
     
         type User @model {
             id: String! @primaryKey
             name: String
-            profile: Profile @hasOne(references: "userId")
+            profile: Profile @hasOne(references: ["userId"])
         }
     `;
     const editedDocument = parse(editedSchema);
@@ -567,13 +567,13 @@ describe('apply schema overrides for model fields with refersTo', () => {
             myId: String! @refersTo(name: "id") @primaryKey
             details: String
             myUserId: String @refersTo(name: "userId") @index(sortKeyFields: ["id"])
-            user: User @belongsTo(references: "myUserId")
+            user: User @belongsTo(references: ["myUserId"])
         }
 
         type User @refersTo(name: "Users") @model {
             id: String! @primaryKey
             myName: String @refersTo(name: "nameField")
-            portfolio: Portfolio @hasOne(references: "myUserId")
+            portfolio: Portfolio @hasOne(references: ["myUserId"])
         }
       `;
     const editedDocument = parse(editedSchema);
@@ -598,13 +598,13 @@ describe('apply schema overrides for model fields with refersTo', () => {
               id: String! @primaryKey
               details: String
               userId: String @index(sortKeyFields: ["id"])
-              user: User @belongsTo(references: "userId")
+              user: User @belongsTo(references: ["userId"])
           }
       
           type User @refersTo(name: "Users") @model {
               id: String! @primaryKey
               name: String
-              profile: Profile @hasOne(references: "userId")
+              profile: Profile @hasOne(references: ["userId"])
         }`;
     const editedDocument = parse(editedSchema);
     const updatedDocument = applySchemaOverrides(document, editedDocument);
@@ -629,13 +629,13 @@ describe('apply schema overrides for model fields with refersTo', () => {
               id: String! @primaryKey
               details: String
               userId: String
-              user: User @belongsTo(references: "userId") @refersTo(name: "Users")
+              user: User @belongsTo(references: ["userId"]) @refersTo(name: "Users")
           }
       
           type User @model {
               id: String! @primaryKey
               name: String
-              profile: Profile @hasOne(references: "userId") @refersTo(name: "Portfolio")
+              profile: Profile @hasOne(references: ["userId"]) @refersTo(name: "Portfolio")
           }
       `;
     const editedDocument = parse(editedSchema);
@@ -778,7 +778,7 @@ describe('model auth rules overrides', () => {
                 id: String! @primaryKey
                 details: String
                 userId: String
-                user: User @belongsTo(references: "userId")
+                user: User @belongsTo(references: ["userId"])
             }
         
             type MyUser
@@ -791,7 +791,7 @@ describe('model auth rules overrides', () => {
             {
                 id: String! @primaryKey
                 name: String
-                profile: Profile @hasOne(references: "userId")
+                profile: Profile @hasOne(references: ["userId"])
             }
         `;
     const editedDocument = parse(editedSchema);

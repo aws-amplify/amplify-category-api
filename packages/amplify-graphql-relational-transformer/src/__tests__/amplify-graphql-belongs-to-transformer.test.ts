@@ -1,9 +1,8 @@
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform, MYSQL_DB_TYPE, constructDataSourceStrategies, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { GraphQLTransform, constructDataSourceStrategies, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { DocumentNode, Kind, parse } from 'graphql';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
 
 test('fails if @belongsTo was used on an object that is not a model type', () => {
@@ -742,17 +741,7 @@ describe('@belongsTo connection field nullability tests', () => {
 });
 
 describe('@belongsTo directive with RDS datasource', () => {
-  const mySqlStrategy: SQLLambdaModelDataSourceStrategy = {
-    name: 'mySqlStrategy',
-    dbType: MYSQL_DB_TYPE,
-    dbConnectionConfig: {
-      databaseNameSsmPath: '/databaseNameSsmPath',
-      hostnameSsmPath: '/hostnameSsmPath',
-      passwordSsmPath: '/passwordSsmPath',
-      portSsmPath: '/portSsmPath',
-      usernameSsmPath: '/usernameSsmPath',
-    },
-  };
+  const mySqlStrategy = mockSqlDataSourceStrategy();
 
   test('happy case should generate correct resolvers', () => {
     const inputSchema = `

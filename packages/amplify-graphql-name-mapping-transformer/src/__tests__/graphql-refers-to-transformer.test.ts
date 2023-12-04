@@ -293,7 +293,7 @@ describe('@refersTo directive on fields', () => {
     const schema = /* GraphQL */ `
       type ${modelName} @model {
         id: ID!
-        details: String @refersTo(name: "description") @belongsTo(references: "parentId")
+        details: String @refersTo(name: "description") @belongsTo(references: ["parentId"])
       }
     `;
     const [parent, field, directive, context] = getTransformerInputsFromSchema(schema, modelName);

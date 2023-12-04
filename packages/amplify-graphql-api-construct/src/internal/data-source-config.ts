@@ -61,8 +61,6 @@ export const constructCustomSqlDataSourceStrategies = (
 /**
  * Extracts the data source provider from the definition. This jumps through some hoops to avoid changing the public interface. If we decide
  * to change the public interface to simplify the structure, then this process gets a lot simpler.
- *
- * TODO: Verify that this supports combined definitions when we add combine support
  */
 export const getDataSourceStrategiesProvider = (definition: IAmplifyGraphqlDefinition): DataSourceStrategiesProvider => {
   const provider: DataSourceStrategiesProvider = {

@@ -1,7 +1,9 @@
 import {
   DirectiveWrapper,
   generateGetArgumentsInput,
+  getResourceNamesForStrategy,
   InvalidDirectiveError,
+  isSqlStrategy,
   MappingTemplate,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
@@ -109,7 +111,8 @@ export class SqlTransformer extends TransformerPluginBase {
           throw new Error(`Could not find custom SQL strategy for ${typeName}.${fieldName}`);
         }
 
-        const { SQLLambdaDataSourceLogicalID: dataSourceId } = ResourceConstants.RESOURCES;
+        const resourceNames = getResourceNamesForStrategy(strategy.strategy);
+        const dataSourceId = resourceNames.sqlLambdaDataSource;
         const dataSource = context.api.host.getDataSource(dataSourceId);
 
         const statement = getStatement(config, strategy.customSqlStatements);
@@ -168,7 +171,8 @@ const getStatementFromStatementAttribute = (config: SqlDirectiveConfiguration): 
 const getStatementFromReferenceAttribute = (config: SqlDirectiveConfiguration, customQueries?: Record<string, string>): string => {
   if (!config.reference || !customQueries || !customQueries[config.reference]) {
     throw new InvalidDirectiveError(
-      `@sql directive 'reference' argument must be a valid custom query name. Check type "${config.resolverTypeName}" and field "${config.resolverFieldName}". The custom query "${config.reference}" does not exist in "sql-statements" directory.`,
+      `The ${config.resolverTypeName} field "${config.resolverFieldName}" references a custom SQL statement "${config.reference}" that ` +
+        `doesn't exist. Verify that "${config.reference}" is a key in the customSqlStatements property.`,
     );
   }
   return customQueries[config.reference];

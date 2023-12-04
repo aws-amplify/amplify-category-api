@@ -6,7 +6,14 @@ export { getTable, getKeySchema, getSortKeyFieldNames, getStrategyDbTypeFromType
 export { DEFAULT_SCHEMA_DEFINITION } from './defaultSchema';
 export { getParameterStoreSecretPath } from './rds-util';
 export const APICategory = 'api';
-export { setResourceName, getResourceName } from './resource-name';
+export {
+  setResourceName,
+  getDefaultStrategyNameForDbType,
+  getResourceName,
+  getResourceNamesForStrategy,
+  getResourceNamesForStrategyName,
+  SQLLambdaResourceNames,
+} from './resource-name';
 export type { SetResourceNameProps } from './resource-name';
 export * from './model-datasource-strategy-utils';
 export * from './graphql-utils';

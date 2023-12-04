@@ -1,5 +1,10 @@
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { MYSQL_DB_TYPE, constructDataSourceStrategies, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import {
+  MYSQL_DB_TYPE,
+  constructDataSourceStrategies,
+  getResourceNamesForStrategy,
+  validateModelSchema,
+} from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
 import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
@@ -37,10 +42,11 @@ describe('ModelTransformer with SQL data sources:', () => {
       dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlStrategy),
     });
     expect(out).toBeDefined();
-    const sqlApiStack = out.stacks[ResourceConstants.RESOURCES.SQLStackName];
+    const resourceNames = getResourceNamesForStrategy(mysqlStrategy);
+    const sqlApiStack = out.stacks[resourceNames.sqlStack];
     expect(sqlApiStack).toBeDefined();
-    expect(out.functions[`${ResourceConstants.RESOURCES.SQLLambdaLogicalID}.zip`]).toBeDefined();
-    expect(out.functions[`${ResourceConstants.RESOURCES.SQLPatchingLambdaLogicalID}.zip`]).toBeDefined();
+    expect(out.functions[`${resourceNames.sqlLambdaFunction}.zip`]).toBeDefined();
+    expect(out.functions[`${resourceNames.sqlPatchingLambdaFunction}.zip`]).toBeDefined();
     validateModelSchema(parse(out.schema));
   });
 });

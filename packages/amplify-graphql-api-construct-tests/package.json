@@ -35,6 +35,8 @@
     "@aws-amplify/amplify-cli-core": "^4.2.10"
   },
   "devDependencies": {
+    "@aws-amplify/graphql-transformer-core": "2.3.3",
+    "@aws-amplify/graphql-transformer-interfaces": "3.3.1",
     "@types/node": "^16.11.56",
     "aws-cdk-lib": "2.80.0",
     "constructs": "10.0.5",

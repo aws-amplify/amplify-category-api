@@ -1,6 +1,12 @@
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
-import { MappingTemplate, getPrimaryKeyFields } from '@aws-amplify/graphql-transformer-core';
+import { ResolverResourceIDs } from 'graphql-transformer-common';
+import {
+  MappingTemplate,
+  getModelDataSourceNameForTypeName,
+  getModelDataSourceStrategy,
+  getPrimaryKeyFields,
+  isSqlStrategy,
+} from '@aws-amplify/graphql-transformer-core';
 import {
   compoundExpression,
   ref,
@@ -31,8 +37,12 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
    */
   makeHasManyGetItemsConnectionWithKeyResolver = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
     const { field, references, object, relatedType } = config;
-    const { SQLLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
-    const dataSource = ctx.api.host.getDataSource(SQLLambdaDataSourceLogicalID);
+    const relatedStrategy = getModelDataSourceStrategy(ctx, relatedType.name.value);
+    if (!isSqlStrategy(relatedStrategy)) {
+      throw new Error('The @hasMany directive is only supported for SQL data sources.');
+    }
+    const dataSourceName = getModelDataSourceNameForTypeName(ctx, relatedType.name.value);
+    const dataSource = ctx.api.host.getDataSource(dataSourceName);
     const mappedTableName = ctx.resourceHelper.getModelNameMapping(relatedType.name.value);
 
     const connectionCondition: Expression[] = [];
@@ -157,8 +167,12 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     ctx: TransformerContextProvider,
   ): void => {
     const { field, references, object, relatedType } = config;
-    const { SQLLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
-    const dataSource = ctx.api.host.getDataSource(SQLLambdaDataSourceLogicalID);
+    const relatedStrategy = getModelDataSourceStrategy(ctx, relatedType.name.value);
+    if (!isSqlStrategy(relatedStrategy)) {
+      throw new Error('The @hasOne directive is only supported for SQL data sources.');
+    }
+    const dataSourceName = getModelDataSourceNameForTypeName(ctx, relatedType.name.value);
+    const dataSource = ctx.api.host.getDataSource(dataSourceName);
     const mappedTableName = ctx.resourceHelper.getModelNameMapping(relatedType.name.value);
 
     const connectionCondition: Expression[] = [];
@@ -203,8 +217,12 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
 
   makeBelongsToGetItemConnectionWithKeyResolver = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
     const { field, references, object, relatedType } = config;
-    const { SQLLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
-    const dataSource = ctx.api.host.getDataSource(SQLLambdaDataSourceLogicalID);
+    const relatedStrategy = getModelDataSourceStrategy(ctx, relatedType.name.value);
+    if (!isSqlStrategy(relatedStrategy)) {
+      throw new Error('The @belongsTo directive is only supported for SQL data sources.');
+    }
+    const dataSourceName = getModelDataSourceNameForTypeName(ctx, relatedType.name.value);
+    const dataSource = ctx.api.host.getDataSource(dataSourceName);
     const mappedTableName = ctx.resourceHelper.getModelNameMapping(relatedType.name.value);
 
     const connectionCondition: Expression[] = [];

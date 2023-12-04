@@ -48,11 +48,11 @@ def,todo_database,Todo,title,2,NULL,NO,varchar,255,1020,NULL,NULL,NULL,utf8mb4,u
   });
 
   it('generate workflow of postgres relational db without connecting to db', async () => {
-    const schema = `"enum_name","enum_values","table_name","column_name","column_default","ordinal_position","data_type","udt_name","is_nullable","character_maximum_length","indexname","index_columns"
-NULL,NULL,"todo","id",NULL,1,"integer","int4","NO",NULL,"todo_pkey","id"
-NULL,NULL,"todo","title",NULL,2,"character varying","varchar","NO",255,NULL,NULL
-NULL,NULL,"todo","due_date",NULL,4,"date","date","YES",NULL,NULL,NULL
-NULL,NULL,"todo","start_date",NULL,3,"date","date","YES",NULL,NULL,NULL`;
+    const schema = `"enum_name","enum_values","table_name","column_name","column_default","ordinal_position","data_type","udt_name","is_nullable","character_maximum_length","indexname","constraint_type","index_columns"
+NULL,NULL,"todo","id",NULL,1,"integer","int4","NO",NULL,"todo_pkey","PRIMARY KEY","id"
+NULL,NULL,"todo","title",NULL,2,"character varying","varchar","NO",255,NULL,NULL,NULL
+NULL,NULL,"todo","due_date",NULL,4,"date","date","YES",NULL,NULL,NULL,NULL
+NULL,NULL,"todo","start_date",NULL,3,"date","date","YES",NULL,NULL,NULL,NULL`;
     await testUnauthGenerate('postgres', schema);
   });
 

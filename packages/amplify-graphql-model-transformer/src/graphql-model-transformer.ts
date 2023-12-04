@@ -10,17 +10,14 @@ import {
   isAmplifyDynamoDbModelDataSourceStrategy,
   isDefaultDynamoDbModelDataSourceStrategy,
   isDynamoDbModel,
-  MYSQL_DB_TYPE,
+  isSqlStrategy,
   ObjectDefinitionWrapper,
-  POSTGRES_DB_TYPE,
   SyncUtils,
   TransformerModelBase,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncDataSourceType,
   DataSourceInstance,
-  ModelDataSourceStrategy,
-  ModelDataSourceStrategyDbType,
   MutationFieldType,
   QueryFieldType,
   SubscriptionFieldType,
@@ -118,8 +115,9 @@ export const directiveDefinition = /* GraphQl */ `
   }
 `;
 
-// Key for the resource generator map to reference the generator for iterative table deployments
-const CUSTOM_DDB_DB_TYPE = 'AmplifyDDB';
+// Keys for the resource generator map to reference the generator for various ModelDataSourceStrategies
+const ITERATIVE_TABLE_GENERATOR = 'AmplifyDDB';
+const SQL_LAMBDA_GENERATOR = 'SQL';
 
 /**
  * ModelTransformer
@@ -144,9 +142,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     super('amplify-model-transformer', directiveDefinition);
     this.options = this.getOptions(options);
     this.resourceGeneratorMap.set(DDB_DB_TYPE, new DynamoModelResourceGenerator());
-    this.resourceGeneratorMap.set(MYSQL_DB_TYPE, new RdsModelResourceGenerator());
-    this.resourceGeneratorMap.set(POSTGRES_DB_TYPE, new RdsModelResourceGenerator());
-    this.resourceGeneratorMap.set(CUSTOM_DDB_DB_TYPE, new AmplifyDynamoModelResourceGenerator());
+    this.resourceGeneratorMap.set(SQL_LAMBDA_GENERATOR, new RdsModelResourceGenerator());
+    this.resourceGeneratorMap.set(ITERATIVE_TABLE_GENERATOR, new AmplifyDynamoModelResourceGenerator());
   }
 
   before = (ctx: TransformerBeforeStepContextProvider): void => {
@@ -155,27 +152,19 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const { dataSourceStrategies, sqlDirectiveDataSourceStrategies } = ctx;
     this.dataSourceStrategiesProvider = { dataSourceStrategies, sqlDirectiveDataSourceStrategies };
 
-    const hasDbType = (dbType: ModelDataSourceStrategyDbType): ((strategy: ModelDataSourceStrategy) => boolean) => {
-      return (strategy: ModelDataSourceStrategy) => strategy.dbType === dbType;
-    };
-
-    const modelDataSources = Object.values(dataSourceStrategies);
+    const strategies = Object.values(dataSourceStrategies);
     const customSqlDataSources = sqlDirectiveDataSourceStrategies?.map((dss) => dss.strategy) ?? [];
-    if (modelDataSources.some(isDefaultDynamoDbModelDataSourceStrategy)) {
+    if (strategies.some(isDefaultDynamoDbModelDataSourceStrategy)) {
       this.resourceGeneratorMap.get(DDB_DB_TYPE)?.enableGenerator();
       this.resourceGeneratorMap.get(DDB_DB_TYPE)?.enableProvisioned();
     }
-    if (modelDataSources.some(hasDbType(MYSQL_DB_TYPE)) || customSqlDataSources.some(hasDbType(MYSQL_DB_TYPE))) {
-      this.resourceGeneratorMap.get(MYSQL_DB_TYPE)?.enableGenerator();
-      this.resourceGeneratorMap.get(MYSQL_DB_TYPE)?.enableUnprovisioned();
+    if (strategies.some(isSqlStrategy) || customSqlDataSources.length > 0) {
+      this.resourceGeneratorMap.get(SQL_LAMBDA_GENERATOR)?.enableGenerator();
+      this.resourceGeneratorMap.get(SQL_LAMBDA_GENERATOR)?.enableUnprovisioned();
     }
-    if (modelDataSources.some(hasDbType(POSTGRES_DB_TYPE)) || customSqlDataSources.some(hasDbType(POSTGRES_DB_TYPE))) {
-      this.resourceGeneratorMap.get(POSTGRES_DB_TYPE)?.enableGenerator();
-      this.resourceGeneratorMap.get(POSTGRES_DB_TYPE)?.enableUnprovisioned();
-    }
-    if (modelDataSources.some(isAmplifyDynamoDbModelDataSourceStrategy)) {
-      this.resourceGeneratorMap.get(CUSTOM_DDB_DB_TYPE)?.enableGenerator();
-      this.resourceGeneratorMap.get(CUSTOM_DDB_DB_TYPE)?.enableProvisioned();
+    if (strategies.some(isAmplifyDynamoDbModelDataSourceStrategy)) {
+      this.resourceGeneratorMap.get(ITERATIVE_TABLE_GENERATOR)?.enableGenerator();
+      this.resourceGeneratorMap.get(ITERATIVE_TABLE_GENERATOR)?.enableProvisioned();
     }
   };
 
@@ -889,9 +878,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     if (isDefaultDynamoDbModelDataSourceStrategy(strategy)) {
       generator = this.resourceGeneratorMap.get(DDB_DB_TYPE);
     } else if (isAmplifyDynamoDbModelDataSourceStrategy(strategy)) {
-      generator = this.resourceGeneratorMap.get(CUSTOM_DDB_DB_TYPE);
-    } else {
-      generator = this.resourceGeneratorMap.get(strategy.dbType);
+      generator = this.resourceGeneratorMap.get(ITERATIVE_TABLE_GENERATOR);
+    } else if (isSqlStrategy(strategy)) {
+      generator = this.resourceGeneratorMap.get(SQL_LAMBDA_GENERATOR);
     }
 
     if (!generator) {
