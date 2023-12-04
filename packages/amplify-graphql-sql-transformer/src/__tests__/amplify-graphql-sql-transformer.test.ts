@@ -102,7 +102,7 @@ describe('sql directive tests', () => {
     };
 
     expect(() => testTransform(transformConfig)).toThrowError(
-      '@sql directive \'reference\' argument must be a valid custom query name. Check type "Query" and field "calculateTaxRate". The custom query "calculate-tax" does not exist in "sql-statements" directory.',
+      'The Query field "calculateTaxRate" references a custom SQL statement "calculate-tax" that doesn\'t exist. Verify that "calculate-tax" is a key in the customSqlStatements property.',
     );
   });
 
