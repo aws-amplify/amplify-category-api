@@ -17,6 +17,7 @@ export const name = subcommand;
 
 export const run = async (context: $TSContext) => {
   printer.warn(PREVIEW_BANNER);
+
   const apiName = getAppSyncAPIName();
   const apiResourceDir = getAPIResourceDir(apiName);
 
