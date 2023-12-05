@@ -98,12 +98,14 @@ export const createRdsLambda = (
   if (sqlLambdaProvisionedConcurrencyConfig) {
     const { provisionedConcurrentExecutions } = sqlLambdaProvisionedConcurrencyConfig;
 
-    const alias = new Alias(scope, resourceNames.sqlLambdaAlias, {
-      aliasName: resourceNames.sqlLambdaAlias,
+    const alias = new Alias(scope, resourceNames.sqlLambdaAliasLogicalId, {
+      // The alias name will be appended to the function ARN to create a new ARN for execution. Note that the total length of the ARN may
+      // not exceed 140 characters, so make sure the alias name is fairly short.
+      aliasName: resourceNames.sqlLambdaAliasName,
       version: (fn as LambdaFunction).currentVersion,
       provisionedConcurrentExecutions,
     });
-    setResourceName(alias, { name: resourceNames.sqlLambdaAlias, setOnDefaultChild: true });
+    setResourceName(alias, { name: resourceNames.sqlLambdaAliasLogicalId, setOnDefaultChild: true });
     return alias;
   }
 

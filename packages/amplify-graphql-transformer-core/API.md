@@ -506,7 +506,9 @@ export const SQL_SCHEMA_FILE_NAME = "schema.sql.graphql";
 // @public (undocumented)
 export interface SQLLambdaResourceNames {
     // (undocumented)
-    sqlLambdaAlias: string;
+    sqlLambdaAliasLogicalId: string;
+    // (undocumented)
+    sqlLambdaAliasName: string;
     // (undocumented)
     sqlLambdaDataSource: string;
     // (undocumented)

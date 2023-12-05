@@ -65,8 +65,8 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
 
     // Expect one SQL lambda alias per strategy if provisioned concurrency is configured
     expect(additionalCfnResources).toBeDefined();
-    expect(additionalCfnResources['SQLLambdaAliassqlstrategy1']).toBeDefined();
-    expect(additionalCfnResources['SQLLambdaAliassqlstrategy2']).toBeDefined();
+    expect(additionalCfnResources['SQLFunctionsqlstrategy1ProvConcurAlias']).toBeDefined();
+    expect(additionalCfnResources['SQLFunctionsqlstrategy2ProvConcurAlias']).toBeDefined();
 
     // Expect one patching lambda function per strategy
     expect(functions['SQLLambdaLayerPatchingFunctionsqlstrategy1']).toBeDefined();

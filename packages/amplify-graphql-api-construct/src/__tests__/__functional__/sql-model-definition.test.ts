@@ -169,7 +169,7 @@ describe('sql-bound API generated resource access', () => {
         const sqlLambda = functions[resourceNames.sqlLambdaFunction];
         expect(sqlLambda).toBeDefined();
 
-        const alias = additionalCfnResources[resourceNames.sqlLambdaAlias] as CfnAlias;
+        const alias = additionalCfnResources[resourceNames.sqlLambdaAliasLogicalId] as CfnAlias;
 
         expect(alias).toBeDefined();
         expect(alias.provisionedConcurrencyConfig).toEqual({ provisionedConcurrentExecutions: 2 });

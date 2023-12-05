@@ -77,5 +77,5 @@ const {
   resources: { functions },
 } = api;
 
-const sqlLambda = functions[`SQLLambdaFunction${STRATEGY_NAME}`];
-new CfnOutput(stack, 'SQLLambdaFunctionName', { value: sqlLambda.functionName });
+const sqlLambda = functions[`SQLFunction${STRATEGY_NAME}`];
+new CfnOutput(stack, 'SQLFunctionName', { value: sqlLambda.functionName });
