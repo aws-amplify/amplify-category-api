@@ -52,8 +52,15 @@ export const getResourceName = (scope: Construct): string | undefined => {
  * Names for the resources created for a SQL-based ModelDataSourceStrategy.
  */
 export interface SQLLambdaResourceNames {
-  /** The alias created if a customer specifies a provisioned concurrency configuration */
-  sqlLambdaAlias: string;
+  /** The Logical ID of the alias created if a customer specifies a provisioned concurrency configuration */
+  sqlLambdaAliasLogicalId: string;
+
+  /**
+   * The name of the alias created if a customer specifies a provisioned concurrency configuration. The name portion is appended to the
+   * function URL, and should be quite short, to avoid the 140 character maximum limit on function ARN length. Since the function ARN
+   * includes the strategy name, and the Alias name is appended to it, the alias name does not need to include the strategy name.
+   */
+  sqlLambdaAliasName: string;
 
   /** The AppSync DataSource */
   sqlLambdaDataSource: string;
@@ -128,13 +135,15 @@ export const getResourceNamesForStrategy = (strategy: SQLLambdaModelDataSourceSt
  * Returns resource names created for the given strategy name. These are used as the logical IDs for the CDK resources themselves.
  */
 export const getResourceNamesForStrategyName = (strategyName: string): SQLLambdaResourceNames => {
+  const sqlLambdaFunction = `SQLFunction${strategyName}`;
   const resourceNames: SQLLambdaResourceNames = {
-    sqlLambdaAlias: `SQLLambdaAlias${strategyName}`,
+    sqlLambdaAliasLogicalId: `${sqlLambdaFunction}ProvConcurAlias`,
+    sqlLambdaAliasName: 'PCAlias',
     sqlLambdaDataSource: `SQLLambdaDataSource${strategyName}`,
     sqlLambdaExecutionRole: `SQLLambdaRole${strategyName}`,
     sqlLambdaLayerVersion: `SQLLambdaLayerVersion${strategyName}`,
     sqlLambdaExecutionRolePolicy: `SQLLambdaRolePolicy${strategyName}`,
-    sqlLambdaFunction: `SQLFunction${strategyName}`,
+    sqlLambdaFunction,
     sqlLayerVersionMapping: `SQLLayerVersionMapping${strategyName}`,
     sqlLayerVersionResolverCustomResource: `SQLLayerVersionCustomResource${strategyName}`,
     sqlPatchingLambdaExecutionRole: `SQLPatchingLambdaRole${strategyName}`,

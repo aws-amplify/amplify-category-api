@@ -1,4 +1,3 @@
-import * as os from 'os';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY, DDB_DEFAULT_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
 import { mockSqlDataSourceStrategy, SCHEMAS } from '@aws-amplify/graphql-transformer-test-utils';
 import { AmplifyGraphqlDefinition } from '../amplify-graphql-definition';
@@ -18,7 +17,7 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
     const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo.ddb);
     const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo2.ddb, DDB_DEFAULT_DATASOURCE_STRATEGY);
     const combinedDefinition = AmplifyGraphqlDefinition.combine([definition1, definition2]);
-    expect(combinedDefinition.schema).toEqual(`${SCHEMAS.todo.ddb}${os.EOL}${SCHEMAS.todo2.ddb}`);
+    expect(combinedDefinition.schema).toMatchSnapshot();
     expect(combinedDefinition.functionSlots.length).toEqual(0);
     expect(combinedDefinition.dataSourceStrategies).toEqual({
       Todo: DDB_DEFAULT_DATASOURCE_STRATEGY,
@@ -30,7 +29,7 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
     const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo.ddb, DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY);
     const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo2.ddb, DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY);
     const combinedDefinition = AmplifyGraphqlDefinition.combine([definition1, definition2]);
-    expect(combinedDefinition.schema).toEqual(`${SCHEMAS.todo.ddb}${os.EOL}${SCHEMAS.todo2.ddb}`);
+    expect(combinedDefinition.schema).toMatchSnapshot();
     expect(combinedDefinition.functionSlots.length).toEqual(0);
     expect(combinedDefinition.dataSourceStrategies).toEqual({
       Todo: DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
@@ -42,7 +41,7 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
     const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.order.ddb);
     const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.lineItem.ddb, DDB_DEFAULT_DATASOURCE_STRATEGY);
     const combinedDefinition = AmplifyGraphqlDefinition.combine([definition1, definition2]);
-    expect(combinedDefinition.schema).toEqual(`${SCHEMAS.order.ddb}${os.EOL}${SCHEMAS.lineItem.ddb}`);
+    expect(combinedDefinition.schema).toMatchSnapshot();
     expect(combinedDefinition.functionSlots.length).toEqual(0);
     expect(combinedDefinition.dataSourceStrategies).toEqual({
       Order: DDB_DEFAULT_DATASOURCE_STRATEGY,
@@ -54,7 +53,7 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
     const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.order.ddb, DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY);
     const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.lineItem.ddb, DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY);
     const combinedDefinition = AmplifyGraphqlDefinition.combine([definition1, definition2]);
-    expect(combinedDefinition.schema).toEqual(`${SCHEMAS.order.ddb}${os.EOL}${SCHEMAS.lineItem.ddb}`);
+    expect(combinedDefinition.schema).toMatchSnapshot();
     expect(combinedDefinition.functionSlots.length).toEqual(0);
     expect(combinedDefinition.dataSourceStrategies).toEqual({
       Order: DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
@@ -66,7 +65,7 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
     const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo.ddb);
     const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo2.ddb, DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY);
     const combinedDefinition = AmplifyGraphqlDefinition.combine([definition1, definition2]);
-    expect(combinedDefinition.schema).toEqual(`${SCHEMAS.todo.ddb}${os.EOL}${SCHEMAS.todo2.ddb}`);
+    expect(combinedDefinition.schema).toMatchSnapshot();
     expect(combinedDefinition.functionSlots.length).toEqual(0);
     expect(combinedDefinition.dataSourceStrategies).toEqual({
       Todo: DDB_DEFAULT_DATASOURCE_STRATEGY,
@@ -78,7 +77,7 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
     const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.order.ddb);
     const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.lineItem.ddb, DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY);
     const combinedDefinition = AmplifyGraphqlDefinition.combine([definition1, definition2]);
-    expect(combinedDefinition.schema).toEqual(`${SCHEMAS.order.ddb}${os.EOL}${SCHEMAS.lineItem.ddb}`);
+    expect(combinedDefinition.schema).toMatchSnapshot();
     expect(combinedDefinition.functionSlots.length).toEqual(0);
     expect(combinedDefinition.dataSourceStrategies).toEqual({
       Order: DDB_DEFAULT_DATASOURCE_STRATEGY,
@@ -92,7 +91,7 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
     const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo.sql, sqlStrategy1);
     const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo2.sql, sqlStrategy2);
     const combinedDefinition = AmplifyGraphqlDefinition.combine([definition1, definition2]);
-    expect(combinedDefinition.schema).toEqual(`${SCHEMAS.todo.sql}${os.EOL}${SCHEMAS.todo2.sql}`);
+    expect(combinedDefinition.schema).toMatchSnapshot();
     expect(combinedDefinition.functionSlots.length).toEqual(0);
     expect(combinedDefinition.dataSourceStrategies).toEqual({
       Todo: sqlStrategy1,
@@ -106,7 +105,7 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
     const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.order.sql, sqlStrategy1);
     const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.lineItem.sql, sqlStrategy2);
     const combinedDefinition = AmplifyGraphqlDefinition.combine([definition1, definition2]);
-    expect(combinedDefinition.schema).toEqual(`${SCHEMAS.order.sql}${os.EOL}${SCHEMAS.lineItem.sql}`);
+    expect(combinedDefinition.schema).toMatchSnapshot();
     expect(combinedDefinition.functionSlots.length).toEqual(0);
     expect(combinedDefinition.dataSourceStrategies).toEqual({
       Order: sqlStrategy1,
@@ -122,7 +121,7 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
     const definition3 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo3.sql, sqlStrategy1);
     const definition4 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo4.sql, sqlStrategy2);
     const combinedDefinition = AmplifyGraphqlDefinition.combine([definition1, definition2, definition3, definition4]);
-    expect(combinedDefinition.schema).toEqual([SCHEMAS.todo.ddb, SCHEMAS.todo2.ddb, SCHEMAS.todo3.sql, SCHEMAS.todo4.sql].join(os.EOL));
+    expect(combinedDefinition.schema).toMatchSnapshot();
     expect(combinedDefinition.functionSlots.length).toEqual(0);
     expect(combinedDefinition.dataSourceStrategies).toEqual({
       Todo: DDB_DEFAULT_DATASOURCE_STRATEGY,
@@ -139,7 +138,7 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
     const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.post.sql, sqlStrategy1);
     const definition3 = AmplifyGraphqlDefinition.fromString(SCHEMAS.comment.sql, sqlStrategy2);
     const combinedDefinition = AmplifyGraphqlDefinition.combine([definition1, definition2, definition3]);
-    expect(combinedDefinition.schema).toEqual([SCHEMAS.blog.ddb, SCHEMAS.post.sql, SCHEMAS.comment.sql].join(os.EOL));
+    expect(combinedDefinition.schema).toMatchSnapshot();
     expect(combinedDefinition.functionSlots.length).toEqual(0);
     expect(combinedDefinition.dataSourceStrategies).toEqual({
       Blog: DDB_DEFAULT_DATASOURCE_STRATEGY,
@@ -153,7 +152,10 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
     const sqlStrategy2 = mockSqlDataSourceStrategy({ name: 'sqlDefinition1' });
     const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo.sql, sqlStrategy1);
     const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo2.sql, sqlStrategy2);
-    expect(() => AmplifyGraphqlDefinition.combine([definition1, definition2])).toThrow();
+    expect(() => AmplifyGraphqlDefinition.combine([definition1, definition2])).toThrowError(
+      "The SQL-based ModelDataSourceStrategy 'sqlDefinition1' was found in multiple definitions, but a strategy name cannot be " +
+        "shared between definitions. To specify a SQL-based API with schemas across multiple files, use 'fromFilesAndStrategy'",
+    );
   });
 
   it('supports nested combined definitions', () => {
@@ -167,7 +169,7 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
       definition1,
       AmplifyGraphqlDefinition.combine([definition2, AmplifyGraphqlDefinition.combine([definition3, definition4])]),
     ]);
-    expect(combinedDefinition.schema).toEqual([SCHEMAS.todo.ddb, SCHEMAS.todo2.ddb, SCHEMAS.todo3.sql, SCHEMAS.todo4.sql].join(os.EOL));
+    expect(combinedDefinition.schema).toMatchSnapshot();
     expect(combinedDefinition.functionSlots.length).toEqual(0);
     expect(combinedDefinition.dataSourceStrategies).toEqual({
       Todo: DDB_DEFAULT_DATASOURCE_STRATEGY,
@@ -184,7 +186,7 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
       const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo.sql, sqlStrategy1);
       const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlQueryStatement, sqlStrategy2);
       const combinedDefinition = AmplifyGraphqlDefinition.combine([definition1, definition2]);
-      expect(combinedDefinition.schema).toEqual([SCHEMAS.todo.sql, SCHEMAS.customSqlQueryStatement].join(os.EOL));
+      expect(combinedDefinition.schema).toMatchSnapshot();
       expect(combinedDefinition.functionSlots.length).toEqual(0);
       expect(combinedDefinition.dataSourceStrategies).toEqual({
         Todo: sqlStrategy1,
@@ -206,7 +208,7 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
       const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo.sql, sqlStrategy1);
       const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlQueryReference, sqlStrategy2);
       const combinedDefinition = AmplifyGraphqlDefinition.combine([definition1, definition2]);
-      expect(combinedDefinition.schema).toEqual([SCHEMAS.todo.sql, SCHEMAS.customSqlQueryReference].join(os.EOL));
+      expect(combinedDefinition.schema).toMatchSnapshot();
       expect(combinedDefinition.functionSlots.length).toEqual(0);
       expect(combinedDefinition.dataSourceStrategies).toEqual({
         Todo: sqlStrategy1,
@@ -230,9 +232,7 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
       const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlQueryStatement, sqlStrategy2);
       const definition3 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlQueryReference, sqlStrategy3);
       const combinedDefinition = AmplifyGraphqlDefinition.combine([definition1, definition2, definition3]);
-      expect(combinedDefinition.schema).toEqual(
-        [SCHEMAS.todo.sql, SCHEMAS.customSqlQueryStatement, SCHEMAS.customSqlQueryReference].join(os.EOL),
-      );
+      expect(combinedDefinition.schema).toMatchSnapshot();
       expect(combinedDefinition.functionSlots.length).toEqual(0);
       expect(combinedDefinition.dataSourceStrategies).toEqual({
         Todo: sqlStrategy1,
@@ -258,21 +258,17 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
       const sqlStrategy2 = mockSqlDataSourceStrategy({ name: 'sqlDefinition2' });
       const sqlStrategy3 = mockSqlDataSourceStrategy({ name: 'sqlDefinition3' });
       const sqlStrategy4 = mockSqlDataSourceStrategy({ name: 'sqlDefinition4' });
-      const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlQueryStatement, sqlStrategy1);
+      const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlQueryStatement + SCHEMAS.todo.sql, sqlStrategy1);
       const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlQueryReference, sqlStrategy2);
       const definition3 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlMutationStatement, sqlStrategy3);
       const definition4 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlMutationReference, sqlStrategy4);
       const combinedDefinition = AmplifyGraphqlDefinition.combine([definition1, definition2, definition3, definition4]);
-      expect(combinedDefinition.schema).toEqual(
-        [
-          SCHEMAS.customSqlQueryStatement,
-          SCHEMAS.customSqlQueryReference,
-          SCHEMAS.customSqlMutationStatement,
-          SCHEMAS.customSqlMutationReference,
-        ].join(os.EOL),
-      );
+
+      expect(combinedDefinition.schema).toMatchSnapshot();
       expect(combinedDefinition.functionSlots.length).toEqual(0);
-      expect(combinedDefinition.dataSourceStrategies).toEqual({});
+      expect(combinedDefinition.dataSourceStrategies).toEqual({
+        Todo: sqlStrategy1,
+      });
       expect(combinedDefinition.customSqlDataSourceStrategies).toEqual(
         expect.arrayContaining([
           {
@@ -305,7 +301,7 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
       const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlQueryStatement, sqlStrategy1);
       const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlMutationStatement, sqlStrategy2);
       const combinedDefinition = AmplifyGraphqlDefinition.combine([definition1, definition2]);
-      expect(combinedDefinition.schema).toEqual([SCHEMAS.customSqlQueryStatement, SCHEMAS.customSqlMutationStatement].join(os.EOL));
+      expect(combinedDefinition.schema).toMatchSnapshot();
       expect(combinedDefinition.functionSlots.length).toEqual(0);
       expect(combinedDefinition.dataSourceStrategies).toEqual({});
       expect(combinedDefinition.customSqlDataSourceStrategies).toEqual(
@@ -330,7 +326,7 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
       const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlQueryReference, sqlStrategy1);
       const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlMutationReference, sqlStrategy2);
       const combinedDefinition = AmplifyGraphqlDefinition.combine([definition1, definition2]);
-      expect(combinedDefinition.schema).toEqual([SCHEMAS.customSqlQueryReference, SCHEMAS.customSqlMutationReference].join(os.EOL));
+      expect(combinedDefinition.schema).toMatchSnapshot();
       expect(combinedDefinition.functionSlots.length).toEqual(0);
       expect(combinedDefinition.dataSourceStrategies).toEqual({});
       expect(combinedDefinition.customSqlDataSourceStrategies).toEqual(
@@ -355,7 +351,7 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
       const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlQueryStatement, sqlStrategy1);
       const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlQueryReference, sqlStrategy2);
       const combinedDefinition = AmplifyGraphqlDefinition.combine([definition1, definition2]);
-      expect(combinedDefinition.schema).toEqual([SCHEMAS.customSqlQueryStatement, SCHEMAS.customSqlQueryReference].join(os.EOL));
+      expect(combinedDefinition.schema).toMatchSnapshot();
       expect(combinedDefinition.functionSlots.length).toEqual(0);
       expect(combinedDefinition.dataSourceStrategies).toEqual({});
       expect(combinedDefinition.customSqlDataSourceStrategies).toEqual(
@@ -418,7 +414,7 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
       const definition2 = AmplifyGraphqlDefinition.fromString(mysqlSchema, mysqlStrategy);
       const definition3 = AmplifyGraphqlDefinition.fromString(postgresSchema, postgresStrategy);
       const combinedDefinition = AmplifyGraphqlDefinition.combine([definition1, definition2, definition3]);
-      expect(combinedDefinition.schema).toEqual([ddbSchema, mysqlSchema, postgresSchema].join(os.EOL));
+      expect(combinedDefinition.schema).toMatchSnapshot();
       expect(combinedDefinition.functionSlots.length).toEqual(0);
       expect(combinedDefinition.dataSourceStrategies).toEqual({
         Post: DDB_DEFAULT_DATASOURCE_STRATEGY,
@@ -439,6 +435,26 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
             strategy: postgresStrategy,
           },
         ]),
+      );
+    });
+
+    it('fails if a custom SQL Query field is declared in multiple definitions', () => {
+      const sqlStrategy1 = mockSqlDataSourceStrategy({ name: 'sqlDefinition1' });
+      const sqlStrategy2 = mockSqlDataSourceStrategy({ name: 'sqlDefinition2' });
+      const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlQueryStatement, sqlStrategy1);
+      const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlQueryStatement, sqlStrategy2);
+      expect(() => AmplifyGraphqlDefinition.combine([definition1, definition2])).toThrowError(
+        "The custom Query field 'customSqlQueryStatement' was found in multiple definitions, but a field name cannot be shared between definitions.",
+      );
+    });
+
+    it('fails if a custom SQL Mutation field is declared in multiple definitions', () => {
+      const sqlStrategy1 = mockSqlDataSourceStrategy({ name: 'sqlDefinition1' });
+      const sqlStrategy2 = mockSqlDataSourceStrategy({ name: 'sqlDefinition2' });
+      const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlMutationStatement, sqlStrategy1);
+      const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlMutationStatement, sqlStrategy2);
+      expect(() => AmplifyGraphqlDefinition.combine([definition1, definition2])).toThrowError(
+        "The custom Mutation field 'customSqlMutationStatement' was found in multiple definitions, but a field name cannot be shared between definitions.",
       );
     });
   });

@@ -65,8 +65,8 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
 
     // Expect one SQL lambda alias per strategy if provisioned concurrency is configured
     expect(additionalCfnResources).toBeDefined();
-    expect(additionalCfnResources['SQLLambdaAliassqlstrategy1']).toBeDefined();
-    expect(additionalCfnResources['SQLLambdaAliassqlstrategy2']).toBeDefined();
+    expect(additionalCfnResources['SQLFunctionsqlstrategy1ProvConcurAlias']).toBeDefined();
+    expect(additionalCfnResources['SQLFunctionsqlstrategy2ProvConcurAlias']).toBeDefined();
 
     // Expect one patching lambda function per strategy
     expect(functions['SQLLambdaLayerPatchingFunctionsqlstrategy1']).toBeDefined();
@@ -498,7 +498,7 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
     expect(functions['SQLFunctionsqlstrategy2']).toBeDefined();
   });
 
-  it.skip('supports Query definitions split amongst heterogeneous definitions', () => {
+  it('supports Query definitions split amongst heterogeneous definitions', () => {
     const sqlStrategy1 = mockSqlDataSourceStrategy({ name: 'sqlstrategy1' });
     const sqlStrategy2 = mockSqlDataSourceStrategy({
       name: 'sqlstrategy2',
@@ -506,16 +506,19 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
         customSqlQueryReference: 'SELECT 1',
       },
     });
-    const schema2 = /* GraphQL */ `
-      type Query {
-        customSqlQueryReference: [Int] @sql(reference: "customSqlQueryReference")
-      }
-    `;
+    const sqlStrategy3 = mockSqlDataSourceStrategy({
+      name: 'sqlstrategy3',
+      customSqlStatements: {
+        customSqlMutationReference: 'UPDATE mytable SET id=1; SELECT 1',
+      },
+    });
+    const schema3 = SCHEMAS.todo.sql + '\n' + SCHEMAS.customSqlMutationReference;
 
     const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlQueryStatement, sqlStrategy1);
-    const definition2 = AmplifyGraphqlDefinition.fromString(schema2, sqlStrategy2);
+    const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlQueryReference, sqlStrategy2);
+    const definition3 = AmplifyGraphqlDefinition.fromString(schema3, sqlStrategy3);
 
-    const api = makeApiByCombining(definition1, definition2);
+    const api = makeApiByCombining(definition1, definition2, definition3);
 
     const {
       resources: {
@@ -533,12 +536,13 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
     expect(ddbDataSources.length).toEqual(0);
 
     const lambdaDataSources = Object.values(cfnDataSources).filter((dataSource) => dataSource.type === 'AWS_LAMBDA');
-    expect(lambdaDataSources.length).toEqual(2);
+    expect(lambdaDataSources.length).toEqual(3);
 
     // Expect one SQL Lambda function per strategy
     expect(functions).toBeDefined();
     expect(functions['SQLFunctionsqlstrategy1']).toBeDefined();
     expect(functions['SQLFunctionsqlstrategy2']).toBeDefined();
+    expect(functions['SQLFunctionsqlstrategy3']).toBeDefined();
   });
 
   it('supports definitions with only custom SQL statements', () => {

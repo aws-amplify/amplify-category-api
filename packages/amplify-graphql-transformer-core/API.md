@@ -378,6 +378,13 @@ export class InvalidTransformerError extends Error {
 export const isAmplifyDynamoDbModelDataSourceStrategy: (strategy: ModelDataSourceStrategy) => strategy is AmplifyDynamoDbModelDataSourceStrategy;
 
 // @public (undocumented)
+export const isBuiltInGraphqlNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitionNode | (InterfaceTypeDefinitionNode & {
+    name: {
+        value: 'Mutation' | 'Query';
+    };
+});
+
+// @public (undocumented)
 export const isDefaultDynamoDbModelDataSourceStrategy: (strategy: ModelDataSourceStrategy) => strategy is DefaultDynamoDbModelDataSourceStrategy;
 
 // @public (undocumented)
@@ -499,7 +506,9 @@ export const SQL_SCHEMA_FILE_NAME = "schema.sql.graphql";
 // @public (undocumented)
 export interface SQLLambdaResourceNames {
     // (undocumented)
-    sqlLambdaAlias: string;
+    sqlLambdaAliasLogicalId: string;
+    // (undocumented)
+    sqlLambdaAliasName: string;
     // (undocumented)
     sqlLambdaDataSource: string;
     // (undocumented)

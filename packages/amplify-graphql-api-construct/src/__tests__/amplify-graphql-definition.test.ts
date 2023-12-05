@@ -220,14 +220,24 @@ describe('AmplifyGraphqlDefinition', () => {
   });
 
   describe('combine', () => {
-    it('returns the correct definition after the combination', () => {
+    it('returns the correct definition after the combination, preserving relationship and auth directives', () => {
       const amplifyTableSchema = /* GraphQL */ `
-        type Blog @model {
+        type Blog @model @auth(rules: [{ allow: owner }]) {
           id: ID!
           posts: [Post] @hasMany
         }
 
-        type Post @model {
+        type Query {
+          getOnlyOwner: [Int] @sql(statement: "SELECT 1") @auth(rules: [{ allow: owner }])
+          getAllowPublic: [Int] @sql(statement: "SELECT 1") @auth(rules: [{ allow: public }])
+        }
+
+        type Mutation {
+          updateOnlyOwner: [Int] @sql(statement: "UPDATE foo SET id = 1; SELECT 1") @auth(rules: [{ allow: owner }])
+          updateAllowPublic: [Int] @sql(statement: "UPDATE foo SET id = 1; SELECT 1") @auth(rules: [{ allow: public }])
+        }
+
+        type Post @model @auth(rules: [{ allow: owner }, { allow: public, operations: [read] }]) {
           id: ID!
           blog: Blog @belongsTo
         }
@@ -235,7 +245,7 @@ describe('AmplifyGraphqlDefinition', () => {
       const definition1 = AmplifyGraphqlDefinition.fromString(TEST_SCHEMA);
       const definition2 = AmplifyGraphqlDefinition.fromString(amplifyTableSchema, AMPLIFY_TABLE_DS_DEFINITION);
       const combinedDefinition = AmplifyGraphqlDefinition.combine([definition1, definition2]);
-      expect(combinedDefinition.schema).toEqual(`${TEST_SCHEMA}${os.EOL}${amplifyTableSchema}`);
+      expect(combinedDefinition.schema).toMatchSnapshot();
       expect(combinedDefinition.functionSlots.length).toEqual(0);
       expect(Object.keys(combinedDefinition.referencedLambdaFunctions ?? {}).length).toEqual(0);
       expect(combinedDefinition.dataSourceStrategies).toEqual({
@@ -245,7 +255,7 @@ describe('AmplifyGraphqlDefinition', () => {
       });
     });
 
-    it('merges referencedLamdaFunctions', () => {
+    it('merges referencedLambdaFunctions', () => {
       const func1 = { functionName: 'imfunc1' } as unknown as IFunction;
       const func2 = { functionName: 'imfunc2' } as unknown as IFunction;
 

@@ -4,7 +4,7 @@ import { isSqlStrategy } from '@aws-amplify/graphql-transformer-core';
 import { IAmplifyGraphqlDefinition } from './types';
 import { constructDataSourceStrategies } from './internal';
 import { CustomSqlDataSourceStrategy, ModelDataSourceStrategy } from './model-datasource-strategy-types';
-import { constructCustomSqlDataSourceStrategies, validateDataSourceStrategy } from './internal/data-source-config';
+import { constructCustomSqlDataSourceStrategies, schemaByMergingDefinitions, validateDataSourceStrategy } from './internal/data-source-config';
 
 export const DEFAULT_MODEL_DATA_SOURCE_STRATEGY: ModelDataSourceStrategy = {
   dbType: 'DYNAMODB',
@@ -117,8 +117,10 @@ export class AmplifyGraphqlDefinition {
       [] as CustomSqlDataSourceStrategy[],
     );
 
+    const mergedSchema = schemaByMergingDefinitions(definitions);
+
     return {
-      schema: definitions.map((def) => def.schema).join(os.EOL),
+      schema: mergedSchema,
       functionSlots: [],
       referencedLambdaFunctions: definitions.reduce((acc, cur) => ({ ...acc, ...cur.referencedLambdaFunctions }), {}),
       dataSourceStrategies: definitions.reduce((acc, cur) => ({ ...acc, ...cur.dataSourceStrategies }), {}),
