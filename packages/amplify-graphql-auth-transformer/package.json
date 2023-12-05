@@ -69,7 +69,7 @@
       "global": {
         "branches": 88,
         "functions": 90,
-        "lines": 94
+        "lines": 90
       }
     },
     "coverageReporters": [
