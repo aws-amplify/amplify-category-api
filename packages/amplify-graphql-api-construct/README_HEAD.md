@@ -131,5 +131,3 @@ new AmplifyGraphqlApi(stack, 'MultiFileDefinition', {
   },
 });
 ```
-
-> **NOTE** The 'dataSourceStrategies' configuration option is in preview and is not recommended to use with production systems.

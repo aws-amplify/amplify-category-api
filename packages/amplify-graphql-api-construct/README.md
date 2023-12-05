@@ -132,8 +132,6 @@ new AmplifyGraphqlApi(stack, 'MultiFileDefinition', {
 });
 ```
 
-> **NOTE** The 'dataSourceStrategies' configuration option is in preview and is not recommended to use with production systems.
-
 # API Reference <a name="API Reference" id="api-reference"></a>
 
 ## Constructs <a name="Constructs" id="Constructs"></a>
@@ -1661,6 +1659,68 @@ For more information, refer to https://docs.aws.amazon.com/appsync/latest/devgui
 
 ---
 
+### CustomSqlDataSourceStrategy <a name="CustomSqlDataSourceStrategy" id="@aws-amplify/graphql-api-construct.CustomSqlDataSourceStrategy"></a>
+
+The input type for defining a ModelDataSourceStrategy used to resolve a field annotated with a `@sql` directive.
+
+Although this is a
+public type, you should rarely need to use this. The AmplifyGraphqlDefinition factory methods (e.g., `fromString`,
+`fromFilesAndStrategy`) will automatically construct this structure for you.
+
+#### Initializer <a name="Initializer" id="@aws-amplify/graphql-api-construct.CustomSqlDataSourceStrategy.Initializer"></a>
+
+```typescript
+import { CustomSqlDataSourceStrategy } from '@aws-amplify/graphql-api-construct'
+
+const customSqlDataSourceStrategy: CustomSqlDataSourceStrategy = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@aws-amplify/graphql-api-construct.CustomSqlDataSourceStrategy.property.fieldName">fieldName</a></code> | <code>string</code> | The field name with which the custom SQL is associated. |
+| <code><a href="#@aws-amplify/graphql-api-construct.CustomSqlDataSourceStrategy.property.strategy">strategy</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy">SQLLambdaModelDataSourceStrategy</a></code> | The strategy used to create the datasource that will resolve the custom SQL statement. |
+| <code><a href="#@aws-amplify/graphql-api-construct.CustomSqlDataSourceStrategy.property.typeName">typeName</a></code> | <code>string</code> | The built-in type (either "Query" or "Mutation") with which the custom SQL is associated. |
+
+---
+
+##### `fieldName`<sup>Required</sup> <a name="fieldName" id="@aws-amplify/graphql-api-construct.CustomSqlDataSourceStrategy.property.fieldName"></a>
+
+```typescript
+public readonly fieldName: string;
+```
+
+- *Type:* string
+
+The field name with which the custom SQL is associated.
+
+---
+
+##### `strategy`<sup>Required</sup> <a name="strategy" id="@aws-amplify/graphql-api-construct.CustomSqlDataSourceStrategy.property.strategy"></a>
+
+```typescript
+public readonly strategy: SQLLambdaModelDataSourceStrategy;
+```
+
+- *Type:* <a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy">SQLLambdaModelDataSourceStrategy</a>
+
+The strategy used to create the datasource that will resolve the custom SQL statement.
+
+---
+
+##### `typeName`<sup>Required</sup> <a name="typeName" id="@aws-amplify/graphql-api-construct.CustomSqlDataSourceStrategy.property.typeName"></a>
+
+```typescript
+public readonly typeName: string;
+```
+
+- *Type:* string
+
+The built-in type (either "Query" or "Mutation") with which the custom SQL is associated.
+
+---
+
 ### DefaultDynamoDbModelDataSourceStrategy <a name="DefaultDynamoDbModelDataSourceStrategy" id="@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy"></a>
 
 Use default CloudFormation type 'AWS::DynamoDB::Table' to provision table.
@@ -2182,6 +2242,7 @@ const partialTranslationBehavior: PartialTranslationBehavior = { ... }
 | <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.enableSearchNodeToNodeEncryption">enableSearchNodeToNodeEncryption</a></code> | <code>boolean</code> | If enabled, set nodeToNodeEncryption on the searchable domain (if one exists). |
 | <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.enableTransformerCfnOutputs">enableTransformerCfnOutputs</a></code> | <code>boolean</code> | When enabled, internal cfn outputs which existed in Amplify-generated apps will continue to be emitted. |
 | <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.populateOwnerFieldForStaticGroupAuth">populateOwnerFieldForStaticGroupAuth</a></code> | <code>boolean</code> | Ensure that the owner field is still populated even if a static iam or group authorization applies. |
+| <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.replaceTableUponGsiUpdate">replaceTableUponGsiUpdate</a></code> | <code>boolean</code> | This behavior will only come into effect when both "allowDestructiveGraphqlSchemaUpdates" and this value are set to true. |
 | <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.respectPrimaryKeyAttributesOnConnectionField">respectPrimaryKeyAttributesOnConnectionField</a></code> | <code>boolean</code> | Enable custom primary key support, there's no good reason to disable this unless trying not to update a legacy app. |
 | <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.sandboxModeEnabled">sandboxModeEnabled</a></code> | <code>boolean</code> | Enabling sandbox mode will enable api key auth on all models in the transformed schema. |
 | <code><a href="#@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.secondaryKeyAsGSI">secondaryKeyAsGSI</a></code> | <code>boolean</code> | If disabled, generated. |
@@ -2283,6 +2344,22 @@ Ensure that the owner field is still populated even if a static iam or group aut
 
 ---
 
+##### `replaceTableUponGsiUpdate`<sup>Optional</sup> <a name="replaceTableUponGsiUpdate" id="@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.replaceTableUponGsiUpdate"></a>
+
+```typescript
+public readonly replaceTableUponGsiUpdate: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+This behavior will only come into effect when both "allowDestructiveGraphqlSchemaUpdates" and this value are set to true.
+
+When enabled, any global secondary index update operation will replace the table instead of iterative deployment, which will WIPE ALL
+EXISTING DATA but cost much less time for deployment This will only affect DynamoDB tables with provision strategy "AMPLIFY_TABLE".
+
+---
+
 ##### `respectPrimaryKeyAttributesOnConnectionField`<sup>Optional</sup> <a name="respectPrimaryKeyAttributesOnConnectionField" id="@aws-amplify/graphql-api-construct.PartialTranslationBehavior.property.respectPrimaryKeyAttributesOnConnectionField"></a>
 
 ```typescript
@@ -2360,6 +2437,40 @@ public readonly useSubUsernameForDefaultIdentityClaim: boolean;
 - *Default:* true
 
 Ensure that oidc and userPool auth use the `sub` field in the for the username field, which disallows new users with the same id to access data from a deleted user in the pool.
+
+---
+
+### ProvisionedConcurrencyConfig <a name="ProvisionedConcurrencyConfig" id="@aws-amplify/graphql-api-construct.ProvisionedConcurrencyConfig"></a>
+
+The configuration for the provisioned concurrency of the Lambda.
+
+#### Initializer <a name="Initializer" id="@aws-amplify/graphql-api-construct.ProvisionedConcurrencyConfig.Initializer"></a>
+
+```typescript
+import { ProvisionedConcurrencyConfig } from '@aws-amplify/graphql-api-construct'
+
+const provisionedConcurrencyConfig: ProvisionedConcurrencyConfig = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@aws-amplify/graphql-api-construct.ProvisionedConcurrencyConfig.property.provisionedConcurrentExecutions">provisionedConcurrentExecutions</a></code> | <code>number</code> | The amount of provisioned concurrency to allocate. |
+
+---
+
+##### `provisionedConcurrentExecutions`<sup>Required</sup> <a name="provisionedConcurrentExecutions" id="@aws-amplify/graphql-api-construct.ProvisionedConcurrencyConfig.property.provisionedConcurrentExecutions"></a>
+
+```typescript
+public readonly provisionedConcurrentExecutions: number;
+```
+
+- *Type:* number
+
+The amount of provisioned concurrency to allocate.
+
+*
 
 ---
 
@@ -2516,7 +2627,7 @@ const sQLLambdaModelDataSourceStrategy: SQLLambdaModelDataSourceStrategy = { ...
 | <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.dbType">dbType</a></code> | <code>string</code> | The type of the SQL database used to process model operations for this definition. |
 | <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.name">name</a></code> | <code>string</code> | The name of the strategy. |
 | <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.customSqlStatements">customSqlStatements</a></code> | <code>{[ key: string ]: string}</code> | Custom SQL statements. |
-| <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.sqlLambdaLayerMapping">sqlLambdaLayerMapping</a></code> | <code>{[ key: string ]: string}</code> | An optional override for the default SQL Lambda Layer. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.sqlLambdaProvisionedConcurrencyConfig">sqlLambdaProvisionedConcurrencyConfig</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.ProvisionedConcurrencyConfig">ProvisionedConcurrencyConfig</a></code> | The configuration for the provisioned concurrency of the Lambda. |
 | <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.vpcConfiguration">vpcConfiguration</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.VpcConfig">VpcConfig</a></code> | The configuration of the VPC into which to install the Lambda. |
 
 ---
@@ -2575,15 +2686,15 @@ to be executed.
 
 ---
 
-##### `sqlLambdaLayerMapping`<sup>Optional</sup> <a name="sqlLambdaLayerMapping" id="@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.sqlLambdaLayerMapping"></a>
+##### `sqlLambdaProvisionedConcurrencyConfig`<sup>Optional</sup> <a name="sqlLambdaProvisionedConcurrencyConfig" id="@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.sqlLambdaProvisionedConcurrencyConfig"></a>
 
 ```typescript
-public readonly sqlLambdaLayerMapping: {[ key: string ]: string};
+public readonly sqlLambdaProvisionedConcurrencyConfig: ProvisionedConcurrencyConfig;
 ```
 
-- *Type:* {[ key: string ]: string}
+- *Type:* <a href="#@aws-amplify/graphql-api-construct.ProvisionedConcurrencyConfig">ProvisionedConcurrencyConfig</a>
 
-An optional override for the default SQL Lambda Layer.
+The configuration for the provisioned concurrency of the Lambda.
 
 ---
 
@@ -3002,6 +3113,7 @@ const translationBehavior: TranslationBehavior = { ... }
 | <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.enableSearchNodeToNodeEncryption">enableSearchNodeToNodeEncryption</a></code> | <code>boolean</code> | *No description.* |
 | <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.enableTransformerCfnOutputs">enableTransformerCfnOutputs</a></code> | <code>boolean</code> | When enabled, internal cfn outputs which existed in Amplify-generated apps will continue to be emitted. |
 | <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.populateOwnerFieldForStaticGroupAuth">populateOwnerFieldForStaticGroupAuth</a></code> | <code>boolean</code> | Ensure that the owner field is still populated even if a static iam or group authorization applies. |
+| <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.replaceTableUponGsiUpdate">replaceTableUponGsiUpdate</a></code> | <code>boolean</code> | This behavior will only come into effect when both "allowDestructiveGraphqlSchemaUpdates" and this value are set to true. |
 | <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.respectPrimaryKeyAttributesOnConnectionField">respectPrimaryKeyAttributesOnConnectionField</a></code> | <code>boolean</code> | Enable custom primary key support, there's no good reason to disable this unless trying not to update a legacy app. |
 | <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.sandboxModeEnabled">sandboxModeEnabled</a></code> | <code>boolean</code> | Enabling sandbox mode will enable api key auth on all models in the transformed schema. |
 | <code><a href="#@aws-amplify/graphql-api-construct.TranslationBehavior.property.secondaryKeyAsGSI">secondaryKeyAsGSI</a></code> | <code>boolean</code> | If disabled, generated. |
@@ -3092,6 +3204,22 @@ public readonly populateOwnerFieldForStaticGroupAuth: boolean;
 - *Default:* true
 
 Ensure that the owner field is still populated even if a static iam or group authorization applies.
+
+---
+
+##### `replaceTableUponGsiUpdate`<sup>Required</sup> <a name="replaceTableUponGsiUpdate" id="@aws-amplify/graphql-api-construct.TranslationBehavior.property.replaceTableUponGsiUpdate"></a>
+
+```typescript
+public readonly replaceTableUponGsiUpdate: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+This behavior will only come into effect when both "allowDestructiveGraphqlSchemaUpdates" and this value are set to true.
+
+When enabled, any GSI update operation will replace the table instead of iterative deployment, which will WIPE ALL EXISTING DATA but
+cost much less time for deployment This will only affect DynamoDB tables with provision strategy "AMPLIFY_TABLE".
 
 ---
 
@@ -3501,8 +3629,6 @@ AmplifyGraphqlDefinition.combine(definitions: IAmplifyGraphqlDefinition[])
 
 Combines multiple IAmplifyGraphqlDefinitions into a single definition.
 
-**NOTE** This API is in preview and is not recommended to use with production systems.
-
 ###### `definitions`<sup>Required</sup> <a name="definitions" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.combine.parameter.definitions"></a>
 
 - *Type:* <a href="#@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition">IAmplifyGraphqlDefinition</a>[]
@@ -3539,8 +3665,6 @@ AmplifyGraphqlDefinition.fromFilesAndStrategy(filePaths: string | string[], data
 
 Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema.
 
-**NOTE** This API is in preview and is not recommended to use with production systems.
-
 ###### `filePaths`<sup>Required</sup> <a name="filePaths" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromFilesAndStrategy.parameter.filePaths"></a>
 
 - *Type:* string | string[]
@@ -3570,8 +3694,6 @@ AmplifyGraphqlDefinition.fromString(schema: string, dataSourceStrategy?: Default
 
 Produce a schema definition from a string input.
 
-**NOTE** The 'dataSourceStrategy' configuration option is in preview and is not recommended to use with production systems.
-
 ###### `schema`<sup>Required</sup> <a name="schema" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlDefinition.fromString.parameter.schema"></a>
 
 - *Type:* string
@@ -3584,10 +3706,66 @@ the graphql input as a string.
 
 - *Type:* <a href="#@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy">DefaultDynamoDbModelDataSourceStrategy</a> | <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy">AmplifyDynamoDbModelDataSourceStrategy</a> | <a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy">SQLLambdaModelDataSourceStrategy</a>
 
-the provisioning definition for datasources that resolve `@model`s in this schema.
+the provisioning definition for datasources that resolve `@model`s and custom SQL statements in this schema.
 
-The DynamoDB from
-CloudFormation will be used by default.
+The DynamoDB from CloudFormation will be used by default.
+
+---
+
+
+
+### SQLLambdaModelDataSourceStrategyFactory <a name="SQLLambdaModelDataSourceStrategyFactory" id="@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategyFactory"></a>
+
+Class exposing utilities to produce SQLLambdaModelDataSourceStrategy objects given various inputs.
+
+#### Initializers <a name="Initializers" id="@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategyFactory.Initializer"></a>
+
+```typescript
+import { SQLLambdaModelDataSourceStrategyFactory } from '@aws-amplify/graphql-api-construct'
+
+new SQLLambdaModelDataSourceStrategyFactory()
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+
+---
+
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategyFactory.fromCustomSqlFiles">fromCustomSqlFiles</a></code> | Creates a SQLLambdaModelDataSourceStrategy where the binding's `customSqlStatements` are populated from `sqlFiles`. |
+
+---
+
+##### `fromCustomSqlFiles` <a name="fromCustomSqlFiles" id="@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategyFactory.fromCustomSqlFiles"></a>
+
+```typescript
+import { SQLLambdaModelDataSourceStrategyFactory } from '@aws-amplify/graphql-api-construct'
+
+SQLLambdaModelDataSourceStrategyFactory.fromCustomSqlFiles(sqlFiles: string[], options: SQLLambdaModelDataSourceStrategy)
+```
+
+Creates a SQLLambdaModelDataSourceStrategy where the binding's `customSqlStatements` are populated from `sqlFiles`.
+
+The key
+of the `customSqlStatements` record is the file's base name (that is, the name of the file minus the directory and extension).
+
+###### `sqlFiles`<sup>Required</sup> <a name="sqlFiles" id="@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategyFactory.fromCustomSqlFiles.parameter.sqlFiles"></a>
+
+- *Type:* string[]
+
+the list of files to load SQL statements from.
+
+---
+
+###### `options`<sup>Required</sup> <a name="options" id="@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategyFactory.fromCustomSqlFiles.parameter.options"></a>
+
+- *Type:* <a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy">SQLLambdaModelDataSourceStrategy</a>
+
+the remaining SQLLambdaModelDataSourceStrategy options.
 
 ---
 
@@ -3606,9 +3784,10 @@ Graphql Api definition, which can be implemented in multiple ways.
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.dataSourceStrategies">dataSourceStrategies</a></code> | <code>{[ key: string ]: <a href="#@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy">DefaultDynamoDbModelDataSourceStrategy</a> \| <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy">AmplifyDynamoDbModelDataSourceStrategy</a> \| <a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy">SQLLambdaModelDataSourceStrategy</a>}</code> | Retrieve the datasource strategy mapping. The default strategy is to use DynamoDB from CloudFormation. |
+| <code><a href="#@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.dataSourceStrategies">dataSourceStrategies</a></code> | <code>{[ key: string ]: <a href="#@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy">DefaultDynamoDbModelDataSourceStrategy</a> \| <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy">AmplifyDynamoDbModelDataSourceStrategy</a> \| <a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy">SQLLambdaModelDataSourceStrategy</a>}</code> | Retrieve the datasource strategy mapping. |
 | <code><a href="#@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.functionSlots">functionSlots</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.MutationFunctionSlot">MutationFunctionSlot</a> \| <a href="#@aws-amplify/graphql-api-construct.QueryFunctionSlot">QueryFunctionSlot</a> \| <a href="#@aws-amplify/graphql-api-construct.SubscriptionFunctionSlot">SubscriptionFunctionSlot</a>[]</code> | Retrieve any function slots defined explicitly in the Api definition. |
 | <code><a href="#@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.schema">schema</a></code> | <code>string</code> | Return the schema definition as a graphql string, with amplify directives allowed. |
+| <code><a href="#@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.customSqlDataSourceStrategies">customSqlDataSourceStrategies</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.CustomSqlDataSourceStrategy">CustomSqlDataSourceStrategy</a>[]</code> | An array of custom Query or Mutation SQL commands to the data sources that resolves them. |
 | <code><a href="#@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.referencedLambdaFunctions">referencedLambdaFunctions</a></code> | <code>{[ key: string ]: aws-cdk-lib.aws_lambda.IFunction}</code> | Retrieve the references to any lambda functions used in the definition. |
 
 ---
@@ -3621,10 +3800,9 @@ public readonly dataSourceStrategies: {[ key: string ]: DefaultDynamoDbModelData
 
 - *Type:* {[ key: string ]: <a href="#@aws-amplify/graphql-api-construct.DefaultDynamoDbModelDataSourceStrategy">DefaultDynamoDbModelDataSourceStrategy</a> | <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy">AmplifyDynamoDbModelDataSourceStrategy</a> | <a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy">SQLLambdaModelDataSourceStrategy</a>}
 
-Retrieve the datasource strategy mapping. The default strategy is to use DynamoDB from CloudFormation.
+Retrieve the datasource strategy mapping.
 
-**NOTE** Explicitly specifying the 'dataSourceStrategies' configuration option is in preview and is not recommended to use with
-production systems. For production, use the static factory methods `fromString` or `fromFiles`.
+The default strategy is to use DynamoDB from CloudFormation.
 
 ---
 
@@ -3649,6 +3827,18 @@ public readonly schema: string;
 - *Type:* string
 
 Return the schema definition as a graphql string, with amplify directives allowed.
+
+---
+
+##### `customSqlDataSourceStrategies`<sup>Optional</sup> <a name="customSqlDataSourceStrategies" id="@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition.property.customSqlDataSourceStrategies"></a>
+
+```typescript
+public readonly customSqlDataSourceStrategies: CustomSqlDataSourceStrategy[];
+```
+
+- *Type:* <a href="#@aws-amplify/graphql-api-construct.CustomSqlDataSourceStrategy">CustomSqlDataSourceStrategy</a>[]
+
+An array of custom Query or Mutation SQL commands to the data sources that resolves them.
 
 ---
 
