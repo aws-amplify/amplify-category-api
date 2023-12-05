@@ -50,7 +50,6 @@ const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
 const SCHEMA_DIR_NAME = 'schema';
 const PROVIDER_NAME = 'awscloudformation';
-const LAYER_MAPPING_S3_BUCKET = 'amplify-rds-layer-resources';
 const USE_BETA_SQL_LAYER = 'use-beta-sql-layer';
 
 /**
@@ -396,9 +395,9 @@ export const getUserOverridenSlots = (userDefinedSlots: Record<string, UserDefin
     .filter((slotName) => slotName !== undefined);
 
 const getRDSLayerMapping = async (context: $TSContext, useBetaSqlLayer = false): Promise<RDSLayerMapping> => {
-  const bucket = `${LAYER_MAPPING_S3_BUCKET}${useBetaSqlLayer ? '-beta' : ''}`;
+  const bucket = `${ResourceConstants.RESOURCES.SQLLayerVersionManifestBucket}${useBetaSqlLayer ? '-beta' : ''}`;
   const region = context.amplify.getProjectMeta().providers.awscloudformation.Region;
-  const url = `https://${bucket}.s3.amazonaws.com/sql-layer-versions/${region}`;
+  const url = `https://${bucket}.s3.amazonaws.com/${ResourceConstants.RESOURCES.SQLLayerVersionManifestKeyPrefix}${region}`;
   const response = await fetch(url);
   if (response.status === 200) {
     const result = await response.text();
