@@ -107,7 +107,11 @@ export const validateDataSourceStrategy = (strategy: ConstructModelDataSourceStr
   const dbConnectionConfig = strategy.dbConnectionConfig;
   const invalidSSMPaths = Object.values(dbConnectionConfig).filter((value) => typeof value === 'string' && !isValidSSMPath(value));
   if (invalidSSMPaths.length > 0) {
-    throw new Error(`Invalid SSM paths in dbConnectionConfig: ${invalidSSMPaths.join(', ')}. SSM paths must start with '/'.`);
+    throw new Error(
+      `Invalid data source strategy "${
+        strategy.name
+      }". Following SSM paths must start with '/' in dbConnectionConfig: ${invalidSSMPaths.join(', ')}.`,
+    );
   }
 };
 

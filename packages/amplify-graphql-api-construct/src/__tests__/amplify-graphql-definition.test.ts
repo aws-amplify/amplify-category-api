@@ -50,7 +50,7 @@ describe('AmplifyGraphqlDefinition', () => {
         },
       };
       expect(() => AmplifyGraphqlDefinition.fromString(TEST_SCHEMA, strategy)).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid SSM paths in dbConnectionConfig: ssm/invalid/hostnameSsmPath, ssm/invalid/portSsmPath, ssm/invalid/usernameSsmPath. SSM paths must start with '/'."`,
+        `"Invalid data source strategy \\"MySqlLambda\\". Following SSM paths must start with '/' in dbConnectionConfig: ssm/invalid/hostnameSsmPath, ssm/invalid/portSsmPath, ssm/invalid/usernameSsmPath."`,
       );
     });
   });
@@ -214,7 +214,7 @@ describe('AmplifyGraphqlDefinition', () => {
       };
       fs.writeFileSync(schemaFilePath, TEST_SCHEMA);
       expect(() => AmplifyGraphqlDefinition.fromFilesAndStrategy([schemaFilePath], strategy)).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid SSM paths in dbConnectionConfig: ssm/invalid/hostnameSsmPath, ssm/invalid/portSsmPath. SSM paths must start with '/'."`,
+        `"Invalid data source strategy \\"MySqlLambda\\". Following SSM paths must start with '/' in dbConnectionConfig: ssm/invalid/hostnameSsmPath, ssm/invalid/portSsmPath."`,
       );
     });
   });
