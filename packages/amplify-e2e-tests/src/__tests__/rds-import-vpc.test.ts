@@ -25,6 +25,7 @@ import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { getDefaultStrategyNameForDbType, getResourceNamesForStrategyName, normalizeDbType } from '@aws-amplify/graphql-transformer-core';
 import { ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-transformer-interfaces';
+import { SQL_TESTS_USE_BETA } from '../rds-v2-tests-common/sql-e2e-config';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -198,7 +199,9 @@ describe('RDS Tests', () => {
     expect(rdsPatchingSubscription.Properties.FilterPolicy).toBeDefined();
     expect(rdsPatchingSubscription.Properties.FilterPolicy.Region).toBeDefined();
 
-    await amplifyPush(projRoot);
+    await amplifyPush(projRoot, false, {
+      useBetaSqlLayer: SQL_TESTS_USE_BETA,
+    });
     await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.
 
     // Get the AppSync API details after deployment

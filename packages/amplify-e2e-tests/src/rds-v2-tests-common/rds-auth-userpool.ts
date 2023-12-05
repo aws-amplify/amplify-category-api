@@ -28,6 +28,7 @@ import {
 import { setupUser, getUserPoolId, signInUser, configureAmplify, getConfiguredAppsyncClientCognitoAuth } from '../schema-api-directives';
 import { gql } from 'graphql-tag';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { SQL_TESTS_USE_BETA } from './sql-e2e-config';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -139,7 +140,9 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
       writeFileSync(rdsSchemaFilePath, appendAmplifyInput(schema, engine), 'utf8');
 
       await updateAuthAddUserGroups(projRoot, [adminGroupName, devGroupName]);
-      await amplifyPush(projRoot);
+      await amplifyPush(projRoot, false, {
+        useBetaSqlLayer: SQL_TESTS_USE_BETA,
+      });
       await sleep(30 * 1000); // Wait for 30 seconds for the VPC endpoints to be live.
 
       const userPoolId = getUserPoolId(projRoot);

@@ -37,6 +37,7 @@ export function amplifyPush(
   testingWithLatestCodebase = false,
   settings?: {
     skipCodegen?: boolean;
+    useBetaSqlLayer?: boolean;
   },
 ): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -49,7 +50,15 @@ export function amplifyPush(
         }
       });
     // Test amplify push
-    const pushCommands = spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    const pushOptions = ['push'];
+    if (settings?.useBetaSqlLayer) {
+      pushOptions.push('--use-beta-sql-layer');
+    }
+    const pushCommands = spawn(getCLIPath(testingWithLatestCodebase), pushOptions, {
+      cwd,
+      stripColors: true,
+      noOutputTimeout: pushTimeoutMS,
+    })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes();
 

@@ -42,6 +42,13 @@ describe('transformGraphQLSchemaV2', () => {
           resourcesToBeUpdated: [],
           allResources: [],
         })),
+        getProjectMeta: jest.fn(() => ({
+          providers: {
+            awscloudformation: {
+              Region: 'us-east-1',
+            },
+          },
+        })),
       },
       parameters: {
         options: { resourcesDir: 'resourceDir', projectDirectory: __dirname },

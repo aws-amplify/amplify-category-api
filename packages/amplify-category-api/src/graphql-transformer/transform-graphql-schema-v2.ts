@@ -50,7 +50,7 @@ const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
 const SCHEMA_DIR_NAME = 'schema';
 const PROVIDER_NAME = 'awscloudformation';
-const LAYER_MAPPING_URL = 'https://amplify-rds-layer-resources.s3.amazonaws.com/rds-layer-mapping.json';
+const USE_BETA_SQL_LAYER = 'use-beta-sql-layer';
 
 /**
  * Transform GraphQL Schema
@@ -339,8 +339,8 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
 
   checkForUnsupportedDirectives(schema, { dataSourceStrategies });
 
-  const rdsLayerMapping = await getRDSLayerMapping();
-
+  const useBetaSqlLayer = context?.input?.options?.[USE_BETA_SQL_LAYER] ?? false;
+  const rdsLayerMapping = await getRDSLayerMapping(context, useBetaSqlLayer);
   const transformManager = new TransformManager(
     opts.overrideConfig,
     hasIamAuth(opts.authConfig),
@@ -394,13 +394,21 @@ export const getUserOverridenSlots = (userDefinedSlots: Record<string, UserDefin
     .flat()
     .filter((slotName) => slotName !== undefined);
 
-const getRDSLayerMapping = async (): Promise<RDSLayerMapping> => {
-  const response = await fetch(LAYER_MAPPING_URL);
+const getRDSLayerMapping = async (context: $TSContext, useBetaSqlLayer = false): Promise<RDSLayerMapping> => {
+  const bucket = `${ResourceConstants.RESOURCES.SQLLayerVersionManifestBucket}${useBetaSqlLayer ? '-beta' : ''}`;
+  const region = context.amplify.getProjectMeta().providers.awscloudformation.Region;
+  const url = `https://${bucket}.s3.amazonaws.com/${ResourceConstants.RESOURCES.SQLLayerVersionManifestKeyPrefix}${region}`;
+  const response = await fetch(url);
   if (response.status === 200) {
-    const result = await response.json();
-    return result as RDSLayerMapping;
+    const result = await response.text();
+    const mapping = {
+      [region]: {
+        layerRegion: result,
+      },
+    };
+    return mapping as RDSLayerMapping;
   } else {
-    throw new Error(`Unable to retrieve layer mapping from ${LAYER_MAPPING_URL} with status code ${response.status}.`);
+    throw new Error(`Unable to retrieve layer mapping from ${url} with status code ${response.status}.`);
   }
 };
 
