@@ -4,7 +4,7 @@ import { isSqlStrategy } from '@aws-amplify/graphql-transformer-core';
 import { IAmplifyGraphqlDefinition } from './types';
 import { constructDataSourceStrategies } from './internal';
 import { CustomSqlDataSourceStrategy, ModelDataSourceStrategy } from './model-datasource-strategy-types';
-import { constructCustomSqlDataSourceStrategies } from './internal/data-source-config';
+import { constructCustomSqlDataSourceStrategies, validateDataSourceStrategy } from './internal/data-source-config';
 
 export const DEFAULT_MODEL_DATA_SOURCE_STRATEGY: ModelDataSourceStrategy = {
   dbType: 'DYNAMODB',
@@ -30,6 +30,7 @@ export class AmplifyGraphqlDefinition {
     schema: string,
     dataSourceStrategy: ModelDataSourceStrategy = DEFAULT_MODEL_DATA_SOURCE_STRATEGY,
   ): IAmplifyGraphqlDefinition {
+    validateDataSourceStrategy(dataSourceStrategy);
     return {
       schema,
       functionSlots: [],
