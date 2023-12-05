@@ -1124,7 +1124,6 @@ export const generateUnauthSQL = (
       noOutputTimeout: VPC_DEPLOYMENT_WAIT_TIME,
     },
   );
-  generateCommand.expect('This feature is in preview and is not recommended to use with production systems.');
   if (opts.expectMessage) {
     generateCommand.expect(opts.expectMessage);
   }
