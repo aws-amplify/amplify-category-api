@@ -152,7 +152,10 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
     const sqlStrategy2 = mockSqlDataSourceStrategy({ name: 'sqlDefinition1' });
     const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo.sql, sqlStrategy1);
     const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo2.sql, sqlStrategy2);
-    expect(() => AmplifyGraphqlDefinition.combine([definition1, definition2])).toThrow();
+    expect(() => AmplifyGraphqlDefinition.combine([definition1, definition2])).toThrowError(
+      "The SQL-based ModelDataSourceStrategy 'sqlDefinition1' was found in multiple definitions, but a strategy name cannot be " +
+        "shared between definitions. To specify a SQL-based API with schemas across multiple files, use 'fromFilesAndStrategy'",
+    );
   });
 
   it('supports nested combined definitions', () => {
@@ -432,6 +435,26 @@ describe('AmplifyGraphqlDefinition.combine definition behavior', () => {
             strategy: postgresStrategy,
           },
         ]),
+      );
+    });
+
+    it('fails if a custom SQL Query field is declared in multiple definitions', () => {
+      const sqlStrategy1 = mockSqlDataSourceStrategy({ name: 'sqlDefinition1' });
+      const sqlStrategy2 = mockSqlDataSourceStrategy({ name: 'sqlDefinition2' });
+      const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlQueryStatement, sqlStrategy1);
+      const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlQueryStatement, sqlStrategy2);
+      expect(() => AmplifyGraphqlDefinition.combine([definition1, definition2])).toThrowError(
+        "The custom Query field 'customSqlQueryStatement' was found in multiple definitions, but a field name cannot be shared between definitions.",
+      );
+    });
+
+    it('fails if a custom SQL Mutation field is declared in multiple definitions', () => {
+      const sqlStrategy1 = mockSqlDataSourceStrategy({ name: 'sqlDefinition1' });
+      const sqlStrategy2 = mockSqlDataSourceStrategy({ name: 'sqlDefinition2' });
+      const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlMutationStatement, sqlStrategy1);
+      const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.customSqlMutationStatement, sqlStrategy2);
+      expect(() => AmplifyGraphqlDefinition.combine([definition1, definition2])).toThrowError(
+        "The custom Mutation field 'customSqlMutationStatement' was found in multiple definitions, but a field name cannot be shared between definitions.",
       );
     });
   });

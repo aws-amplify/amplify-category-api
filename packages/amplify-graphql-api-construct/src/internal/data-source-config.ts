@@ -119,6 +119,19 @@ export const schemaByMergingDefinitions = (definitions: IAmplifyGraphqlDefinitio
     }
   > = {};
 
+  // Throws if the field has already been encountered
+  const validateField = (typeName: string, fieldName: string): void => {
+    const fields = queryAndMutationDefinitions[typeName]?.fields;
+    if (!fields) {
+      return;
+    }
+    if (fields.find((field) => field.name.value === fieldName)) {
+      throw new Error(
+        `The custom ${typeName} field '${fieldName}' was found in multiple definitions, but a field name cannot be shared between definitions.`,
+      );
+    }
+  };
+
   // Transform the schema by reducing Mutation & Query types:
   // - Collect Mutation and Query definitions
   // - Alter the parsed schema by filtering out Mutation & Query types
@@ -133,6 +146,10 @@ export const schemaByMergingDefinitions = (definitions: IAmplifyGraphqlDefinitio
       };
       return;
     }
+
+    (def.fields ?? []).forEach((field) => {
+      validateField(typeName, field.name.value);
+    });
 
     queryAndMutationDefinitions[typeName].fields = [...queryAndMutationDefinitions[typeName].fields, ...(def.fields ?? [])];
   });
