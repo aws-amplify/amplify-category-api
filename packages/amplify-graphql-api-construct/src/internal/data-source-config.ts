@@ -178,3 +178,28 @@ export const schemaByMergingDefinitions = (definitions: IAmplifyGraphqlDefinitio
   const combinedSchemaString = print(newSchema);
   return combinedSchemaString;
 };
+
+/*
+ * Validates the user input for the dataSourceStrategy. This is a no-op for DynamoDB strategies for now.
+ * @param strategy user provided model data source strategy
+ * @returns validates and throws an error if the strategy is invalid
+ */
+export const validateDataSourceStrategy = (strategy: ConstructModelDataSourceStrategy) => {
+  if (!isSqlStrategy(strategy)) {
+    return;
+  }
+
+  const dbConnectionConfig = strategy.dbConnectionConfig;
+  const invalidSSMPaths = Object.values(dbConnectionConfig).filter((value) => typeof value === 'string' && !isValidSSMPath(value));
+  if (invalidSSMPaths.length > 0) {
+    throw new Error(
+      `Invalid data source strategy "${
+        strategy.name
+      }". Following SSM paths must start with '/' in dbConnectionConfig: ${invalidSSMPaths.join(', ')}.`,
+    );
+  }
+};
+
+const isValidSSMPath = (path: string): boolean => {
+  return path.startsWith('/');
+};
