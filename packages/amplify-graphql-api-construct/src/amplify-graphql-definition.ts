@@ -21,13 +21,9 @@ export const DEFAULT_MODEL_DATA_SOURCE_STRATEGY: ModelDataSourceStrategy = {
 export class AmplifyGraphqlDefinition {
   /**
    * Produce a schema definition from a string input.
-   *
-   * **NOTE** The 'dataSourceStrategy' configuration option is in preview and is not recommended to use with production systems.
-   *
    * @param schema the graphql input as a string
    * @param dataSourceStrategy the provisioning definition for datasources that resolve `@model`s and custom SQL statements in this schema.
    * The DynamoDB from CloudFormation will be used by default.
-   * @experimental dataSourceStrategy
    * @returns a fully formed amplify graphql definition
    */
   static fromString(
@@ -59,10 +55,6 @@ export class AmplifyGraphqlDefinition {
 
   /**
    * Convert one or more appsync SchemaFile objects into an Amplify Graphql Schema
-   *
-   * **NOTE** This API is in preview and is not recommended to use with production systems.
-   *
-   * @experimental
    * @param filePaths one or more paths to the graphql files to process
    * @param dataSourceStrategy the provisioning definition for datasources that resolve `@model`s in this schema. The DynamoDB from
    * CloudFormation will be used by default.
@@ -81,10 +73,6 @@ export class AmplifyGraphqlDefinition {
 
   /**
    * Combines multiple IAmplifyGraphqlDefinitions into a single definition.
-   *
-   * **NOTE** This API is in preview and is not recommended to use with production systems.
-   *
-   * @experimental
    * @param definitions the definitions to combine
    */
   static combine(definitions: IAmplifyGraphqlDefinition[]): IAmplifyGraphqlDefinition {
