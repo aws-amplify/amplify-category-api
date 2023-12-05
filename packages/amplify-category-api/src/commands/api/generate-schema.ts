@@ -13,6 +13,7 @@ import {
   getConnectionSecrets,
 } from '../../provider-utils/awscloudformation/utils/rds-resources/database-resources';
 import { writeSchemaFile, generateRDSSchema } from '../../provider-utils/awscloudformation/utils/graphql-schema-utils';
+import { PREVIEW_BANNER } from '../../category-constants';
 import { parse } from 'graphql';
 import { getEngineInput } from '../../provider-utils/awscloudformation/utils/rds-input-utils';
 
@@ -52,6 +53,7 @@ export const run = async (context: $TSContext): Promise<void> => {
     const schema = await graphqlSchemaFromSQLSchema(fs.readFileSync(sqlSchema, 'utf8'), engineType);
     writeSchemaFile(out, schema);
   } else {
+    printer.warn(PREVIEW_BANNER);
     const apiName = getAppSyncAPIName();
     const apiResourceDir = getAPIResourceDir(apiName);
 

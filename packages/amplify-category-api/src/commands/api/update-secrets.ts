@@ -7,6 +7,7 @@ import { SQL_SCHEMA_FILE_NAME, ImportedDataSourceConfig } from '@aws-amplify/gra
 import { databaseConfigurationInputWalkthrough } from '../../provider-utils/awscloudformation/service-walkthroughs/appSync-rds-db-config';
 import { getAppSyncAPIName, getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { storeConnectionSecrets, getSecretsKey } from '../../provider-utils/awscloudformation/utils/rds-resources/database-resources';
+import { PREVIEW_BANNER } from '../../category-constants';
 import { parse } from 'graphql';
 import { getEngineInput } from '../../provider-utils/awscloudformation/utils/rds-input-utils';
 
@@ -15,6 +16,7 @@ const subcommand = 'update-secrets';
 export const name = subcommand;
 
 export const run = async (context: $TSContext) => {
+  printer.warn(PREVIEW_BANNER);
   const apiName = getAppSyncAPIName();
   const apiResourceDir = getAPIResourceDir(apiName);
 
