@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.12](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-function-transformer@2.1.11...@aws-amplify/graphql-function-transformer@2.1.12) (2023-12-06)
+
+### Bug Fixes
+
+- add adminRoles to stash ([#2062](https://github.com/aws-amplify/amplify-category-api/issues/2062)) ([bb90353](https://github.com/aws-amplify/amplify-category-api/commit/bb90353a673b5c57c87f6d6083769ec7e1298036))
+
 ## [2.1.11](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-function-transformer@2.1.10...@aws-amplify/graphql-function-transformer@2.1.11) (2023-11-22)
 
 **Note:** Version bump only for package @aws-amplify/graphql-function-transformer

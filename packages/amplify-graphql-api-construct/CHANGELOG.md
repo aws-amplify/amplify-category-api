@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.4.3...@aws-amplify/graphql-api-construct@1.5.0) (2023-12-06)
+
+### Bug Fixes
+
+- validate SSM paths in sql db connection config ([#2118](https://github.com/aws-amplify/amplify-category-api/issues/2118)) ([b9cd0d7](https://github.com/aws-amplify/amplify-category-api/commit/b9cd0d774be159763eac063781e06c35b3af7eb4))
+
+### Features
+
+- combine heterogeneous data sources ([#2109](https://github.com/aws-amplify/amplify-category-api/issues/2109)) ([fd58bb5](https://github.com/aws-amplify/amplify-category-api/commit/fd58bb5af4249220d17c9751acf677955aed74ea))
+- Remove experimental flags; add missing API construct types ([#2122](https://github.com/aws-amplify/amplify-category-api/issues/2122)) ([a00f4dc](https://github.com/aws-amplify/amplify-category-api/commit/a00f4dcb807871c68ae18b17dbe81bcf5a7a2823))
+- Support custom SQL across definitions ([#2115](https://github.com/aws-amplify/amplify-category-api/issues/2115)) ([eab4820](https://github.com/aws-amplify/amplify-category-api/commit/eab4820c1c931fbdf804b2315b63773a376e0822))
+
 ## [1.4.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.4.2...@aws-amplify/graphql-api-construct@1.4.3) (2023-11-22)
 
 ### Bug Fixes

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.19.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.18.3...amplify-category-api-e2e-tests@3.19.0) (2023-12-06)
+
+### Features
+
+- combine heterogeneous data sources ([#2109](https://github.com/aws-amplify/amplify-category-api/issues/2109)) ([fd58bb5](https://github.com/aws-amplify/amplify-category-api/commit/fd58bb5af4249220d17c9751acf677955aed74ea))
+
 ## [3.18.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.18.2...amplify-category-api-e2e-tests@3.18.3) (2023-11-22)
 
 **Note:** Version bump only for package amplify-category-api-e2e-tests

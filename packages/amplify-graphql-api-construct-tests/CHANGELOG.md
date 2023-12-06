@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.1.3...amplify-graphql-api-construct-tests@1.2.0) (2023-12-06)
+
+### Features
+
+- combine heterogeneous data sources ([#2109](https://github.com/aws-amplify/amplify-category-api/issues/2109)) ([fd58bb5](https://github.com/aws-amplify/amplify-category-api/commit/fd58bb5af4249220d17c9751acf677955aed74ea))
+- Support custom SQL across definitions ([#2115](https://github.com/aws-amplify/amplify-category-api/issues/2115)) ([eab4820](https://github.com/aws-amplify/amplify-category-api/commit/eab4820c1c931fbdf804b2315b63773a376e0822))
+
 ## [1.1.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.1.2...amplify-graphql-api-construct-tests@1.1.3) (2023-11-22)
 
 **Note:** Version bump only for package amplify-graphql-api-construct-tests
