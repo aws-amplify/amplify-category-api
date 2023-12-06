@@ -145,6 +145,13 @@ export class FunctionTransformer extends TransformerPluginBase {
             qref(`$ctx.stash.put("authRole", "arn:aws:sts::${account}:assumed-role/${authRole}/CognitoIdentityCredentials")`),
             qref(`$ctx.stash.put("unauthRole", "arn:aws:sts::${account}:assumed-role/${unauthRole}/CognitoIdentityCredentials")`),
           );
+
+          const identityPoolId = context.synthParameters.identityPoolId;
+          if (identityPoolId) {
+            requestTemplate.push(qref(`$ctx.stash.put("identityPoolId", "${identityPoolId}")`));
+          }
+          const adminRoles = context.synthParameters.adminRoles ?? [];
+          requestTemplate.push(qref(`$ctx.stash.put("adminRoles", ${JSON.stringify(adminRoles)})`));
         }
         requestTemplate.push(obj({}));
 

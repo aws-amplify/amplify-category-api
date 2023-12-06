@@ -33,6 +33,7 @@ import { Auth, API } from 'aws-amplify';
 import { getUserPoolId } from '../schema-api-directives/authHelper';
 import { reconfigureAmplifyAPI, withTimeOut } from '../utils/api';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { SQL_TESTS_USE_BETA } from './sql-e2e-config';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -70,13 +71,16 @@ export const testApiKeyLambdaIamAuthSubscription = (engine: ImportedRDSType, que
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projName);
       await initProjectAndImportSchema();
-      await amplifyPush(projRoot);
+      await amplifyPush(projRoot, false, {
+        useBetaSqlLayer: SQL_TESTS_USE_BETA,
+      });
 
       await apiGqlCompile(projRoot, false, {
         forceCompile: true,
       });
       await amplifyPush(projRoot, false, {
         skipCodegen: true,
+        useBetaSqlLayer: SQL_TESTS_USE_BETA,
       });
       await sleep(2 * 60 * 1000); // Wait for a minute for the VPC endpoints to be live.
 

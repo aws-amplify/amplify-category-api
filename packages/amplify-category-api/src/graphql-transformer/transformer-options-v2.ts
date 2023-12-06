@@ -165,6 +165,8 @@ export const generateTransformerOptions = async (context: $TSContext, options: a
     S3DeploymentRootKey: deploymentRootKey,
   };
 
+  // The project configuration loaded here uses the Gen1 CLI DataSourceTypes and modelToDatasourceMap to hold model information. We'll
+  // convert it to the supported ModelDataSourceStrategy types later.
   const project = await loadProject(resourceDir);
 
   const lastDeployedProjectConfig = fs.existsSync(previouslyDeployedBackendDir)
@@ -239,6 +241,7 @@ export const generateTransformerOptions = async (context: $TSContext, options: a
     },
     rootStackFileName: 'cloudformation-template.json',
     currentCloudBackendDirectory: previouslyDeployedBackendDir,
+    // Reminder that `project` has type `any`, and is not actually compatible with DataSourceStrategiesProvider. We will correct that later.
     projectConfig: project,
     lastDeployedProjectConfig,
     authConfig,

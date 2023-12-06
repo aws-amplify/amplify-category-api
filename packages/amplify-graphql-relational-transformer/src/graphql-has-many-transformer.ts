@@ -3,19 +3,19 @@ import {
   DDB_DB_TYPE,
   DirectiveWrapper,
   generateGetArgumentsInput,
-  getDataSourceType,
+  getStrategyDbTypeFromTypeNode,
   InvalidDirectiveError,
-  isRDSDBType,
+  isSqlDbType,
   TransformerPluginBase,
-  isRDSModel,
+  isSqlModel,
 } from '@aws-amplify/graphql-transformer-core';
 import {
-  DBType,
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
   TransformerPreProcessContextProvider,
+  ModelDataSourceStrategyDbType,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 import {
@@ -143,7 +143,7 @@ export class HasManyTransformer extends TransformerPluginBase {
   prepare = (context: TransformerPrepareStepContextProvider): void => {
     this.directiveList.forEach((config) => {
       const modelName = config.object.name.value;
-      if (isRDSModel(context as TransformerContextProvider, modelName)) {
+      if (isSqlModel(context as TransformerContextProvider, modelName)) {
         setFieldMappingResolverReference(context, config.relatedType?.name?.value, modelName, config.field.name.value, true);
         return;
       }
@@ -161,10 +161,10 @@ export class HasManyTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      const dbType = getDataSourceType(config.field.type, context);
+      const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
       if (dbType === DDB_DB_TYPE) {
         config.relatedTypeIndex = getRelatedTypeIndex(config, context, config.indexName);
-      } else if (isRDSDBType(dbType)) {
+      } else if (isSqlDbType(dbType)) {
         validateParentReferencesFields(config, context);
       }
       ensureHasManyConnectionField(config, context);
@@ -176,7 +176,7 @@ export class HasManyTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      const dbType = getDataSourceType(config.field.type, context);
+      const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
       if (dbType === DDB_DB_TYPE) {
         updateTableForConnection(config, context);
       }
@@ -185,7 +185,11 @@ export class HasManyTransformer extends TransformerPluginBase {
   };
 }
 
-const makeQueryResolver = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider, dbType: DBType): void => {
+const makeQueryResolver = (
+  config: HasManyDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+  dbType: ModelDataSourceStrategyDbType,
+): void => {
   const generator = getGenerator(dbType);
   generator.makeHasManyGetItemsConnectionWithKeyResolver(config, ctx);
 };
@@ -193,7 +197,7 @@ const makeQueryResolver = (config: HasManyDirectiveConfiguration, ctx: Transform
 const validate = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field } = config;
 
-  const dbType = getDataSourceType(field.type, ctx);
+  const dbType = getStrategyDbTypeFromTypeNode(field.type, ctx);
   config.relatedType = getRelatedType(config, ctx);
 
   if (dbType === DDB_DB_TYPE) {
@@ -201,7 +205,7 @@ const validate = (config: HasManyDirectiveConfiguration, ctx: TransformerContext
     config.fieldNodes = getFieldsNodes(config, ctx);
   }
 
-  if (isRDSDBType(dbType)) {
+  if (isSqlDbType(dbType)) {
     ensureReferencesArray(config);
     getReferencesNodes(config, ctx);
   }

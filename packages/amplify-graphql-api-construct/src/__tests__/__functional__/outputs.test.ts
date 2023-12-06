@@ -5,6 +5,8 @@ import { Template, Match } from 'aws-cdk-lib/assertions';
 import { graphqlOutputKey } from '@aws-amplify/backend-output-schemas';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { ArnPrincipal, Role } from 'aws-cdk-lib/aws-iam';
+import { SCHEMAS, mockSqlDataSourceStrategy } from '@aws-amplify/graphql-transformer-test-utils';
+import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 
@@ -169,7 +171,7 @@ describe('storeOutput', () => {
   });
 
   describe('BI metrics output', () => {
-    it('stores expected BI metadata in stack description', () => {
+    it('stores expected BI metadata in stack description for a default definition', () => {
       const stack = new cdk.Stack();
       new AmplifyGraphqlApi(stack, 'TestApi', {
         definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
@@ -186,7 +188,11 @@ describe('storeOutput', () => {
       const { version } = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', '..', 'package.json'), 'utf-8')) as {
         version: string;
       };
-      expect(JSON.parse(stack.templateOptions.description || '{}')).toMatchObject({ createdWith: version, stackType: 'api-AppSync' });
+      expect(JSON.parse(stack.templateOptions.description || '{}')).toMatchObject({
+        createdWith: version,
+        stackType: 'api-AppSync',
+        metadata: { dataSources: 'dynamodb' },
+      });
     });
 
     /**
@@ -208,7 +214,97 @@ describe('storeOutput', () => {
           },
         },
       });
-      expect(JSON.parse(stack.templateOptions.description || '{}')).toMatchObject({ createdBy: 'AmplifyPipelineDeploy' });
+      expect(JSON.parse(stack.templateOptions.description || '{}')).toMatchObject({
+        createdBy: 'AmplifyPipelineDeploy',
+        metadata: { dataSources: 'dynamodb' },
+      });
+    });
+
+    it('stores expected BI metadata for dynamodb data sources regardless of provisioning strategy', () => {
+      const ddbDefaultDefinition = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo.ddb);
+      const ddbManagedDefinition = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo2.ddb, DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY);
+      const stack = new cdk.Stack();
+      stack.node.setContext('amplify-backend-type', 'branch');
+      new AmplifyGraphqlApi(stack, 'TestApi', {
+        definition: AmplifyGraphqlDefinition.combine([ddbDefaultDefinition, ddbManagedDefinition]),
+        authorizationModes: {
+          apiKeyConfig: {
+            expires: cdk.Duration.days(2),
+          },
+        },
+      });
+      expect(JSON.parse(stack.templateOptions.description || '{}')).toMatchObject({
+        createdBy: 'AmplifyPipelineDeploy',
+        metadata: { dataSources: 'dynamodb' },
+      });
+    });
+
+    it('stores expected BI metadata for mysql data sources', () => {
+      const sqlStrategy1 = mockSqlDataSourceStrategy({ name: 'sqlStrategy1' });
+      const sqlDefinition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo.sql, sqlStrategy1);
+      const sqlStrategy2 = mockSqlDataSourceStrategy({ name: 'sqlStrategy2' });
+      const sqlDefinition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo2.sql, sqlStrategy2);
+      const stack = new cdk.Stack();
+      stack.node.setContext('amplify-backend-type', 'branch');
+      new AmplifyGraphqlApi(stack, 'TestApi', {
+        definition: AmplifyGraphqlDefinition.combine([sqlDefinition1, sqlDefinition2]),
+        authorizationModes: {
+          apiKeyConfig: {
+            expires: cdk.Duration.days(2),
+          },
+        },
+      });
+      expect(JSON.parse(stack.templateOptions.description || '{}')).toMatchObject({
+        createdBy: 'AmplifyPipelineDeploy',
+        metadata: { dataSources: 'mysql' },
+      });
+    });
+
+    it('stores expected BI metadata for postgres data sources', () => {
+      const sqlStrategy1 = mockSqlDataSourceStrategy({ name: 'sqlStrategy1', dbType: 'POSTGRES' });
+      const sqlDefinition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo.sql, sqlStrategy1);
+      const sqlStrategy2 = mockSqlDataSourceStrategy({ name: 'sqlStrategy2', dbType: 'POSTGRES' });
+      const sqlDefinition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo2.sql, sqlStrategy2);
+      const stack = new cdk.Stack();
+      stack.node.setContext('amplify-backend-type', 'branch');
+      new AmplifyGraphqlApi(stack, 'TestApi', {
+        definition: AmplifyGraphqlDefinition.combine([sqlDefinition1, sqlDefinition2]),
+        authorizationModes: {
+          apiKeyConfig: {
+            expires: cdk.Duration.days(2),
+          },
+        },
+      });
+      expect(JSON.parse(stack.templateOptions.description || '{}')).toMatchObject({
+        createdBy: 'AmplifyPipelineDeploy',
+        metadata: { dataSources: 'postgres' },
+      });
+    });
+
+    it('stores expected BI metadata for heterogeneous data sources', () => {
+      const ddbDefaultDefinition = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo.ddb);
+      const ddbManagedDefinition = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo2.ddb, DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY);
+
+      const mysqlStrategy = mockSqlDataSourceStrategy({ name: 'mysqlStrategy', dbType: 'MYSQL' });
+      const mysqlDefinition = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo3.sql, mysqlStrategy);
+
+      const postgresStrategy = mockSqlDataSourceStrategy({ name: 'postgresStrategy', dbType: 'POSTGRES' });
+      const postgresDefinition = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo4.sql, postgresStrategy);
+
+      const stack = new cdk.Stack();
+      stack.node.setContext('amplify-backend-type', 'branch');
+      new AmplifyGraphqlApi(stack, 'TestApi', {
+        definition: AmplifyGraphqlDefinition.combine([ddbDefaultDefinition, ddbManagedDefinition, mysqlDefinition, postgresDefinition]),
+        authorizationModes: {
+          apiKeyConfig: {
+            expires: cdk.Duration.days(2),
+          },
+        },
+      });
+      expect(JSON.parse(stack.templateOptions.description || '{}')).toMatchObject({
+        createdBy: 'AmplifyPipelineDeploy',
+        metadata: { dataSources: 'dynamodb,mysql,postgres' },
+      });
     });
   });
 });

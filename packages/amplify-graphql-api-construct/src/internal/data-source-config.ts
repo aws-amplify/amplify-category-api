@@ -1,37 +1,17 @@
-import { parse } from 'graphql';
+import { DefinitionNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode, parse, print } from 'graphql';
 import {
-  CustomSqlDataSourceStrategy as ImplementationCustomSqlDataSourceStrategy,
-  DataSourceType,
-  SQLLambdaModelProvisionStrategy,
-} from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  dataSourceStrategyToDataSourceType,
+  isBuiltInGraphqlNode,
   isSqlStrategy,
   isQueryNode,
   isMutationNode,
   fieldsWithSqlDirective,
 } from '@aws-amplify/graphql-transformer-core';
-import { normalizeDbType } from '@aws-amplify/graphql-transformer-core/lib/utils';
-import { CustomSqlDataSourceStrategy as InterfaceCustomSqlDataSourceStrategy, ModelDataSourceStrategy } from '../model-datasource-strategy';
-
-type DataSourceConfig = {
-  modelToDatasourceMap: Map<string, DataSourceType>;
-};
-
-/**
- * An internal helper to convert from a map of model-to-ModelDataSourceStrategies to the map of model-to-DataSourceTypes that internal
- * transform processing requires. TODO: We can remove this once we refactor the internals to use ModelDataSourceStrategies natively.
- */
-export const parseDataSourceConfig = (dataSourceDefinitionMap: Record<string, ModelDataSourceStrategy>): DataSourceConfig => {
-  const modelToDatasourceMap = new Map<string, DataSourceType>();
-  for (const [key, value] of Object.entries(dataSourceDefinitionMap)) {
-    const dataSourceType = dataSourceStrategyToDataSourceType(value);
-    modelToDatasourceMap.set(key, dataSourceType);
-  }
-  return {
-    modelToDatasourceMap,
-  };
-};
+import { DataSourceStrategiesProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  CustomSqlDataSourceStrategy as ConstructCustomSqlDataSourceStrategy,
+  ModelDataSourceStrategy as ConstructModelDataSourceStrategy,
+} from '../model-datasource-strategy-types';
+import { IAmplifyGraphqlDefinition } from '../types';
 
 /**
  * Creates an interface flavor of customSqlDataSourceStrategies from a factory method's schema and data source. Internally, this function
@@ -40,13 +20,11 @@ export const parseDataSourceConfig = (dataSourceDefinitionMap: Record<string, Mo
  *
  * Note that we do not scan for `Subscription` fields: `@sql` directives are not allowed on those, and it wouldn't make sense to do so
  * anyway, since subscriptions are processed from an incoming Mutation, not as the result of a direct datasource access.
- *
- * TODO: Reword this when we refactor to use Strategies throughout the implementation rather than DataSources.
  */
 export const constructCustomSqlDataSourceStrategies = (
   schema: string,
-  dataSourceStrategy: ModelDataSourceStrategy,
-): InterfaceCustomSqlDataSourceStrategy[] => {
+  dataSourceStrategy: ConstructModelDataSourceStrategy,
+): ConstructCustomSqlDataSourceStrategy[] => {
   if (!isSqlStrategy(dataSourceStrategy)) {
     return [];
   }
@@ -59,7 +37,7 @@ export const constructCustomSqlDataSourceStrategies = (
     return [];
   }
 
-  const customSqlDataSourceStrategies: InterfaceCustomSqlDataSourceStrategy[] = [];
+  const customSqlDataSourceStrategies: ConstructCustomSqlDataSourceStrategy[] = [];
 
   if (queryNode) {
     const fields = fieldsWithSqlDirective(queryNode);
@@ -87,25 +65,141 @@ export const constructCustomSqlDataSourceStrategies = (
 };
 
 /**
- * We currently use a different type structure to model strategies in the interface than we do in the implementation. This maps the
- * interface CustomSqlDataSourceStrategy (which uses SQLLambdaModelDataSourceStrategy) to the implementation flavor (which uses
- * DataSourceType).
- *
- * TODO: Remove this once we refactor the internals to use strategies rather than DataSourceTypes
+ * Extracts the data source provider from the definition. This jumps through some hoops to avoid changing the public interface. If we decide
+ * to change the public interface to simplify the structure, then this process gets a lot simpler.
  */
-export const mapInterfaceCustomSqlStrategiesToImplementationStrategies = (
-  strategies?: InterfaceCustomSqlDataSourceStrategy[],
-): ImplementationCustomSqlDataSourceStrategy[] => {
-  if (!strategies) {
-    return [];
+export const getDataSourceStrategiesProvider = (definition: IAmplifyGraphqlDefinition): DataSourceStrategiesProvider => {
+  const provider: DataSourceStrategiesProvider = {
+    // We can directly use the interface strategies, even though the SQL strategies have the customSqlStatements field that is unused by the
+    // transformer flavor of this type
+    dataSourceStrategies: definition.dataSourceStrategies,
+    sqlDirectiveDataSourceStrategies: [],
+  };
+
+  // We'll collect all the custom SQL statements from the definition into a single map, and use that to make our
+  // SqlDirectiveDataSourceStrategies
+  const customSqlStatements: Record<string, string> = {};
+
+  const constructSqlStrategies = definition.customSqlDataSourceStrategies ?? [];
+
+  // Note that we're relying on the `customSqlStatements` object reference to stay the same throughout this loop. Don't reassign it, or the
+  // collected sqlDirectiveStrategies will break
+  constructSqlStrategies.forEach((sqlStrategy) => {
+    if (sqlStrategy.strategy.customSqlStatements) {
+      Object.assign(customSqlStatements, sqlStrategy.strategy.customSqlStatements);
+    }
+
+    provider.sqlDirectiveDataSourceStrategies!.push({
+      typeName: sqlStrategy.typeName,
+      fieldName: sqlStrategy.fieldName,
+      strategy: sqlStrategy.strategy,
+      customSqlStatements,
+    });
+  });
+
+  return provider;
+};
+
+/**
+ * Creates a new schema by merging the individual schemas contained in the definitions, combining fields of the Query and Mutation types in
+ * individual definitions into a single combined definition. Adding directives to `Query` and `Mutation` types participating in a
+ * combination is not supported (the behavior is undefined whether those directives are migrated).
+ */
+export const schemaByMergingDefinitions = (definitions: IAmplifyGraphqlDefinition[]): string => {
+  const schema = definitions.map((def) => def.schema).join('\n');
+  const parsedSchema = parse(schema);
+
+  // We store the Query & Mutation definitions separately. Since the interfaces are readonly, we'll have to re-compose the types after we've
+  // collected all the fields
+  const queryAndMutationDefinitions: Record<
+    string,
+    {
+      node: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode;
+      fields: FieldDefinitionNode[];
+    }
+  > = {};
+
+  // Throws if the field has already been encountered
+  const validateField = (typeName: string, fieldName: string): void => {
+    const fields = queryAndMutationDefinitions[typeName]?.fields;
+    if (!fields) {
+      return;
+    }
+    if (fields.find((field) => field.name.value === fieldName)) {
+      throw new Error(
+        `The custom ${typeName} field '${fieldName}' was found in multiple definitions, but a field name cannot be shared between definitions.`,
+      );
+    }
+  };
+
+  // Transform the schema by reducing Mutation & Query types:
+  // - Collect Mutation and Query definitions
+  // - Alter the parsed schema by filtering out Mutation & Query types
+  // - Add the combined Mutation & Query definitions to the filtered schema
+  parsedSchema.definitions.filter(isBuiltInGraphqlNode).forEach((def) => {
+    const typeName = def.name.value;
+    if (!queryAndMutationDefinitions[typeName]) {
+      queryAndMutationDefinitions[typeName] = {
+        node: def,
+        // `ObjectTypeDefinitionNode.fields` is a ReadonlyArray; so we have to create a new mutable array to collect all the fields
+        fields: [...(def.fields ?? [])],
+      };
+      return;
+    }
+
+    (def.fields ?? []).forEach((field) => {
+      validateField(typeName, field.name.value);
+    });
+
+    queryAndMutationDefinitions[typeName].fields = [...queryAndMutationDefinitions[typeName].fields, ...(def.fields ?? [])];
+  });
+
+  // Gather the collected Query & Mutation fields into <=2 new definitions
+  const combinedDefinitions = Object.values(queryAndMutationDefinitions)
+    .sort((a, b) => a.node.name.value.localeCompare(b.node.name.value))
+    .reduce((acc, cur) => {
+      const definitionNode = {
+        ...cur.node,
+        fields: cur.fields,
+      };
+      return [...acc, definitionNode];
+    }, [] as DefinitionNode[]);
+
+  // Filter out the old Query & Mutation definitions
+  const filteredDefinitions = parsedSchema.definitions.filter((def) => !isBuiltInGraphqlNode(def));
+
+  // Compose the new schema by appending the collected definitions to the filtered definitions. This means that every query will be
+  // rewritten such that the Mutation and Query types appear at the end of the schema.
+  const newSchema = {
+    ...parsedSchema,
+    definitions: [...filteredDefinitions, ...combinedDefinitions],
+  };
+
+  const combinedSchemaString = print(newSchema);
+  return combinedSchemaString;
+};
+
+/*
+ * Validates the user input for the dataSourceStrategy. This is a no-op for DynamoDB strategies for now.
+ * @param strategy user provided model data source strategy
+ * @returns validates and throws an error if the strategy is invalid
+ */
+export const validateDataSourceStrategy = (strategy: ConstructModelDataSourceStrategy) => {
+  if (!isSqlStrategy(strategy)) {
+    return;
   }
-  return strategies.map((interfaceStrategy) => ({
-    fieldName: interfaceStrategy.fieldName,
-    typeName: interfaceStrategy.typeName,
-    dataSourceType: {
-      dbType: normalizeDbType(interfaceStrategy.strategy.dbType),
-      provisionDB: false,
-      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-    },
-  }));
+
+  const dbConnectionConfig = strategy.dbConnectionConfig;
+  const invalidSSMPaths = Object.values(dbConnectionConfig).filter((value) => typeof value === 'string' && !isValidSSMPath(value));
+  if (invalidSSMPaths.length > 0) {
+    throw new Error(
+      `Invalid data source strategy "${
+        strategy.name
+      }". Following SSM paths must start with '/' in dbConnectionConfig: ${invalidSSMPaths.join(', ')}.`,
+    );
+  }
+};
+
+const isValidSSMPath = (path: string): boolean => {
+  return path.startsWith('/');
 };

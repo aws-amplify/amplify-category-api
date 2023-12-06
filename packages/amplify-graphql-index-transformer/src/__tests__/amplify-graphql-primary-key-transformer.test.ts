@@ -1,10 +1,9 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { constructDataSourceStrategies, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Kind, parse } from 'graphql';
 import _ from 'lodash';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { DataSourceType, DynamoDBProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { PrimaryKeyTransformer } from '..';
 
 test('throws if multiple primary keys are defined on an object', () => {
@@ -726,13 +725,8 @@ test('lowercase model names generate the correct get/list query arguments', () =
   expect(listQuery.arguments[5].name.value).toEqual('sortDirection');
 });
 
-describe('RDS primary key transformer tests', () => {
-  const modelToDatasourceMap = new Map<string, DataSourceType>();
-  modelToDatasourceMap.set('Test', {
-    dbType: 'MySQL',
-    provisionDB: false,
-    provisionStrategy: DynamoDBProvisionStrategy.DEFAULT, // TODO: change this once the RDS stratety is added
-  });
+describe('SQL primary key transformer tests', () => {
+  const mySqlStrategy = mockSqlDataSourceStrategy();
 
   it('a primary key with a single sort key field is properly configured', () => {
     const inputSchema = `
@@ -744,7 +738,7 @@ describe('RDS primary key transformer tests', () => {
     const out = testTransform({
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-      modelToDatasourceMap,
+      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
     });
     const schema = parse(out.schema);
     const stack = out.stacks.Test;
@@ -772,7 +766,7 @@ describe('RDS primary key transformer tests', () => {
     const out = testTransform({
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-      modelToDatasourceMap,
+      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
     });
     const schema = parse(out.schema);
     const stack = out.stacks.Test;
@@ -815,7 +809,7 @@ describe('RDS primary key transformer tests', () => {
     const out = testTransform({
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-      modelToDatasourceMap,
+      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
     });
     const schema = parse(out.schema);
     const stack = out.stacks.Test;
@@ -880,7 +874,7 @@ describe('RDS primary key transformer tests', () => {
     const out = testTransform({
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-      modelToDatasourceMap,
+      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
     });
     const schema = parse(out.schema);
 
@@ -918,7 +912,7 @@ describe('RDS primary key transformer tests', () => {
     const out = testTransform({
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-      modelToDatasourceMap,
+      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
     });
     const schema = parse(out.schema);
 
@@ -950,7 +944,7 @@ describe('RDS primary key transformer tests', () => {
     const out = testTransform({
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-      modelToDatasourceMap,
+      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
     });
     const schema = parse(out.schema);
 
@@ -994,7 +988,7 @@ describe('RDS primary key transformer tests', () => {
     const out = testTransform({
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-      modelToDatasourceMap,
+      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
     });
     const schema = parse(out.schema);
 

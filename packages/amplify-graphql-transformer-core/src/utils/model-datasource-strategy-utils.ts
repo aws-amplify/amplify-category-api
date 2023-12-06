@@ -1,69 +1,63 @@
 import {
   AmplifyDynamoDbModelDataSourceStrategy,
-  DBType,
-  DataSourceType,
+  DataSourceStrategiesProvider,
   DefaultDynamoDbModelDataSourceStrategy,
-  DynamoDBProvisionStrategy,
   ModelDataSourceStrategy,
   ModelDataSourceStrategyDbType,
-  SQLDBType,
+  ModelDataSourceStrategySqlDbType,
   SQLLambdaModelDataSourceStrategy,
-  SQLLambdaModelProvisionStrategy,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { DDB_DB_TYPE, MYSQL_DB_TYPE, POSTGRES_DB_TYPE } from '../types/import-appsync-api-types';
+import { DDB_DB_TYPE, ImportedRDSType, MYSQL_DB_TYPE, POSTGRES_DB_TYPE } from '../types';
+import { isBuiltInGraphqlType } from './graphql-utils';
+import { getResourceNamesForStrategy } from './resource-name';
 
-export const dataSourceStrategyToDataSourceType = (dataSourceStrategy: ModelDataSourceStrategy): DataSourceType => {
-  if (dataSourceStrategy.dbType === 'DYNAMODB') {
-    switch (dataSourceStrategy.provisionStrategy) {
-      case 'DEFAULT':
-        return {
-          dbType: 'DDB',
-          provisionDB: true,
-          provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
-        };
-      case 'AMPLIFY_TABLE':
-        return {
-          dbType: 'DDB',
-          provisionDB: true,
-          provisionStrategy: DynamoDBProvisionStrategy.AMPLIFY_TABLE,
-        };
-      default:
-        throw new Error(`Encountered unexpected provision strategy: ${(dataSourceStrategy as any).provisionStrategy}`);
-    }
-  } else if (dataSourceStrategy.dbType === 'MYSQL' || dataSourceStrategy.dbType === 'POSTGRES') {
-    return {
-      dbType: convertSQLDBType(dataSourceStrategy.dbType),
-      provisionDB: false,
-      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-    };
+/**
+ * Return the data source name for a given `@model` Type name. The strategy for deriving a data source name differs depending on whether the
+ * type's associated ModelDataSourceStrategy uses DynamoDB or SQL. DynamoDB data sources are named `<modelName>Table`, while SQL sources use
+ * the resource constant of the SQL Lambda Data Source.
+ *
+ * Note: This utility is not suitable for deriving data source names for non-model types such as Query or Mutation custom SQL fields, HTTP
+ * data sources, etc.
+ */
+export const getModelDataSourceNameForTypeName = (ctx: DataSourceStrategiesProvider, typeName: string): string => {
+  let dataSourceName: string;
+  const strategy = getModelDataSourceStrategy(ctx, typeName);
+  if (isSqlStrategy(strategy)) {
+    const resourceNames = getResourceNamesForStrategy(strategy);
+    dataSourceName = resourceNames.sqlLambdaDataSource;
+  } else {
+    dataSourceName = `${typeName}Table`;
   }
-  throw new Error(`Encountered unexpected database type ${dataSourceStrategy.dbType}`);
-};
-
-// TODO: Do away with this after we normalize database types throughout the internals
-export const convertSQLDBType = (definitionDBType: 'MYSQL' | 'POSTGRES'): SQLDBType =>
-  definitionDBType === 'MYSQL' ? 'MySQL' : 'Postgres';
-
-/**
- * Type predicate that returns true if `obj` is one of the known DynamoDB-based strategies
- */
-export const isDynamoDbStrategy = (
-  strategy: ModelDataSourceStrategy,
-): strategy is AmplifyDynamoDbModelDataSourceStrategy | DefaultDynamoDbModelDataSourceStrategy => {
-  return isDefaultDynamoDbModelDataSourceStrategy(strategy) || isAmplifyDynamoDbModelDataSourceStrategy(strategy);
+  return dataSourceName;
 };
 
 /**
- * Type predicate that returns true if `obj` is a DefaultDynamoDbModelDataSourceStrategy
+ * Map the database type that is set in the dataSourceStrategies to the engine represented by ImportedRDSType. This is used to generate
+ * parameters for invoking the SQL Lambda.
  */
-export const isDefaultDynamoDbModelDataSourceStrategy = (
-  strategy: ModelDataSourceStrategy,
-): strategy is DefaultDynamoDbModelDataSourceStrategy => {
-  return (
-    isDynamoModelDataSourceDbType(strategy.dbType) &&
-    typeof (strategy as any)['provisionStrategy'] === 'string' &&
-    (strategy as any)['provisionStrategy'] === 'DEFAULT'
-  );
+export const getImportedRDSTypeFromStrategyDbType = (dbType: ModelDataSourceStrategyDbType): ImportedRDSType => {
+  switch (dbType) {
+    case MYSQL_DB_TYPE:
+      return ImportedRDSType.MYSQL;
+    case POSTGRES_DB_TYPE:
+      return ImportedRDSType.POSTGRESQL;
+    default:
+      throw new Error(`Unsupported RDS datasource type: ${dbType}`);
+  }
+};
+
+/**
+ * Get the datasource database type of the model.
+ * @param ctx Transformer Context
+ * @param typename Model name
+ * @returns datasource type
+ */
+export const getModelDataSourceStrategy = (ctx: DataSourceStrategiesProvider, typename: string): ModelDataSourceStrategy => {
+  const strategy = ctx.dataSourceStrategies[typename];
+  if (!strategy) {
+    throw new Error(`Cannot find datasource type for model ${typename}`);
+  }
+  return strategy;
 };
 
 /**
@@ -73,21 +67,65 @@ export const isAmplifyDynamoDbModelDataSourceStrategy = (
   strategy: ModelDataSourceStrategy,
 ): strategy is AmplifyDynamoDbModelDataSourceStrategy => {
   return (
-    isDynamoModelDataSourceDbType(strategy.dbType) &&
+    isDynamoDbType(strategy.dbType) &&
     typeof (strategy as any)['provisionStrategy'] === 'string' &&
     (strategy as any)['provisionStrategy'] === 'AMPLIFY_TABLE'
   );
 };
 
 /**
- * Type predicate that returns true if `dbType` is the DynamoDB database type
- *
- * TODO: Normalize this along the DBType -> ModelDataSourceStrategyDbType refactor
- * @param dbType the candidate dbType to check
- * @returns true if dbType is the DynamoDB database type
+ * Type predicate that returns true if `obj` is a DefaultDynamoDbModelDataSourceStrategy
  */
-export const isDynamoModelDataSourceDbType = (dbType: ModelDataSourceStrategyDbType): dbType is 'DYNAMODB' => {
+export const isDefaultDynamoDbModelDataSourceStrategy = (
+  strategy: ModelDataSourceStrategy,
+): strategy is DefaultDynamoDbModelDataSourceStrategy => {
+  return (
+    isDynamoDbType(strategy.dbType) &&
+    typeof (strategy as any)['provisionStrategy'] === 'string' &&
+    (strategy as any)['provisionStrategy'] === 'DEFAULT'
+  );
+};
+
+/**
+ * Checks if the given model is a DynamoDB model
+ * @param ctx Transformer Context
+ * @param typename Model name
+ * @returns boolean
+ */
+export const isDynamoDbModel = (ctx: DataSourceStrategiesProvider, typename: string): boolean => {
+  if (isBuiltInGraphqlType(typename)) {
+    return false;
+  }
+  const modelDataSourceType = getModelDataSourceStrategy(ctx, typename);
+  return isDynamoDbType(modelDataSourceType.dbType);
+};
+
+/**
+ * Type predicate that returns true if `dbType` is the DynamoDB database type
+ */
+export const isDynamoDbType = (dbType: ModelDataSourceStrategyDbType): dbType is 'DYNAMODB' => {
   return dbType === 'DYNAMODB';
+};
+
+/**
+ * Type predicate that returns true if `dbType` is a supported SQL database type
+ */
+export const isSqlDbType = (dbType: ModelDataSourceStrategyDbType): dbType is ModelDataSourceStrategySqlDbType => {
+  return ([MYSQL_DB_TYPE, POSTGRES_DB_TYPE] as string[]).includes(dbType as string);
+};
+
+/**
+ * Checks if the given model is a SQL model
+ * @param ctx Transformer Context
+ * @param typename Model name
+ * @returns boolean
+ */
+export const isSqlModel = (ctx: DataSourceStrategiesProvider, typename: string): boolean => {
+  if (isBuiltInGraphqlType(typename)) {
+    return false;
+  }
+  const modelDataSourceType = getModelDataSourceStrategy(ctx, typename);
+  return isSqlDbType(modelDataSourceType.dbType);
 };
 
 /**
@@ -95,22 +133,8 @@ export const isDynamoModelDataSourceDbType = (dbType: ModelDataSourceStrategyDbT
  */
 export const isSqlStrategy = (strategy: ModelDataSourceStrategy): strategy is SQLLambdaModelDataSourceStrategy => {
   return (
-    isSqlModelDataSourceDbType(strategy.dbType) &&
-    typeof (strategy as any).name === 'string' &&
-    typeof (strategy as any).dbConnectionConfig === 'object'
+    isSqlDbType(strategy.dbType) && typeof (strategy as any).name === 'string' && typeof (strategy as any).dbConnectionConfig === 'object'
   );
-};
-
-/**
- * Type predicate that returns true if `dbType` is a supported SQL database type
- *
- * TODO: Normalize this along the DBType -> ModelDataSourceStrategyDbType refactor
- * @param dbType the candidate dbType to check
- * @returns true if dbType is one of the supported SQL engines
- */
-export const isSqlModelDataSourceDbType = (dbType: ModelDataSourceStrategyDbType): dbType is 'MYSQL' | 'POSTGRES' => {
-  const validDbTypes: ModelDataSourceStrategyDbType[] = ['MYSQL', 'POSTGRES'];
-  return validDbTypes.includes(dbType);
 };
 
 /**
@@ -126,7 +150,7 @@ export const isSqlModelDataSourceDbType = (dbType: ModelDataSourceStrategyDbType
  * @returns the canonical database type
  * @throws if the type is not recognized
  */
-export const normalizeDbType = (candidate: string): DBType => {
+export const normalizeDbType = (candidate: string): ModelDataSourceStrategyDbType => {
   switch (candidate.toLowerCase()) {
     case 'mysql':
       return MYSQL_DB_TYPE;

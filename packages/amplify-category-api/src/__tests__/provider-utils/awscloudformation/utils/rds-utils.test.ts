@@ -1,9 +1,25 @@
+import { DataSourceStrategiesProvider, ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { DDB_DEFAULT_DATASOURCE_STRATEGY, MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 import { checkForUnsupportedDirectives } from '../../../../provider-utils/awscloudformation/utils/rds-resources/utils';
 
 describe('check for unsupported RDS directives', () => {
-  const modelToDatasourceMap = new Map();
-  modelToDatasourceMap.set('Post', { dbType: 'MySQL' });
-  modelToDatasourceMap.set('Tag', { dbType: 'DDB' });
+  const dataSourceStrategies: Record<string, ModelDataSourceStrategy> = {
+    Post: {
+      name: 'mysqlstrategy',
+      dbType: MYSQL_DB_TYPE,
+      dbConnectionConfig: {
+        databaseNameSsmPath: '/databaseNameSsmPath',
+        hostnameSsmPath: '/hostnameSsmPath',
+        portSsmPath: '/portSsmPath',
+        usernameSsmPath: '/usernameSsmPath',
+        passwordSsmPath: '/passwordSsmPath',
+      },
+    },
+    Tag: DDB_DEFAULT_DATASOURCE_STRATEGY,
+  };
+
+  const dataSourceStrategiesProvider: DataSourceStrategiesProvider = { dataSourceStrategies };
+  const emptyProvider: DataSourceStrategiesProvider = { dataSourceStrategies: {} };
 
   it('should throw error if searchable directive is present on a model', () => {
     const schema = `
@@ -12,8 +28,8 @@ describe('check for unsupported RDS directives', () => {
                 title: String!
             }
         `;
-    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
-      `"@searchable directive on type \\"Post\\"  is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
+    expect(() => checkForUnsupportedDirectives(schema, dataSourceStrategiesProvider)).toThrowErrorMatchingInlineSnapshot(
+      '"@searchable directive on type \\"Post\\"  is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"',
     );
   });
 
@@ -23,8 +39,8 @@ describe('check for unsupported RDS directives', () => {
                 recognizeTextFromImage: String @predictions(actions: [identifyText])
             }
         `;
-    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
-      `"@predictions directive on type \\"Query\\" and field \\"recognizeTextFromImage\\" is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
+    expect(() => checkForUnsupportedDirectives(schema, dataSourceStrategiesProvider)).toThrowErrorMatchingInlineSnapshot(
+      '"@predictions directive on type \\"Query\\" and field \\"recognizeTextFromImage\\" is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"',
     );
   });
 
@@ -34,8 +50,8 @@ describe('check for unsupported RDS directives', () => {
                 echo(msg: String): String @function(name: "echofunction")
             }
         `;
-    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
-      `"@function directive on type \\"Query\\" and field \\"echo\\" is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
+    expect(() => checkForUnsupportedDirectives(schema, dataSourceStrategiesProvider)).toThrowErrorMatchingInlineSnapshot(
+      '"@function directive on type \\"Query\\" and field \\"echo\\" is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"',
     );
   });
 
@@ -54,8 +70,8 @@ describe('check for unsupported RDS directives', () => {
                 posts: [Post] @manyToMany(relationName: "PostTags")
             }
         `;
-    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
-      `"@manyToMany directive on type \\"Post\\" and field \\"tags\\" is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
+    expect(() => checkForUnsupportedDirectives(schema, dataSourceStrategiesProvider)).toThrowErrorMatchingInlineSnapshot(
+      '"@manyToMany directive on type \\"Post\\" and field \\"tags\\" is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"',
     );
   });
 
@@ -72,8 +88,8 @@ describe('check for unsupported RDS directives', () => {
                 listPosts: [Post] @http(url: "https://www.example.com/posts")
             }
         `;
-    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
-      `"@http directive on type \\"Query\\" and field \\"listPosts\\" is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
+    expect(() => checkForUnsupportedDirectives(schema, dataSourceStrategiesProvider)).toThrowErrorMatchingInlineSnapshot(
+      '"@http directive on type \\"Query\\" and field \\"listPosts\\" is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"',
     );
   });
 
@@ -84,38 +100,48 @@ describe('check for unsupported RDS directives', () => {
                 title: String!
             }
         `;
-    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).toThrowErrorMatchingInlineSnapshot(
-      `"@mapsTo directive on type \\"Post\\"  is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
+    expect(() => checkForUnsupportedDirectives(schema, dataSourceStrategiesProvider)).toThrowErrorMatchingInlineSnapshot(
+      '"@mapsTo directive on type \\"Post\\"  is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"',
     );
   });
 
   it('should not throw error if there are only DDB models', () => {
-    const modelToDatasourceMap = new Map();
-    modelToDatasourceMap.set('Post', { dbType: 'DDB' });
     const schema = `
             type Post @model @mapsTo(name: "Article") {
                 id: ID!
                 title: String!
             }
         `;
-    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).not.toThrowError();
+    const ddbProvider: DataSourceStrategiesProvider = {
+      dataSourceStrategies: {
+        Post: DDB_DEFAULT_DATASOURCE_STRATEGY,
+      },
+    };
+    expect(() => checkForUnsupportedDirectives(schema, ddbProvider)).not.toThrowError();
   });
 
   it('early return if model_to_datasource map is empty or undefined', () => {
-    const modelToDatasourceMap = new Map();
     const schema = `
             type Post @model @mapsTo(name: "Article") {
                 id: ID!
                 title: String!
             }
         `;
-    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).not.toThrowError();
+    expect(() => checkForUnsupportedDirectives(schema, emptyProvider)).not.toThrowError();
+  });
+
+  it('early return for a schema with no models', () => {
+    const schema = `
+            type Post {
+                id: ID!
+                title: String!
+            }
+        `;
+    expect(() => checkForUnsupportedDirectives(schema, emptyProvider)).not.toThrowError();
   });
 
   it('early return if schema is empty or undefined', () => {
-    const modelToDatasourceMap = new Map();
-    modelToDatasourceMap.set('Post', { dbType: 'MySQL' });
     const schema = '';
-    expect(() => checkForUnsupportedDirectives(schema, modelToDatasourceMap)).not.toThrowError();
+    expect(() => checkForUnsupportedDirectives(schema, dataSourceStrategiesProvider)).not.toThrowError();
   });
 });

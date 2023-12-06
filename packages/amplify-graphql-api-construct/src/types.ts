@@ -18,7 +18,7 @@ import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { IFunction, CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
 import { AmplifyDynamoDbTableWrapper } from './amplify-dynamodb-table-wrapper';
-import { CustomSqlDataSourceStrategy, ModelDataSourceStrategy } from './model-datasource-strategy';
+import { CustomSqlDataSourceStrategy, ModelDataSourceStrategy } from './model-datasource-strategy-types';
 
 /**
  * Configuration for IAM Authorization on the Graphql Api.
@@ -563,20 +563,12 @@ export interface IAmplifyGraphqlDefinition {
 
   /**
    * Retrieve the datasource strategy mapping. The default strategy is to use DynamoDB from CloudFormation.
-   *
-   * **NOTE** Explicitly specifying the 'dataSourceStrategies' configuration option is in preview and is not recommended to use with
-   * production systems. For production, use the static factory methods `fromString` or `fromFiles`.
-   * @experimental
    * @returns datasource strategy mapping
    */
   readonly dataSourceStrategies: Record<string, ModelDataSourceStrategy>;
 
   /**
    * An array of custom Query or Mutation SQL commands to the data sources that resolves them.
-   *
-   * **NOTE** Explicitly specifying the 'customSqlDataSourceStrategies' configuration option is in preview and is not recommended to use
-   * with production systems. For production, use the static factory methods `fromString` or `fromFiles`.
-   * @experimental
    * @returns a list of mappings from custom SQL commands to data sources
    */
   readonly customSqlDataSourceStrategies?: CustomSqlDataSourceStrategy[];

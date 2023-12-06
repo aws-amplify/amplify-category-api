@@ -7,11 +7,10 @@ import {
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { LambdaDataSource } from 'aws-cdk-lib/aws-appsync';
+import { DDB_DEFAULT_DATASOURCE_STRATEGY, constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
 import { MapsToTransformer } from '../graphql-maps-to-transformer';
 import { attachInputMappingSlot, attachResponseMappingSlot, attachFilterAndConditionInputMappingSlot } from '../field-mapping-resolvers';
 import { createMappingLambda } from '../field-mapping-lambda';
-import { constructModelToDataSourceMap } from './__integ__/common';
-import { DDB_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 
 jest.mock('../field-mapping-resolvers');
 jest.mock('../field-mapping-lambda');
@@ -34,6 +33,8 @@ describe('@mapsTo directive', () => {
 
   const host_stub = 'host_stub';
 
+  const modelName = 'TestName';
+
   const stubTransformerContextBase = {
     resolvers: {
       getResolver: getResolver_mock,
@@ -49,7 +50,6 @@ describe('@mapsTo directive', () => {
     schemaHelper: {
       setTypeMapping: setTypeMapping_mock,
     },
-    modelToDatasourceMap: constructModelToDataSourceMap(['TestName'], DDB_DB_TYPE),
   };
 
   const lambdaDataSource_stub = 'lambdaDataSource_stub' as unknown as LambdaDataSource;
@@ -57,8 +57,6 @@ describe('@mapsTo directive', () => {
   createMappingLambda_mock.mockReturnValue(lambdaDataSource_stub);
 
   const mapsToTransformer = new MapsToTransformer();
-
-  const modelName = 'TestName';
 
   const simpleSchema = /* GraphQL */ `
     type ${modelName} @model @mapsTo(name: "OriginalName") {
@@ -85,7 +83,11 @@ describe('@mapsTo directive', () => {
     return [
       stubDefinition as DeepWriteable<ObjectTypeDefinitionNode>,
       stubDirective as DeepWriteable<DirectiveNode>,
-      { ...stubTransformerContextBase, inputDocument: ast } as unknown as TransformerSchemaVisitStepContextProvider,
+      {
+        ...stubTransformerContextBase,
+        inputDocument: ast,
+        dataSourceStrategies: constructDataSourceStrategies(schema, DDB_DEFAULT_DATASOURCE_STRATEGY),
+      } as unknown as TransformerSchemaVisitStepContextProvider,
     ] as const;
   };
 
@@ -98,7 +100,7 @@ describe('@mapsTo directive', () => {
     stubDirective.arguments = [];
     expect(() =>
       mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
-    ).toThrowErrorMatchingInlineSnapshot(`"name is required in @mapsTo directive."`);
+    ).toThrowErrorMatchingInlineSnapshot('"name is required in @mapsTo directive."');
   });
 
   it('requires a string value for name', () => {
@@ -106,7 +108,7 @@ describe('@mapsTo directive', () => {
     stubDirective.arguments![0].value.kind = 'ListValue';
     expect(() =>
       mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
-    ).toThrowErrorMatchingInlineSnapshot(`"A single string must be provided for \\"name\\" in @mapsTo directive"`);
+    ).toThrowErrorMatchingInlineSnapshot('"A single string must be provided for \\"name\\" in @mapsTo directive"');
   });
 
   it('registers the rename mapping', () => {
@@ -120,7 +122,7 @@ describe('@mapsTo directive', () => {
     expect(() =>
       mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Cannot apply @mapsTo with name \\"OriginalName\\" on type \\"TestName\\" because \\"OriginalName\\" model already exists in the schema."`,
+      '"Cannot apply @mapsTo with name \\"OriginalName\\" on type \\"TestName\\" because \\"OriginalName\\" model already exists in the schema."',
     );
   });
 
@@ -132,13 +134,13 @@ describe('@mapsTo directive', () => {
         originalFieldName: 'origFieldName',
       },
     ];
-    stubTransformerContextBase.resourceHelper.getModelFieldMapKeys.mockReturnValueOnce(['TestType']);
+    stubTransformerContextBase.resourceHelper.getModelFieldMapKeys.mockReturnValueOnce([modelName]);
     const modelFieldMap: ModelFieldMap = {
       getMappedFields: () => testFieldMap,
       getResolverReferences: () => [
         {
           typeName: 'Mutation',
-          fieldName: 'createTestType',
+          fieldName: `create${modelName}`,
           isList: false,
         },
       ],
@@ -146,17 +148,22 @@ describe('@mapsTo directive', () => {
     stubTransformerContextBase.resourceHelper.getModelFieldMap.mockReturnValueOnce(modelFieldMap);
     const dummyResolver = { obj: 'this is a dummy resolver' };
     stubTransformerContextBase.resolvers.getResolver.mockImplementationOnce((typeName: string, fieldName: string) =>
-      typeName === 'Mutation' && fieldName === 'createTestType' ? dummyResolver : undefined,
+      typeName === 'Mutation' && fieldName === `create${modelName}` ? dummyResolver : undefined,
     );
 
+    const transformerContext = {
+      ...stubTransformerContextBase,
+      dataSourceStrategies: constructDataSourceStrategies(simpleSchema, DDB_DEFAULT_DATASOURCE_STRATEGY),
+    };
+
     // test
-    mapsToTransformer.after(stubTransformerContextBase as unknown as TransformerContextProvider);
+    mapsToTransformer.after(transformerContext as unknown as TransformerContextProvider);
 
     // assert
     expect(attachInputMappingSlot_mock).toBeCalledTimes(1);
     expect(attachInputMappingSlot_mock).toBeCalledWith({
       resolver: dummyResolver,
-      resolverFieldName: 'createTestType',
+      resolverFieldName: `create${modelName}`,
       resolverTypeName: 'Mutation',
       fieldMap: testFieldMap,
     });
@@ -164,7 +171,7 @@ describe('@mapsTo directive', () => {
     expect(attachResponseMappingSlot_mock).toBeCalledWith({
       slotName: 'postUpdate',
       resolver: dummyResolver,
-      resolverFieldName: 'createTestType',
+      resolverFieldName: `create${modelName}`,
       resolverTypeName: 'Mutation',
       fieldMap: testFieldMap,
       isList: false,
@@ -174,7 +181,7 @@ describe('@mapsTo directive', () => {
       slotName: 'preUpdate',
       resolver: dummyResolver,
       resolverTypeName: 'Mutation',
-      resolverFieldName: 'createTestType',
+      resolverFieldName: `create${modelName}`,
       fieldMap: testFieldMap,
       dataSource: lambdaDataSource_stub,
     });
@@ -188,13 +195,13 @@ describe('@mapsTo directive', () => {
         originalFieldName: 'origFieldName',
       },
     ];
-    stubTransformerContextBase.resourceHelper.getModelFieldMapKeys.mockReturnValueOnce(['TestType']);
+    stubTransformerContextBase.resourceHelper.getModelFieldMapKeys.mockReturnValueOnce([modelName]);
     const modelFieldMap: ModelFieldMap = {
       getMappedFields: () => testFieldMap,
       getResolverReferences: () => [
         {
           typeName: 'Query',
-          fieldName: 'getTestType',
+          fieldName: `get${modelName}`,
           isList: false,
         },
       ],
@@ -202,11 +209,16 @@ describe('@mapsTo directive', () => {
     stubTransformerContextBase.resourceHelper.getModelFieldMap.mockReturnValueOnce(modelFieldMap);
     const dummyResolver = { obj: 'this is a dummy resolver' };
     stubTransformerContextBase.resolvers.getResolver.mockImplementationOnce((typeName: string, fieldName: string) =>
-      typeName === 'Query' && fieldName === 'getTestType' ? dummyResolver : undefined,
+      typeName === 'Query' && fieldName === `get${modelName}` ? dummyResolver : undefined,
     );
 
+    const transformerContext = {
+      ...stubTransformerContextBase,
+      dataSourceStrategies: constructDataSourceStrategies(simpleSchema, DDB_DEFAULT_DATASOURCE_STRATEGY),
+    };
+
     // test
-    mapsToTransformer.after(stubTransformerContextBase as unknown as TransformerContextProvider);
+    mapsToTransformer.after(transformerContext as unknown as TransformerContextProvider);
 
     // assert
     expect(attachInputMappingSlot_mock).not.toBeCalled();
@@ -214,7 +226,7 @@ describe('@mapsTo directive', () => {
     expect(attachResponseMappingSlot_mock).toBeCalledWith({
       slotName: 'postDataLoad',
       resolver: dummyResolver,
-      resolverFieldName: 'getTestType',
+      resolverFieldName: `get${modelName}`,
       resolverTypeName: 'Query',
       fieldMap: testFieldMap,
       isList: false,
@@ -224,7 +236,7 @@ describe('@mapsTo directive', () => {
       slotName: 'preDataLoad',
       resolver: dummyResolver,
       resolverTypeName: 'Query',
-      resolverFieldName: 'getTestType',
+      resolverFieldName: `get${modelName}`,
       fieldMap: testFieldMap,
       dataSource: lambdaDataSource_stub,
     });
@@ -238,13 +250,13 @@ describe('@mapsTo directive', () => {
         originalFieldName: 'origFieldName',
       },
     ];
-    stubTransformerContextBase.resourceHelper.getModelFieldMapKeys.mockReturnValueOnce(['TestType']);
+    stubTransformerContextBase.resourceHelper.getModelFieldMapKeys.mockReturnValueOnce([modelName]);
     const modelFieldMap: ModelFieldMap = {
       getMappedFields: () => testFieldMap,
       getResolverReferences: () => [
         {
           typeName: 'Query',
-          fieldName: 'getTestType',
+          fieldName: `get${modelName}`,
           isList: false,
         },
       ],
@@ -252,8 +264,13 @@ describe('@mapsTo directive', () => {
     stubTransformerContextBase.resourceHelper.getModelFieldMap.mockReturnValueOnce(modelFieldMap);
     stubTransformerContextBase.resolvers.getResolver.mockReturnValueOnce(undefined);
 
+    const transformerContext = {
+      ...stubTransformerContextBase,
+      dataSourceStrategies: constructDataSourceStrategies(simpleSchema, DDB_DEFAULT_DATASOURCE_STRATEGY),
+    };
+
     // test
-    mapsToTransformer.after(stubTransformerContextBase as unknown as TransformerContextProvider);
+    mapsToTransformer.after(transformerContext as unknown as TransformerContextProvider);
 
     // assert
     expect(attachInputMappingSlot_mock).not.toBeCalled();
@@ -263,13 +280,13 @@ describe('@mapsTo directive', () => {
   it('does not attach resolvers if no mappings defined', () => {
     // setup
     const testFieldMap: FieldMapEntry[] = [];
-    stubTransformerContextBase.resourceHelper.getModelFieldMapKeys.mockReturnValueOnce(['TestType']);
+    stubTransformerContextBase.resourceHelper.getModelFieldMapKeys.mockReturnValueOnce([modelName]);
     const modelFieldMap: ModelFieldMap = {
       getMappedFields: () => testFieldMap,
       getResolverReferences: () => [
         {
           typeName: 'Query',
-          fieldName: 'getTestType',
+          fieldName: `get${modelName}`,
           isList: false,
         },
       ],
@@ -277,8 +294,13 @@ describe('@mapsTo directive', () => {
     stubTransformerContextBase.resourceHelper.getModelFieldMap.mockReturnValueOnce(modelFieldMap);
     stubTransformerContextBase.resolvers.getResolver.mockReturnValueOnce(undefined);
 
+    const transformerContext = {
+      ...stubTransformerContextBase,
+      dataSourceStrategies: constructDataSourceStrategies(simpleSchema, DDB_DEFAULT_DATASOURCE_STRATEGY),
+    };
+
     // test
-    mapsToTransformer.after(stubTransformerContextBase as unknown as TransformerContextProvider);
+    mapsToTransformer.after(transformerContext as unknown as TransformerContextProvider);
 
     // assert
     expect(attachInputMappingSlot_mock).not.toBeCalled();
@@ -291,6 +313,6 @@ describe('@mapsTo directive', () => {
       inputDocument: parse(simpleSchema),
     });
 
-    expect(setTypeMapping_mock).toHaveBeenCalledWith('TestName', 'OriginalName');
+    expect(setTypeMapping_mock).toHaveBeenCalledWith(modelName, 'OriginalName');
   });
 });

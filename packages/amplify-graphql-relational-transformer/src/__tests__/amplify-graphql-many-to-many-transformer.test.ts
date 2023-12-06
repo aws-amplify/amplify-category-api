@@ -2,10 +2,15 @@
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  DDB_DEFAULT_DATASOURCE_STRATEGY,
+  GraphQLTransform,
+  constructDataSourceStrategies,
+  validateModelSchema,
+} from '@aws-amplify/graphql-transformer-core';
+import { AppSyncAuthConfiguration, ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, ObjectTypeDefinitionNode, parse } from 'graphql';
-import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { DeploymentResources, mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { HasOneTransformer, ManyToManyTransformer } from '..';
 import { hasGeneratedDirective, hasGeneratedField } from './test-helpers';
 
@@ -154,6 +159,25 @@ test('fails if second half of relation uses the wrong type', () => {
   const transformer = createTransformer();
 
   expect(() => transformer.transform(inputSchema)).toThrowError(`@manyToMany relation 'FooBar' expects 'Baz' but got 'Foo'.`);
+});
+
+test('fails if used on a SQL model', () => {
+  const inputSchema = `
+    type Foo @model {
+      id: ID! @primaryKey
+      bars: [Bar] @manyToMany(relationName: "FooBar")
+    }
+
+    type Bar @model {
+      id: ID! @primaryKey
+      foos: [Foo] @manyToMany(relationName: "FooBar")
+    }`;
+
+  const mySqlStrategy = mockSqlDataSourceStrategy();
+
+  const dataSourceStrategies = constructDataSourceStrategies(inputSchema, mySqlStrategy);
+  const transformer = createTransformer(undefined, dataSourceStrategies);
+  expect(() => transformer.transform(inputSchema)).toThrowError('@manyToMany directive cannot be used on a SQL model.');
 });
 
 test('valid schema', () => {
@@ -642,7 +666,13 @@ describe('Pre Processing Many To Many Tests', () => {
   });
 });
 
-function createTransformer(overrideAuthConfig?: AppSyncAuthConfiguration) {
+function createTransformer(
+  overrideAuthConfig?: AppSyncAuthConfiguration,
+  overrideDataSourceStrategies?: Record<string, ModelDataSourceStrategy>,
+): {
+  transform: (schema: string) => DeploymentResources & { logs: any[] };
+  preProcessSchema: (schema: DocumentNode) => DocumentNode;
+} {
   const authConfig: AppSyncAuthConfiguration = overrideAuthConfig ?? {
     defaultAuthentication: {
       authenticationType: 'API_KEY',
@@ -669,8 +699,18 @@ function createTransformer(overrideAuthConfig?: AppSyncAuthConfiguration) {
     respectPrimaryKeyAttributesOnConnectionField: false,
     populateOwnerFieldForStaticGroupAuth: false,
   };
+
   return {
-    transform: (schema: string) => testTransform({ schema, authConfig, transformers, transformParameters }),
+    transform: (schema: string) => {
+      const dataSourceStrategies = overrideDataSourceStrategies ?? constructDataSourceStrategies(schema, DDB_DEFAULT_DATASOURCE_STRATEGY);
+      return testTransform({
+        schema,
+        authConfig,
+        transformers,
+        transformParameters,
+        dataSourceStrategies,
+      });
+    },
     preProcessSchema: (schema: DocumentNode) =>
       new GraphQLTransform({ authConfig, transformers, transformParameters }).preProcessSchema(schema),
   };

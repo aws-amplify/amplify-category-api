@@ -5,17 +5,15 @@ import {
   TransformHostProvider,
   TransformerLog,
   NestedStackProvider,
-  RDSLayerMapping,
   SynthParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type {
   AssetProvider,
-  DataSourceType,
   StackManagerProvider,
   TransformParameterProvider,
   TransformParameters,
-  VpcConfig,
-  ProvisionedConcurrencyConfig,
+  DataSourceStrategiesProvider,
+  RDSLayerMappingProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { Aws, CfnOutput, Fn, Stack } from 'aws-cdk-lib';
@@ -47,7 +45,7 @@ import { MappingTemplate } from '../cdk-compat';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
 import { defaultTransformParameters } from '../transformer-context/transform-parameters';
 import * as SyncUtils from './sync-utils';
-import { UserDefinedSlot, DatasourceTransformationConfig } from './types';
+import { UserDefinedSlot } from './types';
 import {
   makeSeenTransformationKey,
   matchArgumentDirective,
@@ -87,20 +85,16 @@ export interface GraphQLTransformOptions {
   readonly host?: TransformHostProvider;
   readonly userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   readonly resolverConfig?: ResolverConfig;
-  readonly sqlLambdaVpcConfig?: VpcConfig;
-  readonly rdsLayerMapping?: RDSLayerMapping;
-  readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
 }
 
-export type TransformOption = {
+export interface TransformOption extends DataSourceStrategiesProvider, RDSLayerMappingProvider {
   scope: Construct;
   nestedStackProvider: NestedStackProvider;
   parameterProvider?: TransformParameterProvider;
   assetProvider: AssetProvider;
   synthParameters: SynthParameters;
   schema: string;
-  datasourceConfig?: DatasourceTransformationConfig;
-};
+}
 
 export type StackMapping = { [resourceId: string]: string };
 
@@ -115,9 +109,7 @@ export class GraphQLTransform {
 
   private readonly userDefinedSlots: Record<string, UserDefinedSlot[]>;
 
-  private readonly sqlLambdaVpcConfig?: VpcConfig;
   private readonly transformParameters: TransformParameters;
-  private readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
   // that specifies we have run already run a directive at a given location.
@@ -149,12 +141,10 @@ export class GraphQLTransform {
     this.stackMappingOverrides = options.stackMapping || {};
     this.userDefinedSlots = options.userDefinedSlots || ({} as Record<string, UserDefinedSlot[]>);
     this.resolverConfig = options.resolverConfig || {};
-    this.sqlLambdaVpcConfig = options.sqlLambdaVpcConfig;
     this.transformParameters = {
       ...defaultTransformParameters,
       ...(options.transformParameters ?? {}),
     };
-    this.sqlLambdaProvisionedConcurrencyConfig = options.sqlLambdaProvisionedConcurrencyConfig;
 
     this.logs = [];
   }
@@ -194,31 +184,29 @@ export class GraphQLTransform {
    * cloudformation template is returned.
    */
   public transform({
-    scope,
+    assetProvider,
+    dataSourceStrategies,
     nestedStackProvider,
     parameterProvider,
-    assetProvider,
-    synthParameters,
+    rdsLayerMapping,
     schema,
-    datasourceConfig,
+    scope,
+    sqlDirectiveDataSourceStrategies,
+    synthParameters,
   }: TransformOption): void {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
     const context = new TransformerContext({
       assetProvider,
       authConfig: this.authConfig,
-      customQueries: datasourceConfig?.customQueries ?? new Map<string, string>(),
-      customSqlDataSourceStrategies: datasourceConfig?.customSqlDataSourceStrategies ?? [],
-      datasourceSecretParameterLocations: datasourceConfig?.datasourceSecretParameterLocations,
+      dataSourceStrategies: dataSourceStrategies,
       inputDocument: parsedDocument,
-      modelToDatasourceMap: datasourceConfig?.modelToDatasourceMap ?? new Map<string, DataSourceType>(),
       nestedStackProvider,
       parameterProvider,
-      rdsLayerMapping: datasourceConfig?.rdsLayerMapping,
+      rdsLayerMapping,
       resolverConfig: this.resolverConfig,
       scope,
-      sqlLambdaProvisionedConcurrencyConfig: this.sqlLambdaProvisionedConcurrencyConfig,
-      sqlLambdaVpcConfig: this.sqlLambdaVpcConfig,
+      sqlDirectiveDataSourceStrategies: sqlDirectiveDataSourceStrategies ?? [],
       stackMapping: this.stackMappingOverrides,
       synthParameters,
       transformParameters: this.transformParameters,

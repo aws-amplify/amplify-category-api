@@ -43,6 +43,10 @@
         "lines": 80
       }
     },
+    "coverageReporters": [
+      "clover",
+      "text"
+    ],
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },

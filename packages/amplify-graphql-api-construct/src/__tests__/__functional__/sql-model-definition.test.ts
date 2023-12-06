@@ -1,9 +1,10 @@
 import * as cdk from 'aws-cdk-lib';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import { CfnFunction, CfnAlias } from 'aws-cdk-lib/aws-lambda';
+import { mockSqlDataSourceStrategy } from '@aws-amplify/graphql-transformer-test-utils';
+import { getResourceNamesForStrategy } from '@aws-amplify/graphql-transformer-core';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
-import { SqlModelDataSourceDbConnectionConfig, VpcConfig } from '../../model-datasource-strategy';
 
 const defaultSchema = /* GraphQL */ `
   type Todo @model @auth(rules: [{ allow: owner }]) {
@@ -12,33 +13,22 @@ const defaultSchema = /* GraphQL */ `
   }
 `;
 
-const vpcConfiguration: VpcConfig = {
-  vpcId: 'vpc-123abc',
-  securityGroupIds: ['sg-123abc'],
-  subnetAvailabilityZoneConfig: [{ subnetId: 'subnet-123abc', availabilityZone: 'us-east-1a' }],
-};
-
-const dbConnectionConfig: SqlModelDataSourceDbConnectionConfig = {
-  hostnameSsmPath: '/ssm/path/hostnameSsmPath',
-  usernameSsmPath: '/ssm/path/usernameSsmPath',
-  passwordSsmPath: '/ssm/path/passwordSsmPath',
-  databaseNameSsmPath: '/ssm/path/databaseNameSsmPath',
-  portSsmPath: '/ssm/path/portSsmPath',
-};
-
 describe('sql-bound API generated resource access', () => {
   describe('l1 resources', () => {
     describe('singleton appsync resources', () => {
       it('provides the generated SQL Lambda function as an L1 construct with a VPC configuration', () => {
+        const strategy = mockSqlDataSourceStrategy({
+          vpcConfiguration: {
+            vpcId: 'vpc-123abc',
+            securityGroupIds: ['sg-123abc'],
+            subnetAvailabilityZoneConfig: [{ subnetId: 'subnet-123abc', availabilityZone: 'us-east-1a' }],
+          },
+        });
+        const resourceNames = getResourceNamesForStrategy(strategy);
         const stack = new cdk.Stack();
         const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
         const api = new AmplifyGraphqlApi(stack, 'TestSqlBoundApi', {
-          definition: AmplifyGraphqlDefinition.fromString(defaultSchema, {
-            name: 'MySQLDefinition',
-            dbType: 'MYSQL',
-            vpcConfiguration,
-            dbConnectionConfig,
-          }),
+          definition: AmplifyGraphqlDefinition.fromString(defaultSchema, strategy),
           authorizationModes: {
             userPoolConfig: { userPool },
           },
@@ -61,7 +51,7 @@ describe('sql-bound API generated resource access', () => {
         expect(lambdaDataSource?.lambdaConfig).toBeDefined();
 
         expect(functions).toBeDefined();
-        const sqlLambda = functions['SQLLambdaFunction'];
+        const sqlLambda = functions[resourceNames.sqlLambdaFunction];
         expect(sqlLambda).toBeDefined();
 
         // TODO: Why does IFunction.isBoundToVpc return false even though VPC is configured?
@@ -78,15 +68,18 @@ describe('sql-bound API generated resource access', () => {
       });
 
       it('provides the generated VPC Endpoints and security group inbound rules as L1 constructs when provided a VPC configuration', () => {
+        const strategy = mockSqlDataSourceStrategy({
+          vpcConfiguration: {
+            vpcId: 'vpc-123abc',
+            securityGroupIds: ['sg-123abc'],
+            subnetAvailabilityZoneConfig: [{ subnetId: 'subnet-123abc', availabilityZone: 'us-east-1a' }],
+          },
+        });
+
         const stack = new cdk.Stack();
         const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
         const api = new AmplifyGraphqlApi(stack, 'TestSqlBoundApi', {
-          definition: AmplifyGraphqlDefinition.fromString(defaultSchema, {
-            name: 'MySQLDefinition',
-            dbType: 'MYSQL',
-            vpcConfiguration,
-            dbConnectionConfig,
-          }),
+          definition: AmplifyGraphqlDefinition.fromString(defaultSchema, strategy),
           authorizationModes: {
             userPoolConfig: { userPool },
           },
@@ -106,14 +99,12 @@ describe('sql-bound API generated resource access', () => {
       });
 
       it('provides the generated SQL Lambda function as an L1 construct without a VPC configuration', () => {
+        const strategy = mockSqlDataSourceStrategy();
+        const resourceNames = getResourceNamesForStrategy(strategy);
         const stack = new cdk.Stack();
         const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
         const api = new AmplifyGraphqlApi(stack, 'TestSqlBoundApi', {
-          definition: AmplifyGraphqlDefinition.fromString(defaultSchema, {
-            name: 'MySQLDefinition',
-            dbType: 'MYSQL',
-            dbConnectionConfig,
-          }),
+          definition: AmplifyGraphqlDefinition.fromString(defaultSchema, strategy),
           authorizationModes: {
             userPoolConfig: { userPool },
           },
@@ -136,7 +127,7 @@ describe('sql-bound API generated resource access', () => {
         expect(lambdaDataSource?.lambdaConfig).toBeDefined();
 
         expect(functions).toBeDefined();
-        const sqlLambda = functions['SQLLambdaFunction'];
+        const sqlLambda = functions[resourceNames.sqlLambdaFunction];
         expect(sqlLambda).toBeDefined();
 
         const cfnFn = sqlLambda.node.defaultChild as CfnFunction;
@@ -145,17 +136,14 @@ describe('sql-bound API generated resource access', () => {
       });
 
       it('provides the generated SQL Lambda function as an L1 construct with provisioned concurrency', () => {
+        const strategy = mockSqlDataSourceStrategy({
+          sqlLambdaProvisionedConcurrencyConfig: { provisionedConcurrentExecutions: 2 },
+        });
+        const resourceNames = getResourceNamesForStrategy(strategy);
         const stack = new cdk.Stack();
         const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
         const api = new AmplifyGraphqlApi(stack, 'TestSqlBoundApi', {
-          definition: AmplifyGraphqlDefinition.fromString(defaultSchema, {
-            name: 'MySQLDefinition',
-            dbType: 'MYSQL',
-            dbConnectionConfig,
-            sqlLambdaProvisionedConcurrencyConfig: {
-              provisionedConcurrentExecutions: 2,
-            },
-          }),
+          definition: AmplifyGraphqlDefinition.fromString(defaultSchema, strategy),
           authorizationModes: {
             userPoolConfig: { userPool },
           },
@@ -178,10 +166,10 @@ describe('sql-bound API generated resource access', () => {
         expect(lambdaDataSource?.lambdaConfig).toBeDefined();
 
         expect(functions).toBeDefined();
-        const sqlLambda = functions['SQLLambdaFunction'];
+        const sqlLambda = functions[resourceNames.sqlLambdaFunction];
         expect(sqlLambda).toBeDefined();
 
-        const alias = additionalCfnResources['SQLLambdaFunctionAlias'] as CfnAlias;
+        const alias = additionalCfnResources[resourceNames.sqlLambdaAliasLogicalId] as CfnAlias;
 
         expect(alias).toBeDefined();
         expect(alias.provisionedConcurrencyConfig).toEqual({ provisionedConcurrentExecutions: 2 });
@@ -189,14 +177,12 @@ describe('sql-bound API generated resource access', () => {
       });
 
       it('provides the generated SQL Lambda function as an L1 construct without provisioned concurrency', () => {
+        const strategy = mockSqlDataSourceStrategy();
+        const resourceNames = getResourceNamesForStrategy(strategy);
         const stack = new cdk.Stack();
         const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
         const api = new AmplifyGraphqlApi(stack, 'TestSqlBoundApi', {
-          definition: AmplifyGraphqlDefinition.fromString(defaultSchema, {
-            name: 'MySQLDefinition',
-            dbType: 'MYSQL',
-            dbConnectionConfig,
-          }),
+          definition: AmplifyGraphqlDefinition.fromString(defaultSchema, strategy),
           authorizationModes: {
             userPoolConfig: { userPool },
           },
@@ -219,12 +205,10 @@ describe('sql-bound API generated resource access', () => {
         expect(lambdaDataSource?.lambdaConfig).toBeDefined();
 
         expect(functions).toBeDefined();
-        const sqlLambda = functions['SQLLambdaFunction'];
+        const sqlLambda = functions[resourceNames.sqlLambdaFunction];
         expect(sqlLambda).toBeDefined();
 
-        const alias = additionalCfnResources['SQLLambdaFunctionAlias'] as CfnAlias;
-
-        expect(alias).toBeUndefined();
+        expect(additionalCfnResources).toMatchObject({});
       });
     });
   });

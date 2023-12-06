@@ -3,8 +3,8 @@ import { deploy, logDebug, GraphQLClient, defaultTransformParams, transformAndSy
 
 jest.setTimeout(2000000);
 
-const ECHO_FUNCTION_NAME = `echoFunction`;
-const HELLO_FUNCTION_NAME = `hello`;
+const ECHO_FUNCTION_NAME = 'echoFunction';
+const HELLO_FUNCTION_NAME = 'hello';
 
 let GRAPHQL_CLIENT: GraphQLClient;
 let server: AmplifyAppSyncSimulator;

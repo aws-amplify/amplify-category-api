@@ -1,10 +1,10 @@
 import { $TSContext, pathManager, ApiCategoryFacade } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { constructTransformerChain } from '@aws-amplify/graphql-transformer';
+import { DataSourceType, DynamoDBProvisionStrategy } from 'graphql-transformer-core';
 import { getUserOverridenSlots, transformGraphQLSchemaV2 } from '../../graphql-transformer/transform-graphql-schema-v2';
 import { generateTransformerOptions } from '../../graphql-transformer/transformer-options-v2';
 import { getAppSyncAPIName } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import { AmplifyCLIFeatureFlagAdapter } from '../../graphql-transformer/amplify-cli-feature-flag-adapter';
 
 jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('@aws-amplify/amplify-prompts');
@@ -42,6 +42,13 @@ describe('transformGraphQLSchemaV2', () => {
           resourcesToBeUpdated: [],
           allResources: [],
         })),
+        getProjectMeta: jest.fn(() => ({
+          providers: {
+            awscloudformation: {
+              Region: 'us-east-1',
+            },
+          },
+        })),
       },
       parameters: {
         options: { resourcesDir: 'resourceDir', projectDirectory: __dirname },
@@ -51,15 +58,30 @@ describe('transformGraphQLSchemaV2', () => {
     pathManagerMock.getBackendDirPath.mockReturnValue('backenddir');
     pathManagerMock.getCurrentCloudBackendDirPath.mockReturnValue('currentcloudbackenddir');
     ApiCategoryFacadeMock.getTransformerVersion.mockReturnValue(Promise.resolve(2));
-    generateTransformerOptionsMock.mockReturnValue({
-      projectConfig: {
-        // schema that will generate auth warnings
-        schema: `
+
+    const schema = `
           type Todo @model @auth(rules: [{ allow: owner }]) {
             content: String
           }
-        `,
+        `;
+    // Intentionally generating the V1 flavor of the project config to emulate the Gen1 CLI flow. This is fixed up in the transformer
+    const modelToDatasourceMap = new Map<string, DataSourceType>([
+      [
+        'Todo',
+        {
+          dbType: 'DYNAMODB',
+          provisionDB: true,
+          provisionStrategy: DynamoDBProvisionStrategy.DEFAULT,
+        },
+      ],
+    ]);
+
+    generateTransformerOptionsMock.mockReturnValue({
+      projectConfig: {
+        // schema that will generate auth warnings
+        schema,
         config: { StackMapping: {} },
+        modelToDatasourceMap,
       },
       transformersFactory: constructTransformerChain(),
       transformersFactoryArgs: {},

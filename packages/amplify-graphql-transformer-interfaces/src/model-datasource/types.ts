@@ -1,5 +1,3 @@
-import { DataSourceType } from '../transformer-context/transformer-datasource-provider';
-
 // #########################################################################################################################################
 // If you change types in this file (the internal implementation), be sure to make corresponding necessary changes to
 // amplify-graphql-api-construct/src/model-datasource-strategy.ts (the customer-facing interface) and the adapter functions in this file.
@@ -17,8 +15,15 @@ export interface ModelDataSourceStrategyBase {
   dbType: ModelDataSourceStrategyDbType;
 }
 
-// TODO: Make this the source of truth for database type definitions used throughout the construct & transformer
-export type ModelDataSourceStrategyDbType = 'DYNAMODB' | 'MYSQL' | 'POSTGRES';
+/**
+ * All supported database types that can be used to resolve models.
+ */
+export type ModelDataSourceStrategyDbType = 'DYNAMODB' | ModelDataSourceStrategySqlDbType;
+
+/**
+ * All supported SQL database types that can be used to resolve models.
+ */
+export type ModelDataSourceStrategySqlDbType = 'MYSQL' | 'POSTGRES';
 
 /**
  * Use default CloudFormation type 'AWS::DynamoDB::Table' to provision table.
@@ -39,6 +44,8 @@ export interface AmplifyDynamoDbModelDataSourceStrategy extends ModelDataSourceS
 /**
  * A strategy that creates a Lambda to connect to a pre-existing SQL table to resolve model data.
  *
+ * Note: The implementation type is different from the interface type: the interface type contains the custom SQL statements that are
+ * reference by the `@sql` `reference` attribute, while the implementation moves those into the SqlDirectiveDataSourceStrategy type.
  */
 export interface SQLLambdaModelDataSourceStrategy extends ModelDataSourceStrategyBase {
   /**
@@ -50,7 +57,7 @@ export interface SQLLambdaModelDataSourceStrategy extends ModelDataSourceStrateg
   /**
    * The type of the SQL database used to process model operations for this definition.
    */
-  readonly dbType: 'MYSQL' | 'POSTGRES';
+  readonly dbType: ModelDataSourceStrategySqlDbType;
 
   /**
    * The parameters the Lambda data source will use to connect to the database.
@@ -61,12 +68,6 @@ export interface SQLLambdaModelDataSourceStrategy extends ModelDataSourceStrateg
    * The configuration of the VPC into which to install the Lambda.
    */
   readonly vpcConfiguration?: VpcConfig;
-
-  /**
-   * Custom SQL statements. The key is the value of the `references` attribute of the `@sql` directive in the `schema`; the value is the SQL
-   * to be executed.
-   */
-  readonly customSqlStatements?: Record<string, string>;
 
   /**
    * The configuration for the provisioned concurrency of the Lambda.
@@ -137,27 +138,58 @@ export interface SqlModelDataSourceDbConnectionConfig {
   readonly databaseNameSsmPath: string;
 }
 
-export interface CustomSqlDataSourceStrategy {
+/**
+ * The internal implementation type for defining a ModelDataSourceStrategy used to resolve a field annotated with a `@sql` directive.
+ *
+ * Note: The implementation type is different from the interface type: it directly contains the SQL statement to be executed rather than
+ * passing a map.
+ */
+export interface SqlDirectiveDataSourceStrategy {
+  /** The built-in type (either "Query" or "Mutation") with which the custom SQL is associated */
   readonly typeName: 'Query' | 'Mutation';
+
+  /** The field name with which the custom SQL is associated */
   readonly fieldName: string;
-  // TODO: Replace this when we support heterogeneous SQL data sources in a single API
-  readonly dataSourceType: DataSourceType;
-}
 
-export interface DataSourceStrategiesProvider {
-  /** Maps GraphQL model names to the ModelDataSourceStrategy used to resolve it. The key of the record is the GraphQL type name. */
-  // TODO: Add this back during combine feature
-  // dataSourceStrategies: Record<string, ModelDataSourceStrategy>;
+  /** The strategy used to create the datasource that will resolve the custom SQL statement. */
+  readonly strategy: SQLLambdaModelDataSourceStrategy;
 
-  /** Maps custom Query and Mutation fields to the ModelDataSourceStrategy used to resolve them. */
-  customSqlDataSourceStrategies: CustomSqlDataSourceStrategy[];
+  /**
+   * Custom SQL statements to be executed to resolve this field.
+   *
+   * Note: It's overkill to make this a map: a SqlDirectiveDataSourceStrategy will only ever use at most one statement (and maybe not even
+   * that if the directive uses inline statements). However, to avoid having to parse the directive configuration in multiple places, we'll
+   * pass the entire map as specified in the CDK construct definition, and let the directive transformer use it to look up references.
+   */
+  readonly customSqlStatements?: Record<string, string>;
 }
 
 /**
- * Maps a given AWS region to the SQL Lambda layer version ARN for that region. TODO: Rename to SQLLambdaLayerMapping
+ * Defines types that vend a dataSourceStrategies and optional customSqlDataSourceStrategies field. Primarily used for transformer context.
+ */
+export interface DataSourceStrategiesProvider {
+  /** Maps GraphQL model names to the ModelDataSourceStrategy used to resolve it. The key of the record is the GraphQL type name. */
+  dataSourceStrategies: Record<string, ModelDataSourceStrategy>;
+
+  /** Maps custom Query and Mutation fields to the ModelDataSourceStrategy used to resolve them. */
+  sqlDirectiveDataSourceStrategies?: SqlDirectiveDataSourceStrategy[];
+}
+
+/**
+ * Maps a given AWS region to the SQL Lambda layer version ARN for that region. TODO: Once we remove SQL imports from Gen1 CLI, remove this
+ * from the transformer interfaces package in favor of the model generator, which is the only place that needs it now that we always resolve
+ * the layer mapping at deploy time.
  */
 export interface RDSLayerMapping {
   readonly [key: string]: {
     layerRegion: string;
   };
+}
+
+/**
+ * Defines types that vend an rdsLayerMapping field. This is used solely for the Gen1 CLI import API flow, since wiring the custom resource
+ * provider used by the CDK isn't worth the cost. TODO: Remove this once we remove SQL imports from Gen1 CLI.
+ */
+export interface RDSLayerMappingProvider {
+  rdsLayerMapping?: RDSLayerMapping;
 }

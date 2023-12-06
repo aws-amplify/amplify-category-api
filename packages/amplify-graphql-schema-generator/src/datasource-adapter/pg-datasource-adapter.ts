@@ -86,27 +86,7 @@ export class PostgresDataSourceAdapter extends DataSourceAdapter {
   }
 
   protected async querySchema(): Promise<string> {
-    const schemaQuery = `
-    SELECT
-      ${expectedColumns.filter((column) => column != 'index_columns').join(',')},
-      REPLACE(SUBSTRING(indexdef from '\\((.*)\\)'), '"', '') as index_columns
-    FROM INFORMATION_SCHEMA.COLUMNS
-    LEFT JOIN pg_indexes
-    ON
-      INFORMATION_SCHEMA.COLUMNS.table_name = pg_indexes.tablename
-      AND INFORMATION_SCHEMA.COLUMNS.column_name = ANY(STRING_TO_ARRAY(REPLACE(SUBSTRING(indexdef from '\\((.*)\\)'), '"', ''), ', '))
-      LEFT JOIN (
-        SELECT
-          t.typname AS enum_name,
-          ARRAY_AGG(e.enumlabel) as enum_values
-        FROM    pg_type t JOIN
-          pg_enum e ON t.oid = e.enumtypid JOIN
-          pg_catalog.pg_namespace n ON n.oid = t.typnamespace
-        WHERE   n.nspname = 'public'
-    	GROUP BY enum_name
-      ) enums
-      ON enums.enum_name = INFORMATION_SCHEMA.COLUMNS.udt_name
-    WHERE table_schema = 'public' AND TABLE_CATALOG = '${this.config.database}';`;
+    const schemaQuery = getPostgresSchemaQuery(this.config.database);
     const result =
       this.useVPC && this.vpcSchemaInspectorLambda
         ? await invokeSchemaInspectorLambda(this.vpcSchemaInspectorLambda, this.config, schemaQuery, this.vpcLambdaRegion)
@@ -130,4 +110,33 @@ export class PostgresDataSourceAdapter extends DataSourceAdapter {
   public cleanup(): void {
     this.dbBuilder && this.dbBuilder.destroy();
   }
+}
+
+export function getPostgresSchemaQuery(databaseName: string): string {
+  return `
+SELECT DISTINCT
+  INFORMATION_SCHEMA.COLUMNS.table_name,
+  ${expectedColumns.filter((column) => !(column === 'index_columns' || column === 'table_name')).join(',')},
+  REPLACE(SUBSTRING(indexdef from '\\((.*)\\)'), '"', '') as index_columns
+FROM INFORMATION_SCHEMA.COLUMNS
+LEFT JOIN pg_indexes
+ON
+  INFORMATION_SCHEMA.COLUMNS.table_name = pg_indexes.tablename
+  AND INFORMATION_SCHEMA.COLUMNS.column_name = ANY(STRING_TO_ARRAY(REPLACE(SUBSTRING(indexdef from '\\((.*)\\)'), '"', ''), ', '))
+  LEFT JOIN (
+    SELECT
+      t.typname AS enum_name,
+      ARRAY_AGG(e.enumlabel) as enum_values
+    FROM    pg_type t JOIN
+      pg_enum e ON t.oid = e.enumtypid JOIN
+      pg_catalog.pg_namespace n ON n.oid = t.typnamespace
+    WHERE   n.nspname = 'public'
+    GROUP BY enum_name
+  ) enums
+  ON enums.enum_name = INFORMATION_SCHEMA.COLUMNS.udt_name
+  LEFT JOIN information_schema.table_constraints
+  ON INFORMATION_SCHEMA.table_constraints.constraint_name = indexname
+  AND INFORMATION_SCHEMA.COLUMNS.table_name = INFORMATION_SCHEMA.table_constraints.table_name
+WHERE INFORMATION_SCHEMA.COLUMNS.table_schema = 'public' AND INFORMATION_SCHEMA.COLUMNS.TABLE_CATALOG = '${databaseName}';
+`;
 }

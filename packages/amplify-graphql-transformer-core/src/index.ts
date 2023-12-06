@@ -1,7 +1,14 @@
 import { print } from 'graphql';
 import { EXTRA_DIRECTIVES_DOCUMENT } from './transformation/validation';
 
-export { GraphQLTransform, GraphQLTransformOptions, SyncUtils, constructDataSourceMap } from './transformation';
+export {
+  constructDataSourceStrategies,
+  constructSqlDirectiveDataSourceStrategies,
+  getModelTypeNames,
+  GraphQLTransform,
+  GraphQLTransformOptions,
+  SyncUtils,
+} from './transformation';
 export { UserDefinedSlot, UserDefinedResolver } from './transformation/types';
 export { validateModelSchema } from './transformation/validation';
 export {
@@ -18,29 +25,37 @@ export {
   APICategory,
   collectDirectives,
   collectDirectivesByTypeNames,
-  dataSourceStrategyToDataSourceType,
   DirectiveWrapper,
   fieldsWithSqlDirective,
   generateGetArgumentsInput,
   GetArgumentsOptions,
-  getDatasourceProvisionStrategy,
-  getDataSourceType,
-  getEngineFromDBType,
-  getImportedRDSType,
+  getModelDataSourceNameForTypeName,
+  getDefaultStrategyNameForDbType,
+  getImportedRDSTypeFromStrategyDbType,
   getKeySchema,
+  getModelDataSourceStrategy,
   getParameterStoreSecretPath,
   getPrimaryKeyFields,
   getResourceName,
+  getResourceNamesForStrategy,
+  getResourceNamesForStrategyName,
   getSortKeyFieldNames,
+  getStrategyDbTypeFromTypeNode,
   getTable,
-  isImportedRDSType,
+  isAmplifyDynamoDbModelDataSourceStrategy,
+  isBuiltInGraphqlNode,
+  isDefaultDynamoDbModelDataSourceStrategy,
+  isDynamoDbModel,
+  isDynamoDbType,
   isMutationNode,
   isObjectTypeDefinitionNode,
   isQueryNode,
-  isRDSDBType,
-  isRDSModel,
+  isSqlDbType,
+  isSqlModel,
   isSqlStrategy,
+  normalizeDbType,
   setResourceName,
+  SQLLambdaResourceNames,
 } from './utils';
 export type { SetResourceNameProps } from './utils';
 export * from './utils/operation-names';
@@ -53,16 +68,18 @@ export {
 } from './transformation/transformer-plugin-base';
 export { TransformerResolver, StackManager } from './transformer-context';
 export {
+  DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
   DDB_DB_TYPE,
+  DDB_DEFAULT_DATASOURCE_STRATEGY,
   ImportAppSyncAPIInputs,
+  ImportedDataSourceConfig,
   ImportedDataSourceType,
   ImportedRDSType,
   MYSQL_DB_TYPE,
   POSTGRES_DB_TYPE,
-  SQL_SCHEMA_FILE_NAME,
   RDSConnectionSecrets,
-  ImportedDataSourceConfig,
   RDSDataSourceConfig,
+  SQL_SCHEMA_FILE_NAME,
 } from './types';
 /**
  * Returns the extra set of directives that are supported by AppSync service.

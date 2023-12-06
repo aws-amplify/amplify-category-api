@@ -8,19 +8,24 @@
 
 /**
  * All known ModelDataSourceStrategies. Concrete strategies vary widely in their requirements and implementations.
- * @experimental
  */
 export type ModelDataSourceStrategy =
   | DefaultDynamoDbModelDataSourceStrategy
   | AmplifyDynamoDbModelDataSourceStrategy
   | SQLLambdaModelDataSourceStrategy;
 
-// TODO: Make this the source of truth for database type definitions used throughout the construct & transformer
-export type ModelDataSourceStrategyDbType = 'DYNAMODB';
+/**
+ * All supported database types that can be used to resolve models.
+ */
+export type ModelDataSourceStrategyDbType = 'DYNAMODB' | ModelDataSourceStrategySqlDbType;
+
+/**
+ * All supported SQL database types that can be used to resolve models.
+ */
+export type ModelDataSourceStrategySqlDbType = 'MYSQL' | 'POSTGRES';
 
 /**
  * Use default CloudFormation type 'AWS::DynamoDB::Table' to provision table.
- * @experimental
  */
 export interface DefaultDynamoDbModelDataSourceStrategy {
   readonly dbType: 'DYNAMODB';
@@ -29,7 +34,6 @@ export interface DefaultDynamoDbModelDataSourceStrategy {
 
 /**
  * Use custom resource type 'Custom::AmplifyDynamoDBTable' to provision table.
- * @experimental
  */
 export interface AmplifyDynamoDbModelDataSourceStrategy {
   readonly dbType: 'DYNAMODB';
@@ -38,8 +42,6 @@ export interface AmplifyDynamoDbModelDataSourceStrategy {
 
 /**
  * A strategy that creates a Lambda to connect to a pre-existing SQL table to resolve model data.
- *
- * @experimental
  */
 export interface SQLLambdaModelDataSourceStrategy {
   /**
@@ -51,7 +53,7 @@ export interface SQLLambdaModelDataSourceStrategy {
   /**
    * The type of the SQL database used to process model operations for this definition.
    */
-  readonly dbType: 'MYSQL' | 'POSTGRES';
+  readonly dbType: ModelDataSourceStrategySqlDbType;
 
   /**
    * The parameters the Lambda data source will use to connect to the database.
@@ -81,7 +83,6 @@ export interface SQLLambdaModelDataSourceStrategy {
  * have at least one subnet. The construct will also create VPC service endpoints in the specified subnets, as well as inbound security
  * rules, to allow traffic on port 443 within each security group. This allows the Lambda to read database connection information from
  * Secure Systems Manager.
- * @experimental
  */
 export interface VpcConfig {
   /** The VPC to install the Lambda data source in. */
@@ -96,7 +97,6 @@ export interface VpcConfig {
 
 /**
  * The configuration for the provisioned concurrency of the Lambda.
- * @experimental
  */
 export interface ProvisionedConcurrencyConfig {
   /** The amount of provisioned concurrency to allocate. **/
@@ -107,7 +107,6 @@ export interface ProvisionedConcurrencyConfig {
  * Subnet configuration for VPC endpoints used by a Lambda resolver for a SQL-based data source. Although it is possible to create multiple
  * subnets in a single availability zone, VPC service endpoints may only be deployed to a single subnet in a given availability zone. This
  * structure ensures that the Lambda function and VPC service endpoints are mutually consistent.
- * @experimental
  */
 export interface SubnetAvailabilityZone {
   /** The subnet ID to install the Lambda data source in. */
@@ -121,7 +120,6 @@ export interface SubnetAvailabilityZone {
  * The Secure Systems Manager parameter paths the Lambda data source will use to connect to the database.
  *
  * These parameters are retrieved from Secure Systems Manager in the same region as the Lambda.
- * @experimental
  */
 export interface SqlModelDataSourceDbConnectionConfig {
   /** The Secure Systems Manager parameter containing the hostname of the database. For RDS-based SQL data sources, this can be the hostname
@@ -142,8 +140,18 @@ export interface SqlModelDataSourceDbConnectionConfig {
   readonly databaseNameSsmPath: string;
 }
 
+/**
+ * The input type for defining a ModelDataSourceStrategy used to resolve a field annotated with a `@sql` directive. Although this is a
+ * public type, you should rarely need to use this. The AmplifyGraphqlDefinition factory methods (e.g., `fromString`,
+ * `fromFilesAndStrategy`) will automatically construct this structure for you.
+ */
 export interface CustomSqlDataSourceStrategy {
+  /** The built-in type (either "Query" or "Mutation") with which the custom SQL is associated */
   readonly typeName: 'Query' | 'Mutation';
+
+  /** The field name with which the custom SQL is associated */
   readonly fieldName: string;
+
+  /** The strategy used to create the datasource that will resolve the custom SQL statement. */
   readonly strategy: SQLLambdaModelDataSourceStrategy;
 }

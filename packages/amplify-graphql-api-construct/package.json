@@ -112,6 +112,7 @@
     "zod": "^3.22.3"
   },
   "devDependencies": {
+    "@aws-amplify/graphql-transformer-test-utils": "0.3.3",
     "@types/fs-extra": "^8.0.1",
     "@types/node": "^12.12.6",
     "aws-cdk-lib": "2.80.0",
@@ -162,6 +163,10 @@
         "functions": 80,
         "lines": 80
       }
-    }
+    },
+    "coverageReporters": [
+      "clover",
+      "text"
+    ]
   }
 }

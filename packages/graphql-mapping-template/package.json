@@ -45,6 +45,10 @@
         "functions": 34,
         "lines": 47
       }
-    }
+    },
+    "coverageReporters": [
+      "clover",
+      "text"
+    ]
   }
 }

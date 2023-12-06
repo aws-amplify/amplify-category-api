@@ -1,9 +1,8 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { constructDataSourceStrategies, getResourceNamesForStrategy, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { DataSourceType, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DefaultValueTransformer } from '..';
 
 describe('DefaultValueModelTransformer:', () => {
@@ -314,7 +313,7 @@ describe('DefaultValueModelTransformer:', () => {
     validateModelSchema(schema);
   });
 
-  it('default value type should not be validated for rds datasource', async () => {
+  it('default value type should not be validated for sql datasource', async () => {
     const validSchema = `
       type Note @model {
           id: ID! @primaryKey
@@ -323,23 +322,19 @@ describe('DefaultValueModelTransformer:', () => {
       }
     `;
 
-    const modelToDatasourceMap = new Map<string, DataSourceType>();
-    modelToDatasourceMap.set('Note', {
-      dbType: 'MySQL',
-      provisionDB: false,
-      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-    });
+    const mySqlStrategy = mockSqlDataSourceStrategy();
+    const resourceNames = getResourceNamesForStrategy(mySqlStrategy);
     const out = testTransform({
       schema: validSchema,
       transformers: [new ModelTransformer(), new DefaultValueTransformer(), new PrimaryKeyTransformer()],
-      modelToDatasourceMap,
+      dataSourceStrategies: constructDataSourceStrategies(validSchema, mySqlStrategy),
     });
     expect(out).toBeDefined();
 
     validateModelSchema(parse(out.schema));
     expect(out.stacks).toBeDefined();
-    expect(out.stacks.SqlApiStack).toBeDefined();
-    expect(out.stacks.SqlApiStack.Resources).toBeDefined();
+    expect(out.stacks[resourceNames.sqlStack]).toBeDefined();
+    expect(out.stacks[resourceNames.sqlStack].Resources).toBeDefined();
     expect(out.resolvers['Mutation.createNote.init.1.req.vtl']).toBeDefined();
     expect(out.resolvers['Mutation.createNote.init.2.req.vtl']).toBeUndefined();
   });

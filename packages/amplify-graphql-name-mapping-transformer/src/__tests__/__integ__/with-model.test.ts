@@ -1,17 +1,22 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { DeploymentResources, mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
-import { DDB_DB_TYPE, MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
-import { DBType } from '@aws-amplify/graphql-transformer-interfaces';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { DDB_DEFAULT_DATASOURCE_STRATEGY, constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
+import { ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { RefersToTransformer } from '../../graphql-refers-to-transformer';
-import { constructModelToDataSourceMap, testTableNameMapping, testColumnNameMapping } from './common';
+import { testTableNameMapping, testColumnNameMapping } from './common';
 
-const transformSchema = (schema: string, dbType: DBType) => {
+const transformSchema = (
+  schema: string,
+  strategy: ModelDataSourceStrategy,
+): DeploymentResources & {
+  logs: any[];
+} => {
   return testTransform({
     schema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new MapsToTransformer(), new RefersToTransformer()],
-    modelToDatasourceMap: constructModelToDataSourceMap(['Todo'], dbType),
+    dataSourceStrategies: constructDataSourceStrategies(schema, strategy),
     transformParameters: {
       sandboxModeEnabled: true,
     },
@@ -26,7 +31,7 @@ describe('@mapsTo directive on model type', () => {
         title: String!
       }
     `;
-    const out = transformSchema(basicSchema, DDB_DB_TYPE);
+    const out = transformSchema(basicSchema, DDB_DEFAULT_DATASOURCE_STRATEGY);
     expect(out.stacks.Task.Resources!.TaskTable!.Properties.TableName).toMatchInlineSnapshot(`
       Object {
         "Fn::Join": Array [
@@ -68,7 +73,9 @@ describe('@mapsTo directive on model type', () => {
   });
 });
 
-describe('@refersTo with RDS Models', () => {
+describe('@refersTo with SQL Models', () => {
+  const mySqlStrategy = mockSqlDataSourceStrategy();
+
   it('model table names are mapped', () => {
     const basicSchema = /* GraphQL */ `
       type Todo @model @refersTo(name: "Task") {
@@ -76,7 +83,7 @@ describe('@refersTo with RDS Models', () => {
         title: String!
       }
     `;
-    const out = transformSchema(basicSchema, MYSQL_DB_TYPE);
+    const out = transformSchema(basicSchema, mySqlStrategy);
     testTableNameMapping('Todo', 'Task', out);
   });
 
@@ -87,7 +94,7 @@ describe('@refersTo with RDS Models', () => {
         title: String! @refersTo(name: "description")
       }
     `;
-    const out = transformSchema(basicSchema, MYSQL_DB_TYPE);
+    const out = transformSchema(basicSchema, mySqlStrategy);
     testColumnNameMapping('Todo', out);
   });
 });

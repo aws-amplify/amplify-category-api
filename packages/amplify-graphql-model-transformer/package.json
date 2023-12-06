@@ -62,13 +62,18 @@
       "node"
     ],
     "collectCoverage": true,
+    "coverageProvider": "v8",
     "coverageThreshold": {
       "global": {
-        "branches": 57,
-        "functions": 69,
-        "lines": 74
+        "branches": 75,
+        "functions": 80,
+        "lines": 85
       }
     },
+    "coverageReporters": [
+      "clover",
+      "text"
+    ],
     "modulePathIgnorePatterns": [
       "overrides"
     ]

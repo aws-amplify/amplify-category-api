@@ -37,13 +37,13 @@ export class BelongsToTransformer extends TransformerPluginBase {
 }
 
 // @public (undocumented)
-export function getConnectionAttributeName(transformParameters: TransformParameters, type: string, field: string, relatedTypeField: string): string;
+export const getConnectionAttributeName: (transformParameters: TransformParameters, type: string, field: string, relatedTypeField: string) => string;
 
 // @public (undocumented)
 export const getObjectPrimaryKey: (object: ObjectTypeDefinitionNode) => FieldDefinitionNode;
 
 // @public (undocumented)
-export function getSortKeyConnectionAttributeName(type: string, field: string, relatedTypeField: string): string;
+export const getSortKeyConnectionAttributeName: (type: string, field: string, relatedTypeField: string) => string;
 
 // @public (undocumented)
 export class HasManyTransformer extends TransformerPluginBase {
