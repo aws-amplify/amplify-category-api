@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`RDS primary key transformer tests a primary key with a composite sort key is properly configured 1`] = `
+exports[`SQL primary key transformer tests a primary key with a composite sort key is properly configured 1`] = `
 Object {
   "Mutation.createTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
@@ -302,7 +302,7 @@ $util.toJson(null)
 }
 `;
 
-exports[`RDS primary key transformer tests a primary key with a single sort key field is properly configured 1`] = `
+exports[`SQL primary key transformer tests a primary key with a single sort key field is properly configured 1`] = `
 Object {
   "Mutation.createTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
@@ -599,7 +599,7 @@ $util.toJson(null)
 }
 `;
 
-exports[`RDS primary key transformer tests a primary key with no sort key is properly configured 1`] = `
+exports[`SQL primary key transformer tests a primary key with no sort key is properly configured 1`] = `
 Object {
   "Mutation.createTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
@@ -891,7 +891,7 @@ $util.toJson(null)
 }
 `;
 
-exports[`RDS primary key transformer tests individual resolvers can be made null by @model 1`] = `
+exports[`SQL primary key transformer tests individual resolvers can be made null by @model 1`] = `
 Object {
   "Mutation.createTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
@@ -1140,7 +1140,7 @@ $util.toJson(null)
 }
 `;
 
-exports[`RDS primary key transformer tests resolvers can be renamed by @model 1`] = `
+exports[`SQL primary key transformer tests resolvers can be renamed by @model 1`] = `
 Object {
   "Mutation.testCreate.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))

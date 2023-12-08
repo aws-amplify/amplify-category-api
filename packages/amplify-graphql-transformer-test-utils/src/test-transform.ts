@@ -1,30 +1,34 @@
 import { AppSyncAuthConfiguration, TransformerPluginProvider, TransformerLogLevel } from '@aws-amplify/graphql-transformer-interfaces';
 import type {
-  DataSourceType,
-  CustomSqlDataSourceStrategy,
+  ModelDataSourceStrategy,
+  RDSLayerMappingProvider,
+  SqlDirectiveDataSourceStrategy,
   SynthParameters,
   TransformParameters,
-  VpcConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { GraphQLTransform, RDSConnectionSecrets, ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
+import {
+  DDB_DEFAULT_DATASOURCE_STRATEGY,
+  GraphQLTransform,
+  ResolverConfig,
+  UserDefinedSlot,
+  constructDataSourceStrategies,
+} from '@aws-amplify/graphql-transformer-core';
 import { OverrideConfig, TransformManager } from './cdk-compat/transform-manager';
 import { DeploymentResources } from './deployment-resources';
 
-export type TestTransformParameters = {
-  transformers: TransformerPluginProvider[];
-  schema: string;
-  transformParameters?: Partial<TransformParameters>;
-  resolverConfig?: ResolverConfig;
+export type TestTransformParameters = RDSLayerMappingProvider & {
   authConfig?: AppSyncAuthConfiguration;
-  userDefinedSlots?: Record<string, UserDefinedSlot[]>;
-  stackMapping?: Record<string, string>;
-  modelToDatasourceMap?: Map<string, DataSourceType>;
-  customSqlDataSourceStrategies?: CustomSqlDataSourceStrategy[];
-  datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
-  customQueries?: Map<string, string>;
+  // Making this optional so test code can simply use a default DDB strategy for each model in the schema.
+  dataSourceStrategies?: Record<string, ModelDataSourceStrategy>;
   overrideConfig?: OverrideConfig;
-  sqlLambdaVpcConfig?: VpcConfig;
+  resolverConfig?: ResolverConfig;
+  schema: string;
+  sqlDirectiveDataSourceStrategies?: SqlDirectiveDataSourceStrategy[];
+  stackMapping?: Record<string, string>;
   synthParameters?: Partial<SynthParameters>;
+  transformers: TransformerPluginProvider[];
+  transformParameters?: Partial<TransformParameters>;
+  userDefinedSlots?: Record<string, UserDefinedSlot[]>;
 };
 
 /**
@@ -33,20 +37,18 @@ export type TestTransformParameters = {
  */
 export const testTransform = (params: TestTransformParameters): DeploymentResources & { logs: any[] } => {
   const {
-    schema,
-    modelToDatasourceMap,
-    customSqlDataSourceStrategies,
-    datasourceSecretParameterLocations,
-    customQueries,
-    overrideConfig,
-    transformers,
     authConfig,
+    dataSourceStrategies,
+    overrideConfig,
+    rdsLayerMapping,
     resolverConfig,
-    userDefinedSlots,
+    schema,
+    sqlDirectiveDataSourceStrategies,
     stackMapping,
-    transformParameters,
-    sqlLambdaVpcConfig,
     synthParameters: overrideSynthParameters,
+    transformers,
+    transformParameters,
+    userDefinedSlots,
   } = params;
 
   const transform = new GraphQLTransform({
@@ -56,7 +58,6 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     transformParameters,
     userDefinedSlots,
     resolverConfig,
-    sqlLambdaVpcConfig,
   });
 
   const transformManager = new TransformManager(overrideConfig);
@@ -77,12 +78,9 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
       ...overrideSynthParameters,
     },
     schema,
-    datasourceConfig: {
-      modelToDatasourceMap,
-      datasourceSecretParameterLocations,
-      customQueries,
-      customSqlDataSourceStrategies,
-    },
+    rdsLayerMapping,
+    dataSourceStrategies: dataSourceStrategies ?? constructDataSourceStrategies(schema, DDB_DEFAULT_DATASOURCE_STRATEGY),
+    sqlDirectiveDataSourceStrategies,
   });
 
   const logs: any[] = [];

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-schema-generator",
-  "version": "0.5.3",
+  "version": "0.6.0",
   "description": "Amplify GraphQL schema generator",
   "repository": {
     "type": "git",
@@ -29,8 +29,8 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "2.3.3",
-    "@aws-amplify/graphql-transformer-interfaces": "3.3.1",
+    "@aws-amplify/graphql-transformer-core": "2.4.0",
+    "@aws-amplify/graphql-transformer-interfaces": "3.3.2",
     "@aws-sdk/client-ec2": "3.338.0",
     "@aws-sdk/client-iam": "3.338.0",
     "@aws-sdk/client-lambda": "3.338.0",
@@ -38,7 +38,7 @@
     "csv-parse": "^5.5.2",
     "fs-extra": "11.1.1",
     "graphql": "^15.5.0",
-    "graphql-transformer-common": "4.26.2",
+    "graphql-transformer-common": "4.27.0",
     "knex": "~2.4.0",
     "mysql2": "~2.3.3",
     "ora": "^4.0.3",
@@ -70,11 +70,12 @@
       "node"
     ],
     "collectCoverage": true,
+    "coverageProvider": "v8",
     "coverageThreshold": {
       "global": {
-        "branches": 30,
-        "functions": 40,
-        "lines": 50
+        "branches": 76,
+        "functions": 74,
+        "lines": 83
       }
     },
     "coverageReporters": [

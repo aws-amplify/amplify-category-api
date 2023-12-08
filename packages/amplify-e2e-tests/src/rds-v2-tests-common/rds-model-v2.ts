@@ -19,7 +19,14 @@ import generator from 'generate-password';
 import { ObjectTypeDefinitionNode, parse } from 'graphql';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import {
+  ImportedRDSType,
+  getDefaultStrategyNameForDbType,
+  getResourceNamesForStrategyName,
+  normalizeDbType,
+} from '@aws-amplify/graphql-transformer-core';
+import { ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-transformer-interfaces';
+import { SQL_TESTS_USE_BETA } from './sql-e2e-config';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -43,13 +50,18 @@ export const testRDSModel = (engine: ImportedRDSType, queries: string[]): void =
     const projName = `${engineSuffix}modeltest`;
     const apiName = projName;
 
+    const strategyName = getDefaultStrategyNameForDbType(normalizeDbType(engine) as ModelDataSourceStrategySqlDbType);
+    const resourceNames = getResourceNamesForStrategyName(strategyName);
+
     let projRoot;
     let appSyncClient;
 
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projName);
       await initProjectAndImportSchema();
-      await amplifyPush(projRoot);
+      await amplifyPush(projRoot, false, {
+        useBetaSqlLayer: SQL_TESTS_USE_BETA,
+      });
       await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.
 
       await verifyApiEndpointAndCreateClient();
@@ -88,13 +100,13 @@ export const testRDSModel = (engine: ImportedRDSType, queries: string[]): void =
       // Validate the generated resources in the CloudFormation template
       const apisDirectory = path.join(projRoot, 'amplify', 'backend', 'api');
       const apiDirectory = path.join(apisDirectory, apiName);
-      const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', 'SqlApiStack.json');
+      const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', `${resourceNames.sqlStack}.json`);
       const cfnTemplate = JSON.parse(readFileSync(cfnRDSTemplateFile, 'utf8'));
       expect(cfnTemplate.Resources).toBeDefined();
       const resources = cfnTemplate.Resources;
 
       // Validate if the SQL lambda function has VPC configuration even if the database is accessible through internet
-      const rdsLambdaFunction = getResource(resources, 'SQLLambdaFunction', CDK_FUNCTION_TYPE);
+      const rdsLambdaFunction = getResource(resources, resourceNames.sqlLambdaFunction, CDK_FUNCTION_TYPE);
       expect(rdsLambdaFunction).toBeDefined();
       expect(rdsLambdaFunction.Properties).toBeDefined();
       expect(rdsLambdaFunction.Properties.VpcConfig).toBeDefined();
@@ -103,11 +115,11 @@ export const testRDSModel = (engine: ImportedRDSType, queries: string[]): void =
       expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds).toBeDefined();
       expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds.length).toBeGreaterThan(0);
 
-      expect(getResource(resources, 'SQLVpcEndpointssm', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-      expect(getResource(resources, 'SQLVpcEndpointssmmessages', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-      expect(getResource(resources, 'SQLVpcEndpointkms', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-      expect(getResource(resources, 'SQLVpcEndpointec2', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-      expect(getResource(resources, 'SQLVpcEndpointec2messages', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+      expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ssm`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+      expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ssmmessages`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+      expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}kms`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+      expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ec2`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+      expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ec2messages`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
     };
 
     afterAll(async () => {

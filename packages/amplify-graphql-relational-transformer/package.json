@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-relational-transformer",
-  "version": "2.2.3",
+  "version": "2.3.0",
   "description": "Amplify GraphQL relational modeling transformers",
   "repository": {
     "type": "git",
@@ -28,17 +28,17 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-index-transformer": "2.2.3",
-    "@aws-amplify/graphql-model-transformer": "2.3.3",
-    "@aws-amplify/graphql-transformer-core": "2.3.3",
-    "@aws-amplify/graphql-transformer-interfaces": "3.3.1",
+    "@aws-amplify/graphql-index-transformer": "2.3.0",
+    "@aws-amplify/graphql-model-transformer": "2.4.0",
+    "@aws-amplify/graphql-transformer-core": "2.4.0",
+    "@aws-amplify/graphql-transformer-interfaces": "3.3.2",
     "graphql": "^15.5.0",
-    "graphql-mapping-template": "4.20.12",
-    "graphql-transformer-common": "4.26.2",
+    "graphql-mapping-template": "4.20.13",
+    "graphql-transformer-common": "4.27.0",
     "immer": "^9.0.12"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "0.3.3"
+    "@aws-amplify/graphql-transformer-test-utils": "0.4.0"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.80.0",
@@ -58,11 +58,12 @@
       "node"
     ],
     "collectCoverage": true,
+    "coverageProvider": "v8",
     "coverageThreshold": {
       "global": {
-        "branches": 38,
-        "functions": 50,
-        "lines": 55
+        "branches": 77,
+        "functions": 90,
+        "lines": 90
       }
     },
     "coverageReporters": [

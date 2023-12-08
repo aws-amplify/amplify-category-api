@@ -16,6 +16,8 @@ batch:
         type: WINDOWS_SERVER_2019_CONTAINER
         compute-type: BUILD_GENERAL1_LARGE
         image: $WINDOWS_IMAGE_2019
+      depend-on:
+        - build_linux
     - identifier: test
       buildspec: codebuild_specs/test.yml
       env:

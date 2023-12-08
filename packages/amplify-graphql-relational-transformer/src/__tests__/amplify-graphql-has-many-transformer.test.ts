@@ -1,9 +1,14 @@
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { ConflictHandlerType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { DataSourceType, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  ConflictHandlerType,
+  DDB_DEFAULT_DATASOURCE_STRATEGY,
+  GraphQLTransform,
+  constructDataSourceStrategies,
+  validateModelSchema,
+} from '@aws-amplify/graphql-transformer-core';
 import { Kind, parse } from 'graphql';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
 import { hasGeneratedField } from './test-helpers';
 
@@ -176,6 +181,10 @@ test('fails if @hasMany was used with a related type that is not a model', () =>
     testTransform({
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasManyTransformer()],
+      dataSourceStrategies: {
+        Test: DDB_DEFAULT_DATASOURCE_STRATEGY,
+        Test1: DDB_DEFAULT_DATASOURCE_STRATEGY,
+      },
     }),
   ).toThrowError('Object type Test1 must be annotated with @model.');
 });
@@ -932,19 +941,9 @@ describe('@hasMany connection field nullability tests', () => {
 });
 
 describe('@hasMany directive with RDS datasource', () => {
-  test('happy case should generate correct resolvers', () => {
-    const modelToDatasourceMap = new Map<string, DataSourceType>();
-    modelToDatasourceMap.set('Blog', {
-      dbType: 'MySQL',
-      provisionDB: false,
-      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-    });
-    modelToDatasourceMap.set('Post', {
-      dbType: 'MySQL',
-      provisionDB: false,
-      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-    });
+  const mySqlStrategy = mockSqlDataSourceStrategy();
 
+  test('happy case should generate correct resolvers', () => {
     const inputSchema = `
       type Blog @model {
         id: String! @primaryKey
@@ -961,7 +960,7 @@ describe('@hasMany directive with RDS datasource', () => {
     const out = testTransform({
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
-      modelToDatasourceMap,
+      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
     });
     expect(out).toBeDefined();
     const schema = parse(out.schema);
@@ -974,18 +973,6 @@ describe('@hasMany directive with RDS datasource', () => {
   });
 
   test('composite key should generate correct resolvers', () => {
-    const modelToDatasourceMap = new Map<string, DataSourceType>();
-    modelToDatasourceMap.set('System', {
-      dbType: 'MySQL',
-      provisionDB: false,
-      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-    });
-    modelToDatasourceMap.set('Part', {
-      dbType: 'MySQL',
-      provisionDB: false,
-      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-    });
-
     const inputSchema = `
       type System @model {
         systemId: String! @primaryKey(sortKeyFields: ["systemName"])
@@ -1004,7 +991,7 @@ describe('@hasMany directive with RDS datasource', () => {
     const out = testTransform({
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
-      modelToDatasourceMap,
+      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
     });
     expect(out).toBeDefined();
     const schema = parse(out.schema);

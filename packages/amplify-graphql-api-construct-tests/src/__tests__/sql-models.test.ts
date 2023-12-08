@@ -11,6 +11,7 @@ import {
 } from 'amplify-category-api-e2e-core';
 import { LambdaClient, GetProvisionedConcurrencyConfigCommand } from '@aws-sdk/client-lambda';
 import generator from 'generate-password';
+import { getResourceNamesForStrategyName } from '@aws-amplify/graphql-transformer-core';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { graphql } from '../graphql-request';
 
@@ -48,6 +49,10 @@ describe('CDK GraphQL Transformer', () => {
   const dbname = 'default_db';
 
   let dbDetails: DBDetails;
+
+  // DO NOT CHANGE THIS VALUE: The test uses it to find resources by name. It is hardcoded in the sql-models backend app
+  const strategyName = 'MySqlDBStrategy';
+  const resourceNames = getResourceNamesForStrategyName(strategyName);
 
   beforeAll(async () => {
     dbDetails = await setupDatabase({
@@ -123,11 +128,10 @@ describe('CDK GraphQL Transformer', () => {
     expect(listResult.body.data.listTodos.items.length).toEqual(1);
     expect(todo.id).toEqual(listResult.body.data.listTodos.items[0].id);
     const client = new LambdaClient({ region });
-    const functionName = outputs[name].SQLLambdaFunctionName;
-    const functionAlias = 'SQLLambdaFunctionAlias';
+    const functionName = outputs[name].SQLFunctionName;
     const command = new GetProvisionedConcurrencyConfigCommand({
       FunctionName: functionName,
-      Qualifier: functionAlias,
+      Qualifier: resourceNames.sqlLambdaAliasName,
     });
     const response = await client.send(command);
     expect(response.RequestedProvisionedConcurrentExecutions).toEqual(2);

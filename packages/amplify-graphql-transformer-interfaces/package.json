@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-transformer-interfaces",
-  "version": "3.3.1",
+  "version": "3.3.2",
   "description": "Amplify GraphQL transformer interface definitions",
   "repository": {
     "type": "git",
@@ -48,6 +48,7 @@
       "node"
     ],
     "collectCoverage": true,
+    "coverageProvider": "v8",
     "coverageReporters": [
       "clover",
       "text"

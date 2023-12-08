@@ -1,12 +1,11 @@
-import { ConflictHandlerType, MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
-import { SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { parse } from 'graphql';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { SearchableModelTransformer } from '..';
 import { ALLOWABLE_SEARCHABLE_INSTANCE_TYPES } from '../constants';
-import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 
 test('SearchableModelTransformer validation happy case', () => {
   const validSchema = `
@@ -39,15 +38,9 @@ test('Throws error for Searchable RDS Models', () => {
     testTransform({
       schema: validSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new SearchableModelTransformer()],
-      modelToDatasourceMap: new Map(
-        Object.entries({
-          Post: {
-            dbType: MYSQL_DB_TYPE,
-            provisionDB: false,
-            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-          },
-        }),
-      ),
+      dataSourceStrategies: {
+        Post: mockSqlDataSourceStrategy(),
+      },
     }),
   ).toThrowErrorMatchingInlineSnapshot(`"@searchable is not supported on \\"Post\\" model as it uses RDS datasource."`);
 });

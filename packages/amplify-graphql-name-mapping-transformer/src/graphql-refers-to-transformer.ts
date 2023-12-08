@@ -1,4 +1,4 @@
-import { TransformerPluginBase, isRDSModel, getFieldNameFor, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
+import { TransformerPluginBase, isSqlModel, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
   TransformerPluginType,
@@ -31,13 +31,13 @@ const directiveDefinition = `
 
 export class RefersToTransformer extends TransformerPluginBase {
   constructor() {
-    super(`amplify-refers-to-transformer`, directiveDefinition, TransformerPluginType.GENERIC);
+    super('amplify-refers-to-transformer', directiveDefinition, TransformerPluginType.GENERIC);
   }
 
   /**
    * Register any renamed models with the ctx.resourceHelper.
    */
-  object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider) => {
+  object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider): void => {
     const context = ctx as TransformerContextProvider;
     shouldBeAppliedToModel(definition, directiveName);
     shouldBeAppliedToRDSModels(definition, context);
@@ -54,7 +54,7 @@ export class RefersToTransformer extends TransformerPluginBase {
     definition: FieldDefinitionNode,
     directive: DirectiveNode,
     ctx: TransformerSchemaVisitStepContextProvider,
-  ) => {
+  ): void => {
     if (parent.kind === Kind.INTERFACE_TYPE_DEFINITION) {
       throw new InvalidDirectiveError(
         `@refersTo directive cannot be placed on "${parent?.name?.value}" interface's ${definition?.name?.value} field.`,
@@ -73,9 +73,9 @@ export class RefersToTransformer extends TransformerPluginBase {
    * During the generateResolvers step, the refersTo transformer reads all of the model field mappings from the resourceHelper and generates
    * VTL to store the field mappings in the resolver context stash
    */
-  after = (context: TransformerContextProvider) => {
+  after = (context: TransformerContextProvider): void => {
     context.resourceHelper.getModelFieldMapKeys().forEach((modelName) => {
-      if (!isRDSModel(context, modelName)) {
+      if (!isSqlModel(context, modelName)) {
         return;
       }
       const modelFieldMap = context.resourceHelper.getModelFieldMap(modelName);
@@ -102,7 +102,7 @@ export class RefersToTransformer extends TransformerPluginBase {
    * Run pre-mutation steps on the schema to support refersTo
    * @param context The pre-processing context for the transformer, used to store type mappings
    */
-  preMutateSchema = (context: TransformerPreProcessContextProvider) => {
+  preMutateSchema = (context: TransformerPreProcessContextProvider): void => {
     setTypeMappingInSchema(context, directiveName);
   };
 }
@@ -110,14 +110,14 @@ export class RefersToTransformer extends TransformerPluginBase {
 export const shouldBeAppliedToRDSModels = (
   definition: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
   ctx: TransformerContextProvider,
-) => {
+): void => {
   const modelName = definition.name.value;
-  if (!isRDSModel(ctx, modelName)) {
+  if (!isSqlModel(ctx, modelName)) {
     throw new Error(`@${directiveName} is only supported on RDS models. ${modelName} is not an RDS model.`);
   }
 };
 
-export const shouldNotBeOnRelationalField = (definition: FieldDefinitionNode, modelName: string) => {
+export const shouldNotBeOnRelationalField = (definition: FieldDefinitionNode, modelName: string): void => {
   const relationalDirectives = ['hasOne', 'hasMany', 'belongsTo', 'manyToMany'];
   if (definition?.directives?.some((directive) => relationalDirectives.includes(directive?.name?.value))) {
     throw new Error(`@${directiveName} is not supported on "${definition?.name?.value}" relational field in "${modelName}" model.`);

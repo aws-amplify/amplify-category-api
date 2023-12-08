@@ -1,7 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { $TSContext, CloudformationProviderFacade, pathManager, JSONUtilities } from '@aws-amplify/amplify-cli-core';
-import { DataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
 import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk, getAdminRoles } from '../../graphql-transformer/utils';
 import { TransformerProjectConfig } from '../../graphql-transformer/cdk-compat/project-config';
 import { DeploymentResources } from '../../graphql-transformer/cdk-compat/deployment-resources';
@@ -74,10 +73,8 @@ describe('graphql transformer utils', () => {
           pipelineFunctions: {},
           resolvers: {},
           stacks: {},
-          modelToDatasourceMap: new Map<string, DataSourceType>(),
+          dataSourceStrategies: {},
           config: { Version: 5, ElasticsearchWarning: true },
-          customQueries: new Map<string, string>(),
-          customSqlDataSourceStrategies: [],
         } as TransformerProjectConfig;
       });
 
@@ -98,10 +95,8 @@ describe('graphql transformer utils', () => {
             'Query.listTodos.req.vtl': '$util.unauthorized\n',
           },
           stacks: {},
-          modelToDatasourceMap: new Map<string, DataSourceType>(),
+          dataSourceStrategies: {},
           config: { Version: 5, ElasticsearchWarning: true },
-          customQueries: new Map<string, string>(),
-          customSqlDataSourceStrategies: [],
         } as TransformerProjectConfig;
       });
 
@@ -122,10 +117,8 @@ describe('graphql transformer utils', () => {
           },
           resolvers: {},
           stacks: {},
-          modelToDatasourceMap: new Map<string, DataSourceType>(),
+          dataSourceStrategies: {},
           config: { Version: 5, ElasticsearchWarning: true },
-          customQueries: new Map<string, string>(),
-          customSqlDataSourceStrategies: [],
         } as TransformerProjectConfig;
       });
 
@@ -210,7 +203,7 @@ describe('graphql transformer utils', () => {
               },
             },
           },
-          modelToDatasourceMap: new Map<string, DataSourceType>(),
+          dataSourceStrategies: {},
           config: { Version: 5, ElasticsearchWarning: true },
         } as unknown as TransformerProjectConfig;
       });

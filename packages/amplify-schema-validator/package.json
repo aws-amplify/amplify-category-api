@@ -3,7 +3,7 @@
   "main": "./dist/index.js",
   "private": true,
   "types": "./dist/index.d.ts",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "files": [
     "dist",
     "!**/__tests__/**/*"
@@ -41,6 +41,14 @@
   ],
   "jest": {
     "collectCoverage": true,
+    "coverageProvider": "v8",
+    "coverageThreshold": {
+      "global": {
+        "branches": 77,
+        "functions": 90,
+        "lines": 90
+      }
+    },
     "coverageReporters": [
       "clover",
       "text"

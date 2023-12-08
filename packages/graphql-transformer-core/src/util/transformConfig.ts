@@ -170,7 +170,12 @@ interface ProjectConfiguration {
     [k: string]: Template;
   };
   config: TransformConfig;
+
+  /** TODO: Remove this type when we migrate our SQL E2E tests to use the CDK construct rather than the Gen1 CLI to provision an API. This
+   * is not compatible with transformer internals. */
   modelToDatasourceMap: Map<string, DataSourceType>;
+  /** TODO: Remove this type when we migrate our SQL E2E tests to use the CDK construct rather than the Gen1 CLI to provision an API. This
+   * is not compatible with transformer internals. */
   customQueries: Map<string, string>;
 }
 export const loadProject = async (projectDirectory: string, opts?: ProjectOptions): Promise<ProjectConfiguration> => {
@@ -298,14 +303,14 @@ export const readSchema = async (
   let schema = '';
   if (!_.isEmpty(existingSchemaFiles)) {
     // Schema.graphql contains the models for DynamoDB datasource.
-    // Schema.sql.graphql contains the models for imported 'MySQL' datasource.
+    // Schema.sql.graphql contains the models for imported 'MYSQL' datasource.
     // Intentionally using 'for ... of ...' instead of 'object.foreach' to process this in sequence.
     for (const file of existingSchemaFiles) {
       const fileSchema = (await fs.readFile(file)).toString();
       const { amplifyType, schema: fileSchemaWithoutAmplifyInput } = removeAmplifyInput(fileSchema);
       const datasourceType = file.endsWith('.sql.graphql')
         ? constructDataSourceType(getRDSDBTypeFromInput(amplifyType), false)
-        : constructDataSourceType('DDB');
+        : constructDataSourceType('DYNAMODB');
       modelToDatasourceMap = new Map([...modelToDatasourceMap.entries(), ...constructDataSourceMap(fileSchema, datasourceType).entries()]);
       if (amplifyType) {
         amplifyInputType = mergeTypeFields(amplifyInputType, amplifyType);
@@ -317,7 +322,7 @@ export const readSchema = async (
     }
   } else if (fs.existsSync(schemaDirectoryPath)) {
     // Schema folder is used only for DynamoDB datasource
-    const datasourceType = constructDataSourceType('DDB');
+    const datasourceType = constructDataSourceType('DYNAMODB');
     const schemaInDirectory = (await readSchemaDocuments(schemaDirectoryPath)).join('\n');
     modelToDatasourceMap = new Map([
       ...modelToDatasourceMap.entries(),
@@ -341,9 +346,9 @@ const getRDSDBTypeFromInput = (amplifyType: InputObjectTypeDefinitionNode): DBTy
   const engine = (engineInput?.defaultValue as StringValueNode)?.value;
   switch (engine) {
     case 'mysql':
-      return 'MySQL';
+      return 'MYSQL';
     case 'postgres':
-      return 'Postgres';
+      return 'POSTGRES';
     default:
       throw new Error(`engine ${engine} specified in the RDS schema file is not supported`);
   }
@@ -402,13 +407,16 @@ async function readSchemaDocuments(schemaDirectoryPath: string): Promise<string[
 }
 
 /**
- * Supported transformable database types.
+ * Supported transformable database types. TODO: Remove this type when we migrate our SQL E2E tests to use the CDK construct rather than the
+ * Gen1 CLI to provision an API. That said, the DBType values in this type are compatible with those in `ModelDataSourceStrategyDbType`, so
+ * it's safe to use these values as-is in the transformer internals.
  */
-export type DBType = 'DDB' | 'MySQL' | 'Postgres';
+export type DBType = 'DYNAMODB' | 'MYSQL' | 'POSTGRES';
 
 /**
  * Configuration for a datasource. Defines the underlying database engine, and instructs the tranformer whether to provision the database
- * storage or whether it already exists.
+ * storage or whether it already exists. TODO: Remove this type when we migrate our SQL E2E tests to use the CDK construct rather than the
+ * Gen1 CLI to provision an API. This is not compatible with transformer internals.
  */
 export interface DataSourceType {
   dbType: DBType;
@@ -416,6 +424,8 @@ export interface DataSourceType {
   provisionStrategy: DataSourceProvisionStrategy;
 }
 
+/** TODO: Remove this type when we migrate our SQL E2E tests to use the CDK construct rather than the Gen1 CLI to provision an API. This
+ * is not compatible with transformer internals. */
 export const enum DynamoDBProvisionStrategy {
   /**
    * Use default cloud formation resource of `AWS::DynamoDB::Table`
@@ -427,9 +437,12 @@ export const enum DynamoDBProvisionStrategy {
   AMPLIFY_TABLE = 'AMPLIFY_TABLE',
 }
 
-// TODO: add strategy for the RDS
+/** TODO: Remove this type when we migrate our SQL E2E tests to use the CDK construct rather than the Gen1 CLI to provision an API. This
+ * is not compatible with transformer internals. */
 export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy;
 
+/** TODO: Remove this when we migrate our SQL E2E tests to use the CDK construct rather than the Gen1 CLI to provision an API. This
+ * is not compatible with transformer internals. */
 const constructDataSourceType = (
   dbType: DBType,
   provisionDB = true,
@@ -449,7 +462,7 @@ const constructDataSourceType = (
  * @param datasourceType the datasource type for each model to be associated with
  * @returns a map of model names to datasource types
  */
-export const constructDataSourceMap = (schema: string, datasourceType: DataSourceType): Map<string, DataSourceType> => {
+const constructDataSourceMap = (schema: string, datasourceType: DataSourceType): Map<string, DataSourceType> => {
   const parsedSchema = parse(schema);
   const result = new Map<string, DataSourceType>();
   parsedSchema.definitions

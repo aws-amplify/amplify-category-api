@@ -19,58 +19,6 @@ Array [
       Object {
         "default": Object {
           "kind": "DB_GENERATED",
-          "value": "A",
-        },
-        "length": "1",
-        "name": "pub_type",
-        "type": Object {
-          "kind": "NonNull",
-          "type": Object {
-            "kind": "Scalar",
-            "name": "String",
-          },
-        },
-      },
-      Object {
-        "default": undefined,
-        "length": "1",
-        "name": "placeholder",
-        "type": Object {
-          "kind": "NonNull",
-          "type": Object {
-            "kind": "Scalar",
-            "name": "String",
-          },
-        },
-      },
-    ],
-    "indexes": Array [],
-    "name": "articles",
-    "primaryKey": Index {
-      "fields": Array [
-        "pub_id",
-        "pub_type",
-      ],
-      "name": "PRIMARY_KEY",
-    },
-  },
-  Model {
-    "fields": Array [
-      Object {
-        "default": undefined,
-        "length": null,
-        "name": "pub_id",
-        "type": Object {
-          "kind": "NonNull",
-          "type": Object {
-            "kind": "Scalar",
-            "name": "Int",
-          },
-        },
-      },
-      Object {
-        "default": Object {
-          "kind": "DB_GENERATED",
           "value": "CURRENT_TIMESTAMP",
         },
         "length": null,
@@ -174,6 +122,58 @@ Array [
     "primaryKey": Index {
       "fields": Array [
         "pub_id",
+      ],
+      "name": "PRIMARY_KEY",
+    },
+  },
+  Model {
+    "fields": Array [
+      Object {
+        "default": undefined,
+        "length": null,
+        "name": "pub_id",
+        "type": Object {
+          "kind": "NonNull",
+          "type": Object {
+            "kind": "Scalar",
+            "name": "Int",
+          },
+        },
+      },
+      Object {
+        "default": Object {
+          "kind": "DB_GENERATED",
+          "value": "A",
+        },
+        "length": "1",
+        "name": "pub_type",
+        "type": Object {
+          "kind": "NonNull",
+          "type": Object {
+            "kind": "Scalar",
+            "name": "String",
+          },
+        },
+      },
+      Object {
+        "default": undefined,
+        "length": "1",
+        "name": "placeholder",
+        "type": Object {
+          "kind": "NonNull",
+          "type": Object {
+            "kind": "Scalar",
+            "name": "String",
+          },
+        },
+      },
+    ],
+    "indexes": Array [],
+    "name": "articles",
+    "primaryKey": Index {
+      "fields": Array [
+        "pub_id",
+        "pub_type",
       ],
       "name": "PRIMARY_KEY",
     },

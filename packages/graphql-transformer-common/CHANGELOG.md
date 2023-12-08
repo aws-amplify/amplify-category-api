@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.27.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.26.2...graphql-transformer-common@4.27.0) (2023-12-06)
+
+### Features
+
+- combine heterogeneous data sources ([#2109](https://github.com/aws-amplify/amplify-category-api/issues/2109)) ([fd58bb5](https://github.com/aws-amplify/amplify-category-api/commit/fd58bb5af4249220d17c9751acf677955aed74ea))
+
 ## [4.26.2](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.26.1...graphql-transformer-common@4.26.2) (2023-11-18)
 
 ### Bug Fixes

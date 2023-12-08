@@ -22,7 +22,6 @@ const subcommand = 'generate-schema';
 export const name = subcommand;
 
 export const run = async (context: $TSContext): Promise<void> => {
-  printer.warn(PREVIEW_BANNER);
   const transformerVersion = await ApiCategoryFacade.getTransformerVersion(context);
   if (transformerVersion !== 2) {
     throw new AmplifyError('InvalidDirectiveError', {
@@ -54,6 +53,7 @@ export const run = async (context: $TSContext): Promise<void> => {
     const schema = await graphqlSchemaFromSQLSchema(fs.readFileSync(sqlSchema, 'utf8'), engineType);
     writeSchemaFile(out, schema);
   } else {
+    printer.warn(PREVIEW_BANNER);
     const apiName = getAppSyncAPIName();
     const apiResourceDir = getAPIResourceDir(apiName);
 

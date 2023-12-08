@@ -23,6 +23,9 @@ import gql from 'graphql-tag';
 import { print } from 'graphql';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { ResourceConstants } from 'graphql-transformer-common';
+import { getDefaultStrategyNameForDbType, getResourceNamesForStrategyName, normalizeDbType } from '@aws-amplify/graphql-transformer-core';
+import { ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-transformer-interfaces';
+import { SQL_TESTS_USE_BETA } from '../rds-v2-tests-common/sql-e2e-config';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -32,15 +35,11 @@ const CDK_VPC_ENDPOINT_TYPE = 'AWS::EC2::VPCEndpoint';
 const CDK_SUBSCRIPTION_TYPE = 'AWS::SNS::Subscription';
 const APPSYNC_DATA_SOURCE_TYPE = 'AWS::AppSync::DataSource';
 
-const {
-  AmplifySQLLayerNotificationTopicAccount,
-  AmplifySQLLayerNotificationTopicName,
-  SQLLambdaDataSourceLogicalID,
-  SQLLambdaLogicalID,
-  SQLPatchingLambdaLogicalID,
-  SQLStackName,
-  SQLVpcEndpointLogicalIDPrefix,
-} = ResourceConstants.RESOURCES;
+const { AmplifySQLLayerNotificationTopicAccount, AmplifySQLLayerNotificationTopicName } = ResourceConstants.RESOURCES;
+
+const engine = 'mysql';
+const strategyName = getDefaultStrategyNameForDbType(normalizeDbType(engine) as ModelDataSourceStrategySqlDbType);
+const resourceNames = getResourceNamesForStrategyName(strategyName);
 
 describe('RDS Tests', () => {
   const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
@@ -146,13 +145,13 @@ describe('RDS Tests', () => {
     // Validate the generated resources in the CloudFormation template
     const apisDirectory = path.join(projRoot, 'amplify', 'backend', 'api');
     const apiDirectory = path.join(apisDirectory, apiName);
-    const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', `${SQLStackName}.json`);
+    const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', `${resourceNames.sqlStack}.json`);
     const cfnTemplate = JSON.parse(readFileSync(cfnRDSTemplateFile, 'utf8'));
     expect(cfnTemplate.Resources).toBeDefined();
     const resources = cfnTemplate.Resources;
 
     // Validate if the SQL lambda function has VPC configuration
-    const rdsLambdaFunction = getResource(resources, SQLLambdaLogicalID, CDK_FUNCTION_TYPE);
+    const rdsLambdaFunction = getResource(resources, resourceNames.sqlLambdaFunction, CDK_FUNCTION_TYPE);
     expect(rdsLambdaFunction).toBeDefined();
     expect(rdsLambdaFunction.Properties).toBeDefined();
     expect(rdsLambdaFunction.Properties.VpcConfig).toBeDefined();
@@ -161,20 +160,20 @@ describe('RDS Tests', () => {
     expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds).toBeDefined();
     expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds.length).toBeGreaterThan(0);
 
-    expect(getResource(resources, `${SQLVpcEndpointLogicalIDPrefix}ssm`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-    expect(getResource(resources, `${SQLVpcEndpointLogicalIDPrefix}ssmmessages`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-    expect(getResource(resources, `${SQLVpcEndpointLogicalIDPrefix}kms`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-    expect(getResource(resources, `${SQLVpcEndpointLogicalIDPrefix}ec2`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-    expect(getResource(resources, `${SQLVpcEndpointLogicalIDPrefix}ec2messages`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ssm`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ssmmessages`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}kms`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ec2`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+    expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ec2messages`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
 
     // Validate patching lambda and subscription
-    const rdsPatchingLambdaFunction = getResource(resources, SQLPatchingLambdaLogicalID, CDK_FUNCTION_TYPE);
+    const rdsPatchingLambdaFunction = getResource(resources, resourceNames.sqlPatchingLambdaFunction, CDK_FUNCTION_TYPE);
     expect(rdsPatchingLambdaFunction).toBeDefined();
     expect(rdsPatchingLambdaFunction.Properties).toBeDefined();
     expect(rdsPatchingLambdaFunction.Properties.Environment).toBeDefined();
     expect(rdsPatchingLambdaFunction.Properties.Environment.Variables).toBeDefined();
     expect(rdsPatchingLambdaFunction.Properties.Environment.Variables.LAMBDA_FUNCTION_ARN).toBeDefined();
-    const rdsDataSourceLambda = getResource(resources, SQLLambdaDataSourceLogicalID, APPSYNC_DATA_SOURCE_TYPE);
+    const rdsDataSourceLambda = getResource(resources, resourceNames.sqlLambdaDataSource, APPSYNC_DATA_SOURCE_TYPE);
     expect(rdsPatchingLambdaFunction.Properties.Environment.Variables.LAMBDA_FUNCTION_ARN).toEqual(
       rdsDataSourceLambda.Properties.LambdaConfig.LambdaFunctionArn,
     );
@@ -188,7 +187,7 @@ describe('RDS Tests', () => {
     };
     // Counterintuitively, the subscription actually gets created with the resource prefix of the FUNCTION that gets triggered, rather than
     // the scope created specifically for the subscription
-    const rdsPatchingSubscription = getResource(resources, SQLPatchingLambdaLogicalID, CDK_SUBSCRIPTION_TYPE);
+    const rdsPatchingSubscription = getResource(resources, resourceNames.sqlPatchingLambdaFunction, CDK_SUBSCRIPTION_TYPE);
     expect(rdsPatchingSubscription).toBeDefined();
     expect(rdsPatchingSubscription.Properties).toBeDefined();
     expect(rdsPatchingSubscription.Properties.Protocol).toBeDefined();
@@ -200,7 +199,9 @@ describe('RDS Tests', () => {
     expect(rdsPatchingSubscription.Properties.FilterPolicy).toBeDefined();
     expect(rdsPatchingSubscription.Properties.FilterPolicy.Region).toBeDefined();
 
-    await amplifyPush(projRoot);
+    await amplifyPush(projRoot, false, {
+      useBetaSqlLayer: SQL_TESTS_USE_BETA,
+    });
     await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.
 
     // Get the AppSync API details after deployment

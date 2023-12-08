@@ -1,11 +1,12 @@
-import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { constructDataSourceStrategies, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
-import { TestTransformParameters, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { TestTransformParameters, mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { SqlTransformer } from '../graphql-sql-transformer';
 
 describe('sql directive tests', () => {
+  const mySqlStrategy = mockSqlDataSourceStrategy();
+
   it('should compile happy case with statement argument', () => {
     const doc = /* GraphQL */ `
       type Query {
@@ -16,24 +17,12 @@ describe('sql directive tests', () => {
     const out = testTransform({
       schema: doc,
       transformers: [new ModelTransformer(), new SqlTransformer()],
-      modelToDatasourceMap: new Map(
-        Object.entries({
-          Post: {
-            dbType: 'MySQL',
-            provisionDB: false,
-            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-          },
-        }),
-      ),
-      customSqlDataSourceStrategies: [
+      dataSourceStrategies: constructDataSourceStrategies(doc, mySqlStrategy),
+      sqlDirectiveDataSourceStrategies: [
         {
           typeName: 'Query',
           fieldName: 'calculateTaxRate',
-          dataSourceType: {
-            dbType: 'MySQL',
-            provisionDB: false,
-            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-          },
+          strategy: mySqlStrategy,
         },
       ],
     });
@@ -59,30 +48,17 @@ describe('sql directive tests', () => {
       }
     `;
 
-    const customQueries = new Map<string, string>();
-    customQueries.set('calculate-tax', 'SELECT * FROM TAXRATE WHERE ZIP = :zip');
-
     const out = testTransform({
       schema: doc,
       transformers: [new ModelTransformer(), new SqlTransformer()],
-      customQueries,
-      modelToDatasourceMap: new Map(
-        Object.entries({
-          Post: {
-            dbType: 'MySQL',
-            provisionDB: false,
-            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-          },
-        }),
-      ),
-      customSqlDataSourceStrategies: [
+      dataSourceStrategies: constructDataSourceStrategies(doc, mySqlStrategy),
+      sqlDirectiveDataSourceStrategies: [
         {
           typeName: 'Query',
           fieldName: 'calculateTaxRate',
-          dataSourceType: {
-            dbType: 'MySQL',
-            provisionDB: false,
-            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
+          strategy: mySqlStrategy,
+          customSqlStatements: {
+            'calculate-tax': 'SELECT * FROM TAXRATE WHERE ZIP = :zip',
           },
         },
       ],
@@ -109,37 +85,24 @@ describe('sql directive tests', () => {
       }
     `;
 
-    const customQueries = new Map<string, string>();
-    customQueries.set('calculate-tax-rate', 'SELECT * FROM TAXRATE WHERE ZIP = :zip');
-
     const transformConfig: TestTransformParameters = {
       schema: doc,
       transformers: [new ModelTransformer(), new SqlTransformer()],
-      customQueries,
-      modelToDatasourceMap: new Map(
-        Object.entries({
-          Post: {
-            dbType: 'MySQL' as const,
-            provisionDB: false,
-            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-          },
-        }),
-      ),
-      customSqlDataSourceStrategies: [
+      dataSourceStrategies: constructDataSourceStrategies(doc, mySqlStrategy),
+      sqlDirectiveDataSourceStrategies: [
         {
           typeName: 'Query',
           fieldName: 'calculateTaxRate',
-          dataSourceType: {
-            dbType: 'MySQL',
-            provisionDB: false,
-            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
+          strategy: mySqlStrategy,
+          customSqlStatements: {
+            'incorrect-reference-name': 'SELECT * FROM TAXRATE WHERE ZIP = :zip',
           },
         },
       ],
     };
 
     expect(() => testTransform(transformConfig)).toThrowError(
-      '@sql directive \'reference\' argument must be a valid custom query name. Check type "Query" and field "calculateTaxRate". The custom query "calculate-tax" does not exist in "sql-statements" directory.',
+      'The Query field "calculateTaxRate" references a custom SQL statement "calculate-tax" that doesn\'t exist. Verify that "calculate-tax" is a key in the customSqlStatements property.',
     );
   });
 
@@ -156,31 +119,52 @@ describe('sql directive tests', () => {
     const transformConfig: TestTransformParameters = {
       schema: doc,
       transformers: [new ModelTransformer(), new SqlTransformer()],
-      customQueries,
-      modelToDatasourceMap: new Map(
-        Object.entries({
-          Post: {
-            dbType: 'MySQL' as const,
-            provisionDB: false,
-            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-          },
-        }),
-      ),
-      customSqlDataSourceStrategies: [
+      dataSourceStrategies: constructDataSourceStrategies(doc, mySqlStrategy),
+      sqlDirectiveDataSourceStrategies: [
         {
           typeName: 'Query',
           fieldName: 'calculateTaxRate',
-          dataSourceType: {
-            dbType: 'MySQL',
-            provisionDB: false,
-            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
+          strategy: mySqlStrategy,
+          customSqlStatements: {
+            'calculate-tax': 'SELECT * FROM TAXRATE WHERE ZIP = :zip',
           },
         },
       ],
     };
 
     expect(() => testTransform(transformConfig)).toThrowError(
-      '@sql directive can have either \'statement\' or \'reference\' argument but not both. Check type "Query" and field "calculateTaxRate".',
+      '@sql directive can have either a \'statement\' or a \'reference\' argument but not both. Check type "Query" and field "calculateTaxRate".',
+    );
+  });
+
+  it('should throw error if neither statement and argument provided', () => {
+    const doc = /* GraphQL */ `
+      type Query {
+        calculateTaxRate(zip: String): Int @sql
+      }
+    `;
+
+    const customQueries = new Map<string, string>();
+    customQueries.set('calculate-tax', 'SELECT * FROM TAXRATE WHERE ZIP = :zip');
+
+    const transformConfig: TestTransformParameters = {
+      schema: doc,
+      transformers: [new ModelTransformer(), new SqlTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(doc, mySqlStrategy),
+      sqlDirectiveDataSourceStrategies: [
+        {
+          typeName: 'Query',
+          fieldName: 'calculateTaxRate',
+          strategy: mySqlStrategy,
+          customSqlStatements: {
+            'calculate-tax': 'SELECT * FROM TAXRATE WHERE ZIP = :zip',
+          },
+        },
+      ],
+    };
+
+    expect(() => testTransform(transformConfig)).toThrowError(
+      '@sql directive must have either a \'statement\' or a \'reference\' argument. Check type "Query" and field "calculateTaxRate".',
     );
   });
 
@@ -194,24 +178,12 @@ describe('sql directive tests', () => {
     const transformConfig: TestTransformParameters = {
       schema: doc,
       transformers: [new ModelTransformer(), new SqlTransformer()],
-      modelToDatasourceMap: new Map(
-        Object.entries({
-          Post: {
-            dbType: 'MySQL' as const,
-            provisionDB: false,
-            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-          },
-        }),
-      ),
-      customSqlDataSourceStrategies: [
+      dataSourceStrategies: constructDataSourceStrategies(doc, mySqlStrategy),
+      sqlDirectiveDataSourceStrategies: [
         {
           typeName: 'Query',
           fieldName: 'calculateTaxRate',
-          dataSourceType: {
-            dbType: 'MySQL',
-            provisionDB: false,
-            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-          },
+          strategy: mySqlStrategy,
         },
       ],
     };
@@ -231,24 +203,12 @@ describe('sql directive tests', () => {
     const transformConfig: TestTransformParameters = {
       schema: doc,
       transformers: [new ModelTransformer(), new SqlTransformer()],
-      modelToDatasourceMap: new Map(
-        Object.entries({
-          Post: {
-            dbType: 'MySQL',
-            provisionDB: false,
-            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-          },
-        }),
-      ),
-      customSqlDataSourceStrategies: [
+      dataSourceStrategies: constructDataSourceStrategies(doc, mySqlStrategy),
+      sqlDirectiveDataSourceStrategies: [
         {
-          typeName: 'Query',
+          typeName: 'Todo' as any,
           fieldName: 'calculateTaxRate',
-          dataSourceType: {
-            dbType: 'MySQL',
-            provisionDB: false,
-            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-          },
+          strategy: mySqlStrategy,
         },
       ],
     };
@@ -267,16 +227,12 @@ describe('sql directive tests', () => {
     const transformConfig: TestTransformParameters = {
       schema: doc,
       transformers: [new ModelTransformer(), new SqlTransformer()],
-      modelToDatasourceMap: new Map(),
-      customSqlDataSourceStrategies: [
+      dataSourceStrategies: {},
+      sqlDirectiveDataSourceStrategies: [
         {
           typeName: 'Query',
           fieldName: 'calculateTaxRate',
-          dataSourceType: {
-            dbType: 'MySQL',
-            provisionDB: false,
-            provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-          },
+          strategy: mySqlStrategy,
         },
       ],
     };

@@ -21,18 +21,22 @@ import { CfnRole } from 'aws-cdk-lib/aws-iam';
 import { CfnStack } from 'aws-cdk-lib';
 import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
-import type { CustomSqlDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
-import type { DataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
 import { ISynthesisSession } from 'aws-cdk-lib';
+import type { ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-transformer-interfaces';
 import type { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
+import { ProvisionedConcurrencyConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import type { RDSLayerMappingProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
+import type { SqlDirectiveDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { Stack } from 'aws-cdk-lib';
 import type { SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
-import type { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
 export interface AmplifyApiGraphQlResourceStackTemplate {
@@ -70,6 +74,30 @@ export interface DeploymentResources extends ResolversFunctionsAndSchema, Nested
 }
 
 // @public (undocumented)
+export interface MakeSqlDataSourceStrategyOptions {
+    // (undocumented)
+    customSqlStatements?: Record<string, string>;
+    // (undocumented)
+    dbConnectionConfig?: SqlModelDataSourceDbConnectionConfig;
+    // (undocumented)
+    dbType?: ModelDataSourceStrategySqlDbType;
+    // (undocumented)
+    name?: string;
+    // (undocumented)
+    sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
+    // (undocumented)
+    vpcConfiguration?: VpcConfig;
+}
+
+// @public (undocumented)
+export const MOCK_DB_CONNECTION_CONFIG: SqlModelDataSourceDbConnectionConfig;
+
+// @public (undocumented)
+export const mockSqlDataSourceStrategy: (options?: MakeSqlDataSourceStrategyOptions) => SQLLambdaModelDataSourceStrategy & {
+    customSqlStatements?: Record<string, string> | undefined;
+};
+
+// @public (undocumented)
 export interface NestedStacks {
     // (undocumented)
     rootStack: Template;
@@ -92,6 +120,50 @@ export interface ResolversFunctionsAndSchema {
     // (undocumented)
     userOverriddenSlots: string[];
 }
+
+// @public (undocumented)
+export const SCHEMAS: {
+    todo: {
+        ddb: string;
+        sql: string;
+    };
+    todo2: {
+        ddb: string;
+        sql: string;
+    };
+    todo3: {
+        ddb: string;
+        sql: string;
+    };
+    todo4: {
+        ddb: string;
+        sql: string;
+    };
+    blog: {
+        ddb: string;
+        sql: string;
+    };
+    post: {
+        ddb: string;
+        sql: string;
+    };
+    comment: {
+        ddb: string;
+        sql: string;
+    };
+    order: {
+        ddb: string;
+        sql: string;
+    };
+    lineItem: {
+        ddb: string;
+        sql: string;
+    };
+    customSqlQueryStatement: string;
+    customSqlQueryReference: string;
+    customSqlMutationStatement: string;
+    customSqlMutationReference: string;
+};
 
 // @public (undocumented)
 export interface StackMapping {
@@ -131,21 +203,18 @@ export const testTransform: (params: TestTransformParameters) => DeploymentResou
 };
 
 // @public (undocumented)
-export type TestTransformParameters = {
-    transformers: TransformerPluginProvider[];
-    schema: string;
-    transformParameters?: Partial<TransformParameters>;
-    resolverConfig?: ResolverConfig;
+export type TestTransformParameters = RDSLayerMappingProvider & {
     authConfig?: AppSyncAuthConfiguration;
-    userDefinedSlots?: Record<string, UserDefinedSlot[]>;
-    stackMapping?: Record<string, string>;
-    modelToDatasourceMap?: Map<string, DataSourceType>;
-    customSqlDataSourceStrategies?: CustomSqlDataSourceStrategy[];
-    datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
-    customQueries?: Map<string, string>;
+    dataSourceStrategies?: Record<string, ModelDataSourceStrategy>;
     overrideConfig?: OverrideConfig;
-    sqlLambdaVpcConfig?: VpcConfig;
+    resolverConfig?: ResolverConfig;
+    schema: string;
+    sqlDirectiveDataSourceStrategies?: SqlDirectiveDataSourceStrategy[];
+    stackMapping?: Record<string, string>;
     synthParameters?: Partial<SynthParameters>;
+    transformers: TransformerPluginProvider[];
+    transformParameters?: Partial<TransformParameters>;
+    userDefinedSlots?: Record<string, UserDefinedSlot[]>;
 };
 
 // @public (undocumented)
@@ -169,7 +238,7 @@ export class TransformManager {
 
 // Warnings were encountered during analysis:
 //
-// src/test-transform.ts:25:3 - (ae-forgotten-export) The symbol "OverrideConfig" needs to be exported by the entry point index.d.ts
+// src/test-transform.ts:23:3 - (ae-forgotten-export) The symbol "OverrideConfig" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

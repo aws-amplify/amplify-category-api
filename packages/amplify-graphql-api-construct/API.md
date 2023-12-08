@@ -196,13 +196,10 @@ export interface CustomConflictResolutionStrategy extends ConflictResolutionStra
     readonly handlerType: 'LAMBDA';
 }
 
-// @public (undocumented)
+// @public
 export interface CustomSqlDataSourceStrategy {
-    // (undocumented)
     readonly fieldName: string;
-    // (undocumented)
     readonly strategy: SQLLambdaModelDataSourceStrategy;
-    // (undocumented)
     readonly typeName: 'Query' | 'Mutation';
 }
 
@@ -267,8 +264,11 @@ export interface LambdaAuthorizationConfig {
 // @public
 export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
 
-// @public (undocumented)
-export type ModelDataSourceStrategyDbType = 'DYNAMODB';
+// @public
+export type ModelDataSourceStrategyDbType = 'DYNAMODB' | ModelDataSourceStrategySqlDbType;
+
+// @public
+export type ModelDataSourceStrategySqlDbType = 'MYSQL' | 'POSTGRES';
 
 // @public
 export interface MutationFunctionSlot extends FunctionSlotBase {
@@ -328,7 +328,7 @@ export interface QueryFunctionSlot extends FunctionSlotBase {
 export interface SQLLambdaModelDataSourceStrategy {
     readonly customSqlStatements?: Record<string, string>;
     readonly dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
-    readonly dbType: 'MYSQL' | 'POSTGRES';
+    readonly dbType: ModelDataSourceStrategySqlDbType;
     readonly name: string;
     readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
     readonly vpcConfiguration?: VpcConfig;

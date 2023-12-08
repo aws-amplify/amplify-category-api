@@ -1,36 +1,36 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`@refersTo with RDS Models model field names are mapped 1`] = `
+exports[`@refersTo with SQL Models model field names are mapped 1`] = `
 "#set( $fieldMap = {\\"title\\":\\"description\\"} )
 #set( $ctx.stash.fieldMap = $fieldMap )
 $util.toJson({})"
 `;
 
-exports[`@refersTo with RDS Models model field names are mapped 2`] = `
+exports[`@refersTo with SQL Models model field names are mapped 2`] = `
 "#set( $fieldMap = {\\"title\\":\\"description\\"} )
 #set( $ctx.stash.fieldMap = $fieldMap )
 $util.toJson({})"
 `;
 
-exports[`@refersTo with RDS Models model field names are mapped 3`] = `
+exports[`@refersTo with SQL Models model field names are mapped 3`] = `
 "#set( $fieldMap = {\\"title\\":\\"description\\"} )
 #set( $ctx.stash.fieldMap = $fieldMap )
 $util.toJson({})"
 `;
 
-exports[`@refersTo with RDS Models model field names are mapped 4`] = `
+exports[`@refersTo with SQL Models model field names are mapped 4`] = `
 "#set( $fieldMap = {\\"title\\":\\"description\\"} )
 #set( $ctx.stash.fieldMap = $fieldMap )
 $util.toJson({})"
 `;
 
-exports[`@refersTo with RDS Models model field names are mapped 5`] = `
+exports[`@refersTo with SQL Models model field names are mapped 5`] = `
 "#set( $fieldMap = {\\"title\\":\\"description\\"} )
 #set( $ctx.stash.fieldMap = $fieldMap )
 $util.toJson({})"
 `;
 
-exports[`@refersTo with RDS Models model table names are mapped 1`] = `
+exports[`@refersTo with SQL Models model table names are mapped 1`] = `
 "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.table = \\"Task\\" )
@@ -56,7 +56,7 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments.i
 ## [End] Invoke RDS Lambda data source. **"
 `;
 
-exports[`@refersTo with RDS Models model table names are mapped 2`] = `
+exports[`@refersTo with SQL Models model table names are mapped 2`] = `
 "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.table = \\"Task\\" )
@@ -83,7 +83,7 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments.i
 ## [End] Invoke RDS Lambda data source. **"
 `;
 
-exports[`@refersTo with RDS Models model table names are mapped 3`] = `
+exports[`@refersTo with SQL Models model table names are mapped 3`] = `
 "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.table = \\"Task\\" )
@@ -106,7 +106,7 @@ $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.k
 ## [End] Invoke RDS Lambda data source. **"
 `;
 
-exports[`@refersTo with RDS Models model table names are mapped 4`] = `
+exports[`@refersTo with SQL Models model table names are mapped 4`] = `
 "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
@@ -133,7 +133,7 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, 
 ## [End] Invoke RDS Lambda data source. **"
 `;
 
-exports[`@refersTo with RDS Models model table names are mapped 5`] = `
+exports[`@refersTo with SQL Models model table names are mapped 5`] = `
 "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )

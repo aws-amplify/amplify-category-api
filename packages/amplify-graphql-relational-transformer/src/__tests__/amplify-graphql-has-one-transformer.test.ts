@@ -1,9 +1,14 @@
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { ConflictHandlerType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { DataSourceType, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  ConflictHandlerType,
+  DDB_DEFAULT_DATASOURCE_STRATEGY,
+  GraphQLTransform,
+  constructDataSourceStrategies,
+  validateModelSchema,
+} from '@aws-amplify/graphql-transformer-core';
 import { DocumentNode, Kind, parse } from 'graphql';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { HasManyTransformer, HasOneTransformer } from '..';
 import { hasGeneratedField } from './test-helpers';
 
@@ -45,6 +50,10 @@ test('fails if @hasOne was used with a related type that is not a model', () => 
     testTransform({
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasOneTransformer()],
+      dataSourceStrategies: {
+        Test: DDB_DEFAULT_DATASOURCE_STRATEGY,
+        Test1: DDB_DEFAULT_DATASOURCE_STRATEGY,
+      },
     }),
   ).toThrowError('Object type Test1 must be annotated with @model.');
 });
@@ -428,7 +437,6 @@ test('@hasOne and @hasMany cannot point at each other if DataStore is enabled', 
       id: ID!
       blog: Blog @hasOne
     }`;
-  ``;
 
   expect(() =>
     testTransform({
@@ -747,19 +755,9 @@ describe('@hasOne connection field nullability tests', () => {
 });
 
 describe('@hasOne directive with RDS datasource', () => {
-  test('happy case should generate correct resolvers', () => {
-    const modelToDatasourceMap = new Map<string, DataSourceType>();
-    modelToDatasourceMap.set('User', {
-      dbType: 'MySQL',
-      provisionDB: false,
-      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-    });
-    modelToDatasourceMap.set('Profile', {
-      dbType: 'MySQL',
-      provisionDB: false,
-      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-    });
+  const mySqlStrategy = mockSqlDataSourceStrategy();
 
+  test('happy case should generate correct resolvers', () => {
     const inputSchema = `
       type User @model {
         id: String! @primaryKey
@@ -776,7 +774,7 @@ describe('@hasOne directive with RDS datasource', () => {
     const out = testTransform({
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
-      modelToDatasourceMap,
+      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
     });
     expect(out).toBeDefined();
     const schema = parse(out.schema);
@@ -789,18 +787,6 @@ describe('@hasOne directive with RDS datasource', () => {
   });
 
   test('composite key should generate correct resolvers', () => {
-    const modelToDatasourceMap = new Map<string, DataSourceType>();
-    modelToDatasourceMap.set('User', {
-      dbType: 'MySQL',
-      provisionDB: false,
-      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-    });
-    modelToDatasourceMap.set('Profile', {
-      dbType: 'MySQL',
-      provisionDB: false,
-      provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-    });
-
     const inputSchema = `
       type User @model {
         firstName: String! @primaryKey(sortKeyFields: ["lastName"])
@@ -817,7 +803,7 @@ describe('@hasOne directive with RDS datasource', () => {
     const out = testTransform({
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
-      modelToDatasourceMap,
+      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
     });
     expect(out).toBeDefined();
     const schema = parse(out.schema);

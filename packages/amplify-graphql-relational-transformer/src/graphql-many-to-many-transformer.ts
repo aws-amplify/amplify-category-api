@@ -1,9 +1,10 @@
 import {
+  DDB_DEFAULT_DATASOURCE_STRATEGY,
   DirectiveWrapper,
   InvalidDirectiveError,
   TransformerPluginBase,
   generateGetArgumentsInput,
-  isRDSModel,
+  isSqlModel,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   FieldMapEntry,
@@ -14,6 +15,7 @@ import {
   TransformerTransformSchemaStepContextProvider,
   TransformerValidationStepContextProvider,
   TransformerPreProcessContextProvider,
+  DataSourceStrategiesProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   DirectiveNode,
@@ -126,13 +128,16 @@ export class ManyToManyTransformer extends TransformerPluginBase {
 
     addDirectiveToRelationMap(this.relationMap, args);
     this.directiveList.push(args);
+
+    this.relationMap.forEach((_, relationName) => addJoinTableToDatasourceStrategies(context, relationName));
   };
 
   /** During the preProcess step, modify the document node and return it
    * so that it represents any schema modifications the plugin needs
    */
   mutateSchema = (context: TransformerPreProcessContextProvider): DocumentNode => {
-    const manyToManyMap = new Map<string, ManyToManyPreProcessContext[]>(); // Relation name is the key, each array should be length 2 (two models being connected)
+    // Relation name is the key, each array should be length 2 (two models being connected)
+    const manyToManyMap = new Map<string, ManyToManyPreProcessContext[]>();
     const newDocument: DocumentNode = produce(context.inputDocument, (draftDoc) => {
       const filteredDefs = draftDoc?.definitions?.filter(
         (def) => def.kind === 'ObjectTypeExtension' || def.kind === 'ObjectTypeDefinition',
@@ -289,6 +294,10 @@ export class ManyToManyTransformer extends TransformerPluginBase {
 
       const d1ExpectedType = getBaseType(directive1.field.type);
       const d2ExpectedType = getBaseType(directive2.field.type);
+
+      if (isSqlModel(ctx, d1ExpectedType) || isSqlModel(ctx, d2ExpectedType)) {
+        throw new InvalidDirectiveError(`@${directiveName} directive cannot be used on a SQL model.`);
+      }
 
       if (d1ExpectedType !== directive2.object.name.value) {
         throw new InvalidDirectiveError(
@@ -463,7 +472,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
         renamedFields.push({ originalFieldName: d2FieldNameIdOrig, currentFieldName: d2FieldNameId });
       }
 
-      if (renamedFields.length && !isRDSModel(context as TransformerContextProvider, name)) {
+      if (renamedFields.length && !isSqlModel(context as TransformerContextProvider, name)) {
         registerManyToManyForeignKeyMappings({
           resourceHelper: ctx.resourceHelper,
           typeName: name,
@@ -497,6 +506,15 @@ export class ManyToManyTransformer extends TransformerPluginBase {
     }
   };
 }
+
+/**
+ * Adds the join table created by the transformer to the context's `dataSourceStrategies`. NOTE: This is the only place in the transformer
+ * chain where we use a default value for the ModelDataSourceStrategy. All other models must be explicitly set by the caller in the
+ * transformer context, but the many to many join table will always be created using the DynamoDB default provisioning strategy.
+ */
+const addJoinTableToDatasourceStrategies = (ctx: DataSourceStrategiesProvider, relationName: string): void => {
+  ctx.dataSourceStrategies[relationName] = DDB_DEFAULT_DATASOURCE_STRATEGY;
+};
 
 function addDirectiveToRelationMap(map: Map<string, ManyToManyRelation>, directive: ManyToManyDirectiveConfiguration): void {
   const { relationName } = directive;

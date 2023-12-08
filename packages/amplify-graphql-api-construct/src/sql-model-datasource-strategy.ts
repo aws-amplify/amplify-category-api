@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { SQLLambdaModelDataSourceStrategy, SqlModelDataSourceDbConnectionConfig } from './model-datasource-strategy';
+import { isSqlDbType } from '@aws-amplify/graphql-transformer-core';
+import { SQLLambdaModelDataSourceStrategy, SqlModelDataSourceDbConnectionConfig } from './model-datasource-strategy-types';
 
 /**
  * Type predicate that returns true if the object is a SQLLambdaModelDataSourceStrategy.
@@ -12,8 +13,7 @@ export const isSQLLambdaModelDataSourceStrategy = (obj: any): obj is SQLLambdaMo
     (typeof obj === 'object' || typeof obj === 'function') &&
     typeof obj.name === 'string' &&
     typeof obj.dbType === 'string' &&
-    // TODO: Use canonical SQL DB type strings
-    ['MYSQL', 'POSTGRES'].includes(obj.dbType) &&
+    isSqlDbType(obj.dbType) &&
     isSqlModelDataSourceDbConnectionConfig(obj.dbConnectionConfig)
   );
 };

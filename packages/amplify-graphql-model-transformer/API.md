@@ -8,7 +8,6 @@ import { AppSyncDataSourceType } from '@aws-amplify/graphql-transformer-interfac
 import * as cdk from 'aws-cdk-lib';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { DBType } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql';
 import { EnumTypeDefinitionNode } from 'graphql';
@@ -22,6 +21,7 @@ import { InputValueDefinitionNode } from 'graphql';
 import { MutationFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { QueryFieldType } from '@aws-amplify/graphql-transformer-interfaces';
+import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { SubscriptionFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { SyncConfig } from '@aws-amplify/graphql-transformer-core';
 import { TransformerBeforeStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -320,7 +320,7 @@ export const propagateApiKeyToNestedTypes: (ctx: TransformerContextProvider, def
 // @public (undocumented)
 export class RdsModelResourceGenerator extends ModelResourceGenerator {
     // (undocumented)
-    generateResources(context: TransformerContextProvider, dbTypeOverride?: DBType): void;
+    generateResources(context: TransformerContextProvider, strategyOverride?: SQLLambdaModelDataSourceStrategy): void;
     // (undocumented)
     protected readonly generatorType = "RdsModelResourceGenerator";
     // (undocumented)

@@ -3,10 +3,10 @@ import {
   DDB_DB_TYPE,
   DirectiveWrapper,
   generateGetArgumentsInput,
-  getDataSourceType,
+  getStrategyDbTypeFromTypeNode,
   InvalidDirectiveError,
-  isRDSModel,
-  isRDSDBType,
+  isSqlModel,
+  isSqlDbType,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
 import {
@@ -167,7 +167,7 @@ export class HasOneTransformer extends TransformerPluginBase {
   prepare = (context: TransformerPrepareStepContextProvider): void => {
     this.directiveList.forEach((config) => {
       const modelName = config.object.name.value;
-      if (isRDSModel(context as TransformerContextProvider, modelName)) {
+      if (isSqlModel(context as TransformerContextProvider, modelName)) {
         setFieldMappingResolverReference(context, config.relatedType?.name?.value, modelName, config.field.name.value);
         return;
       }
@@ -185,10 +185,10 @@ export class HasOneTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      const dbType = getDataSourceType(config.field.type, context);
+      const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
       if (dbType === DDB_DB_TYPE) {
         config.relatedTypeIndex = getRelatedTypeIndex(config, context);
-      } else if (isRDSDBType(dbType)) {
+      } else if (isSqlDbType(dbType)) {
         validateParentReferencesFields(config, context);
       }
       ensureHasOneConnectionField(config, context);
@@ -199,7 +199,7 @@ export class HasOneTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      const dbType = getDataSourceType(config.field.type, context);
+      const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
       const generator = getGenerator(dbType);
       generator.makeHasOneGetItemConnectionWithKeyResolver(config, context);
     }
@@ -209,7 +209,7 @@ export class HasOneTransformer extends TransformerPluginBase {
 const validate = (config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field } = config;
 
-  const dbType = getDataSourceType(field.type, ctx);
+  const dbType = getStrategyDbTypeFromTypeNode(field.type, ctx);
   config.relatedType = getRelatedType(config, ctx);
 
   if (dbType === DDB_DB_TYPE) {
@@ -217,7 +217,7 @@ const validate = (config: HasOneDirectiveConfiguration, ctx: TransformerContextP
     config.fieldNodes = getFieldsNodes(config, ctx);
   }
 
-  if (isRDSDBType(dbType)) {
+  if (isSqlDbType(dbType)) {
     ensureReferencesArray(config);
     getReferencesNodes(config, ctx);
   }

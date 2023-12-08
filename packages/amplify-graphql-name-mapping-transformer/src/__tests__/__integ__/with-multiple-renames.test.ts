@@ -1,9 +1,9 @@
-import { ConflictHandlerType, DDB_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { MapsToTransformer } from '../../graphql-maps-to-transformer';
-import { expectedResolversForModelWithRenamedField, constructModelToDataSourceMap } from './common';
+import { expectedResolversForModelWithRenamedField } from './common';
 
 const originalSchema = /* GraphQL */ `
   type Checklist @model {
@@ -63,7 +63,6 @@ const transformSchema = (schema: string, enableDataStore = false) => {
       new BelongsToTransformer(),
       new MapsToTransformer(),
     ],
-    modelToDatasourceMap: constructModelToDataSourceMap(['Agenda', 'Todo', 'Location', 'Day'], DDB_DB_TYPE),
     transformParameters: {
       sandboxModeEnabled: true,
     },

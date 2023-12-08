@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { SQLLambdaModelDataSourceStrategyFactory } from '../../sql-model-datasource-strategy';
-import { SQLLambdaModelDataSourceStrategy } from '../../model-datasource-strategy';
+import { SQLLambdaModelDataSourceStrategy } from '../../model-datasource-strategy-types';
 
 describe('SQL bound API definitions', () => {
   let tmpDir: string;

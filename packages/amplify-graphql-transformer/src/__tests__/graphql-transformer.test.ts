@@ -6,7 +6,7 @@ import {
   TransformerLogLevel,
   TransformerPluginProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { DDB_DEFAULT_DATASOURCE_STRATEGY, GraphQLTransform, constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
 import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces/src';
 import { NestedStack, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
@@ -71,6 +71,12 @@ describe('executeTransform', () => {
     const assets = new Map<string, string>();
     const tempAssetDir = fs.mkdtempSync(path.join(os.tmpdir(), 'transformer-assets'));
 
+    const schema = /* GraphQL */ `
+      type Todo @model {
+        content: String!
+      }
+    `;
+
     executeTransform({
       scope: new Stack(),
       nestedStackProvider: {
@@ -95,11 +101,8 @@ describe('executeTransform', () => {
         apiName: 'testApi',
       },
       ...defaultTransformConfig,
-      schema: /* GraphQL */ `
-        type Todo @model {
-          content: String!
-        }
-      `,
+      schema,
+      dataSourceStrategies: constructDataSourceStrategies(schema, DDB_DEFAULT_DATASOURCE_STRATEGY),
     });
   });
 
@@ -116,6 +119,11 @@ describe('executeTransform', () => {
     let didLog = false;
     const assets = new Map<string, string>();
     const tempAssetDir = fs.mkdtempSync(path.join(os.tmpdir(), 'transformer-assets'));
+    const schema = /* GraphQL */ `
+      type Todo @model @auth(rules: [{ allow: owner }]) {
+        content: String!
+      }
+    `;
     executeTransform({
       scope: new Stack(),
       nestedStackProvider: {
@@ -141,15 +149,12 @@ describe('executeTransform', () => {
         userPoolId: 'testUserPool',
       },
       ...defaultTransformConfig,
-      schema: /* GraphQL */ `
-        type Todo @model @auth(rules: [{ allow: owner }]) {
-          content: String!
-        }
-      `,
+      schema,
       authConfig: userPoolAuthConfig,
       printTransformerLog: (): void => {
         didLog = true;
       },
+      dataSourceStrategies: constructDataSourceStrategies(schema, DDB_DEFAULT_DATASOURCE_STRATEGY),
     });
     expect(didLog).toEqual(true);
   });
@@ -157,6 +162,11 @@ describe('executeTransform', () => {
   it('does not log warnings on simple schema', () => {
     const assets = new Map<string, string>();
     const tempAssetDir = fs.mkdtempSync(path.join(os.tmpdir(), 'transformer-assets'));
+    const schema = /* GraphQL */ `
+      type Todo @model {
+        content: String!
+      }
+    `;
     executeTransform({
       scope: new Stack(),
       nestedStackProvider: {
@@ -181,11 +191,8 @@ describe('executeTransform', () => {
         apiName: 'testApi',
       },
       ...defaultTransformConfig,
-      schema: /* GraphQL */ `
-        type Todo @model {
-          content: String!
-        }
-      `,
+      schema,
+      dataSourceStrategies: constructDataSourceStrategies(schema, DDB_DEFAULT_DATASOURCE_STRATEGY),
       printTransformerLog: ({ message }: TransformerLog): void => {
         throw new Error(`Transformer logging not expected, received ${message}`);
       },

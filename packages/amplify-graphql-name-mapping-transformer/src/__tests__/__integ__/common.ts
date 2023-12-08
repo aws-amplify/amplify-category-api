@@ -1,4 +1,3 @@
-import { DataSourceType, DBType, SQLLambdaModelProvisionStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DeploymentResources } from '@aws-amplify/graphql-transformer-test-utils';
 
 // indexes next to each resolver can help to match the resolver to the snapshot files
@@ -65,17 +64,4 @@ export const testColumnNameMapping = (modelName: string, out: DeploymentResource
 export const testRelationalFieldMapping = (resolverName: string, tableName: string, out: DeploymentResources): void => {
   expect(out.resolvers[resolverName]).toContain(`lambdaInput.table = "${tableName}"`);
   expect(out.resolvers[resolverName]).toMatchSnapshot();
-};
-
-export const constructModelToDataSourceMap = (modelNames: string[], dbType: DBType): Map<string, DataSourceType> => {
-  return new Map(
-    modelNames.map((modelName) => [
-      modelName,
-      {
-        dbType,
-        provisionDB: true,
-        provisionStrategy: SQLLambdaModelProvisionStrategy.DEFAULT,
-      },
-    ]),
-  );
 };
