@@ -25,6 +25,11 @@ import { validateDirectivesFromOlderTransformerVersionAreNotUsed } from './valid
 import { validateDirectivesFromNewerTransformerVersionAreNotUsed } from './validators/use-directives-from-newer-transformer-version';
 import { ValidateSchemaProps } from './helpers/schema-validator-props';
 import { validateFieldNamesAreUniqueWithRelationsPresent } from './validators/unique-field-names-with-relation';
+import { validateManyToManyHasRelationName } from './validators/many-to-many-has-a-relationname';
+import { validateHasOneNotUsedWithLists } from './validators/hasOne-cannot-be-used-with-lists';
+import { validateHasManyIsUsedWithLists } from './validators/hasMany-must-be-used-with-lists';
+import { validateObjectIsAnnotatedWithModel } from './validators/object-must-be-annotated-with-model';
+import { validateRelationshipNamesAreNotInverseOfRelationName } from './validators/relationshipname-not-inverseof-relationname';
 
 const allValidators = [
   validateIndexScalarTypes,
@@ -45,6 +50,11 @@ const allValidators = [
   validateEnumIsDefinedOnce,
   validateKeyExistsInRelatedModel,
   validateFieldNamesAreUniqueWithRelationsPresent,
+  validateManyToManyHasRelationName,
+  validateHasOneNotUsedWithLists,
+  validateHasManyIsUsedWithLists,
+  validateObjectIsAnnotatedWithModel,
+  validateRelationshipNamesAreNotInverseOfRelationName,
 ];
 
 const allValidatorsWithContext = [
