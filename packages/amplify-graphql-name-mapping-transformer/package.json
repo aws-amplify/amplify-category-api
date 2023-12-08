@@ -61,15 +61,16 @@
       "node"
     ],
     "collectCoverage": true,
+    "coverageProvider": "v8",
     "collectCoverageFrom": [
       "src/**",
       "!src/__tests__/**"
     ],
     "coverageThreshold": {
       "global": {
-        "branches": 71,
-        "functions": 80,
-        "lines": 80
+        "branches": 66,
+        "functions": 90,
+        "lines": 90
       }
     },
     "coverageReporters": [
