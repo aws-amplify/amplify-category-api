@@ -65,6 +65,20 @@ describe('enum imports', () => {
     expect(graphqlSchema).toMatchSnapshot();
   });
 
+  it('invalid enum value must throw an error', () => {
+    const dbschema = new Schema(new Engine('Postgres'));
+    const model = new Model('users');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
+    model.addField(new Field('status', { kind: 'Enum', name: 'UserStatus', values: ['ACTIVE-0', 'INACTIVE-1'] }));
+    model.setPrimaryKey(['id']);
+    dbschema.addModel(model);
+
+    expect(() => generateGraphQLSchema(dbschema)).toThrowError(
+      'Enum "UserStatus" (values: ACTIVE-0,INACTIVE-1) contains one or more invalid values. Enum values can contain A-Z, a-z, 0-9 or underscore(_) and must begin with an alphabet or an underscore(_).',
+    );
+  });
+
   it('multiple enum fields of same name must generate one graphql enum type', () => {
     const dbschema = new Schema(new Engine('Postgres'));
     let model = new Model('users');

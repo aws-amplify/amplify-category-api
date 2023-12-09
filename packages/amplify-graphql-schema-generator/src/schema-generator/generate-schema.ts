@@ -189,6 +189,11 @@ const constructObjectType = (model: Model) => {
 };
 
 const constructEnumType = (type: EnumType): EnumWrapper => {
+  // Check if the enum values imported from the database contain any invalid character.
+  // Enum can contain A-Z, a-z, 0-9 or underscore(_) and must begin with an alphabet or an underscore(_).
+  if (!validateEnumValues(type.values)) {
+    throw new Error(`Enum "${type.name}" (values: ${type.values.join(',')}) contains one or more invalid values. Enum values can contain A-Z, a-z, 0-9 or underscore(_) and must begin with an alphabet or an underscore(_).`);
+  }
   const enumValues = type.values.map((t) => {
     return {
       kind: Kind.ENUM_VALUE_DEFINITION,
@@ -208,6 +213,12 @@ const constructEnumType = (type: EnumType): EnumWrapper => {
   });
   return enumType;
 };
+
+const validateEnumValues = (values: string[]): boolean => {
+ const regex = new RegExp(/^[_A-Za-z][_0-9A-Za-z]*$/);
+ const containsValidValues = values.every((value) => regex.test(value));
+ return containsValidValues;
+}
 
 const addIndexes = (type: ObjectDefinitionWrapper, indexes: Index[]): void => {
   indexes.forEach((index) => {
