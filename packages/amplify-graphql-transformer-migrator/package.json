@@ -29,7 +29,7 @@
   "dependencies": {
     "@aws-amplify/graphql-transformer-core": "2.4.0",
     "fs-extra": "^8.1.0",
-    "glob": "^7.2.0",
+    "glob": "^10.3.0",
     "graphql": "^15.5.0",
     "graphql-transformer-common": "4.27.0",
     "lodash": "^4.17.21"

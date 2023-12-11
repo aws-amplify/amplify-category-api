@@ -615,7 +615,7 @@ export class UnknownDirectiveError extends Error {
 // Warning: (ae-forgotten-export) The symbol "UploadOptions" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export function uploadAPIProject(opts: UploadOptions): Promise<void>;
+export const uploadAPIProject: (opts: UploadOptions) => Promise<void>;
 
 // @public (undocumented)
 function writeConfig(projectDir: string, config: TransformConfig): Promise<TransformConfig>;
