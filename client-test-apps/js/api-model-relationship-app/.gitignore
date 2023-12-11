@@ -32,12 +32,14 @@ cypress/screenshots
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+yarn.lock
 
 #amplify-do-not-edit-begin
 amplify/\#current-cloud-backend
 amplify/.config/local-*
 amplify/logs
 amplify/mock-data
+amplify/mock-api-resources
 amplify/backend/amplify-meta.json
 amplify/backend/.temp
 build/
