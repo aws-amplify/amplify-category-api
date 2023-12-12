@@ -75,6 +75,7 @@ describe('enum imports', () => {
     dbschema.addModel(model);
 
     const graphqlSchema = generateGraphQLSchema(dbschema);
+    parse(graphqlSchema); // Parse to make sure that the Schema is valid.
     expect(graphqlSchema).toMatchSnapshot();
   });
 
