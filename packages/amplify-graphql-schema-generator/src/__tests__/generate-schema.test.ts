@@ -65,6 +65,19 @@ describe('enum imports', () => {
     expect(graphqlSchema).toMatchSnapshot();
   });
 
+  it('enum values with single character', () => {
+    const dbschema = new Schema(new Engine('Postgres'));
+    const model = new Model('users');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
+    model.addField(new Field('status', { kind: 'Enum', name: 'UserStatus', values: ['A', 'D', 'B'] }));
+    model.setPrimaryKey(['id']);
+    dbschema.addModel(model);
+
+    const graphqlSchema = generateGraphQLSchema(dbschema);
+    expect(graphqlSchema).toMatchSnapshot();
+  });
+
   it('invalid enum value must throw an error', () => {
     const dbschema = new Schema(new Engine('Postgres'));
     const model = new Model('users');
