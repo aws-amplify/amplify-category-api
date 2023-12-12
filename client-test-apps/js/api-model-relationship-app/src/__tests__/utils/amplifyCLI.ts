@@ -269,7 +269,10 @@ export class AmplifyCLI {
 
     if (s?.name?.length > 20) console.warn('Project names should not be longer than 20 characters. This may cause tests to break.');
 
-    const chain = spawn(getCLIPath(), cliArgs, { cwd: this.projectRoot, env, disableCIDetection: s.disableCIDetection })
+    const cliPath = getCLIPath();
+    console.log(`Using CLI path '${cliPath}'`);
+    console.log(`Project root: '${this.projectRoot}'`);
+    const chain = spawn(cliPath, cliArgs, { cwd: this.projectRoot, env, disableCIDetection: s.disableCIDetection })
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
