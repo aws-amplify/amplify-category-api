@@ -88,7 +88,7 @@ describe('enum imports', () => {
     dbschema.addModel(model);
 
     expect(() => generateGraphQLSchema(dbschema)).toThrowError(
-      'Enum "UserStatus" (values: ACTIVE-0,INACTIVE-1) contains one or more invalid values. Enum values can contain A-Z, a-z, 0-9 or underscore(_) and must begin with an alphabet or an underscore(_).',
+      'Enum "UserStatus" (values: ACTIVE-0,INACTIVE-1) contains one or more invalid values. Enum values must match the regex [_A-Za-z][_0-9A-Za-z]*.',
     );
   });
 

@@ -195,7 +195,7 @@ const constructEnumType = (type: EnumType): EnumWrapper => {
     throw new Error(
       `Enum "${type.name}" (values: ${type.values.join(
         ',',
-      )}) contains one or more invalid values. Enum values can contain A-Z, a-z, 0-9 or underscore(_) and must begin with an alphabet or an underscore(_).`,
+      )}) contains one or more invalid values. Enum values must match the regex [_A-Za-z][_0-9A-Za-z]*.`,
     );
   }
   const enumValues = type.values.map((t) => {
