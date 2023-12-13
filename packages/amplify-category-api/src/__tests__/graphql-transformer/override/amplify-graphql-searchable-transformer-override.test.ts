@@ -76,6 +76,9 @@ test('it overrides expected resources', () => {
       Enabled: true,
       KmsKeyId: '1a2a3a4-1a2a-3a4a-5a6a-1a2a3a4a5a6a',
     },
+    DomainEndpointOptions: {
+      EnforceHTTPS: true,
+    },
   });
   Template.fromJSON(searchableStack).hasResourceProperties('AWS::AppSync::Resolver', {
     ApiId: {
