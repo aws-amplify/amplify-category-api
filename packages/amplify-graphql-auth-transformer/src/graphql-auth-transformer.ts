@@ -9,6 +9,7 @@ import {
   generateGetArgumentsInput,
   isSqlModel,
   getModelDataSourceNameForTypeName,
+  isModelType,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
@@ -1495,7 +1496,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     }
 
     // Check based on schema file
-    if (isSqlModel(ctx, typename)) {
+    if (isModelType(ctx, typename) && isSqlModel(ctx, typename)) {
       return new RDSAuthVTLGenerator();
     }
     return new DDBAuthVTLGenerator();
