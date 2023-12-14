@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphql-api-construct-tests",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "E2e test suite",
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
     "build-tests": "tsc --build tsconfig.tests.json"
   },
   "dependencies": {
-    "@aws-amplify/graphql-api-construct": "1.5.0",
+    "@aws-amplify/graphql-api-construct": "1.5.1",
     "@aws-cdk/aws-cognito-identitypool-alpha": "2.80.0-alpha.0",
     "@aws-sdk/client-lambda": "3.338.0",
     "@aws-sdk/client-rds": "3.338.0",
@@ -35,7 +35,7 @@
     "@aws-amplify/amplify-cli-core": "^4.2.10"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-core": "2.4.0",
+    "@aws-amplify/graphql-transformer-core": "2.4.1",
     "@aws-amplify/graphql-transformer-interfaces": "3.3.2",
     "@types/node": "^16.11.56",
     "aws-cdk-lib": "2.80.0",
