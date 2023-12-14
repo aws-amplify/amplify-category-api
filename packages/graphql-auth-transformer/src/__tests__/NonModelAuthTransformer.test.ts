@@ -1,7 +1,7 @@
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { FunctionTransformer } from 'graphql-function-transformer';
-import { ObjectTypeDefinitionNode, DocumentNode, Kind, parse } from 'graphql';
+import { ObjectTypeDefinitionNode, DocumentNode, Kind, parse, FieldDefinitionNode } from 'graphql';
 import { ModelAuthTransformer } from '../ModelAuthTransformer';
 
 const featureFlags = {
@@ -15,22 +15,23 @@ const featureFlags = {
   getObject: jest.fn(),
 };
 
-describe('@auth directive without @model', async () => {
+describe('@auth directive without @model', () => {
   const getObjectType = (doc: DocumentNode, type: string): ObjectTypeDefinitionNode | undefined => {
     return doc.definitions.find((def) => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
       | ObjectTypeDefinitionNode
       | undefined;
   };
 
-  const getField = (type, name) => type.fields.find((f) => f.name.value === name);
+  const getField = (type: ObjectTypeDefinitionNode | undefined, name: string): FieldDefinitionNode | undefined =>
+    type?.fields?.find((f) => f.name.value === name);
 
-  const expectNone = (fieldOrType) => {
-    expect(fieldOrType.directives.length === 0);
+  const expectNone = (fieldOrType: ObjectTypeDefinitionNode | FieldDefinitionNode | undefined): void => {
+    expect(fieldOrType?.directives?.length).toBe(0);
   };
 
-  const expectOne = (fieldOrType, directiveName) => {
-    expect(fieldOrType.directives.length === 1);
-    expect(fieldOrType.directives.find((d) => d.name.value === directiveName)).toBeDefined();
+  const expectOne = (fieldOrType: ObjectTypeDefinitionNode | FieldDefinitionNode | undefined, directiveName: string): void => {
+    expect(fieldOrType?.directives?.length).toBe(1);
+    expect(fieldOrType?.directives?.find((d) => d.name.value === directiveName)).toBeDefined();
   };
 
   test('that @auth with no @model on type is failing validation as model is required', () => {
