@@ -47,6 +47,7 @@ export {
   isDefaultDynamoDbModelDataSourceStrategy,
   isDynamoDbModel,
   isDynamoDbType,
+  isModelType,
   isMutationNode,
   isObjectTypeDefinitionNode,
   isQueryNode,
