@@ -145,7 +145,7 @@ export const testRDSModel = (engine: ImportedRDSType, queries: string[]): void =
         ],
       };
 
-      // Counterintuitively, the subscription actually gets created with the resource prefix of the FUNCTION that gets triggered, 
+      // Counterintuitively, the subscription actually gets created with the resource prefix of the FUNCTION that gets triggered,
       // rather than the scope created specifically for the subscription
       const rdsPatchingSubscription = getResource(resources, resourceNames.sqlPatchingLambdaFunction, CDK_SUBSCRIPTION_TYPE);
       expect(rdsPatchingSubscription).toBeDefined();
