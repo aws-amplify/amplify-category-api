@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.4.0...@aws-amplify/graphql-transformer-core@2.4.1) (2023-12-14)
+
+### Bug Fixes
+
+- Fix support for [@auth](https://github.com/auth) on fields with no [@model](https://github.com/model) ([79e4d83](https://github.com/aws-amplify/amplify-category-api/commit/79e4d83528d1581767265dae1006162c1a2110f6))
+
 # [2.4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.3.3...@aws-amplify/graphql-transformer-core@2.4.0) (2023-12-06)
 
 ### Features
