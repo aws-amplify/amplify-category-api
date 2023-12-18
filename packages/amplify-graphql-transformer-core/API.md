@@ -397,6 +397,9 @@ export const isDynamoDbType: (dbType: ModelDataSourceStrategyDbType) => dbType i
 function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncConfigLambda;
 
 // @public (undocumented)
+export const isModelType: (ctx: DataSourceStrategiesProvider, typename: string) => boolean;
+
+// @public (undocumented)
 export const isMutationNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitionNode | (InterfaceTypeDefinitionNode & {
     name: {
         value: 'Mutation';

@@ -108,6 +108,19 @@ export const isDynamoDbType = (dbType: ModelDataSourceStrategyDbType): dbType is
 };
 
 /**
+ * Returns true if the given type is a model--that is, if the `typename` is in the context's dataSourceStrategies map. Unlike
+ * `isDynamoDbModel` and `isSqlModel`, this method will not throw if the given typename is not in the context's dataSourceStrategies, since
+ * the purpose of this method is to safely check for the type's existence in that structure.
+ */
+export const isModelType = (ctx: DataSourceStrategiesProvider, typename: string): boolean => {
+  const strategy = ctx.dataSourceStrategies[typename];
+  if (!strategy) {
+    return false;
+  }
+  return true;
+};
+
+/**
  * Type predicate that returns true if `dbType` is a supported SQL database type
  */
 export const isSqlDbType = (dbType: ModelDataSourceStrategyDbType): dbType is ModelDataSourceStrategySqlDbType => {
