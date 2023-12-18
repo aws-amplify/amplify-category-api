@@ -15,6 +15,7 @@ export const validateHasOneNotUsedWithLists = (schema: DocumentNode): Error[] =>
     (defintion) => defintion.kind === Kind.OBJECT_TYPE_DEFINITION,
   ) as ObjectTypeDefinitionNode[];
   objectTypeDefinitions.forEach((objectTypeDefinition) => {
+    const objectName = objectTypeDefinition.name.value;
     const directiveFields = objectTypeDefinition.fields?.filter((objectField) =>
       objectField.directives?.find((directive) => directive.name.value === 'hasOne'),
     );
@@ -22,7 +23,11 @@ export const validateHasOneNotUsedWithLists = (schema: DocumentNode): Error[] =>
     directiveFields?.forEach((directiveField) => {
       const listType = isListType(directiveField.type);
       if (listType) {
-        errors.push(new InvalidDirectiveError('@hasOne cannot be used with lists. Use @hasMany instead'));
+        errors.push(
+          new InvalidDirectiveError(
+            `@hasOne cannot be used with lists in ${directiveField.name.value} field in ${objectName} object. Use @hasMany instead`,
+          ),
+        );
       }
     });
   });

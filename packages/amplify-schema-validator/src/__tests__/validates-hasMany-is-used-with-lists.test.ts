@@ -4,7 +4,7 @@ import { readSchema } from './helpers/readSchema';
 describe('Validate Schema', () => {
   it('fails validation when schema has a hasMany directive not used with lists', () => {
     const schema = readSchema('invalid-hasMany-must-be-used-with-lists.graphql');
-    const errorRegex = '@hasMany must be used with a list. Use @hasOne for non-list types';
+    const errorRegex = 'bars field in Foo object has a @hasMany directive which must be used with a list. Use @hasOne for non-list types.';
     expect(() => validateSchema(schema)).toThrow(errorRegex);
   });
 

@@ -15,6 +15,7 @@ export const validateHasManyIsUsedWithLists = (schema: DocumentNode): Error[] =>
     (defintion) => defintion.kind === Kind.OBJECT_TYPE_DEFINITION,
   ) as ObjectTypeDefinitionNode[];
   objectTypeDefinitions.forEach((objectTypeDefinition) => {
+    const objectName = objectTypeDefinition.name.value;
     const directiveFields = objectTypeDefinition.fields?.filter((objectField) =>
       objectField.directives?.find((directive) => directive.name.value === 'hasMany'),
     );
@@ -22,7 +23,11 @@ export const validateHasManyIsUsedWithLists = (schema: DocumentNode): Error[] =>
     directiveFields?.forEach((directiveField) => {
       const listType = isListType(directiveField.type);
       if (!listType) {
-        errors.push(new InvalidDirectiveError('@hasMany must be used with a list. Use @hasOne for non-list types.'));
+        errors.push(
+          new InvalidDirectiveError(
+            `${directiveField.name.value} field in ${objectName} object has a @hasMany directive which must be used with a list. Use @hasOne for non-list types.`,
+          ),
+        );
       }
     });
   });
