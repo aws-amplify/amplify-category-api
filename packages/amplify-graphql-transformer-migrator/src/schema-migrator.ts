@@ -150,7 +150,7 @@ function doSchemaValidation(schema: string) {
   }
 }
 
-async function getSchemaDocs(resourceDir: string): Promise<SchemaDocument[]> {
+const getSchemaDocs = async (resourceDir: string): Promise<SchemaDocument[]> => {
   const schemaFilePath = path.join(resourceDir, 'schema.graphql');
   const schemaDirectoryPath = path.join(resourceDir, 'schema');
   const schemaFileExists = fs.existsSync(schemaFilePath);
@@ -166,7 +166,7 @@ async function getSchemaDocs(resourceDir: string): Promise<SchemaDocument[]> {
     return await Promise.all(schemaFiles.map(async (fileName) => ({ schema: await fs.readFile(fileName, 'utf8'), filePath: fileName })));
   }
   return [];
-}
+};
 
 function schemaHasComments(fullSchema: string): boolean {
   return /#/.test(fullSchema);

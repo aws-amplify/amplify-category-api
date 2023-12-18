@@ -56,9 +56,10 @@
       "node"
     ],
     "collectCoverage": true,
+    "coverageProvider": "v8",
     "coverageThreshold": {
       "global": {
-        "branches": 70,
+        "branches": 75,
         "functions": 90,
         "lines": 90
       }

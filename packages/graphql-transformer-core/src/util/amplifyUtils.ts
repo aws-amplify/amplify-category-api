@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import glob from 'glob';
+import * as glob from 'glob';
 import { CloudFormation, Fn, Template } from 'cloudform-types';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { DeploymentResources } from '../deployment-resources';
@@ -343,9 +343,9 @@ export interface UploadOptions {
  * Reads deployment assets from disk and uploads to the cloud via an uploader.
  * @param opts Deployment options.
  */
-export async function uploadDeployment(opts: UploadOptions) {
+export const uploadDeployment = async (opts: UploadOptions): Promise<void> => {
   if (!opts.directory) {
-    throw new Error(`You must provide a 'directory'`);
+    throw new Error("You must provide a 'directory'");
   }
 
   if (!fs.existsSync(opts.directory)) {
@@ -353,12 +353,12 @@ export async function uploadDeployment(opts: UploadOptions) {
   }
 
   if (!opts.upload || typeof opts.upload !== 'function') {
-    throw new Error(`You must provide an 'upload' function`);
+    throw new Error("You must provide an 'upload' function");
   }
 
   const { directory, upload } = opts;
 
-  let fileNames = glob.sync('**/*', {
+  const fileNames = glob.sync('**/*', {
     cwd: directory,
     nodir: true,
   });
@@ -370,7 +370,7 @@ export async function uploadDeployment(opts: UploadOptions) {
   });
 
   await Promise.all(uploadPromises);
-}
+};
 
 /**
  * Writes a deployment to disk at a path.

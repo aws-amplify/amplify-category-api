@@ -26,6 +26,21 @@ type User @refersTo(name: \\"users\\") @model {
 "
 `;
 
+exports[`enum imports enum values with single character 1`] = `
+"type User @refersTo(name: \\"users\\") @model {
+  id: String! @primaryKey
+  name: String
+  status: UserStatus
+}
+
+enum UserStatus {
+  A
+  D
+  B
+}
+"
+`;
+
 exports[`enum imports generates enum imports 1`] = `
 "type User @refersTo(name: \\"users\\") @model {
   id: String! @primaryKey

@@ -547,11 +547,11 @@ const getRuntimeDisplayName = (runtime: FunctionRuntimes) => {
   }
 };
 
-export function validateNodeModulesDirRemoval(projRoot) {
-  let functionDir = path.join(projRoot, 'amplify', '#current-cloud-backend', 'function');
+export const validateNodeModulesDirRemoval = (projRoot): void => {
+  const functionDir = path.join(projRoot, 'amplify', '#current-cloud-backend', 'function');
   const nodeModulesDirs = glob.sync('**/node_modules', {
     cwd: functionDir,
     absolute: true,
   });
   expect(nodeModulesDirs.length).toBe(0);
-}
+};

@@ -230,6 +230,9 @@ test('it generates expected resources', () => {
     EBSOptions: Match.anyValue(),
     ElasticsearchClusterConfig: Match.anyValue(),
     ElasticsearchVersion: '7.10',
+    DomainEndpointOptions: {
+      EnforceHTTPS: true,
+    },
   });
   Template.fromJSON(searchableStack).hasResource('AWS::Elasticsearch::Domain', {
     UpdateReplacePolicy: 'Delete',
