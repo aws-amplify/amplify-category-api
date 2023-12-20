@@ -1,24 +1,10 @@
-import * as cdk from 'aws-cdk-lib';
 import { IConstruct } from 'constructs';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY, DDB_DEFAULT_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
 import { mockSqlDataSourceStrategy, SCHEMAS } from '@aws-amplify/graphql-transformer-test-utils';
-import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
-import { IAmplifyGraphqlDefinition } from '../../types';
+import { makeApiByCombining } from './test-utils';
 
 describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
-  const makeApiByCombining = (...definitions: IAmplifyGraphqlDefinition[]): AmplifyGraphqlApi => {
-    const combinedDefinition = AmplifyGraphqlDefinition.combine(definitions);
-    const stack = new cdk.Stack();
-    const api = new AmplifyGraphqlApi(stack, 'TestSqlBoundApi', {
-      definition: combinedDefinition,
-      authorizationModes: {
-        apiKeyConfig: { expires: cdk.Duration.days(7) },
-      },
-    });
-    return api;
-  };
-
   /**
    * This is technically redundant, since we assert on the function names in tests below. We're keeping this as a separate test to capture
    * the scoping requirements for resources created for a data source.
@@ -351,113 +337,6 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
     const sqlStrategy1 = mockSqlDataSourceStrategy({ name: 'sqlDefinition1' });
     const sqldefinition = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo.sql, sqlStrategy1);
     expect(() => makeApiByCombining(ddbdefinition, sqldefinition)).toThrow();
-  });
-
-  it('allows a many-to-many relationship across DynamoDB definitions', () => {
-    const postSchema = /* GraphQL */ `
-      type Post @model {
-        id: ID!
-        title: String!
-        content: String
-        tags: [Tag] @manyToMany(relationName: "PostTags")
-      }
-    `;
-
-    const tagSchema = /* GraphQL */ `
-      type Tag @model {
-        id: ID!
-        label: String!
-        posts: [Post] @manyToMany(relationName: "PostTags")
-      }
-    `;
-    const definition1 = AmplifyGraphqlDefinition.fromString(postSchema);
-    const definition2 = AmplifyGraphqlDefinition.fromString(tagSchema, DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY);
-    const api = makeApiByCombining(definition1, definition2);
-
-    const {
-      resources: {
-        cfnResources: { cfnGraphqlApi, cfnGraphqlSchema, cfnApiKey, cfnDataSources },
-      },
-    } = api;
-
-    expect(cfnGraphqlApi).toBeDefined();
-    expect(cfnGraphqlSchema).toBeDefined();
-    expect(cfnApiKey).toBeDefined();
-    expect(cfnDataSources).toBeDefined();
-
-    const ddbDataSources = Object.values(cfnDataSources).filter((dataSource) => dataSource.type === 'AMAZON_DYNAMODB');
-    expect(ddbDataSources.length).toEqual(3);
-
-    const lambdaDataSources = Object.values(cfnDataSources).filter((dataSource) => dataSource.type === 'AWS_LAMBDA');
-    expect(lambdaDataSources.length).toEqual(0);
-  });
-
-  it('fails if a many-to-many relationship is declared across a DDB/SQL boundary', () => {
-    const postSchemaDdb = /* GraphQL */ `
-      type Post @model {
-        id: ID! @primaryKey
-        title: String!
-        content: String
-        tags: [Tag] @manyToMany(relationName: "PostTags")
-      }
-    `;
-
-    const tagSchemaSql = /* GraphQL */ `
-      type Tag @model {
-        id: ID! @primaryKey
-        label: String!
-        posts: [Post] @manyToMany(relationName: "PostTags")
-      }
-    `;
-    const ddbdefinition = AmplifyGraphqlDefinition.fromString(postSchemaDdb);
-    const sqlStrategy1 = mockSqlDataSourceStrategy({ name: 'sqlDefinition1' });
-    const sqldefinition = AmplifyGraphqlDefinition.fromString(tagSchemaSql, sqlStrategy1);
-    expect(() => makeApiByCombining(ddbdefinition, sqldefinition)).toThrow();
-  });
-
-  it('fails if a many-to-many relationship is declared across a SQL boundary', () => {
-    const postSchemaSql = /* GraphQL */ `
-      type Post @model {
-        id: ID! @primaryKey
-        title: String!
-        content: String
-        tags: [Tag] @manyToMany(relationName: "PostTags")
-      }
-    `;
-
-    const tagSchemaSql = /* GraphQL */ `
-      type Tag @model {
-        id: ID! @primaryKey
-        label: String!
-        posts: [Post] @manyToMany(relationName: "PostTags")
-      }
-    `;
-    const sqlStrategy1 = mockSqlDataSourceStrategy({ name: 'sqlDefinition1' });
-    const sqlStrategy2 = mockSqlDataSourceStrategy({ name: 'sqlDefinition2' });
-    const definition1 = AmplifyGraphqlDefinition.fromString(postSchemaSql, sqlStrategy1);
-    const definition2 = AmplifyGraphqlDefinition.fromString(tagSchemaSql, sqlStrategy2);
-    expect(() => makeApiByCombining(definition1, definition2)).toThrow();
-  });
-
-  // This is technically redundant with tests in the relational transformer (the test only uses a single data source, so it's not really a
-  // `combine` test), but it makes sense to add it here since we're testing other combinations
-  it('fails if a many-to-many relationship is declared in a single SQL data source', () => {
-    const schema = /* GraphQL */ `
-      type Post @model {
-        id: ID! @primaryKey
-        title: String!
-        content: String
-        tags: [Tag] @manyToMany(relationName: "PostTags")
-      }
-      type Tag @model {
-        id: ID! @primaryKey
-        label: String!
-        posts: [Post] @manyToMany(relationName: "PostTags")
-      }
-    `;
-    const sqlStrategy1 = mockSqlDataSourceStrategy({ name: 'sqlDefinition1' });
-    const definition1 = AmplifyGraphqlDefinition.fromString(schema, sqlStrategy1);
-    expect(() => makeApiByCombining(definition1)).toThrow();
   });
 
   it('supports definitions with both models and custom SQL statements', () => {
