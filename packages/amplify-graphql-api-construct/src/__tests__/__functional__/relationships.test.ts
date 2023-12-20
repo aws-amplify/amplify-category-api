@@ -107,6 +107,46 @@ describe('relationships', () => {
     );
   });
 
+  it('synths with both strategies as long as both sides of the manyToMany relationship share a strategy', () => {
+    const defaultStrategyDef = AmplifyGraphqlDefinition.fromString(
+      /* GraphQL */ `
+        type Blog @model {
+          description: String!
+          posts: [Post] @manyToMany(relationName: "blogPosts")
+        }
+        type Post @model {
+          description: String!
+          blog: [Blog] @manyToMany(relationName: "blogPosts")
+        }
+      `,
+      DDB_DEFAULT_DATASOURCE_STRATEGY,
+    );
+
+    const amplifyManagedStrategyDef = AmplifyGraphqlDefinition.fromString(
+      /* GraphQL */ `
+        type Todo @model {
+          description: String!
+          tags: [Tag] @manyToMany(relationName: "todoTags")
+        }
+        type Tag @model {
+          description: String!
+          todo: [Todo] @manyToMany(relationName: "todoTags")
+        }
+      `,
+      DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
+    );
+
+    const stack = new cdk.Stack();
+    const opts = {
+      definition: AmplifyGraphqlDefinition.combine([defaultStrategyDef, amplifyManagedStrategyDef]),
+      authorizationModes: {
+        apiKeyConfig: { expires: cdk.Duration.days(7) },
+      },
+    };
+
+    expect(new AmplifyGraphqlApi(stack, 'TestApi', opts)).toBeDefined();
+  });
+
   it('fails with manyToMany where one side is default strategy and the other is AMPLIFY_TABLE strategy', () => {
     const defaultStrategyDef = AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
       type Blog @model {
