@@ -115,12 +115,6 @@ export const validateFieldRules = (
 ): void => {
   const rules = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] }, generateGetArgumentsInput(transformParameters)).rules;
 
-  if (!isParentTypeBuiltinType && parentHasModelDirective && isSqlModel(context as TransformerContextProvider, parent.name.value)) {
-    throw new InvalidDirectiveError(
-      `@auth rules are not supported on fields on relational database models. Check field "${fieldName}" on type "${parent.name.value}". Please use @auth on the type instead.`,
-    );
-  }
-
   if (rules.length === 0) {
     throw new InvalidDirectiveError(`@auth on ${fieldName} does not have any auth rules.`);
   }

@@ -24,6 +24,7 @@ import {
   appendAmplifyInput,
   getAppSyncEndpoint,
   getDefaultDatabasePort,
+  checkListResponseErrors,
 } from '../rds-v2-test-utils';
 import { setupUser, getUserPoolId, signInUser, configureAmplify, getConfiguredAppsyncClientCognitoAuth } from '../schema-api-directives';
 import { gql } from 'graphql-tag';
@@ -46,13 +47,15 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
     const database = 'default_db';
     let host = 'localhost';
     const identifier = `integtest${db_identifier}`;
-    const projName = 'rdsuserpoolauth';
+    // const projName = 'rdsuserpoolauth';
+    const projName = 'fielduserpool';
     const userName1 = 'user1';
     const userName2 = 'user2';
     const adminGroupName = 'Admin';
     const devGroupName = 'Dev';
     const userPassword = 'user@Password';
     const userPoolProvider = 'userPools';
+    const apiKeyProvider = 'apiKey';
     let graphQlEndpoint = 'localhost';
 
     let projRoot;
@@ -61,17 +64,18 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
 
     beforeAll(async () => {
       console.log(sqlCreateStatements(engine));
-      projRoot = await createNewProjectDir(projName);
+      // projRoot = await createNewProjectDir(projName);
+      projRoot = '/Users/edupp/Desktop/sampleapps/fielduserpool';
       await setupAmplifyProject();
     });
 
     afterAll(async () => {
       const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
       if (existsSync(metaFilePath)) {
-        await deleteProject(projRoot);
+        // await deleteProject(projRoot);
       }
-      deleteProjectDir(projRoot);
-      await cleanupDatabase();
+      // deleteProjectDir(projRoot);
+      // await cleanupDatabase();
     });
 
     const setupDatabase = async (): Promise<void> => {
@@ -91,7 +95,7 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
     };
 
     const cleanupDatabase = async (): Promise<void> => {
-      await deleteDBInstance(identifier, region);
+      // await deleteDBInstance(identifier, region);
     };
 
     const subscriptionWithOwner = (name: string, ownerField: string = 'owner'): string => {
@@ -108,6 +112,7 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
 
     const setupAmplifyProject = async (): Promise<void> => {
       const apiName = projName;
+      /*
       await initJSProjectWithProfile(projRoot, {
         disableAmplifyAppCreation: false,
         name: projName,
@@ -140,21 +145,22 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
       writeFileSync(rdsSchemaFilePath, appendAmplifyInput(schema, engine), 'utf8');
 
       await updateAuthAddUserGroups(projRoot, [adminGroupName, devGroupName]);
-      await amplifyPush(projRoot, false, {
+      await amplifyPush(projRoot, true, {
         useBetaSqlLayer: SQL_TESTS_USE_BETA,
       });
       await sleep(30 * 1000); // Wait for 30 seconds for the VPC endpoints to be live.
 
       const userPoolId = getUserPoolId(projRoot);
+      */
       configureAmplify(projRoot);
-      await setupUser(userPoolId, userName1, userPassword, adminGroupName);
-      await setupUser(userPoolId, userName2, userPassword, devGroupName);
+      // await setupUser(userPoolId, userName1, userPassword, adminGroupName);
+      // await setupUser(userPoolId, userName2, userPassword, devGroupName);
       graphQlEndpoint = getAppSyncEndpoint(projRoot, apiName);
       const user1 = await signInUser(userName1, userPassword);
       userMap[userName1] = user1;
       const user2 = await signInUser(userName2, userPassword);
       userMap[userName2] = user2;
-      appSyncClients = await configureAppSyncClients(projRoot, apiName, [userPoolProvider], userMap);
+      appSyncClients = await configureAppSyncClients(projRoot, apiName, [userPoolProvider, apiKeyProvider], userMap);
     };
 
     test('logged in user can perform CRUD and subscription operations', async () => {
@@ -223,6 +229,186 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
       ]);
       expect(onDeleteSubscriptionResult).toHaveLength(1);
       checkOperationResult(onDeleteSubscriptionResult[0], todoRandomUpdated, `onDelete${modelName}`);
+    });
+
+    test('Logged in user can perform CRUD and subscription operations to private fields if public fields are not specified in selection set', async () => {
+      const modelName = 'TodoPrivateContentVarious';
+      const modelOperationHelpers = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
+      const todoHelper = modelOperationHelpers[modelName];
+
+      const todo = {
+        privateContent: 'Todo',
+      };
+      const createResultSetName = `create${modelName}`;
+      const privateResultSet = `
+        id
+        privateContent
+      `;
+      const createResult = await todoHelper.create(createResultSetName, todo, privateResultSet);
+      expect(createResult.data[createResultSetName].id).toBeDefined();
+      todo['id'] = createResult.data[createResultSetName].id;
+      // protected fields are nullified in mutation responses
+      expect(createResult.data[createResultSetName].privateContent).toBeNull();
+
+      const todoUpdated = {
+        id: todo['id'],
+        privateContent: 'Todo updated',
+      };
+      const updateResult = await todoHelper.update(`update${modelName}`, todoUpdated, privateResultSet);
+      expect(updateResult.data[`update${modelName}`].id).toEqual(todo['id']);
+      expect(updateResult.data[`update${modelName}`].privateContent).toBeNull();
+
+      const getResult = await todoHelper.get(
+        {
+          id: todo['id'],
+        },
+        privateResultSet,
+        false,
+      );
+      checkOperationResult(getResult, todoUpdated, `get${modelName}`);
+
+      const listTodosResult = await todoHelper.list({}, privateResultSet, `list${modelName}`, false);
+      checkListItemExistence(listTodosResult, `list${modelName}`, todo['id'], true);
+
+      // unless all fields have same Auth rules as the model, delete is expected to fail
+      await expect(
+        async () => await todoHelper.delete(`delete${modelName}`, { id: todo['id'] }, privateResultSet),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"GraphQL error: Not Authorized to access deleteTodoPrivateContentVarious on type Mutation"`,
+      );
+
+      const todoRandom = {
+        id: Date.now().toString(),
+        privateContent: 'Todo',
+      };
+      const todoRandomUpdated = {
+        ...todoRandom,
+        privateContent: 'Todo updated',
+      };
+      const actorClient = getConfiguredAppsyncClientCognitoAuth(graphQlEndpoint, region, userMap[userName1]);
+      const subTodoHelper = createModelOperationHelpers(actorClient, schema)[modelName];
+
+      const onCreateSubscriptionResult = await subTodoHelper.subscribe(
+        'onCreate',
+        [
+          async () => {
+            await subTodoHelper.create(createResultSetName, todoRandom, privateResultSet);
+          },
+        ],
+        {},
+        privateResultSet,
+        false,
+      );
+      expect(onCreateSubscriptionResult).toHaveLength(1);
+      expect(onCreateSubscriptionResult[0].data[`onCreate${modelName}`].id).toEqual(todoRandom.id);
+      expect(onCreateSubscriptionResult[0].data[`onCreate${modelName}`].privateContent).toBeNull();
+
+      const onUpdateSubscriptionResult = await subTodoHelper.subscribe(
+        'onUpdate',
+        [
+          async () => {
+            await subTodoHelper.update(`update${modelName}`, todoRandomUpdated, privateResultSet);
+          },
+        ],
+        {},
+        privateResultSet,
+        false,
+      );
+      expect(onUpdateSubscriptionResult).toHaveLength(1);
+      expect(onUpdateSubscriptionResult[0].data[`onUpdate${modelName}`].id).toEqual(todoRandom.id);
+      expect(onUpdateSubscriptionResult[0].data[`onUpdate${modelName}`].privateContent).toBeNull();
+
+      const onDeleteSubscriptionResult = await subTodoHelper.subscribe('onDelete', [], {}, privateResultSet, false);
+      expect(onDeleteSubscriptionResult).toHaveLength(0);
+    });
+
+    test('Logged in user cannot perform CRUD and subscription operations on non-private fields', async () => {
+      const modelName = 'TodoPrivateContentVarious';
+      const modelOperationHelpers = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
+      const todoHelper = modelOperationHelpers[modelName];
+
+      const todoWithPrivateFields = {
+        privateContent: 'PrivateContent',
+      };
+      const todo = {
+        ...todoWithPrivateFields,
+        publicContent: 'PublicContent',
+      };
+      const completeResultSet = `
+        id
+        privateContent
+        publicContent
+      `;
+      const createResultSetName = `create${modelName}`;
+
+      await expect(async () => await todoHelper.create(createResultSetName, todo)).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"GraphQL error: Not Authorized to access create${modelName} on type Mutation"`,
+      );
+
+      // Create a record with only private fields which is allowed, so we can test the update and delete operations.
+      const privateResultSet = `
+        id
+        privateContent
+      `;
+      const createResult = await todoHelper.create(createResultSetName, todoWithPrivateFields, privateResultSet);
+      expect(createResult.data[createResultSetName].id).toBeDefined();
+      todo['id'] = createResult.data[createResultSetName].id;
+
+      const todoUpdated = {
+        id: todo['id'],
+        privateContent: 'Private Content updated',
+        publicContent: 'Public Content updated',
+      };
+
+      await expect(async () => await todoHelper.update(`update${modelName}`, todoUpdated)).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"GraphQL error: Not Authorized to access update${modelName} on type Mutation"`,
+      );
+
+      const expectedFieldError = `"GraphQL error: Not Authorized to access publicContent on type ${modelName}"`;
+      const getResult = await todoHelper.get({ id: todo['id'] }, undefined, true, 'all');
+      checkOperationResult(getResult, { ...todo, publicContent: null }, `get${modelName}`, false, [expectedFieldError]);
+
+      const listTodosResult = await todoHelper.list({}, completeResultSet, `list${modelName}`, false, 'all');
+      checkListItemExistence(listTodosResult, `list${modelName}`, todo['id'], true);
+      checkListResponseErrors(listTodosResult, [`Not Authorized to access publicContent on type ${modelName}`]);
+
+      const todoRandom = {
+        ...todoWithPrivateFields,
+        id: Date.now().toString(),
+      };
+      const todoRandomUpdated = {
+        ...todoWithPrivateFields,
+        id: todoRandom.id,
+      };
+      const actorClient = getConfiguredAppsyncClientCognitoAuth(graphQlEndpoint, region, userMap[userName1]);
+      const subTodoHelper = createModelOperationHelpers(actorClient, schema)[modelName];
+
+      const onCreateSubscriptionResult = await subTodoHelper.subscribe('onCreate', [
+        async () => {
+          await subTodoHelper.create(createResultSetName, todoRandom, privateResultSet);
+        },
+      ]);
+      expect(onCreateSubscriptionResult).toHaveLength(1);
+      checkOperationResult(
+        onCreateSubscriptionResult[0],
+        { ...todoRandom, publicContent: null, privateContent: null },
+        `onCreate${modelName}`,
+      );
+
+      const onUpdateSubscriptionResult = await subTodoHelper.subscribe('onUpdate', [
+        async () => {
+          await subTodoHelper.update(`update${modelName}`, todoRandomUpdated, privateResultSet);
+        },
+      ]);
+      expect(onUpdateSubscriptionResult).toHaveLength(1);
+      checkOperationResult(
+        onUpdateSubscriptionResult[0],
+        { ...todoRandomUpdated, publicContent: null, privateContent: null },
+        `onUpdate${modelName}`,
+      );
+
+      const onDeleteSubscriptionResult = await subTodoHelper.subscribe('onDelete', []);
+      expect(onDeleteSubscriptionResult).toHaveLength(0);
     });
 
     test('owner of a record can perform CRUD operations using default owner field', async () => {
@@ -301,6 +487,107 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
       checkOperationResult(onDeleteSubscriptionResult[0], todoRandomUpdated, `onDelete${modelName}`);
     });
 
+    test('owner of a record cannot perform CRUD and subscription operations on public protected field', async () => {
+      const modelName = 'TodoOwnerContentVarious';
+      const modelOperationHelpers = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
+      const todoHelper = modelOperationHelpers[modelName];
+
+      const todoWithPrivateFields = {
+        privateContent: 'PrivateContent',
+      };
+      const todo = {
+        ...todoWithPrivateFields,
+        publicContent: 'PublicContent',
+      };
+      const completeResultSet = `
+        id
+        owner
+        privateContent
+        publicContent
+      `;
+      const createResultSetName = `create${modelName}`;
+
+      await expect(async () => await todoHelper.create(createResultSetName, todo)).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"GraphQL error: Not Authorized to access create${modelName} on type Mutation"`,
+      );
+
+      // Create a record with non-public fields which is allowed, so we can test the update and delete operations.
+      const allowedResultSet = `
+        id
+        owner
+        privateContent
+      `;
+      const createResult = await todoHelper.create(createResultSetName, todoWithPrivateFields, allowedResultSet);
+      expect(createResult.data[createResultSetName].id).toBeDefined();
+      todo['id'] = createResult.data[createResultSetName].id;
+      expect(createResult.data[createResultSetName].privateContent).toBeNull();
+      expect(createResult.data[createResultSetName].owner).toEqual(userName1);
+      todo['owner'] = userName1;
+
+      const todoWithAllowedFields = {
+        ...todoWithPrivateFields,
+        owner: userName1,
+        id: todo['id'],
+      };
+
+      const todoUpdated = {
+        id: todo['id'],
+        privateContent: 'Private Content updated',
+        publicContent: 'Public Content updated',
+        owner: userName1,
+      };
+
+      await expect(async () => await todoHelper.update(`update${modelName}`, todoUpdated)).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"GraphQL error: Not Authorized to access update${modelName} on type Mutation"`,
+      );
+
+      const expectedFieldError = `"GraphQL error: Not Authorized to access publicContent on type ${modelName}"`;
+      const getResult = await todoHelper.get({ id: todo['id'] }, undefined, true, 'all');
+      checkOperationResult(getResult, { ...todo, publicContent: null }, `get${modelName}`, false, [expectedFieldError]);
+
+      const listTodosResult = await todoHelper.list({}, completeResultSet, `list${modelName}`, false, 'all');
+      checkListItemExistence(listTodosResult, `list${modelName}`, todo['id'], true);
+      checkListResponseErrors(listTodosResult, [`Not Authorized to access publicContent on type ${modelName}`]);
+
+      const todoRandom = {
+        ...todoWithAllowedFields,
+        id: Date.now().toString(),
+      };
+      const todoRandomUpdated = {
+        ...todoWithAllowedFields,
+        id: todoRandom.id,
+      };
+      const actorClient = getConfiguredAppsyncClientCognitoAuth(graphQlEndpoint, region, userMap[userName1]);
+      const subTodoHelper = createModelOperationHelpers(actorClient, schema)[modelName];
+
+      const onCreateSubscriptionResult = await subTodoHelper.subscribe('onCreate', [
+        async () => {
+          await subTodoHelper.create(createResultSetName, todoRandom, allowedResultSet);
+        },
+      ]);
+      expect(onCreateSubscriptionResult).toHaveLength(1);
+      checkOperationResult(
+        onCreateSubscriptionResult[0],
+        { ...todoRandom, publicContent: null, privateContent: null },
+        `onCreate${modelName}`,
+      );
+
+      const onUpdateSubscriptionResult = await subTodoHelper.subscribe('onUpdate', [
+        async () => {
+          await subTodoHelper.update(`update${modelName}`, todoRandomUpdated, allowedResultSet);
+        },
+      ]);
+      expect(onUpdateSubscriptionResult).toHaveLength(1);
+      checkOperationResult(
+        onUpdateSubscriptionResult[0],
+        { ...todoRandomUpdated, publicContent: null, privateContent: null },
+        `onUpdate${modelName}`,
+      );
+
+      const onDeleteSubscriptionResult = await subTodoHelper.subscribe('onDelete', []);
+      expect(onDeleteSubscriptionResult).toHaveLength(0);
+    });
+
     test('non-owner of a record cannot access it using default owner field', async () => {
       const modelName = 'TodoOwner';
       const modelOperationHelpersOwner = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
@@ -371,6 +658,64 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
         },
       ]);
       expect(onDeleteSubscriptionResult).toHaveLength(0);
+    });
+
+    test.skip('logged in non-owner can perform CRUD operations with only private fields in selection set', async () => {
+      const modelName = 'TodoOwnerContentVarious';
+      const ownerModelOperationHelpers = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
+      const nonOwnerModelOperationHelpers = createModelOperationHelpers(appSyncClients[userPoolProvider][userName2], schema);
+      const ownerTodoHelper = ownerModelOperationHelpers[modelName];
+      const nonOwnerTodoHelper = nonOwnerModelOperationHelpers[modelName];
+
+      const todo = {
+        privateContent: 'Todo',
+      };
+      const createResultSetName = `create${modelName}`;
+      const privateResultSet = `
+        id
+        privateContent
+      `;
+      const ownerAllowedResultSet = `
+        id
+        owner
+        privateContent
+      `;
+
+      // owner creates a record with only allowed fields
+      const createResult = await ownerTodoHelper.create(createResultSetName, todo, ownerAllowedResultSet);
+      expect(createResult.data[createResultSetName].id).toBeDefined();
+      todo['id'] = createResult.data[createResultSetName].id;
+      // protected fields are nullified in mutation responses
+      expect(createResult.data[createResultSetName].privateContent).toBeNull();
+      expect(createResult.data[createResultSetName].owner).toEqual(userName1);
+      todo['owner'] = userName1;
+
+      const todoUpdated = {
+        id: todo['id'],
+        privateContent: 'Todo updated',
+      };
+      // non-owner can update the private protected field
+      const updateResult = await nonOwnerTodoHelper.update(`update${modelName}`, todoUpdated, privateResultSet);
+      expect(updateResult.data[`update${modelName}`].id).toEqual(todo['id']);
+      expect(updateResult.data[`update${modelName}`].privateContent).toBeNull();
+
+      // non-owner can read the private protected field
+      const getResult = await nonOwnerTodoHelper.get(
+        {
+          id: todo['id'],
+        },
+        privateResultSet,
+        false,
+      );
+      checkOperationResult(getResult, todoUpdated, `get${modelName}`);
+
+      const listTodosResult = await nonOwnerTodoHelper.list({}, privateResultSet, `list${modelName}`, false);
+      checkListItemExistence(listTodosResult, `list${modelName}`, todo['id'], true);
+
+      // unless all fields have same Auth rules as the model, delete is expected to fail
+      await expect(
+        async () => await nonOwnerTodoHelper.delete(`delete${modelName}`, { id: todo['id'] }, privateResultSet),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access delete${modelName} on type Mutation"`);
     });
 
     test('custom owner field used to store owner information', async () => {
@@ -452,6 +797,107 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
       ]);
       expect(onDeleteSubscriptionResult).toHaveLength(1);
       checkOperationResult(onDeleteSubscriptionResult[0], todoRandomUpdated, `onDelete${modelName}`);
+    });
+
+    test('custom owner of a record cannot perform CRUD and subscription operations on public protected field', async () => {
+      const modelName = 'TodoCustomOwnerContentVarious';
+      const modelOperationHelpers = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
+      const todoHelper = modelOperationHelpers[modelName];
+
+      const todoWithPrivateFields = {
+        privateContent: 'PrivateContent',
+      };
+      const todo = {
+        ...todoWithPrivateFields,
+        publicContent: 'PublicContent',
+      };
+      const completeResultSet = `
+        id
+        author
+        privateContent
+        publicContent
+      `;
+      const createResultSetName = `create${modelName}`;
+
+      await expect(async () => await todoHelper.create(createResultSetName, todo)).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"GraphQL error: Not Authorized to access create${modelName} on type Mutation"`,
+      );
+
+      // Create a record with non-public fields which is allowed, so we can test the update and delete operations.
+      const allowedResultSet = `
+        id
+        author
+        privateContent
+      `;
+      const createResult = await todoHelper.create(createResultSetName, todoWithPrivateFields, allowedResultSet);
+      expect(createResult.data[createResultSetName].id).toBeDefined();
+      todo['id'] = createResult.data[createResultSetName].id;
+      expect(createResult.data[createResultSetName].privateContent).toBeNull();
+      expect(createResult.data[createResultSetName].author).toEqual(userName1);
+      todo['author'] = userName1;
+
+      const todoWithAllowedFields = {
+        ...todoWithPrivateFields,
+        author: userName1,
+        id: todo['id'],
+      };
+
+      const todoUpdated = {
+        id: todo['id'],
+        privateContent: 'Private Content updated',
+        publicContent: 'Public Content updated',
+        author: userName1,
+      };
+
+      await expect(async () => await todoHelper.update(`update${modelName}`, todoUpdated)).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"GraphQL error: Not Authorized to access update${modelName} on type Mutation"`,
+      );
+
+      const expectedFieldError = `"GraphQL error: Not Authorized to access publicContent on type ${modelName}"`;
+      const getResult = await todoHelper.get({ id: todo['id'] }, undefined, true, 'all');
+      checkOperationResult(getResult, { ...todo, publicContent: null }, `get${modelName}`, false, [expectedFieldError]);
+
+      const listTodosResult = await todoHelper.list({}, completeResultSet, `list${modelName}`, false, 'all');
+      checkListItemExistence(listTodosResult, `list${modelName}`, todo['id'], true);
+      checkListResponseErrors(listTodosResult, [`Not Authorized to access publicContent on type ${modelName}`]);
+
+      const todoRandom = {
+        ...todoWithAllowedFields,
+        id: Date.now().toString(),
+      };
+      const todoRandomUpdated = {
+        ...todoWithAllowedFields,
+        id: todoRandom.id,
+      };
+      const actorClient = getConfiguredAppsyncClientCognitoAuth(graphQlEndpoint, region, userMap[userName1]);
+      const subTodoHelper = createModelOperationHelpers(actorClient, schema)[modelName];
+
+      const onCreateSubscriptionResult = await subTodoHelper.subscribe('onCreate', [
+        async () => {
+          await subTodoHelper.create(createResultSetName, todoRandom, allowedResultSet);
+        },
+      ]);
+      expect(onCreateSubscriptionResult).toHaveLength(1);
+      checkOperationResult(
+        onCreateSubscriptionResult[0],
+        { ...todoRandom, publicContent: null, privateContent: null },
+        `onCreate${modelName}`,
+      );
+
+      const onUpdateSubscriptionResult = await subTodoHelper.subscribe('onUpdate', [
+        async () => {
+          await subTodoHelper.update(`update${modelName}`, todoRandomUpdated, allowedResultSet);
+        },
+      ]);
+      expect(onUpdateSubscriptionResult).toHaveLength(1);
+      checkOperationResult(
+        onUpdateSubscriptionResult[0],
+        { ...todoRandomUpdated, publicContent: null, privateContent: null },
+        `onUpdate${modelName}`,
+      );
+
+      const onDeleteSubscriptionResult = await subTodoHelper.subscribe('onDelete', []);
+      expect(onDeleteSubscriptionResult).toHaveLength(0);
     });
 
     test('non-owner of a record cannot pretend to be an owner and gain access', async () => {
@@ -536,6 +982,64 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
       expect(onDeleteSubscriptionResult).toHaveLength(0);
     });
 
+    test.skip('logged in non-owner using custom owner field can perform CRUD operations with only private fields in selection set', async () => {
+      const modelName = 'TodoCustomOwnerContentVarious';
+      const ownerModelOperationHelpers = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
+      const nonOwnerModelOperationHelpers = createModelOperationHelpers(appSyncClients[userPoolProvider][userName2], schema);
+      const ownerTodoHelper = ownerModelOperationHelpers[modelName];
+      const nonOwnerTodoHelper = nonOwnerModelOperationHelpers[modelName];
+
+      const todo = {
+        privateContent: 'Todo',
+      };
+      const createResultSetName = `create${modelName}`;
+      const privateResultSet = `
+        id
+        privateContent
+      `;
+      const ownerAllowedResultSet = `
+        id
+        author
+        privateContent
+      `;
+
+      // owner creates a record with only allowed fields
+      const createResult = await ownerTodoHelper.create(createResultSetName, todo, ownerAllowedResultSet);
+      expect(createResult.data[createResultSetName].id).toBeDefined();
+      todo['id'] = createResult.data[createResultSetName].id;
+      // protected fields are nullified in mutation responses
+      expect(createResult.data[createResultSetName].privateContent).toBeNull();
+      expect(createResult.data[createResultSetName].author).toEqual(userName1);
+      todo['author'] = userName1;
+
+      const todoUpdated = {
+        id: todo['id'],
+        privateContent: 'Todo updated',
+      };
+      // non-owner can update the private protected field
+      const updateResult = await nonOwnerTodoHelper.update(`update${modelName}`, todoUpdated, privateResultSet);
+      expect(updateResult.data[`update${modelName}`].id).toEqual(todo['id']);
+      expect(updateResult.data[`update${modelName}`].privateContent).toBeNull();
+
+      // non-owner can read the private protected field
+      const getResult = await nonOwnerTodoHelper.get(
+        {
+          id: todo['id'],
+        },
+        privateResultSet,
+        false,
+      );
+      checkOperationResult(getResult, todoUpdated, `get${modelName}`);
+
+      const listTodosResult = await nonOwnerTodoHelper.list({}, privateResultSet, `list${modelName}`, false);
+      checkListItemExistence(listTodosResult, `list${modelName}`, todo['id'], true);
+
+      // unless all fields have same Auth rules as the model, delete is expected to fail
+      await expect(
+        async () => await nonOwnerTodoHelper.delete(`delete${modelName}`, { id: todo['id'] }, privateResultSet),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access delete${modelName} on type Mutation"`);
+    });
+
     test('member in list of owners can perform CRUD and subscription operations', async () => {
       const modelName = 'TodoOwnerFieldList';
       const modelOperationHelpers = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
@@ -606,6 +1110,107 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
       ]);
       expect(onDeleteSubscriptionResult).toHaveLength(1);
       checkOperationResult(onDeleteSubscriptionResult[0], todoRandomUpdated, `onDelete${modelName}`);
+    });
+
+    test('member in list of custom owners list cannot perform CRUD and subscription operations on public protected field', async () => {
+      const modelName = 'TodoCustomOwnersContentVarious';
+      const modelOperationHelpers = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
+      const todoHelper = modelOperationHelpers[modelName];
+
+      const todoWithPrivateFields = {
+        privateContent: 'PrivateContent',
+      };
+      const todo = {
+        ...todoWithPrivateFields,
+        publicContent: 'PublicContent',
+      };
+      const completeResultSet = `
+        id
+        authors
+        privateContent
+        publicContent
+      `;
+      const createResultSetName = `create${modelName}`;
+
+      await expect(async () => await todoHelper.create(createResultSetName, todo)).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"GraphQL error: Not Authorized to access create${modelName} on type Mutation"`,
+      );
+
+      // Create a record with non-public fields which is allowed, so we can test the update and delete operations.
+      const allowedResultSet = `
+        id
+        authors
+        privateContent
+      `;
+      const createResult = await todoHelper.create(createResultSetName, todoWithPrivateFields, allowedResultSet);
+      expect(createResult.data[createResultSetName].id).toBeDefined();
+      todo['id'] = createResult.data[createResultSetName].id;
+      expect(createResult.data[createResultSetName].privateContent).toBeNull();
+      expect(createResult.data[createResultSetName].authors).toEqual([userName1]);
+      todo['authors'] = [userName1];
+
+      const todoWithAllowedFields = {
+        ...todoWithPrivateFields,
+        authors: [userName1],
+        id: todo['id'],
+      };
+
+      const todoUpdated = {
+        id: todo['id'],
+        privateContent: 'Private Content updated',
+        publicContent: 'Public Content updated',
+        authors: [userName1],
+      };
+
+      await expect(async () => await todoHelper.update(`update${modelName}`, todoUpdated)).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"GraphQL error: Not Authorized to access update${modelName} on type Mutation"`,
+      );
+
+      const expectedFieldError = `"GraphQL error: Not Authorized to access publicContent on type ${modelName}"`;
+      const getResult = await todoHelper.get({ id: todo['id'] }, undefined, true, 'all');
+      checkOperationResult(getResult, { ...todo, publicContent: null }, `get${modelName}`, false, [expectedFieldError]);
+
+      const listTodosResult = await todoHelper.list({}, completeResultSet, `list${modelName}`, false, 'all');
+      checkListItemExistence(listTodosResult, `list${modelName}`, todo['id'], true);
+      checkListResponseErrors(listTodosResult, [`Not Authorized to access publicContent on type ${modelName}`]);
+
+      const todoRandom = {
+        ...todoWithAllowedFields,
+        id: Date.now().toString(),
+      };
+      const todoRandomUpdated = {
+        ...todoWithAllowedFields,
+        id: todoRandom.id,
+      };
+      const actorClient = getConfiguredAppsyncClientCognitoAuth(graphQlEndpoint, region, userMap[userName1]);
+      const subTodoHelper = createModelOperationHelpers(actorClient, schema)[modelName];
+
+      const onCreateSubscriptionResult = await subTodoHelper.subscribe('onCreate', [
+        async () => {
+          await subTodoHelper.create(createResultSetName, todoRandom, allowedResultSet);
+        },
+      ]);
+      expect(onCreateSubscriptionResult).toHaveLength(1);
+      checkOperationResult(
+        onCreateSubscriptionResult[0],
+        { ...todoRandom, publicContent: null, privateContent: null },
+        `onCreate${modelName}`,
+      );
+
+      const onUpdateSubscriptionResult = await subTodoHelper.subscribe('onUpdate', [
+        async () => {
+          await subTodoHelper.update(`update${modelName}`, todoRandomUpdated, allowedResultSet);
+        },
+      ]);
+      expect(onUpdateSubscriptionResult).toHaveLength(1);
+      checkOperationResult(
+        onUpdateSubscriptionResult[0],
+        { ...todoRandomUpdated, publicContent: null, privateContent: null },
+        `onUpdate${modelName}`,
+      );
+
+      const onDeleteSubscriptionResult = await subTodoHelper.subscribe('onDelete', []);
+      expect(onDeleteSubscriptionResult).toHaveLength(0);
     });
 
     test('non-owner of a record cannot add themself to owner list', async () => {
@@ -679,6 +1284,64 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
         },
       ]);
       expect(onDeleteSubscriptionResult).toHaveLength(0);
+    });
+
+    test.skip('logged in user not part of custom owner field list can perform CRUD operations with only private fields in selection set', async () => {
+      const modelName = 'TodoCustomOwnersContentVarious';
+      const ownerModelOperationHelpers = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
+      const nonOwnerModelOperationHelpers = createModelOperationHelpers(appSyncClients[userPoolProvider][userName2], schema);
+      const ownerTodoHelper = ownerModelOperationHelpers[modelName];
+      const nonOwnerTodoHelper = nonOwnerModelOperationHelpers[modelName];
+
+      const todo = {
+        privateContent: 'Todo',
+      };
+      const createResultSetName = `create${modelName}`;
+      const privateResultSet = `
+        id
+        privateContent
+      `;
+      const ownerAllowedResultSet = `
+        id
+        authors
+        privateContent
+      `;
+
+      // owner creates a record with only allowed fields
+      const createResult = await ownerTodoHelper.create(createResultSetName, todo, ownerAllowedResultSet);
+      expect(createResult.data[createResultSetName].id).toBeDefined();
+      todo['id'] = createResult.data[createResultSetName].id;
+      // protected fields are nullified in mutation responses
+      expect(createResult.data[createResultSetName].privateContent).toBeNull();
+      expect(createResult.data[createResultSetName].authors).toEqual([userName1]);
+      todo['authors'] = [userName1];
+
+      const todoUpdated = {
+        id: todo['id'],
+        privateContent: 'Todo updated',
+      };
+      // non-owner can update the private protected field
+      const updateResult = await nonOwnerTodoHelper.update(`update${modelName}`, todoUpdated, privateResultSet);
+      expect(updateResult.data[`update${modelName}`].id).toEqual(todo['id']);
+      expect(updateResult.data[`update${modelName}`].privateContent).toBeNull();
+
+      // non-owner can read the private protected field
+      const getResult = await nonOwnerTodoHelper.get(
+        {
+          id: todo['id'],
+        },
+        privateResultSet,
+        false,
+      );
+      checkOperationResult(getResult, todoUpdated, `get${modelName}`);
+
+      const listTodosResult = await nonOwnerTodoHelper.list({}, privateResultSet, `list${modelName}`, false);
+      checkListItemExistence(listTodosResult, `list${modelName}`, todo['id'], true);
+
+      // unless all fields have same Auth rules as the model, delete is expected to fail
+      await expect(
+        async () => await nonOwnerTodoHelper.delete(`delete${modelName}`, { id: todo['id'] }, privateResultSet),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access delete${modelName} on type Mutation"`);
     });
 
     test('owner can add another user to the owner list', async () => {
@@ -821,6 +1484,95 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
       ]);
       expect(onDeleteSubscriptionResult).toHaveLength(1);
       checkOperationResult(onDeleteSubscriptionResult[0], todoRandomUpdated, `onDelete${modelName}`);
+    });
+
+    test.skip('users in static group cannot perform CRUD and subscription operations on public protected field', async () => {
+      const modelName = 'TodoAdminContentVarious';
+      const modelOperationHelpers = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema);
+      const todoHelper = modelOperationHelpers[modelName];
+
+      const todoWithPrivateFields = {
+        privateContent: 'PrivateContent',
+      };
+      const todo = {
+        ...todoWithPrivateFields,
+        publicContent: 'PublicContent',
+      };
+      const completeResultSet = `
+        id
+        privateContent
+        publicContent
+      `;
+      const createResultSetName = `create${modelName}`;
+
+      await expect(async () => await todoHelper.create(createResultSetName, todo)).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"GraphQL error: Not Authorized to access create${modelName} on type Mutation"`,
+      );
+
+      // Create a record with only allowed fields, so we can test the update and delete operations.
+      const privateResultSet = `
+        id
+        privateContent
+      `;
+      const createResult = await todoHelper.create(createResultSetName, todoWithPrivateFields, privateResultSet);
+      expect(createResult.data[createResultSetName].id).toBeDefined();
+      todo['id'] = createResult.data[createResultSetName].id;
+
+      const todoUpdated = {
+        id: todo['id'],
+        privateContent: 'Private Content updated',
+        publicContent: 'Public Content updated',
+      };
+
+      await expect(async () => await todoHelper.update(`update${modelName}`, todoUpdated)).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"GraphQL error: Not Authorized to access update${modelName} on type Mutation"`,
+      );
+
+      const expectedFieldError = `"GraphQL error: Not Authorized to access publicContent on type ${modelName}"`;
+      const getResult = await todoHelper.get({ id: todo['id'] }, undefined, true, 'all');
+      checkOperationResult(getResult, { ...todo, publicContent: null }, `get${modelName}`, false, [expectedFieldError]);
+
+      const listTodosResult = await todoHelper.list({}, completeResultSet, `list${modelName}`, false, 'all');
+      checkListItemExistence(listTodosResult, `list${modelName}`, todo['id'], true);
+      checkListResponseErrors(listTodosResult, [`Not Authorized to access publicContent on type ${modelName}`]);
+
+      const todoRandom = {
+        ...todoWithPrivateFields,
+        id: Date.now().toString(),
+      };
+      const todoRandomUpdated = {
+        ...todoWithPrivateFields,
+        id: todoRandom.id,
+      };
+      const actorClient = getConfiguredAppsyncClientCognitoAuth(graphQlEndpoint, region, userMap[userName1]);
+      const subTodoHelper = createModelOperationHelpers(actorClient, schema)[modelName];
+
+      const onCreateSubscriptionResult = await subTodoHelper.subscribe('onCreate', [
+        async () => {
+          await subTodoHelper.create(createResultSetName, todoRandom, privateResultSet);
+        },
+      ]);
+      expect(onCreateSubscriptionResult).toHaveLength(1);
+      checkOperationResult(
+        onCreateSubscriptionResult[0],
+        { ...todoRandom, publicContent: null, privateContent: null },
+        `onCreate${modelName}`,
+      );
+
+      const onUpdateSubscriptionResult = await subTodoHelper.subscribe('onUpdate', [
+        async () => {
+          await subTodoHelper.update(`update${modelName}`, todoRandomUpdated, privateResultSet);
+        },
+      ]);
+      expect(onUpdateSubscriptionResult).toHaveLength(1);
+      checkOperationResult(
+        onUpdateSubscriptionResult[0],
+        { ...todoRandomUpdated, publicContent: null, privateContent: null },
+        `onUpdate${modelName}`,
+      );
+
+      const onDeleteSubscriptionResult = await subTodoHelper.subscribe('onDelete', []);
+      expect(onDeleteSubscriptionResult).toHaveLength(0);
     });
 
     test('users not in static group cannot perform CRUD operations', async () => {

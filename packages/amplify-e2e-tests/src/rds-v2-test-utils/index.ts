@@ -351,7 +351,13 @@ export const getAppSyncEndpoint = (projRoot: string, apiName: string): string =>
   return GraphQLAPIEndpointOutput as string;
 };
 
-export const checkOperationResult = (result: any, expected: any, resultSetName: string, isList: boolean = false): void => {
+export const checkOperationResult = (
+  result: any,
+  expected: any,
+  resultSetName: string,
+  isList: boolean = false,
+  errors?: string[],
+): void => {
   expect(result).toBeDefined();
   expect(result.data).toBeDefined();
   expect(result.data[resultSetName]).toBeDefined();
@@ -365,12 +371,28 @@ export const checkOperationResult = (result: any, expected: any, resultSetName: 
     delete item['__typename'];
     expect(item).toEqual(expected[index]);
   });
+
+  if (errors && errors.length > 0) {
+    expect(result.errors).toBeDefined();
+    expect(result.errors).toHaveLength(errors.length);
+    result.errors?.forEach((error: any, index: number) => {
+      expect(error.message).toEqual(errors[index]);
+    });
+  }
 };
 
 export const checkListItemExistence = (result: any, resultSetName: string, id: string, shouldExist: boolean = false) => {
   expect(result.data[`${resultSetName}`]).toBeDefined();
   expect(result.data[`${resultSetName}`].items).toBeDefined();
   expect(result.data[`${resultSetName}`].items?.filter((item: any) => item?.id === id)?.length).toEqual(shouldExist ? 1 : 0);
+};
+
+export const checkListResponseErrors = (result: any, errors: string[]) => {
+  expect(result.errors).toBeDefined();
+  expect(result.errors?.length).toBeGreaterThan(0);
+  errors.map((error: string) => {
+    expect(result.errors.findIndex((receivedError: any) => receivedError.message === error)).toBeGreaterThanOrEqual(0);
+  });
 };
 
 export const appendAmplifyInput = (schema: string, engine: ImportedRDSType): string => {

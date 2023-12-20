@@ -7,10 +7,23 @@ export const schema = (engine: ImportedRDSType): string => `
     content: String
   }
 
+  type TodoPrivateContentVarious @model @auth(rules: [{ allow: private }]) {
+    id: ID! @primaryKey @auth(rules: [{ allow: private }, { allow: public }])
+    privateContent: String @auth(rules: [{ allow: private }])
+    publicContent: String @auth(rules: [{ allow: public }])
+  }
+
   type TodoOwner @model @auth(rules: [{ allow: owner }]) {
     id: ID! @primaryKey
     content: String
     owner: String
+  }
+
+  type TodoOwnerContentVarious @model @auth(rules: [{ allow: owner }]) {
+    id: ID! @primaryKey @auth(rules: [{ allow: owner }, { allow: private }, { allow: public }])
+    owner: String
+    privateContent: String @auth(rules: [{ allow: private }])
+    publicContent: String @auth(rules: [{ allow: public }])
   }
 
   type TodoOwnerFieldString @model @auth(rules: [{ allow: owner, ownerField: "author" }]) {
@@ -19,15 +32,35 @@ export const schema = (engine: ImportedRDSType): string => `
     author: String
   }
 
+  type TodoCustomOwnerContentVarious @model @auth(rules: [{ allow: owner, ownerField: "author" }]) {
+    id: ID! @primaryKey @auth(rules: [{ allow: owner, ownerField: "author" }, { allow: private }, { allow: public }])
+    author: String
+    privateContent: String @auth(rules: [{ allow: private }])
+    publicContent: String @auth(rules: [{ allow: public }])
+  }
+
   type TodoOwnerFieldList @model @auth(rules: [{ allow: owner, ownerField: "authors" }]) {
     id: ID! @primaryKey
     content: String
     authors: [String]
   }
 
+  type TodoCustomOwnersContentVarious @model @auth(rules: [{ allow: owner, ownerField: "authors" }]) {
+    id: ID! @primaryKey @auth(rules: [{ allow: owner, ownerField: "authors" }, { allow: private }, { allow: public }])
+    privateContent: String @auth(rules: [{ allow: private }])
+    publicContent: String @auth(rules: [{ allow: public }])
+    authors: [String]
+  }
+
   type TodoStaticGroup @model @auth(rules: [{ allow: groups, groups: ["Admin"] }]) {
     id: ID! @primaryKey
     content: String
+  }
+
+  type TodoAdminContentVarious @model @auth(rules: [{ allow: groups, groups: ["Admin"] }]) {
+    id: ID! @primaryKey @auth(rules: [{ allow: groups, groups: ["Admin"] }, { allow: private }, { allow: public }])
+    privateContent: String @auth(rules: [{ allow: private }])
+    publicContent: String @auth(rules: [{ allow: public }])
   }
 
   type TodoGroupFieldString @model @auth(rules: [{ allow: groups, groupsField: "groupField" }]) {
