@@ -1,0 +1,9 @@
+type Foo @model {
+  id: ID!
+  bars: [Bar] @hasMany
+}
+
+type Bar {
+  id: ID!
+  bar: String!
+}
