@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.3.2...@aws-amplify/graphql-relational-transformer@2.3.3) (2023-12-21)
+
+### Bug Fixes
+
+- Fix manyToMany relationships with Amplify managed table strategies ([#2151](https://github.com/aws-amplify/amplify-category-api/issues/2151)) ([2dccaa6](https://github.com/aws-amplify/amplify-category-api/commit/2dccaa6e76deb33627bb31ca90f6f126d53239d7))
+
 ## [2.3.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.3.1...@aws-amplify/graphql-relational-transformer@2.3.2) (2023-12-18)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer

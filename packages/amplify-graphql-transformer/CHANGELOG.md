@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.3.6...@aws-amplify/graphql-transformer@1.3.7) (2023-12-21)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer
+
 ## [1.3.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.3.5...@aws-amplify/graphql-transformer@1.3.6) (2023-12-18)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer
