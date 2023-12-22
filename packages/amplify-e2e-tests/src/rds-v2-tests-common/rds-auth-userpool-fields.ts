@@ -142,7 +142,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       writeFileSync(rdsSchemaFilePath, appendAmplifyInput(schema, engine), 'utf8');
 
       await updateAuthAddUserGroups(projRoot, [adminGroupName, devGroupName]);
-      await amplifyPush(projRoot, true, {
+      await amplifyPush(projRoot, false, {
         useBetaSqlLayer: SQL_TESTS_USE_BETA,
       });
       await sleep(30 * 1000); // Wait for 30 seconds for the VPC endpoints to be live.
