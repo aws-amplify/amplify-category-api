@@ -55,7 +55,7 @@ export class DirectiveWrapper {
       {},
     );
     if (options?.deepMergeArguments) {
-      return _.merge(_.cloneDeep(defaultValue), argValues);
+      return _.merge(structuredClone(defaultValue), argValues);
     }
     return Object.assign(defaultValue, argValues);
   };
