@@ -98,12 +98,18 @@ export class GQLQueryHelper {
     return deleteResult;
   };
 
-  get = async (input: any, selectionSet?: string, isCompleteQuery = true, errorPolicy?: ErrorPolicy): Promise<any> => {
+  get = async (
+    input: any,
+    selectionSet?: string,
+    isCompleteQuery = true,
+    errorPolicy?: ErrorPolicy,
+    primaryKeyName = 'id',
+  ): Promise<any> => {
     let completeSelectionSet = selectionSet;
     if (selectionSet && !isCompleteQuery) {
       completeSelectionSet = `
-        query GetModel($id: ID!) {
-          get${this.name}(id: $id) {
+        query GetModel($${primaryKeyName}: ID!) {
+          get${this.name}(${primaryKeyName}: $${primaryKeyName}) {
             ${selectionSet}
           }
         }

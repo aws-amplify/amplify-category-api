@@ -381,10 +381,18 @@ export const checkOperationResult = (
   }
 };
 
-export const checkListItemExistence = (result: any, resultSetName: string, id: string, shouldExist: boolean = false) => {
+export const checkListItemExistence = (
+  result: any,
+  resultSetName: string,
+  primaryKeyValue: string,
+  shouldExist = false,
+  primaryKeyName = 'id',
+) => {
   expect(result.data[`${resultSetName}`]).toBeDefined();
   expect(result.data[`${resultSetName}`].items).toBeDefined();
-  expect(result.data[`${resultSetName}`].items?.filter((item: any) => item?.id === id)?.length).toEqual(shouldExist ? 1 : 0);
+  expect(result.data[`${resultSetName}`].items?.filter((item: any) => item[primaryKeyName] === primaryKeyValue)?.length).toEqual(
+    shouldExist ? 1 : 0,
+  );
 };
 
 export const checkListResponseErrors = (result: any, errors: string[]) => {
@@ -426,3 +434,17 @@ export const updatePreAuthTrigger = (projRoot: string, usernameClaim: string) =>
         `;
   fs.writeFileSync(triggerHandlerFilePath, func);
 };
+
+export const expectNullFields = (result: any, nullFields: string[]) => {
+  nullFields.map((field) => {
+    expect(result[field]).toBeNull();
+  });
+};
+
+export const expectedFieldErrors = (fields: string[], typeName: string, includePrefix = true) =>
+  fields.map(
+    (field) => `${includePrefix ? '"GraphQL error: ' : ''}Not Authorized to access ${field} on type ${typeName}${includePrefix ? '"' : ''}`,
+  );
+
+export const expectedOperationError = (operation: string, typeName: string) =>
+  `"GraphQL error: Not Authorized to access ${operation} on type ${typeName}"`;
