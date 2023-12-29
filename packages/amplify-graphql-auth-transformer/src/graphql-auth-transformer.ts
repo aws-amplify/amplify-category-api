@@ -205,7 +205,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     this.rules = getAuthDirectiveRules(new DirectiveWrapper(directive), getAuthRulesOptions);
 
     // validate rules
-    validateRules(this.rules, this.configuredAuthProviders, def.name.value);
+    validateRules(this.rules, this.configuredAuthProviders, def.name.value, context);
     // create access control for object
     const acm = new AccessControlMatrix({
       name: def.name.value,
@@ -278,7 +278,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       parent,
       context,
     );
-    validateRules(rules, this.configuredAuthProviders, field.name.value);
+    validateRules(rules, this.configuredAuthProviders, field.name.value, context);
 
     // regardless if a model directive is used we generate the policy for iam auth
     this.setAuthPolicyFlag(rules);
