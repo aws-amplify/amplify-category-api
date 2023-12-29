@@ -65,7 +65,7 @@ test('ModelConnectionTransformer simple one to many happy case', () => {
   expect(connectionUpdateId).toBeTruthy();
 });
 
-test('ModelConnectionTransformer simple one to many happy case with custom keyField', () => {
+test('ModelConnectionTransformer simple one to many happy case with custom keyField and implicit connection name', () => {
   const validSchema = `
     type Post @model {
         id: ID!
@@ -132,7 +132,7 @@ test('that ModelConnection Transformer throws error when the field in connection
   }
 });
 
-test('ModelConnectionTransformer simple one to many happy case with custom keyField', () => {
+test('ModelConnectionTransformer simple one to many happy case with custom keyField and explicit connection name', () => {
   const validSchema = `
     type Post @model {
         id: ID!
@@ -283,7 +283,7 @@ test('ModelConnectionTransformer many to many should fail due to missing other "
   }
 });
 
-test('ModelConnectionTransformer many to many should fail due to missing other "name"', () => {
+test('ModelConnectionTransformer many to many should fail due to missing other connection', () => {
   const validSchema = `
     type Post @model {
         id: ID!

@@ -3,6 +3,7 @@ import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode, parse } from 'graphql';
+import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
 import { AuthTransformer } from '../graphql-auth-transformer';
 
 describe('@auth directive without @model', () => {
@@ -30,6 +31,14 @@ describe('@auth directive without @model', () => {
 
   const getField = (type: ObjectTypeDefinitionNode | undefined, name: string): FieldDefinitionNode | undefined =>
     type?.fields?.find((f) => f.name.value === name);
+
+  const getObjectWithKeyPrefix = <T>(keyPrefix: string, obj: Record<string, T>): T | undefined => {
+    const matchingKey = Object.keys(obj ?? {}).find((key) => key.startsWith(keyPrefix));
+    if (!matchingKey) {
+      return undefined;
+    }
+    return obj[matchingKey];
+  };
 
   it('supports @auth with no operations on a field in a type with no @model', () => {
     const validSchema = /* GraphQL */ `
@@ -172,5 +181,69 @@ describe('@auth directive without @model', () => {
     expect(queryType).toBeDefined();
     expectNoDirectives(queryType!);
     expectOneDirective(getField(queryType, 'getSecret'), 'aws_iam');
+  });
+
+  test('generates the right IAM policy for AuthRole using private auth', () => {
+    const validSchema = `
+      type Query {
+          getSecret: String!
+          @auth (
+            rules: [
+              { allow: private, provider: iam },
+            ])
+          @function (name: "getSecret-\${env}")
+      }
+      `;
+
+    const testTransformParams = {
+      schema: validSchema,
+      authConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer(), new FunctionTransformer()],
+    };
+
+    const out = testTransform(testTransformParams);
+    expect(out).toBeDefined();
+    const resources = out.rootStack.Resources;
+    expect(resources).toBeDefined();
+
+    const authRolePolicy = getObjectWithKeyPrefix('AuthRolePolicy', resources!);
+    const unauthRolePolicy = getObjectWithKeyPrefix('UnauthRolePolicy', resources!);
+    expect(authRolePolicy).toBeDefined();
+    expect(unauthRolePolicy).toBeUndefined();
+    expect(authRolePolicy?.Properties.PolicyDocument.Statement[0].Resource).toBeDefined();
+    expect(authRolePolicy?.Properties.PolicyDocument.Statement[0].Resource).not.toEqual({});
+  });
+
+  test('generates the right IAM policies for AuthRole and UnauthRole using public auth', () => {
+    const validSchema = `
+      type Query {
+          getSecret: String!
+          @auth (
+            rules: [
+              { allow: public, provider: iam },
+            ])
+          @function (name: "getSecret-\${env}")
+      }
+      `;
+
+    const testTransformParams = {
+      schema: validSchema,
+      authConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer(), new FunctionTransformer()],
+    };
+
+    const out = testTransform(testTransformParams);
+    expect(out).toBeDefined();
+    const resources = out.rootStack.Resources;
+    expect(resources).toBeDefined();
+
+    const authRolePolicy = getObjectWithKeyPrefix('AuthRolePolicy', resources!);
+    const unauthRolePolicy = getObjectWithKeyPrefix('UnauthRolePolicy', resources!);
+    expect(authRolePolicy).toBeDefined();
+    expect(unauthRolePolicy).toBeDefined();
+    expect(authRolePolicy?.Properties.PolicyDocument.Statement[0].Resource).toBeDefined();
+    expect(authRolePolicy?.Properties.PolicyDocument.Statement[0].Resource).not.toEqual({});
+    expect(unauthRolePolicy?.Properties.PolicyDocument.Statement[0].Resource).toBeDefined();
+    expect(unauthRolePolicy?.Properties.PolicyDocument.Statement[0].Resource).not.toEqual({});
   });
 });
