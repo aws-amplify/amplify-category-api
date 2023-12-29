@@ -102,7 +102,7 @@ export class GQLQueryHelper {
     input: any,
     selectionSet?: string,
     isCompleteQuery = true,
-    errorPolicy?: ErrorPolicy,
+    errorPolicy: ErrorPolicy = 'none',
     primaryKeyName = 'id',
   ): Promise<any> => {
     let completeSelectionSet = selectionSet;
@@ -128,7 +128,7 @@ export class GQLQueryHelper {
       `,
       fetchPolicy: 'no-cache',
       variables: getInput,
-      errorPolicy: errorPolicy ?? 'none',
+      errorPolicy,
     });
 
     return getResult;
@@ -139,7 +139,7 @@ export class GQLQueryHelper {
     selectionSet?: string,
     operation?: string,
     isCompleteQuery = true,
-    errorPolicy?: ErrorPolicy,
+    errorPolicy: ErrorPolicy = 'none',
   ): Promise<any> => {
     let completeSelectionSet = selectionSet;
     if (selectionSet && !isCompleteQuery) {
@@ -166,7 +166,7 @@ export class GQLQueryHelper {
       `,
       fetchPolicy: 'no-cache',
       variables: listInput,
-      errorPolicy: errorPolicy ?? 'none',
+      errorPolicy,
     });
 
     return listResult;

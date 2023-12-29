@@ -1,7 +1,7 @@
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
-import { convertToDBSpecificGraphQLString, generateDDL } from '../../rds-v2-test-utils';
+import { generateDDL } from '../../rds-v2-test-utils';
 
-export const schema = (engine: ImportedRDSType): string => `
+export const schema = `
   type TodoPrivateContentVarious @model @auth(rules: [{ allow: private }]) {
     id: ID! @primaryKey @auth(rules: [{ allow: private }, { allow: public }])
     owner: String
@@ -73,4 +73,4 @@ export const schema = (engine: ImportedRDSType): string => `
   }
 `;
 
-export const sqlCreateStatements = (engine: ImportedRDSType): string[] => generateDDL(schema(engine), engine);
+export const sqlCreateStatements = (engine: ImportedRDSType): string[] => generateDDL(schema, engine);

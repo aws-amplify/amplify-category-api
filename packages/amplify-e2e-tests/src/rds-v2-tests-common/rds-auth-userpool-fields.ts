@@ -15,7 +15,7 @@ import {
 import { existsSync, writeFileSync, removeSync } from 'fs-extra';
 import generator from 'generate-password';
 import path from 'path';
-import { schema as generateSchema, sqlCreateStatements } from '../__tests__/auth-test-schemas/userpool-provider-fields';
+import { schema, sqlCreateStatements } from '../__tests__/auth-test-schemas/userpool-provider-fields';
 import {
   createModelOperationHelpers,
   configureAppSyncClients,
@@ -37,7 +37,6 @@ import { SQL_TESTS_USE_BETA } from './sql-e2e-config';
 (global as any).fetch = require('node-fetch');
 
 export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
-  const schema = generateSchema(engine);
   describe('SQL Cognito userpool provider Auth tests', () => {
     const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
 
@@ -383,7 +382,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
           await user1TodoHelper.update(updateResultSetName, { ...todoPrivateFields, ownerContent: 'Owner Content' }, privateAndOwnerSet),
       ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
 
-      /*
+      /* todo: enable once fixed in auth utils
       const privateAndOwnersSet = `
         ${privateResultSet}
         ownersContent
@@ -408,7 +407,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       checkListItemExistence(listTodosResult1, `list${modelName}`, todoPrivateFields['id'], true);
       checkListResponseErrors(listTodosResult1, expectedFieldErrors(['publicContent'], modelName, false));
 
-      /*
+      /* todo: enable once fixed in auth utils
       // non-owner cannot read owner's records
       const privateAndAllOwnersSet = `
         ${privateResultSet}
@@ -502,7 +501,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         async () => await user1TodoHelper.delete(`delete${modelName}`, { id: todo['id'] }, privateResultSet),
       ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(`delete${modelName}`, 'Mutation'));
 
-      /*
+      /* todo: enable once fixed in auth utils
       // user2 can update the private field
       const todoUpdated2 = {
         id: todo['id'],
@@ -625,7 +624,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         ownersContent
       `;
 
-      /*
+      /* todo: enable once fixed in auth utils
       // user1 cannot create a record by specifying user2 as the owner
       await expect(async () => await user1TodoHelper.create(createResultSetName, { ...todo, owner: 'user2' })).rejects.toThrowErrorMatchingInlineSnapshot(
         expectedOperationError(createResultSetName, 'Mutation'),
@@ -707,7 +706,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       checkListItemExistence(listTodosResult1, `list${modelName}`, todo['id'], true);
       checkListResponseErrors(listTodosResult1, expectedFieldErrors(['publicContent'], modelName, false));
 
-      /*
+      /* todo: enable once fixed in auth utils
       // non-owner cannot read a record with owner protected fields in the selection set
       const ownerReadFieldSet = `
         id
@@ -744,7 +743,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       const subscriberClient = getConfiguredAppsyncClientCognitoAuth(graphQlEndpoint, region, userMap[userName2]);
       const subTodoHelper = createModelOperationHelpers(subscriberClient, schema)[modelName];
 
-      /*
+      /* todo: enable once fixed in auth utils
       const onCreateSubscriptionResult = await subTodoHelper.subscribe('onCreate', [
         async () => {
           await user1TodoHelper.create(createResultSetName, todoRandom, setWithOwnersContent);
@@ -824,10 +823,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       const listTodosResult1 = await user1TodoHelper.list({}, completeOwnerResultSet, `list${modelName}`, false);
       checkListItemExistence(listTodosResult1, `list${modelName}`, todo['customId'], true, 'customId');
 
-      /*
-      // user1 can delete the record
-      const deleteResult1 = await user1TodoHelper.delete(deleteResultSetName, { customId: todo['customId'] }, completeOwnerResultSet);
-      checkOperationResult(deleteResult1, { ...todo, ...todoUpdated1, privateContent: null, ownerContent: null }, deleteResultSetName);
+      /* todo: enable once fixed in auth utils
 
       // user2 can update the private field
       const todoUpdated2 = {
@@ -860,6 +856,12 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
 
       const listTodosResult2 = await user2TodoHelper.list({}, privateResultSet, `list${modelName}`, false);
       checkListItemExistence(listTodosResult2, `list${modelName}`, todo['customId'], true, 'customId');
+
+      /* todo: enable once fixed in auth utils
+      // user1 can delete the record
+      const deleteResult1 = await user1TodoHelper.delete(deleteResultSetName, { customId: todo['customId'] }, completeOwnerResultSet);
+      checkOperationResult(deleteResult1, { ...todo, ...todoUpdated1, privateContent: null, ownerContent: null }, deleteResultSetName);
+      */
 
       // owner(user1) can listen to updates on allowed fields
       const todoRandom = {
@@ -910,7 +912,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         `onUpdate${modelName}`,
       );
 
-      /*
+      /* todo: enable once fixed in auth utils
       const onDeleteSubscriptionResult = await subTodoHelper.subscribe(
         'onDelete', 
         [
@@ -956,7 +958,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         ownerContent
       `;
 
-      /*
+      /* todo: enable once fixed in auth utils
       // user1 cannot create a record by specifying user2 as the owner
       await expect(async () => await user1TodoHelper.create(createResultSetName, { ...todo, author: 'user2' }, completeOwnerResultSet)).rejects.toThrowErrorMatchingInlineSnapshot(
         expectedOperationError(createResultSetName, 'Mutation'),
@@ -1023,7 +1025,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       checkListItemExistence(listTodosResult1, `list${modelName}`, todo['customId'], true, 'customId');
       checkListResponseErrors(listTodosResult1, expectedFieldErrors(['publicContent'], modelName, false));
 
-      /*
+      /* todo: enable once fixed in auth utils
       // non-owner cannot read a record with owner protected fields in the selection set
       const ownerReadFieldSet = `
         customId
@@ -1057,7 +1059,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       const subscriberClient = getConfiguredAppsyncClientCognitoAuth(graphQlEndpoint, region, userMap[userName2]);
       const subTodoHelper = createModelOperationHelpers(subscriberClient, schema)[modelName];
 
-      /*
+      /* todo: enable once fixed in auth utils
       const onCreateSubscriptionResult = await subTodoHelper.subscribe(
         'onCreate', [
           async () => {
@@ -1276,7 +1278,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         ownersContent
       `;
 
-      /*
+      /* todo: enable once fixed in auth utils
       // user1 cannot create a record by specifying user2 as the only owner
       await expect(async () => await user1TodoHelper.create(createResultSetName, { ...todo, authors: [userName2] }, completeOwnerResultSet)).rejects.toThrowErrorMatchingInlineSnapshot(
         expectedOperationError(createResultSetName, 'Mutation'),
@@ -1349,7 +1351,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       checkListItemExistence(listTodosResult1, `list${modelName}`, todo['customId'], true, 'customId');
       checkListResponseErrors(listTodosResult1, expectedFieldErrors(['publicContent'], modelName, false));
 
-      /*
+      /* todo: enable once fixed in auth utils
       // non-owner cannot read a record with dynamic owner list protected field in the selection set
       const ownerReadFieldSet = `
         customId
@@ -1384,7 +1386,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       const subscriberClient = getConfiguredAppsyncClientCognitoAuth(graphQlEndpoint, region, userMap[userName2]);
       const subTodoHelper = createModelOperationHelpers(subscriberClient, schema)[modelName];
 
-      /*
+      /* todo: enable once fixed in auth utils
       const onCreateSubscriptionResult = await subTodoHelper.subscribe(
         'onCreate', [
           async () => {

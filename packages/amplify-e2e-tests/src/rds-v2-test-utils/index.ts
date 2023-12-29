@@ -375,8 +375,8 @@ export const checkOperationResult = (
   if (errors && errors.length > 0) {
     expect(result.errors).toBeDefined();
     expect(result.errors).toHaveLength(errors.length);
-    result.errors?.forEach((error: any, index: number) => {
-      expect(error.message).toEqual(errors[index]);
+    errors.map((error: string) => {
+      expect(result.errors).toContain(error);
     });
   }
 };
