@@ -74,6 +74,9 @@ export interface DeploymentResources extends ResolversFunctionsAndSchema, Nested
 }
 
 // @public (undocumented)
+export const getResourceWithKeyPrefix: (keyPrefix: string, deploymentResources: DeploymentResources) => any | undefined;
+
+// @public (undocumented)
 export interface MakeSqlDataSourceStrategyOptions {
     // (undocumented)
     customSqlStatements?: Record<string, string>;

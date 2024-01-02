@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-auth-transformer",
-  "version": "3.3.1",
+  "version": "3.3.3",
   "description": "Amplify GraphQL @auth transformer",
   "repository": {
     "type": "git",
@@ -29,20 +29,20 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-model-transformer": "2.4.1",
-    "@aws-amplify/graphql-relational-transformer": "2.3.1",
-    "@aws-amplify/graphql-transformer-core": "2.4.1",
-    "@aws-amplify/graphql-transformer-interfaces": "3.3.2",
+    "@aws-amplify/graphql-model-transformer": "2.4.2",
+    "@aws-amplify/graphql-relational-transformer": "2.3.3",
+    "@aws-amplify/graphql-transformer-core": "2.4.2",
+    "@aws-amplify/graphql-transformer-interfaces": "3.3.3",
     "graphql": "^15.5.0",
-    "graphql-mapping-template": "4.20.13",
-    "graphql-transformer-common": "4.27.0",
+    "graphql-mapping-template": "4.20.14",
+    "graphql-transformer-common": "4.27.1",
     "lodash": "^4.17.21",
     "md5": "^2.3.0"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-index-transformer": "2.3.1",
-    "@aws-amplify/graphql-searchable-transformer": "2.4.1",
-    "@aws-amplify/graphql-transformer-test-utils": "0.4.1",
+    "@aws-amplify/graphql-index-transformer": "2.3.2",
+    "@aws-amplify/graphql-searchable-transformer": "2.4.2",
+    "@aws-amplify/graphql-transformer-test-utils": "0.4.2",
     "@types/node": "^12.12.6"
   },
   "peerDependencies": {
