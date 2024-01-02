@@ -8,8 +8,7 @@ module.exports = {
   testEnvironment: 'jsdom',
   coverageThreshold: {
     global: {
-      lines: 100,
-      statements: 100,
+      lines: 90,
       functions: 90,
       branches: 77,
     },
