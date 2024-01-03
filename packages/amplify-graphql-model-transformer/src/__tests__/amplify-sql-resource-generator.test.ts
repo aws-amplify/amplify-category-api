@@ -8,7 +8,6 @@ import {
 import { parse } from 'graphql';
 import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { ResourceConstants } from 'graphql-transformer-common';
 import { ModelTransformer } from '../graphql-model-transformer';
 
 describe('ModelTransformer with SQL data sources:', () => {
@@ -48,5 +47,68 @@ describe('ModelTransformer with SQL data sources:', () => {
     expect(out.functions[`${resourceNames.sqlLambdaFunction}.zip`]).toBeDefined();
     expect(out.functions[`${resourceNames.sqlPatchingLambdaFunction}.zip`]).toBeDefined();
     validateModelSchema(parse(out.schema));
+  });
+
+  it('should assign SSM permissions', () => {
+    const validSchema = `
+      type Post @model {
+          id: ID! @primaryKey
+          title: String!
+      }
+      type Comment @model {
+        id: ID! @primaryKey
+        content: String
+      }
+    `;
+
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlStrategy),
+    });
+    expect(out).toBeDefined();
+    const resourceNames = getResourceNamesForStrategy(mysqlStrategy);
+    const sqlApiStack = out.stacks[resourceNames.sqlStack];
+    expect(sqlApiStack).toBeDefined();
+    const [_, policy] = Object.entries(sqlApiStack.Resources).find(([resourceName]) => {
+      return resourceName.startsWith(resourceNames.sqlLambdaExecutionRolePolicy);
+    });
+    expect(policy.Properties.PolicyDocument).toMatchSnapshot();
+  });
+
+  it('should assign secrets manager permissions', () => {
+    const validSchema = `
+      type Post @model {
+          id: ID! @primaryKey
+          title: String!
+      }
+      type Comment @model {
+        id: ID! @primaryKey
+        content: String
+      }
+    `;
+
+    const secretsManagerConfig = {
+      ...mysqlStrategy,
+      dbConnectionConfig: {
+        databaseName: 'mydb',
+        port: 3306,
+        hostname: 'myfakehost',
+        secretArn: 'myfakearn',
+      },
+    };
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(validSchema, secretsManagerConfig),
+    });
+    expect(out).toBeDefined();
+    const resourceNames = getResourceNamesForStrategy(secretsManagerConfig);
+    const sqlApiStack = out.stacks[resourceNames.sqlStack];
+    expect(sqlApiStack).toBeDefined();
+    const [_, policy] = Object.entries(sqlApiStack.Resources).find(([resourceName]) => {
+      return resourceName.startsWith(resourceNames.sqlLambdaExecutionRolePolicy);
+    });
+    expect(policy.Properties.PolicyDocument).toMatchSnapshot();
   });
 });
