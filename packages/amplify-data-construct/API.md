@@ -43,11 +43,8 @@ import { QueryFunctionSlot } from '@aws-amplify/graphql-api-construct';
 import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-api-construct';
 import { SQLLambdaModelDataSourceStrategyFactory } from '@aws-amplify/graphql-api-construct';
 import { SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
-<<<<<<< HEAD
-=======
 import { SqlModelDataSourceSecretsManagerDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
 import { SqlModelDataSourceSsmDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
->>>>>>> a8631eb8c (chore: export types from data construct)
 import { SSESpecification } from '@aws-amplify/graphql-api-construct';
 import { SSEType } from '@aws-amplify/graphql-api-construct';
 import { StreamSpecification } from '@aws-amplify/graphql-api-construct';
@@ -136,13 +133,10 @@ export { SQLLambdaModelDataSourceStrategyFactory }
 
 export { SqlModelDataSourceDbConnectionConfig }
 
-<<<<<<< HEAD
-=======
 export { SqlModelDataSourceSecretsManagerDbConnectionConfig }
 
 export { SqlModelDataSourceSsmDbConnectionConfig }
 
->>>>>>> a8631eb8c (chore: export types from data construct)
 export { SSESpecification }
 
 export { SSEType }
