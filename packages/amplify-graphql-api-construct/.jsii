@@ -5795,7 +5795,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
-        "line": 174
+        "line": 177
       },
       "name": "CustomSqlDataSourceStrategy",
       "properties": [
@@ -5808,7 +5808,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 179
+            "line": 182
           },
           "name": "fieldName",
           "type": {
@@ -5824,7 +5824,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 182
+            "line": 185
           },
           "name": "strategy",
           "type": {
@@ -5840,7 +5840,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 176
+            "line": 179
           },
           "name": "typeName",
           "type": {
@@ -7169,7 +7169,7 @@
       "kind": "class",
       "locationInModule": {
         "filename": "src/sql-model-datasource-strategy.ts",
-        "line": 70
+        "line": 71
       },
       "methods": [
         {
@@ -7180,7 +7180,7 @@
           },
           "locationInModule": {
             "filename": "src/sql-model-datasource-strategy.ts",
-            "line": 77
+            "line": 78
           },
           "name": "fromCustomSqlFiles",
           "parameters": [
@@ -7350,6 +7350,22 @@
           "abstract": true,
           "docs": {
             "stability": "experimental",
+            "summary": "The hostame of the database."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/model-datasource-strategy-types.ts",
+            "line": 145
+          },
+          "name": "hostname",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "experimental",
             "summary": "The port number of the database proxy, cluster, or instance."
           },
           "immutable": true,
@@ -7394,7 +7410,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
-        "line": 150
+        "line": 153
       },
       "name": "SqlModelDataSourceSsmDbConnectionConfig",
       "properties": [
@@ -7407,7 +7423,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 166
+            "line": 169
           },
           "name": "databaseNameSsmPath",
           "type": {
@@ -7424,7 +7440,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 154
+            "line": 157
           },
           "name": "hostnameSsmPath",
           "type": {
@@ -7440,7 +7456,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 163
+            "line": 166
           },
           "name": "passwordSsmPath",
           "type": {
@@ -7456,7 +7472,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 157
+            "line": 160
           },
           "name": "portSsmPath",
           "type": {
@@ -7472,7 +7488,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 160
+            "line": 163
           },
           "name": "usernameSsmPath",
           "type": {
@@ -8037,5 +8053,5 @@
     }
   },
   "version": "1.5.5",
-  "fingerprint": "l9GllyWX/rMqORRF6mHBVG/IV8CXZOJWQFRVjcrQpb4="
+  "fingerprint": "jeHTsZeYHlCCNdNe2JckaPVa1lLlOe2/ty8tgb4mmjE="
 }

@@ -345,6 +345,7 @@ export type SqlModelDataSourceDbConnectionConfig = SqlModelDataSourceSecretsMana
 // @public
 export interface SqlModelDataSourceSecretsManagerDbConnectionConfig {
     readonly databaseName: string;
+    readonly hostname: string;
     readonly port: number;
     readonly secretArn: string;
 }

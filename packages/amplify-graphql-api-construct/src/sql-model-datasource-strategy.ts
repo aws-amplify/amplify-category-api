@@ -60,7 +60,8 @@ export const isSqlModelDataSourceSecretsManagerDbConnectionConfig = (
     (typeof obj === 'object' || typeof obj === 'function') &&
     typeof obj.secretArn === 'string' &&
     typeof obj.port === 'number' &&
-    typeof obj.databaseName === 'string'
+    typeof obj.databaseName === 'string' &&
+    typeof obj.hostname == 'string'
   );
 };
 

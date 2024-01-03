@@ -388,6 +388,8 @@ export interface SqlModelDataSourceSecretsManagerDbConnectionConfig {
     // (undocumented)
     readonly databaseName: string;
     // (undocumented)
+    readonly hostname: string;
+    // (undocumented)
     readonly port: number;
     // (undocumented)
     readonly secretArn: string;

@@ -130,6 +130,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       environment.secretArn = secretEntry.secretArn;
       environment.port = secretEntry.port.toString();
       environment.database = secretEntry.databaseName;
+      environment.hostname = secretEntry.hostname;
     }
 
     const lambda = createRdsLambda(

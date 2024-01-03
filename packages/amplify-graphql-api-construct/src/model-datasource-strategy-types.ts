@@ -140,6 +140,9 @@ export interface SqlModelDataSourceSecretsManagerDbConnectionConfig {
 
   /** The database name. */
   readonly databaseName: string;
+
+  /** The hostame of the database. */
+  readonly hostname: string;
 }
 
 /**
