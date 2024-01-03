@@ -217,7 +217,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       );
       checkOperationResult(getResult1, { ...todo, ...todoUpdated1, ownersContent: null }, `get${modelName}`);
 
-      const listTodosResult1 = await user1TodoHelper.list({}, user1ReadAllowedSet, `list${modelName}`, false);
+      const listTodosResult1 = await user1TodoHelper.list({}, user1ReadAllowedSet, `list${modelName}`, false, 'all');
       checkListItemExistence(listTodosResult1, `list${modelName}`, todo['id'], true);
 
       // user2 can update the private and dynamic owners list protected fields.
@@ -235,7 +235,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         privateContent
         ownersContent
       `;
-      const updateResult2 = await user1TodoHelper.update(updateResultSetName, todoUpdated2, user2UpdateAllowedSet);
+      const updateResult2 = await user2TodoHelper.update(updateResultSetName, todoUpdated2, user2UpdateAllowedSet);
       expect(updateResult2.data[updateResultSetName].id).toEqual(todo['id']);
       expect(updateResult2.data[updateResultSetName].owner).toEqual(userName1);
       expect(updateResult2.data[updateResultSetName].authors).toEqual([userName2]);
@@ -252,7 +252,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       );
       checkOperationResult(getResult2, todoUpdated2, `get${modelName}`);
 
-      const listTodosResult2 = await user2TodoHelper.list({}, user2ReadAllowedSet, `list${modelName}`, false);
+      const listTodosResult2 = await user2TodoHelper.list({}, user2ReadAllowedSet, `list${modelName}`, false, 'all');
       checkListItemExistence(listTodosResult2, `list${modelName}`, todo['id'], true);
 
       // unless one has delete access to all fields in the model, delete is expected to fail
@@ -407,7 +407,6 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       checkListItemExistence(listTodosResult1, `list${modelName}`, todoPrivateFields['id'], true);
       checkListResponseErrors(listTodosResult1, expectedFieldErrors(['publicContent'], modelName, false));
 
-      /* todo: enable once fixed in auth utils
       // non-owner cannot read owner's records
       const privateAndAllOwnersSet = `
         ${privateResultSet}
@@ -415,12 +414,17 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         ownersContent
       `;
       const getResult2 = await user2TodoHelper.get({ id: todoPrivateFields['id'] }, privateAndAllOwnersSet, false, 'all');
-      checkOperationResult(getResult2, { ...todoPrivateFields, publicContent: null }, `get${modelName}`, false, expectedFieldErrors(['ownerContent', 'ownersContent'], modelName));
+      checkOperationResult(
+        getResult2,
+        { ...todoPrivateFields, ownerContent: null, ownersContent: null },
+        `get${modelName}`,
+        false,
+        expectedFieldErrors(['ownerContent', 'ownersContent'], modelName),
+      );
 
       const listTodosResult2 = await user2TodoHelper.list({}, privateAndAllOwnersSet, `list${modelName}`, false, 'all');
       checkListItemExistence(listTodosResult2, `list${modelName}`, todoPrivateFields['id'], true);
       checkListResponseErrors(listTodosResult2, expectedFieldErrors(['ownerContent', 'ownersContent'], modelName, false));
-      */
     });
 
     test('Owner model auth and allowed field operations', async () => {
@@ -493,7 +497,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       );
       checkOperationResult(getResult1, { ...todo, ...todoUpdated1 }, `get${modelName}`);
 
-      const listTodosResult1 = await user1TodoHelper.list({}, completeOwnerResultSet, `list${modelName}`, false);
+      const listTodosResult1 = await user1TodoHelper.list({}, completeOwnerResultSet, `list${modelName}`, false, 'all');
       checkListItemExistence(listTodosResult1, `list${modelName}`, todo['id'], true);
 
       // unless one has delete access to all fields in the model, delete is expected to fail
@@ -535,7 +539,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         `get${modelName}`,
       );
 
-      const listTodosResult2 = await user2TodoHelper.list({}, user2ReadAllowedSet, `list${modelName}`, false);
+      const listTodosResult2 = await user2TodoHelper.list({}, user2ReadAllowedSet, `list${modelName}`, false, 'all');
       checkListItemExistence(listTodosResult2, `list${modelName}`, todo['id'], true);
 
       // owner can listen to updates on allowed fields
@@ -706,7 +710,6 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       checkListItemExistence(listTodosResult1, `list${modelName}`, todo['id'], true);
       checkListResponseErrors(listTodosResult1, expectedFieldErrors(['publicContent'], modelName, false));
 
-      /* todo: enable once fixed in auth utils
       // non-owner cannot read a record with owner protected fields in the selection set
       const ownerReadFieldSet = `
         id
@@ -717,17 +720,19 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       `;
       const getResult2 = await user2TodoHelper.get({ id: todo['id'] }, ownerReadFieldSet, false, 'all');
       checkOperationResult(
-        getResult2, 
-        { id: todo['id'], owner: null, authors: null, ownerContent: null, ownersContent: null }, 
-        `get${modelName}`, 
-        false, 
-        expectedFieldErrors(['owner', 'authors', 'ownerContent', 'ownersContent'], modelName)
+        getResult2,
+        { id: todo['id'], owner: null, authors: null, ownerContent: null, ownersContent: null },
+        `get${modelName}`,
+        false,
+        expectedFieldErrors(['owner', 'authors', 'ownerContent', 'ownersContent'], modelName),
       );
 
       const listTodosResult2 = await user2TodoHelper.list({}, ownerReadFieldSet, `list${modelName}`, false, 'all');
       checkListItemExistence(listTodosResult2, `list${modelName}`, todo['id'], true);
-      checkListResponseErrors(listTodosResult2, expectedFieldErrors(['owner', 'authors', 'ownerContent', 'ownersContent'], modelName, false));
-      */
+      checkListResponseErrors(
+        listTodosResult2,
+        expectedFieldErrors(['owner', 'authors', 'ownerContent', 'ownersContent'], modelName, false),
+      );
 
       // non-owner cannot listen to updates on owner protected fields
       const todoRandom = {
@@ -743,7 +748,6 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       const subscriberClient = getConfiguredAppsyncClientCognitoAuth(graphQlEndpoint, region, userMap[userName2]);
       const subTodoHelper = createModelOperationHelpers(subscriberClient, schema)[modelName];
 
-      /* todo: enable once fixed in auth utils
       const onCreateSubscriptionResult = await subTodoHelper.subscribe('onCreate', [
         async () => {
           await user1TodoHelper.create(createResultSetName, todoRandom, setWithOwnersContent);
@@ -751,7 +755,14 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       ]);
       expect(onCreateSubscriptionResult).toHaveLength(1);
       expect(onCreateSubscriptionResult[0].data[`onCreate${modelName}`].id).toEqual(todoRandom.id);
-      expectNullFields(onCreateSubscriptionResult[0].data[`onCreate${modelName}`], ['owner', 'authors', 'privateContent', 'publicContent', 'ownerContent', 'ownersContent']);
+      expect(onCreateSubscriptionResult[0].data[`onCreate${modelName}`].owner).toEqual(userName1);
+      expect(onCreateSubscriptionResult[0].data[`onCreate${modelName}`].authors).toEqual(todoRandom.authors);
+      expectNullFields(onCreateSubscriptionResult[0].data[`onCreate${modelName}`], [
+        'privateContent',
+        'publicContent',
+        'ownerContent',
+        'ownersContent',
+      ]);
 
       const onUpdateSubscriptionResult = await subTodoHelper.subscribe('onUpdate', [
         async () => {
@@ -760,8 +771,15 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       ]);
       expect(onUpdateSubscriptionResult).toHaveLength(1);
       expect(onUpdateSubscriptionResult[0].data[`onUpdate${modelName}`].id).toEqual(todoRandom.id);
-      expectNullFields(onUpdateSubscriptionResult[0].data[`onUpdate${modelName}`], ['owner', 'authors', 'privateContent', 'publicContent', 'ownerContent', 'ownersContent']);
-      */
+      expect(onUpdateSubscriptionResult[0].data[`onUpdate${modelName}`].owner).toEqual(userName1);
+      expect(onUpdateSubscriptionResult[0].data[`onUpdate${modelName}`].authors).toEqual(todoRandom.authors);
+      expectNullFields(onUpdateSubscriptionResult[0].data[`onUpdate${modelName}`], [
+        'privateContent',
+        'publicContent',
+        'ownerContent',
+        'ownersContent',
+      ]);
+
       const onDeleteSubscriptionResult = await subTodoHelper.subscribe('onDelete', []);
       expect(onDeleteSubscriptionResult).toHaveLength(0);
     });
@@ -820,7 +838,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       );
       checkOperationResult(getResult1, { ...todo, ...todoUpdated1 }, `get${modelName}`);
 
-      const listTodosResult1 = await user1TodoHelper.list({}, completeOwnerResultSet, `list${modelName}`, false);
+      const listTodosResult1 = await user1TodoHelper.list({}, completeOwnerResultSet, `list${modelName}`, false, 'all');
       checkListItemExistence(listTodosResult1, `list${modelName}`, todo['customId'], true, 'customId');
 
       /* todo: enable once fixed in auth utils
@@ -854,7 +872,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         `get${modelName}`,
       );
 
-      const listTodosResult2 = await user2TodoHelper.list({}, privateResultSet, `list${modelName}`, false);
+      const listTodosResult2 = await user2TodoHelper.list({}, privateResultSet, `list${modelName}`, false, 'all');
       checkListItemExistence(listTodosResult2, `list${modelName}`, todo['customId'], true, 'customId');
 
       /* todo: enable once fixed in auth utils
@@ -912,7 +930,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         `onUpdate${modelName}`,
       );
 
-      /* todo: enable once fixed in auth utils
+      /* TODO: enable once fixed in auth utils
       const onDeleteSubscriptionResult = await subTodoHelper.subscribe(
         'onDelete', 
         [
@@ -1025,7 +1043,6 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       checkListItemExistence(listTodosResult1, `list${modelName}`, todo['customId'], true, 'customId');
       checkListResponseErrors(listTodosResult1, expectedFieldErrors(['publicContent'], modelName, false));
 
-      /* todo: enable once fixed in auth utils
       // non-owner cannot read a record with owner protected fields in the selection set
       const ownerReadFieldSet = `
         customId
@@ -1034,17 +1051,16 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       `;
       const getResult2 = await user2TodoHelper.get({ customId: todo['customId'] }, ownerReadFieldSet, false, 'all', 'customId');
       checkOperationResult(
-        getResult2, 
-        { customId: todo['customId'], author: null, ownerContent: null }, 
-        `get${modelName}`, 
-        false, 
-        expectedFieldErrors(['author', 'ownerContent'], modelName)
+        getResult2,
+        { customId: todo['customId'], author: null, ownerContent: null },
+        `get${modelName}`,
+        false,
+        expectedFieldErrors(['author', 'ownerContent'], modelName),
       );
 
       const listTodosResult2 = await user2TodoHelper.list({}, ownerReadFieldSet, `list${modelName}`, false, 'all');
       checkListItemExistence(listTodosResult2, `list${modelName}`, todo['customId'], true, 'customId');
       checkListResponseErrors(listTodosResult2, expectedFieldErrors(['author', 'ownerContent'], modelName, false));
-      */
 
       // non-owner cannot listen to updates on owner protected fields
       const todoRandom = {
@@ -1059,9 +1075,9 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       const subscriberClient = getConfiguredAppsyncClientCognitoAuth(graphQlEndpoint, region, userMap[userName2]);
       const subTodoHelper = createModelOperationHelpers(subscriberClient, schema)[modelName];
 
-      /* todo: enable once fixed in auth utils
       const onCreateSubscriptionResult = await subTodoHelper.subscribe(
-        'onCreate', [
+        'onCreate',
+        [
           async () => {
             await user1TodoHelper.create(createResultSetName, todoRandom, completeOwnerResultSet);
           },
@@ -1072,10 +1088,11 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       );
       expect(onCreateSubscriptionResult).toHaveLength(1);
       expect(onCreateSubscriptionResult[0].data[`onCreate${modelName}`].customId).toEqual(todoRandom.customId);
-      expectNullFields(onCreateSubscriptionResult[0].data[`onCreate${modelName}`], ['author', 'privateContent', 'publicContent', 'ownerContent']);
+      expect(onCreateSubscriptionResult[0].data[`onCreate${modelName}`].author).toEqual(todoRandom.author);
+      expectNullFields(onCreateSubscriptionResult[0].data[`onCreate${modelName}`], ['privateContent', 'ownerContent']);
 
       const onUpdateSubscriptionResult = await subTodoHelper.subscribe(
-        'onUpdate', 
+        'onUpdate',
         [
           async () => {
             await user1TodoHelper.update(updateResultSetName, todoRandomUpdated, completeOwnerResultSet);
@@ -1087,8 +1104,10 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       );
       expect(onUpdateSubscriptionResult).toHaveLength(1);
       expect(onUpdateSubscriptionResult[0].data[`onUpdate${modelName}`].customId).toEqual(todoRandom.customId);
-      expectNullFields(onUpdateSubscriptionResult[0].data[`onUpdate${modelName}`], ['author', 'privateContent', 'publicContent', 'ownerContent']);
+      expect(onUpdateSubscriptionResult[0].data[`onUpdate${modelName}`].author).toEqual(todoRandom.author);
+      expectNullFields(onUpdateSubscriptionResult[0].data[`onUpdate${modelName}`], ['privateContent', 'ownerContent']);
 
+      /* TODO: enable once fixed in auth utils
       const onDeleteSubscriptionResult = await subTodoHelper.subscribe('onDelete', [
         async () => {
           await user1TodoHelper.delete(deleteResultSetName, { customId: todo['customId'] }, completeOwnerResultSet);
@@ -1096,7 +1115,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       ]);
       expect(onDeleteSubscriptionResult).toHaveLength(1);
       expect(onDeleteSubscriptionResult[0].data[`onDelete${modelName}`].customId).toEqual(todoRandom.customId);
-      expectNullFields(onDeleteSubscriptionResult[0].data[`onDelete${modelName}`], ['author', 'privateContent', 'publicContent', 'ownerContent']);
+      expect(onDeleteSubscriptionResult[0].data[`onDelete${modelName}`].author).toEqual(todoRandom.author);
+      expectNullFields(onDeleteSubscriptionResult[0].data[`onDelete${modelName}`], ['privateContent', 'ownerContent']);
       */
     });
 
@@ -1154,7 +1174,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       );
       checkOperationResult(getResult1, { ...todo, ...todoUpdated1 }, `get${modelName}`);
 
-      const listTodosResult1 = await user1TodoHelper.list({}, completeOwnerResultSet, `list${modelName}`, false);
+      const listTodosResult1 = await user1TodoHelper.list({}, completeOwnerResultSet, `list${modelName}`, false, 'all');
       checkListItemExistence(listTodosResult1, `list${modelName}`, todo['customId'], true, 'customId');
 
       // user2 can update the dynamic owners protected field
@@ -1198,7 +1218,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         `get${modelName}`,
       );
 
-      const listTodosResult2 = await user2TodoHelper.list({}, privateResultSet, `list${modelName}`, false);
+      const listTodosResult2 = await user2TodoHelper.list({}, privateResultSet, `list${modelName}`, false, 'all');
       checkListItemExistence(listTodosResult2, `list${modelName}`, todo['customId'], true, 'customId');
 
       // owner(user1) can listen to updates on allowed fields
@@ -1351,7 +1371,6 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       checkListItemExistence(listTodosResult1, `list${modelName}`, todo['customId'], true, 'customId');
       checkListResponseErrors(listTodosResult1, expectedFieldErrors(['publicContent'], modelName, false));
 
-      /* todo: enable once fixed in auth utils
       // non-owner cannot read a record with dynamic owner list protected field in the selection set
       const ownerReadFieldSet = `
         customId
@@ -1360,17 +1379,16 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       `;
       const getResult2 = await user2TodoHelper.get({ customId: todo['customId'] }, ownerReadFieldSet, false, 'all', 'customId');
       checkOperationResult(
-        getResult2, 
-        { customId: todo['customId'], authors: null, ownersContent: null }, 
-        `get${modelName}`, 
-        false, 
-        expectedFieldErrors(['authors', 'ownersContent'], modelName)
+        getResult2,
+        { customId: todo['customId'], authors: null, ownersContent: null },
+        `get${modelName}`,
+        false,
+        expectedFieldErrors(['authors', 'ownersContent'], modelName),
       );
 
       const listTodosResult2 = await user2TodoHelper.list({}, ownerReadFieldSet, `list${modelName}`, false, 'all');
       checkListItemExistence(listTodosResult2, `list${modelName}`, todo['customId'], true, 'customId');
       checkListResponseErrors(listTodosResult2, expectedFieldErrors(['authors', 'ownersContent'], modelName, false));
-      */
 
       // non-owner cannot listen to updates on owner protected fields
       const todoRandom = {
@@ -1386,9 +1404,9 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       const subscriberClient = getConfiguredAppsyncClientCognitoAuth(graphQlEndpoint, region, userMap[userName2]);
       const subTodoHelper = createModelOperationHelpers(subscriberClient, schema)[modelName];
 
-      /* todo: enable once fixed in auth utils
       const onCreateSubscriptionResult = await subTodoHelper.subscribe(
-        'onCreate', [
+        'onCreate',
+        [
           async () => {
             await user1TodoHelper.create(createResultSetName, todoRandom, completeOwnerResultSet);
           },
@@ -1399,10 +1417,11 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       );
       expect(onCreateSubscriptionResult).toHaveLength(1);
       expect(onCreateSubscriptionResult[0].data[`onCreate${modelName}`].customId).toEqual(todoRandom.customId);
-      expectNullFields(onCreateSubscriptionResult[0].data[`onCreate${modelName}`], ['authors', 'privateContent', 'ownersContent']);
+      expect(onCreateSubscriptionResult[0].data[`onCreate${modelName}`].authors).toEqual([userName1]);
+      expectNullFields(onCreateSubscriptionResult[0].data[`onCreate${modelName}`], ['privateContent', 'ownersContent']);
 
       const onUpdateSubscriptionResult = await subTodoHelper.subscribe(
-        'onUpdate', 
+        'onUpdate',
         [
           async () => {
             await user1TodoHelper.update(updateResultSetName, todoRandomUpdated, completeOwnerResultSet);
@@ -1414,8 +1433,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       );
       expect(onUpdateSubscriptionResult).toHaveLength(1);
       expect(onUpdateSubscriptionResult[0].data[`onUpdate${modelName}`].customId).toEqual(todoRandom.customId);
-      expectNullFields(onUpdateSubscriptionResult[0].data[`onUpdate${modelName}`], ['authors', 'privateContent', 'ownersContent']);
-      */
+      expect(onUpdateSubscriptionResult[0].data[`onUpdate${modelName}`].authors).toEqual([userName1]);
+      expectNullFields(onUpdateSubscriptionResult[0].data[`onUpdate${modelName}`], ['privateContent', 'ownersContent']);
     });
 
     test.skip('non-admin users can perform CRUD and subscription operations with only private fields in selection set', async () => {
