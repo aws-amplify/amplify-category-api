@@ -70,9 +70,11 @@ describe('ModelTransformer with SQL data sources:', () => {
     const resourceNames = getResourceNamesForStrategy(mysqlStrategy);
     const sqlApiStack = out.stacks[resourceNames.sqlStack];
     expect(sqlApiStack).toBeDefined();
-    const [_, policy] = Object.entries(sqlApiStack.Resources).find(([resourceName]) => {
-      return resourceName.startsWith(resourceNames.sqlLambdaExecutionRolePolicy);
-    });
+    const [, policy] =
+      Object.entries(sqlApiStack.Resources!).find(([resourceName]) => {
+        return resourceName.startsWith(resourceNames.sqlLambdaExecutionRolePolicy);
+      }) || [];
+    expect(policy).toBeDefined();
     expect(policy.Properties.PolicyDocument).toMatchSnapshot();
   });
 
@@ -106,9 +108,12 @@ describe('ModelTransformer with SQL data sources:', () => {
     const resourceNames = getResourceNamesForStrategy(secretsManagerConfig);
     const sqlApiStack = out.stacks[resourceNames.sqlStack];
     expect(sqlApiStack).toBeDefined();
-    const [_, policy] = Object.entries(sqlApiStack.Resources).find(([resourceName]) => {
-      return resourceName.startsWith(resourceNames.sqlLambdaExecutionRolePolicy);
-    });
+    expect(sqlApiStack.Resources).toBeDefined();
+    const [, policy] =
+      Object.entries(sqlApiStack.Resources!).find(([resourceName]) => {
+        return resourceName.startsWith(resourceNames.sqlLambdaExecutionRolePolicy);
+      }) || [];
+    expect(policy).toBeDefined();
     expect(policy.Properties.PolicyDocument).toMatchSnapshot();
   });
 });
