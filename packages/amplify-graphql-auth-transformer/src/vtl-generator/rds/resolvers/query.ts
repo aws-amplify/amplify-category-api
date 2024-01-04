@@ -1,4 +1,4 @@
-import { compoundExpression, equals, ifElse, methodCall, nul, printBlock, ref, set, str, toJson } from 'graphql-mapping-template';
+import { compoundExpression, equals, ifElse, methodCall, nul, printBlock, ref, set, str, toJson, iff, not } from 'graphql-mapping-template';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
@@ -32,8 +32,10 @@ export const generateAuthExpressionForField = (
 ): string => {
   const expressions = [];
   expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, fields, providers.hasIdentityPoolId, true)));
-  expressions.push(set(ref('authResult'), methodCall(ref('util.authRules.queryAuth'), ref('authRules'))));
-  expressions.push(validateAuthResult(), emptyPayload);
+  // determine the authorization status using the state information from the context source for field level auth
+  expressions.push(set(ref('authResult'), methodCall(ref('util.authRules.validateUsingSource'), ref('authRules'), ref('ctx.source'))));
+  expressions.push(compoundExpression([iff(not(ref('authResult')), methodCall(ref('util.unauthorized')))]));
+  expressions.push(emptyPayload);
   return printBlock('Authorization rules')(compoundExpression(expressions));
 };
 
