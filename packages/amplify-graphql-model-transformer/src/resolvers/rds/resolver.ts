@@ -79,19 +79,26 @@ export const createRdsLambda = (
     let ssmEndpoint = Fn.join('', ['ssm.', Fn.ref('AWS::Region'), '.amazonaws.com']); // Default SSM endpoint
     if (sqlLambdaVpcConfig) {
       const endpoints = addVpcEndpointForSecretsManager(scope, sqlLambdaVpcConfig, resourceNames);
-      const ssmEndpointEntries = endpoints.find((endpoint) => endpoint.service === 'ssm')?.endpoint.attrDnsEntries;
-      if (ssmEndpointEntries) {
-        ssmEndpoint = Fn.select(0, ssmEndpointEntries);
+      const endpointEntries = endpoints.find((endpoint) => endpoint.service === 'ssm')?.endpoint.attrDnsEntries;
+      if (endpointEntries) {
+        ssmEndpoint = Fn.select(0, endpointEntries);
       }
     }
 
     lambdaEnvironment.SSM_ENDPOINT = ssmEndpoint;
   } else if (environment?.USE_SECRETS_MANAGER_CREDENTIALS) {
-    // TODO: secrets manager vpc endpoint
-    lambdaEnvironment.SECRETS_MANAGER_ENDPOINT = '';
+    let secretsManagerEndpoint = Fn.join('', ['secretsmanager.', Fn.ref('AWS::Region'), '.amazonaws.com']); // Default SSM endpoint
+    if (sqlLambdaVpcConfig) {
+      const endpoints = addVpcEndpointForSecretsManager(scope, sqlLambdaVpcConfig, resourceNames);
+      const endpointEntries = endpoints.find((endpoint) => endpoint.service === 'secretsmanager')?.endpoint.attrDnsEntries;
+      if (endpointEntries) {
+        secretsManagerEndpoint = Fn.select(0, endpointEntries);
+      }
+    }
+
+    lambdaEnvironment.SECRETS_MANAGER_ENDPOINT = secretsManagerEndpoint;
   } else {
-    // TODO: better error message
-    throw new Error('no credentials');
+    throw new Error('Unable to determine if SQL lambda should use SSM or Secrets Manager.');
   }
 
   const fn = apiGraphql.host.addLambdaFunction(
@@ -191,7 +198,7 @@ const addVpcEndpointForSecretsManager = (
   sqlLambdaVpcConfig: VpcConfig,
   resourceNames: SQLLambdaResourceNames,
 ): { service: string; endpoint: CfnVPCEndpoint }[] => {
-  const services = ['ssm', 'ssmmessages', 'ec2', 'ec2messages', 'kms'];
+  const services = ['ssm', 'ssmmessages', 'ec2', 'ec2messages', 'kms', 'secretsmanager'];
   return services.map((service) => {
     return {
       service,
