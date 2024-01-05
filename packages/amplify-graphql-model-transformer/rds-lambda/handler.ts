@@ -1,5 +1,5 @@
 import { SSMClient, GetParameterCommand, GetParameterCommandOutput } from '@aws-sdk/client-ssm';
-import { SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
+import { GetSecretValueCommand, SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
 // @ts-ignore
 import { DBAdapter, DBConfig, getDBAdapter } from 'rds-query-processor';
 
@@ -74,6 +74,42 @@ const getSSMValue = async (key: string | undefined): Promise<string> => {
   return response.Parameter.Value;
 };
 
+const getSecretManagerValue = async (secretArn: string | undefined): Promise<{ username: string, password: string}> => {
+  if (!secretArn) {
+    throw Error('Secret ARN not provided to retrieve database connection secret');
+  }
+  const secretValueCommand = new GetSecretValueCommand({ SecretId: secretArn });
+  // When the lambda is deployed in VPC and VPC endpoints for secrets manager are not defined or
+  // the security group's inbound rule for port 443 is not defined,
+  // the secrets manager client waits for the entire lambda execution time and times out.
+  // If the parameter is not retrieved within 10 seconds, throw an error.
+  const data = await Promise.race([secretsManagerClient.send(secretValueCommand), wait10Seconds()]);
+
+  if (
+    (typeof data === 'string' || data instanceof String) &&
+    data === WAIT_COMPLETE
+  ) {
+    console.log('Unable to retrieve secret for database connection from Secrets Manager. If your database is in VPC, verify that you have VPC endpoints for Secrets Manager defined and the security group\'s inbound rule for port 443 is defined.');
+    throw new Error('Unable to get the database credentials. Check the logs for more details.');
+  }
+
+  const response = data as GetSecretValueCommandOutput;
+  if ((response?.$metadata?.httpStatusCode && response?.$metadata?.httpStatusCode >= 400) || !response.SecretString) {
+    throw new Error('Unable to get secret for database connection');
+  }
+
+  try {
+    const secrets = JSON.parse(response.SecretString);
+    if (!secrets.username || !secrets.password) {
+      throw new Error('Unable to get secret for database connection');
+    }
+    return secrets;
+  } catch {
+    throw new Error('Unable to get secret for database connection');
+  }
+}
+
+
 const getDBConfig = async (): DBConfig => {
   const config: DBConfig = {
     engine: getDBEngine(),
@@ -97,11 +133,12 @@ const getDBConfig = async (): DBConfig => {
     
     config.port = Number.parseInt(process.env.port || '3306');
     config.database = process.env.database;
+    config.host = process.env.host;
 
-    // TODO: get secrets manager value
-    config.host = await getSSMValue(process.env.host);
-    config.username = await getSSMValue(process.env.username);
-    config.password = await getSSMValue(process.env.password);
+
+    const secrets = await getSecretManagerValue(process.env.secretArn);
+    config.username = secrets.username;
+    config.password = secrets.password;
   }
 
   if (!config.host || !config.port || !config.username || !config.password || !config.database) {
