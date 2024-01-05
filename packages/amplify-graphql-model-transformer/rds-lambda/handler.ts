@@ -1,5 +1,5 @@
 import { SSMClient, GetParameterCommand, GetParameterCommandOutput } from '@aws-sdk/client-ssm';
-import { GetSecretValueCommand, SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
+import { GetSecretValueCommand, SecretsManagerClient, GetSecretValueCommandOutput } from '@aws-sdk/client-secrets-manager';
 // @ts-ignore
 import { DBAdapter, DBConfig, getDBAdapter } from 'rds-query-processor';
 
