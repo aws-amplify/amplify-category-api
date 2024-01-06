@@ -8410,6 +8410,13 @@
   resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.3.tgz#dd249cef80c6fff2ba6a0d4e5beca913e04e25f8"
   integrity sha512-ZYFzrvyWUNhaPomn80dsMNgMeXxNWZBdkuG/hWlUvXvbdUH8ZERNBGXnU87McuGcWDsyzX2aChCv/SVN348k3A==
 
+"@types/mock-fs@4.13.4":
+  version "4.13.4"
+  resolved "https://registry.yarnpkg.com/@types/mock-fs/-/mock-fs-4.13.4.tgz#e73edb4b4889d44d23f1ea02d6eebe50aa30b09a"
+  integrity sha512-mXmM0o6lULPI8z3XNnQCpL0BGxPwx1Ul1wXYEPBGl4efShyxW2Rln0JOPEWGyZaYZMM6OVXM/15zUuFMY52ljg==
+  dependencies:
+    "@types/node" "*"
+
 "@types/node@*", "@types/node@>=12":
   version "20.8.4"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-20.8.4.tgz#0e9ebb2ff29d5c3302fc84477d066fa7c6b441aa"
@@ -16452,6 +16459,11 @@ mnemonist@0.38.3:
   integrity sha512-2K9QYubXx/NAjv4VLq1d1Ly8pWNC5L3BrixtdkyTegXWJIqY+zLNDhhX/A+ZwWt70tB1S8H4BE8FLYEFyNoOBw==
   dependencies:
     obliterator "^1.6.1"
+
+mock-fs@5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/mock-fs/-/mock-fs-5.2.0.tgz#3502a9499c84c0a1218ee4bf92ae5bf2ea9b2b5e"
+  integrity sha512-2dF2R6YMSZbpip1V1WHKGLNjr/k48uQClqMVb5H3MOvwc9qhYis3/IWbj02qIg/Y8MDXKFF4c5v0rxx2o6xTZw==
 
 modify-values@^1.0.0:
   version "1.0.1"
