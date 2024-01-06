@@ -55,7 +55,7 @@ export const testRdsApiKeyFieldAuth = (engine: ImportedRDSType, queries: string[
     let person1ApiKeyClient, person2ApiKeyClient, person3ApiKeyClient;
     let person1IAMPublicClient, person2IAMPublicClient, person3IAMPublicClient;
     let apiEndPoint;
-    
+
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projName);
       await initProjectAndImportSchema();
@@ -227,9 +227,9 @@ export const testRdsApiKeyFieldAuth = (engine: ImportedRDSType, queries: string[
       };
       // The API can create the record with all fields. But the API throws unauthorized error for the SSN field.
       // We will run a get query to verify that the record was created with all the fields including SSN.
-      await expect(
-        person1ApiKeyClient.create('createPerson1', person),
-      ).rejects.toThrow('GraphQL error: Not Authorized to access ssn on type Person1');
+      await expect(person1ApiKeyClient.create('createPerson1', person)).rejects.toThrow(
+        'GraphQL error: Not Authorized to access ssn on type Person1',
+      );
 
       const person1Response = await person1IAMPublicClient.get({ id: person.id });
       expect(person1Response.data.getPerson1.id).toEqual(person.id);
@@ -244,9 +244,9 @@ export const testRdsApiKeyFieldAuth = (engine: ImportedRDSType, queries: string[
         firstName: 'Person1',
         lastName: 'Person1',
       };
-      await expect(
-        person1ApiKeyClient.get({ id: person.id }),
-      ).rejects.toThrow('GraphQL error: Not Authorized to access ssn on type Person1');
+      await expect(person1ApiKeyClient.get({ id: person.id })).rejects.toThrow(
+        'GraphQL error: Not Authorized to access ssn on type Person1',
+      );
 
       const person1Response = await person1ApiKeyClient.get({ id: person.id }, getQueryWithoutSSN('Person1'));
       expect(person1Response.data.getPerson1.id).toEqual(person.id);
@@ -260,9 +260,7 @@ export const testRdsApiKeyFieldAuth = (engine: ImportedRDSType, queries: string[
         firstName: 'Person1',
         lastName: 'Person1',
       };
-      await expect(
-        person1ApiKeyClient.list(),
-      ).rejects.toThrow('GraphQL error: Not Authorized to access ssn on type Person1');
+      await expect(person1ApiKeyClient.list()).rejects.toThrow('GraphQL error: Not Authorized to access ssn on type Person1');
 
       const listPerson1Response = await person1ApiKeyClient.list(undefined, listQueryWithoutSSN('Person1'));
       expect(listPerson1Response.data.listPerson1s).toBeDefined();
@@ -281,9 +279,9 @@ export const testRdsApiKeyFieldAuth = (engine: ImportedRDSType, queries: string[
         lastName: 'Person1',
         ssn: '999-99-9999',
       };
-      await expect(
-        person1ApiKeyClient.update('updatePerson1', person),
-      ).rejects.toThrow('GraphQL error: Not Authorized to access updatePerson1 on type Mutation');
+      await expect(person1ApiKeyClient.update('updatePerson1', person)).rejects.toThrow(
+        'GraphQL error: Not Authorized to access updatePerson1 on type Mutation',
+      );
 
       const person1Response = await person1IAMPublicClient.get({ id: person.id });
       expect(person1Response.data.getPerson1.id).toEqual(person.id);
@@ -298,12 +296,12 @@ export const testRdsApiKeyFieldAuth = (engine: ImportedRDSType, queries: string[
         firstName: 'Person1-Updated',
         lastName: 'Person1-Updated',
       };
-      
+
       const person1UpdateResponse = await person1ApiKeyClient.update('updatePerson1', person, selectionSetWithoutSSN);
       expect(person1UpdateResponse.data.updatePerson1.id).toEqual(person.id);
       expect(person1UpdateResponse.data.updatePerson1.firstName).toEqual(person.firstName);
       expect(person1UpdateResponse.data.updatePerson1.lastName).toEqual(person.lastName);
-      
+
       const person1Response = await person1IAMPublicClient.get({ id: person.id });
       expect(person1Response.data.getPerson1.id).toEqual(person.id);
       expect(person1Response.data.getPerson1.firstName).toEqual(person.firstName);
@@ -314,9 +312,9 @@ export const testRdsApiKeyFieldAuth = (engine: ImportedRDSType, queries: string[
       const person = {
         id: 1,
       };
-      await expect(
-        person1ApiKeyClient.delete('deletePerson1', person),
-      ).rejects.toThrow('GraphQL error: Not Authorized to access deletePerson1 on type Mutation');
+      await expect(person1ApiKeyClient.delete('deletePerson1', person)).rejects.toThrow(
+        'GraphQL error: Not Authorized to access deletePerson1 on type Mutation',
+      );
     });
 
     test('Model Person1 - SSN field must be redacted on subscriptions', async () => {
@@ -382,9 +380,9 @@ export const testRdsApiKeyFieldAuth = (engine: ImportedRDSType, queries: string[
         lastName: 'Person1',
         ssn: '123-45-6789',
       };
-      await expect(
-        person2ApiKeyClient.create('createPerson2', person),
-      ).rejects.toThrow('GraphQL error: Not Authorized to access createPerson2 on type Mutation');
+      await expect(person2ApiKeyClient.create('createPerson2', person)).rejects.toThrow(
+        'GraphQL error: Not Authorized to access createPerson2 on type Mutation',
+      );
 
       const personResponse = await person2IAMPublicClient.get({ id: person.id });
       expect(personResponse.data.getPerson2).toBeNull();
@@ -409,18 +407,18 @@ export const testRdsApiKeyFieldAuth = (engine: ImportedRDSType, queries: string[
         lastName: 'Person1',
         ssn: '999-99-9999',
       };
-      await expect(
-        person2ApiKeyClient.update('updatePerson2', person),
-      ).rejects.toThrow('GraphQL error: Not Authorized to access updatePerson2 on type Mutation');
+      await expect(person2ApiKeyClient.update('updatePerson2', person)).rejects.toThrow(
+        'GraphQL error: Not Authorized to access updatePerson2 on type Mutation',
+      );
     });
 
     test('Model Person2 - Api Key cannot delete a record', async () => {
       const person = {
         id: 1,
       };
-      await expect(
-        person2ApiKeyClient.delete('deletePerson2', person),
-      ).rejects.toThrow('GraphQL error: Not Authorized to access deletePerson2 on type Mutation');
+      await expect(person2ApiKeyClient.delete('deletePerson2', person)).rejects.toThrow(
+        'GraphQL error: Not Authorized to access deletePerson2 on type Mutation',
+      );
     });
 
     test('Model Person2 - SSN field must be readable on subscriptions', async () => {
@@ -486,9 +484,9 @@ export const testRdsApiKeyFieldAuth = (engine: ImportedRDSType, queries: string[
         lastName: 'Person1',
         ssn: '123-45-6789',
       };
-      await expect(
-        person3ApiKeyClient.create('createPerson3', person),
-      ).rejects.toThrow('GraphQL error: Not Authorized to access createPerson3 on type Mutation');
+      await expect(person3ApiKeyClient.create('createPerson3', person)).rejects.toThrow(
+        'GraphQL error: Not Authorized to access createPerson3 on type Mutation',
+      );
 
       const personResponse = await person3IAMPublicClient.get({ id: person.id });
       expect(personResponse.data.getPerson3).toBeNull();
@@ -508,9 +506,9 @@ export const testRdsApiKeyFieldAuth = (engine: ImportedRDSType, queries: string[
       expect(personCreateResponse.data.createPerson3.ssn).toBeNull(); // SSN is null because of subscription field redactions
 
       // Api Key can delete a record. It will throw unauthorized error for SSN field. The record will still be deleted.
-      await expect(
-        person3ApiKeyClient.delete('deletePerson3', { id: person.id }),
-      ).rejects.toThrow('GraphQL error: Not Authorized to access ssn on type Person3');
+      await expect(person3ApiKeyClient.delete('deletePerson3', { id: person.id })).rejects.toThrow(
+        'GraphQL error: Not Authorized to access ssn on type Person3',
+      );
 
       const person3GetResponse = await person3IAMPublicClient.get({ id: person.id });
       expect(person3GetResponse.data.getPerson3).toBeNull();
