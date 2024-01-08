@@ -39,6 +39,10 @@
     ],
     "testURL": "http://localhost",
     "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    },
     "moduleFileExtensions": [
       "ts",
       "tsx",

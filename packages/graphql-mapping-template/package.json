@@ -47,6 +47,10 @@
         "lines": 59
       }
     },
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    },
     "coverageReporters": [
       "clover",
       "text"

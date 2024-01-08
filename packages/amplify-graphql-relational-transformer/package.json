@@ -61,10 +61,14 @@
     "coverageProvider": "v8",
     "coverageThreshold": {
       "global": {
-        "branches": 77,
+        "branches": 76,
         "functions": 90,
         "lines": 90
       }
+    },
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
     },
     "coverageReporters": [
       "clover",

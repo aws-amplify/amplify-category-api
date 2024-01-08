@@ -96,6 +96,10 @@
         "diagnostics": false
       }
     },
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    },
     "moduleNameMapper": {
       "axios": "axios/dist/node/axios.cjs"
     }

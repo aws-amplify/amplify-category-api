@@ -189,7 +189,7 @@
     "@commitlint/prompt": "^16.2.3",
     "@microsoft/api-extractor": "^7.33.5",
     "@types/glob": "^7.1.1",
-    "@types/jest": "^26.0.20",
+    "@types/jest": "^29.5.11",
     "@types/js-yaml": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "^5.59.2",
     "@typescript-eslint/parser": "^5.59.2",
@@ -211,8 +211,8 @@
     "execa": "^5.1.1",
     "glob": "^10.3.0",
     "husky": "^3.0.3",
-    "jest": "^26.6.2",
-    "jest-circus": "^26.6.2",
+    "jest": "^29.6.0",
+    "jest-circus": "^29.6.0",
     "jest-junit": "^12.0.0",
     "js-yaml": "^4.0.0",
     "lint-staged": "^13.2.2",
@@ -242,9 +242,6 @@
     "json5": "^2.2.3",
     "fast-xml-parser": "^4.2.4",
     "semver": "^7.5.2",
-    "jest": "26.6.2",
-    "jest-environment-jsdom": "26.6.2",
-    "jest-environment-node": "26.6.2",
-    "ts-jest": "^26.5.5"
+    "ts-jest": "^29.1.1"
   }
 }

@@ -44,6 +44,14 @@
   },
   "jest": {
     "testEnvironment": "node",
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    },
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    },
     "collectCoverage": true
   }
 }

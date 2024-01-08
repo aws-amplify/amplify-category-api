@@ -51,6 +51,10 @@
     },
     "testURL": "http://localhost",
     "testRegex": "(src/__tests__/.*.test.*)$",
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    },
     "moduleFileExtensions": [
       "ts",
       "tsx",

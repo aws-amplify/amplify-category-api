@@ -61,6 +61,10 @@
       "json",
       "node"
     ],
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    },
     "globals": {
       "ts-jest": {
         "diagnostics": false

@@ -74,6 +74,10 @@
       "clover",
       "text"
     ],
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    },
     "modulePathIgnorePatterns": [
       "overrides"
     ]

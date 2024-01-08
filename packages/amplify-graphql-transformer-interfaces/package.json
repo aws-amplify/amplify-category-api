@@ -49,6 +49,10 @@
     ],
     "collectCoverage": true,
     "coverageProvider": "v8",
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    },
     "coverageReporters": [
       "clover",
       "text"
