@@ -5795,7 +5795,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
-        "line": 177
+        "line": 180
       },
       "name": "CustomSqlDataSourceStrategy",
       "properties": [
@@ -5808,7 +5808,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 182
+            "line": 185
           },
           "name": "fieldName",
           "type": {
@@ -5824,7 +5824,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 185
+            "line": 188
           },
           "name": "strategy",
           "type": {
@@ -5840,7 +5840,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 179
+            "line": 182
           },
           "name": "typeName",
           "type": {
@@ -7339,7 +7339,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 142
+            "line": 145
           },
           "name": "databaseName",
           "type": {
@@ -7355,7 +7355,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 145
+            "line": 148
           },
           "name": "hostname",
           "type": {
@@ -7371,7 +7371,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 139
+            "line": 142
           },
           "name": "port",
           "type": {
@@ -7394,6 +7394,24 @@
           "type": {
             "primitive": "string"
           }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "*",
+            "stability": "experimental",
+            "summary": "The ARN of the customer managed encryption key for the secret."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/model-datasource-strategy-types.ts",
+            "line": 139
+          },
+          "name": "keyArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
         }
       ],
       "symbolId": "src/model-datasource-strategy-types:SqlModelDataSourceSecretsManagerDbConnectionConfig"
@@ -7410,7 +7428,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
-        "line": 153
+        "line": 156
       },
       "name": "SqlModelDataSourceSsmDbConnectionConfig",
       "properties": [
@@ -7423,7 +7441,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 169
+            "line": 172
           },
           "name": "databaseNameSsmPath",
           "type": {
@@ -7440,7 +7458,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 157
+            "line": 160
           },
           "name": "hostnameSsmPath",
           "type": {
@@ -7456,7 +7474,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 166
+            "line": 169
           },
           "name": "passwordSsmPath",
           "type": {
@@ -7472,7 +7490,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 160
+            "line": 163
           },
           "name": "portSsmPath",
           "type": {
@@ -7488,7 +7506,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 163
+            "line": 166
           },
           "name": "usernameSsmPath",
           "type": {
@@ -8053,5 +8071,5 @@
     }
   },
   "version": "1.5.5",
-  "fingerprint": "jeHTsZeYHlCCNdNe2JckaPVa1lLlOe2/ty8tgb4mmjE="
+  "fingerprint": "EHqFFlvmhcMqdDhOne2VdjgpigxrgWZynQ0YYoIt53Y="
 }

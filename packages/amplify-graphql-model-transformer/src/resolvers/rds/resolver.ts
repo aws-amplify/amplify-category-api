@@ -302,6 +302,15 @@ export const createRdsLambdaRole = (
           resources: [secretEntry.secretArn],
         }),
       );
+      if (secretEntry.keyArn) {
+        policyStatements.push(
+          new PolicyStatement({
+            actions: ['secretsmanager:GetSecretValue'],
+            effect: Effect.ALLOW,
+            resources: [secretEntry.secretArn],
+          }),
+        );
+      }
     } else {
       // TODO: better message
       throw new Error('unable to get db secrets');

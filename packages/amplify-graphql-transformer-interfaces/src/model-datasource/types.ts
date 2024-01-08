@@ -133,6 +133,9 @@ export interface SqlModelDataSourceSecretsManagerDbConnectionConfig {
   /** The arn of the managed secret with username, password, and hostname to use when connecting to the database. **/
   readonly secretArn: string;
 
+  /** The ARN of the customer managed encryption key for the secret. **/
+  readonly keyArn?: string;
+
   /** port number of the database proxy, cluster, or instance. */
   readonly port: number;
 
