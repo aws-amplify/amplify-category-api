@@ -358,10 +358,7 @@ export const uploadDeployment = async (opts: UploadOptions): Promise<void> => {
 
   const { directory, upload } = opts;
 
-  const fileNames = glob.sync('**/*', {
-    cwd: directory,
-    nodir: true,
-  });
+  const fileNames = getS3KeyNamesFromDirectory(directory);
 
   const uploadPromises = fileNames.map(async (fileName) => {
     const resourceContent = fs.createReadStream(path.join(directory, fileName));
@@ -370,6 +367,29 @@ export const uploadDeployment = async (opts: UploadOptions): Promise<void> => {
   });
 
   await Promise.all(uploadPromises);
+};
+
+/**
+ * Generate the S3 keys for the files under the given directory
+ * @param directory path of directory
+ * @returns array of keys for S3 upload
+ */
+export const getS3KeyNamesFromDirectory = (directory: string): string[] => {
+  const fileNames = glob.sync('**/*', {
+    cwd: directory,
+    nodir: true,
+    /**
+     * Return / delimited paths, even on Windows.
+     * On posix systems, this has no effect.
+     * But, on Windows, it means that paths will be / delimited, and absolute paths will be their full resolved UNC forms,
+     * eg instead of 'C:\\foo\\bar', it would return '//?/C:/foo/bar'
+     *
+     * For Amplify CLI usage, this flag is required for `glob` version GREATER THAN 7.2.0
+     * The backslash "\" will be generated in the S3 key without it, which causes the wrong S3 path URI when the files are upload to S3
+     */
+    posix: true,
+  });
+  return fileNames;
 };
 
 /**
