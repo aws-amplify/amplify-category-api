@@ -3490,7 +3490,7 @@
     "stability": "stable"
   },
   "homepage": "https://github.com/aws-amplify/amplify-category-api.git",
-  "jsiiVersion": "5.2.14 (build 3ac02dc)",
+  "jsiiVersion": "5.3.3 (build 720b620)",
   "keywords": [
     "awscdk",
     "aws-cdk",
@@ -7960,5 +7960,5 @@
     }
   },
   "version": "1.5.3",
-  "fingerprint": "kShdHAsA7goL/jdWqXvbX35Jp7m/JBUZASjuLbBz62A="
+  "fingerprint": "QZJ1iwWx7ZzrNoDALKed4oxMgvh2gxR/S5WRqdJ/q6U="
 }
