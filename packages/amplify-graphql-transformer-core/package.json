@@ -77,6 +77,6 @@
       "clover",
       "text"
     ],
-    "testEnvironment": "./FixJestEnvironment.js"
+    "testEnvironment": "../../FixJestEnvironment.js"
   }
 }
