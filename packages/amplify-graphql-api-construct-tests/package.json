@@ -98,7 +98,8 @@
     },
     "moduleNameMapper": {
       "axios": "axios/dist/node/axios.cjs"
-    }
+    },
+    "testEnvironment": "../../FixJestEnvironment.js"
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",
