@@ -104,7 +104,7 @@ export class AmplifyDynamoDbTableWrapper {
    * Create the wrapper given an underlying CfnResource that is an instance of Custom::AmplifyDynamoDBTable.
    * @param resource the Cfn resource.
    */
-  constructor(private readonly resource: CfnResource) {
+  constructor(public readonly resource: CfnResource) {
     if (resource.cfnResourceType !== AMPLIFY_DYNAMODB_TABLE_RESOURCE_TYPE) {
       throw new Error(`Only CfnResource with type ${AMPLIFY_DYNAMODB_TABLE_RESOURCE_TYPE} can be used in AmplifyDynamoDbTable`);
     }

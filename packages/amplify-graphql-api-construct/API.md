@@ -75,6 +75,8 @@ export class AmplifyDynamoDbTableWrapper {
     static isAmplifyDynamoDbTableResource(x: any): x is CfnResource;
     set pointInTimeRecoveryEnabled(pointInTimeRecoveryEnabled: boolean);
     set provisionedThroughput(provisionedThroughput: ProvisionedThroughput);
+    // (undocumented)
+    readonly resource: CfnResource;
     setGlobalSecondaryIndexProvisionedThroughput(indexName: string, provisionedThroughput: ProvisionedThroughput): void;
     set sseSpecification(sseSpecification: SSESpecification);
     set streamSpecification(streamSpecification: StreamSpecification);

@@ -3814,6 +3814,21 @@
         {
           "docs": {
             "stability": "stable",
+            "summary": "the Cfn resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/amplify-dynamodb-table-wrapper.ts",
+            "line": 107
+          },
+          "name": "resource",
+          "type": {
+            "fqn": "aws-cdk-lib.CfnResource"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
             "summary": "Specify how you are charged for read and write throughput and how you manage capacity."
           },
           "locationInModule": {
@@ -7960,5 +7975,5 @@
     }
   },
   "version": "1.5.3",
-  "fingerprint": "kShdHAsA7goL/jdWqXvbX35Jp7m/JBUZASjuLbBz62A="
+  "fingerprint": "s6k8Vp7lyihm6ltcbZ4uuvaasVMDNuNzfXuGVsubzSk="
 }
