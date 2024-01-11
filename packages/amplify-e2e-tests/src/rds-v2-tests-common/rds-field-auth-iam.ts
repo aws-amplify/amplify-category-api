@@ -72,7 +72,7 @@ export const testRdsIAMFieldAuth = (engine: ImportedRDSType, queries: string[]):
         skipCodegen: true,
         useBetaSqlLayer: SQL_TESTS_USE_BETA,
       });
-      
+
       const meta = getProjectMeta(projRoot);
       const appRegion = meta.providers.awscloudformation.Region;
       const { output } = meta.api[apiName];
@@ -99,7 +99,7 @@ export const testRdsIAMFieldAuth = (engine: ImportedRDSType, queries: string[]):
       await setupUser(userPoolId, cognito_username, cognito_password);
       await signInUser(cognito_username, cognito_password);
       const authCredentials = await Auth.currentCredentials();
-      
+
       const unauthAppSyncClient = getConfiguredAppsyncClientIAMAuth(apiEndPoint, appRegion, unAuthCredentials);
       const authAppSyncClient = getConfiguredAppsyncClientIAMAuth(apiEndPoint, appRegion, authCredentials);
       person1IAMPrivateClient = constructModelHelper('Person1', authAppSyncClient);
@@ -128,8 +128,6 @@ export const testRdsIAMFieldAuth = (engine: ImportedRDSType, queries: string[]):
         password,
         region,
       };
-
-      console.log(JSON.stringify(dbConfig, null, 4));
 
       const db = await setupRDSInstanceAndData(dbConfig, queries);
       port = db.port;
