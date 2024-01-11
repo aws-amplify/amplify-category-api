@@ -70,6 +70,7 @@
     ],
     "modulePathIgnorePatterns": [
       "overrides"
-    ]
+    ],
+    "testEnvironment": "../../FixJestEnvironment.js"
   }
 }

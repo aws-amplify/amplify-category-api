@@ -46,7 +46,8 @@
       "jsx",
       "json",
       "node"
-    ]
+    ],
+    "testEnvironment": "../../FixJestEnvironment.js"
   },
   "devDependencies": {
     "@aws-amplify/graphql-auth-transformer": "3.3.3",

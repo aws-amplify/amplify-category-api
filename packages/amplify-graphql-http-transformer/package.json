@@ -67,8 +67,10 @@
       "clover",
       "text"
     ],
+    "testEnvironment": "../../FixJestEnvironment.js",
     "modulePathIgnorePatterns": [
       "overrides"
-    ]
+    ],
+    "testEnvironment": "../../FixJestEnvironment.js"
   }
 }
