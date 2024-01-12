@@ -82,8 +82,7 @@
     "@aws-amplify/graphql-transformer-test-utils": "0.4.2",
     "@types/js-yaml": "^4.0.0",
     "@types/node": "^12.12.6",
-    "amplify-util-headless-input": "^1.9.15",
-    "ts-jest": "26.4.4"
+    "amplify-util-headless-input": "^1.9.15"
   },
   "jest": {
     "testURL": "http://localhost",

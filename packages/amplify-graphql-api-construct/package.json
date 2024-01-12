@@ -121,7 +121,6 @@
     "jsii-docgen": "9.1.2",
     "jsii-pacmak": "^1.84.0",
     "rimraf": "^3.0.0",
-    "ts-jest": "^26.4.4",
     "ts-node": "^8.10.1"
   },
   "peerDependencies": {

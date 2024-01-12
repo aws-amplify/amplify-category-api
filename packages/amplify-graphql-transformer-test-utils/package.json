@@ -34,8 +34,7 @@
   },
   "devDependencies": {
     "@types/node": "^12.12.6",
-    "rimraf": "^3.0.0",
-    "ts-jest": "26.4.4"
+    "rimraf": "^3.0.0"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.120.0",
