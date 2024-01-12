@@ -47,3 +47,43 @@ Object {
   "Type": "AWS::IAM::Policy",
 }
 `;
+
+exports[`ModelTransformer: should successfully transform simple valid schema 2`] = `
+Object {
+  "DependsOn": Array [
+    "TableManagerCustomProviderwaiterstatemachineRoleDefaultPolicy485A85C2",
+    "TableManagerCustomProviderwaiterstatemachineRole9616A97E",
+  ],
+  "Properties": Object {
+    "DefinitionString": Object {
+      "Fn::Join": Array [
+        "",
+        Array [
+          "{\\"StartAt\\":\\"framework-isComplete-task\\",\\"States\\":{\\"framework-isComplete-task\\":{\\"End\\":true,\\"Retry\\":[{\\"ErrorEquals\\":[\\"States.ALL\\"],\\"IntervalSeconds\\":30,\\"MaxAttempts\\":240,\\"BackoffRate\\":1}],\\"Catch\\":[{\\"ErrorEquals\\":[\\"States.ALL\\"],\\"Next\\":\\"framework-onTimeout-task\\"}],\\"Type\\":\\"Task\\",\\"Resource\\":\\"",
+          Object {
+            "Fn::GetAtt": Array [
+              "TableManagerCustomProviderframeworkisComplete2E51021B",
+              "Arn",
+            ],
+          },
+          "\\"},\\"framework-onTimeout-task\\":{\\"End\\":true,\\"Type\\":\\"Task\\",\\"Resource\\":\\"",
+          Object {
+            "Fn::GetAtt": Array [
+              "TableManagerCustomProviderframeworkonTimeoutC98D33BB",
+              "Arn",
+            ],
+          },
+          "\\"}}}",
+        ],
+      ],
+    },
+    "RoleArn": Object {
+      "Fn::GetAtt": Array [
+        "TableManagerCustomProviderwaiterstatemachineRole9616A97E",
+        "Arn",
+      ],
+    },
+  },
+  "Type": "AWS::StepFunctions::StateMachine",
+}
+`;

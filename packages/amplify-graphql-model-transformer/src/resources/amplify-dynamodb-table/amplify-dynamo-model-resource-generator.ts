@@ -102,6 +102,10 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
       logRetention: aws_logs.RetentionDays.ONE_MONTH,
       queryInterval: Duration.seconds(30),
       totalTimeout: Duration.hours(2),
+
+      // Results in deploy error when logging is enabled
+      // Invalid Logging Configuration: The CloudWatch Logs Resource Policy size was exceeded
+      disableWaiterStateMachineLogging: true,
     });
     this.customResourceServiceToken = customResourceProvider.serviceToken;
   }

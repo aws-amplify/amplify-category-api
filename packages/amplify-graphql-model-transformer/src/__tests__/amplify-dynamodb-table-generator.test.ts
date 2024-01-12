@@ -37,6 +37,18 @@ describe('ModelTransformer:', () => {
     const ddbManagerPolicy = amplifyTableManagerStack.Resources![`${policyKey}`];
     expect(ddbManagerPolicy).toBeDefined();
     expect(ddbManagerPolicy).toMatchSnapshot();
+
+    const stateMachineKey = Object.keys(amplifyTableManagerStack.Resources!).find(
+      (r) => r.includes('TableManagerCustomProviderwaiterstatemachine') && !r.includes('Role') && !r.includes('LogGroup'),
+    );
+    const stateMachine = amplifyTableManagerStack.Resources![`${stateMachineKey}`];
+    expect(stateMachine).toBeDefined();
+    expect(stateMachine).toMatchSnapshot();
+    // Results in deploy error when logging is enabled
+    // Invalid Logging Configuration: The CloudWatch Logs Resource Policy size was exceeded
+    // LoggingConfiguration should not be set
+    expect(stateMachine.Properties.LoggingConfiguration).not.toBeDefined();
+
     // Post table resource should be generated within the custom table type
     const postStack = out.stacks['Post'];
     expect(postStack).toBeDefined();
