@@ -35,7 +35,7 @@
     "@aws-amplify/graphql-transformer-core": "2.4.2",
     "@aws-amplify/graphql-transformer-interfaces": "3.3.3",
     "@aws-amplify/graphql-transformer-migrator": "2.2.15",
-    "@aws-cdk/aws-apigatewayv2-alpha": "~2.80.0-alpha.0",
+    "@aws-cdk/aws-apigatewayv2-alpha": "2.114.1-alpha.0 ",
     "@aws-sdk/client-ec2": "3.338.0",
     "@aws-sdk/client-iam": "3.338.0",
     "@aws-sdk/client-lambda": "3.338.0",
@@ -75,7 +75,7 @@
     "@aws-amplify/amplify-provider-awscloudformation": "^8.8.0",
     "amplify-headless-interface": "^1.17.4",
     "amplify-util-headless-input": "^1.9.15",
-    "aws-cdk-lib": "^2.80.0",
+    "aws-cdk-lib": "^2.120.0",
     "constructs": "^10.0.5"
   },
   "devDependencies": {
