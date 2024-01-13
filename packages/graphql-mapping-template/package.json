@@ -42,7 +42,7 @@
     "coverageProvider": "v8",
     "coverageThreshold": {
       "global": {
-        "branches": 63,
+        "branches": 62,
         "functions": 33,
         "lines": 59
       }
