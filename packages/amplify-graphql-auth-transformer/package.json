@@ -46,7 +46,7 @@
     "@types/node": "^12.12.6"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.120.0",
+    "aws-cdk-lib": "^2.121.1",
     "constructs": "^10.0.5"
   },
   "jest": {

@@ -45,7 +45,7 @@
     "zod": "^3.22.3"
   },
   "dependencies": {
-    "aws-cdk-lib": "^2.120.0",
+    "aws-cdk-lib": "^2.121.1",
     "constructs": "^10.0.5"
   },
   "dependencyClosure": {
@@ -8170,5 +8170,5 @@
     }
   },
   "version": "1.5.3",
-  "fingerprint": "smKWz4Y7KzZTX6gWyrFww1mi/BlZypIU6lS4pzp7tLM="
+  "fingerprint": "PvF1KnysJZCHo9+DXzVgJDG/PQKC5DhvTaiWnvZWsyA="
 }
