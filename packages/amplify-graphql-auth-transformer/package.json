@@ -40,8 +40,10 @@
     "md5": "^2.3.0"
   },
   "devDependencies": {
+    "@aws-amplify/graphql-function-transformer": "2.1.14",
     "@aws-amplify/graphql-index-transformer": "2.3.2",
     "@aws-amplify/graphql-searchable-transformer": "2.4.2",
+    "@aws-amplify/graphql-sql-transformer": "0.2.2",
     "@aws-amplify/graphql-transformer-test-utils": "0.4.2",
     "@types/node": "^12.12.6"
   },
