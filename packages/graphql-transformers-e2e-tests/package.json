@@ -65,7 +65,6 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
-    "testEnvironment": "node",
     "collectCoverage": true,
     "coverageProvider": "v8",
     "collectCoverageFrom": [
