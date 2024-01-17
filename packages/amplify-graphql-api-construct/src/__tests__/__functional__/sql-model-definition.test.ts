@@ -94,8 +94,8 @@ describe('sql-bound API generated resource access', () => {
         expect(additionalCfnResources).toBeDefined();
         const endpoints = Object.values(additionalCfnResources).filter((resource) => resource.cfnResourceType === 'AWS::EC2::VPCEndpoint');
 
-        // 5 endpoints per SQL Lambda function. Update this test accordingly as we add additional data sources bound to separate functions.
-        expect(endpoints.length).toBe(5);
+        // 6 endpoints per SQL Lambda function. Update this test accordingly as we add additional data sources bound to separate functions.
+        expect(endpoints.length).toBe(6);
       });
 
       it('provides the generated SQL Lambda function as an L1 construct without a VPC configuration', () => {
