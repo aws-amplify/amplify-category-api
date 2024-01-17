@@ -54,11 +54,14 @@ export const checkForUnsupportedDirectives = (schema: string, context: DataSourc
   visit(document, schemaVisitor);
 };
 
-export const containsSqlModelOrDirective = (dataSourceStrategies: Record<string, ModelDataSourceStrategy>): boolean => {
-  if (dataSourceStrategies && Object.keys(dataSourceStrategies).length > 0) {
-    return Object.values(dataSourceStrategies).some((strategy) => isSqlStrategy(strategy));
+export const containsSqlModelOrDirective = (
+  dataSourceStrategies: Record<string, ModelDataSourceStrategy>,
+  sqlDirectiveDataSourceStrategies?: SqlDirectiveDataSourceStrategy[],
+): boolean => {
+  if (sqlDirectiveDataSourceStrategies && sqlDirectiveDataSourceStrategies?.length > 0) {
+    return true;
   }
-  return false;
+  return Object.values(dataSourceStrategies).some((strategy) => isSqlStrategy(strategy));
 };
 
 const unsupportedDirectiveError = (

@@ -1,4 +1,8 @@
-import { DataSourceStrategiesProvider, ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  DataSourceStrategiesProvider,
+  ModelDataSourceStrategy,
+  SQLLambdaModelDataSourceStrategy,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { DDB_DEFAULT_DATASOURCE_STRATEGY, MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 import {
   checkForUnsupportedDirectives,
@@ -6,17 +10,19 @@ import {
 } from '../../../../provider-utils/awscloudformation/utils/rds-resources/utils';
 
 describe('check for unsupported RDS directives', () => {
+  const dbConnectionConfig = {
+    databaseNameSsmPath: '/databaseNameSsmPath',
+    hostnameSsmPath: '/hostnameSsmPath',
+    portSsmPath: '/portSsmPath',
+    usernameSsmPath: '/usernameSsmPath',
+    passwordSsmPath: '/passwordSsmPath',
+  };
+
   const dataSourceStrategies: Record<string, ModelDataSourceStrategy> = {
     Post: {
       name: 'mysqlstrategy',
       dbType: MYSQL_DB_TYPE,
-      dbConnectionConfig: {
-        databaseNameSsmPath: '/databaseNameSsmPath',
-        hostnameSsmPath: '/hostnameSsmPath',
-        portSsmPath: '/portSsmPath',
-        usernameSsmPath: '/usernameSsmPath',
-        passwordSsmPath: '/passwordSsmPath',
-      },
+      dbConnectionConfig,
     },
     Tag: DDB_DEFAULT_DATASOURCE_STRATEGY,
   };
@@ -25,6 +31,24 @@ describe('check for unsupported RDS directives', () => {
     Post: DDB_DEFAULT_DATASOURCE_STRATEGY,
     Tag: DDB_DEFAULT_DATASOURCE_STRATEGY,
   };
+
+  const strategy: SQLLambdaModelDataSourceStrategy = {
+    name: 'strategy',
+    dbType: 'MYSQL',
+    dbConnectionConfig,
+  };
+
+  const sqlDirectiveDataSourceStrategies = [
+    {
+      typeName: 'Query' as const,
+      fieldName: 'myCustomQuery',
+      strategy: strategy,
+      customSqlStatements: {
+        myCustomQuery: 'SELECT 1;',
+        myCustomMutation: 'UPDATE mytable SET id=1; SELECT 1;',
+      },
+    },
+  ];
 
   const dataSourceStrategiesProvider: DataSourceStrategiesProvider = { dataSourceStrategies };
   const emptyProvider: DataSourceStrategiesProvider = { dataSourceStrategies: {} };
@@ -154,13 +178,15 @@ describe('check for unsupported RDS directives', () => {
   });
 
   it('containsSqlModelOrDirective should return true if there are sql models', () => {
-    expect(containsSqlModelOrDirective(dataSourceStrategies)).toBeTruthy();
-    expect(containsSqlModelOrDirective(dataSourceStrategies)).toBeTruthy();
+    expect(containsSqlModelOrDirective(dataSourceStrategies, undefined)).toBeTruthy();
+    expect(containsSqlModelOrDirective(dataSourceStrategies, [])).toBeTruthy();
+    expect(containsSqlModelOrDirective(emptyProvider.dataSourceStrategies, sqlDirectiveDataSourceStrategies)).toBeTruthy();
+    expect(containsSqlModelOrDirective(ddbDataSourceStrategies, sqlDirectiveDataSourceStrategies)).toBeTruthy();
   });
 
   it('containsSqlModelOrDirective should return false if there are no sql models', () => {
-    expect(containsSqlModelOrDirective(ddbDataSourceStrategies)).toBeFalsy();
-    expect(containsSqlModelOrDirective(ddbDataSourceStrategies)).toBeFalsy();
+    expect(containsSqlModelOrDirective(ddbDataSourceStrategies, undefined)).toBeFalsy();
+    expect(containsSqlModelOrDirective(ddbDataSourceStrategies, [])).toBeFalsy();
     expect(containsSqlModelOrDirective(emptyProvider.dataSourceStrategies)).toBeFalsy();
   });
 });
