@@ -343,7 +343,7 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
 
   // Read the RDS Mapping S3 Manifest only if the schema contains SQL models or @sql directives.
   let rdsLayerMapping: RDSLayerMapping | undefined = undefined;
-  if (containsSqlModelOrDirective(dataSourceStrategies, sqlDirectiveDataSourceStrategies)) {
+  if (containsSqlModelOrDirective(dataSourceStrategies)) {
     rdsLayerMapping = await getRDSLayerMapping(context, useBetaSqlLayer);
   }
 

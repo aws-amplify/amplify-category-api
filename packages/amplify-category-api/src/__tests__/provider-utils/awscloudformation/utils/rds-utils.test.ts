@@ -1,6 +1,9 @@
 import { DataSourceStrategiesProvider, ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DDB_DEFAULT_DATASOURCE_STRATEGY, MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
-import { checkForUnsupportedDirectives } from '../../../../provider-utils/awscloudformation/utils/rds-resources/utils';
+import {
+  checkForUnsupportedDirectives,
+  containsSqlModelOrDirective,
+} from '../../../../provider-utils/awscloudformation/utils/rds-resources/utils';
 
 describe('check for unsupported RDS directives', () => {
   const dataSourceStrategies: Record<string, ModelDataSourceStrategy> = {
@@ -15,6 +18,11 @@ describe('check for unsupported RDS directives', () => {
         passwordSsmPath: '/passwordSsmPath',
       },
     },
+    Tag: DDB_DEFAULT_DATASOURCE_STRATEGY,
+  };
+
+  const ddbDataSourceStrategies: Record<string, ModelDataSourceStrategy> = {
+    Post: DDB_DEFAULT_DATASOURCE_STRATEGY,
     Tag: DDB_DEFAULT_DATASOURCE_STRATEGY,
   };
 
@@ -143,5 +151,16 @@ describe('check for unsupported RDS directives', () => {
   it('early return if schema is empty or undefined', () => {
     const schema = '';
     expect(() => checkForUnsupportedDirectives(schema, dataSourceStrategiesProvider)).not.toThrowError();
+  });
+
+  it('containsSqlModelOrDirective should return true if there are sql models', () => {
+    expect(containsSqlModelOrDirective(dataSourceStrategies)).toBeTruthy();
+    expect(containsSqlModelOrDirective(dataSourceStrategies)).toBeTruthy();
+  });
+
+  it('containsSqlModelOrDirective should return false if there are no sql models', () => {
+    expect(containsSqlModelOrDirective(ddbDataSourceStrategies)).toBeFalsy();
+    expect(containsSqlModelOrDirective(ddbDataSourceStrategies)).toBeFalsy();
+    expect(containsSqlModelOrDirective(emptyProvider.dataSourceStrategies)).toBeFalsy();
   });
 });
