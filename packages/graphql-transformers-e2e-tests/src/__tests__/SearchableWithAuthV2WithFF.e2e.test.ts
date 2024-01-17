@@ -23,6 +23,7 @@ import {
   createUserPool,
   createUserPoolClient,
   signupUser,
+  setIdentityPoolRoles,
 } from '../cognitoUtils';
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -154,18 +155,27 @@ beforeAll(async () => {
     }
   `;
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
-  USER_POOL_ID = userPoolResponse.UserPool.Id;
+  USER_POOL_ID = userPoolResponse.UserPool!.Id!;
   const userPoolClientResponse = await createUserPoolClient(cognitoClient, USER_POOL_ID, `UserPool${STACK_NAME}`);
-  const userPoolClientId = userPoolClientResponse.UserPoolClient.ClientId;
-  // create auth and unauthroles
-  const { authRole, unauthRole } = await iamHelper.createRoles(AUTH_ROLE_NAME, UNAUTH_ROLE_NAME);
+  const userPoolClientId = userPoolClientResponse.UserPoolClient!.ClientId!;
+
   // create identitypool
   IDENTITY_POOL_ID = await createIdentityPool(identityClient, `IdentityPool${STACK_NAME}`, {
+    providerName: `cognito-idp.${AWS_REGION}.amazonaws.com/${USER_POOL_ID}`,
+    clientId: userPoolClientId,
+  });
+
+  // create auth and unauthroles
+  const { authRole, unauthRole } = await iamHelper.createRoles(AUTH_ROLE_NAME, UNAUTH_ROLE_NAME, IDENTITY_POOL_ID);
+
+  // set roles on identity pool
+  await setIdentityPoolRoles(identityClient, IDENTITY_POOL_ID, {
     authRoleArn: authRole.Arn,
     unauthRoleArn: unauthRole.Arn,
     providerName: `cognito-idp.${AWS_REGION}.amazonaws.com/${USER_POOL_ID}`,
     clientId: userPoolClientId,
   });
+
   try {
     await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
   } catch (e) {

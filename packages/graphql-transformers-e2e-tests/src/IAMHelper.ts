@@ -16,7 +16,11 @@ export class IAMHelper {
   /**
    * Creates auth and unauth roles
    */
-  async createRoles(authRoleName: string, unauthRoleName: string): Promise<{ authRole: IAM.Role; unauthRole: IAM.Role }> {
+  async createRoles(
+    authRoleName: string,
+    unauthRoleName: string,
+    identityPoolId: string,
+  ): Promise<{ authRole: IAM.Role; unauthRole: IAM.Role }> {
     const authRole = await this.client
       .createRole({
         RoleName: authRoleName,
@@ -28,7 +32,15 @@ export class IAMHelper {
             "Principal": {
               "Federated": "cognito-identity.amazonaws.com"
             },
-            "Action": "sts:AssumeRoleWithWebIdentity"
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+              "StringEquals": {
+                "cognito-identity.amazonaws.com:aud": "${identityPoolId}"
+              },
+              "ForAnyValue:StringLike": {
+                "cognito-identity.amazonaws.com:amr": "authenticated"
+              }
+            }
           }
         ]
       }`,
@@ -45,7 +57,15 @@ export class IAMHelper {
             "Principal": {
               "Federated": "cognito-identity.amazonaws.com"
             },
-            "Action": "sts:AssumeRoleWithWebIdentity"
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+              "StringEquals": {
+                "cognito-identity.amazonaws.com:aud": "${identityPoolId}"
+              },
+              "ForAnyValue:StringLike": {
+                "cognito-identity.amazonaws.com:amr": "unauthenticated"
+              }
+            }
           }
         ]
       }`,
@@ -55,7 +75,7 @@ export class IAMHelper {
     return { authRole: authRole.Role, unauthRole: unauthRole.Role };
   }
 
-  async createRoleForCognitoGroup(name: string): Promise<IAM.Role> {
+  async createRoleForCognitoGroup(name: string, identityPoolId: string): Promise<IAM.Role> {
     const role = await this.client
       .createRole({
         RoleName: name,
@@ -67,7 +87,15 @@ export class IAMHelper {
             "Principal": {
               "Federated": "cognito-identity.amazonaws.com"
             },
-            "Action": "sts:AssumeRoleWithWebIdentity"
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+              "StringEquals": {
+                "cognito-identity.amazonaws.com:aud": "${identityPoolId}"
+              },
+              "ForAnyValue:StringLike": {
+                "cognito-identity.amazonaws.com:amr": "authenticated"
+              }
+            }
           }
         ]
       }`,
