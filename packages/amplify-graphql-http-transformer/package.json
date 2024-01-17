@@ -67,7 +67,6 @@
       "clover",
       "text"
     ],
-    "testEnvironment": "../../FixJestEnvironment.js",
     "modulePathIgnorePatterns": [
       "overrides"
     ],
