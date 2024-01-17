@@ -6,28 +6,38 @@ export const schema = `
     id: ID! @primaryKey @auth(rules: [{ allow: private, provider: oidc }, { allow: public }])
     owner: String
     authors: [String]
+    group: String
+    groups: [String]
     privateContent: String @auth(rules: [{ allow: private, provider: oidc }])
     publicContent: String @auth(rules: [{ allow: public }])
-    ownerContent: String @auth(rules: [{ allow: owner, operations: [create, read], provider: oidc, identityClaim: "user_id" }])
-    ownersContent: String @auth(rules: [{ allow: owner, ownerField: "authors", operations: [update, read], provider: oidc, identityClaim: "user_id" }])
+    ownerContent: String @auth(rules: [{ allow: owner, provider: oidc, identityClaim: "user_id", operations: [create, read] }])
+    ownersContent: String @auth(rules: [{ allow: owner, ownerField: "authors", provider: oidc, identityClaim: "user_id", operations: [update, read] }])
+    adminContent: String @auth(rules: [{ allow: groups, groups: ["Admin"], provider: oidc, groupClaim: "cognito:groups" }])
+    groupContent: String @auth(rules: [{ allow: groups, groupsField: "group", provider: oidc, groupClaim: "cognito:groups", operations: [create, read] }])
+    groupsContent: String @auth(rules: [{ allow: groups, groupsField: "groups", provider: oidc, groupClaim: "cognito:groups", operations: [update, read] }])
   }
 
   type TodoOwnerContentVarious @model @auth(rules: [{ allow: owner, provider: oidc, identityClaim: "user_id" }]) {
     id: ID! @primaryKey @auth(rules: [{ allow: owner, provider: oidc, identityClaim: "user_id" }, { allow: private, provider: oidc }, { allow: public }])
     owner: String
     authors: [String]
+    group: String
+    groups: [String]
     privateContent: String @auth(rules: [{ allow: private, provider: oidc, operations: [create, update, read] }])
     publicContent: String @auth(rules: [{ allow: public }])
-    ownerContent: String @auth(rules: [{ allow: owner, operations: [update, delete, read], provider: oidc, identityClaim: "user_id" }])
-    ownersContent: String @auth(rules: [{ allow: owner, ownerField: "authors", operations: [create, read], provider: oidc, identityClaim: "user_id" }])
+    ownerContent: String @auth(rules: [{ allow: owner, provider: oidc, identityClaim: "user_id", operations: [update, delete, read] }])
+    ownersContent: String @auth(rules: [{ allow: owner, ownerField: "authors", provider: oidc, identityClaim: "user_id", operations: [create, read] }])
+    adminContent: String @auth(rules: [{ allow: groups, groups: ["Admin"], provider: oidc, groupClaim: "cognito:groups" }])
+    groupContent: String @auth(rules: [{ allow: groups, groupsField: "group", provider: oidc, groupClaim: "cognito:groups", operations: [update, delete, read] }])
+    groupsContent: String @auth(rules: [{ allow: groups, groupsField: "groups", provider: oidc, groupClaim: "cognito:groups", operations: [create, read] }])
   }
 
   type TodoCustomOwnerContentVarious @model @auth(rules: [{ allow: owner, ownerField: "author", provider: oidc, identityClaim: "user_id" }]) {
     customId: ID! @primaryKey @auth(rules: [{ allow: owner, ownerField: "author", provider: oidc, identityClaim: "user_id" }, { allow: private, provider: oidc }, { allow: public }])
     author: String
-    privateContent: String @auth(rules: [{ allow: private, provider: oidc }, { allow: owner, ownerField: "author", operations: [delete], provider: oidc, identityClaim: "user_id" }])
-    publicContent: String @auth(rules: [{ allow: public }, { allow: owner, ownerField: "author", operations: [delete], provider: oidc, identityClaim: "user_id" }])
-    ownerContent: String @auth(rules: [{ allow: owner, ownerField: "author", operations: [create, delete, read], provider: oidc, identityClaim: "user_id" }])
+    privateContent: String @auth(rules: [{ allow: private, provider: oidc }, { allow: owner, ownerField: "author", provider: oidc, identityClaim: "user_id", operations: [delete] }])
+    publicContent: String @auth(rules: [{ allow: public }, { allow: owner, ownerField: "author", provider: oidc, identityClaim: "user_id", operations: [delete] }])
+    ownerContent: String @auth(rules: [{ allow: owner, ownerField: "author", provider: oidc, identityClaim: "user_id", operations: [create, delete, read] }])
   }
 
   type TodoCustomOwnersContentVarious @model @auth(rules: [{ allow: owner, ownerField: "authors", provider: oidc, identityClaim: "user_id" }]) {
@@ -35,41 +45,49 @@ export const schema = `
     authors: [String]
     privateContent: String @auth(rules: [{ allow: private, provider: oidc }])
     publicContent: String @auth(rules: [{ allow: public }])
-    ownersContent: String @auth(rules: [{ allow: owner, ownerField: "authors", operations: [update, read], provider: oidc, identityClaim: "user_id" }])
+    ownersContent: String @auth(rules: [{ allow: owner, ownerField: "authors", provider: oidc, identityClaim: "user_id", operations: [update, read] }])
   }
 
   type TodoAdminContentVarious @model @auth(rules: [{ allow: groups, groups: ["Admin"], provider: oidc, groupClaim: "cognito:groups" }]) {
     id: ID! @primaryKey @auth(rules: [{ allow: groups, groups: ["Admin"], provider: oidc, groupClaim: "cognito:groups" }, { allow: private, provider: oidc }, { allow: public }])
     owner: String
     authors: [String]
+    group: String
+    groups: [String]
     privateContent: String @auth(rules: [{ allow: private, provider: oidc }])
     publicContent: String @auth(rules: [{ allow: public }])
-    ownerContent: String @auth(rules: [{ allow: owner, provider: oidc, identityClaim: "user_id" }])
-    ownersContent: String @auth(rules: [{ allow: owner, ownerField: "authors", provider: oidc, identityClaim: "user_id" }])
+    ownerContent: String @auth(rules: [{ allow: owner, provider: oidc, identityClaim: "user_id", operations: [update, read] }])
+    ownersContent: String @auth(rules: [{ allow: owner, ownerField: "authors", provider: oidc, identityClaim: "user_id", operations: [create, read] }])
+    groupContent: String @auth(rules: [{ allow: groups, groupsField: "group", provider: oidc, groupClaim: "cognito:groups", operations: [update, delete, read] }])
+    groupsContent: String @auth(rules: [{ allow: groups, groupsField: "groups", provider: oidc, groupClaim: "cognito:groups", operations: [create, read] }])
   }
 
-  type TodoCustomGroupContentVarious @model @auth(rules: [{ allow: groups, groupsField: "customGroup", provider: oidc, groupClaim: "cognito:groups" }]) {
-    customId: ID! @primaryKey @auth(rules: [{ allow: groups, groupsField: "customGroup", provider: oidc, groupClaim: "cognito:groups" }, { allow: private, provider: oidc }, { allow: public }])
+  type TodoCustomGroupContentVarious @model @auth(rules: [{ allow: groups, groupsField: "group", provider: oidc, groupClaim: "cognito:groups" }]) {
+    customId: ID! @primaryKey @auth(rules: [{ allow: groups, groupsField: "group", provider: oidc, groupClaim: "cognito:groups" }, { allow: private, provider: oidc }, { allow: public }])
     owner: String
     authors: [String]
-    customGroup: String
-    privateContent: String @auth(rules: [{ allow: private, provider: oidc }])
-    publicContent: String @auth(rules: [{ allow: public }])
-    ownerContent: String @auth(rules: [{ allow: owner, provider: oidc, identityClaim: "user_id" }])
-    ownersContent: String @auth(rules: [{ allow: owner, ownerField: "authors", provider: oidc, identityClaim: "user_id" }])
-    adminContent: String @auth(rules: [{ allow: groups, groups: ["Admin"], provider: oidc, groupClaim: "cognito:groups" }])
+    group: String
+    groups: [String]
+    privateContent: String @auth(rules: [{ allow: private, provider: oidc }, { allow: groups, groupsField: "group", provider: oidc, groupClaim: "cognito:groups", operations: [delete] }])
+    publicContent: String @auth(rules: [{ allow: public }, { allow: groups, groupsField: "group", provider: oidc, groupClaim: "cognito:groups", operations: [delete] }])
+    ownerContent: String @auth(rules: [{ allow: owner, provider: oidc, identityClaim: "user_id", operations: [update, read] }, { allow: groups, groupsField: "group", provider: oidc, groupClaim: "cognito:groups", operations: [delete] }])
+    ownersContent: String @auth(rules: [{ allow: owner, ownerField: "authors", provider: oidc, identityClaim: "user_id", operations: [create, read] }, { allow: groups, groupsField: "group", provider: oidc, groupClaim: "cognito:groups", operations: [delete] }])
+    adminContent: String @auth(rules: [{ allow: groups, groups: ["Admin"], provider: oidc, groupClaim: "cognito:groups" }, { allow: groups, groupsField: "group", provider: oidc, groupClaim: "cognito:groups", operations: [delete] }])
+    groupsContent: String @auth(rules: [{ allow: groups, groupsField: "groups", provider: oidc, groupClaim: "cognito:groups", operations: [create, read] }, { allow: groups, groupsField: "group", provider: oidc, groupClaim: "cognito:groups", operations: [delete] }])
   }
 
-  type TodoCustomGroupsContentVarious @model @auth(rules: [{ allow: groups, groupsField: "customGroups", provider: oidc, groupClaim: "cognito:groups" }]) {
-    customId: ID! @primaryKey @auth(rules: [{ allow: groups, groupsField: "customGroups", provider: oidc, groupClaim: "cognito:groups" }, { allow: private, provider: oidc }, { allow: public }])
+  type TodoCustomGroupsContentVarious @model @auth(rules: [{ allow: groups, groupsField: "groups", provider: oidc, groupClaim: "cognito:groups" }]) {
+    customId: ID! @primaryKey @auth(rules: [{ allow: groups, groupsField: "groups", provider: oidc, groupClaim: "cognito:groups" }, { allow: private, provider: oidc }, { allow: public }])
     owner: String
     authors: [String]
-    customGroups: [String]
+    group: String
+    groups: [String]
     privateContent: String @auth(rules: [{ allow: private, provider: oidc }])
     publicContent: String @auth(rules: [{ allow: public }])
-    ownerContent: String @auth(rules: [{ allow: owner, provider: oidc, identityClaim: "user_id" }])
-    ownersContent: String @auth(rules: [{ allow: owner, ownerField: "authors", provider: oidc, identityClaim: "user_id" }])
+    ownerContent: String @auth(rules: [{ allow: owner, provider: oidc, identityClaim: "user_id", operations: [update, read] }])
+    ownersContent: String @auth(rules: [{ allow: owner, ownerField: "authors", provider: oidc, identityClaim: "user_id", operations: [create, read] }])
     adminContent: String @auth(rules: [{ allow: groups, groups: ["Admin"], provider: oidc, groupClaim: "cognito:groups" }])
+    groupContent: String @auth(rules: [{ allow: groups, groupsField: "group", provider: oidc, groupClaim: "cognito:groups", operations: [update, read] }])
   }
 `;
 
