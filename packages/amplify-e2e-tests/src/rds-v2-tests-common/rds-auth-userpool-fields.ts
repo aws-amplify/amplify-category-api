@@ -163,8 +163,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         adminContent: 'Admin Content',
         groupContent: 'Group Content',
         authors: [userName1],
-        group: adminGroupName,
-        groups: [adminGroupName],
+        customGroup: adminGroupName,
+        customGroups: [adminGroupName],
       };
       const createResultSetName = `create${modelName}`;
       const updateResultSetName = `update${modelName}`;
@@ -172,8 +172,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         id
         owner
         authors
-        group
-        groups
+        customGroup
+        customGroups
         privateContent
         ownerContent
         adminContent
@@ -189,8 +189,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       todo['owner'] = userName1;
       // protected fields are nullified in mutation responses
       expectNullFields(createResult1.data[createResultSetName], [
-        'group',
-        'groups',
+        'customGroup',
+        'customGroups',
         'privateContent',
         'ownerContent',
         'adminContent',
@@ -201,7 +201,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       const todoUpdated1 = {
         id: todo['id'],
         authors: [userName1, userName2],
-        groups: [adminGroupName, devGroupName],
+        customGroups: [adminGroupName, devGroupName],
         privateContent: 'Private Content updated',
         ownersContent: 'Owners Content updated',
         adminContent: 'Admin Content updated',
@@ -211,8 +211,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         id
         owner
         authors
-        group
-        groups
+        customGroup
+        customGroups
         privateContent
         ownersContent
         adminContent
@@ -223,8 +223,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       expect(updateResult1.data[updateResultSetName].owner).toEqual(userName1);
       expect(updateResult1.data[updateResultSetName].authors).toEqual([userName1, userName2]);
       expectNullFields(updateResult1.data[updateResultSetName], [
-        'group',
-        'groups',
+        'customGroup',
+        'customGroups',
         'privateContent',
         'ownersContent',
         'adminContent',
@@ -236,8 +236,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         id
         owner
         authors
-        group
-        groups
+        customGroup
+        customGroups
         privateContent
         ownerContent
         ownersContent
@@ -263,8 +263,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         id: todo['id'],
         owner: todo['owner'],
         authors: [userName2],
-        group: devGroupName,
-        groups: [devGroupName],
+        customGroup: devGroupName,
+        customGroups: [devGroupName],
         privateContent: 'Private Content updated 1',
         ownersContent: 'Owners Content updated 1',
         groupsContent: 'Groups Content updated 1',
@@ -273,8 +273,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         id
         owner
         authors
-        group
-        groups
+        customGroup
+        customGroups
         privateContent
         ownersContent
         groupsContent
@@ -283,7 +283,13 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       expect(updateResult2.data[updateResultSetName].id).toEqual(todo['id']);
       expect(updateResult2.data[updateResultSetName].owner).toEqual(userName1);
       expect(updateResult2.data[updateResultSetName].authors).toEqual([userName2]);
-      expectNullFields(updateResult2.data[updateResultSetName], ['group', 'groups', 'privateContent', 'ownersContent', 'groupsContent']);
+      expectNullFields(updateResult2.data[updateResultSetName], [
+        'customGroup',
+        'customGroups',
+        'privateContent',
+        'ownersContent',
+        'groupsContent',
+      ]);
 
       // user2 can read the allowed fields
       const user2ReadAllowedSet = user2UpdateAllowedSet;
@@ -332,8 +338,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       );
       expect(onCreateSubscriptionResult).toHaveLength(1);
       expectNullFields(onCreateSubscriptionResult[0].data[`onCreate${modelName}`], [
-        'group',
-        'groups',
+        'customGroup',
+        'customGroups',
         'privateContent',
         'ownerContent',
         'adminContent',
@@ -353,8 +359,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       );
       expect(onUpdateSubscriptionResult).toHaveLength(1);
       expectNullFields(onUpdateSubscriptionResult[0].data[`onUpdate${modelName}`], [
-        'group',
-        'groups',
+        'customGroup',
+        'customGroups',
         'privateContent',
         'ownersContent',
         'adminContent',
@@ -373,8 +379,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       const todoPrivateFields = {
         owner: userName1,
         authors: [userName1],
-        group: adminGroupName,
-        groups: [adminGroupName],
+        customGroup: adminGroupName,
+        customGroups: [adminGroupName],
         privateContent: 'Private Content',
       };
       const createResultSetName = `create${modelName}`;
@@ -383,8 +389,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         id
         owner
         authors
-        group
-        groups
+        customGroup
+        customGroups
         privateContent
       `;
 
@@ -420,7 +426,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       expect(createResult1.data[createResultSetName].authors).toEqual([userName1]);
       todoPrivateFields['id'] = createResult1.data[createResultSetName].id;
       // protected fields are nullified in mutation responses
-      const nulledPrivateFields = ['group', 'groups', 'privateContent'];
+      const nulledPrivateFields = ['customGroup', 'customGroups', 'privateContent'];
       expectNullFields(createResult1.data[createResultSetName], [...nulledPrivateFields, 'ownerContent', 'adminContent', 'groupContent']);
 
       const privateAndPublicSet = `
@@ -514,8 +520,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
 
       const todo = {
         authors: [userName1],
-        group: adminGroupName,
-        groups: [adminGroupName],
+        customGroup: adminGroupName,
+        customGroups: [adminGroupName],
         privateContent: 'Private Content',
         ownersContent: 'Owners Content',
         adminContent: 'Admin Content',
@@ -531,8 +537,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         ${privateResultSet}
         owner
         authors
-        group
-        groups
+        customGroup
+        customGroups
       `;
       const adminOwnerResultSet = `
           ${ownerResultSet}
@@ -564,14 +570,14 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       todo['id'] = createResult1.data[createResultSetName].id;
       todo['owner'] = userName1;
       // protected fields are nullified in mutation responses
-      const nulledOwnerFields = ['group', 'groups', 'privateContent'];
+      const nulledOwnerFields = ['customGroup', 'customGroups', 'privateContent'];
       expectNullFields(createResult1.data[createResultSetName], [...nulledOwnerFields, 'ownersContent', 'groupsContent']);
 
       // user1 can update the allowed fields and add user2 to dyamic owners list field
       const todoUpdated1 = {
         id: todo['id'],
         authors: [userName1, userName2],
-        groups: [adminGroupName, devGroupName],
+        customGroups: [adminGroupName, devGroupName],
         privateContent: 'Private Content updated',
         ownerContent: 'Owner Content',
         adminContent: 'Admin Content updated',
@@ -666,7 +672,15 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       expect(onCreateSubscriptionResult).toHaveLength(1);
       checkOperationResult(
         onCreateSubscriptionResult[0],
-        { ...todoRandom, group: null, groups: null, privateContent: null, adminContent: null, ownersContent: null, groupsContent: null },
+        {
+          ...todoRandom,
+          customGroup: null,
+          customGroups: null,
+          privateContent: null,
+          adminContent: null,
+          ownersContent: null,
+          groupsContent: null,
+        },
         `onCreate${modelName}`,
       );
 
@@ -686,8 +700,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         onUpdateSubscriptionResult[0],
         {
           ...todoRandomUpdated,
-          group: null,
-          groups: null,
+          customGroup: null,
+          customGroups: null,
           privateContent: null,
           adminContent: null,
           ownerContent: null,
@@ -707,8 +721,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
 
       const todo = {
         authors: [userName1],
-        group: adminGroupName,
-        groups: [adminGroupName],
+        customGroup: adminGroupName,
+        customGroups: [adminGroupName],
         privateContent: 'Private Content',
         ownersContent: 'Owners Content',
         adminContent: 'Admin Content',
@@ -724,8 +738,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         ${privateResultSet}
         owner
         authors
-        group
-        groups
+        customGroup
+        customGroups
       `;
       const adminOwnerResultSet = `
           ${ownerResultSet}
@@ -777,7 +791,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       todo['id'] = createResult1.data[createResultSetName].id;
       todo['owner'] = userName1;
       // protected fields are nullified in mutation responses
-      const nulledOwnerFields = ['group', 'groups', 'privateContent'];
+      const nulledOwnerFields = ['customGroup', 'customGroups', 'privateContent'];
       expectNullFields(createResult1.data[createResultSetName], [...nulledOwnerFields, 'ownersContent']);
 
       const publicFieldSet = `
@@ -820,19 +834,19 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       // non-owner cannot update a record to re-assign group membership
       const groupFieldSet = `
           id
-          group
+          customGroup
         `;
       await expect(
-        async () => await user2TodoHelper.update(updateResultSetName, { id: todo['id'], group: devGroupName }, groupFieldSet),
+        async () => await user2TodoHelper.update(updateResultSetName, { id: todo['id'], customGroup: devGroupName }, groupFieldSet),
       ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
 
       // non-owner cannot update a record to re-assign group memberships stored as dynamic list
       const groupsFieldSet = `
           id
-          groups
+          customGroups
         `;
       await expect(
-        async () => await user2TodoHelper.update(updateResultSetName, { id: todo['id'], groups: [devGroupName] }, groupsFieldSet),
+        async () => await user2TodoHelper.update(updateResultSetName, { id: todo['id'], customGroups: [devGroupName] }, groupsFieldSet),
       ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
 
       // non-owner cannot update a record with an owner protected field
@@ -872,8 +886,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         id
         owner
         authors
-        group
-        groups
+        customGroup
+        customGroups
         ownerContent
         ownersContent
         adminContent
@@ -896,8 +910,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
           id: todo['id'],
           owner: null,
           authors: null,
-          group: null,
-          groups: null,
+          customGroup: null,
+          customGroups: null,
           ownerContent: null,
           ownersContent: null,
           adminContent: null,
@@ -1607,8 +1621,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       const todo = {
         owner: userName1,
         authors: [userName1],
-        group: adminGroupName,
-        groups: [adminGroupName],
+        customGroup: adminGroupName,
+        customGroups: [adminGroupName],
         privateContent: 'Private Content',
         ownersContent: 'Owners Content',
         groupsContent: 'Groups Content',
@@ -1623,8 +1637,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
           ${privateResultSet}
           owner
           authors
-          group
-          groups
+          customGroup
+          customGroups
         `;
       const setWithOwnerAndGroupContent = `
           ${adminResultSet}
@@ -1652,14 +1666,14 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       todo['id'] = createResult1.data[createResultSetName].id;
       todo['owner'] = userName1;
       // protected fields are nullified in mutation responses
-      const nulledFields = ['group', 'groups', 'privateContent'];
+      const nulledFields = ['customGroup', 'customGroups', 'privateContent'];
       expectNullFields(createResult1.data[createResultSetName], [...nulledFields, 'ownersContent', 'groupsContent']);
 
       // user1 can update the allowed fields and add user2 to dyamic owners list field
       const todoUpdated1 = {
         id: todo['id'],
         authors: [userName1, userName2],
-        groups: [adminGroupName, devGroupName],
+        customGroups: [adminGroupName, devGroupName],
         privateContent: 'Private Content updated',
         ownerContent: 'Owner Content',
         groupContent: 'Group Content',
@@ -1751,7 +1765,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       expect(onCreateSubscriptionResult).toHaveLength(1);
       checkOperationResult(
         onCreateSubscriptionResult[0],
-        { ...todoRandom, group: null, groups: null, privateContent: null, ownersContent: null, groupsContent: null },
+        { ...todoRandom, customGroup: null, customGroups: null, privateContent: null, ownersContent: null, groupsContent: null },
         `onCreate${modelName}`,
       );
 
@@ -1769,7 +1783,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       expect(onUpdateSubscriptionResult).toHaveLength(1);
       checkOperationResult(
         onUpdateSubscriptionResult[0],
-        { ...todoRandomUpdated, group: null, groups: null, privateContent: null, ownerContent: null, groupContent: null },
+        { ...todoRandomUpdated, customGroup: null, customGroups: null, privateContent: null, ownerContent: null, groupContent: null },
         `onUpdate${modelName}`,
       );
 
@@ -1784,8 +1798,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
 
       const todo = {
         authors: [userName1],
-        group: adminGroupName,
-        groups: [adminGroupName],
+        customGroup: adminGroupName,
+        customGroups: [adminGroupName],
         privateContent: 'Private Content',
         ownersContent: 'Owners Content',
         groupsContent: 'Groups Content',
@@ -1800,8 +1814,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
           ${privateResultSet}
           owner
           authors
-          group
-          groups
+          customGroup
+          customGroups
         `;
       const setWithOwnerAndGroupContent = `
           ${adminResultSet}
@@ -1835,7 +1849,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       todo['id'] = createResult1.data[createResultSetName].id;
       todo['owner'] = userName1;
       // protected fields are nullified in mutation responses
-      const nulledFields = ['group', 'groups', 'privateContent'];
+      const nulledFields = ['customGroup', 'customGroups', 'privateContent'];
       expectNullFields(createResult1.data[createResultSetName], [...nulledFields, 'ownersContent']);
 
       const publicFieldSet = `
@@ -1852,7 +1866,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         async () => await user1TodoHelper.update(updateResultSetName, { ...todo, ownersContent: 'Owners Content' }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
 
-      // admin cannot update a record with dynamic list of groups protected field that does not allow update operation
+      // admin cannot update a record with dynamic list of customGroups protected field that does not allow update operation
       await expect(
         async () => await user1TodoHelper.update(updateResultSetName, { ...todo, groupsContent: 'Groups Content' }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
@@ -1878,19 +1892,19 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       // non-admin cannot update a record to re-assign group membership
       const groupFieldSet = `
         id
-        group
+        customGroup
       `;
       await expect(
-        async () => await user2TodoHelper.update(updateResultSetName, { id: todo['id'], group: devGroupName }, groupFieldSet),
+        async () => await user2TodoHelper.update(updateResultSetName, { id: todo['id'], customGroup: devGroupName }, groupFieldSet),
       ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
 
       // non-admin cannot update a record to re-assign group memberships stored as dynamic list
       const groupsFieldSet = `
           id
-          groups
+          customGroups
         `;
       await expect(
-        async () => await user2TodoHelper.update(updateResultSetName, { id: todo['id'], groups: [devGroupName] }, groupsFieldSet),
+        async () => await user2TodoHelper.update(updateResultSetName, { id: todo['id'], customGroups: [devGroupName] }, groupsFieldSet),
       ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
 
       // non-owner cannot update a record with an owner protected field
@@ -1930,8 +1944,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         id
         owner
         authors
-        group
-        groups
+        customGroup
+        customGroups
         ownerContent
         ownersContent
         groupContent
@@ -1945,8 +1959,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
           id: todo['id'],
           owner: null,
           authors: null,
-          group: null,
-          groups: null,
+          customGroup: null,
+          customGroups: null,
           ownerContent: null,
           ownersContent: null,
           groupContent: null,
@@ -2015,8 +2029,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         customId: Date.now().toString(),
         owner: userName1,
         authors: [userName1],
-        group: adminGroupName,
-        groups: [adminGroupName],
+        customGroup: adminGroupName,
+        customGroups: [adminGroupName],
         privateContent: 'Private Content',
         ownersContent: 'Owners Content',
         adminContent: 'Admin Content',
@@ -2033,8 +2047,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
           ${privateResultSet}
           owner
           authors
-          group
-          groups
+          customGroup
+          customGroups
           adminContent
         `;
       const setWithOwnerContent = `
@@ -2061,14 +2075,14 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       todo['customId'] = createResult1.data[createResultSetName].customId;
       todo['owner'] = userName1;
       // protected fields are nullified in mutation responses
-      const nulledMutationFields = ['group', 'groups', 'privateContent', 'adminContent'];
+      const nulledMutationFields = ['customGroup', 'customGroups', 'privateContent', 'adminContent'];
       expectNullFields(createResult1.data[createResultSetName], [...nulledMutationFields, 'ownersContent', 'groupsContent']);
 
       // user in allowed group can update the allowed fields and add user2 to dyamic owners list field
       const todoUpdated1 = {
         customId: todo['customId'],
         authors: [userName1, userName2],
-        groups: [adminGroupName, devGroupName],
+        customGroups: [adminGroupName, devGroupName],
         privateContent: 'Private Content updated',
         ownerContent: 'Owner Content',
       };
@@ -2170,7 +2184,15 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       expect(onCreateSubscriptionResult).toHaveLength(1);
       checkOperationResult(
         onCreateSubscriptionResult[0],
-        { ...todoRandom, group: null, groups: null, privateContent: null, ownersContent: null, adminContent: null, groupsContent: null },
+        {
+          ...todoRandom,
+          customGroup: null,
+          customGroups: null,
+          privateContent: null,
+          ownersContent: null,
+          adminContent: null,
+          groupsContent: null,
+        },
         `onCreate${modelName}`,
       );
 
@@ -2188,7 +2210,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       expect(onUpdateSubscriptionResult).toHaveLength(1);
       checkOperationResult(
         onUpdateSubscriptionResult[0],
-        { ...todoRandomUpdated, group: null, groups: null, privateContent: null, ownerContent: null, adminContent: null },
+        { ...todoRandomUpdated, customGroup: null, customGroups: null, privateContent: null, ownerContent: null, adminContent: null },
         `onUpdate${modelName}`,
       );
 
@@ -2208,8 +2230,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         onDeleteSubscriptionResult[0],
         {
           ...todoRandomUpdated,
-          group: null,
-          groups: null,
+          customGroup: null,
+          customGroups: null,
           privateContent: null,
           ownerContent: null,
           ownersContent: null,
@@ -2229,8 +2251,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         customId: Date.now().toString(),
         owner: userName1,
         authors: [userName1],
-        group: adminGroupName,
-        groups: [adminGroupName],
+        customGroup: adminGroupName,
+        customGroups: [adminGroupName],
         privateContent: 'Private Content',
         ownersContent: 'Owners Content',
         adminContent: 'Admin Content',
@@ -2247,8 +2269,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
           ${privateResultSet}
           owner
           authors
-          group
-          groups
+          customGroup
+          customGroups
           adminContent
         `;
       const setWithOwnerContent = `
@@ -2286,7 +2308,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       todo['customId'] = createResult1.data[createResultSetName].customId;
       todo['owner'] = userName1;
       // protected fields are nullified in mutation responses
-      const nulledAdminFields = ['group', 'groups', 'privateContent', 'adminContent'];
+      const nulledAdminFields = ['customGroup', 'customGroups', 'privateContent', 'adminContent'];
       expectNullFields(createResult1.data[createResultSetName], [...nulledAdminFields, 'ownersContent', 'groupsContent']);
 
       const publicFieldSet = `
@@ -2334,20 +2356,21 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       // user not in allowed group cannot update a record to re-assign group membership
       const groupFieldSet = `
           customId
-          group
+          customGroup
         `;
       await expect(
-        async () => await user2TodoHelper.update(updateResultSetName, { customId: todo['customId'], group: devGroupName }, groupFieldSet),
+        async () =>
+          await user2TodoHelper.update(updateResultSetName, { customId: todo['customId'], customGroup: devGroupName }, groupFieldSet),
       ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
 
       // user not in allowed group cannot update a record to re-assign group memberships stored as dynamic list
       const groupsFieldSet = `
           customId
-          groups
+          customGroups
         `;
       await expect(
         async () =>
-          await user2TodoHelper.update(updateResultSetName, { customId: todo['customId'], groups: [devGroupName] }, groupsFieldSet),
+          await user2TodoHelper.update(updateResultSetName, { customId: todo['customId'], customGroups: [devGroupName] }, groupsFieldSet),
       ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
 
       // user not in allowed group cannot update a record with an owner protected field
@@ -2378,8 +2401,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         customId
         owner
         authors
-        group
-        groups
+        customGroup
+        customGroups
         ownerContent
         ownersContent
         adminContent
@@ -2389,8 +2412,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       const expectedReadErrorFields = [
         'owner',
         'authors',
-        'group',
-        'groups',
+        'customGroup',
+        'customGroups',
         'ownerContent',
         'ownersContent',
         'adminContent',
@@ -2402,8 +2425,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
           customId: todo['customId'],
           owner: null,
           authors: null,
-          group: null,
-          groups: null,
+          customGroup: null,
+          customGroups: null,
           ownerContent: null,
           ownersContent: null,
           adminContent: null,
@@ -2437,7 +2460,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
           await user1TodoHelper.create(createResultSetName, todoRandom, setWithOwnersAndGroupsContent);
         },
       ]);
-      const expectedSubscriptionNullFields = ['group', 'groups', 'privateContent', 'publicContent'];
+      const expectedSubscriptionNullFields = ['customGroup', 'customGroups', 'privateContent', 'publicContent'];
       expect(onCreateSubscriptionResult).toHaveLength(1);
       expect(onCreateSubscriptionResult[0].data[`onCreate${modelName}`].customId).toEqual(todoRandom.customId);
       expectNullFields(onCreateSubscriptionResult[0].data[`onCreate${modelName}`], [
@@ -2485,8 +2508,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         customId: Date.now().toString(),
         owner: userName1,
         authors: [userName1],
-        group: adminGroupName,
-        groups: [adminGroupName],
+        customGroup: adminGroupName,
+        customGroups: [adminGroupName],
         privateContent: 'Private Content',
         adminContent: 'Admin Content',
         ownersContent: 'Owners Content',
@@ -2501,8 +2524,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
           ${privateResultSet}
           owner
           authors
-          group
-          groups
+          customGroup
+          customGroups
           adminContent
         `;
       const setWithOwnerAndGroupContent = `
@@ -2529,14 +2552,14 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       todo['customId'] = createResult1.data[createResultSetName].customId;
       todo['owner'] = userName1;
       // protected fields are nullified in mutation responses
-      const nulledMutationFields = ['group', 'groups', 'privateContent', 'adminContent'];
+      const nulledMutationFields = ['customGroup', 'customGroups', 'privateContent', 'adminContent'];
       expectNullFields(createResult1.data[createResultSetName], [...nulledMutationFields, 'ownersContent']);
 
       // user part of allowed groups can update the allowed fields and add user2 to dyamic owners list field
       const todoUpdated1 = {
         customId: todo['customId'],
         authors: [userName1, userName2],
-        groups: [adminGroupName, devGroupName],
+        customGroups: [adminGroupName, devGroupName],
         privateContent: 'Private Content updated',
         ownerContent: 'Owner Content',
         groupContent: 'Group Content',
@@ -2626,7 +2649,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       expect(onCreateSubscriptionResult).toHaveLength(1);
       checkOperationResult(
         onCreateSubscriptionResult[0],
-        { ...todoRandom, group: null, groups: null, privateContent: null, ownersContent: null, adminContent: null },
+        { ...todoRandom, customGroup: null, customGroups: null, privateContent: null, ownersContent: null, adminContent: null },
         `onCreate${modelName}`,
       );
 
@@ -2646,8 +2669,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         onUpdateSubscriptionResult[0],
         {
           ...todoRandomUpdated,
-          group: null,
-          groups: null,
+          customGroup: null,
+          customGroups: null,
           privateContent: null,
           ownerContent: null,
           adminContent: null,
@@ -2666,8 +2689,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         customId: Date.now().toString(),
         owner: userName1,
         authors: [userName1],
-        group: adminGroupName,
-        groups: [adminGroupName],
+        customGroup: adminGroupName,
+        customGroups: [adminGroupName],
         privateContent: 'Private Content',
         ownersContent: 'Owners Content',
         adminContent: 'Admin Content',
@@ -2683,8 +2706,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
           ${privateResultSet}
           owner
           authors
-          group
-          groups
+          customGroup
+          customGroups
           adminContent
         `;
       const setWithOwnerAndGroupContent = `
@@ -2727,7 +2750,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       todo['customId'] = createResult1.data[createResultSetName].customId;
       todo['owner'] = userName1;
       // protected fields are nullified in mutation responses
-      const nulledAdminFields = ['group', 'groups', 'privateContent', 'adminContent'];
+      const nulledAdminFields = ['customGroup', 'customGroups', 'privateContent', 'adminContent'];
       expectNullFields(createResult1.data[createResultSetName], [...nulledAdminFields, 'ownersContent']);
 
       const publicFieldSet = `
@@ -2770,20 +2793,21 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       // user not part of allowed groups cannot update a record to re-assign group membership
       const groupFieldSet = `
           customId
-          group
+          customGroup
         `;
       await expect(
-        async () => await user2TodoHelper.update(updateResultSetName, { customId: todo['customId'], group: devGroupName }, groupFieldSet),
+        async () =>
+          await user2TodoHelper.update(updateResultSetName, { customId: todo['customId'], customGroup: devGroupName }, groupFieldSet),
       ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
 
       // user not part of allowed groups cannot update a record to re-assign group memberships stored as dynamic list
       const groupsFieldSet = `
           customId
-          groups
+          customGroups
         `;
       await expect(
         async () =>
-          await user2TodoHelper.update(updateResultSetName, { customId: todo['customId'], groups: [devGroupName] }, groupsFieldSet),
+          await user2TodoHelper.update(updateResultSetName, { customId: todo['customId'], customGroups: [devGroupName] }, groupsFieldSet),
       ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
 
       // user not part of allowed groups cannot update a record with an owner protected field
@@ -2814,8 +2838,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
         customId
         owner
         authors
-        group
-        groups
+        customGroup
+        customGroups
         ownerContent
         ownersContent
         adminContent
@@ -2825,8 +2849,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       const expectedReadErrorFields = [
         'owner',
         'authors',
-        'group',
-        'groups',
+        'customGroup',
+        'customGroups',
         'ownerContent',
         'ownersContent',
         'adminContent',
@@ -2838,8 +2862,8 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
           customId: todo['customId'],
           owner: null,
           authors: null,
-          group: null,
-          groups: null,
+          customGroup: null,
+          customGroups: null,
           ownerContent: null,
           ownersContent: null,
           adminContent: null,
@@ -2878,7 +2902,7 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
           await user1TodoHelper.create(createResultSetName, todoRandom, setWithOwnersContent);
         },
       ]);
-      const expectedSubscriptionNullFields = ['group', 'groups', 'privateContent', 'publicContent'];
+      const expectedSubscriptionNullFields = ['customGroup', 'customGroups', 'privateContent', 'publicContent'];
       expect(onCreateSubscriptionResult).toHaveLength(1);
       expect(onCreateSubscriptionResult[0].data[`onCreate${modelName}`].customId).toEqual(todoRandom.customId);
       expectNullFields(onCreateSubscriptionResult[0].data[`onCreate${modelName}`], [
