@@ -48,7 +48,7 @@ export const getAuthDirectiveRules = (authDir: DirectiveWrapper, options?: GetAu
       operations.push('get');
       operations.push('list');
       operations.push('listen');
-      if (!options.isSqlDataSource) {
+      if (!options?.isSqlDataSource) {
         operations.push('search');
         operations.push('sync');
       }
