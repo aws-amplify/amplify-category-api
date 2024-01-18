@@ -49,7 +49,7 @@ const schemas = {
   },
 };
 
-const operations = ['create', 'update', 'delete', /* 'read', */ 'get', 'list', 'sync', 'listen', 'search'];
+const operations = ['create', 'update', 'delete', 'read', 'get', 'list', 'sync', 'listen', 'search'];
 
 describe('Auth operation combinations: custom mutations', () => {
   beforeEach(() => {

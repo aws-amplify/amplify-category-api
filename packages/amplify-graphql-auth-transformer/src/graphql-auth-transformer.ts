@@ -201,7 +201,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     if (context.metadata.has('joinTypeList')) {
       isJoinType = context.metadata.get<Array<string>>('joinTypeList')!.includes(typeName);
     }
-    const getAuthRulesOptions = merge({ isField: false }, generateGetArgumentsInput(context.transformParameters));
+    const isSqlDataSource = isModelType(context, typeName) && isSqlModel(context, typeName);
+    const getAuthRulesOptions = merge({ isField: false, isSqlDataSource }, generateGetArgumentsInput(context.transformParameters));
     this.rules = getAuthDirectiveRules(new DirectiveWrapper(directive), getAuthRulesOptions);
 
     // validate rules
@@ -267,7 +268,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const modelDirective = parent.directives?.find((dir) => dir.name.value === 'model');
     const typeName = parent.name.value;
     const fieldName = field.name.value;
-    const getAuthRulesOptions = merge({ isField: true }, generateGetArgumentsInput(context.transformParameters));
+    const isSqlDataSource = isModelType(context, parent.name.value) && isSqlModel(context, parent.name.value);
+    const getAuthRulesOptions = merge({ isField: true, isSqlDataSource }, generateGetArgumentsInput(context.transformParameters));
     const rules: AuthRule[] = getAuthDirectiveRules(new DirectiveWrapper(directive), getAuthRulesOptions);
     validateFieldRules(
       new DirectiveWrapper(directive),

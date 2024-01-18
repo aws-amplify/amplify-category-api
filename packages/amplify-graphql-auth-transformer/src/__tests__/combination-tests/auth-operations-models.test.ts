@@ -34,7 +34,7 @@ const sqlSchemaTemplate = /* GraphQL */ `
   }
 `;
 
-const operations = ['create', 'update', 'delete', /* 'read', */ 'get', 'list', 'sync', 'listen', 'search'];
+const operations = ['create', 'update', 'delete', 'read', 'get', 'list', 'sync', 'listen', 'search'];
 
 describe('Auth operation combinations: model', () => {
   beforeEach(() => {
