@@ -10,7 +10,7 @@ do
          --db-instance-identifier {} \
          --skip-final-snapshot \
          --query 'DBInstance.DBInstanceIdentifier' \
-         --no-delete-automated-backups \
+         --delete-automated-backups \
          --output text | xargs -I {} \
       echo "--- Deleting DB instance" {}
 done
