@@ -104,12 +104,11 @@ export async function addUserToGroup(groupName: string, username: string, userPo
   });
 }
 
-export async function createIdentityPool(
+export const createIdentityPool = async (
   client: CognitoIdentity,
   identityPoolName: string,
-  params: { authRoleArn: string; unauthRoleArn: string; providerName: string; clientId: string; useTokenAuth?: boolean },
-): Promise<string> {
-  const useTokenAuth = params?.useTokenAuth ?? false;
+  params: { providerName: string; clientId: string },
+): Promise<string> => {
   const idPool = await client
     .createIdentityPool({
       IdentityPoolName: identityPoolName,
@@ -123,9 +122,18 @@ export async function createIdentityPool(
     })
     .promise();
 
+  return idPool.IdentityPoolId;
+};
+
+export const setIdentityPoolRoles = async (
+  client: CognitoIdentity,
+  identityPoolId: string,
+  params: { authRoleArn: string; unauthRoleArn: string; providerName: string; clientId: string; useTokenAuth?: boolean },
+): Promise<void> => {
+  const useTokenAuth = params?.useTokenAuth ?? false;
   await client
     .setIdentityPoolRoles({
-      IdentityPoolId: idPool.IdentityPoolId,
+      IdentityPoolId: identityPoolId,
       Roles: {
         authenticated: params.authRoleArn,
         unauthenticated: params.unauthRoleArn,
@@ -142,9 +150,7 @@ export async function createIdentityPool(
         : {}),
     })
     .promise();
-
-  return idPool.IdentityPoolId;
-}
+};
 
 export async function createUserPool(client: CognitoClient, userPoolName: string): Promise<CreateUserPoolResponse> {
   return new Promise((res, rej) => {
