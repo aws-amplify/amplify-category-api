@@ -204,10 +204,15 @@ export const validateDataSourceStrategy = (strategy: ConstructModelDataSourceStr
       );
     }
   } else if (isSqlModelDataSourceSecretsManagerDbConnectionConfig(dbConnectionConfig)) {
-    // TODO validate secrets ARN
+    if (!dbConnectionConfig.secretArn.match(/^arn:aws:secretsmanager:\w+(?:-\w+)+:\d{12}:secret:[A-Za-z0-9]+(?:-[A-Za-z0-9]+)+$/)) {
+      throw new Error(`Invalid data source strategy "${strategy.name}". The value of secretArn is not a valid ARN.`);
+    }
+
+    if (dbConnectionConfig.keyArn && !dbConnectionConfig.keyArn.match(/^arn:aws:kms:\w+(?:-\w+)+:\d{12}:key\/[A-Za-z0-9\-]+$/)) {
+      throw new Error(`Invalid data source strategy "${strategy.name}". The value of keyArn is not a valid ARN.`);
+    }
   } else {
-    // TODO: better eeror message
-    throw new Error('bad things ');
+    throw new Error(`Invalid data source strategy "${strategy.name}". dbConnectionConfig does not include SSM paths or Secret ARN.`);
   }
 };
 
