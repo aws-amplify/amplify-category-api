@@ -6,20 +6,30 @@ export const schema = `
     id: ID! @primaryKey @auth(rules: [{ allow: private }, { allow: public }])
     owner: String
     authors: [String]
+    customGroup: String
+    customGroups: [String]
     privateContent: String @auth(rules: [{ allow: private }])
     publicContent: String @auth(rules: [{ allow: public }])
     ownerContent: String @auth(rules: [{ allow: owner, operations: [create, read] }])
     ownersContent: String @auth(rules: [{ allow: owner, ownerField: "authors", operations: [update, read] }])
+    adminContent: String @auth(rules: [{ allow: groups, groups: ["Admin"] }])
+    groupContent: String @auth(rules: [{ allow: groups, groupsField: "customGroup", operations: [create, read] }])
+    groupsContent: String @auth(rules: [{ allow: groups, groupsField: "customGroups", operations: [update, read] }])
   }
 
   type TodoOwnerContentVarious @model @auth(rules: [{ allow: owner }]) {
     id: ID! @primaryKey @auth(rules: [{ allow: owner }, { allow: private }, { allow: public }])
     owner: String
     authors: [String]
+    customGroup: String
+    customGroups: [String]
     privateContent: String @auth(rules: [{ allow: private, operations: [create, update, read] }])
     publicContent: String @auth(rules: [{ allow: public }])
     ownerContent: String @auth(rules: [{ allow: owner, operations: [update, delete, read] }])
     ownersContent: String @auth(rules: [{ allow: owner, ownerField: "authors", operations: [create, read] }])
+    adminContent: String @auth(rules: [{ allow: groups, groups: ["Admin"] }])
+    groupContent: String @auth(rules: [{ allow: groups, groupsField: "customGroup", operations: [update, delete, read] }])
+    groupsContent: String @auth(rules: [{ allow: groups, groupsField: "customGroups", operations: [create, read] }])
   }
 
   type TodoCustomOwnerContentVarious @model @auth(rules: [{ allow: owner, ownerField: "author" }]) {
@@ -42,10 +52,14 @@ export const schema = `
     id: ID! @primaryKey @auth(rules: [{ allow: groups, groups: ["Admin"] }, { allow: private }, { allow: public }])
     owner: String
     authors: [String]
+    customGroup: String
+    customGroups: [String]
     privateContent: String @auth(rules: [{ allow: private }])
     publicContent: String @auth(rules: [{ allow: public }])
-    ownerContent: String @auth(rules: [{ allow: owner }])
-    ownersContent: String @auth(rules: [{ allow: owner, ownerField: "authors" }])
+    ownerContent: String @auth(rules: [{ allow: owner, operations: [update, read] }])
+    ownersContent: String @auth(rules: [{ allow: owner, ownerField: "authors", operations: [create, read] }])
+    groupContent: String @auth(rules: [{ allow: groups, groupsField: "customGroup", operations: [update, delete, read] }])
+    groupsContent: String @auth(rules: [{ allow: groups, groupsField: "customGroups", operations: [create, read] }])
   }
 
   type TodoCustomGroupContentVarious @model @auth(rules: [{ allow: groups, groupsField: "customGroup" }]) {
@@ -53,23 +67,27 @@ export const schema = `
     owner: String
     authors: [String]
     customGroup: String
-    privateContent: String @auth(rules: [{ allow: private }])
-    publicContent: String @auth(rules: [{ allow: public }])
-    ownerContent: String @auth(rules: [{ allow: owner }])
-    ownersContent: String @auth(rules: [{ allow: owner, ownerField: "authors" }])
-    adminContent: String @auth(rules: [{ allow: groups, groups: ["Admin"] }])
+    customGroups: [String]
+    privateContent: String @auth(rules: [{ allow: private }, { allow: groups, groupsField: "customGroup", operations: [delete] }])
+    publicContent: String @auth(rules: [{ allow: public }, { allow: groups, groupsField: "customGroup", operations: [delete] }])
+    ownerContent: String @auth(rules: [{ allow: owner, operations: [update, read] }, { allow: groups, groupsField: "customGroup", operations: [delete] }])
+    ownersContent: String @auth(rules: [{ allow: owner, ownerField: "authors", operations: [create, read] }, { allow: groups, groupsField: "customGroup", operations: [delete] }])
+    adminContent: String @auth(rules: [{ allow: groups, groups: ["Admin"] }, { allow: groups, groupsField: "customGroup", operations: [delete] }])
+    groupsContent: String @auth(rules: [{ allow: groups, groupsField: "customGroups", operations: [create, read] }, { allow: groups, groupsField: "customGroup", operations: [delete] }])
   }
 
   type TodoCustomGroupsContentVarious @model @auth(rules: [{ allow: groups, groupsField: "customGroups" }]) {
     customId: ID! @primaryKey @auth(rules: [{ allow: groups, groupsField: "customGroups" }, { allow: private }, { allow: public }])
     owner: String
     authors: [String]
+    customGroup: String
     customGroups: [String]
     privateContent: String @auth(rules: [{ allow: private }])
     publicContent: String @auth(rules: [{ allow: public }])
-    ownerContent: String @auth(rules: [{ allow: owner }])
-    ownersContent: String @auth(rules: [{ allow: owner, ownerField: "authors" }])
+    ownerContent: String @auth(rules: [{ allow: owner, operations: [update, read] }])
+    ownersContent: String @auth(rules: [{ allow: owner, ownerField: "authors", operations: [create, read] }])
     adminContent: String @auth(rules: [{ allow: groups, groups: ["Admin"] }])
+    groupContent: String @auth(rules: [{ allow: groups, groupsField: "customGroup", operations: [update, read] }])
   }
 `;
 
