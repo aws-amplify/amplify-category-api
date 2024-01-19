@@ -98,7 +98,7 @@ export const createRdsLambda = (
 
     lambdaEnvironment.SECRETS_MANAGER_ENDPOINT = secretsManagerEndpoint;
   } else {
-    throw new Error('Unable to determine if SQL lambda should use SSM or Secrets Manager.');
+    throw new Error('Unable to determine if SSM or Secrets Manager should be used for credentials.');
   }
 
   const fn = apiGraphql.host.addLambdaFunction(
@@ -312,8 +312,7 @@ export const createRdsLambdaRole = (
         );
       }
     } else {
-      // TODO: better message
-      throw new Error('unable to get db secrets');
+      throw new Error('Unable to determine if SSM or Secrets Manager should be used for credentials.');
     }
   }
 
