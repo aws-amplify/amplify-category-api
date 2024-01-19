@@ -227,8 +227,6 @@ export interface RDSLayerMappingProvider {
   rdsLayerMapping?: RDSLayerMapping;
 }
 
-// TODO: move somewhere else
-
 /**
  * Type predicate that returns true if the object is a SqlModelDataSourceDbConnectionConfig.
  * @param obj the object to inspect
