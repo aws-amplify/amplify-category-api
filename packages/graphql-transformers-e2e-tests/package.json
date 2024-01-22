@@ -65,7 +65,6 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
-    "testEnvironment": "node",
     "collectCoverage": true,
     "coverageProvider": "v8",
     "collectCoverageFrom": [
@@ -112,7 +111,8 @@
     },
     "moduleNameMapper": {
       "axios": "axios/dist/node/axios.cjs"
-    }
+    },
+    "testEnvironment": "../../FixJestEnvironment.js"
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",

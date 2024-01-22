@@ -109,7 +109,6 @@
       "default",
       "jest-junit"
     ],
-    "testEnvironment": "node",
     "testURL": "http://localhost/",
     "testRegex": "(src/(__tests__|__e2e__|__e2e_v2__)/.*.test.ts)$",
     "moduleFileExtensions": [
@@ -122,7 +121,8 @@
     ],
     "moduleNameMapper": {
       "axios": "axios/dist/node/axios.cjs"
-    }
+    },
+    "testEnvironment": "../../FixJestEnvironment.js"
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",

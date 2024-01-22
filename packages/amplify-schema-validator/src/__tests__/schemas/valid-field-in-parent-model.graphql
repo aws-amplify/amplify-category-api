@@ -1,6 +1,6 @@
 type Project @model {
   id: ID!
-  team: Team @hasMany
+  team: [Team] @hasMany
 }
 
 type Team @model {

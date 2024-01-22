@@ -47,3 +47,16 @@ export interface DeploymentResources extends ResolversFunctionsAndSchema, Nested
   // The full stack mapping for the deployment.
   stackMapping: StackMapping;
 }
+
+export const getResourceWithKeyPrefix = (keyPrefix: string, deploymentResources: DeploymentResources): any | undefined => {
+  const resources = deploymentResources.rootStack.Resources;
+  if (!resources) {
+    return undefined;
+  }
+
+  const matchingKey = Object.keys(resources ?? {}).find((key) => key.startsWith(keyPrefix));
+  if (!matchingKey) {
+    return undefined;
+  }
+  return resources[matchingKey];
+};

@@ -69,6 +69,7 @@
     "coverageReporters": [
       "clover",
       "text"
-    ]
+    ],
+    "testEnvironment": "../../FixJestEnvironment.js"
   }
 }

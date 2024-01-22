@@ -1,7 +1,11 @@
 import { parse, FieldDefinitionNode, ObjectTypeDefinitionNode, visit } from 'graphql';
 import _ from 'lodash';
 import { isSqlStrategy } from '@aws-amplify/graphql-transformer-core';
-import { DataSourceStrategiesProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  DataSourceStrategiesProvider,
+  ModelDataSourceStrategy,
+  SqlDirectiveDataSourceStrategy,
+} from '@aws-amplify/graphql-transformer-interfaces';
 
 export const checkForUnsupportedDirectives = (schema: string, context: DataSourceStrategiesProvider): void => {
   const unsupportedRDSDirectives = ['searchable', 'predictions', 'function', 'manyToMany', 'http', 'mapsTo'];
@@ -48,6 +52,16 @@ export const checkForUnsupportedDirectives = (schema: string, context: DataSourc
   };
 
   visit(document, schemaVisitor);
+};
+
+export const containsSqlModelOrDirective = (
+  dataSourceStrategies: Record<string, ModelDataSourceStrategy>,
+  sqlDirectiveDataSourceStrategies?: SqlDirectiveDataSourceStrategy[],
+): boolean => {
+  if (sqlDirectiveDataSourceStrategies && sqlDirectiveDataSourceStrategies?.length > 0) {
+    return true;
+  }
+  return Object.values(dataSourceStrategies).some((strategy) => isSqlStrategy(strategy));
 };
 
 const unsupportedDirectiveError = (

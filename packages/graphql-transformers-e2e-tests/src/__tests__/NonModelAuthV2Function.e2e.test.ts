@@ -13,7 +13,15 @@ import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import 'isomorphic-fetch';
 import { default as moment } from 'moment';
 import { CloudFormationClient } from '../CloudFormationClient';
-import { configureAmplify, createIdentityPool, createUserPool, createUserPoolClient, signupUser, authenticateUser } from '../cognitoUtils';
+import {
+  configureAmplify,
+  createIdentityPool,
+  createUserPool,
+  createUserPoolClient,
+  signupUser,
+  authenticateUser,
+  setIdentityPoolRoles,
+} from '../cognitoUtils';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { IAMHelper } from '../IAMHelper';
 import { LambdaHelper } from '../LambdaHelper';
@@ -116,13 +124,21 @@ beforeAll(async () => {
 
   // create userpool
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
-  USER_POOL_ID = userPoolResponse.UserPool.Id;
+  USER_POOL_ID = userPoolResponse.UserPool!.Id!;
   const userPoolClientResponse = await createUserPoolClient(cognitoClient, USER_POOL_ID, `UserPool${STACK_NAME}`);
-  const userPoolClientId = userPoolClientResponse.UserPoolClient.ClientId;
-  // create auth and unauth roles
-  const roles = await iamHelper.createRoles(AUTH_ROLE_NAME, UNAUTH_ROLE_NAME);
+  const userPoolClientId = userPoolClientResponse.UserPoolClient!.ClientId!;
+
   // create identity pool
   IDENTITY_POOL_ID = await createIdentityPool(identityClient, `IdentityPool${STACK_NAME}`, {
+    providerName: `cognito-idp.${REGION}.amazonaws.com/${USER_POOL_ID}`,
+    clientId: userPoolClientId,
+  });
+
+  // create auth and unauth roles
+  const roles = await iamHelper.createRoles(AUTH_ROLE_NAME, UNAUTH_ROLE_NAME, IDENTITY_POOL_ID);
+
+  // set roles on identity pool
+  await setIdentityPoolRoles(identityClient, IDENTITY_POOL_ID, {
     authRoleArn: roles.authRole.Arn,
     unauthRoleArn: roles.unauthRole.Arn,
     providerName: `cognito-idp.${REGION}.amazonaws.com/${USER_POOL_ID}`,
