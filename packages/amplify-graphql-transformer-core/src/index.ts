@@ -29,30 +29,34 @@ export {
   fieldsWithSqlDirective,
   generateGetArgumentsInput,
   GetArgumentsOptions,
+  getModelDataSourceNameForTypeName,
+  getDefaultStrategyNameForDbType,
   getImportedRDSTypeFromStrategyDbType,
   getKeySchema,
   getModelDataSourceStrategy,
   getParameterStoreSecretPath,
   getPrimaryKeyFields,
   getResourceName,
+  getResourceNamesForStrategy,
+  getResourceNamesForStrategyName,
   getSortKeyFieldNames,
   getStrategyDbTypeFromTypeNode,
   getTable,
   isAmplifyDynamoDbModelDataSourceStrategy,
+  isBuiltInGraphqlNode,
   isDefaultDynamoDbModelDataSourceStrategy,
   isDynamoDbModel,
   isDynamoDbType,
+  isModelType,
   isMutationNode,
   isObjectTypeDefinitionNode,
   isQueryNode,
   isSqlDbType,
   isSqlModel,
   isSqlStrategy,
+  normalizeDbType,
   setResourceName,
-
-  // Exported but possibly unused
-  // TODO: Revisit these after the combine feature work. If they're not used, remove them
-  isDynamoDbStrategy,
+  SQLLambdaResourceNames,
 } from './utils';
 export type { SetResourceNameProps } from './utils';
 export * from './utils/operation-names';

@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.2.73](https://github.com/aws-amplify/amplify-category-api/compare/graphql-auth-transformer@7.2.72...graphql-auth-transformer@7.2.73) (2023-12-18)
+
+**Note:** Version bump only for package graphql-auth-transformer
+
+## [7.2.72](https://github.com/aws-amplify/amplify-category-api/compare/graphql-auth-transformer@7.2.71...graphql-auth-transformer@7.2.72) (2023-12-14)
+
+### Bug Fixes
+
+- Fix support for [@auth](https://github.com/auth) on fields with no [@model](https://github.com/model) ([79e4d83](https://github.com/aws-amplify/amplify-category-api/commit/79e4d83528d1581767265dae1006162c1a2110f6))
+
+## [7.2.71](https://github.com/aws-amplify/amplify-category-api/compare/graphql-auth-transformer@7.2.70...graphql-auth-transformer@7.2.71) (2023-12-06)
+
+**Note:** Version bump only for package graphql-auth-transformer
+
 ## [7.2.70](https://github.com/aws-amplify/amplify-category-api/compare/graphql-auth-transformer@7.2.69...graphql-auth-transformer@7.2.70) (2023-11-18)
 
 **Note:** Version bump only for package graphql-auth-transformer

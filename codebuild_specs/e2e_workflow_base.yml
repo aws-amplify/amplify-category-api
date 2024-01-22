@@ -16,6 +16,13 @@ batch:
         type: WINDOWS_SERVER_2019_CONTAINER
         compute-type: BUILD_GENERAL1_LARGE
         image: $WINDOWS_IMAGE_2019
+      # Declaring a dependency on build_linux allows build_windows to run in
+      # parallel with the other tasks. This means we detect Windows build
+      # failures later in the cycle, but since those are infrequent, and this
+      # step is a long one, we are optimizing for shorter wallclock time in the
+      # average case where there are no Windows build failures.
+      depend-on:
+        - build_linux
     - identifier: test
       buildspec: codebuild_specs/test.yml
       env:

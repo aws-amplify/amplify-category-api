@@ -8,6 +8,8 @@ import {
   getSortKeyFieldNames,
   generateGetArgumentsInput,
   isSqlModel,
+  getModelDataSourceNameForTypeName,
+  isModelType,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
@@ -199,11 +201,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     if (context.metadata.has('joinTypeList')) {
       isJoinType = context.metadata.get<Array<string>>('joinTypeList')!.includes(typeName);
     }
-    const getAuthRulesOptions = merge({ isField: false }, generateGetArgumentsInput(context.transformParameters));
+    const isSqlDataSource = isModelType(context, typeName) && isSqlModel(context, typeName);
+    const getAuthRulesOptions = merge({ isField: false, isSqlDataSource }, generateGetArgumentsInput(context.transformParameters));
     this.rules = getAuthDirectiveRules(new DirectiveWrapper(directive), getAuthRulesOptions);
 
     // validate rules
-    validateRules(this.rules, this.configuredAuthProviders, def.name.value);
+    validateRules(this.rules, this.configuredAuthProviders, def.name.value, context);
     // create access control for object
     const acm = new AccessControlMatrix({
       name: def.name.value,
@@ -265,7 +268,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const modelDirective = parent.directives?.find((dir) => dir.name.value === 'model');
     const typeName = parent.name.value;
     const fieldName = field.name.value;
-    const getAuthRulesOptions = merge({ isField: true }, generateGetArgumentsInput(context.transformParameters));
+    const isSqlDataSource = isModelType(context, parent.name.value) && isSqlModel(context, parent.name.value);
+    const getAuthRulesOptions = merge({ isField: true, isSqlDataSource }, generateGetArgumentsInput(context.transformParameters));
     const rules: AuthRule[] = getAuthDirectiveRules(new DirectiveWrapper(directive), getAuthRulesOptions);
     validateFieldRules(
       new DirectiveWrapper(directive),
@@ -276,7 +280,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       parent,
       context,
     );
-    validateRules(rules, this.configuredAuthProviders, field.name.value);
+    validateRules(rules, this.configuredAuthProviders, field.name.value, context);
 
     // regardless if a model directive is used we generate the policy for iam auth
     this.setAuthPolicyFlag(rules);
@@ -937,12 +941,9 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
 
       return roleDefinition;
     });
-    const { SQLLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
-    const dataSource = (
-      isSqlModel(ctx, def.name.value)
-        ? ctx.api.host.getDataSource(SQLLambdaDataSourceLogicalID)
-        : ctx.api.host.getDataSource(`${def.name.value}Table`)
-    ) as DataSourceProvider;
+
+    const dataSourceName = getModelDataSourceNameForTypeName(ctx, def.name.value);
+    const dataSource = ctx.api.host.getDataSource(dataSourceName) as DataSourceProvider;
     const requestExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthRequestExpression(ctx, def);
     const authExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForUpdate(
       this.configuredAuthProviders,
@@ -974,12 +975,9 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       roleDefinition.allowedFields = allowedFields;
       return roleDefinition;
     });
-    const { SQLLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
-    const dataSource = (
-      isSqlModel(ctx, def.name.value)
-        ? ctx.api.host.getDataSource(SQLLambdaDataSourceLogicalID)
-        : ctx.api.host.getDataSource(`${def.name.value}Table`)
-    ) as DataSourceProvider;
+
+    const dataSourceName = getModelDataSourceNameForTypeName(ctx, def.name.value);
+    const dataSource = ctx.api.host.getDataSource(dataSourceName) as DataSourceProvider;
     const requestExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthRequestExpression(ctx, def);
     const authExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForDelete(
       this.configuredAuthProviders,
@@ -1501,7 +1499,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     }
 
     // Check based on schema file
-    if (isSqlModel(ctx, typename)) {
+    if (isModelType(ctx, typename) && isSqlModel(ctx, typename)) {
       return new RDSAuthVTLGenerator();
     }
     return new DDBAuthVTLGenerator();

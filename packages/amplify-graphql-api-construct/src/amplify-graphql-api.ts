@@ -37,6 +37,7 @@ import type {
   IBackendOutputStorageStrategy,
   AddFunctionProps,
   ConflictResolution,
+  IAmplifyGraphqlDefinition,
 } from './types';
 import {
   convertAuthorizationModesToTransformerAuthConfig,
@@ -153,7 +154,11 @@ export class AmplifyGraphqlApi extends Construct {
       outputStorageStrategy,
     } = props;
 
-    new AttributionMetadataStorage().storeAttributionMetadata(Stack.of(scope), this.stackType, path.join(__dirname, '..', 'package.json'));
+    const dataSources = getMetadataDataSources(definition);
+
+    new AttributionMetadataStorage().storeAttributionMetadata(Stack.of(scope), this.stackType, path.join(__dirname, '..', 'package.json'), {
+      dataSources,
+    });
 
     const { authConfig, authSynthParameters } = convertAuthorizationModesToTransformerAuthConfig(authorizationModes);
 
@@ -399,4 +404,11 @@ const validateNoOtherAmplifyGraphqlApiInStack = (scope: Construct): void => {
   if (wasOtherAmplifyGraphlApiFound) {
     throw new Error('Only one AmplifyGraphqlApi is expected in a stack');
   }
+};
+
+const getMetadataDataSources = (definition: IAmplifyGraphqlDefinition): string => {
+  const dataSourceDbTypes = Object.values(definition.dataSourceStrategies).map((strategy) => strategy.dbType.toLocaleLowerCase());
+  const customSqlDbTypes = (definition.customSqlDataSourceStrategies ?? []).map((strategy) => strategy.strategy.dbType.toLocaleLowerCase());
+  const dataSources = [...new Set([...dataSourceDbTypes, ...customSqlDbTypes])].sort();
+  return dataSources.join(',');
 };

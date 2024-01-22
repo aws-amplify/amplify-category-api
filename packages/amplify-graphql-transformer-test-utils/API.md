@@ -23,15 +23,20 @@ import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import { ISynthesisSession } from 'aws-cdk-lib';
 import type { ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-transformer-interfaces';
 import type { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { ProvisionedConcurrencyConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import type { RDSLayerMappingProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
 import type { SqlDirectiveDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { Stack } from 'aws-cdk-lib';
 import type { SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
+import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
 export interface AmplifyApiGraphQlResourceStackTemplate {
@@ -69,6 +74,33 @@ export interface DeploymentResources extends ResolversFunctionsAndSchema, Nested
 }
 
 // @public (undocumented)
+export const getResourceWithKeyPrefix: (keyPrefix: string, deploymentResources: DeploymentResources) => any | undefined;
+
+// @public (undocumented)
+export interface MakeSqlDataSourceStrategyOptions {
+    // (undocumented)
+    customSqlStatements?: Record<string, string>;
+    // (undocumented)
+    dbConnectionConfig?: SqlModelDataSourceDbConnectionConfig;
+    // (undocumented)
+    dbType?: ModelDataSourceStrategySqlDbType;
+    // (undocumented)
+    name?: string;
+    // (undocumented)
+    sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
+    // (undocumented)
+    vpcConfiguration?: VpcConfig;
+}
+
+// @public (undocumented)
+export const MOCK_DB_CONNECTION_CONFIG: SqlModelDataSourceDbConnectionConfig;
+
+// @public (undocumented)
+export const mockSqlDataSourceStrategy: (options?: MakeSqlDataSourceStrategyOptions) => SQLLambdaModelDataSourceStrategy & {
+    customSqlStatements?: Record<string, string> | undefined;
+};
+
+// @public (undocumented)
 export interface NestedStacks {
     // (undocumented)
     rootStack: Template;
@@ -91,6 +123,50 @@ export interface ResolversFunctionsAndSchema {
     // (undocumented)
     userOverriddenSlots: string[];
 }
+
+// @public (undocumented)
+export const SCHEMAS: {
+    todo: {
+        ddb: string;
+        sql: string;
+    };
+    todo2: {
+        ddb: string;
+        sql: string;
+    };
+    todo3: {
+        ddb: string;
+        sql: string;
+    };
+    todo4: {
+        ddb: string;
+        sql: string;
+    };
+    blog: {
+        ddb: string;
+        sql: string;
+    };
+    post: {
+        ddb: string;
+        sql: string;
+    };
+    comment: {
+        ddb: string;
+        sql: string;
+    };
+    order: {
+        ddb: string;
+        sql: string;
+    };
+    lineItem: {
+        ddb: string;
+        sql: string;
+    };
+    customSqlQueryStatement: string;
+    customSqlQueryReference: string;
+    customSqlMutationStatement: string;
+    customSqlMutationReference: string;
+};
 
 // @public (undocumented)
 export interface StackMapping {

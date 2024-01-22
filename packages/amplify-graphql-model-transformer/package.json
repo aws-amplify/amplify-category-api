@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-model-transformer",
-  "version": "2.3.3",
+  "version": "2.4.2",
   "description": "Amplify graphql @model transformer",
   "repository": {
     "type": "git",
@@ -32,18 +32,18 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "2.3.3",
-    "@aws-amplify/graphql-transformer-interfaces": "3.3.1",
+    "@aws-amplify/graphql-transformer-core": "2.4.2",
+    "@aws-amplify/graphql-transformer-interfaces": "3.3.3",
     "graphql": "^15.5.0",
-    "graphql-mapping-template": "4.20.12",
-    "graphql-transformer-common": "4.26.2"
+    "graphql-mapping-template": "4.20.14",
+    "graphql-transformer-common": "4.27.1"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.80.0",
     "constructs": "^10.0.5"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "0.3.3",
+    "@aws-amplify/graphql-transformer-test-utils": "0.4.2",
     "@aws-sdk/client-dynamodb": "^3.431.0",
     "@types/aws-lambda": "8.10.119",
     "@types/node": "^12.12.6"
@@ -62,11 +62,12 @@
       "node"
     ],
     "collectCoverage": true,
+    "coverageProvider": "v8",
     "coverageThreshold": {
       "global": {
-        "branches": 57,
-        "functions": 69,
-        "lines": 74
+        "branches": 75,
+        "functions": 80,
+        "lines": 85
       }
     },
     "coverageReporters": [
@@ -75,6 +76,7 @@
     ],
     "modulePathIgnorePatterns": [
       "overrides"
-    ]
+    ],
+    "testEnvironment": "../../FixJestEnvironment.js"
   }
 }

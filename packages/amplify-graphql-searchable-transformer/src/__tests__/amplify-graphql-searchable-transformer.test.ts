@@ -1,11 +1,11 @@
-import { ConflictHandlerType, MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { parse } from 'graphql';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { SearchableModelTransformer } from '..';
 import { ALLOWABLE_SEARCHABLE_INSTANCE_TYPES } from '../constants';
-import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 
 test('SearchableModelTransformer validation happy case', () => {
   const validSchema = `
@@ -39,17 +39,7 @@ test('Throws error for Searchable RDS Models', () => {
       schema: validSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new SearchableModelTransformer()],
       dataSourceStrategies: {
-        Post: {
-          name: 'mysqlstrategy',
-          dbType: MYSQL_DB_TYPE,
-          dbConnectionConfig: {
-            databaseNameSsmPath: '/databaseNameSsmPath',
-            hostnameSsmPath: '/hostnameSsmPath',
-            portSsmPath: '/portSsmPath',
-            usernameSsmPath: '/usernameSsmPath',
-            passwordSsmPath: '/passwordSsmPath',
-          },
-        },
+        Post: mockSqlDataSourceStrategy(),
       },
     }),
   ).toThrowErrorMatchingInlineSnapshot(`"@searchable is not supported on \\"Post\\" model as it uses RDS datasource."`);
@@ -240,6 +230,9 @@ test('it generates expected resources', () => {
     EBSOptions: Match.anyValue(),
     ElasticsearchClusterConfig: Match.anyValue(),
     ElasticsearchVersion: '7.10',
+    DomainEndpointOptions: {
+      EnforceHTTPS: true,
+    },
   });
   Template.fromJSON(searchableStack).hasResource('AWS::Elasticsearch::Domain', {
     UpdateReplacePolicy: 'Delete',

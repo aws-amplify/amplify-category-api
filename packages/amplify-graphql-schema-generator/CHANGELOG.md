@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.6.1...@aws-amplify/graphql-schema-generator@0.6.2) (2023-12-18)
+
+### Bug Fixes
+
+- **api:** validate imported enum values ([860f045](https://github.com/aws-amplify/amplify-category-api/commit/860f0456975d729c41d21a154a07b8b9bc6d9a34))
+
+## [0.6.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.6.0...@aws-amplify/graphql-schema-generator@0.6.1) (2023-12-14)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+# [0.6.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.5.3...@aws-amplify/graphql-schema-generator@0.6.0) (2023-12-06)
+
+### Bug Fixes
+
+- correctly set pk/indexes when table name changes ([#2098](https://github.com/aws-amplify/amplify-category-api/issues/2098)) ([3a1a979](https://github.com/aws-amplify/amplify-category-api/commit/3a1a979139ea2aa4d09a105fe67898863c4ca244))
+- typo in PG schema query ([#2104](https://github.com/aws-amplify/amplify-category-api/issues/2104)) ([5f0e743](https://github.com/aws-amplify/amplify-category-api/commit/5f0e74302ba77eb307702b2b1b226326788853fb))
+
+### Features
+
+- combine heterogeneous data sources ([#2109](https://github.com/aws-amplify/amplify-category-api/issues/2109)) ([fd58bb5](https://github.com/aws-amplify/amplify-category-api/commit/fd58bb5af4249220d17c9751acf677955aed74ea))
+
 ## [0.5.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.5.2...@aws-amplify/graphql-schema-generator@0.5.3) (2023-11-22)
 
 **Note:** Version bump only for package @aws-amplify/graphql-schema-generator

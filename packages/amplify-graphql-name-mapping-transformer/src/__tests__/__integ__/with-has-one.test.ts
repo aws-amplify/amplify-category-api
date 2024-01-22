@@ -1,9 +1,9 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { DeploymentResources, mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { BelongsToTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { DDB_DEFAULT_DATASOURCE_STRATEGY, MYSQL_DB_TYPE, constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
+import { DDB_DEFAULT_DATASOURCE_STRATEGY, constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { ModelDataSourceStrategy, SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { RefersToTransformer } from '../../graphql-refers-to-transformer';
 import { MapsToTransformer } from '../../graphql-maps-to-transformer';
 import { expectedResolversForModelWithRenamedField, testTableNameMapping, testRelationalFieldMapping } from './common';
@@ -118,18 +118,7 @@ describe('@mapsTo with @hasOne', () => {
 
 describe('@refersTo with @hasOne for RDS Models', () => {
   it('model table names are mapped', () => {
-    const mySqlStrategy: SQLLambdaModelDataSourceStrategy = {
-      name: 'mySqlStrategy',
-      dbType: MYSQL_DB_TYPE,
-      dbConnectionConfig: {
-        databaseNameSsmPath: '/databaseNameSsmPath',
-        hostnameSsmPath: '/hostnameSsmPath',
-        passwordSsmPath: '/passwordSsmPath',
-        portSsmPath: '/portSsmPath',
-        usernameSsmPath: '/usernameSsmPath',
-      },
-    };
-
+    const mySqlStrategy = mockSqlDataSourceStrategy();
     const out = transformSchema(refersToHasOne, mySqlStrategy);
     testTableNameMapping('Employee', 'Person', out);
     testTableNameMapping('Task', 'Todo', out);

@@ -199,6 +199,9 @@ export type GetArgumentsOptions = {
     deepMergeArguments?: boolean;
 };
 
+// @public (undocumented)
+export const getDefaultStrategyNameForDbType: (dbType: ModelDataSourceStrategySqlDbType) => string;
+
 // Warning: (ae-forgotten-export) The symbol "Operation" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -209,6 +212,9 @@ export const getImportedRDSTypeFromStrategyDbType: (dbType: ModelDataSourceStrat
 
 // @public (undocumented)
 export const getKeySchema: (table: any, indexName?: string) => any;
+
+// @public (undocumented)
+export const getModelDataSourceNameForTypeName: (ctx: DataSourceStrategiesProvider, typeName: string) => string;
 
 // @public (undocumented)
 export const getModelDataSourceStrategy: (ctx: DataSourceStrategiesProvider, typename: string) => ModelDataSourceStrategy;
@@ -224,6 +230,12 @@ export const getPrimaryKeyFields: (type: ObjectTypeDefinitionNode) => string[];
 
 // @public (undocumented)
 export const getResourceName: (scope: Construct) => string | undefined;
+
+// @public (undocumented)
+export const getResourceNamesForStrategy: (strategy: SQLLambdaModelDataSourceStrategy) => SQLLambdaResourceNames;
+
+// @public (undocumented)
+export const getResourceNamesForStrategyName: (strategyName: string) => SQLLambdaResourceNames;
 
 // @public (undocumented)
 export const getSortKeyFieldNames: (type: ObjectTypeDefinitionNode) => string[];
@@ -366,19 +378,26 @@ export class InvalidTransformerError extends Error {
 export const isAmplifyDynamoDbModelDataSourceStrategy: (strategy: ModelDataSourceStrategy) => strategy is AmplifyDynamoDbModelDataSourceStrategy;
 
 // @public (undocumented)
+export const isBuiltInGraphqlNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitionNode | (InterfaceTypeDefinitionNode & {
+    name: {
+        value: 'Mutation' | 'Query';
+    };
+});
+
+// @public (undocumented)
 export const isDefaultDynamoDbModelDataSourceStrategy: (strategy: ModelDataSourceStrategy) => strategy is DefaultDynamoDbModelDataSourceStrategy;
 
 // @public (undocumented)
 export const isDynamoDbModel: (ctx: DataSourceStrategiesProvider, typename: string) => boolean;
 
 // @public (undocumented)
-export const isDynamoDbStrategy: (strategy: ModelDataSourceStrategy) => strategy is DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy;
-
-// @public (undocumented)
 export const isDynamoDbType: (dbType: ModelDataSourceStrategyDbType) => dbType is "DYNAMODB";
 
 // @public (undocumented)
 function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncConfigLambda;
+
+// @public (undocumented)
+export const isModelType: (ctx: DataSourceStrategiesProvider, typename: string) => boolean;
 
 // @public (undocumented)
 export const isMutationNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitionNode | (InterfaceTypeDefinitionNode & {
@@ -420,6 +439,9 @@ export class MappingTemplate {
 
 // @public (undocumented)
 export const MYSQL_DB_TYPE: ModelDataSourceStrategySqlDbType;
+
+// @public (undocumented)
+export const normalizeDbType: (candidate: string) => ModelDataSourceStrategyDbType;
 
 // @public (undocumented)
 export class ObjectDefinitionWrapper {
@@ -483,6 +505,42 @@ export type SetResourceNameProps = {
 
 // @public (undocumented)
 export const SQL_SCHEMA_FILE_NAME = "schema.sql.graphql";
+
+// @public (undocumented)
+export interface SQLLambdaResourceNames {
+    // (undocumented)
+    sqlLambdaAliasLogicalId: string;
+    // (undocumented)
+    sqlLambdaAliasName: string;
+    // (undocumented)
+    sqlLambdaDataSource: string;
+    // (undocumented)
+    sqlLambdaExecutionRole: string;
+    // (undocumented)
+    sqlLambdaExecutionRolePolicy: string;
+    // (undocumented)
+    sqlLambdaFunction: string;
+    // (undocumented)
+    sqlLambdaLayerVersion: string;
+    // (undocumented)
+    sqlLayerVersionMapping: string;
+    // (undocumented)
+    sqlLayerVersionResolverCustomResource: string;
+    // (undocumented)
+    sqlPatchingLambdaExecutionRole: string;
+    // (undocumented)
+    sqlPatchingLambdaExecutionRolePolicy: string;
+    // (undocumented)
+    sqlPatchingLambdaFunction: string;
+    // (undocumented)
+    sqlPatchingSubscription: string;
+    // (undocumented)
+    sqlPatchingTopic: string;
+    // (undocumented)
+    sqlStack: string;
+    // (undocumented)
+    sqlVpcEndpointPrefix: string;
+}
 
 // @public (undocumented)
 export class StackManager implements StackManagerProvider {

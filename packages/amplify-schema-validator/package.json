@@ -3,7 +3,7 @@
   "main": "./dist/index.js",
   "private": true,
   "types": "./dist/index.d.ts",
-  "version": "0.2.8",
+  "version": "0.2.10",
   "files": [
     "dist",
     "!**/__tests__/**/*"
@@ -38,12 +38,5 @@
         "graphql"
       ]
     }
-  ],
-  "jest": {
-    "collectCoverage": true,
-    "coverageReporters": [
-      "clover",
-      "text"
-    ]
-  }
+  ]
 }

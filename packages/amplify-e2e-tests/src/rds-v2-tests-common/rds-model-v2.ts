@@ -18,8 +18,16 @@ import { existsSync, readFileSync } from 'fs-extra';
 import generator from 'generate-password';
 import { ObjectTypeDefinitionNode, parse } from 'graphql';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import { ResourceConstants } from 'graphql-transformer-common';
 import gql from 'graphql-tag';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import {
+  ImportedRDSType,
+  getDefaultStrategyNameForDbType,
+  getResourceNamesForStrategyName,
+  normalizeDbType,
+} from '@aws-amplify/graphql-transformer-core';
+import { ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-transformer-interfaces';
+import { SQL_TESTS_USE_BETA } from './sql-e2e-config';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -27,6 +35,9 @@ import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 export const testRDSModel = (engine: ImportedRDSType, queries: string[]): void => {
   const CDK_FUNCTION_TYPE = 'AWS::Lambda::Function';
   const CDK_VPC_ENDPOINT_TYPE = 'AWS::EC2::VPCEndpoint';
+  const CDK_SUBSCRIPTION_TYPE = 'AWS::SNS::Subscription';
+  const APPSYNC_DATA_SOURCE_TYPE = 'AWS::AppSync::DataSource';
+  const { AmplifySQLLayerNotificationTopicAccount, AmplifySQLLayerNotificationTopicName } = ResourceConstants.RESOURCES;
 
   describe(`RDS Model Directive - ${engine}`, () => {
     const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
@@ -43,13 +54,18 @@ export const testRDSModel = (engine: ImportedRDSType, queries: string[]): void =
     const projName = `${engineSuffix}modeltest`;
     const apiName = projName;
 
+    const strategyName = getDefaultStrategyNameForDbType(normalizeDbType(engine) as ModelDataSourceStrategySqlDbType);
+    const resourceNames = getResourceNamesForStrategyName(strategyName);
+
     let projRoot;
     let appSyncClient;
 
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projName);
       await initProjectAndImportSchema();
-      await amplifyPush(projRoot);
+      await amplifyPush(projRoot, false, {
+        useBetaSqlLayer: SQL_TESTS_USE_BETA,
+      });
       await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.
 
       await verifyApiEndpointAndCreateClient();
@@ -88,26 +104,60 @@ export const testRDSModel = (engine: ImportedRDSType, queries: string[]): void =
       // Validate the generated resources in the CloudFormation template
       const apisDirectory = path.join(projRoot, 'amplify', 'backend', 'api');
       const apiDirectory = path.join(apisDirectory, apiName);
-      const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', 'SqlApiStack.json');
+      const cfnRDSTemplateFile = path.join(apiDirectory, 'build', 'stacks', `${resourceNames.sqlStack}.json`);
       const cfnTemplate = JSON.parse(readFileSync(cfnRDSTemplateFile, 'utf8'));
       expect(cfnTemplate.Resources).toBeDefined();
       const resources = cfnTemplate.Resources;
 
       // Validate if the SQL lambda function has VPC configuration even if the database is accessible through internet
-      const rdsLambdaFunction = getResource(resources, 'SQLLambdaFunction', CDK_FUNCTION_TYPE);
-      expect(rdsLambdaFunction).toBeDefined();
-      expect(rdsLambdaFunction.Properties).toBeDefined();
-      expect(rdsLambdaFunction.Properties.VpcConfig).toBeDefined();
-      expect(rdsLambdaFunction.Properties.VpcConfig.SubnetIds).toBeDefined();
-      expect(rdsLambdaFunction.Properties.VpcConfig.SubnetIds.length).toBeGreaterThan(0);
-      expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds).toBeDefined();
-      expect(rdsLambdaFunction.Properties.VpcConfig.SecurityGroupIds.length).toBeGreaterThan(0);
+      const sqlLambdaFunction = getResource(resources, resourceNames.sqlLambdaFunction, CDK_FUNCTION_TYPE);
+      expect(sqlLambdaFunction).toBeDefined();
+      expect(sqlLambdaFunction.Properties).toBeDefined();
+      expect(sqlLambdaFunction.Properties.VpcConfig).toBeDefined();
+      expect(sqlLambdaFunction.Properties.VpcConfig.SubnetIds).toBeDefined();
+      expect(sqlLambdaFunction.Properties.VpcConfig.SubnetIds.length).toBeGreaterThan(0);
+      expect(sqlLambdaFunction.Properties.VpcConfig.SecurityGroupIds).toBeDefined();
+      expect(sqlLambdaFunction.Properties.VpcConfig.SecurityGroupIds.length).toBeGreaterThan(0);
 
-      expect(getResource(resources, 'SQLVpcEndpointssm', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-      expect(getResource(resources, 'SQLVpcEndpointssmmessages', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-      expect(getResource(resources, 'SQLVpcEndpointkms', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-      expect(getResource(resources, 'SQLVpcEndpointec2', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-      expect(getResource(resources, 'SQLVpcEndpointec2messages', CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+      expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ssm`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+      expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ssmmessages`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+      expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}kms`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+      expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ec2`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+      expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ec2messages`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
+
+      // Validate patching lambda and subscription
+      const sqlPatchingLambdaFunction = getResource(resources, resourceNames.sqlPatchingLambdaFunction, CDK_FUNCTION_TYPE);
+      expect(sqlPatchingLambdaFunction).toBeDefined();
+      expect(sqlPatchingLambdaFunction.Properties).toBeDefined();
+      expect(sqlPatchingLambdaFunction.Properties.Environment).toBeDefined();
+      expect(sqlPatchingLambdaFunction.Properties.Environment.Variables).toBeDefined();
+      expect(sqlPatchingLambdaFunction.Properties.Environment.Variables.LAMBDA_FUNCTION_ARN).toBeDefined();
+      const sqlDataSourceLambda = getResource(resources, resourceNames.sqlLambdaDataSource, APPSYNC_DATA_SOURCE_TYPE);
+      expect(sqlPatchingLambdaFunction.Properties.Environment.Variables.LAMBDA_FUNCTION_ARN).toEqual(
+        sqlDataSourceLambda.Properties.LambdaConfig.LambdaFunctionArn,
+      );
+
+      // Validate subscription
+      const expectedTopicArn = {
+        'Fn::Join': [
+          ':',
+          ['arn:aws:sns', { Ref: 'AWS::Region' }, `${AmplifySQLLayerNotificationTopicAccount}:${AmplifySQLLayerNotificationTopicName}`],
+        ],
+      };
+
+      // Counterintuitively, the subscription actually gets created with the resource prefix of the FUNCTION that gets triggered,
+      // rather than the scope created specifically for the subscription
+      const rdsPatchingSubscription = getResource(resources, resourceNames.sqlPatchingLambdaFunction, CDK_SUBSCRIPTION_TYPE);
+      expect(rdsPatchingSubscription).toBeDefined();
+      expect(rdsPatchingSubscription.Properties).toBeDefined();
+      expect(rdsPatchingSubscription.Properties.Protocol).toBeDefined();
+      expect(rdsPatchingSubscription.Properties.Protocol).toEqual('lambda');
+      expect(rdsPatchingSubscription.Properties.Endpoint).toBeDefined();
+      expect(rdsPatchingSubscription.Properties.TopicArn).toBeDefined();
+      expect(rdsPatchingSubscription.Properties.TopicArn).toMatchObject(expectedTopicArn);
+      expect(rdsPatchingSubscription.Properties.Region).toBeDefined();
+      expect(rdsPatchingSubscription.Properties.FilterPolicy).toBeDefined();
+      expect(rdsPatchingSubscription.Properties.FilterPolicy.Region).toBeDefined();
     };
 
     afterAll(async () => {

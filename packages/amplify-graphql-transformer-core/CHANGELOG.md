@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.4.1...@aws-amplify/graphql-transformer-core@2.4.2) (2023-12-18)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-core
+
+## [2.4.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.4.0...@aws-amplify/graphql-transformer-core@2.4.1) (2023-12-14)
+
+### Bug Fixes
+
+- Fix support for [@auth](https://github.com/auth) on fields with no [@model](https://github.com/model) ([79e4d83](https://github.com/aws-amplify/amplify-category-api/commit/79e4d83528d1581767265dae1006162c1a2110f6))
+
+# [2.4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.3.3...@aws-amplify/graphql-transformer-core@2.4.0) (2023-12-06)
+
+### Features
+
+- combine heterogeneous data sources ([#2109](https://github.com/aws-amplify/amplify-category-api/issues/2109)) ([fd58bb5](https://github.com/aws-amplify/amplify-category-api/commit/fd58bb5af4249220d17c9751acf677955aed74ea))
+- Support custom SQL across definitions ([#2115](https://github.com/aws-amplify/amplify-category-api/issues/2115)) ([eab4820](https://github.com/aws-amplify/amplify-category-api/commit/eab4820c1c931fbdf804b2315b63773a376e0822))
+
 ## [2.3.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.3.2...@aws-amplify/graphql-transformer-core@2.3.3) (2023-11-22)
 
 ### Bug Fixes

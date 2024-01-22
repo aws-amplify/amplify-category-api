@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.9.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.9.2...@aws-amplify/amplify-category-api@5.9.3) (2023-12-21)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+## [5.9.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.9.1...@aws-amplify/amplify-category-api@5.9.2) (2023-12-18)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+## [5.9.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.9.0...@aws-amplify/amplify-category-api@5.9.1) (2023-12-14)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+# [5.9.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.8.3...@aws-amplify/amplify-category-api@5.9.0) (2023-12-06)
+
+### Features
+
+- combine heterogeneous data sources ([#2109](https://github.com/aws-amplify/amplify-category-api/issues/2109)) ([fd58bb5](https://github.com/aws-amplify/amplify-category-api/commit/fd58bb5af4249220d17c9751acf677955aed74ea))
+
 ## [5.8.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.8.2...@aws-amplify/amplify-category-api@5.8.3) (2023-11-22)
 
 ### Bug Fixes

@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.2...@aws-amplify/graphql-maps-to-transformer@3.4.3) (2023-12-21)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [3.4.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.1...@aws-amplify/graphql-maps-to-transformer@3.4.2) (2023-12-18)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [3.4.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.0...@aws-amplify/graphql-maps-to-transformer@3.4.1) (2023-12-14)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+# [3.4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.3.3...@aws-amplify/graphql-maps-to-transformer@3.4.0) (2023-12-06)
+
+### Features
+
+- combine heterogeneous data sources ([#2109](https://github.com/aws-amplify/amplify-category-api/issues/2109)) ([fd58bb5](https://github.com/aws-amplify/amplify-category-api/commit/fd58bb5af4249220d17c9751acf677955aed74ea))
+
 ## [3.3.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.3.2...@aws-amplify/graphql-maps-to-transformer@3.3.3) (2023-11-22)
 
 **Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer

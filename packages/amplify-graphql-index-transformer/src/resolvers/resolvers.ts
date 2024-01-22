@@ -1,6 +1,7 @@
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
 import {
   DDB_DB_TYPE,
+  getModelDataSourceNameForTypeName,
   getModelDataSourceStrategy,
   isAmplifyDynamoDbModelDataSourceStrategy,
   MappingTemplate,
@@ -518,17 +519,14 @@ export const makeQueryResolver = (
   ctx: TransformerContextProvider,
   dbType: ModelDataSourceStrategyDbType,
 ): void => {
-  const { SQLLambdaDataSourceLogicalID } = ResourceConstants.RESOURCES;
-  const isDynamoDB = isDynamoDbType(dbType);
   const { name, object, queryField } = config;
   if (!(name && queryField)) {
     throw new Error('Expected name and queryField to be defined while generating resolver.');
   }
   const modelName = object.name.value;
-  let dataSourceName = `${object.name.value}Table`;
-  if (!isDynamoDB) {
-    dataSourceName = SQLLambdaDataSourceLogicalID;
-  }
+
+  const dataSourceName = getModelDataSourceNameForTypeName(ctx, modelName);
+  const isDynamoDB = isDynamoDbType(dbType);
   const dataSource = ctx.api.host.getDataSource(dataSourceName);
   const queryTypeName = ctx.output.getQueryTypeName() as string;
 

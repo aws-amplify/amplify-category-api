@@ -5,18 +5,14 @@ import {
   MYSQL_DB_TYPE,
   POSTGRES_DB_TYPE,
   constructDataSourceStrategies,
+  getResourceNamesForStrategy,
 } from '@aws-amplify/graphql-transformer-core';
 import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, NamedTypeNode, parse } from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
 import { Template } from 'aws-cdk-lib/assertions';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import {
-  VpcConfig,
-  ModelDataSourceStrategySqlDbType,
-  SQLLambdaModelDataSourceStrategy,
-  ModelDataSourceStrategy,
-} from '@aws-amplify/graphql-transformer-interfaces';
+import { VpcConfig, ModelDataSourceStrategySqlDbType, SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   doNotExpectFields,
   expectFields,
@@ -1619,12 +1615,17 @@ describe('ModelTransformer:', () => {
       });
       expect(out).toBeDefined();
 
+      const resourceNames = getResourceNamesForStrategy(vpcStrategy);
+
       validateModelSchema(parse(out.schema));
       expect(out.stacks).toBeDefined();
-      expect(out.stacks.SqlApiStack).toBeDefined();
-      expect(out.stacks.SqlApiStack.Resources).toBeDefined();
-      const resourcesIds = Object.keys(out.stacks.SqlApiStack.Resources!) as string[];
-      const sqlLambda = out.stacks.SqlApiStack.Resources![resourcesIds.find((resource) => resource.startsWith('SQLLambdaFunction'))!];
+      expect(out.stacks[resourceNames.sqlStack]).toBeDefined();
+      expect(out.stacks[resourceNames.sqlStack].Resources).toBeDefined();
+      const resourcesIds = Object.keys(out.stacks[resourceNames.sqlStack].Resources!) as string[];
+      const sqlLambda =
+        out.stacks[resourceNames.sqlStack].Resources![
+          resourcesIds.find((resource) => resource.startsWith(resourceNames.sqlLambdaFunction))!
+        ];
       expect(sqlLambda).toBeDefined();
       expect(sqlLambda.Properties).toBeDefined();
       expect(sqlLambda.Properties?.VpcConfig).toBeDefined();
@@ -1680,31 +1681,5 @@ describe('ModelTransformer:', () => {
         expect(out.resolvers['Query.listPosts.req.vtl']).toContain(snippet);
       });
     });
-  });
-
-  it('should fail if multiple SQL engine types are used', () => {
-    const invalidSchema = `
-      type Note @model {
-          id: ID! @primaryKey
-          content: String!
-      }
-      type Post @model {
-        id: ID! @primaryKey
-        content: String!
-    }
-    `;
-
-    const dataSourceStrategies: Record<string, ModelDataSourceStrategy> = {
-      Note: makeStrategy(MYSQL_DB_TYPE),
-      Post: makeStrategy(POSTGRES_DB_TYPE),
-    };
-
-    expect(() =>
-      testTransform({
-        schema: invalidSchema,
-        transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-        dataSourceStrategies,
-      }),
-    ).toThrowError();
   });
 });

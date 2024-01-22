@@ -20,6 +20,7 @@ import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { GQLQueryHelper } from '../query-utils/gql-helper';
 import { gql } from 'graphql-transformer-core';
 import { ObjectTypeDefinitionNode, parse } from 'graphql';
+import { SQL_TESTS_USE_BETA } from '../rds-v2-tests-common/sql-e2e-config';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -43,7 +44,9 @@ describe('RDS Relational Directives', () => {
   beforeAll(async () => {
     projRoot = await createNewProjectDir('rdsmodelapi');
     await initProjectAndImportSchema();
-    await amplifyPush(projRoot);
+    await amplifyPush(projRoot, false, {
+      useBetaSqlLayer: SQL_TESTS_USE_BETA,
+    });
     await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.
 
     const meta = getProjectMeta(projRoot);

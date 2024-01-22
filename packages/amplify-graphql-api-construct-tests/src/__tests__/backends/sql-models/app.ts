@@ -27,6 +27,9 @@ interface DBDetails {
   };
 }
 
+// DO NOT CHANGE THIS VALUE: The test uses it to find resources by name
+const STRATEGY_NAME = 'MySqlDBStrategy';
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const dbDetails: DBDetails = require('../db-details.json');
 
@@ -48,7 +51,7 @@ const api = new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
       }
     `,
     {
-      name: 'MySqlDB',
+      name: STRATEGY_NAME,
       dbType: 'MYSQL',
       vpcConfiguration: {
         vpcId: dbDetails.vpcConfig.vpcId,
@@ -74,5 +77,5 @@ const {
   resources: { functions },
 } = api;
 
-const sqlLambda = functions['SQLLambdaFunction'];
-new CfnOutput(stack, 'SQLLambdaFunctionName', { value: sqlLambda.functionName });
+const sqlLambda = functions[`SQLFunction${STRATEGY_NAME}`];
+new CfnOutput(stack, 'SQLFunctionName', { value: sqlLambda.functionName });
