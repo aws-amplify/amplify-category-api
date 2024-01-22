@@ -38,7 +38,7 @@ import {
   getSecretsKey,
 } from '../provider-utils/awscloudformation/utils/rds-resources/database-resources';
 import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import { checkForUnsupportedDirectives } from '../provider-utils/awscloudformation/utils/rds-resources/utils';
+import { checkForUnsupportedDirectives, containsSqlModelOrDirective } from '../provider-utils/awscloudformation/utils/rds-resources/utils';
 import { isAuthModeUpdated } from './auth-mode-compare';
 import { getAdminRoles, getIdentityPoolId, mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
 import { generateTransformerOptions } from './transformer-options-v2';
@@ -340,7 +340,13 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
   checkForUnsupportedDirectives(schema, { dataSourceStrategies });
 
   const useBetaSqlLayer = context?.input?.options?.[USE_BETA_SQL_LAYER] ?? false;
-  const rdsLayerMapping = await getRDSLayerMapping(context, useBetaSqlLayer);
+
+  // Read the RDS Mapping S3 Manifest only if the schema contains SQL models or @sql directives.
+  let rdsLayerMapping: RDSLayerMapping | undefined = undefined;
+  if (containsSqlModelOrDirective(dataSourceStrategies, sqlDirectiveDataSourceStrategies)) {
+    rdsLayerMapping = await getRDSLayerMapping(context, useBetaSqlLayer);
+  }
+
   const transformManager = new TransformManager(
     opts.overrideConfig,
     hasIamAuth(opts.authConfig),

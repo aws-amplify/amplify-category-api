@@ -47,9 +47,11 @@ export const getAuthDirectiveRules = (authDir: DirectiveWrapper, options?: GetAu
       operations.splice(indexOfRead, 1);
       operations.push('get');
       operations.push('list');
-      operations.push('search');
-      operations.push('sync');
       operations.push('listen');
+      if (!options?.isSqlDataSource) {
+        operations.push('search');
+        operations.push('sync');
+      }
       // eslint-disable-next-line no-param-reassign
       rule.operations = operations as ModelOperation[];
     }

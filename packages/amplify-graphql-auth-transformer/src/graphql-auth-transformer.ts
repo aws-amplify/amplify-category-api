@@ -201,11 +201,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     if (context.metadata.has('joinTypeList')) {
       isJoinType = context.metadata.get<Array<string>>('joinTypeList')!.includes(typeName);
     }
-    const getAuthRulesOptions = merge({ isField: false }, generateGetArgumentsInput(context.transformParameters));
+    const isSqlDataSource = isModelType(context, typeName) && isSqlModel(context, typeName);
+    const getAuthRulesOptions = merge({ isField: false, isSqlDataSource }, generateGetArgumentsInput(context.transformParameters));
     this.rules = getAuthDirectiveRules(new DirectiveWrapper(directive), getAuthRulesOptions);
 
     // validate rules
-    validateRules(this.rules, this.configuredAuthProviders, def.name.value);
+    validateRules(this.rules, this.configuredAuthProviders, def.name.value, context);
     // create access control for object
     const acm = new AccessControlMatrix({
       name: def.name.value,
@@ -267,7 +268,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const modelDirective = parent.directives?.find((dir) => dir.name.value === 'model');
     const typeName = parent.name.value;
     const fieldName = field.name.value;
-    const getAuthRulesOptions = merge({ isField: true }, generateGetArgumentsInput(context.transformParameters));
+    const isSqlDataSource = isModelType(context, parent.name.value) && isSqlModel(context, parent.name.value);
+    const getAuthRulesOptions = merge({ isField: true, isSqlDataSource }, generateGetArgumentsInput(context.transformParameters));
     const rules: AuthRule[] = getAuthDirectiveRules(new DirectiveWrapper(directive), getAuthRulesOptions);
     validateFieldRules(
       new DirectiveWrapper(directive),
@@ -278,7 +280,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       parent,
       context,
     );
-    validateRules(rules, this.configuredAuthProviders, field.name.value);
+    validateRules(rules, this.configuredAuthProviders, field.name.value, context);
 
     // regardless if a model directive is used we generate the policy for iam auth
     this.setAuthPolicyFlag(rules);
