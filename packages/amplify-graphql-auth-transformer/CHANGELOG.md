@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.3.3...@aws-amplify/graphql-auth-transformer@3.3.4) (2024-01-22)
+
+### Bug Fixes
+
+- support 'read' operation alias for SQL data sources ([#2204](https://github.com/aws-amplify/amplify-category-api/issues/2204)) ([e3264db](https://github.com/aws-amplify/amplify-category-api/commit/e3264db29f3d498fec6aff6e6c30e91f71ded29b))
+
 ## [3.3.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.3.2...@aws-amplify/graphql-auth-transformer@3.3.3) (2023-12-21)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer

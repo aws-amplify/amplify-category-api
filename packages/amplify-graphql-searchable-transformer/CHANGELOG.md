@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.5.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@2.4.2...@aws-amplify/graphql-searchable-transformer@2.5.0) (2024-01-22)
+
+### Features
+
+- adds support of cardinality aggregation to searchable transformer ([#2127](https://github.com/aws-amplify/amplify-category-api/issues/2127)) ([92a4cbf](https://github.com/aws-amplify/amplify-category-api/commit/92a4cbf448dc371e2107926e731015929989a2ae))
+
 ## [2.4.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@2.4.1...@aws-amplify/graphql-searchable-transformer@2.4.2) (2023-12-18)
 
 **Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer

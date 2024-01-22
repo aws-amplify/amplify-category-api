@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.2.5](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.2.4...graphql-transformer-core@8.2.5) (2024-01-22)
+
+### Bug Fixes
+
+- **glob:** remove backslash in s3 upload key ([#2178](https://github.com/aws-amplify/amplify-category-api/issues/2178)) ([4ae480e](https://github.com/aws-amplify/amplify-category-api/commit/4ae480e35321caa0baddc7fed6aa14a349dba2ec))
+
 ## [8.2.4](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.2.3...graphql-transformer-core@8.2.4) (2023-12-18)
 
 **Note:** Version bump only for package graphql-transformer-core
