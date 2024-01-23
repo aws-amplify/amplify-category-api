@@ -4,6 +4,6 @@ import { testRdsUserpoolIAMFieldAuth } from '../rds-v2-tests-common/rds-auth-use
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 
-describe('RDS MySQL Lambda Authorizer field auth rules', () => {
+describe('RDS MySQL Userpool and IAM field auth rules', () => {
   testRdsUserpoolIAMFieldAuth(ImportedRDSType.MYSQL, []);
 });
