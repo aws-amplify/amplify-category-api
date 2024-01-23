@@ -17,14 +17,7 @@ import { existsSync, removeSync, writeFileSync } from 'fs-extra';
 import generator from 'generate-password';
 import path from 'path';
 import { GQLQueryHelper } from '../query-utils/gql-helper';
-import {
-  configureAmplify,
-  getConfiguredAppsyncClientAPIKeyAuth,
-  getConfiguredAppsyncClientIAMAuth,
-  getUserPoolId,
-  setupUser,
-  signInUser,
-} from '../schema-api-directives';
+import { configureAmplify, getConfiguredAppsyncClientIAMAuth, getUserPoolId, setupUser, signInUser } from '../schema-api-directives';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { SQL_TESTS_USE_BETA } from './sql-e2e-config';
 import {
@@ -34,14 +27,9 @@ import {
   configureAppSyncClients,
   expectedFieldErrors,
   expectedOperationError,
-  getAppSyncEndpoint,
   getDefaultDatabasePort,
 } from '../rds-v2-test-utils';
-import { API, Auth } from 'aws-amplify';
-import gql from 'graphql-tag';
-import { withTimeOut } from '../utils/api';
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
-import { Observable, ZenObservable } from 'zen-observable-ts';
+import { Auth } from 'aws-amplify';
 import { schema, sqlCreateStatements } from '../__tests__/auth-test-schemas/userpool-iam-fields';
 
 // to deal with bug in cognito-identity-js
@@ -63,6 +51,13 @@ export const testRdsUserpoolIAMFieldAuth = (engine: ImportedRDSType, queries: st
     const engineName = engine === ImportedRDSType.MYSQL ? 'mysql' : 'postgres';
     const projName = `${engineSuffix}multifieldauth1`;
     const apiName = projName;
+
+    const modelName = 'Post';
+    const createResultSetName = `create${modelName}`;
+    const updateResultSetName = `update${modelName}`;
+    const deleteResultSetName = `delete${modelName}`;
+    const getResultSetName = `get${modelName}`;
+    const listResultSetName = `list${modelName}s`;
 
     const userName1 = 'user1';
     const userName2 = 'user2';
@@ -131,11 +126,11 @@ export const testRdsUserpoolIAMFieldAuth = (engine: ImportedRDSType, queries: st
       appSyncClients = await configureAppSyncClients(projRoot, apiName, [userPoolProvider], userMap);
       userpoolAppSyncClients = appSyncClients[userPoolProvider];
 
-      postIAMPublicClient = constructModelHelper('Post', unauthAppSyncClient);
-      postIAMPrivateClient = constructModelHelper('Post', authAppSyncClient);
-      postUser1Client = constructModelHelper('Post', userpoolAppSyncClients[userName1]);
-      postUser2Client = constructModelHelper('Post', userpoolAppSyncClients[userName2]);
-      postUser3Client = constructModelHelper('Post', userpoolAppSyncClients[userName3]);
+      postIAMPublicClient = constructModelHelper(modelName, unauthAppSyncClient);
+      postIAMPrivateClient = constructModelHelper(modelName, authAppSyncClient);
+      postUser1Client = constructModelHelper(modelName, userpoolAppSyncClients[userName1]);
+      postUser2Client = constructModelHelper(modelName, userpoolAppSyncClients[userName2]);
+      postUser3Client = constructModelHelper(modelName, userpoolAppSyncClients[userName3]);
     };
 
     afterAll(async () => {
@@ -217,28 +212,28 @@ export const testRdsUserpoolIAMFieldAuth = (engine: ImportedRDSType, queries: st
         subscriberContent: 'Exclusive content 1',
       };
       // userpool owner cannot create a post without restricted field `likes`
-      const createPostResult = await postUser1Client.create('createPost', omit(post, 'likes'));
-      expect(createPostResult.data.createPost).toEqual(expect.objectContaining(omit(post, 'subscriberContent')));
+      const createPostResult = await postUser1Client.create(createResultSetName, omit(post, 'likes'));
+      expect(createPostResult.data[createResultSetName]).toEqual(expect.objectContaining(omit(post, 'subscriberContent')));
       // subscriber content is protected and cannot be read upon mutation
-      expect(createPostResult.data.createPost.subscriberContent).toBeNull();
+      expect(createPostResult.data[createResultSetName].subscriberContent).toBeNull();
       // userpool owner cannot create a post with field input `likes`
       await expect(
         async () =>
-          await postUser1Client.create('createPost', {
+          await postUser1Client.create(createResultSetName, {
             id: 'P-2',
             title: 'My Post 2',
             subscriberList: [userName1],
             subscriberContent: 'Exclusive content 2',
             likes: 10,
           }),
-      ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError('createPost', 'Mutation'));
+      ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(createResultSetName, 'Mutation'));
       // userpool owner can read allowed fields
       const getPostResult = await postUser1Client.get({
         id: post.id,
       });
-      expect(getPostResult.data.getPost).toEqual(expect.objectContaining(post));
+      expect(getPostResult.data[getResultSetName]).toEqual(expect.objectContaining(post));
       const listPostsResult = await postUser1Client.list();
-      expect(listPostsResult.data.listPosts.items).toEqual(expect.arrayContaining([expect.objectContaining(post)]));
+      expect(listPostsResult.data[listResultSetName].items).toEqual(expect.arrayContaining([expect.objectContaining(post)]));
       // userpool owner can update allowed fields
       const updatedPost = {
         id: post.id,
@@ -251,22 +246,22 @@ export const testRdsUserpoolIAMFieldAuth = (engine: ImportedRDSType, queries: st
       // cannot update likes
       await expect(
         async () =>
-          await postUser1Client.update('updatePost', {
+          await postUser1Client.update(updateResultSetName, {
             id: updatedPost.id,
             likes: 10,
           }),
-      ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError('updatePost', 'Mutation'));
-      const updatePostResult = await postUser1Client.update('updatePost', omit(updatedPost, 'likes'));
-      expect(updatePostResult.data.updatePost).toEqual(expect.objectContaining(omit(updatedPost, 'subscriberContent')));
+      ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
+      const updatePostResult = await postUser1Client.update(updateResultSetName, omit(updatedPost, 'likes'));
+      expect(updatePostResult.data[updateResultSetName]).toEqual(expect.objectContaining(omit(updatedPost, 'subscriberContent')));
       // subscriber content is protected and cannot be read upon mutation
-      expect(updatePostResult.data.updatePost.subscriberContent).toBeNull();
+      expect(updatePostResult.data[updateResultSetName].subscriberContent).toBeNull();
       // unless one has delete access to all fields in the model, delete is expected to fail
       // userpool owner cannot delete the post
-      await expect(async () => await postUser1Client.delete('deletePost', { id: post.id })).rejects.toThrowErrorMatchingInlineSnapshot(
-        expectedOperationError('deletePost', 'Mutation'),
-      );
+      await expect(
+        async () => await postUser1Client.delete(deleteResultSetName, { id: post.id }),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(deleteResultSetName, 'Mutation'));
       // remove the post by private iam role
-      await postIAMPrivateClient.delete('deletePost', { id: post.id });
+      await postIAMPrivateClient.delete(deleteResultSetName, { id: post.id });
     });
     test('private iam role can perform all valid operations on post', async () => {
       // private iam role can create a post with allowed fields (except `likes`, `subscriberContent`)
@@ -278,14 +273,14 @@ export const testRdsUserpoolIAMFieldAuth = (engine: ImportedRDSType, queries: st
         likes: 0,
         subscriberContent: 'Exclusive content 2',
       };
-      await expect(async () => await postIAMPrivateClient.create('createPost', post)).rejects.toThrowErrorMatchingInlineSnapshot(
-        expectedOperationError('createPost', 'Mutation'),
+      await expect(async () => await postIAMPrivateClient.create(createResultSetName, post)).rejects.toThrowErrorMatchingInlineSnapshot(
+        expectedOperationError(createResultSetName, 'Mutation'),
       );
 
-      const createPostResult = await postIAMPrivateClient.create('createPost', omit(post, 'likes', 'subscriberContent'));
-      expect(createPostResult.data.createPost).toEqual(expect.objectContaining(omit(post, 'subscriberContent')));
+      const createPostResult = await postIAMPrivateClient.create(createResultSetName, omit(post, 'likes', 'subscriberContent'));
+      expect(createPostResult.data[createResultSetName]).toEqual(expect.objectContaining(omit(post, 'subscriberContent')));
       // user2 should be able to update subscriber content to the post created by private iam
-      await postUser2Client.update('updatePost', {
+      await postUser2Client.update(updateResultSetName, {
         id: post.id,
         subscriberContent: post.subscriberContent,
       });
@@ -293,9 +288,9 @@ export const testRdsUserpoolIAMFieldAuth = (engine: ImportedRDSType, queries: st
       const getPostResult = await postIAMPrivateClient.get({
         id: post.id,
       });
-      expect(getPostResult.data.getPost).toEqual(expect.objectContaining(post));
+      expect(getPostResult.data[getResultSetName]).toEqual(expect.objectContaining(post));
       const listPostsResult = await postIAMPrivateClient.list();
-      expect(listPostsResult.data.listPosts.items).toEqual(expect.arrayContaining([expect.objectContaining(post)]));
+      expect(listPostsResult.data[listResultSetName].items).toEqual(expect.arrayContaining([expect.objectContaining(post)]));
       // private iam role can update all the fields
       const updatedPost = {
         id: post.id,
@@ -305,15 +300,15 @@ export const testRdsUserpoolIAMFieldAuth = (engine: ImportedRDSType, queries: st
         subscriberList: [userName1, userName3],
         subscriberContent: 'Exclusive content 2 updated',
       };
-      const updatePostResult = await postIAMPrivateClient.update('updatePost', updatedPost);
-      expect(updatePostResult.data.updatePost).toEqual(expect.objectContaining(omit(updatedPost, 'subscriberContent')));
+      const updatePostResult = await postIAMPrivateClient.update(updateResultSetName, updatedPost);
+      expect(updatePostResult.data[updateResultSetName]).toEqual(expect.objectContaining(omit(updatedPost, 'subscriberContent')));
       // subscriber content is protected and cannot be read upon mutation
-      expect(updatePostResult.data.updatePost.subscriberContent).toBeNull();
+      expect(updatePostResult.data[updateResultSetName].subscriberContent).toBeNull();
       // private iam role can delete a post
-      const deletePostResult = await postIAMPrivateClient.delete('deletePost', { id: post.id });
-      expect(deletePostResult.data.deletePost).toEqual(expect.objectContaining(omit(updatedPost, 'subscriberContent')));
+      const deletePostResult = await postIAMPrivateClient.delete(deleteResultSetName, { id: post.id });
+      expect(deletePostResult.data[deleteResultSetName]).toEqual(expect.objectContaining(omit(updatedPost, 'subscriberContent')));
       // subscriber content is protected and cannot be read upon mutation
-      expect(deletePostResult.data.deletePost.subscriberContent).toBeNull();
+      expect(deletePostResult.data[deleteResultSetName].subscriberContent).toBeNull();
     });
     test('public iam role can perform all valid operations on post', async () => {
       const post = {
@@ -324,7 +319,7 @@ export const testRdsUserpoolIAMFieldAuth = (engine: ImportedRDSType, queries: st
         likes: 0,
         subscriberContent: 'Exclusive content 3',
       };
-      await postUser3Client.create('createPost', omit(post, 'likes'));
+      await postUser3Client.create(createResultSetName, omit(post, 'likes'));
       // public iam role can only read restricted fields
       const getPostResult = await postIAMPublicClient.get(
         {
@@ -337,18 +332,18 @@ export const testRdsUserpoolIAMFieldAuth = (engine: ImportedRDSType, queries: st
       checkOperationResult(
         getPostResult,
         { ...post, subscriberList: null, subscriberContent: null },
-        'getPost',
+        getResultSetName,
         false,
         expectedFieldErrors(['subscriberContent', 'subscriberList'], 'Post'),
       );
-      const listPostsResult = await postIAMPublicClient.list({}, undefined, 'listPosts', true, 'all');
-      checkListItemExistence(listPostsResult, 'listPosts', post.id, true);
+      const listPostsResult = await postIAMPublicClient.list({}, undefined, listResultSetName, true, 'all');
+      checkListItemExistence(listPostsResult, listResultSetName, post.id, true);
       checkListResponseErrors(listPostsResult, expectedFieldErrors(['subscriberContent', 'subscriberList'], 'Post', false));
 
       // public iam role cannot do CUD operatioins
       await expect(
-        async () => await postIAMPublicClient.create('createPost', { id: 'P-invalid', title: 'My Post 3' }),
-      ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError('createPost', 'Mutation'));
+        async () => await postIAMPublicClient.create(createResultSetName, { id: 'P-invalid', title: 'My Post 3' }),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(createResultSetName, 'Mutation'));
 
       const updatedPost = {
         id: post.id,
@@ -360,16 +355,16 @@ export const testRdsUserpoolIAMFieldAuth = (engine: ImportedRDSType, queries: st
       };
       Object.entries(omit(updatedPost, 'id')).forEach(async (entry) => {
         const updateInput = Object.fromEntries([['id', post.id], entry]);
-        await expect(async () => await postIAMPublicClient.update('updatePost', updateInput)).rejects.toThrowErrorMatchingInlineSnapshot(
-          expectedOperationError('updatePost', 'Mutation'),
-        );
+        await expect(
+          async () => await postIAMPublicClient.update(updateResultSetName, updateInput),
+        ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
       });
 
-      await expect(async () => await postIAMPublicClient.delete('deletePost', { id: post.id })).rejects.toThrowErrorMatchingInlineSnapshot(
-        expectedOperationError('deletePost', 'Mutation'),
-      );
+      await expect(
+        async () => await postIAMPublicClient.delete(deleteResultSetName, { id: post.id }),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(deleteResultSetName, 'Mutation'));
       // remove the post by private iam role
-      await postIAMPrivateClient.delete('deletePost', { id: post.id });
+      await postIAMPrivateClient.delete(deleteResultSetName, { id: post.id });
     });
     test('signed in non-owner users(private userpool) can perform all valid operations on post', async () => {
       const post = {
@@ -380,7 +375,7 @@ export const testRdsUserpoolIAMFieldAuth = (engine: ImportedRDSType, queries: st
         likes: 0,
         subscriberContent: 'Exclusive content 4',
       };
-      await postUser1Client.create('createPost', omit(post, 'likes'));
+      await postUser1Client.create(createResultSetName, omit(post, 'likes'));
       // private userpool(signed-in) users cannot read subscriber content if they are not in the subscriber list or owner
       const getPostResult = await postUser3Client.get(
         {
@@ -393,12 +388,12 @@ export const testRdsUserpoolIAMFieldAuth = (engine: ImportedRDSType, queries: st
       checkOperationResult(
         getPostResult,
         { ...post, subscriberContent: null },
-        'getPost',
+        getResultSetName,
         false,
         expectedFieldErrors(['subscriberContent'], 'Post'),
       );
-      const listPostsResult = await postUser3Client.list({}, undefined, 'listPosts', true, 'all');
-      checkListItemExistence(listPostsResult, 'listPosts', post.id, true);
+      const listPostsResult = await postUser3Client.list({}, undefined, listResultSetName, true, 'all');
+      checkListItemExistence(listPostsResult, listResultSetName, post.id, true);
       checkListResponseErrors(listPostsResult, expectedFieldErrors(['subscriberContent'], 'Post', false));
       // private userpool(signed-in) users cannot update or delete fields in post if they are not owner
       const updatedPost = {
@@ -411,17 +406,17 @@ export const testRdsUserpoolIAMFieldAuth = (engine: ImportedRDSType, queries: st
       };
       Object.entries(omit(updatedPost, 'id')).forEach(async (entry) => {
         const updateInput = Object.fromEntries([['id', post.id], entry]);
-        await expect(async () => await postUser3Client.update('updatePost', updateInput)).rejects.toThrowErrorMatchingInlineSnapshot(
-          expectedOperationError('updatePost', 'Mutation'),
+        await expect(async () => await postUser3Client.update(updateResultSetName, updateInput)).rejects.toThrowErrorMatchingInlineSnapshot(
+          expectedOperationError(updateResultSetName, 'Mutation'),
         );
       });
 
-      await expect(async () => await postUser3Client.delete('deletePost', { id: post.id })).rejects.toThrowErrorMatchingInlineSnapshot(
-        expectedOperationError('deletePost', 'Mutation'),
-      );
+      await expect(
+        async () => await postUser3Client.delete(deleteResultSetName, { id: post.id }),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(deleteResultSetName, 'Mutation'));
 
       // remove the post by private iam role
-      await postIAMPrivateClient.delete('deletePost', { id: post.id });
+      await postIAMPrivateClient.delete(deleteResultSetName, { id: post.id });
     });
     test('subscribers(onwer field as array) can perform all valid operations on post', async () => {
       const post = {
@@ -432,14 +427,14 @@ export const testRdsUserpoolIAMFieldAuth = (engine: ImportedRDSType, queries: st
         likes: 0,
         subscriberContent: 'Exclusive content 5',
       };
-      await postUser1Client.create('createPost', omit(post, 'likes'));
+      await postUser1Client.create(createResultSetName, omit(post, 'likes'));
       // subscriber can read subscriber content
       const getPostResult = await postUser2Client.get({
         id: post.id,
       });
-      expect(getPostResult.data.getPost).toEqual(expect.objectContaining(post));
+      expect(getPostResult.data[getResultSetName]).toEqual(expect.objectContaining(post));
       const listPostsResult = await postUser2Client.list();
-      expect(listPostsResult.data.listPosts.items).toEqual(expect.arrayContaining([expect.objectContaining(post)]));
+      expect(listPostsResult.data[listResultSetName].items).toEqual(expect.arrayContaining([expect.objectContaining(post)]));
       // non-owner subscriber cannot update or delete any fields in post
       const updatedPost = {
         id: 'P-5',
@@ -451,17 +446,17 @@ export const testRdsUserpoolIAMFieldAuth = (engine: ImportedRDSType, queries: st
       };
       Object.entries(omit(updatedPost, 'id')).forEach(async (entry) => {
         const updateInput = Object.fromEntries([['id', post.id], entry]);
-        await expect(async () => await postUser2Client.update('updatePost', updateInput)).rejects.toThrowErrorMatchingInlineSnapshot(
-          expectedOperationError('updatePost', 'Mutation'),
+        await expect(async () => await postUser2Client.update(updateResultSetName, updateInput)).rejects.toThrowErrorMatchingInlineSnapshot(
+          expectedOperationError(updateResultSetName, 'Mutation'),
         );
       });
       // cannot delete the post
-      await expect(async () => await postUser2Client.delete('deletePost', { id: post.id })).rejects.toThrowErrorMatchingInlineSnapshot(
-        expectedOperationError('deletePost', 'Mutation'),
-      );
+      await expect(
+        async () => await postUser2Client.delete(deleteResultSetName, { id: post.id }),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(deleteResultSetName, 'Mutation'));
 
       // remove the post by private iam role
-      await postIAMPrivateClient.delete('deletePost', { id: post.id });
+      await postIAMPrivateClient.delete(deleteResultSetName, { id: post.id });
     });
 
     // helper functions
