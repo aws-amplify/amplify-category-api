@@ -54,8 +54,9 @@ export class DirectiveWrapper {
       }),
       {},
     );
-    if (options?.deepMergeArguments) {
-      return _.merge(_.cloneDeep(defaultValue), argValues);
+    if (options?.deepMergeArguments && !_.isEmpty(argValues)) {
+      const clonedDefaultArgValues = _.cloneDeep(defaultValue);
+      return _.merge(clonedDefaultArgValues, argValues);
     }
     return Object.assign(defaultValue, argValues);
   };
