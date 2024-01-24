@@ -119,5 +119,72 @@ describe('Transformer Core Util Tests', () => {
 
       expect(needsDeepMerge(defaultArgs, userArgs)).toEqual(true);
     });
+
+    it('should respect query name overrides', () => {
+      const schema = `
+        type Todo @model(queries: { get: "queryFor" }) {
+          name: String!
+          description: String
+        }
+      `;
+      const parsedDoc = parse(schema);
+      const objNode = parsedDoc?.definitions?.[0] as ObjectTypeDefinitionNode;
+      const modelDir = objNode?.directives?.[0] as DirectiveNode;
+      const wrappedDir = new DirectiveWrapper(modelDir);
+
+      const newArgs = wrappedDir.getArguments(cloneDeep(defaultArgs), { deepMergeArguments: true });
+      expect(newArgs.subscriptions).toEqual(defaultArgs.subscriptions);
+      expect(newArgs.timestamps).toEqual(defaultArgs.timestamps);
+      expect(newArgs.mutations).toEqual(defaultArgs.mutations);
+      expect(newArgs.queries).not.toEqual(defaultArgs.queries);
+      expect(newArgs.queries.get).toEqual('queryFor');
+      expect(newArgs.queries.list).toEqual(`list${typeName}s`);
+    });
+
+    it('should respect disabled operations', () => {
+      const schema = `
+        type Todo @model(queries: { get: null }, mutations: null, subscriptions: null) {
+          name: String!
+          description: String
+        }
+
+        type Query {
+          getMyTodo(id: ID!): Todo @function(name: "getmytodofunction")
+        }
+      `;
+      const parsedDoc = parse(schema);
+      const objNode = parsedDoc?.definitions?.[0] as ObjectTypeDefinitionNode;
+      const modelDir = objNode?.directives?.[0] as DirectiveNode;
+      const wrappedDir = new DirectiveWrapper(modelDir);
+
+      const newArgs = wrappedDir.getArguments(cloneDeep(defaultArgs), { deepMergeArguments: true });
+      expect(newArgs.subscriptions).toBeNull();
+      expect(newArgs.timestamps).toEqual(defaultArgs.timestamps);
+      expect(newArgs.mutations).toBeNull();
+      expect(newArgs.queries).not.toEqual(defaultArgs.queries);
+      expect(newArgs.queries.get).toBeNull();
+      expect(newArgs.queries.list).toEqual(`list${typeName}s`);
+    });
+
+    it('should allow Custom create and update timestamps', () => {
+      const schema = `
+        type Todo @model(timestamps: { createdAt: "createdOn", updatedAt: "updatedOn" }) {
+          name: String!
+          description: String
+        }
+      `;
+      const parsedDoc = parse(schema);
+      const objNode = parsedDoc?.definitions?.[0] as ObjectTypeDefinitionNode;
+      const modelDir = objNode?.directives?.[0] as DirectiveNode;
+      const wrappedDir = new DirectiveWrapper(modelDir);
+
+      const newArgs = wrappedDir.getArguments(cloneDeep(defaultArgs), { deepMergeArguments: true });
+      expect(newArgs.queries).toEqual(defaultArgs.queries);
+      expect(newArgs.mutations).toEqual(defaultArgs.mutations);
+      expect(newArgs.subscriptions).toEqual(defaultArgs.subscriptions);
+      expect(newArgs.timestamps).not.toEqual(defaultArgs.timestamps);
+      expect(newArgs.timestamps.createdAt).toEqual('createdOn');
+      expect(newArgs.timestamps.updatedAt).toEqual('updatedOn');
+    });
   });
 });
