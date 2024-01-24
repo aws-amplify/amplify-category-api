@@ -2,6 +2,7 @@ import { DirectiveNode, ObjectTypeDefinitionNode, parse } from 'graphql';
 import { cloneDeep } from 'lodash';
 import { getFieldNameFor } from '../../utils/operation-names';
 import { DirectiveWrapper } from '../../utils';
+import { needsDeepMerge } from '../../utils/directive-wrapper';
 
 describe('Transformer Core Util Tests', () => {
   describe(': Directive Wrapper tests', () => {
@@ -62,6 +63,61 @@ describe('Transformer Core Util Tests', () => {
       expect(newArgs.timestamps).toEqual(defaultArgs.timestamps);
       expect(newArgs.queries).toEqual(defaultArgs.queries);
       expect(newArgs.mutations).toEqual(defaultArgs.mutations);
+    });
+
+    it('should skip deep clone when there are no user provided arguments', () => {
+      const defaultArgs = {
+        subscriptions: {
+          level: 'on',
+          onCreate: [getFieldNameFor('onCreate', typeName)],
+          onDelete: [getFieldNameFor('onDelete', typeName)],
+          onUpdate: [getFieldNameFor('onUpdate', typeName)],
+        },
+      };
+      const userArgs = {};
+
+      expect(needsDeepMerge(defaultArgs, userArgs)).toEqual(false);
+    });
+
+    it('should skip deep clone when there are no common properties between default and user provided arguments', () => {
+      const defaultArgs = {
+        subscriptions: {
+          level: 'on',
+          onCreate: [getFieldNameFor('onCreate', typeName)],
+          onDelete: [getFieldNameFor('onDelete', typeName)],
+          onUpdate: [getFieldNameFor('onUpdate', typeName)],
+        },
+      };
+      const userArgs = {
+        queries: {
+          get: getFieldNameFor('get', typeName),
+          list: getFieldNameFor('list', typeName),
+        },
+      };
+
+      expect(needsDeepMerge(defaultArgs, userArgs)).toEqual(false);
+    });
+
+    it('should allow deep clone when there are common properties between default and user args', () => {
+      const defaultArgs = {
+        subscriptions: {
+          level: 'on',
+          onCreate: [getFieldNameFor('onCreate', typeName)],
+          onDelete: [getFieldNameFor('onDelete', typeName)],
+          onUpdate: [getFieldNameFor('onUpdate', typeName)],
+        },
+      };
+      const userArgs = {
+        queries: {
+          get: getFieldNameFor('get', typeName),
+          list: getFieldNameFor('list', typeName),
+        },
+        subscriptions: {
+          level: 'public',
+        },
+      };
+
+      expect(needsDeepMerge(defaultArgs, userArgs)).toEqual(true);
     });
   });
 });

@@ -6,7 +6,7 @@ import { TranslationBehavior } from '../types';
  * Be sure to document default values when adding new keys in the top level `types` file.
  */
 export const defaultTranslationBehavior: TranslationBehavior = {
-  shouldDeepMergeDirectiveConfigDefaults: false,
+  shouldDeepMergeDirectiveConfigDefaults: true,
   disableResolverDeduping: true,
   sandboxModeEnabled: false,
   useSubUsernameForDefaultIdentityClaim: true,
