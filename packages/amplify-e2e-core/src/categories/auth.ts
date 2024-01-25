@@ -384,14 +384,11 @@ export function updateAuthAddUserGroups(projectDir: string, groupNames: string[]
     if (settings?.overrides?.category === 'auth') {
       chain.wait('A migration is needed to support latest updates on auth resources').sendConfirmYes();
     }
-    chain
-      .wait('What do you want to do?')
-      .send(KEY_DOWN_ARROW)
-      .send(KEY_DOWN_ARROW)
-      .sendCarriageReturn()
-      .wait('Provide a name for your user pool group')
-      .send(groupNames[0])
-      .sendCarriageReturn();
+    chain.wait('What do you want to do?').send(KEY_DOWN_ARROW).send(KEY_DOWN_ARROW);
+    if (settings.useSocialProvider) {
+      chain.send(KEY_DOWN_ARROW);
+    }
+    chain.sendCarriageReturn().wait('Provide a name for your user pool group').send(groupNames[0]).sendCarriageReturn();
 
     if (groupNames.length > 1) {
       let index = 1;
