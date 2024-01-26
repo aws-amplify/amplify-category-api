@@ -1,18 +1,18 @@
 import ts from 'typescript';
 import { Field, FieldType, Model, Schema } from '../schema-representation';
 
-const TYPEBEAST_SCHEMA_PACKAGE = '@aws-amplify/data-schema';
-const TYPEBEAST_MODEL_METHOD = 'model';
-const TYPEBEAST_SCHEMA_METHOD = 'schema';
-const TYPEBEAST_IDENTIFIER_METHOD = 'identifier';
-const TYPEBEAST_ARRAY_METHOD = 'array';
-const TYPEBEAST_REQUIRED_METHOD = 'required';
-const TYPEBEAST_STRING_METHOD = 'string';
-const TYPEBEAST_ENUM_METHOD = 'enum';
-const TYPEBEAST_REFERENCE_A = 'a';
+const SCHEMA_PACKAGE = '@aws-amplify/data-schema';
+const MODEL_METHOD = 'model';
+const SCHEMA_METHOD = 'schema';
+const IDENTIFIER_METHOD = 'identifier';
+const ARRAY_METHOD = 'array';
+const REQUIRED_METHOD = 'required';
+const STRING_METHOD = 'string';
+const ENUM_METHOD = 'enum';
+const REFERENCE_A = 'a';
 const EXPORT_VARIABLE_NAME = 'schema';
 
-const GQL_TYPEBEAST_TYPE_MAP = {
+const GQL_TYPESCRIPT_DATA_SCHEMA_TYPE_MAP = {
   string: 'string',
   int: 'integer',
   float: 'float',
@@ -37,14 +37,14 @@ const createProperty = (field: Field): ts.Node => {
 const createDataType = (type: FieldType): ts.Node => {
   if (type.kind === 'Scalar') {
     return ts.factory.createCallExpression(
-      ts.factory.createIdentifier(`${TYPEBEAST_REFERENCE_A}.${getTypebeastDataType(type.name)}`),
+      ts.factory.createIdentifier(`${REFERENCE_A}.${getTypescriptDataSchemaType(type.name)}`),
       undefined,
       undefined,
     );
   }
 
   if (type.kind === 'Enum') {
-    return ts.factory.createCallExpression(ts.factory.createIdentifier(`${TYPEBEAST_REFERENCE_A}.${TYPEBEAST_ENUM_METHOD}`), undefined, [
+    return ts.factory.createCallExpression(ts.factory.createIdentifier(`${REFERENCE_A}.${ENUM_METHOD}`), undefined, [
       ts.factory.createArrayLiteralExpression(
         type.values.map((value) => ts.factory.createStringLiteral(value)),
         true,
@@ -56,14 +56,14 @@ const createDataType = (type: FieldType): ts.Node => {
   // In case if there is a custom type in the IR schema, we will import it as string.
   if (type.kind === 'Custom') {
     return ts.factory.createCallExpression(
-      ts.factory.createIdentifier(`${TYPEBEAST_REFERENCE_A}.${TYPEBEAST_STRING_METHOD}`),
+      ts.factory.createIdentifier(`${REFERENCE_A}.${STRING_METHOD}`),
       undefined,
       undefined,
     );
   }
 
   // List or NonNull
-  const modifier = type.kind === 'List' ? TYPEBEAST_ARRAY_METHOD : TYPEBEAST_REQUIRED_METHOD;
+  const modifier = type.kind === 'List' ? ARRAY_METHOD : REQUIRED_METHOD;
   return ts.factory.createCallExpression(
     ts.factory.createPropertyAccessExpression(createDataType(type.type) as ts.Expression, ts.factory.createIdentifier(modifier)),
     undefined,
@@ -71,10 +71,10 @@ const createDataType = (type: FieldType): ts.Node => {
   );
 };
 
-const getTypebeastDataType = (type: string): string => {
-  const DEFAULT_DATATYPE = TYPEBEAST_STRING_METHOD;
-  const typebeastType = GQL_TYPEBEAST_TYPE_MAP[type.toLowerCase()];
-  return typebeastType ?? DEFAULT_DATATYPE;
+const getTypescriptDataSchemaType = (type: string): string => {
+  const DEFAULT_DATATYPE = STRING_METHOD;
+  const tsDataSchemaType = GQL_TYPESCRIPT_DATA_SCHEMA_TYPE_MAP[type.toLowerCase()];
+  return tsDataSchemaType ?? DEFAULT_DATATYPE;
 };
 
 const createModelDefinition = (model: Model): ts.Node => {
@@ -86,13 +86,13 @@ const createModelDefinition = (model: Model): ts.Node => {
 
 const createModel = (model: Model): ts.Node => {
   const modelExpr = ts.factory.createCallExpression(
-    ts.factory.createIdentifier(`${TYPEBEAST_REFERENCE_A}.${TYPEBEAST_MODEL_METHOD}`),
+    ts.factory.createIdentifier(`${REFERENCE_A}.${MODEL_METHOD}`),
     undefined,
     [createModelDefinition(model) as ts.Expression],
   );
 
   const modelExprWithPK = ts.factory.createCallExpression(
-    ts.factory.createPropertyAccessExpression(modelExpr, ts.factory.createIdentifier(TYPEBEAST_IDENTIFIER_METHOD)),
+    ts.factory.createPropertyAccessExpression(modelExpr, ts.factory.createIdentifier(IDENTIFIER_METHOD)),
     undefined,
     [
       ts.factory.createArrayLiteralExpression(
@@ -111,8 +111,8 @@ const createModel = (model: Model): ts.Node => {
 const exportModifier = ts.factory.createModifier(ts.SyntaxKind.ExportKeyword);
 
 /**
- * Creates a typebeast schema from internal SQL schema representation
- * Example Typebeast schema:
+ * Creates a typescript data schema from internal SQL schema representation
+ * Example typescript data schema:
  * ```
  * export const schema = a.schema({              <--- createSchema()
  *   User: a.model({                             <--- createModel()
@@ -122,14 +122,14 @@ const exportModifier = ts.factory.createModifier(ts.SyntaxKind.ExportKeyword);
  *   }),
  * });
  * @param schema
- * @returns Typebeast schema in TS Node format
+ * @returns Typescript data schema in TS Node format
  */
 export const createSchema = (schema: Schema): ts.Node => {
   const models = schema.getModels().map((model) => {
     return createModel(model);
   });
   const tsSchema = ts.factory.createCallExpression(
-    ts.factory.createIdentifier(`${TYPEBEAST_REFERENCE_A}.${TYPEBEAST_SCHEMA_METHOD}`),
+    ts.factory.createIdentifier(`${REFERENCE_A}.${SCHEMA_METHOD}`),
     undefined,
     [ts.factory.createObjectLiteralExpression(models as ts.ObjectLiteralElementLike[], true)],
   );
@@ -149,9 +149,9 @@ export const createImportExpression = (): ts.Node => {
       false,
       undefined,
       ts.factory.createNamedImports([
-        ts.factory.createImportSpecifier(false, undefined, ts.factory.createIdentifier(TYPEBEAST_REFERENCE_A)),
+        ts.factory.createImportSpecifier(false, undefined, ts.factory.createIdentifier(REFERENCE_A)),
       ]),
     ),
-    ts.factory.createStringLiteral(TYPEBEAST_SCHEMA_PACKAGE),
+    ts.factory.createStringLiteral(SCHEMA_PACKAGE),
   );
 };

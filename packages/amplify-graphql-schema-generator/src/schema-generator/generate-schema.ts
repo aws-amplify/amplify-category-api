@@ -14,7 +14,6 @@ import { EnumType, Field, FieldType, Index, Model, Schema } from '../schema-repr
 import { applySchemaOverrides } from './schema-overrides';
 import { singular } from 'pluralize';
 import { toCamelCase, toPascalCase } from 'graphql-transformer-common';
-import { generateTypeBeastSchema } from '../ts-schema-generator/generate-ts-schema';
 
 export const generateGraphQLSchema = (schema: Schema, existingSchemaDocument?: DocumentNode | undefined): string => {
   const models = schema.getModels();

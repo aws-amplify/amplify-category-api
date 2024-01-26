@@ -1,8 +1,8 @@
 import { Engine, Field, Model, Schema } from '../schema-representation';
-import { generateTypeBeastSchema } from '../ts-schema-generator/generate-ts-schema';
+import { generateTypescriptDataSchema } from '../ts-schema-generator/generate-ts-schema';
 
 describe('Type name conversions', () => {
-  it('basic models should generate correct typebeast schema', () => {
+  it('basic models should generate correct typescript data schema', () => {
     const dbschema = new Schema(new Engine('MySQL'));
     let model = new Model('User');
     model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
@@ -16,7 +16,7 @@ describe('Type name conversions', () => {
     model.setPrimaryKey(['id']);
     dbschema.addModel(model);
 
-    const graphqlSchema = generateTypeBeastSchema(dbschema);
+    const graphqlSchema = generateTypescriptDataSchema(dbschema);
     expect(graphqlSchema).toMatchSnapshot();
   });
 
@@ -42,7 +42,7 @@ describe('Type name conversions', () => {
     model.setPrimaryKey(['id']);
     dbschema.addModel(model);
 
-    const graphqlSchema = generateTypeBeastSchema(dbschema);
+    const graphqlSchema = generateTypescriptDataSchema(dbschema);
     expect(graphqlSchema).toMatchSnapshot();
   });
 
@@ -55,7 +55,7 @@ describe('Type name conversions', () => {
     model.setPrimaryKey(['id']);
     dbschema.addModel(model);
 
-    const graphqlSchema = generateTypeBeastSchema(dbschema);
+    const graphqlSchema = generateTypescriptDataSchema(dbschema);
     expect(graphqlSchema).toMatchSnapshot();
   });
 });

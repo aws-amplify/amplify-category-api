@@ -1,19 +1,19 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { createNewProjectDir, deleteProjectDir, npmInstall, npmTest } from 'amplify-category-api-e2e-core';
-import { Engine, Field, Model, Schema, generateTypeBeastSchema } from '@aws-amplify/graphql-schema-generator';
+import { Engine, Field, Model, Schema, generateTypescriptDataSchema } from '@aws-amplify/graphql-schema-generator';
 
-describe('validate generated typebeast schema', () => {
+describe('validate generated typescript data schema', () => {
   let projectDir: string;
-  const TYPEBEAST_EXAMPLE_PROJECT_PATH = path.join(__dirname, '..', 'examples', 'typebeast-schema-validation');
+  const EXAMPLE_PROJECT_PATH = path.join(__dirname, '..', 'examples', 'ts-data-schema-validation');
   beforeEach(async () => {
-    projectDir = await createNewProjectDir('typebeast');
+    projectDir = await createNewProjectDir('ts-data-schema');
     await setupProject();
   });
 
   const setupProject = async (): Promise<void> => {
-    fs.copyFileSync(path.join(TYPEBEAST_EXAMPLE_PROJECT_PATH, 'package.json'), path.join(projectDir, 'package.json'));
-    fs.copyFileSync(path.join(TYPEBEAST_EXAMPLE_PROJECT_PATH, 'tsconfig.json'), path.join(projectDir, 'tsconfig.json'));
+    fs.copyFileSync(path.join(EXAMPLE_PROJECT_PATH, 'package.json'), path.join(projectDir, 'package.json'));
+    fs.copyFileSync(path.join(EXAMPLE_PROJECT_PATH, 'tsconfig.json'), path.join(projectDir, 'tsconfig.json'));
     fs.mkdirSync(path.join(projectDir, 'src'));
     fs.writeFileSync(path.join(projectDir, 'src', 'schema.ts'), generateSchema());
   };
@@ -40,7 +40,7 @@ describe('validate generated typebeast schema', () => {
     model.setPrimaryKey(['id']);
     dbschema.addModel(model);
 
-    const graphqlSchema = generateTypeBeastSchema(dbschema);
+    const graphqlSchema = generateTypescriptDataSchema(dbschema);
     return graphqlSchema;
   };
 

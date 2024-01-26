@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Type name conversions basic models should generate correct typebeast schema 1`] = `
+exports[`Type name conversions basic models should generate correct typescript data schema 1`] = `
 "import { a } from \\"@aws-amplify/data-schema\\";
 
 export const schema = a.schema({
