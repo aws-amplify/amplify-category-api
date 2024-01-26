@@ -45,7 +45,8 @@
     "pluralize": "^8.0.0",
     "uuid": "^8.3.2",
     "ws": "^7.5.7",
-    "yargs": "^15.1.0"
+    "yargs": "^15.1.0",
+    "@aws-amplify/graphql-schema-generator": "0.6.2"
   },
   "peerDependencies": {
     "@aws-amplify/amplify-cli-core": "^4.2.10"
@@ -114,7 +115,8 @@
       }
     },
     "moduleNameMapper": {
-      "axios": "axios/dist/node/axios.cjs"
+      "axios": "axios/dist/node/axios.cjs",
+      "^csv-parse/sync": "<rootDir>/../../node_modules/csv-parse/dist/cjs/sync.cjs"
     }
   },
   "jest-junit": {
