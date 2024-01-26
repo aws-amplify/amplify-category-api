@@ -54,7 +54,7 @@ export class DirectiveWrapper {
       }),
       {},
     );
-    if (options?.deepMergeArguments) {
+    if (options?.deepMergeArguments && needsDeepMerge(defaultValue, argValues)) {
       return _.merge(_.cloneDeep(defaultValue), argValues);
     }
     return Object.assign(defaultValue, argValues);
@@ -64,3 +64,20 @@ export class DirectiveWrapper {
 export const generateGetArgumentsInput = ({ shouldDeepMergeDirectiveConfigDefaults }: TransformParameters): GetArgumentsOptions => ({
   deepMergeArguments: shouldDeepMergeDirectiveConfigDefaults,
 });
+
+/**
+ * Checks for cases where we don't need to do deep cloning and merging of arguments.
+ * These include cases when the user provided arguments are empty or when there are no common keys between the default and user provided arguments.
+ * @param defaultValue the default properties set for the directive
+ * @param argValues the user provided arguments for the directive
+ * @returns if deep cloning and merging of arguments is needed
+ */
+export const needsDeepMerge = <T>(defaultValue: Required<T>, argValues: { [x: string]: any }): boolean => {
+  if (_.isEmpty(argValues)) {
+    return false;
+  }
+  if (typeof defaultValue === 'object') {
+    return Object.keys(argValues)?.some((key) => Object.keys(defaultValue)?.includes(key));
+  }
+  return true;
+};
