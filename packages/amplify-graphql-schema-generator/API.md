@@ -157,6 +157,9 @@ export const findMatchingField: (columnName: string, taleName: string, document:
 export const generateGraphQLSchema: (schema: Schema, existingSchemaDocument?: DocumentNode | undefined) => string;
 
 // @public (undocumented)
+export const generateTypeBeastSchema: (schema: Schema) => string;
+
+// @public (undocumented)
 export const getHostVpc: (hostname: string, region: string) => Promise<VpcConfig | undefined>;
 
 // @public (undocumented)

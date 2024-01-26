@@ -1,11 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs';
-import {
-  createNewProjectDir,
-  deleteProjectDir,
-  npmInstall,
-  npmTest,
-} from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir, npmInstall, npmTest } from 'amplify-category-api-e2e-core';
 import { Engine, Field, Model, Schema, generateTypeBeastSchema } from '@aws-amplify/graphql-schema-generator';
 
 describe('validate generated typebeast schema', () => {
@@ -17,19 +12,10 @@ describe('validate generated typebeast schema', () => {
   });
 
   const setupProject = async (): Promise<void> => {
-    fs.copyFileSync(
-      path.join(TYPEBEAST_EXAMPLE_PROJECT_PATH, 'package.json'),
-      path.join(projectDir, 'package.json'),
-    );
-    fs.copyFileSync(
-      path.join(TYPEBEAST_EXAMPLE_PROJECT_PATH, 'tsconfig.json'),
-      path.join(projectDir, 'tsconfig.json'),
-    );
+    fs.copyFileSync(path.join(TYPEBEAST_EXAMPLE_PROJECT_PATH, 'package.json'), path.join(projectDir, 'package.json'));
+    fs.copyFileSync(path.join(TYPEBEAST_EXAMPLE_PROJECT_PATH, 'tsconfig.json'), path.join(projectDir, 'tsconfig.json'));
     fs.mkdirSync(path.join(projectDir, 'src'));
-    fs.writeFileSync(
-      path.join(projectDir, 'src', 'schema.ts'),
-      generateSchema(),
-    );
+    fs.writeFileSync(path.join(projectDir, 'src', 'schema.ts'), generateSchema());
   };
 
   const generateSchema = (): string => {

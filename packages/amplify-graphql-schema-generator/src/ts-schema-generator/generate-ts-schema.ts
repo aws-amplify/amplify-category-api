@@ -8,11 +8,7 @@ const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 export const generateTypeBeastSchema = (schema: Schema): string => {
   const result = printer.printList(
     ts.ListFormat.MultiLine,
-    ts.factory.createNodeArray([
-      createImportExpression(),
-      ts.factory.createIdentifier('\n'),
-      createSchema(schema),
-    ]),
+    ts.factory.createNodeArray([createImportExpression(), ts.factory.createIdentifier('\n'), createSchema(schema)]),
     file,
   );
   return result;
