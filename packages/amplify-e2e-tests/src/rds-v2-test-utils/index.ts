@@ -1,7 +1,7 @@
 import { join } from 'path';
 import _ from 'lodash';
 import * as fs from 'fs-extra';
-import { parse, ObjectTypeDefinitionNode, Kind, visit, FieldDefinitionNode, StringValueNode } from 'graphql';
+import { parse, ObjectTypeDefinitionNode, Kind, visit, FieldDefinitionNode, StringValueNode, valueFromASTUntyped } from 'graphql';
 import axios from 'axios';
 import {
   getProjectMeta,
@@ -198,9 +198,13 @@ const getFieldStatement = (field: FieldDefinitionNode, isPrimaryKey: boolean, en
   const isNonNull = fieldType.kind === Kind.NON_NULL_TYPE;
   const baseType = getBaseType(fieldType);
   const columnType = isArrayOrObject(fieldType, []) ? getArrayStringFieldType(engine) : convertToSQLType(baseType);
+  // Check if @default is defined on field
+  const defaultDir = field.directives.find((dir) => dir.name.value === 'default');
+  const defaultValueNode = defaultDir?.arguments.find((arg) => arg.name.value === 'value');
+  const fieldDefaultValue = defaultDir && defaultValueNode ? valueFromASTUntyped(defaultValueNode.value) : undefined;
   const sql = `${convertToDBSpecificName(fieldName, engine)} ${columnType} ${isNonNull ? 'NOT NULL' : ''} ${
     isPrimaryKey ? 'PRIMARY KEY' : ''
-  }`;
+  } ${fieldDefaultValue ? `DEFAULT ${fieldDefaultValue}` : ''}`;
   return sql;
 };
 
