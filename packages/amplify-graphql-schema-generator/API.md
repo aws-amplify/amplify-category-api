@@ -157,7 +157,7 @@ export const findMatchingField: (columnName: string, taleName: string, document:
 export const generateGraphQLSchema: (schema: Schema, existingSchemaDocument?: DocumentNode | undefined) => string;
 
 // @public (undocumented)
-export const generateTypeBeastSchema: (schema: Schema) => string;
+export const generateTypescriptDataSchema: (schema: Schema) => string;
 
 // @public (undocumented)
 export const getHostVpc: (hostname: string, region: string) => Promise<VpcConfig | undefined>;
@@ -416,6 +416,22 @@ export abstract class StringDataSourceAdapter {
     // (undocumented)
     protected abstract validateSchema(schema: any[]): void;
 }
+
+// @public (undocumented)
+export class TypescriptDataSchemaGenerator {
+    // (undocumented)
+    static generate: (config: TypescriptDataSchemaGeneratorConfig) => Promise<string>;
+}
+
+// @public (undocumented)
+export type TypescriptDataSchemaGeneratorConfig = {
+    engine: DBEngineType;
+    host: string;
+    port: number;
+    database: string;
+    username: string;
+    password: string;
+};
 
 // (No @packageDocumentation comment for this package)
 

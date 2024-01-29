@@ -1,25 +1,24 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { createNewProjectDir, deleteProjectDir, npmInstall, npmTest } from 'amplify-category-api-e2e-core';
-import { Engine, Field, Model, Schema, generateTypescriptDataSchema } from '@aws-amplify/graphql-schema-generator';
+import { DBEngineType, Engine, Field, Model, Schema, generateTypescriptDataSchema } from '@aws-amplify/graphql-schema-generator';
 
 describe('validate generated typescript data schema', () => {
   let projectDir: string;
   const EXAMPLE_PROJECT_PATH = path.join(__dirname, '..', 'examples', 'ts-data-schema-validation');
   beforeEach(async () => {
     projectDir = await createNewProjectDir('ts-data-schema');
-    await setupProject();
   });
 
-  const setupProject = async (): Promise<void> => {
+  const setupProject = async (engine: DBEngineType): Promise<void> => {
     fs.copyFileSync(path.join(EXAMPLE_PROJECT_PATH, 'package.json'), path.join(projectDir, 'package.json'));
     fs.copyFileSync(path.join(EXAMPLE_PROJECT_PATH, 'tsconfig.json'), path.join(projectDir, 'tsconfig.json'));
     fs.mkdirSync(path.join(projectDir, 'src'));
-    fs.writeFileSync(path.join(projectDir, 'src', 'schema.ts'), generateSchema());
+    fs.writeFileSync(path.join(projectDir, 'src', 'schema.ts'), generateSchema(engine));
   };
 
-  const generateSchema = (): string => {
-    const dbschema = new Schema(new Engine('MySQL'));
+  const generateSchema = (engine: DBEngineType): string => {
+    const dbschema = new Schema(new Engine(engine));
     const model = new Model('Table');
     model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
     model.addField(new Field('field1', { kind: 'Scalar', name: 'String' }));
@@ -48,7 +47,14 @@ describe('validate generated typescript data schema', () => {
     deleteProjectDir(projectDir);
   });
 
-  test('generated schema should compile successfully', () => {
+  test('generated schema should compile successfully for MySQL engine', async () => {
+    await setupProject('MySQL');
+    npmInstall(projectDir);
+    npmTest(projectDir);
+  });
+
+  test('generated schema should compile successfully for Postgres engine', async () => {
+    await setupProject('Postgres');
     npmInstall(projectDir);
     npmTest(projectDir);
   });

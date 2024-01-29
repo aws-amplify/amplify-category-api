@@ -1,5 +1,5 @@
 {
-  "name": "typebeast-example",
+  "name": "typescript-data-schema-example",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,7 +7,7 @@
     "test": "tsc"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "typescript": "^5.3.3",
     "@aws-amplify/data-schema": "*"
