@@ -425,12 +425,13 @@ export class TypescriptDataSchemaGenerator {
 
 // @public (undocumented)
 export type TypescriptDataSchemaGeneratorConfig = {
-    engine: DBEngineType;
+    engine: 'mysql' | 'postgresql';
     host: string;
     port: number;
     database: string;
     username: string;
     password: string;
+    outputFile?: string;
 };
 
 // (No @packageDocumentation comment for this package)
