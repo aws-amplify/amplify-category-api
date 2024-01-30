@@ -18,17 +18,28 @@ import { existsSync, removeSync, writeFileSync } from 'fs-extra';
 import generator from 'generate-password';
 import path from 'path';
 import { GQLQueryHelper } from '../query-utils/gql-helper';
-import { configureAmplify, getConfiguredAppsyncClientIAMAuth, getUserPoolId, setupUser, signInUser } from '../schema-api-directives';
+import {
+  configureAmplify,
+  getConfiguredAppsyncClientCognitoAuth,
+  getConfiguredAppsyncClientIAMAuth,
+  getUserPoolId,
+  setupUser,
+  signInUser,
+} from '../schema-api-directives';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { SQL_TESTS_USE_BETA } from './sql-e2e-config';
 import {
+  appendAmplifyInputWithoutGlobalAuthRule,
   checkListItemExistence,
   checkListResponseErrors,
   checkOperationResult,
   configureAppSyncClients,
+  createModelOperationHelpers,
+  expectNullFields,
   expectedFieldErrors,
   expectedOperationError,
   getDefaultDatabasePort,
+  omit,
 } from '../rds-v2-test-utils';
 import { Auth } from 'aws-amplify';
 import { schema, sqlCreateStatements } from '../__tests__/auth-test-schemas/userpool-static-dynamic-fields';
@@ -59,6 +70,9 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
     const deleteResultSetName = `delete${modelName}`;
     const getResultSetName = `get${modelName}`;
     const listResultSetName = `list${modelName}s`;
+    const onCreateResultSetName = `onCreate${modelName}`;
+    const onUpdateResultSetName = `onUpdate${modelName}`;
+    const onDeleteResultSetName = `onDelete${modelName}`;
 
     const userName1 = 'user1'; // Admin
     const userName2 = 'user2'; // BuildTime
@@ -81,8 +95,6 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
       employeeUser4Client: GQLQueryHelper;
     let employeeUser2, employeeUser3, employeeUser4;
     beforeAll(async () => {
-      console.log(sqlCreateStatements(engine));
-
       projRoot = await createNewProjectDir(projName);
       await initProjectAndImportSchema();
       await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.
@@ -219,7 +231,7 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
       });
       // Write RDS schema
       const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.sql.graphql');
-      const rdsSchema = appendAmplifyInput(schema, engine);
+      const rdsSchema = appendAmplifyInputWithoutGlobalAuthRule(schema, engine);
       writeFileSync(rdsSchemaFilePath, rdsSchema, 'utf8');
       // Enable unauthenticated access to the Cognito resource and push again
       await enableUserPoolUnauthenticatedAccess(projRoot);
@@ -280,6 +292,72 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
       // notes and salary fields are protected and cannot be read upon deletion
       expect(deleteEmployeeResult.data[deleteResultSetName].notes).toBeNull();
       expect(deleteEmployeeResult.data[deleteResultSetName].salary).toBeNull();
+    });
+    test('Admin user can subscribe all updates on employee', async () => {
+      const employee = {
+        id: 'E-1-sub',
+        bio: 'Bio1 sub',
+        notes: 'My note 1 sub',
+        email: userName2,
+        accolades: ['You did it!'],
+        salary: 1000,
+        team: [buildTimeGroupName, runTimeGroupName],
+      };
+      // Setup admin user client for subscription (user1)
+      const subscriberClient = getConfiguredAppsyncClientCognitoAuth(apiEndPoint, region, userMap[userName1]);
+      const subEmployeeHelper = createModelOperationHelpers(subscriberClient, schema)[modelName];
+      // Can listen to the create event
+      const onCreateSubscriptionResult = await subEmployeeHelper.subscribe(
+        'onCreate',
+        [
+          async () => {
+            await employeeUser1Client.create(createResultSetName, employee);
+          },
+        ],
+        {},
+      );
+      expect(onCreateSubscriptionResult).toHaveLength(1);
+      expect(onCreateSubscriptionResult[0].data[onCreateResultSetName]).toEqual(expect.objectContaining(omit(employee, 'notes', 'salary')));
+      expectNullFields(onCreateSubscriptionResult[0].data[onCreateResultSetName], ['notes', 'salary']);
+      // Can listen to the update event
+      const updatedEmployee = {
+        id: employee.id,
+        bio: 'Bio1 updated',
+        notes: 'My note 1 updated',
+        email: userName2,
+        accolades: ['You did it!', 'Thank you!'],
+        salary: 2000,
+        team: [buildTimeGroupName],
+      };
+      const onUpdateSubscriptionResult = await subEmployeeHelper.subscribe(
+        'onUpdate',
+        [
+          async () => {
+            await employeeUser1Client.update(updateResultSetName, updatedEmployee);
+          },
+        ],
+        {},
+      );
+      expect(onUpdateSubscriptionResult).toHaveLength(1);
+      expect(onUpdateSubscriptionResult[0].data[onUpdateResultSetName]).toEqual(
+        expect.objectContaining(omit(updatedEmployee, 'notes', 'salary')),
+      );
+      expectNullFields(onUpdateSubscriptionResult[0].data[onUpdateResultSetName], ['notes', 'salary']);
+      // Can listen to the delete event
+      const onDeleteSubscriptionResult = await subEmployeeHelper.subscribe(
+        'onDelete',
+        [
+          async () => {
+            await employeeUser1Client.delete(deleteResultSetName, { id: updatedEmployee.id });
+          },
+        ],
+        {},
+      );
+      expect(onDeleteSubscriptionResult).toHaveLength(1);
+      expect(onDeleteSubscriptionResult[0].data[onDeleteResultSetName]).toEqual(
+        expect.objectContaining(omit(updatedEmployee, 'notes', 'salary')),
+      );
+      expectNullFields(onDeleteSubscriptionResult[0].data[onDeleteResultSetName], ['notes', 'salary']);
     });
     test('Non-admin group users can perform all valid operations on employee', async () => {
       // User not in Admin group cannot create or delete the employee even if the owner field is himself
@@ -390,6 +468,72 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
         ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
       });
     });
+    test('Non-admin user can subscribe all updates on employee except for restricted fields', async () => {
+      const employee = {
+        id: 'E-2-sub',
+        bio: 'Bio2 sub',
+        notes: 'My note 2 sub',
+        email: userName3,
+        accolades: ['You did it!'],
+        salary: 1000,
+        team: [buildTimeGroupName, runTimeGroupName],
+      };
+      // Setup non-admin user client for subscription (user2)
+      const subscriberClient = getConfiguredAppsyncClientCognitoAuth(apiEndPoint, region, userMap[userName2]);
+      const subEmployeeHelper = createModelOperationHelpers(subscriberClient, schema)[modelName];
+      // Can listen to the create event
+      const onCreateSubscriptionResult = await subEmployeeHelper.subscribe(
+        'onCreate',
+        [
+          async () => {
+            await employeeUser1Client.create(createResultSetName, employee);
+          },
+        ],
+        {},
+      );
+      expect(onCreateSubscriptionResult).toHaveLength(1);
+      expect(onCreateSubscriptionResult[0].data[onCreateResultSetName]).toEqual(expect.objectContaining(omit(employee, 'notes', 'salary')));
+      expectNullFields(onCreateSubscriptionResult[0].data[onCreateResultSetName], ['notes', 'salary']);
+      // Can listen to the update event
+      const updatedEmployee = {
+        id: employee.id,
+        bio: 'Bio1 updated',
+        notes: 'My note 1 updated',
+        email: userName2,
+        accolades: ['You did it!', 'Thank you!'],
+        salary: 2000,
+        team: [buildTimeGroupName],
+      };
+      const onUpdateSubscriptionResult = await subEmployeeHelper.subscribe(
+        'onUpdate',
+        [
+          async () => {
+            await employeeUser1Client.update(updateResultSetName, updatedEmployee);
+          },
+        ],
+        {},
+      );
+      expect(onUpdateSubscriptionResult).toHaveLength(1);
+      expect(onUpdateSubscriptionResult[0].data[onUpdateResultSetName]).toEqual(
+        expect.objectContaining(omit(updatedEmployee, 'notes', 'salary')),
+      );
+      expectNullFields(onUpdateSubscriptionResult[0].data[onUpdateResultSetName], ['notes', 'salary']);
+      // Can listen to the delete event
+      const onDeleteSubscriptionResult = await subEmployeeHelper.subscribe(
+        'onDelete',
+        [
+          async () => {
+            await employeeUser1Client.delete(deleteResultSetName, { id: updatedEmployee.id });
+          },
+        ],
+        {},
+      );
+      expect(onDeleteSubscriptionResult).toHaveLength(1);
+      expect(onDeleteSubscriptionResult[0].data[onDeleteResultSetName]).toEqual(
+        expect.objectContaining(omit(updatedEmployee, 'notes', 'salary')),
+      );
+      expectNullFields(onDeleteSubscriptionResult[0].data[onDeleteResultSetName], ['notes', 'salary']);
+    });
 
     // helper functions
     const constructModelHelper = (name: string, client): GQLQueryHelper => {
@@ -446,17 +590,5 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
 
       return helper;
     };
-    const appendAmplifyInput = (schema: string, engine: ImportedRDSType): string => {
-      const amplifyInput = (engineName: ImportedRDSType): string => {
-        return `
-          input AMPLIFY {
-            engine: String = "${engineName}",
-          }
-        `;
-      };
-      return amplifyInput(engine) + '\n' + schema;
-    };
-    const omit = <T extends {}, K extends keyof T>(obj: T, ...keys: K[]) =>
-      Object.fromEntries(Object.entries(obj).filter(([key]) => !keys.includes(key as K))) as Omit<T, K>;
   });
 };
