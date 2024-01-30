@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.4.3...@aws-amplify/graphql-transformer-core@2.4.4) (2024-01-30)
+
+### Bug Fixes
+
+- deep merge default behavior ([#2212](https://github.com/aws-amplify/amplify-category-api/issues/2212)) ([fdb50e4](https://github.com/aws-amplify/amplify-category-api/commit/fdb50e42b3c6492e0e84582312e441676126466c))
+
 ## [2.4.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.4.2...@aws-amplify/graphql-transformer-core@2.4.3) (2024-01-22)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-core
