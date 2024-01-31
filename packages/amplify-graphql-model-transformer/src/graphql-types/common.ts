@@ -22,6 +22,7 @@ import {
   makeValueNode,
   ModelResourceIDs,
   STANDARD_SCALARS,
+  APPSYNC_DEFINED_SCALARS,
   toPascalCase,
 } from 'graphql-transformer-common';
 import {
@@ -69,6 +70,7 @@ export const makeConditionFilterInput = (
   addListTypeConditions(input, name);
   addNonListTypeConditions(input, name);
   addDatastoreConditions(input, ctx);
+  addTimestampFields(input);
 
   return input;
 };
@@ -100,6 +102,7 @@ export const makeSubscriptionFilterInput = (
 
   addListTypeConditions(input, name);
   addDatastoreConditions(input, ctx);
+  addTimestampFields(input);
 
   return input;
 };
@@ -167,6 +170,25 @@ const addDatastoreConditions = (input: InputObjectDefinitionWrapper, ctx: Transf
     const datastoreFields = [{ fieldName: '_deleted', typeName: STANDARD_SCALARS.Boolean }];
 
     for (const { fieldName, typeName } of datastoreFields) {
+      const type = ModelResourceIDs.ModelScalarFilterInputTypeName(typeName, false);
+      const inputField = InputFieldWrapper.create(fieldName, type, true, false);
+      input.addField(inputField);
+    }
+  }
+};
+
+/**
+ * Add implicit timestamp fields createdAt and updatedAt automatically included in all models
+ * @param input output object
+ */
+const addTimestampFields = (input: InputObjectDefinitionWrapper) => {
+  const timestampFields = [
+    { fieldName: 'createdAt', typeName: APPSYNC_DEFINED_SCALARS.AWSDateTime },
+    { fieldName: 'updatedAt', typeName: APPSYNC_DEFINED_SCALARS.AWSDateTime },
+  ];
+
+  for (const { fieldName, typeName } of timestampFields) {
+    if (!input.hasField(fieldName)) {
       const type = ModelResourceIDs.ModelScalarFilterInputTypeName(typeName, false);
       const inputField = InputFieldWrapper.create(fieldName, type, true, false);
       input.addField(inputField);
