@@ -1,7 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Type name conversions basic models should generate correct typescript data schema 1`] = `
-"import { a } from \\"@aws-amplify/data-schema\\";
+"/* eslint-disable */
+import { a } from \\"@aws-amplify/data-schema\\";
 
 export const schema = a.schema({
     \\"User\\": a.model({
@@ -21,7 +22,8 @@ export const schema = a.schema({
 `;
 
 exports[`Type name conversions check all valid datatypes 1`] = `
-"import { a } from \\"@aws-amplify/data-schema\\";
+"/* eslint-disable */
+import { a } from \\"@aws-amplify/data-schema\\";
 
 export const schema = a.schema({
     \\"Table\\": a.model({
@@ -49,7 +51,8 @@ export const schema = a.schema({
 `;
 
 exports[`Type name conversions generates enum imports correctly 1`] = `
-"import { a } from \\"@aws-amplify/data-schema\\";
+"/* eslint-disable */
+import { a } from \\"@aws-amplify/data-schema\\";
 
 export const schema = a.schema({
     \\"User\\": a.model({

@@ -161,7 +161,7 @@ export const createSchema = (schema: Schema): ts.Node => {
  * @returns Import statement in TS Node format
  */
 export const createImportExpression = (): ts.Node => {
-  return ts.factory.createImportDeclaration(
+  const importStatement = ts.factory.createImportDeclaration(
     undefined,
     ts.factory.createImportClause(
       false,
@@ -172,4 +172,11 @@ export const createImportExpression = (): ts.Node => {
     ),
     ts.factory.createStringLiteral(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.SCHEMA_PACKAGE),
   );
+  const importStatementWithEslintDisabled = ts.addSyntheticLeadingComment(
+    importStatement,
+    ts.SyntaxKind.MultiLineCommentTrivia,
+    ' eslint-disable ',
+    true,
+  );
+  return importStatementWithEslintDisabled;
 };
