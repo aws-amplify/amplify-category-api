@@ -62,6 +62,7 @@ export const createRDSInstance = async (
     MasterUsername: config.username,
     MasterUserPassword: config.password,
     PubliclyAccessible: config.publiclyAccessible ?? true,
+    CACertificateIdentifier: 'rds-ca-rsa2048-g1',
   };
   const command = new CreateDBInstanceCommand(params);
 

@@ -21,6 +21,7 @@ import {
   signupUser,
   createGroup,
   addUserToGroup,
+  setIdentityPoolRoles,
 } from '../cognitoUtils';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
@@ -256,22 +257,31 @@ beforeAll(async () => {
 
   // create userpool
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
-  USER_POOL_ID = userPoolResponse.UserPool.Id;
+  USER_POOL_ID = userPoolResponse.UserPool!.Id!;
   const userPoolClientResponse = await createUserPoolClient(cognitoClient, USER_POOL_ID, `UserPool${STACK_NAME}`);
-  const userPoolClientId = userPoolClientResponse.UserPoolClient.ClientId;
-  // create auth and unauthroles
-  const roles = await iamHelper.createRoles(AUTH_ROLE_NAME, UNAUTH_ROLE_NAME);
-  // create admin group role
-  const customGroupRole = await iamHelper.createRoleForCognitoGroup(CUSTOM_GROUP_ROLE_NAME);
-  await createGroup(USER_POOL_ID, CUSTOM_GROUP_NAME, customGroupRole.Arn);
+  const userPoolClientId = userPoolClientResponse.UserPoolClient!.ClientId!;
+
   // create identitypool
   IDENTITY_POOL_ID = await createIdentityPool(identityClient, `IdentityPool${STACK_NAME}`, {
+    providerName: `cognito-idp.${AWS_REGION}.amazonaws.com/${USER_POOL_ID}`,
+    clientId: userPoolClientId,
+  });
+
+  // create auth and unauthroles
+  const roles = await iamHelper.createRoles(AUTH_ROLE_NAME, UNAUTH_ROLE_NAME, IDENTITY_POOL_ID);
+
+  // set roles on identity pool
+  await setIdentityPoolRoles(identityClient, IDENTITY_POOL_ID, {
     authRoleArn: roles.authRole.Arn,
     unauthRoleArn: roles.unauthRole.Arn,
     providerName: `cognito-idp.${AWS_REGION}.amazonaws.com/${USER_POOL_ID}`,
     clientId: userPoolClientId,
     useTokenAuth: true,
   });
+
+  // create admin group role
+  const customGroupRole = await iamHelper.createRoleForCognitoGroup(CUSTOM_GROUP_ROLE_NAME, IDENTITY_POOL_ID);
+  await createGroup(USER_POOL_ID, CUSTOM_GROUP_NAME, customGroupRole.Arn);
 
   const out = testTransform({
     schema: validSchema,
