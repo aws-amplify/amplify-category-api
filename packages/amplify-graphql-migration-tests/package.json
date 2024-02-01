@@ -47,7 +47,10 @@
       "json",
       "node"
     ],
-    "testEnvironment": "../../FixJestEnvironment.js"
+    "testEnvironment": "../../FixJestEnvironment.js",
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ]
   },
   "devDependencies": {
     "@aws-amplify/graphql-auth-transformer": "3.3.5",

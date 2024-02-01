@@ -38,5 +38,10 @@
         "graphql"
       ]
     }
-  ]
+  ],
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ]
+  }
 }

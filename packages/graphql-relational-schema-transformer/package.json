@@ -65,6 +65,9 @@
       "ts-jest": {
         "diagnostics": false
       }
-    }
+    },
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ]
   }
 }

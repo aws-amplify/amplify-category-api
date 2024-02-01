@@ -59,6 +59,9 @@
     "coverageReporters": [
       "clover",
       "text"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.ts"
     ]
   }
 }
