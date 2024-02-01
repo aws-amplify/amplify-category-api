@@ -607,7 +607,6 @@ export class TransformerOutput implements TransformerContextOutputProvider {
   public getInput(name: string): InputObjectTypeDefinitionNode | undefined {
     if (this.nodeMap[name]) {
       const node = this.nodeMap[name];
-      console.log(node);
       if (node.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION) {
         return node as InputObjectTypeDefinitionNode;
       }
