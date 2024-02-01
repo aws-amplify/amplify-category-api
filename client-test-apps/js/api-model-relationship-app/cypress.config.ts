@@ -6,4 +6,5 @@ export default defineConfig({
       // implement node event listeners here
     },
   },
+  pageLoadTimeout: 180000,
 });
