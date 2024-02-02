@@ -213,9 +213,10 @@ export const testRdsUserpoolIAMFieldAuth = (engine: ImportedRDSType, queries: st
       };
       // userpool owner cannot create a post without restricted field `likes`
       const createPostResult = await postUser1Client.create(createResultSetName, omit(post, 'likes'));
-      expect(createPostResult.data[createResultSetName]).toEqual(expect.objectContaining(omit(post, 'subscriberContent')));
-      // subscriber content is protected and cannot be read upon mutation
+      expect(createPostResult.data[createResultSetName]).toEqual(expect.objectContaining(omit(post, 'subscriberContent', 'likes')));
+      // subscriber content and likes are protected and cannot be read upon mutation
       expect(createPostResult.data[createResultSetName].subscriberContent).toBeNull();
+      expect(createPostResult.data[createResultSetName].likes).toBeNull();
       // userpool owner cannot create a post with field input `likes`
       await expect(
         async () =>
@@ -252,9 +253,10 @@ export const testRdsUserpoolIAMFieldAuth = (engine: ImportedRDSType, queries: st
           }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
       const updatePostResult = await postUser1Client.update(updateResultSetName, omit(updatedPost, 'likes'));
-      expect(updatePostResult.data[updateResultSetName]).toEqual(expect.objectContaining(omit(updatedPost, 'subscriberContent')));
-      // subscriber content is protected and cannot be read upon mutation
+      expect(updatePostResult.data[updateResultSetName]).toEqual(expect.objectContaining(omit(updatedPost, 'subscriberContent', 'likes')));
+      // subscriber content and likes are protected and cannot be read upon mutation
       expect(updatePostResult.data[updateResultSetName].subscriberContent).toBeNull();
+      expect(updatePostResult.data[updateResultSetName].likes).toBeNull();
       // unless one has delete access to all fields in the model, delete is expected to fail
       // userpool owner cannot delete the post
       await expect(
@@ -278,7 +280,7 @@ export const testRdsUserpoolIAMFieldAuth = (engine: ImportedRDSType, queries: st
       );
 
       const createPostResult = await postIAMPrivateClient.create(createResultSetName, omit(post, 'likes', 'subscriberContent'));
-      expect(createPostResult.data[createResultSetName]).toEqual(expect.objectContaining(omit(post, 'subscriberContent')));
+      expect(createPostResult.data[createResultSetName]).toEqual(expect.objectContaining(omit(post, 'subscriberContent', 'likes')));
       // user2 should be able to update subscriber content to the post created by private iam
       await postUser2Client.update(updateResultSetName, {
         id: post.id,
@@ -301,14 +303,16 @@ export const testRdsUserpoolIAMFieldAuth = (engine: ImportedRDSType, queries: st
         subscriberContent: 'Exclusive content 2 updated',
       };
       const updatePostResult = await postIAMPrivateClient.update(updateResultSetName, updatedPost);
-      expect(updatePostResult.data[updateResultSetName]).toEqual(expect.objectContaining(omit(updatedPost, 'subscriberContent')));
-      // subscriber content is protected and cannot be read upon mutation
+      expect(updatePostResult.data[updateResultSetName]).toEqual(expect.objectContaining(omit(updatedPost, 'subscriberContent', 'likes')));
+      // subscriber content and likes are protected and cannot be read upon mutation
       expect(updatePostResult.data[updateResultSetName].subscriberContent).toBeNull();
+      expect(updatePostResult.data[updateResultSetName].likes).toBeNull();
       // private iam role can delete a post
       const deletePostResult = await postIAMPrivateClient.delete(deleteResultSetName, { id: post.id });
-      expect(deletePostResult.data[deleteResultSetName]).toEqual(expect.objectContaining(omit(updatedPost, 'subscriberContent')));
-      // subscriber content is protected and cannot be read upon mutation
+      expect(deletePostResult.data[deleteResultSetName]).toEqual(expect.objectContaining(omit(updatedPost, 'subscriberContent', 'likes')));
+      // subscriber content and likes are protected and cannot be read upon mutation
       expect(deletePostResult.data[deleteResultSetName].subscriberContent).toBeNull();
+      expect(deletePostResult.data[deleteResultSetName].likes).toBeNull();
     });
     test('public iam role can perform all valid operations on post', async () => {
       const post = {

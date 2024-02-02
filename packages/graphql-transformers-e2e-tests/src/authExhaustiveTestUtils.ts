@@ -23,6 +23,7 @@ import {
   createUserPool,
   createUserPoolClient,
   signupUser,
+  setIdentityPoolRoles,
 } from './cognitoUtils';
 import { cleanupStackAfterTest, deploy } from './deployNestedStacks';
 import { IAMHelper } from './IAMHelper';
@@ -463,12 +464,18 @@ export const deploySchema = async (
   }
 
   const userPoolResource = await createUserPool(COGNITO_CLIENT, `UserPool${stackName}`);
-  const userPoolId = userPoolResource.UserPool.Id;
+  const userPoolId = userPoolResource.UserPool!.Id!;
   const userPoolClientResponse = await createUserPoolClient(COGNITO_CLIENT, userPoolId, `UserPool${stackName}`);
-  const userPoolClientId = userPoolClientResponse.UserPoolClient.ClientId;
+  const userPoolClientId = userPoolClientResponse.UserPoolClient!.ClientId!;
 
-  const roles = await IAM_HELPER.createRoles(authRoleName, unauthRoleName);
   const identityPoolId = await createIdentityPool(IDENTITY_CLIENT, `IdentityPool${stackName}`, {
+    providerName: `cognito-idp.${REGION}.amazonaws.com/${userPoolId}`,
+    clientId: userPoolClientId,
+  });
+
+  const roles = await IAM_HELPER.createRoles(authRoleName, unauthRoleName, identityPoolId);
+
+  await setIdentityPoolRoles(IDENTITY_CLIENT, identityPoolId, {
     authRoleArn: roles.authRole.Arn,
     unauthRoleArn: roles.unauthRole.Arn,
     providerName: `cognito-idp.${REGION}.amazonaws.com/${userPoolId}`,
