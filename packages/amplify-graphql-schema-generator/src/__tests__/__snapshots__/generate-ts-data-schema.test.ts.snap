@@ -1,0 +1,70 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Type name conversions basic models should generate correct typescript data schema 1`] = `
+"/* eslint-disable */
+import { a } from \\"@aws-amplify/data-schema\\";
+
+export const schema = a.schema({
+    \\"User\\": a.model({
+        id: a.string().required(),
+        name: a.string()
+    }).identifier([
+        \\"id\\"
+    ]),
+    \\"Profile\\": a.model({
+        id: a.string().required(),
+        details: a.string()
+    }).identifier([
+        \\"id\\"
+    ])
+});
+"
+`;
+
+exports[`Type name conversions check all valid datatypes 1`] = `
+"/* eslint-disable */
+import { a } from \\"@aws-amplify/data-schema\\";
+
+export const schema = a.schema({
+    \\"Table\\": a.model({
+        id: a.string().required(),
+        field1: a.string(),
+        field2: a.string(),
+        field3: a.integer(),
+        field4: a.float(),
+        field5: a.boolean(),
+        field6: a.id(),
+        field7: a.date(),
+        field8: a.time(),
+        field9: a.datetime(),
+        field10: a.timestamp(),
+        field11: a.json(),
+        field12: a.email(),
+        field13: a.phone(),
+        field14: a.url(),
+        field15: a.ipAddress()
+    }).identifier([
+        \\"id\\"
+    ])
+});
+"
+`;
+
+exports[`Type name conversions generates enum imports correctly 1`] = `
+"/* eslint-disable */
+import { a } from \\"@aws-amplify/data-schema\\";
+
+export const schema = a.schema({
+    \\"User\\": a.model({
+        id: a.string().required(),
+        name: a.string(),
+        status: a.enum([
+            \\"ACTIVE\\",
+            \\"INACTIVE\\"
+        ])
+    }).identifier([
+        \\"id\\"
+    ])
+});
+"
+`;

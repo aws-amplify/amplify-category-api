@@ -43,7 +43,8 @@
     "mysql2": "~2.3.3",
     "ora": "^4.0.3",
     "pg": "~8.11.3",
-    "pluralize": "^8.0.0"
+    "pluralize": "^8.0.0",
+    "typescript": "^4.8.4"
   },
   "peerDependencies": {
     "@aws-amplify/amplify-prompts": "^2.8.4"
