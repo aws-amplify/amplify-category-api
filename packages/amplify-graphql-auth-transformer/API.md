@@ -211,6 +211,7 @@ export const getAuthDirectiveRules: (authDir: DirectiveWrapper, options?: GetAut
 // @public (undocumented)
 export type GetAuthRulesOptions = GetArgumentsOptions & {
     isField?: boolean;
+    isSqlDataSource?: boolean;
 };
 
 // @public (undocumented)

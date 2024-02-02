@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-transformer-test-utils",
-  "version": "0.4.2",
+  "version": "0.4.4",
   "description": "Test utils for graphql transformers",
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "2.4.2",
+    "@aws-amplify/graphql-transformer-core": "2.4.4",
     "@aws-amplify/graphql-transformer-interfaces": "3.3.3"
   },
   "devDependencies": {
@@ -67,6 +67,7 @@
     "coverageReporters": [
       "clover",
       "text"
-    ]
+    ],
+    "testEnvironment": "../../FixJestEnvironment.js"
   }
 }
