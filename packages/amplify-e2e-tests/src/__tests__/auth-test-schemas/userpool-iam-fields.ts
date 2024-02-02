@@ -19,6 +19,7 @@ export const schema = `
         { allow: public, provider: iam, operations: [read] }
         # Signed in users can read posts
         { allow: private, operations: [read] }
+        { allow: owner, ownerField: "subscriberList", operations: [read]}
       ]
     ) {
     id: ID! @primaryKey
