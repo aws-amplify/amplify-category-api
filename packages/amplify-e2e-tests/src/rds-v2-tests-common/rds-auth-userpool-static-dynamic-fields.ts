@@ -259,10 +259,11 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
         team: [buildTimeGroupName, runTimeGroupName],
       };
       const createEmployeeResult = await employeeUser1Client.create(createResultSetName, employee);
-      expect(createEmployeeResult.data[createResultSetName]).toEqual(expect.objectContaining(omit(employee, 'notes', 'salary')));
-      // notes and salary are protected and cannot be read upon mutation
+      expect(createEmployeeResult.data[createResultSetName]).toEqual(expect.objectContaining(omit(employee, 'notes', 'salary', 'team')));
+      // notes, team and salary are protected and cannot be read upon mutation
       expect(createEmployeeResult.data[createResultSetName].notes).toBeNull();
       expect(createEmployeeResult.data[createResultSetName].salary).toBeNull();
+      expect(createEmployeeResult.data[createResultSetName].team).toBeNull();
       // Admin group user can read all fields
       const getEmployeeResult = await employeeUser1Client.get({
         id: employee.id,
@@ -281,17 +282,23 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
         team: [buildTimeGroupName],
       };
       const updateEmployeeResult = await employeeUser1Client.update(updateResultSetName, updatedEmployee);
-      expect(updateEmployeeResult.data[updateResultSetName]).toEqual(expect.objectContaining(omit(updatedEmployee, 'notes', 'salary')));
-      // notes and salary fields are protected and cannot be read upon mutation
+      expect(updateEmployeeResult.data[updateResultSetName]).toEqual(
+        expect.objectContaining(omit(updatedEmployee, 'notes', 'salary', 'team')),
+      );
+      // notes, team and salary fields are protected and cannot be read upon mutation
       expect(updateEmployeeResult.data[updateResultSetName].notes).toBeNull();
       expect(updateEmployeeResult.data[updateResultSetName].salary).toBeNull();
+      expect(updateEmployeeResult.data[updateResultSetName].team).toBeNull();
       // unless one has delete access to all fields in the model, delete is expected to fail
       // admin user can delete the employee
       const deleteEmployeeResult = await employeeUser1Client.delete(deleteResultSetName, { id: employee.id });
-      expect(deleteEmployeeResult.data[deleteResultSetName]).toEqual(expect.objectContaining(omit(updatedEmployee, 'notes', 'salary')));
-      // notes and salary fields are protected and cannot be read upon deletion
+      expect(deleteEmployeeResult.data[deleteResultSetName]).toEqual(
+        expect.objectContaining(omit(updatedEmployee, 'notes', 'salary', 'team')),
+      );
+      // notes, team and salary fields are protected and cannot be read upon deletion
       expect(deleteEmployeeResult.data[deleteResultSetName].notes).toBeNull();
       expect(deleteEmployeeResult.data[deleteResultSetName].salary).toBeNull();
+      expect(deleteEmployeeResult.data[deleteResultSetName].team).toBeNull();
     });
     test('Admin user can subscribe all updates on employee', async () => {
       const employee = {
@@ -317,8 +324,10 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
         {},
       );
       expect(onCreateSubscriptionResult).toHaveLength(1);
-      expect(onCreateSubscriptionResult[0].data[onCreateResultSetName]).toEqual(expect.objectContaining(omit(employee, 'notes', 'salary')));
-      expectNullFields(onCreateSubscriptionResult[0].data[onCreateResultSetName], ['notes', 'salary']);
+      expect(onCreateSubscriptionResult[0].data[onCreateResultSetName]).toEqual(
+        expect.objectContaining(omit(employee, 'notes', 'salary', 'team')),
+      );
+      expectNullFields(onCreateSubscriptionResult[0].data[onCreateResultSetName], ['notes', 'salary', 'team']);
       // Can listen to the update event
       const updatedEmployee = {
         id: employee.id,
@@ -340,9 +349,9 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
       );
       expect(onUpdateSubscriptionResult).toHaveLength(1);
       expect(onUpdateSubscriptionResult[0].data[onUpdateResultSetName]).toEqual(
-        expect.objectContaining(omit(updatedEmployee, 'notes', 'salary')),
+        expect.objectContaining(omit(updatedEmployee, 'notes', 'salary', 'team')),
       );
-      expectNullFields(onUpdateSubscriptionResult[0].data[onUpdateResultSetName], ['notes', 'salary']);
+      expectNullFields(onUpdateSubscriptionResult[0].data[onUpdateResultSetName], ['notes', 'salary', 'team']);
       // Can listen to the delete event
       const onDeleteSubscriptionResult = await subEmployeeHelper.subscribe(
         'onDelete',
@@ -355,9 +364,9 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
       );
       expect(onDeleteSubscriptionResult).toHaveLength(1);
       expect(onDeleteSubscriptionResult[0].data[onDeleteResultSetName]).toEqual(
-        expect.objectContaining(omit(updatedEmployee, 'notes', 'salary')),
+        expect.objectContaining(omit(updatedEmployee, 'notes', 'salary', 'team')),
       );
-      expectNullFields(onDeleteSubscriptionResult[0].data[onDeleteResultSetName], ['notes', 'salary']);
+      expectNullFields(onDeleteSubscriptionResult[0].data[onDeleteResultSetName], ['notes', 'salary', 'team']);
     });
     test('Non-admin group users can perform all valid operations on employee', async () => {
       // User not in Admin group cannot create or delete the employee even if the owner field is himself
@@ -415,10 +424,13 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
         updateResultSetName,
         omit(updatedEmployee1, 'team', 'salary', 'email'),
       );
-      expect(updateEmployeeResult1.data[updateResultSetName]).toEqual(expect.objectContaining(omit(updatedEmployee1, 'notes', 'salary')));
-      // notes and salary fields are protected and cannot be read upon mutation
+      expect(updateEmployeeResult1.data[updateResultSetName]).toEqual(
+        expect.objectContaining(omit(updatedEmployee1, 'notes', 'salary', 'team')),
+      );
+      // notes, team and salary fields are protected and cannot be read upon mutation
       expect(updateEmployeeResult1.data[updateResultSetName].notes).toBeNull();
       expect(updateEmployeeResult1.data[updateResultSetName].salary).toBeNull();
+      expect(updateEmployeeResult1.data[updateResultSetName].team).toBeNull();
       // User can update accolades for their teammates
       const updatedEmployee2 = {
         ...employeeUser4,
@@ -436,7 +448,9 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
           accolades
         `,
       );
-      expect(updateEmployeeResult2.data[updateResultSetName]).toEqual(expect.objectContaining(omit(updatedEmployee2, 'notes', 'salary')));
+      expect(updateEmployeeResult2.data[updateResultSetName]).toEqual(
+        expect.objectContaining(omit(updatedEmployee2, 'notes', 'salary', 'team')),
+      );
       // notes field is protected and cannot be read upon mutation
       expect(updateEmployeeResult2.data[updateResultSetName].notes).toBeNull();
 
@@ -492,8 +506,10 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
         {},
       );
       expect(onCreateSubscriptionResult).toHaveLength(1);
-      expect(onCreateSubscriptionResult[0].data[onCreateResultSetName]).toEqual(expect.objectContaining(omit(employee, 'notes', 'salary')));
-      expectNullFields(onCreateSubscriptionResult[0].data[onCreateResultSetName], ['notes', 'salary']);
+      expect(onCreateSubscriptionResult[0].data[onCreateResultSetName]).toEqual(
+        expect.objectContaining(omit(employee, 'notes', 'salary', 'team')),
+      );
+      expectNullFields(onCreateSubscriptionResult[0].data[onCreateResultSetName], ['notes', 'salary', 'team']);
       // Can listen to the update event
       const updatedEmployee = {
         id: employee.id,
@@ -515,9 +531,9 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
       );
       expect(onUpdateSubscriptionResult).toHaveLength(1);
       expect(onUpdateSubscriptionResult[0].data[onUpdateResultSetName]).toEqual(
-        expect.objectContaining(omit(updatedEmployee, 'notes', 'salary')),
+        expect.objectContaining(omit(updatedEmployee, 'notes', 'salary', 'team')),
       );
-      expectNullFields(onUpdateSubscriptionResult[0].data[onUpdateResultSetName], ['notes', 'salary']);
+      expectNullFields(onUpdateSubscriptionResult[0].data[onUpdateResultSetName], ['notes', 'salary', 'team']);
       // Can listen to the delete event
       const onDeleteSubscriptionResult = await subEmployeeHelper.subscribe(
         'onDelete',
@@ -530,9 +546,9 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
       );
       expect(onDeleteSubscriptionResult).toHaveLength(1);
       expect(onDeleteSubscriptionResult[0].data[onDeleteResultSetName]).toEqual(
-        expect.objectContaining(omit(updatedEmployee, 'notes', 'salary')),
+        expect.objectContaining(omit(updatedEmployee, 'notes', 'salary', 'team')),
       );
-      expectNullFields(onDeleteSubscriptionResult[0].data[onDeleteResultSetName], ['notes', 'salary']);
+      expectNullFields(onDeleteSubscriptionResult[0].data[onDeleteResultSetName], ['notes', 'salary', 'team']);
     });
 
     // helper functions

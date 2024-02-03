@@ -14,6 +14,7 @@ export const schema = `
         { allow: groups, groups: ["Admin"] }
         { allow: private, operations: [read] }
         { allow: owner, ownerField: "email", operations: [read, update] }
+        { allow: groups, groupsField: "team", operations: [read] }
       ]
     ) {
     id: ID! @primaryKey
