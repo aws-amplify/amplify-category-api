@@ -53,6 +53,9 @@
     ],
     "collectCoverageFrom": [
       "src/**/*.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/__tests__/"
     ]
   }
 }
