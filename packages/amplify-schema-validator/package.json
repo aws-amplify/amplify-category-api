@@ -38,13 +38,5 @@
         "graphql"
       ]
     }
-  ],
-  "jest": {
-    "collectCoverageFrom": [
-      "src/**/*.ts"
-    ],
-    "coveragePathIgnorePatterns": [
-      "/__tests__/"
-    ]
-  }
+  ]
 }
