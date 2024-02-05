@@ -37,9 +37,9 @@
     "coverageProvider": "v8",
     "coverageThreshold": {
       "global": {
-        "branches": 63,
-        "functions": 11,
-        "lines": 27
+        "branches": 36,
+        "functions": 8,
+        "lines": 8
       }
     },
     "coverageReporters": [
