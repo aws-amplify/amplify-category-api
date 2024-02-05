@@ -169,6 +169,8 @@ input ModelTaskFilterInput {
   and: [ModelTaskFilterInput]
   or: [ModelTaskFilterInput]
   not: ModelTaskFilterInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Query {
@@ -182,6 +184,8 @@ input ModelTaskConditionInput {
   and: [ModelTaskConditionInput]
   or: [ModelTaskConditionInput]
   not: ModelTaskConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateTaskInput {
@@ -209,6 +213,8 @@ input ModelSubscriptionTaskFilterInput {
   title: ModelSubscriptionStringInput
   and: [ModelSubscriptionTaskFilterInput]
   or: [ModelSubscriptionTaskFilterInput]
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Subscription {
@@ -401,6 +407,8 @@ input ModelTestFilterInput {
   or: [ModelTestFilterInput]
   not: ModelTestFilterInput
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Query {
@@ -417,6 +425,8 @@ input ModelTestConditionInput {
   or: [ModelTestConditionInput]
   not: ModelTestConditionInput
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateTestInput {
@@ -448,6 +458,8 @@ input ModelSubscriptionTestFilterInput {
   and: [ModelSubscriptionTestFilterInput]
   or: [ModelSubscriptionTestFilterInput]
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Subscription {
@@ -471,6 +483,8 @@ input ModelEmailFilterInput {
   or: [ModelEmailFilterInput]
   not: ModelEmailFilterInput
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input ModelEmailConditionInput {
@@ -478,6 +492,8 @@ input ModelEmailConditionInput {
   or: [ModelEmailConditionInput]
   not: ModelEmailConditionInput
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateEmailInput {
@@ -500,6 +516,8 @@ input ModelSubscriptionEmailFilterInput {
   and: [ModelSubscriptionEmailFilterInput]
   or: [ModelSubscriptionEmailFilterInput]
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 "
 `;
@@ -877,6 +895,8 @@ input ModelAuthorFilterInput {
   or: [ModelAuthorFilterInput]
   not: ModelAuthorFilterInput
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input ModelAuthorConditionInput {
@@ -885,6 +905,8 @@ input ModelAuthorConditionInput {
   or: [ModelAuthorConditionInput]
   not: ModelAuthorConditionInput
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateAuthorInput {
@@ -914,6 +936,8 @@ input ModelSubscriptionAuthorFilterInput {
   and: [ModelSubscriptionAuthorFilterInput]
   or: [ModelSubscriptionAuthorFilterInput]
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type ModelRequireConnection {
@@ -930,6 +954,8 @@ input ModelRequireFilterInput {
   or: [ModelRequireFilterInput]
   not: ModelRequireFilterInput
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input ModelRequireConditionInput {
@@ -939,6 +965,8 @@ input ModelRequireConditionInput {
   or: [ModelRequireConditionInput]
   not: ModelRequireConditionInput
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateRequireInput {
@@ -967,6 +995,8 @@ input ModelSubscriptionRequireFilterInput {
   and: [ModelSubscriptionRequireFilterInput]
   or: [ModelSubscriptionRequireFilterInput]
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type ModelCommentConnection {
@@ -984,6 +1014,8 @@ input ModelCommentFilterInput {
   or: [ModelCommentFilterInput]
   not: ModelCommentFilterInput
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input ModelCommentConditionInput {
@@ -994,6 +1026,8 @@ input ModelCommentConditionInput {
   or: [ModelCommentConditionInput]
   not: ModelCommentConditionInput
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateCommentInput {
@@ -1025,6 +1059,8 @@ input ModelSubscriptionCommentFilterInput {
   and: [ModelSubscriptionCommentFilterInput]
   or: [ModelSubscriptionCommentFilterInput]
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 "
 `;
@@ -4079,6 +4115,8 @@ input ModelPostFilterInput {
   or: [ModelPostFilterInput]
   not: ModelPostFilterInput
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Query {
@@ -4093,6 +4131,8 @@ input ModelPostConditionInput {
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreatePostInput {
@@ -4124,6 +4164,8 @@ input ModelSubscriptionPostFilterInput {
   and: [ModelSubscriptionPostFilterInput]
   or: [ModelSubscriptionPostFilterInput]
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Subscription {
@@ -4517,6 +4559,8 @@ input ModelNoteFilterInput {
   and: [ModelNoteFilterInput]
   or: [ModelNoteFilterInput]
   not: ModelNoteFilterInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Query {
@@ -4530,6 +4574,8 @@ input ModelNoteConditionInput {
   and: [ModelNoteConditionInput]
   or: [ModelNoteConditionInput]
   not: ModelNoteConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateNoteInput {
@@ -4562,6 +4608,8 @@ input ModelSubscriptionNoteFilterInput {
   tags: ModelSubscriptionStringInput
   and: [ModelSubscriptionNoteFilterInput]
   or: [ModelSubscriptionNoteFilterInput]
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Subscription {
@@ -5045,6 +5093,8 @@ input ModelNoteFilterInput {
   and: [ModelNoteFilterInput]
   or: [ModelNoteFilterInput]
   not: ModelNoteFilterInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Query {
@@ -5058,6 +5108,8 @@ input ModelNoteConditionInput {
   and: [ModelNoteConditionInput]
   or: [ModelNoteConditionInput]
   not: ModelNoteConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateNoteInput {
@@ -5090,6 +5142,8 @@ input ModelSubscriptionNoteFilterInput {
   tags: ModelSubscriptionStringInput
   and: [ModelSubscriptionNoteFilterInput]
   or: [ModelSubscriptionNoteFilterInput]
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Subscription {
@@ -5736,6 +5790,8 @@ input ModelModelTypeFilterInput {
   or: [ModelModelTypeFilterInput]
   not: ModelModelTypeFilterInput
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Query {
@@ -5750,6 +5806,8 @@ input ModelModelTypeConditionInput {
   or: [ModelModelTypeConditionInput]
   not: ModelModelTypeConditionInput
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateModelTypeInput {
@@ -5783,6 +5841,8 @@ input ModelSubscriptionModelTypeFilterInput {
   and: [ModelSubscriptionModelTypeFilterInput]
   or: [ModelSubscriptionModelTypeFilterInput]
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Subscription {
@@ -5967,6 +6027,8 @@ input ModelPostFilterInput {
   or: [ModelPostFilterInput]
   not: ModelPostFilterInput
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Query {
@@ -5981,6 +6043,8 @@ input ModelPostConditionInput {
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreatePostInput {
@@ -6012,6 +6076,8 @@ input ModelSubscriptionPostFilterInput {
   and: [ModelSubscriptionPostFilterInput]
   or: [ModelSubscriptionPostFilterInput]
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Subscription {

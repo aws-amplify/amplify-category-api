@@ -169,6 +169,8 @@ input ModelTestFilterInput {
   and: [ModelTestFilterInput]
   or: [ModelTestFilterInput]
   not: ModelTestFilterInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Query {
@@ -181,6 +183,8 @@ input ModelTestConditionInput {
   and: [ModelTestConditionInput]
   or: [ModelTestConditionInput]
   not: ModelTestConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateTestInput {
@@ -208,6 +212,8 @@ input ModelSubscriptionTestFilterInput {
   stringValue: ModelSubscriptionStringInput
   and: [ModelSubscriptionTestFilterInput]
   or: [ModelSubscriptionTestFilterInput]
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Subscription {
@@ -432,6 +438,8 @@ input ModelPostFilterInput {
   and: [ModelPostFilterInput]
   or: [ModelPostFilterInput]
   not: ModelPostFilterInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Query {
@@ -458,6 +466,8 @@ input ModelPostConditionInput {
   and: [ModelPostConditionInput]
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreatePostInput {
@@ -527,6 +537,8 @@ input ModelSubscriptionPostFilterInput {
   awsDateTime: ModelSubscriptionStringInput
   and: [ModelSubscriptionPostFilterInput]
   or: [ModelSubscriptionPostFilterInput]
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Subscription {

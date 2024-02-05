@@ -216,6 +216,8 @@ input ModelEmployeeFilterInput {
   and: [ModelEmployeeFilterInput]
   or: [ModelEmployeeFilterInput]
   not: ModelEmployeeFilterInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input ModelEmployeeConditionInput {
@@ -225,6 +227,8 @@ input ModelEmployeeConditionInput {
   and: [ModelEmployeeConditionInput]
   or: [ModelEmployeeConditionInput]
   not: ModelEmployeeConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateEmployeeInput {
@@ -258,6 +262,8 @@ input ModelSubscriptionEmployeeFilterInput {
   type: ModelSubscriptionStringInput
   and: [ModelSubscriptionEmployeeFilterInput]
   or: [ModelSubscriptionEmployeeFilterInput]
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Subscription {
@@ -1957,6 +1963,8 @@ input ModelUserFilterInput {
   and: [ModelUserFilterInput]
   or: [ModelUserFilterInput]
   not: ModelUserFilterInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input ModelUserConditionInput {
@@ -1964,6 +1972,8 @@ input ModelUserConditionInput {
   and: [ModelUserConditionInput]
   or: [ModelUserConditionInput]
   not: ModelUserConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateUserInput {
@@ -1985,6 +1995,8 @@ input ModelSubscriptionUserFilterInput {
   name: ModelSubscriptionStringInput
   and: [ModelSubscriptionUserFilterInput]
   or: [ModelSubscriptionUserFilterInput]
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input SearchableStringFilterInput {

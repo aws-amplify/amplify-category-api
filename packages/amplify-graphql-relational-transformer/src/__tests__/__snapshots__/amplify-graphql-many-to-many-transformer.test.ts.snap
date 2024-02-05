@@ -190,6 +190,8 @@ input ModelModelAFilterInput {
   and: [ModelModelAFilterInput]
   or: [ModelModelAFilterInput]
   not: ModelModelAFilterInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Query {
@@ -205,6 +207,8 @@ input ModelModelAConditionInput {
   and: [ModelModelAConditionInput]
   or: [ModelModelAConditionInput]
   not: ModelModelAConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateModelAInput {
@@ -239,6 +243,8 @@ input ModelSubscriptionModelAFilterInput {
   sortId: ModelSubscriptionIDInput
   and: [ModelSubscriptionModelAFilterInput]
   or: [ModelSubscriptionModelAFilterInput]
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Subscription {
@@ -264,12 +270,16 @@ input ModelModelBFilterInput {
   and: [ModelModelBFilterInput]
   or: [ModelModelBFilterInput]
   not: ModelModelBFilterInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input ModelModelBConditionInput {
   and: [ModelModelBConditionInput]
   or: [ModelModelBConditionInput]
   not: ModelModelBConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateModelBInput {
@@ -292,6 +302,8 @@ input ModelSubscriptionModelBFilterInput {
   sortId: ModelSubscriptionIDInput
   and: [ModelSubscriptionModelBFilterInput]
   or: [ModelSubscriptionModelBFilterInput]
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type ModelModelAModelBConnection {
@@ -308,6 +320,8 @@ input ModelModelAModelBFilterInput {
   and: [ModelModelAModelBFilterInput]
   or: [ModelModelAModelBFilterInput]
   not: ModelModelAModelBFilterInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input ModelModelAModelBConditionInput {
@@ -318,6 +332,8 @@ input ModelModelAModelBConditionInput {
   and: [ModelModelAModelBConditionInput]
   or: [ModelModelAModelBConditionInput]
   not: ModelModelAModelBConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateModelAModelBInput {
@@ -348,6 +364,8 @@ input ModelSubscriptionModelAModelBFilterInput {
   modelBsortId: ModelSubscriptionIDInput
   and: [ModelSubscriptionModelAModelBFilterInput]
   or: [ModelSubscriptionModelAModelBFilterInput]
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input ModelIDKeyConditionInput {
@@ -3474,6 +3492,8 @@ input ModelModelAFilterInput {
   and: [ModelModelAFilterInput]
   or: [ModelModelAFilterInput]
   not: ModelModelAFilterInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Query {
@@ -3489,6 +3509,8 @@ input ModelModelAConditionInput {
   and: [ModelModelAConditionInput]
   or: [ModelModelAConditionInput]
   not: ModelModelAConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateModelAInput {
@@ -3527,6 +3549,8 @@ input ModelSubscriptionModelAFilterInput {
   secondSortId: ModelSubscriptionIDInput
   and: [ModelSubscriptionModelAFilterInput]
   or: [ModelSubscriptionModelAFilterInput]
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Subscription {
@@ -3552,12 +3576,16 @@ input ModelModelBFilterInput {
   and: [ModelModelBFilterInput]
   or: [ModelModelBFilterInput]
   not: ModelModelBFilterInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input ModelModelBConditionInput {
   and: [ModelModelBConditionInput]
   or: [ModelModelBConditionInput]
   not: ModelModelBConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateModelBInput {
@@ -3580,6 +3608,8 @@ input ModelSubscriptionModelBFilterInput {
   sortId: ModelSubscriptionIDInput
   and: [ModelSubscriptionModelBFilterInput]
   or: [ModelSubscriptionModelBFilterInput]
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type ModelModelAModelBConnection {
@@ -3597,6 +3627,8 @@ input ModelModelAModelBFilterInput {
   and: [ModelModelAModelBFilterInput]
   or: [ModelModelAModelBFilterInput]
   not: ModelModelAModelBFilterInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input ModelModelAModelBConditionInput {
@@ -3608,6 +3640,8 @@ input ModelModelAModelBConditionInput {
   and: [ModelModelAModelBConditionInput]
   or: [ModelModelAModelBConditionInput]
   not: ModelModelAModelBConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateModelAModelBInput {
@@ -3641,6 +3675,8 @@ input ModelSubscriptionModelAModelBFilterInput {
   modelBsortId: ModelSubscriptionIDInput
   and: [ModelSubscriptionModelAModelBFilterInput]
   or: [ModelSubscriptionModelAModelBFilterInput]
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input ModelModelAPrimaryCompositeKeyConditionInput {
@@ -3873,6 +3909,8 @@ input ModelModelAFilterInput {
   and: [ModelModelAFilterInput]
   or: [ModelModelAFilterInput]
   not: ModelModelAFilterInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Query {
@@ -3888,6 +3926,8 @@ input ModelModelAConditionInput {
   and: [ModelModelAConditionInput]
   or: [ModelModelAConditionInput]
   not: ModelModelAConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateModelAInput {
@@ -3922,6 +3962,8 @@ input ModelSubscriptionModelAFilterInput {
   sortId: ModelSubscriptionIDInput
   and: [ModelSubscriptionModelAFilterInput]
   or: [ModelSubscriptionModelAFilterInput]
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Subscription {
@@ -3946,12 +3988,16 @@ input ModelModelBFilterInput {
   and: [ModelModelBFilterInput]
   or: [ModelModelBFilterInput]
   not: ModelModelBFilterInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input ModelModelBConditionInput {
   and: [ModelModelBConditionInput]
   or: [ModelModelBConditionInput]
   not: ModelModelBConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateModelBInput {
@@ -3970,6 +4016,8 @@ input ModelSubscriptionModelBFilterInput {
   id: ModelSubscriptionIDInput
   and: [ModelSubscriptionModelBFilterInput]
   or: [ModelSubscriptionModelBFilterInput]
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type ModelModelAModelBConnection {
@@ -3985,6 +4033,8 @@ input ModelModelAModelBFilterInput {
   and: [ModelModelAModelBFilterInput]
   or: [ModelModelAModelBFilterInput]
   not: ModelModelAModelBFilterInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input ModelModelAModelBConditionInput {
@@ -3994,6 +4044,8 @@ input ModelModelAModelBConditionInput {
   and: [ModelModelAModelBConditionInput]
   or: [ModelModelAModelBConditionInput]
   not: ModelModelAModelBConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateModelAModelBInput {
@@ -4021,6 +4073,8 @@ input ModelSubscriptionModelAModelBFilterInput {
   modelBID: ModelSubscriptionIDInput
   and: [ModelSubscriptionModelAModelBFilterInput]
   or: [ModelSubscriptionModelAModelBFilterInput]
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input ModelIDKeyConditionInput {
@@ -4220,6 +4274,8 @@ input ModelFooFilterInput {
   and: [ModelFooFilterInput]
   or: [ModelFooFilterInput]
   not: ModelFooFilterInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Query {
@@ -4235,6 +4291,8 @@ input ModelFooConditionInput {
   and: [ModelFooConditionInput]
   or: [ModelFooConditionInput]
   not: ModelFooConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateFooInput {
@@ -4265,6 +4323,8 @@ input ModelSubscriptionFooFilterInput {
   id: ModelSubscriptionIDInput
   and: [ModelSubscriptionFooFilterInput]
   or: [ModelSubscriptionFooFilterInput]
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type Subscription {
@@ -4289,12 +4349,16 @@ input ModelBarFilterInput {
   and: [ModelBarFilterInput]
   or: [ModelBarFilterInput]
   not: ModelBarFilterInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input ModelBarConditionInput {
   and: [ModelBarConditionInput]
   or: [ModelBarConditionInput]
   not: ModelBarConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateBarInput {
@@ -4313,6 +4377,8 @@ input ModelSubscriptionBarFilterInput {
   id: ModelSubscriptionIDInput
   and: [ModelSubscriptionBarFilterInput]
   or: [ModelSubscriptionBarFilterInput]
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 type ModelFooBarConnection {
@@ -4327,6 +4393,8 @@ input ModelFooBarFilterInput {
   and: [ModelFooBarFilterInput]
   or: [ModelFooBarFilterInput]
   not: ModelFooBarFilterInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input ModelFooBarConditionInput {
@@ -4335,6 +4403,8 @@ input ModelFooBarConditionInput {
   and: [ModelFooBarConditionInput]
   or: [ModelFooBarConditionInput]
   not: ModelFooBarConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateFooBarInput {
@@ -4359,6 +4429,8 @@ input ModelSubscriptionFooBarFilterInput {
   barID: ModelSubscriptionIDInput
   and: [ModelSubscriptionFooBarFilterInput]
   or: [ModelSubscriptionFooBarFilterInput]
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 "
 `;
