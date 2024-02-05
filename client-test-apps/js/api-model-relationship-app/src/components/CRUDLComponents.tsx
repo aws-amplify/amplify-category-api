@@ -67,7 +67,7 @@ export const createCreateRecordComponent = ({ recordName, createMutation, sentin
             <Heading level={3}>Create A { capitalizedRecordName }</Heading>
             <Flex direction='row'>
               <TextField id={`${recordName}-id-input`} label='Test Id' onChange={(event: any) => { setId(event.target.value) }}/>
-              <Button id={`${recordName}-create`} onClick={() => wrappedFn(context)}>Create { capitalizedRecordName }</Button>
+              <Button id={`${recordName}-create`} onClick={async () => { await wrappedFn(context); }}>Create { capitalizedRecordName }</Button>
               <OperationStateIndicator id={`${recordName}-is-created`} state={opState} />
             </Flex>
           </Flex>
