@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.6.4...@aws-amplify/graphql-schema-generator@0.7.0) (2024-02-05)
+
+### Features
+
+- **api:** generate typescript data schema from sql schema internal representation ([#2225](https://github.com/aws-amplify/amplify-category-api/issues/2225)) ([460b077](https://github.com/aws-amplify/amplify-category-api/commit/460b0776af82932d2b42a2b7720b49b91fdbd45c))
+
 ## [0.6.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.6.3...@aws-amplify/graphql-schema-generator@0.6.4) (2024-01-30)
 
 **Note:** Version bump only for package @aws-amplify/graphql-schema-generator

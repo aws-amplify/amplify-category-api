@@ -76,6 +76,10 @@ export function npmInstall(cwd: string) {
   spawnSync('npm', ['install'], { cwd });
 }
 
+export function npmTest(cwd: string) {
+  spawnSync('npm', ['test'], { cwd });
+}
+
 export async function installAmplifyCLI(version: string = 'latest') {
   spawnSync('npm', ['install', '-g', `@aws-amplify/cli@${version}`], {
     cwd: process.cwd(),
