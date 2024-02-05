@@ -213,8 +213,8 @@ input ModelSubscriptionTaskFilterInput {
   title: ModelSubscriptionStringInput
   and: [ModelSubscriptionTaskFilterInput]
   or: [ModelSubscriptionTaskFilterInput]
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
 }
 
 type Subscription {
@@ -458,8 +458,8 @@ input ModelSubscriptionTestFilterInput {
   and: [ModelSubscriptionTestFilterInput]
   or: [ModelSubscriptionTestFilterInput]
   _deleted: ModelBooleanInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
 }
 
 type Subscription {
@@ -516,8 +516,8 @@ input ModelSubscriptionEmailFilterInput {
   and: [ModelSubscriptionEmailFilterInput]
   or: [ModelSubscriptionEmailFilterInput]
   _deleted: ModelBooleanInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
 }
 "
 `;
@@ -936,8 +936,8 @@ input ModelSubscriptionAuthorFilterInput {
   and: [ModelSubscriptionAuthorFilterInput]
   or: [ModelSubscriptionAuthorFilterInput]
   _deleted: ModelBooleanInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
 }
 
 type ModelRequireConnection {
@@ -995,8 +995,8 @@ input ModelSubscriptionRequireFilterInput {
   and: [ModelSubscriptionRequireFilterInput]
   or: [ModelSubscriptionRequireFilterInput]
   _deleted: ModelBooleanInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
 }
 
 type ModelCommentConnection {
@@ -1059,8 +1059,8 @@ input ModelSubscriptionCommentFilterInput {
   and: [ModelSubscriptionCommentFilterInput]
   or: [ModelSubscriptionCommentFilterInput]
   _deleted: ModelBooleanInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
 }
 "
 `;
@@ -4164,8 +4164,8 @@ input ModelSubscriptionPostFilterInput {
   and: [ModelSubscriptionPostFilterInput]
   or: [ModelSubscriptionPostFilterInput]
   _deleted: ModelBooleanInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
 }
 
 type Subscription {
@@ -4608,8 +4608,8 @@ input ModelSubscriptionNoteFilterInput {
   tags: ModelSubscriptionStringInput
   and: [ModelSubscriptionNoteFilterInput]
   or: [ModelSubscriptionNoteFilterInput]
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
 }
 
 type Subscription {
@@ -5142,8 +5142,8 @@ input ModelSubscriptionNoteFilterInput {
   tags: ModelSubscriptionStringInput
   and: [ModelSubscriptionNoteFilterInput]
   or: [ModelSubscriptionNoteFilterInput]
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
 }
 
 type Subscription {
@@ -5841,8 +5841,8 @@ input ModelSubscriptionModelTypeFilterInput {
   and: [ModelSubscriptionModelTypeFilterInput]
   or: [ModelSubscriptionModelTypeFilterInput]
   _deleted: ModelBooleanInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
 }
 
 type Subscription {
@@ -6076,8 +6076,8 @@ input ModelSubscriptionPostFilterInput {
   and: [ModelSubscriptionPostFilterInput]
   or: [ModelSubscriptionPostFilterInput]
   _deleted: ModelBooleanInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
 }
 
 type Subscription {

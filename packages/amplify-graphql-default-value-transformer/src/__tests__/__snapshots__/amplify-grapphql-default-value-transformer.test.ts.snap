@@ -212,8 +212,8 @@ input ModelSubscriptionTestFilterInput {
   stringValue: ModelSubscriptionStringInput
   and: [ModelSubscriptionTestFilterInput]
   or: [ModelSubscriptionTestFilterInput]
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
 }
 
 type Subscription {
@@ -537,8 +537,8 @@ input ModelSubscriptionPostFilterInput {
   awsDateTime: ModelSubscriptionStringInput
   and: [ModelSubscriptionPostFilterInput]
   or: [ModelSubscriptionPostFilterInput]
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
 }
 
 type Subscription {

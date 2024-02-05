@@ -70,7 +70,7 @@ export const makeConditionFilterInput = (
   addListTypeConditions(input, name);
   addNonListTypeConditions(input, name);
   addDatastoreConditions(input, ctx);
-  addTimestampFields(input);
+  addTimestampFields(input, false);
 
   return input;
 };
@@ -102,7 +102,7 @@ export const makeSubscriptionFilterInput = (
 
   addListTypeConditions(input, name);
   addDatastoreConditions(input, ctx);
-  addTimestampFields(input);
+  addTimestampFields(input, true);
 
   return input;
 };
@@ -181,7 +181,7 @@ const addDatastoreConditions = (input: InputObjectDefinitionWrapper, ctx: Transf
  * Add implicit timestamp fields createdAt and updatedAt automatically included in all models
  * @param input output object
  */
-const addTimestampFields = (input: InputObjectDefinitionWrapper) => {
+const addTimestampFields = (input: InputObjectDefinitionWrapper, isSubscriptionFilter: boolean) => {
   const timestampFields = [
     { fieldName: 'createdAt', typeName: APPSYNC_DEFINED_SCALARS.AWSDateTime },
     { fieldName: 'updatedAt', typeName: APPSYNC_DEFINED_SCALARS.AWSDateTime },
@@ -189,7 +189,7 @@ const addTimestampFields = (input: InputObjectDefinitionWrapper) => {
 
   for (const { fieldName, typeName } of timestampFields) {
     if (!input.hasField(fieldName)) {
-      const type = ModelResourceIDs.ModelScalarFilterInputTypeName(typeName, false);
+      const type = ModelResourceIDs.ModelFilterScalarInputTypeName(typeName, false, isSubscriptionFilter);
       const inputField = InputFieldWrapper.create(fieldName, type, true, false);
       input.addField(inputField);
     }

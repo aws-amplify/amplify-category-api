@@ -813,8 +813,8 @@ input ModelSubscriptionTodoFilterInput {
   content: ModelSubscriptionStringInput
   and: [ModelSubscriptionTodoFilterInput]
   or: [ModelSubscriptionTodoFilterInput]
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
   owner: ModelStringInput
 }
 

@@ -222,8 +222,8 @@ input ModelSubscriptionUserFilterInput {
   lastName: ModelSubscriptionStringInput
   and: [ModelSubscriptionUserFilterInput]
   or: [ModelSubscriptionUserFilterInput]
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
 }
 
 type Subscription {
@@ -283,8 +283,8 @@ input ModelSubscriptionProfileFilterInput {
   userLastName: ModelSubscriptionStringInput
   and: [ModelSubscriptionProfileFilterInput]
   or: [ModelSubscriptionProfileFilterInput]
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
 }
 
 input ModelStringKeyConditionInput {
@@ -563,8 +563,8 @@ input ModelSubscriptionUserFilterInput {
   name: ModelSubscriptionStringInput
   and: [ModelSubscriptionUserFilterInput]
   or: [ModelSubscriptionUserFilterInput]
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
 }
 
 type Subscription {
@@ -622,7 +622,7 @@ input ModelSubscriptionProfileFilterInput {
   userId: ModelSubscriptionStringInput
   and: [ModelSubscriptionProfileFilterInput]
   or: [ModelSubscriptionProfileFilterInput]
-  updatedAt: ModelStringInput
+  updatedAt: ModelSubscriptionStringInput
 }
 "
 `;
