@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-app": "^5.0.21",
+    "@aws-amplify/graphql-schema-generator": "0.6.4",
     "@aws-amplify/graphql-transformer-core": "2.4.4",
     "amplify-category-api-e2e-core": "4.4.6",
     "aws-amplify": "^4.2.8",
@@ -114,7 +115,8 @@
       }
     },
     "moduleNameMapper": {
-      "axios": "axios/dist/node/axios.cjs"
+      "axios": "axios/dist/node/axios.cjs",
+      "^csv-parse/sync": "<rootDir>/../../node_modules/csv-parse/dist/cjs/sync.cjs"
     }
   },
   "jest-junit": {
