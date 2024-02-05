@@ -59,8 +59,6 @@
     "collectCoverage": false,
     "collectCoverageFrom": [
       "src/**/*.ts",
-      "!**/node_modules/**",
-      "!src/__tests__/**",
       "!**/*.d.ts"
     ],
     "reporters": [
@@ -100,7 +98,8 @@
       "axios": "axios/dist/node/axios.cjs"
     },
     "coveragePathIgnorePatterns": [
-      "/__tests__/"
+      "/__tests__/",
+      "/node_modules/"
     ]
   },
   "jest-junit": {
