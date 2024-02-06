@@ -58,8 +58,7 @@
     ],
     "collectCoverage": false,
     "collectCoverageFrom": [
-      "src/**/*.ts",
-      "!**/*.d.ts"
+      "src/**/*.ts"
     ],
     "reporters": [
       "default",

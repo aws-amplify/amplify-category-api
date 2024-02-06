@@ -68,8 +68,7 @@
     "collectCoverage": true,
     "coverageProvider": "v8",
     "collectCoverageFrom": [
-      "src/**/*.ts",
-      "!**/*.d.ts"
+      "src/**/*.ts"
     ],
     "coverageReporters": [
       "clover",
