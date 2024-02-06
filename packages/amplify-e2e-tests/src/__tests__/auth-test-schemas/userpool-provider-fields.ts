@@ -89,6 +89,31 @@ export const schema = `
     adminContent: String @auth(rules: [{ allow: groups, groups: ["Admin"] }])
     groupContent: String @auth(rules: [{ allow: groups, groupsField: "customGroup", operations: [update, read] }])
   }
+
+  type TodoModel @model @auth(rules: [{ allow: private }]) {
+    id: ID! @primaryKey
+    name: String!
+    note: NoteNonModel
+  }
+
+  type NoteNonModel {
+    content: String!
+    adminContent: String @auth(rules: [{ allow: groups, groups: ["Admin"] }])
+  }
+
+  type TodoRenamedFields @model @auth(rules: [{ allow: private }]) {
+    id: ID! @primaryKey @refersTo(name: "todo_id")
+    privateContent: String! @refersTo(name: "private_content")
+    author: String @refersTo(name: "author_field")
+    authors: [String] @refersTo(name: "authors_field")
+    customGroup: String @refersTo(name: "custom_group")
+    customGroups: [String] @refersTo(name: "custom_groups")
+    ownerContent: String @refersTo(name: "owner_content") @auth(rules: [{ allow: owner, ownerField: "author", operations: [create, read] }])
+    ownersContent: String @refersTo(name: "owners_content") @auth(rules: [{ allow: owner, ownerField: "authors", operations: [update, read] }])
+    adminContent: String @refersTo(name: "admin_content") @auth(rules: [{ allow: groups, groups: ["Admin"] }])
+    groupContent: String @refersTo(name: "group_content") @auth(rules: [{ allow: groups, groupsField: "customGroup", operations: [create, read] }])
+    groupsContent: String @refersTo(name: "groups_content") @auth(rules: [{ allow: groups, groupsField: "customGroups", operations: [update, read] }])
+  }
 `;
 
 export const sqlCreateStatements = (engine: ImportedRDSType): string[] => generateDDL(schema, engine);

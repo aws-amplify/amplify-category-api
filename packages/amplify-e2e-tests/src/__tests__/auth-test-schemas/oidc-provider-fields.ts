@@ -89,6 +89,31 @@ export const schema = `
     adminContent: String @auth(rules: [{ allow: groups, groups: ["Admin"], provider: oidc, groupClaim: "cognito:groups" }])
     groupContent: String @auth(rules: [{ allow: groups, groupsField: "customGroup", provider: oidc, groupClaim: "cognito:groups", operations: [update, read] }])
   }
+
+  type TodoModel @model @auth(rules: [{ allow: private, provider: oidc }]) {
+    id: ID! @primaryKey
+    name: String!
+    note: NoteNonModel
+  }
+
+  type NoteNonModel {
+    content: String!
+    adminContent: String @auth(rules: [{ allow: groups, groups: ["Admin"], provider: oidc, groupClaim: "cognito:groups" }])
+  }
+
+  type TodoRenamedFields @model @auth(rules: [{ allow: private, provider: oidc }]) {
+    id: ID! @primaryKey @refersTo(name: "todo_id")
+    privateContent: String! @refersTo(name: "private_content")
+    author: String @refersTo(name: "author_field")
+    authors: [String] @refersTo(name: "authors_field")
+    customGroup: String @refersTo(name: "custom_group")
+    customGroups: [String] @refersTo(name: "custom_groups")
+    ownerContent: String @refersTo(name: "owner_content") @auth(rules: [{ allow: owner, ownerField: "author", provider: oidc, identityClaim: "user_id", operations: [create, read] }])
+    ownersContent: String @refersTo(name: "owners_content") @auth(rules: [{ allow: owner, ownerField: "authors", provider: oidc, identityClaim: "user_id", operations: [update, read] }])
+    adminContent: String @refersTo(name: "admin_content") @auth(rules: [{ allow: groups, groups: ["Admin"], provider: oidc, groupClaim: "cognito:groups" }])
+    groupContent: String @refersTo(name: "group_content") @auth(rules: [{ allow: groups, groupsField: "customGroup", provider: oidc, groupClaim: "cognito:groups", operations: [create, read] }])
+    groupsContent: String @refersTo(name: "groups_content") @auth(rules: [{ allow: groups, groupsField: "customGroups", provider: oidc, groupClaim: "cognito:groups", operations: [update, read] }])
+  }
 `;
 
 export const sqlCreateStatements = (engine: ImportedRDSType): string[] => generateDDL(schema, engine);
