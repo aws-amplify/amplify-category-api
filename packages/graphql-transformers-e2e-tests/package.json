@@ -69,8 +69,6 @@
     "coverageProvider": "v8",
     "collectCoverageFrom": [
       "src/**/*.ts",
-      "!**/node_modules/**",
-      "!src/__tests__/**",
       "!**/*.d.ts"
     ],
     "coverageReporters": [
@@ -114,6 +112,7 @@
     },
     "testEnvironment": "../../FixJestEnvironment.js",
     "coveragePathIgnorePatterns": [
+      "/node_modules",
       "/__tests__/"
     ]
   },

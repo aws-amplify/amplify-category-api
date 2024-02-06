@@ -74,8 +74,6 @@
     "collectCoverage": false,
     "collectCoverageFrom": [
       "src/**/*.ts",
-      "!**/node_modules/**",
-      "!src/__tests__/**",
       "!**/*.d.ts"
     ],
     "reporters": [
@@ -119,6 +117,7 @@
       "^csv-parse/sync": "<rootDir>/../../node_modules/csv-parse/dist/cjs/sync.cjs"
     },
     "coveragePathIgnorePatterns": [
+      "/node_modules/",
       "/__tests__/"
     ]
   },

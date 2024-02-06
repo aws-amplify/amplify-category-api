@@ -96,10 +96,7 @@
     "collectCoverage": true,
     "coverageProvider": "v8",
     "collectCoverageFrom": [
-      "src/**/*.ts",
-      "!**/node_modules/**",
-      "!src/__tests__/**",
-      "!lib/**"
+      "src/**/*.ts"
     ],
     "coverageReporters": [
       "clover",
@@ -124,7 +121,9 @@
     },
     "testEnvironment": "../../FixJestEnvironment.js",
     "coveragePathIgnorePatterns": [
-      "/__tests__/"
+      "/__tests__/",
+      "/lib/",
+      "/node_modules"
     ]
   },
   "jest-junit": {

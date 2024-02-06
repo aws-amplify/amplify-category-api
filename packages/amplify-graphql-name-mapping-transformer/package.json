@@ -63,8 +63,7 @@
     "collectCoverage": true,
     "coverageProvider": "v8",
     "collectCoverageFrom": [
-      "src/**",
-      "!src/__tests__/**"
+      "src/**/*.ts"
     ],
     "coverageThreshold": {
       "global": {
