@@ -33,7 +33,7 @@ import {
   toUpper,
   wrapNonNull,
 } from 'graphql-transformer-common';
-import { getSortKeyFieldNames } from '@aws-amplify/graphql-transformer-core';
+import { getSortKeyFieldNames, getSubscriptionFilterInputName } from '@aws-amplify/graphql-transformer-core';
 import { WritableDraft } from 'immer/dist/types/types-external';
 import {
   BelongsToDirectiveConfiguration,
@@ -226,6 +226,20 @@ export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration
     );
   }
 
+  const subscriptionFilterInputName = getSubscriptionFilterInputName(object.name.value);
+  const filterSubscriptionInput = ctx.output.getType(subscriptionFilterInputName) as InputObjectTypeDefinitionNode;
+  if (filterSubscriptionInput) {
+    updateFilterConnectionInputWithConnectionFields(
+      ctx,
+      filterSubscriptionInput,
+      object,
+      connectionAttributeName,
+      primaryKeyConnectionFieldType,
+      field,
+      sortKeyFields,
+    );
+  }
+
   config.connectionFields.push(connectionAttributeName);
   config.connectionFields.push(
     ...getSortKeyFieldNames(relatedType).map((it) => getSortKeyConnectionAttributeName(object.name.value, field.name.value, it)),
@@ -359,6 +373,20 @@ export const ensureHasManyConnectionField = (
     updateFilterConnectionInputWithConnectionFields(
       ctx,
       conditionInput,
+      object,
+      connectionAttributeName,
+      primaryKeyConnectionFieldType,
+      field,
+      sortKeyFields,
+    );
+  }
+
+  const subscriptionFilterInputName = getSubscriptionFilterInputName(object.name.value);
+  const filterSubscriptionInput = ctx.output.getType(subscriptionFilterInputName) as InputObjectTypeDefinitionNode;
+  if (filterSubscriptionInput) {
+    updateFilterConnectionInputWithConnectionFields(
+      ctx,
+      filterSubscriptionInput,
       object,
       connectionAttributeName,
       primaryKeyConnectionFieldType,

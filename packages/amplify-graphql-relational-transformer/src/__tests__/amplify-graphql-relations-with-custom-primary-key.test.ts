@@ -208,17 +208,22 @@ describe('custom primary key and relational directives', () => {
     const medicalAppointmentUpdateInput = schema.definitions.find(
       (def: any) => def.name && def.name.value === 'UpdateMedicalAppointmentInput',
     ) as any;
+    const medicalAppointmentSubscriptionFilterInput = schema.definitions.find(
+      (def: any) => def.name && def.name.value === 'ModelSubscriptionMedicalAppointmentFilterInput',
+    ) as any;
 
     expect(medicalAppointmentFilterInput).toBeDefined();
     expect(medicalAppointmentConditionInput).toBeDefined();
     expect(medicalAppointmentCreateInput).toBeDefined();
     expect(medicalAppointmentUpdateInput).toBeDefined();
+    expect(medicalAppointmentSubscriptionFilterInput).toBeDefined();
 
     const inputs = [
       medicalAppointmentFilterInput,
       medicalAppointmentConditionInput,
       medicalAppointmentCreateInput,
       medicalAppointmentUpdateInput,
+      medicalAppointmentSubscriptionFilterInput,
     ];
 
     inputs.forEach((it) => {
@@ -285,13 +290,17 @@ describe('custom primary key and relational directives', () => {
     const patientConditionInput = schema.definitions.find((def: any) => def.name && def.name.value === 'ModelPatientConditionInput') as any;
     const patientCreateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreatePatientInput') as any;
     const patientUpdateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdatePatientInput') as any;
+    const patientSubscriptionFilterInput = schema.definitions.find(
+      (def: any) => def.name && def.name.value === 'ModelSubscriptionPatientFilterInput',
+    ) as any;
 
     expect(patientFilterInput).toBeDefined();
     expect(patientConditionInput).toBeDefined();
     expect(patientCreateInput).toBeDefined();
     expect(patientUpdateInput).toBeDefined();
+    expect(patientSubscriptionFilterInput).toBeDefined();
 
-    const inputs = [patientFilterInput, patientConditionInput, patientCreateInput, patientUpdateInput];
+    const inputs = [patientFilterInput, patientConditionInput, patientCreateInput, patientUpdateInput, patientSubscriptionFilterInput];
 
     inputs.forEach((it) => {
       const primaryKeyConnectionField = it.fields.find((f: any) => f.name.value === 'patientMedicalAppointmentAppointmentReference');
@@ -357,17 +366,22 @@ describe('custom primary key and relational directives', () => {
     const medicalAppointmentUpdateInput = schema.definitions.find(
       (def: any) => def.name && def.name.value === 'UpdateMedicalAppointmentInput',
     ) as any;
+    const medicalAppointmentSubscriptionFilterInput = schema.definitions.find(
+      (def: any) => def.name && def.name.value === 'ModelSubscriptionPatientFilterInput',
+    ) as any;
 
     expect(medicalAppointmentFilterInput).toBeDefined();
     expect(medicalAppointmentConditionInput).toBeDefined();
     expect(medicalAppointmentCreateInput).toBeDefined();
     expect(medicalAppointmentUpdateInput).toBeDefined();
+    expect(medicalAppointmentSubscriptionFilterInput).toBeDefined();
 
     const inputs = [
       medicalAppointmentFilterInput,
       medicalAppointmentConditionInput,
       medicalAppointmentCreateInput,
       medicalAppointmentUpdateInput,
+      medicalAppointmentSubscriptionFilterInput,
     ];
 
     inputs.forEach((it) => {
