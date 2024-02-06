@@ -1,6 +1,21 @@
 import { TransformerContextProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { Expression, printBlock, compoundExpression, set, ref, list, qref, methodCall, str, obj } from 'graphql-mapping-template';
+import {
+  Expression,
+  printBlock,
+  compoundExpression,
+  set,
+  ref,
+  list,
+  qref,
+  methodCall,
+  str,
+  obj,
+  iff,
+  not,
+  isNullOrEmpty,
+} from 'graphql-mapping-template';
 import _ from 'lodash';
+import { ResourceConstants } from 'graphql-transformer-common';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../../types';
 import { addIndexToResolverSlot, getResolverObject, validateSortDirectionInput } from '../resolvers';
 import { IndexVTLGenerator } from './vtl-generator';
@@ -17,6 +32,7 @@ export class RDSIndexVTLGenerator implements IndexVTLGenerator {
       compoundExpression([
         set(ref('lambdaInput'), obj({})),
         set(ref('lambdaInput.args'), obj({})),
+        set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${ResourceConstants.DEFAULT_PAGE_LIMIT})`)),
         set(ref('lambdaInput.table'), str(mappedTableName)),
         set(ref('lambdaInput.operation'), str('INDEX')),
         set(ref('lambdaInput.operationName'), str(operationName)),
@@ -34,6 +50,11 @@ export class RDSIndexVTLGenerator implements IndexVTLGenerator {
         ),
         set(ref('lambdaInput.args.input'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
         qref(methodCall(ref('lambdaInput.args.input.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments'), obj({})))),
+        qref(methodCall(ref('lambdaInput.args.put'), str('limit'), ref('limit'))),
+        iff(
+          not(isNullOrEmpty(ref('context.arguments.nextToken'))),
+          qref(methodCall(ref('lambdaInput.args.put'), str('nextToken'), ref('context.arguments.nextToken'))),
+        ),
         obj({
           version: str('2018-05-29'),
           operation: str('Invoke'),
