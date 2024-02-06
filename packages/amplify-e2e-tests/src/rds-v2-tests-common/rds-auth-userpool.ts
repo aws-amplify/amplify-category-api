@@ -1209,6 +1209,7 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
       checkOperationResult(onDeleteSubscriptionResult[0], todoRandomUpdated, `onDelete${modelName}`);
     });
 
+    // TODO: enable once fixed in auth utils
     test('logged in user can perform custom operations', async () => {
       const appSyncClient = appSyncClients[userPoolProvider][userName2];
       const todo = {
@@ -1249,7 +1250,7 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
       expect(getResult.data.customGetTodoPrivate[0].id).toEqual(todo.id);
       expect(getResult.data.customGetTodoPrivate[0].content).toEqual(todo.content);
     });
-
+    // TODO: enable once fixed in auth utils
     test('users in static group can perform custom operations', async () => {
       const appSyncClient = appSyncClients[userPoolProvider][userName1];
       const todo = {
@@ -1290,7 +1291,7 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
       expect(getResult.data.customGetTodoStaticGroup[0].id).toEqual(todo.id);
       expect(getResult.data.customGetTodoStaticGroup[0].content).toEqual(todo.content);
     });
-
+    // TODO: enable once fixed in auth utils
     test('users not in static group cannot perform custom operations', async () => {
       const appSyncClient = appSyncClients[userPoolProvider][userName2];
       const todo = {
