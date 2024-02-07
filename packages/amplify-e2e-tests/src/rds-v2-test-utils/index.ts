@@ -1,7 +1,7 @@
 import { join } from 'path';
 import _ from 'lodash';
 import * as fs from 'fs-extra';
-import { parse, ObjectTypeDefinitionNode, Kind, visit, FieldDefinitionNode, StringValueNode, valueFromASTUntyped } from 'graphql';
+import { parse, ObjectTypeDefinitionNode, Kind, visit, FieldDefinitionNode, StringValueNode, valueFromASTUntyped, TypeNode } from 'graphql';
 import axios from 'axios';
 import {
   getProjectMeta,
@@ -10,7 +10,7 @@ import {
   addRDSPortInboundRule,
   getAppSyncApi,
 } from 'amplify-category-api-e2e-core';
-import { getBaseType, isArrayOrObject, toPascalCase } from 'graphql-transformer-common';
+import { getBaseType, isArrayOrObject, isListType, toPascalCase } from 'graphql-transformer-common';
 import { GQLQueryHelper } from '../query-utils/gql-helper';
 import {
   getConfiguredAppsyncClientAPIKeyAuth,
@@ -197,7 +197,7 @@ const getFieldStatement = (field: FieldDefinitionNode, isPrimaryKey: boolean, en
   const fieldType = field.type;
   const isNonNull = fieldType.kind === Kind.NON_NULL_TYPE;
   const baseType = getBaseType(fieldType);
-  const columnType = isArrayOrObject(fieldType, []) ? getArrayStringFieldType(engine) : convertToSQLType(baseType);
+  const columnType = isArrayOrObject(fieldType, []) ? getArrayOrObjectFieldType(fieldType, engine) : convertToSQLType(baseType);
   // Check if @default is defined on field
   const defaultDir = field.directives.find((dir) => dir.name.value === 'default');
   const defaultValueNode = defaultDir?.arguments.find((arg) => arg.name.value === 'value');
@@ -208,12 +208,12 @@ const getFieldStatement = (field: FieldDefinitionNode, isPrimaryKey: boolean, en
   return sql;
 };
 
-const getArrayStringFieldType = (engine: ImportedRDSType): string => {
+const getArrayOrObjectFieldType = (fieldType: TypeNode, engine: ImportedRDSType): string => {
   switch (engine) {
     case ImportedRDSType.MYSQL:
       return 'JSON'; // MySQL does not support array types
     case ImportedRDSType.POSTGRESQL:
-      return 'VARCHAR[]';
+      return isListType(fieldType) ? 'VARCHAR[]' : 'json';
     default:
       return 'VARCHAR[]';
   }

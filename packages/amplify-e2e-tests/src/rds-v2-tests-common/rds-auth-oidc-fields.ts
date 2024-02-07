@@ -2971,5 +2971,622 @@ export const testOIDCFieldAuth = (engine: ImportedRDSType): void => {
         'groupContent',
       ]);
     });
+
+    describe('Non Model protected fields and allowed operations', () => {
+      const modelName = 'TodoModel';
+      const nonModelName = 'NoteNonModel';
+
+      const note = {
+        content: 'Note content',
+        adminContent: 'Admin content',
+      };
+      const todoWithAdminNote = {
+        name: 'Reading books',
+        note,
+      };
+      const todoWithoutAdminNote = {
+        name: 'Reading books',
+        note: {
+          content: note.content,
+        },
+      };
+      const createResultSetName = `create${modelName}`;
+      const updateResultSetName = `update${modelName}`;
+      const deleteResultSetName = `delete${modelName}`;
+      const privateResultSet = `
+          id
+          name
+          note {
+            content
+          }
+        `;
+      const adminResultSet = `
+          id
+          name
+          note {
+            content
+            adminContent
+          }
+        `;
+      const todoUpdated1 = {
+        name: 'Reading books updated',
+        note: {
+          content: 'Note content updated',
+          adminContent: 'Admin content updated',
+        },
+      };
+
+      const todoUpdated2 = {
+        name: 'Reading books updated',
+        note: {
+          content: 'Note content updated',
+        },
+      };
+
+      test('admin can create a record with all fields', async () => {
+        const user1TodoHelper = user1ModelOperationHelpers[modelName];
+        const createResult1 = await user1TodoHelper.create(createResultSetName, todoWithAdminNote, adminResultSet);
+        expect(createResult1.data[createResultSetName].id).toBeDefined();
+        todoWithAdminNote['id'] = createResult1.data[createResultSetName].id;
+        checkOperationResult(
+          createResult1,
+          { ...todoWithAdminNote, note: { ...todoWithAdminNote.note, __typename: nonModelName } },
+          createResultSetName,
+        );
+      });
+
+      test('non-admin can create a record with private non-model fields', async () => {
+        const user2TodoHelper = user2ModelOperationHelpers[modelName];
+        const createResult2 = await user2TodoHelper.create(createResultSetName, todoWithoutAdminNote, privateResultSet);
+        expect(createResult2.data[createResultSetName].id).toBeDefined();
+        todoWithoutAdminNote['id'] = createResult2.data[createResultSetName].id;
+        checkOperationResult(
+          createResult2,
+          { ...todoWithoutAdminNote, note: { ...todoWithoutAdminNote.note, __typename: nonModelName } },
+          createResultSetName,
+        );
+      });
+
+      test('admin can update all non-model fields', async () => {
+        const user1TodoHelper = user1ModelOperationHelpers[modelName];
+        todoUpdated1['id'] = todoWithAdminNote['id'];
+        const updateResult1 = await user1TodoHelper.update(updateResultSetName, todoUpdated1, adminResultSet);
+        expect(updateResult1.data[updateResultSetName].id).toEqual(todoUpdated1['id']);
+        checkOperationResult(
+          updateResult1,
+          { ...todoUpdated1, note: { ...todoUpdated1.note, __typename: nonModelName } },
+          updateResultSetName,
+        );
+      });
+
+      test('non-admin can update private non-model fields', async () => {
+        const user2TodoHelper = user2ModelOperationHelpers[modelName];
+        todoUpdated2['id'] = todoWithoutAdminNote['id'];
+        const updateResult2 = await user2TodoHelper.update(updateResultSetName, todoUpdated2, privateResultSet);
+        expect(updateResult2.data[updateResultSetName].id).toEqual(todoUpdated2['id']);
+        checkOperationResult(
+          updateResult2,
+          { ...todoUpdated2, note: { ...todoUpdated2.note, __typename: nonModelName } },
+          updateResultSetName,
+        );
+      });
+
+      test('admin can read all non-model fields', async () => {
+        const user1TodoHelper = user1ModelOperationHelpers[modelName];
+        const getResult1 = await user1TodoHelper.get(
+          {
+            id: todoWithAdminNote['id'],
+          },
+          adminResultSet,
+          false,
+        );
+        checkOperationResult(
+          getResult1,
+          { ...todoWithAdminNote, ...todoUpdated1, note: { ...todoUpdated1.note, __typename: nonModelName } },
+          `get${modelName}`,
+        );
+
+        const listTodosResult1 = await user1TodoHelper.list({}, adminResultSet, `list${modelName}s`, false, 'all');
+        checkListItemExistence(listTodosResult1, `list${modelName}s`, todoWithAdminNote['id'], true);
+      });
+
+      test('non-admin can read private non-model fields', async () => {
+        const user2TodoHelper = user2ModelOperationHelpers[modelName];
+        const getResult2 = await user2TodoHelper.get(
+          {
+            id: todoWithoutAdminNote['id'],
+          },
+          privateResultSet,
+          false,
+        );
+        checkOperationResult(
+          getResult2,
+          { ...todoWithoutAdminNote, ...todoUpdated2, note: { ...todoUpdated2.note, __typename: nonModelName } },
+          `get${modelName}`,
+        );
+
+        const listTodosResult2 = await user2TodoHelper.list({}, privateResultSet, `list${modelName}s`, false, 'all');
+        checkListItemExistence(listTodosResult2, `list${modelName}s`, todoWithoutAdminNote['id'], true);
+      });
+
+      test('admin can delete the record', async () => {
+        const user1TodoHelper = user1ModelOperationHelpers[modelName];
+        const deleteResult1 = await user1TodoHelper.delete(deleteResultSetName, { id: todoWithAdminNote['id'] }, adminResultSet);
+        expect(deleteResult1.data[deleteResultSetName].id).toEqual(todoWithAdminNote['id']);
+        checkOperationResult(
+          deleteResult1,
+          { ...todoUpdated1, note: { ...todoUpdated1.note, __typename: nonModelName } },
+          deleteResultSetName,
+        );
+      });
+
+      test('non-admin can listen to mutations on all fields', async () => {
+        const user1TodoHelper = user1ModelOperationHelpers[modelName];
+        // TODO: non-models auth field redaction. Re-visit this test after we decide the expected behavior.
+        const todoRandom = {
+          ...todoWithAdminNote,
+          id: Date.now().toString(),
+        };
+        const todoRandomUpdated = {
+          ...todoUpdated1,
+          id: todoRandom.id,
+        };
+        const subscriberClient = getConfiguredAppsyncClientOIDCAuth(graphQlEndpoint, region, userMap[userName2]);
+        const subTodoHelper = createModelOperationHelpers(subscriberClient, schema)[modelName];
+
+        const onCreateSubscriptionResult = await subTodoHelper.subscribe(
+          'onCreate',
+          [
+            async () => {
+              await user1TodoHelper.create(createResultSetName, todoRandom, adminResultSet);
+            },
+          ],
+          {},
+          adminResultSet,
+          false,
+        );
+        expect(onCreateSubscriptionResult).toHaveLength(1);
+        const onCreateResultData = onCreateSubscriptionResult[0].data[`onCreate${modelName}`];
+        expect(onCreateResultData?.id).toEqual(todoRandom.id);
+        checkOperationResult(
+          onCreateSubscriptionResult[0],
+          { ...todoRandom, note: { ...todoRandom.note, __typename: nonModelName } },
+          `onCreate${modelName}`,
+        );
+
+        const onUpdateSubscriptionResult = await subTodoHelper.subscribe(
+          'onUpdate',
+          [
+            async () => {
+              await user1TodoHelper.update(`update${modelName}`, todoRandomUpdated, adminResultSet);
+            },
+          ],
+          {},
+          adminResultSet,
+          false,
+        );
+        expect(onUpdateSubscriptionResult).toHaveLength(1);
+        const onUpdateResultData = onUpdateSubscriptionResult[0].data[`onUpdate${modelName}`];
+        expect(onUpdateResultData?.id).toEqual(todoRandomUpdated.id);
+        checkOperationResult(
+          onUpdateSubscriptionResult[0],
+          { ...todoRandomUpdated, note: { ...todoRandomUpdated.note, __typename: nonModelName } },
+          `onUpdate${modelName}`,
+        );
+
+        const onDeleteSubscriptionResult = await subTodoHelper.subscribe(
+          'onDelete',
+          [
+            async () => {
+              await user1TodoHelper.delete(deleteResultSetName, { id: todoRandomUpdated.id }, adminResultSet);
+            },
+          ],
+          {},
+          adminResultSet,
+          false,
+        );
+        expect(onDeleteSubscriptionResult).toHaveLength(1);
+        const onDeleteResultData = onDeleteSubscriptionResult[0].data[`onDelete${modelName}`];
+        expect(onDeleteResultData?.id).toEqual(todoRandomUpdated.id);
+        checkOperationResult(
+          onDeleteSubscriptionResult[0],
+          { ...todoRandomUpdated, note: { ...todoRandomUpdated.note, __typename: nonModelName } },
+          `onDelete${modelName}`,
+        );
+      });
+    });
+
+    describe('Non Model protected fields and restricted operations', () => {
+      const modelName = 'TodoModel';
+      const nonModelName = 'NoteNonModel';
+
+      const note = {
+        content: 'Note content',
+        adminContent: 'Admin content',
+      };
+      const todoWithAdminNote = {
+        name: 'Reading books',
+        note,
+      };
+      const createResultSetName = `create${modelName}`;
+      const updateResultSetName = `update${modelName}`;
+      const deleteResultSetName = `delete${modelName}`;
+
+      const adminResultSet = `
+          id
+          name
+          note {
+            content
+            adminContent
+          }
+        `;
+
+      test('non-admin cannot create a record with admin protected non-model field', async () => {
+        const user2TodoHelper = user2ModelOperationHelpers[modelName];
+        await expect(
+          async () => await user2TodoHelper.create(createResultSetName, todoWithAdminNote, adminResultSet),
+        ).rejects.toThrowErrorMatchingInlineSnapshot(expectedFieldErrors(['adminContent'], nonModelName)[0]);
+      });
+
+      test('admin can create a record with all fields', async () => {
+        const user1TodoHelper = user1ModelOperationHelpers[modelName];
+        const createResult1 = await user1TodoHelper.create(createResultSetName, todoWithAdminNote, adminResultSet);
+        expect(createResult1.data[createResultSetName].id).toBeDefined();
+        todoWithAdminNote['id'] = createResult1.data[createResultSetName].id;
+      });
+
+      test('non-admin cannot get the admin protected field during update', async () => {
+        const user2TodoHelper = user2ModelOperationHelpers[modelName];
+        await expect(
+          async () =>
+            await user2TodoHelper.update(
+              updateResultSetName,
+              { id: todoWithAdminNote['id'], note: { adminContent: 'Admin content updated', content: 'content updated' } },
+              adminResultSet,
+            ),
+        ).rejects.toThrowErrorMatchingInlineSnapshot(expectedFieldErrors(['adminContent'], nonModelName)[0]);
+      });
+
+      test('non-admin cannot read the admin protected non-model field', async () => {
+        const user2TodoHelper = user2ModelOperationHelpers[modelName];
+        const getResult1 = await user2TodoHelper.get({ id: todoWithAdminNote['id'] }, adminResultSet, false, 'all');
+        checkOperationResult(
+          getResult1,
+          {
+            ...todoWithAdminNote,
+            note: { ...todoWithAdminNote.note, adminContent: null, __typename: nonModelName, content: 'content updated' },
+          },
+          `get${modelName}`,
+          false,
+          expectedFieldErrors(['adminContent'], modelName),
+        );
+
+        const listTodosResult1 = await user2TodoHelper.list({}, adminResultSet, `list${modelName}s`, false, 'all');
+        checkListItemExistence(listTodosResult1, `list${modelName}s`, todoWithAdminNote['id'], true);
+        checkListResponseErrors(listTodosResult1, expectedFieldErrors(['adminContent'], nonModelName, false));
+      });
+
+      test('non-admin cannot get the admin protected field during delete', async () => {
+        const user2TodoHelper = user2ModelOperationHelpers[modelName];
+        await expect(
+          async () => await user2TodoHelper.delete(deleteResultSetName, { id: todoWithAdminNote['id'] }, adminResultSet),
+        ).rejects.toThrowErrorMatchingInlineSnapshot(expectedFieldErrors(['adminContent'], nonModelName)[0]);
+      });
+    });
+
+    test('Model with renamed protected fields and allowed operations', async () => {
+      const modelName = 'TodoRenamedFields';
+      const user1TodoHelper = user1ModelOperationHelpers[modelName];
+      const user2TodoHelper = user2ModelOperationHelpers[modelName];
+
+      const todo = {
+        privateContent: 'Private Content',
+        author: userName1,
+        authors: [userName1],
+        customGroup: adminGroupName,
+        customGroups: [adminGroupName],
+        ownerContent: 'Owner Content',
+        adminContent: 'Admin Content',
+        groupContent: 'Group Content',
+      };
+      const createResultSetName = `create${modelName}`;
+      const updateResultSetName = `update${modelName}`;
+      const user1CreateAllowedSet = `
+        id
+        privateContent
+        author
+        authors
+        customGroup
+        customGroups
+        ownerContent
+        adminContent
+        groupContent
+      `;
+
+      // owner(user1) creates a record with only allowed fields
+      const createResult1 = await user1TodoHelper.create(createResultSetName, todo, user1CreateAllowedSet);
+      expect(createResult1.data[createResultSetName].id).toBeDefined();
+      expect(createResult1.data[createResultSetName].author).toEqual(userName1);
+      expect(createResult1.data[createResultSetName].authors).toEqual([userName1]);
+      expect(createResult1.data[createResultSetName].privateContent).toEqual(todo.privateContent);
+      expect(createResult1.data[createResultSetName].customGroup).toEqual(todo.customGroup);
+      expect(createResult1.data[createResultSetName].customGroups).toEqual(todo.customGroups);
+      todo['id'] = createResult1.data[createResultSetName].id;
+      // protected fields are nullified in mutation responses
+      expectNullFields(createResult1.data[createResultSetName], ['ownerContent', 'adminContent', 'groupContent']);
+
+      // user1 can update the allowed fields and add user2 to dyamic owners and groups list fields
+      const todoUpdated1 = {
+        id: todo['id'],
+        authors: [userName1, userName2],
+        customGroups: [adminGroupName, devGroupName],
+        privateContent: 'Private Content updated',
+        ownersContent: 'Owners Content updated',
+        adminContent: 'Admin Content updated',
+        groupsContent: 'Groups Content updated',
+      };
+      const user1UpdateAllowedSet = `
+        id
+        author
+        authors
+        customGroup
+        customGroups
+        privateContent
+        ownersContent
+        adminContent
+        groupsContent
+      `;
+      const updateResult1 = await user1TodoHelper.update(updateResultSetName, todoUpdated1, user1UpdateAllowedSet);
+      expect(updateResult1.data[updateResultSetName].id).toEqual(todo['id']);
+      expect(updateResult1.data[updateResultSetName].author).toEqual(userName1);
+      expect(updateResult1.data[updateResultSetName].authors).toEqual([userName1, userName2]);
+      expect(updateResult1.data[updateResultSetName].privateContent).toEqual(todoUpdated1.privateContent);
+      expect(updateResult1.data[updateResultSetName].customGroup).toEqual(todo.customGroup);
+      expect(updateResult1.data[updateResultSetName].customGroups).toEqual(todoUpdated1.customGroups);
+      expectNullFields(updateResult1.data[updateResultSetName], ['ownersContent', 'adminContent', 'groupsContent']);
+
+      // user1 can read the allowed fields
+      const completeResultSet = `
+        id
+        author
+        authors
+        customGroup
+        customGroups
+        privateContent
+        ownerContent
+        ownersContent
+        adminContent
+        groupContent
+        groupsContent
+      `;
+      const user1ReadAllowedSet = completeResultSet;
+      const getResult1 = await user1TodoHelper.get(
+        {
+          id: todo['id'],
+        },
+        user1ReadAllowedSet,
+        false,
+      );
+      checkOperationResult(getResult1, { ...todo, ...todoUpdated1 }, `get${modelName}`);
+
+      const listTodosResult1 = await user1TodoHelper.list({}, user1ReadAllowedSet, `list${modelName}`, false, 'all');
+      checkListItemExistence(listTodosResult1, `list${modelName}`, todo['id'], true);
+
+      // user2 can update the private and dynamic owners list protected fields.
+      const todoUpdated2 = {
+        id: todo['id'],
+        author: todo['author'],
+        authors: [userName2],
+        customGroup: devGroupName,
+        customGroups: [devGroupName],
+        privateContent: 'Private Content updated 1',
+        ownersContent: 'Owners Content updated 1',
+        groupsContent: 'Groups Content updated 1',
+      };
+      const user2UpdateAllowedSet = `
+        id
+        author
+        authors
+        customGroup
+        customGroups
+        privateContent
+        ownersContent
+        groupsContent
+      `;
+      const updateResult2 = await user2TodoHelper.update(updateResultSetName, todoUpdated2, user2UpdateAllowedSet);
+      expect(updateResult2.data[updateResultSetName].id).toEqual(todo['id']);
+      expect(updateResult2.data[updateResultSetName].author).toEqual(userName1);
+      expect(updateResult2.data[updateResultSetName].authors).toEqual([userName2]);
+      expect(updateResult2.data[updateResultSetName].privateContent).toEqual(todoUpdated2.privateContent);
+      expect(updateResult2.data[updateResultSetName].customGroup).toEqual(todoUpdated2.customGroup);
+      expect(updateResult2.data[updateResultSetName].customGroups).toEqual(todoUpdated2.customGroups);
+      expectNullFields(updateResult2.data[updateResultSetName], ['ownersContent', 'groupsContent']);
+
+      // user2 can read the allowed fields
+      const user2ReadAllowedSet = user2UpdateAllowedSet;
+      const getResult2 = await user2TodoHelper.get(
+        {
+          id: todo['id'],
+        },
+        user2ReadAllowedSet,
+        false,
+      );
+      checkOperationResult(getResult2, todoUpdated2, `get${modelName}`);
+
+      const listTodosResult2 = await user2TodoHelper.list({}, user2ReadAllowedSet, `list${modelName}`, false, 'all');
+      checkListItemExistence(listTodosResult2, `list${modelName}`, todo['id'], true);
+
+      // unless one has delete access to all fields in the model, delete is expected to fail
+      await expect(
+        async () => await user1TodoHelper.delete(`delete${modelName}`, { id: todo['id'] }, user1CreateAllowedSet),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(`delete${modelName}`, 'Mutation'));
+
+      // user2 can listen to updates on the non-protected fields
+      const todoRandom = {
+        ...todo,
+        id: Date.now().toString(),
+      };
+      const todoRandomUpdated = {
+        ...todoUpdated1,
+        id: todoRandom.id,
+        author: userName1,
+        privateContent: 'Private Content updated',
+        adminContent: 'Admin Content updated',
+      };
+      const subscriberClient = getConfiguredAppsyncClientOIDCAuth(graphQlEndpoint, region, userMap[userName2]);
+      const subTodoHelper = createModelOperationHelpers(subscriberClient, schema)[modelName];
+
+      const onCreateSubscriptionResult = await subTodoHelper.subscribe(
+        'onCreate',
+        [
+          async () => {
+            await user1TodoHelper.create(createResultSetName, todoRandom, user1CreateAllowedSet);
+          },
+        ],
+        {},
+        user1CreateAllowedSet,
+        false,
+      );
+      expect(onCreateSubscriptionResult).toHaveLength(1);
+      expect(onCreateSubscriptionResult[0].data[`onCreate${modelName}`].privateContent).toEqual(todoRandom.privateContent);
+      expect(onCreateSubscriptionResult[0].data[`onCreate${modelName}`].customGroup).toEqual(todoRandom.customGroup);
+      expect(onCreateSubscriptionResult[0].data[`onCreate${modelName}`].customGroups).toEqual(todoRandom.customGroups);
+      expectNullFields(onCreateSubscriptionResult[0].data[`onCreate${modelName}`], ['ownerContent', 'adminContent', 'groupContent']);
+
+      const onUpdateSubscriptionResult = await subTodoHelper.subscribe(
+        'onUpdate',
+        [
+          async () => {
+            await user1TodoHelper.update(`update${modelName}`, todoRandomUpdated, user1UpdateAllowedSet);
+          },
+        ],
+        {},
+        user1UpdateAllowedSet,
+        false,
+      );
+      expect(onUpdateSubscriptionResult).toHaveLength(1);
+      expect(onUpdateSubscriptionResult[0].data[`onUpdate${modelName}`].privateContent).toEqual(todoRandomUpdated.privateContent);
+      expect(onUpdateSubscriptionResult[0].data[`onUpdate${modelName}`].customGroup).toEqual(todoRandom.customGroup);
+      expect(onUpdateSubscriptionResult[0].data[`onUpdate${modelName}`].customGroups).toEqual(todoRandomUpdated.customGroups);
+      expectNullFields(onUpdateSubscriptionResult[0].data[`onUpdate${modelName}`], ['ownersContent', 'adminContent', 'groupsContent']);
+
+      const onDeleteSubscriptionResult = await subTodoHelper.subscribe('onDelete', [], {}, user1UpdateAllowedSet, false);
+      expect(onDeleteSubscriptionResult).toHaveLength(0);
+    });
+
+    test('Model with renamed protected fields and restricted operations', async () => {
+      const modelName = 'TodoRenamedFields';
+      const user1TodoHelper = user1ModelOperationHelpers[modelName];
+      const user2TodoHelper = user2ModelOperationHelpers[modelName];
+
+      const todoPrivateFields = {
+        author: userName1,
+        authors: [userName1],
+        customGroup: adminGroupName,
+        customGroups: [adminGroupName],
+        privateContent: 'Private Content',
+      };
+      const createResultSetName = `create${modelName}`;
+      const updateResultSetName = `update${modelName}`;
+      const privateResultSet = `
+        id
+        author
+        authors
+        customGroup
+        customGroups
+        privateContent
+      `;
+
+      // cannot create a record with dynamic owner list protected field that does not allow create operation
+      await expect(
+        async () => await user1TodoHelper.create(createResultSetName, { ...todoPrivateFields, ownersContent: 'Owners Content' }),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(createResultSetName, 'Mutation'));
+
+      // cannot create a record with dynamic groups list protected field that does not allow create operation
+      await expect(
+        async () => await user1TodoHelper.create(createResultSetName, { ...todoPrivateFields, groupsContent: 'Groups Content' }),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(createResultSetName, 'Mutation'));
+
+      // Create a record with allowed fields, so we can test the update and delete operations.
+      const user1CreateAllowedSet = `
+        ${privateResultSet}
+        ownerContent
+        adminContent
+        groupContent
+      `;
+      const createResult1 = await user1TodoHelper.create(
+        createResultSetName,
+        { ...todoPrivateFields, ownerContent: 'Owner Content', adminContent: 'Admin Content', groupContent: 'Group Content' },
+        user1CreateAllowedSet,
+      );
+      expect(createResult1.data[createResultSetName].id).toBeDefined();
+      expect(createResult1.data[createResultSetName].author).toEqual(userName1);
+      expect(createResult1.data[createResultSetName].authors).toEqual([userName1]);
+      expect(createResult1.data[createResultSetName].privateContent).toEqual(todoPrivateFields.privateContent);
+      expect(createResult1.data[createResultSetName].customGroup).toEqual(todoPrivateFields.customGroup);
+      expect(createResult1.data[createResultSetName].customGroups).toEqual(todoPrivateFields.customGroups);
+      todoPrivateFields['id'] = createResult1.data[createResultSetName].id;
+      // protected fields are nullified in mutation responses
+      expectNullFields(createResult1.data[createResultSetName], ['ownerContent', 'adminContent', 'groupContent']);
+
+      const privateAndOwnerSet = `
+        ${privateResultSet}
+        ownerContent
+      `;
+      // cannot update a record with owner protected field that does not allow update operation
+      await expect(
+        async () =>
+          await user1TodoHelper.update(updateResultSetName, { ...todoPrivateFields, ownerContent: 'Owner Content' }, privateAndOwnerSet),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
+
+      const privateAndOwnersSet = `
+        ${privateResultSet}
+        ownersContent
+      `;
+      // non-owner cannot update a record with dynamic owner list protected field
+      await expect(
+        async () =>
+          await user2TodoHelper.update(updateResultSetName, { ...todoPrivateFields, ownersContent: 'Owners Content' }, privateAndOwnersSet),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
+
+      const privateAndGroupSet = `
+          ${privateResultSet}
+          groupContent
+        `;
+      // cannot update a record with group protected field that does not allow update operation
+      await expect(
+        async () =>
+          await user1TodoHelper.update(updateResultSetName, { ...todoPrivateFields, groupContent: 'Group Content' }, privateAndGroupSet),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
+
+      const privateAndGroupsSet = `
+        ${privateResultSet}
+        groupsContent
+      `;
+      // non-owner cannot update a record with dynamic group list protected field
+      await expect(
+        async () =>
+          await user2TodoHelper.update(updateResultSetName, { ...todoPrivateFields, groupsContent: 'Groups Content' }, privateAndGroupsSet),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
+
+      // non-owner or user not part of allowed groups cannot read owner, group protected fields
+      const ownerAndGroupFields = ['ownerContent', 'ownersContent', 'adminContent', 'groupContent', 'groupsContent'];
+      const nonPublicSet = `
+        ${privateResultSet}
+        ${ownerAndGroupFields.join('\n')}
+      `;
+      const getResult2 = await user2TodoHelper.get({ id: todoPrivateFields['id'] }, nonPublicSet, false, 'all');
+      checkOperationResult(
+        getResult2,
+        { ...todoPrivateFields, ownerContent: null, ownersContent: null, adminContent: null, groupContent: null, groupsContent: null },
+        `get${modelName}`,
+        false,
+        expectedFieldErrors(ownerAndGroupFields, modelName),
+      );
+
+      const listTodosResult2 = await user2TodoHelper.list({}, nonPublicSet, `list${modelName}`, false, 'all');
+      checkListItemExistence(listTodosResult2, `list${modelName}`, todoPrivateFields['id'], true);
+      checkListResponseErrors(listTodosResult2, expectedFieldErrors(ownerAndGroupFields, modelName, false));
+    });
   });
 };
