@@ -18,14 +18,7 @@ import { existsSync, removeSync, writeFileSync } from 'fs-extra';
 import generator from 'generate-password';
 import path from 'path';
 import { GQLQueryHelper } from '../query-utils/gql-helper';
-import {
-  configureAmplify,
-  getConfiguredAppsyncClientCognitoAuth,
-  getConfiguredAppsyncClientIAMAuth,
-  getUserPoolId,
-  setupUser,
-  signInUser,
-} from '../schema-api-directives';
+import { configureAmplify, getConfiguredAppsyncClientCognitoAuth, getUserPoolId, setupUser, signInUser } from '../schema-api-directives';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { SQL_TESTS_USE_BETA } from './sql-e2e-config';
 import {
@@ -41,7 +34,6 @@ import {
   getDefaultDatabasePort,
   omit,
 } from '../rds-v2-test-utils';
-import { Auth } from 'aws-amplify';
 import { schema, sqlCreateStatements } from '../__tests__/auth-test-schemas/userpool-static-dynamic-fields';
 
 // to deal with bug in cognito-identity-js
@@ -248,7 +240,7 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
       });
     };
 
-    test('Admin user can perform all valid operations on employee', async () => {
+    describe('Admin user can perform all valid operations on employee', () => {
       const employee = {
         id: 'E-1',
         bio: 'Bio1',
@@ -258,20 +250,6 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
         salary: 1000,
         team: [buildTimeGroupName, runTimeGroupName],
       };
-      const createEmployeeResult = await employeeUser1Client.create(createResultSetName, employee);
-      expect(createEmployeeResult.data[createResultSetName]).toEqual(expect.objectContaining(omit(employee, 'notes', 'salary', 'team')));
-      // notes, team and salary are protected and cannot be read upon mutation
-      expect(createEmployeeResult.data[createResultSetName].notes).toBeNull();
-      expect(createEmployeeResult.data[createResultSetName].salary).toBeNull();
-      expect(createEmployeeResult.data[createResultSetName].team).toBeNull();
-      // Admin group user can read all fields
-      const getEmployeeResult = await employeeUser1Client.get({
-        id: employee.id,
-      });
-      expect(getEmployeeResult.data[getResultSetName]).toEqual(expect.objectContaining(employee));
-      const listEmployeesResult = await employeeUser1Client.list();
-      expect(listEmployeesResult.data[listResultSetName].items).toEqual(expect.arrayContaining([expect.objectContaining(employee)]));
-      // Admin group user can update all fields
       const updatedEmployee = {
         id: employee.id,
         bio: 'Bio1 updated',
@@ -281,26 +259,59 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
         salary: 2000,
         team: [buildTimeGroupName],
       };
-      const updateEmployeeResult = await employeeUser1Client.update(updateResultSetName, updatedEmployee);
-      expect(updateEmployeeResult.data[updateResultSetName]).toEqual(
-        expect.objectContaining(omit(updatedEmployee, 'notes', 'salary', 'team')),
-      );
-      // notes, team and salary fields are protected and cannot be read upon mutation
-      expect(updateEmployeeResult.data[updateResultSetName].notes).toBeNull();
-      expect(updateEmployeeResult.data[updateResultSetName].salary).toBeNull();
-      expect(updateEmployeeResult.data[updateResultSetName].team).toBeNull();
+      describe('Admin group user can create an employee', () => {
+        let createEmployeeResult;
+        test('should create the employee successfully', async () => {
+          createEmployeeResult = await employeeUser1Client.create(createResultSetName, employee);
+          expect(createEmployeeResult.data[createResultSetName]).toEqual(
+            expect.objectContaining(omit(employee, 'notes', 'salary', 'team')),
+          );
+        });
+        test('notes, team and salary are protected and cannot be read upon mutation', () => {
+          expect(createEmployeeResult.data[createResultSetName].notes).toBeNull();
+          expect(createEmployeeResult.data[createResultSetName].salary).toBeNull();
+          expect(createEmployeeResult.data[createResultSetName].team).toBeNull();
+        });
+      });
+      test('Admin group user can read all fields', async () => {
+        const getEmployeeResult = await employeeUser1Client.get({
+          id: employee.id,
+        });
+        expect(getEmployeeResult.data[getResultSetName]).toEqual(expect.objectContaining(employee));
+        const listEmployeesResult = await employeeUser1Client.list();
+        expect(listEmployeesResult.data[listResultSetName].items).toEqual(expect.arrayContaining([expect.objectContaining(employee)]));
+      });
+      describe('Admin group user can update all fields', () => {
+        let updateEmployeeResult;
+        test('should update the employee successfully', async () => {
+          updateEmployeeResult = await employeeUser1Client.update(updateResultSetName, updatedEmployee);
+          expect(updateEmployeeResult.data[updateResultSetName]).toEqual(
+            expect.objectContaining(omit(updatedEmployee, 'notes', 'salary', 'team')),
+          );
+        });
+        test('notes, team and salary fields are protected and cannot be read upon mutation', () => {
+          expect(updateEmployeeResult.data[updateResultSetName].notes).toBeNull();
+          expect(updateEmployeeResult.data[updateResultSetName].salary).toBeNull();
+          expect(updateEmployeeResult.data[updateResultSetName].team).toBeNull();
+        });
+      });
       // unless one has delete access to all fields in the model, delete is expected to fail
-      // admin user can delete the employee
-      const deleteEmployeeResult = await employeeUser1Client.delete(deleteResultSetName, { id: employee.id });
-      expect(deleteEmployeeResult.data[deleteResultSetName]).toEqual(
-        expect.objectContaining(omit(updatedEmployee, 'notes', 'salary', 'team')),
-      );
-      // notes, team and salary fields are protected and cannot be read upon deletion
-      expect(deleteEmployeeResult.data[deleteResultSetName].notes).toBeNull();
-      expect(deleteEmployeeResult.data[deleteResultSetName].salary).toBeNull();
-      expect(deleteEmployeeResult.data[deleteResultSetName].team).toBeNull();
+      describe('Admin user can delete the employee', () => {
+        let deleteEmployeeResult;
+        test('should delete the employee successfully', async () => {
+          deleteEmployeeResult = await employeeUser1Client.delete(deleteResultSetName, { id: employee.id });
+          expect(deleteEmployeeResult.data[deleteResultSetName]).toEqual(
+            expect.objectContaining(omit(updatedEmployee, 'notes', 'salary', 'team')),
+          );
+        });
+        test('notes, team and salary fields are protected and cannot be read upon deletion', () => {
+          expect(deleteEmployeeResult.data[deleteResultSetName].notes).toBeNull();
+          expect(deleteEmployeeResult.data[deleteResultSetName].salary).toBeNull();
+          expect(deleteEmployeeResult.data[deleteResultSetName].team).toBeNull();
+        });
+      });
     });
-    test('Admin user can subscribe all updates on employee', async () => {
+    describe('Admin user can subscribe all updates on employee', () => {
       const employee = {
         id: 'E-1-sub',
         bio: 'Bio1 sub',
@@ -310,25 +321,6 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
         salary: 1000,
         team: [buildTimeGroupName, runTimeGroupName],
       };
-      // Setup admin user client for subscription (user1)
-      const subscriberClient = getConfiguredAppsyncClientCognitoAuth(apiEndPoint, region, userMap[userName1]);
-      const subEmployeeHelper = createModelOperationHelpers(subscriberClient, schema)[modelName];
-      // Can listen to the create event
-      const onCreateSubscriptionResult = await subEmployeeHelper.subscribe(
-        'onCreate',
-        [
-          async () => {
-            await employeeUser1Client.create(createResultSetName, employee);
-          },
-        ],
-        {},
-      );
-      expect(onCreateSubscriptionResult).toHaveLength(1);
-      expect(onCreateSubscriptionResult[0].data[onCreateResultSetName]).toEqual(
-        expect.objectContaining(omit(employee, 'notes', 'salary', 'team')),
-      );
-      expectNullFields(onCreateSubscriptionResult[0].data[onCreateResultSetName], ['notes', 'salary', 'team']);
-      // Can listen to the update event
       const updatedEmployee = {
         id: employee.id,
         bio: 'Bio1 updated',
@@ -338,151 +330,183 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
         salary: 2000,
         team: [buildTimeGroupName],
       };
-      const onUpdateSubscriptionResult = await subEmployeeHelper.subscribe(
-        'onUpdate',
-        [
-          async () => {
-            await employeeUser1Client.update(updateResultSetName, updatedEmployee);
-          },
-        ],
-        {},
-      );
-      expect(onUpdateSubscriptionResult).toHaveLength(1);
-      expect(onUpdateSubscriptionResult[0].data[onUpdateResultSetName]).toEqual(
-        expect.objectContaining(omit(updatedEmployee, 'notes', 'salary', 'team')),
-      );
-      expectNullFields(onUpdateSubscriptionResult[0].data[onUpdateResultSetName], ['notes', 'salary', 'team']);
-      // Can listen to the delete event
-      const onDeleteSubscriptionResult = await subEmployeeHelper.subscribe(
-        'onDelete',
-        [
-          async () => {
-            await employeeUser1Client.delete(deleteResultSetName, { id: updatedEmployee.id });
-          },
-        ],
-        {},
-      );
-      expect(onDeleteSubscriptionResult).toHaveLength(1);
-      expect(onDeleteSubscriptionResult[0].data[onDeleteResultSetName]).toEqual(
-        expect.objectContaining(omit(updatedEmployee, 'notes', 'salary', 'team')),
-      );
-      expectNullFields(onDeleteSubscriptionResult[0].data[onDeleteResultSetName], ['notes', 'salary', 'team']);
-    });
-    test('Non-admin group users can perform all valid operations on employee', async () => {
-      // User not in Admin group cannot create or delete the employee even if the owner field is himself
-      await expect(
-        async () =>
-          await employeeUser2Client.create(createResultSetName, {
-            id: 'invalid2',
-            email: userName2,
-            team: [buildTimeGroupName],
-          }),
-      ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(createResultSetName, 'Mutation'));
-      await expect(
-        async () =>
-          await employeeUser2Client.delete(deleteResultSetName, {
-            id: employeeUser2.id,
-          }),
-      ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(deleteResultSetName, 'Mutation'));
-      // User can read all fields of its own record
-      const getEmployeeResult1 = await employeeUser2Client.get({
-        id: employeeUser2.id,
+      // Setup admin user client for subscription (user1)
+      const subscriberClient = getConfiguredAppsyncClientCognitoAuth(apiEndPoint, region, userMap[userName1]);
+      const subEmployeeHelper = createModelOperationHelpers(subscriberClient, schema)[modelName];
+      test('Can listen to the create event', async () => {
+        const onCreateSubscriptionResult = await subEmployeeHelper.subscribe(
+          'onCreate',
+          [
+            async () => {
+              await employeeUser1Client.create(createResultSetName, employee);
+            },
+          ],
+          {},
+        );
+        expect(onCreateSubscriptionResult).toHaveLength(1);
+        expect(onCreateSubscriptionResult[0].data[onCreateResultSetName]).toEqual(
+          expect.objectContaining(omit(employee, 'notes', 'salary', 'team')),
+        );
+        expectNullFields(onCreateSubscriptionResult[0].data[onCreateResultSetName], ['notes', 'salary', 'team']);
       });
-      expect(getEmployeeResult1.data[getResultSetName]).toEqual(expect.objectContaining(employeeUser2));
-      // User can read restricted fields of other employees
-      // User cannot read team notes of those he is not a member
-      // User cannot read salary info of others
-      const getEmployeeResult2 = await employeeUser2Client.get(
-        {
-          id: employeeUser3.id,
-        },
-        undefined,
-        true,
-        'all',
-      );
-      checkOperationResult(
-        getEmployeeResult2,
-        { ...employeeUser3, notes: null, salary: null },
-        getResultSetName,
-        false,
-        expectedFieldErrors(['notes', 'salary'], 'Employee'),
-      );
-      const listEmployeesResult = await employeeUser2Client.list({}, undefined, listResultSetName, true, 'all');
-      checkListItemExistence(listEmployeesResult, listResultSetName, employeeUser3.id, true);
-      checkListResponseErrors(listEmployeesResult, expectedFieldErrors(['notes', 'salary'], 'Employee', false));
-      // User can update fields of bio, notes and accolades of their own
-      const updatedEmployee1 = {
-        id: employeeUser2.id,
-        bio: 'Bio2 updated',
-        notes: 'My note 2 updated',
-        accolades: ['Good Job!', 'Cool!'],
-        team: employeeUser2.team,
-        salary: employeeUser2.salary,
-        email: employeeUser2.email,
-      };
-      const updateEmployeeResult1 = await employeeUser2Client.update(
-        updateResultSetName,
-        omit(updatedEmployee1, 'team', 'salary', 'email'),
-      );
-      expect(updateEmployeeResult1.data[updateResultSetName]).toEqual(
-        expect.objectContaining(omit(updatedEmployee1, 'notes', 'salary', 'team')),
-      );
-      // notes, team and salary fields are protected and cannot be read upon mutation
-      expect(updateEmployeeResult1.data[updateResultSetName].notes).toBeNull();
-      expect(updateEmployeeResult1.data[updateResultSetName].salary).toBeNull();
-      expect(updateEmployeeResult1.data[updateResultSetName].team).toBeNull();
-      // User can update accolades for their teammates
-      const updatedEmployee2 = {
-        ...employeeUser4,
-        accolades: [...employeeUser4.accolades, 'He has ownership'],
-      };
-      const updateEmployeeResult2 = await employeeUser2Client.update(
-        updateResultSetName,
-        { id: updatedEmployee2.id, accolades: updatedEmployee2.accolades },
-        `
-          id
-          bio
-          notes
-          email
-          team
-          accolades
-        `,
-      );
-      expect(updateEmployeeResult2.data[updateResultSetName]).toEqual(
-        expect.objectContaining(omit(updatedEmployee2, 'notes', 'salary', 'team')),
-      );
-      // notes field is protected and cannot be read upon mutation
-      expect(updateEmployeeResult2.data[updateResultSetName].notes).toBeNull();
-
-      // User cannot update bio or notes if they are not owner
-      await expect(
-        async () => await employeeUser2Client.update(updateResultSetName, { id: employeeUser3.id, bio: 'invalid bio' }),
-      ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
-      await expect(
-        async () => await employeeUser2Client.update(updateResultSetName, { id: employeeUser3.id, notes: 'invalid notes' }),
-      ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
-      // User cannot update accolades for an employee from a non-overlapping team
-      await expect(
-        async () =>
-          await employeeUser2Client.update(updateResultSetName, {
-            id: employeeUser3.id,
-            accolades: [...employeeUser3.accolades, 'Best employee!'],
-          }),
-      ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
-      // User cannot update any of the fields left
-      const forbiddenFields = {
-        team: [runTimeGroupName],
-        email: userName1,
-        salary: 10000,
-      };
-      Object.entries(forbiddenFields).forEach(async (entry) => {
-        const updateInput = Object.fromEntries([['id', employeeUser2.id], entry]);
+      test('Can listen to the update event', async () => {
+        const onUpdateSubscriptionResult = await subEmployeeHelper.subscribe(
+          'onUpdate',
+          [
+            async () => {
+              await employeeUser1Client.update(updateResultSetName, updatedEmployee);
+            },
+          ],
+          {},
+        );
+        expect(onUpdateSubscriptionResult).toHaveLength(1);
+        expect(onUpdateSubscriptionResult[0].data[onUpdateResultSetName]).toEqual(
+          expect.objectContaining(omit(updatedEmployee, 'notes', 'salary', 'team')),
+        );
+        expectNullFields(onUpdateSubscriptionResult[0].data[onUpdateResultSetName], ['notes', 'salary', 'team']);
+      });
+      test('Can listen to the delete event', async () => {
+        const onDeleteSubscriptionResult = await subEmployeeHelper.subscribe(
+          'onDelete',
+          [
+            async () => {
+              await employeeUser1Client.delete(deleteResultSetName, { id: updatedEmployee.id });
+            },
+          ],
+          {},
+        );
+        expect(onDeleteSubscriptionResult).toHaveLength(1);
+        expect(onDeleteSubscriptionResult[0].data[onDeleteResultSetName]).toEqual(
+          expect.objectContaining(omit(updatedEmployee, 'notes', 'salary', 'team')),
+        );
+        expectNullFields(onDeleteSubscriptionResult[0].data[onDeleteResultSetName], ['notes', 'salary', 'team']);
+      });
+    });
+    describe('Non-admin group users can perform all valid operations on employee', () => {
+      test('User not in Admin group cannot create or delete the employee even if the owner field is himself', async () => {
         await expect(
-          async () => await employeeUser2Client.update(updateResultSetName, updateInput),
+          async () =>
+            await employeeUser2Client.create(createResultSetName, {
+              id: 'invalid2',
+              email: userName2,
+              team: [buildTimeGroupName],
+            }),
+        ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(createResultSetName, 'Mutation'));
+        await expect(
+          async () =>
+            await employeeUser2Client.delete(deleteResultSetName, {
+              id: employeeUser2.id,
+            }),
+        ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(deleteResultSetName, 'Mutation'));
+      });
+      test('User can read all fields of its own record', async () => {
+        const getEmployeeResult1 = await employeeUser2Client.get({
+          id: employeeUser2.id,
+        });
+        expect(getEmployeeResult1.data[getResultSetName]).toEqual(expect.objectContaining(employeeUser2));
+      });
+      test('User cannot read team notes of those he is not a member and cannot read salary info of others', async () => {
+        const getEmployeeResult2 = await employeeUser2Client.get(
+          {
+            id: employeeUser3.id,
+          },
+          undefined,
+          true,
+          'all',
+        );
+        checkOperationResult(
+          getEmployeeResult2,
+          { ...employeeUser3, notes: null, salary: null },
+          getResultSetName,
+          false,
+          expectedFieldErrors(['notes', 'salary'], 'Employee'),
+        );
+        const listEmployeesResult = await employeeUser2Client.list({}, undefined, listResultSetName, true, 'all');
+        checkListItemExistence(listEmployeesResult, listResultSetName, employeeUser3.id, true);
+        checkListResponseErrors(listEmployeesResult, expectedFieldErrors(['notes', 'salary'], 'Employee', false));
+      });
+      describe('User can update fields of bio, notes and accolades of their own', () => {
+        let updateEmployeeResult1;
+        const updatedEmployee1 = {
+          id: employeeUser2.id,
+          bio: 'Bio2 updated',
+          notes: 'My note 2 updated',
+          accolades: ['Good Job!', 'Cool!'],
+          team: employeeUser2.team,
+          salary: employeeUser2.salary,
+          email: employeeUser2.email,
+        };
+        test('should update the restricted fields successfully', async () => {
+          updateEmployeeResult1 = await employeeUser2Client.update(updateResultSetName, omit(updatedEmployee1, 'team', 'salary', 'email'));
+          expect(updateEmployeeResult1.data[updateResultSetName]).toEqual(
+            expect.objectContaining(omit(updatedEmployee1, 'notes', 'salary', 'team')),
+          );
+        });
+        test('notes, team and salary fields are protected and cannot be read upon mutation', () => {
+          expect(updateEmployeeResult1.data[updateResultSetName].notes).toBeNull();
+          expect(updateEmployeeResult1.data[updateResultSetName].salary).toBeNull();
+          expect(updateEmployeeResult1.data[updateResultSetName].team).toBeNull();
+        });
+      });
+      describe('User can update accolades for their teammates', () => {
+        let updateEmployeeResult2;
+        const updatedEmployee2 = {
+          ...employeeUser4,
+          accolades: [...employeeUser4.accolades, 'He has ownership'],
+        };
+        test('should update the employee successfully', async () => {
+          updateEmployeeResult2 = await employeeUser2Client.update(
+            updateResultSetName,
+            { id: updatedEmployee2.id, accolades: updatedEmployee2.accolades },
+            `
+              id
+              bio
+              notes
+              email
+              team
+              accolades
+            `,
+          );
+        });
+        expect(updateEmployeeResult2.data[updateResultSetName]).toEqual(
+          expect.objectContaining(omit(updatedEmployee2, 'notes', 'salary', 'team')),
+        );
+        test('notes field is protected and cannot be read upon mutation', () => {
+          expect(updateEmployeeResult2.data[updateResultSetName].notes).toBeNull();
+        });
+      });
+      test('User cannot update bio or notes if they are not owner', async () => {
+        await expect(
+          async () => await employeeUser2Client.update(updateResultSetName, { id: employeeUser3.id, bio: 'invalid bio' }),
+        ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
+        await expect(
+          async () => await employeeUser2Client.update(updateResultSetName, { id: employeeUser3.id, notes: 'invalid notes' }),
         ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
       });
+      test('User cannot update accolades for an employee from a non-overlapping team', async () => {
+        await expect(
+          async () =>
+            await employeeUser2Client.update(updateResultSetName, {
+              id: employeeUser3.id,
+              accolades: [...employeeUser3.accolades, 'Best employee!'],
+            }),
+        ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
+      });
+      test('User cannot update any of the fields left', () => {
+        const forbiddenFields = {
+          team: [runTimeGroupName],
+          email: userName1,
+          salary: 10000,
+        };
+        Object.entries(forbiddenFields).forEach(async (entry) => {
+          const updateInput = Object.fromEntries([['id', employeeUser2.id], entry]);
+          await expect(
+            async () => await employeeUser2Client.update(updateResultSetName, updateInput),
+          ).rejects.toThrowErrorMatchingInlineSnapshot(expectedOperationError(updateResultSetName, 'Mutation'));
+        });
+      });
     });
-    test('Non-admin user can subscribe all updates on employee except for restricted fields', async () => {
+    describe('Non-admin user can subscribe all updates on employee except for restricted fields', () => {
       const employee = {
         id: 'E-2-sub',
         bio: 'Bio2 sub',
@@ -492,25 +516,6 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
         salary: 1000,
         team: [buildTimeGroupName, runTimeGroupName],
       };
-      // Setup non-admin user client for subscription (user2)
-      const subscriberClient = getConfiguredAppsyncClientCognitoAuth(apiEndPoint, region, userMap[userName2]);
-      const subEmployeeHelper = createModelOperationHelpers(subscriberClient, schema)[modelName];
-      // Can listen to the create event
-      const onCreateSubscriptionResult = await subEmployeeHelper.subscribe(
-        'onCreate',
-        [
-          async () => {
-            await employeeUser1Client.create(createResultSetName, employee);
-          },
-        ],
-        {},
-      );
-      expect(onCreateSubscriptionResult).toHaveLength(1);
-      expect(onCreateSubscriptionResult[0].data[onCreateResultSetName]).toEqual(
-        expect.objectContaining(omit(employee, 'notes', 'salary', 'team')),
-      );
-      expectNullFields(onCreateSubscriptionResult[0].data[onCreateResultSetName], ['notes', 'salary', 'team']);
-      // Can listen to the update event
       const updatedEmployee = {
         id: employee.id,
         bio: 'Bio1 updated',
@@ -520,35 +525,57 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
         salary: 2000,
         team: [buildTimeGroupName],
       };
-      const onUpdateSubscriptionResult = await subEmployeeHelper.subscribe(
-        'onUpdate',
-        [
-          async () => {
-            await employeeUser1Client.update(updateResultSetName, updatedEmployee);
-          },
-        ],
-        {},
-      );
-      expect(onUpdateSubscriptionResult).toHaveLength(1);
-      expect(onUpdateSubscriptionResult[0].data[onUpdateResultSetName]).toEqual(
-        expect.objectContaining(omit(updatedEmployee, 'notes', 'salary', 'team')),
-      );
-      expectNullFields(onUpdateSubscriptionResult[0].data[onUpdateResultSetName], ['notes', 'salary', 'team']);
-      // Can listen to the delete event
-      const onDeleteSubscriptionResult = await subEmployeeHelper.subscribe(
-        'onDelete',
-        [
-          async () => {
-            await employeeUser1Client.delete(deleteResultSetName, { id: updatedEmployee.id });
-          },
-        ],
-        {},
-      );
-      expect(onDeleteSubscriptionResult).toHaveLength(1);
-      expect(onDeleteSubscriptionResult[0].data[onDeleteResultSetName]).toEqual(
-        expect.objectContaining(omit(updatedEmployee, 'notes', 'salary', 'team')),
-      );
-      expectNullFields(onDeleteSubscriptionResult[0].data[onDeleteResultSetName], ['notes', 'salary', 'team']);
+      // Setup non-admin user client for subscription (user2)
+      const subscriberClient = getConfiguredAppsyncClientCognitoAuth(apiEndPoint, region, userMap[userName2]);
+      const subEmployeeHelper = createModelOperationHelpers(subscriberClient, schema)[modelName];
+      test('Can listen to the create event', async () => {
+        const onCreateSubscriptionResult = await subEmployeeHelper.subscribe(
+          'onCreate',
+          [
+            async () => {
+              await employeeUser1Client.create(createResultSetName, employee);
+            },
+          ],
+          {},
+        );
+        expect(onCreateSubscriptionResult).toHaveLength(1);
+        expect(onCreateSubscriptionResult[0].data[onCreateResultSetName]).toEqual(
+          expect.objectContaining(omit(employee, 'notes', 'salary', 'team')),
+        );
+        expectNullFields(onCreateSubscriptionResult[0].data[onCreateResultSetName], ['notes', 'salary', 'team']);
+      });
+      test('Can listen to the update event', async () => {
+        const onUpdateSubscriptionResult = await subEmployeeHelper.subscribe(
+          'onUpdate',
+          [
+            async () => {
+              await employeeUser1Client.update(updateResultSetName, updatedEmployee);
+            },
+          ],
+          {},
+        );
+        expect(onUpdateSubscriptionResult).toHaveLength(1);
+        expect(onUpdateSubscriptionResult[0].data[onUpdateResultSetName]).toEqual(
+          expect.objectContaining(omit(updatedEmployee, 'notes', 'salary', 'team')),
+        );
+        expectNullFields(onUpdateSubscriptionResult[0].data[onUpdateResultSetName], ['notes', 'salary', 'team']);
+      });
+      test('Can listen to the delete event', async () => {
+        const onDeleteSubscriptionResult = await subEmployeeHelper.subscribe(
+          'onDelete',
+          [
+            async () => {
+              await employeeUser1Client.delete(deleteResultSetName, { id: updatedEmployee.id });
+            },
+          ],
+          {},
+        );
+        expect(onDeleteSubscriptionResult).toHaveLength(1);
+        expect(onDeleteSubscriptionResult[0].data[onDeleteResultSetName]).toEqual(
+          expect.objectContaining(omit(updatedEmployee, 'notes', 'salary', 'team')),
+        );
+        expectNullFields(onDeleteSubscriptionResult[0].data[onDeleteResultSetName], ['notes', 'salary', 'team']);
+      });
     });
 
     // helper functions
