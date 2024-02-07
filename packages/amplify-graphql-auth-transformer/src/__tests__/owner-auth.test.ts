@@ -481,6 +481,32 @@ describe('owner based @auth', () => {
     expect(out.schema).toMatchSnapshot();
   });
 
+  it('should not add duplicate implicit field when already included', async () => {
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [],
+    };
+    const validSchema = `
+      type Todo @model @auth(rules: [{ allow: owner }]) {
+        owner: String
+        content: String
+      }
+    `;
+
+    const out = testTransform({
+      schema: validSchema,
+      authConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer()],
+    });
+    expect(out).toBeDefined();
+
+    validateModelSchema(parse(out.schema));
+    parse(out.schema);
+    expect(out.schema).toMatchSnapshot();
+  });
+
   describe('with identity claim feature flag disabled', () => {
     test('auth transformer validation happy case', () => {
       const authConfig: AppSyncAuthConfiguration = {
