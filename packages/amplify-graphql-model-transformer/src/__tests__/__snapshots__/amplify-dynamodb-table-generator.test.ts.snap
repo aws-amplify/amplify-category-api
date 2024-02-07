@@ -37,10 +37,7 @@ Object {
     "PolicyName": "CreateUpdateDeleteTablesPolicyB7B6ADB5",
     "Roles": Array [
       Object {
-        "Ref": "TableManagerOnEventHandlerServiceRoleD69E8A0C",
-      },
-      Object {
-        "Ref": "TableManagerIsCompleteHandlerServiceRole73EE73E4",
+        "Ref": "TableManagerHandlerRoleE8EBC863",
       },
     ],
   },
