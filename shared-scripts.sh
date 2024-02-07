@@ -279,7 +279,22 @@ function useChildAccountCredentials {
         parent_acct=$(aws sts get-caller-identity | jq -cr '.Account')
         child_accts=$(aws organizations list-accounts | jq -c "[.Accounts[].Id | select(. != \"$parent_acct\")]")
         org_size=$(echo $child_accts | jq 'length')
-        pick_acct=$(echo $child_accts | jq -cr ".[$RANDOM % $org_size]")
+        opt_in_regions="eu-south-1 ap-east-1"
+        if echo "$opt_in_regions" | grep -qw "$CLI_REGION"; then
+            child_accts=$(echo $child_accts | jq -c '.[]')
+            for child_acct in $child_accts; do
+                child_acct=$(echo $child_acct | tr -d '"')
+                # Get enabled opt-in regions for the child account
+                enabled_regions=$(aws account list-regions --account-id $child_acct --region-opt-status-contains ENABLED)
+                # Check if given opt-in region is enabled for the child account
+                if echo "$enabled_regions" | jq -e ".Regions[].RegionName == \"$CLI_REGION\""; then
+                    pick_acct=$child_acct
+                    break
+                fi
+            done
+        else
+            pick_acct=$(echo $child_accts | jq -cr ".[$RANDOM % $org_size]")
+        fi
         session_id=$((1 + $RANDOM % 10000))
         if [[ -z "$pick_acct" || -z "$session_id" ]]; then
           echo "Unable to find a child account. Falling back to parent AWS account"
