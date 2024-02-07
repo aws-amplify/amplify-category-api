@@ -2926,11 +2926,9 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       ]);
     });
 
-    test('Non Model protected fields and allowed operations', async () => {
+    describe('Non Model protected fields and allowed operations', () => {
       const modelName = 'TodoModel';
       const nonModelName = 'NoteNonModel';
-      const user1TodoHelper = user1ModelOperationHelpers[modelName];
-      const user2TodoHelper = user2ModelOperationHelpers[modelName];
 
       const note = {
         content: 'Note content',
@@ -2964,182 +2962,197 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
             adminContent
           }
         `;
-
-      // admin(user1) can create a record with all fields
-      const createResult1 = await user1TodoHelper.create(createResultSetName, todoWithAdminNote, adminResultSet);
-      expect(createResult1.data[createResultSetName].id).toBeDefined();
-      todoWithAdminNote['id'] = createResult1.data[createResultSetName].id;
-      checkOperationResult(
-        createResult1,
-        { ...todoWithAdminNote, note: { ...todoWithAdminNote.note, __typename: nonModelName } },
-        createResultSetName,
-      );
-
-      // non-admin(user2) can create a record with private non-model fields
-      const createResult2 = await user2TodoHelper.create(createResultSetName, todoWithoutAdminNote, privateResultSet);
-      expect(createResult2.data[createResultSetName].id).toBeDefined();
-      todoWithoutAdminNote['id'] = createResult2.data[createResultSetName].id;
-      checkOperationResult(
-        createResult2,
-        { ...todoWithoutAdminNote, note: { ...todoWithoutAdminNote.note, __typename: nonModelName } },
-        createResultSetName,
-      );
-
-      // admin can update all non-model fields
       const todoUpdated1 = {
-        id: todoWithAdminNote['id'],
         name: 'Reading books updated',
         note: {
           content: 'Note content updated',
           adminContent: 'Admin content updated',
         },
       };
-      const updateResult1 = await user1TodoHelper.update(updateResultSetName, todoUpdated1, adminResultSet);
-      expect(updateResult1.data[updateResultSetName].id).toEqual(todoUpdated1['id']);
-      checkOperationResult(
-        updateResult1,
-        { ...todoUpdated1, note: { ...todoUpdated1.note, __typename: nonModelName } },
-        updateResultSetName,
-      );
 
-      // non-admin can update private non-model fields
       const todoUpdated2 = {
-        id: todoWithoutAdminNote['id'],
         name: 'Reading books updated',
         note: {
           content: 'Note content updated',
         },
       };
-      const updateResult2 = await user2TodoHelper.update(updateResultSetName, todoUpdated2, privateResultSet);
-      expect(updateResult2.data[updateResultSetName].id).toEqual(todoUpdated2['id']);
-      checkOperationResult(
-        updateResult2,
-        { ...todoUpdated2, note: { ...todoUpdated2.note, __typename: nonModelName } },
-        updateResultSetName,
-      );
 
-      // admin can read all non-model fields
-      const getResult1 = await user1TodoHelper.get(
-        {
-          id: todoWithAdminNote['id'],
-        },
-        adminResultSet,
-        false,
-      );
-      checkOperationResult(
-        getResult1,
-        { ...todoWithAdminNote, ...todoUpdated1, note: { ...todoUpdated1.note, __typename: nonModelName } },
-        `get${modelName}`,
-      );
+      test('admin can create a record with all fields', async () => {
+        const user1TodoHelper = user1ModelOperationHelpers[modelName];
+        const createResult1 = await user1TodoHelper.create(createResultSetName, todoWithAdminNote, adminResultSet);
+        expect(createResult1.data[createResultSetName].id).toBeDefined();
+        todoWithAdminNote['id'] = createResult1.data[createResultSetName].id;
+        checkOperationResult(
+          createResult1,
+          { ...todoWithAdminNote, note: { ...todoWithAdminNote.note, __typename: nonModelName } },
+          createResultSetName,
+        );
+      });
 
-      const listTodosResult1 = await user1TodoHelper.list({}, adminResultSet, `list${modelName}s`, false, 'all');
-      checkListItemExistence(listTodosResult1, `list${modelName}s`, todoWithAdminNote['id'], true);
+      test('non-admin can create a record with private non-model fields', async () => {
+        const user2TodoHelper = user2ModelOperationHelpers[modelName];
+        const createResult2 = await user2TodoHelper.create(createResultSetName, todoWithoutAdminNote, privateResultSet);
+        expect(createResult2.data[createResultSetName].id).toBeDefined();
+        todoWithoutAdminNote['id'] = createResult2.data[createResultSetName].id;
+        checkOperationResult(
+          createResult2,
+          { ...todoWithoutAdminNote, note: { ...todoWithoutAdminNote.note, __typename: nonModelName } },
+          createResultSetName,
+        );
+      });
 
-      // non-admin can read private non-model fields
-      const getResult2 = await user2TodoHelper.get(
-        {
-          id: todoWithoutAdminNote['id'],
-        },
-        privateResultSet,
-        false,
-      );
-      checkOperationResult(
-        getResult2,
-        { ...todoWithoutAdminNote, ...todoUpdated2, note: { ...todoUpdated2.note, __typename: nonModelName } },
-        `get${modelName}`,
-      );
+      test('admin can update all non-model fields', async () => {
+        const user1TodoHelper = user1ModelOperationHelpers[modelName];
+        todoUpdated1['id'] = todoWithAdminNote['id'];
+        const updateResult1 = await user1TodoHelper.update(updateResultSetName, todoUpdated1, adminResultSet);
+        expect(updateResult1.data[updateResultSetName].id).toEqual(todoUpdated1['id']);
+        checkOperationResult(
+          updateResult1,
+          { ...todoUpdated1, note: { ...todoUpdated1.note, __typename: nonModelName } },
+          updateResultSetName,
+        );
+      });
 
-      const listTodosResult2 = await user2TodoHelper.list({}, privateResultSet, `list${modelName}s`, false, 'all');
-      checkListItemExistence(listTodosResult2, `list${modelName}s`, todoWithoutAdminNote['id'], true);
+      test('non-admin can update private non-model fields', async () => {
+        const user2TodoHelper = user2ModelOperationHelpers[modelName];
+        todoUpdated2['id'] = todoWithoutAdminNote['id'];
+        const updateResult2 = await user2TodoHelper.update(updateResultSetName, todoUpdated2, privateResultSet);
+        expect(updateResult2.data[updateResultSetName].id).toEqual(todoUpdated2['id']);
+        checkOperationResult(
+          updateResult2,
+          { ...todoUpdated2, note: { ...todoUpdated2.note, __typename: nonModelName } },
+          updateResultSetName,
+        );
+      });
 
-      // admin can delete the record
-      const deleteResult1 = await user1TodoHelper.delete(deleteResultSetName, { id: todoWithAdminNote['id'] }, adminResultSet);
-      expect(deleteResult1.data[deleteResultSetName].id).toEqual(todoWithAdminNote['id']);
-      checkOperationResult(
-        deleteResult1,
-        { ...todoUpdated1, note: { ...todoUpdated1.note, __typename: nonModelName } },
-        deleteResultSetName,
-      );
-
-      // non-admin can listen to mutations on all fields
-      // TODO: non-models auth field redaction. Re-visit this test after we decide the expected behavior.
-      const todoRandom = {
-        ...todoWithAdminNote,
-        id: Date.now().toString(),
-      };
-      const todoRandomUpdated = {
-        ...todoUpdated1,
-        id: todoRandom.id,
-      };
-      const subscriberClient = getConfiguredAppsyncClientCognitoAuth(graphQlEndpoint, region, userMap[userName2]);
-      const subTodoHelper = createModelOperationHelpers(subscriberClient, schema)[modelName];
-
-      const onCreateSubscriptionResult = await subTodoHelper.subscribe(
-        'onCreate',
-        [
-          async () => {
-            await user1TodoHelper.create(createResultSetName, todoRandom, adminResultSet);
+      test('admin can read all non-model fields', async () => {
+        const user1TodoHelper = user1ModelOperationHelpers[modelName];
+        const getResult1 = await user1TodoHelper.get(
+          {
+            id: todoWithAdminNote['id'],
           },
-        ],
-        {},
-        adminResultSet,
-        false,
-      );
-      expect(onCreateSubscriptionResult).toHaveLength(1);
-      const onCreateResultData = onCreateSubscriptionResult[0].data[`onCreate${modelName}`];
-      expect(onCreateResultData?.id).toEqual(todoRandom.id);
-      checkOperationResult(
-        onCreateSubscriptionResult[0],
-        { ...todoRandom, note: { ...todoRandom.note, __typename: nonModelName } },
-        `onCreate${modelName}`,
-      );
+          adminResultSet,
+          false,
+        );
+        checkOperationResult(
+          getResult1,
+          { ...todoWithAdminNote, ...todoUpdated1, note: { ...todoUpdated1.note, __typename: nonModelName } },
+          `get${modelName}`,
+        );
 
-      const onUpdateSubscriptionResult = await subTodoHelper.subscribe(
-        'onUpdate',
-        [
-          async () => {
-            await user1TodoHelper.update(`update${modelName}`, todoRandomUpdated, adminResultSet);
-          },
-        ],
-        {},
-        adminResultSet,
-        false,
-      );
-      expect(onUpdateSubscriptionResult).toHaveLength(1);
-      const onUpdateResultData = onUpdateSubscriptionResult[0].data[`onUpdate${modelName}`];
-      expect(onUpdateResultData?.id).toEqual(todoRandomUpdated.id);
-      checkOperationResult(
-        onUpdateSubscriptionResult[0],
-        { ...todoRandomUpdated, note: { ...todoRandomUpdated.note, __typename: nonModelName } },
-        `onUpdate${modelName}`,
-      );
+        const listTodosResult1 = await user1TodoHelper.list({}, adminResultSet, `list${modelName}s`, false, 'all');
+        checkListItemExistence(listTodosResult1, `list${modelName}s`, todoWithAdminNote['id'], true);
+      });
 
-      const onDeleteSubscriptionResult = await subTodoHelper.subscribe(
-        'onDelete',
-        [
-          async () => {
-            await user1TodoHelper.delete(deleteResultSetName, { id: todoRandomUpdated.id }, adminResultSet);
+      test('non-admin can read private non-model fields', async () => {
+        const user2TodoHelper = user2ModelOperationHelpers[modelName];
+        const getResult2 = await user2TodoHelper.get(
+          {
+            id: todoWithoutAdminNote['id'],
           },
-        ],
-        {},
-        adminResultSet,
-        false,
-      );
-      expect(onDeleteSubscriptionResult).toHaveLength(1);
-      const onDeleteResultData = onDeleteSubscriptionResult[0].data[`onDelete${modelName}`];
-      expect(onDeleteResultData?.id).toEqual(todoRandomUpdated.id);
-      checkOperationResult(
-        onDeleteSubscriptionResult[0],
-        { ...todoRandomUpdated, note: { ...todoRandomUpdated.note, __typename: nonModelName } },
-        `onDelete${modelName}`,
-      );
+          privateResultSet,
+          false,
+        );
+        checkOperationResult(
+          getResult2,
+          { ...todoWithoutAdminNote, ...todoUpdated2, note: { ...todoUpdated2.note, __typename: nonModelName } },
+          `get${modelName}`,
+        );
+
+        const listTodosResult2 = await user2TodoHelper.list({}, privateResultSet, `list${modelName}s`, false, 'all');
+        checkListItemExistence(listTodosResult2, `list${modelName}s`, todoWithoutAdminNote['id'], true);
+      });
+
+      test('admin can delete the record', async () => {
+        const user1TodoHelper = user1ModelOperationHelpers[modelName];
+        const deleteResult1 = await user1TodoHelper.delete(deleteResultSetName, { id: todoWithAdminNote['id'] }, adminResultSet);
+        expect(deleteResult1.data[deleteResultSetName].id).toEqual(todoWithAdminNote['id']);
+        checkOperationResult(
+          deleteResult1,
+          { ...todoUpdated1, note: { ...todoUpdated1.note, __typename: nonModelName } },
+          deleteResultSetName,
+        );
+      });
+
+      test('non-admin can listen to mutations on all fields', async () => {
+        const user1TodoHelper = user1ModelOperationHelpers[modelName];
+        // TODO: non-models auth field redaction. Re-visit this test after we decide the expected behavior.
+        const todoRandom = {
+          ...todoWithAdminNote,
+          id: Date.now().toString(),
+        };
+        const todoRandomUpdated = {
+          ...todoUpdated1,
+          id: todoRandom.id,
+        };
+        const subscriberClient = getConfiguredAppsyncClientCognitoAuth(graphQlEndpoint, region, userMap[userName2]);
+        const subTodoHelper = createModelOperationHelpers(subscriberClient, schema)[modelName];
+
+        const onCreateSubscriptionResult = await subTodoHelper.subscribe(
+          'onCreate',
+          [
+            async () => {
+              await user1TodoHelper.create(createResultSetName, todoRandom, adminResultSet);
+            },
+          ],
+          {},
+          adminResultSet,
+          false,
+        );
+        expect(onCreateSubscriptionResult).toHaveLength(1);
+        const onCreateResultData = onCreateSubscriptionResult[0].data[`onCreate${modelName}`];
+        expect(onCreateResultData?.id).toEqual(todoRandom.id);
+        checkOperationResult(
+          onCreateSubscriptionResult[0],
+          { ...todoRandom, note: { ...todoRandom.note, __typename: nonModelName } },
+          `onCreate${modelName}`,
+        );
+
+        const onUpdateSubscriptionResult = await subTodoHelper.subscribe(
+          'onUpdate',
+          [
+            async () => {
+              await user1TodoHelper.update(`update${modelName}`, todoRandomUpdated, adminResultSet);
+            },
+          ],
+          {},
+          adminResultSet,
+          false,
+        );
+        expect(onUpdateSubscriptionResult).toHaveLength(1);
+        const onUpdateResultData = onUpdateSubscriptionResult[0].data[`onUpdate${modelName}`];
+        expect(onUpdateResultData?.id).toEqual(todoRandomUpdated.id);
+        checkOperationResult(
+          onUpdateSubscriptionResult[0],
+          { ...todoRandomUpdated, note: { ...todoRandomUpdated.note, __typename: nonModelName } },
+          `onUpdate${modelName}`,
+        );
+
+        const onDeleteSubscriptionResult = await subTodoHelper.subscribe(
+          'onDelete',
+          [
+            async () => {
+              await user1TodoHelper.delete(deleteResultSetName, { id: todoRandomUpdated.id }, adminResultSet);
+            },
+          ],
+          {},
+          adminResultSet,
+          false,
+        );
+        expect(onDeleteSubscriptionResult).toHaveLength(1);
+        const onDeleteResultData = onDeleteSubscriptionResult[0].data[`onDelete${modelName}`];
+        expect(onDeleteResultData?.id).toEqual(todoRandomUpdated.id);
+        checkOperationResult(
+          onDeleteSubscriptionResult[0],
+          { ...todoRandomUpdated, note: { ...todoRandomUpdated.note, __typename: nonModelName } },
+          `onDelete${modelName}`,
+        );
+      });
     });
 
-    test('Non Model protected fields and restricted operations', async () => {
+    describe('Non Model protected fields and restricted operations', () => {
       const modelName = 'TodoModel';
       const nonModelName = 'NoteNonModel';
-      const user1TodoHelper = user1ModelOperationHelpers[modelName];
-      const user2TodoHelper = user2ModelOperationHelpers[modelName];
 
       const note = {
         content: 'Note content',
@@ -3162,47 +3175,57 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
           }
         `;
 
-      // non-admin cannot create a record with admin protected non-model field
-      await expect(
-        async () => await user2TodoHelper.create(createResultSetName, todoWithAdminNote, adminResultSet),
-      ).rejects.toThrowErrorMatchingInlineSnapshot(expectedFieldErrors(['adminContent'], nonModelName)[0]);
+      test('non-admin cannot create a record with admin protected non-model field', async () => {
+        const user2TodoHelper = user2ModelOperationHelpers[modelName];
+        await expect(
+          async () => await user2TodoHelper.create(createResultSetName, todoWithAdminNote, adminResultSet),
+        ).rejects.toThrowErrorMatchingInlineSnapshot(expectedFieldErrors(['adminContent'], nonModelName)[0]);
+      });
 
-      // create a record as admin, so we can test the update and delete operations
-      const createResult1 = await user1TodoHelper.create(createResultSetName, todoWithAdminNote, adminResultSet);
-      expect(createResult1.data[createResultSetName].id).toBeDefined();
-      todoWithAdminNote['id'] = createResult1.data[createResultSetName].id;
+      test('admin can create a record with all fields', async () => {
+        const user1TodoHelper = user1ModelOperationHelpers[modelName];
+        const createResult1 = await user1TodoHelper.create(createResultSetName, todoWithAdminNote, adminResultSet);
+        expect(createResult1.data[createResultSetName].id).toBeDefined();
+        todoWithAdminNote['id'] = createResult1.data[createResultSetName].id;
+      });
 
-      // non-admin cannot get the admin protected field during update
-      await expect(
-        async () =>
-          await user2TodoHelper.update(
-            updateResultSetName,
-            { id: todoWithAdminNote['id'], note: { adminContent: 'Admin content updated', content: 'content updated' } },
-            adminResultSet,
-          ),
-      ).rejects.toThrowErrorMatchingInlineSnapshot(expectedFieldErrors(['adminContent'], nonModelName)[0]);
+      test('non-admin cannot get the admin protected field during update', async () => {
+        const user2TodoHelper = user2ModelOperationHelpers[modelName];
+        await expect(
+          async () =>
+            await user2TodoHelper.update(
+              updateResultSetName,
+              { id: todoWithAdminNote['id'], note: { adminContent: 'Admin content updated', content: 'content updated' } },
+              adminResultSet,
+            ),
+        ).rejects.toThrowErrorMatchingInlineSnapshot(expectedFieldErrors(['adminContent'], nonModelName)[0]);
+      });
 
-      // non-admin cannot read the admin protected non-model field
-      const getResult1 = await user2TodoHelper.get({ id: todoWithAdminNote['id'] }, adminResultSet, false, 'all');
-      checkOperationResult(
-        getResult1,
-        {
-          ...todoWithAdminNote,
-          note: { ...todoWithAdminNote.note, adminContent: null, __typename: nonModelName, content: 'content updated' },
-        },
-        `get${modelName}`,
-        false,
-        expectedFieldErrors(['adminContent'], modelName),
-      );
+      test('non-admin cannot read the admin protected non-model field', async () => {
+        const user2TodoHelper = user2ModelOperationHelpers[modelName];
+        const getResult1 = await user2TodoHelper.get({ id: todoWithAdminNote['id'] }, adminResultSet, false, 'all');
+        checkOperationResult(
+          getResult1,
+          {
+            ...todoWithAdminNote,
+            note: { ...todoWithAdminNote.note, adminContent: null, __typename: nonModelName, content: 'content updated' },
+          },
+          `get${modelName}`,
+          false,
+          expectedFieldErrors(['adminContent'], modelName),
+        );
 
-      const listTodosResult1 = await user2TodoHelper.list({}, adminResultSet, `list${modelName}s`, false, 'all');
-      checkListItemExistence(listTodosResult1, `list${modelName}s`, todoWithAdminNote['id'], true);
-      checkListResponseErrors(listTodosResult1, expectedFieldErrors(['adminContent'], nonModelName, false));
+        const listTodosResult1 = await user2TodoHelper.list({}, adminResultSet, `list${modelName}s`, false, 'all');
+        checkListItemExistence(listTodosResult1, `list${modelName}s`, todoWithAdminNote['id'], true);
+        checkListResponseErrors(listTodosResult1, expectedFieldErrors(['adminContent'], nonModelName, false));
+      });
 
-      // non-admin cannot get the admin protected field during delete
-      await expect(
-        async () => await user2TodoHelper.delete(deleteResultSetName, { id: todoWithAdminNote['id'] }, adminResultSet),
-      ).rejects.toThrowErrorMatchingInlineSnapshot(expectedFieldErrors(['adminContent'], nonModelName)[0]);
+      test('non-admin cannot get the admin protected field during delete', async () => {
+        const user2TodoHelper = user2ModelOperationHelpers[modelName];
+        await expect(
+          async () => await user2TodoHelper.delete(deleteResultSetName, { id: todoWithAdminNote['id'] }, adminResultSet),
+        ).rejects.toThrowErrorMatchingInlineSnapshot(expectedFieldErrors(['adminContent'], nonModelName)[0]);
+      });
     });
 
     test('Model with renamed protected fields and allowed operations', async () => {
