@@ -116,7 +116,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
       onEventHandler: gsiOnEventHandler,
       isCompleteHandler: gsiIsCompleteHandler,
       logRetention: aws_logs.RetentionDays.ONE_MONTH,
-      queryInterval: Duration.seconds(30),
+      queryInterval: Duration.seconds(10),
       totalTimeout: Duration.hours(2),
     });
     this.customResourceServiceToken = customResourceProvider.serviceToken;
