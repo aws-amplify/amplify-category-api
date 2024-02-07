@@ -61,6 +61,12 @@
     "coverageReporters": [
       "clover",
       "text"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/__tests__/"
     ]
   }
 }

@@ -63,8 +63,7 @@
     "collectCoverage": true,
     "coverageProvider": "v8",
     "collectCoverageFrom": [
-      "src/**",
-      "!src/__tests__/**"
+      "src/**/*.ts"
     ],
     "coverageThreshold": {
       "global": {
@@ -77,6 +76,9 @@
       "clover",
       "text"
     ],
-    "testEnvironment": "../../FixJestEnvironment.js"
+    "testEnvironment": "../../FixJestEnvironment.js",
+    "coveragePathIgnorePatterns": [
+      "/__tests__/"
+    ]
   }
 }
