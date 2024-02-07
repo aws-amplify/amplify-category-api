@@ -78,8 +78,25 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
       path.join(__dirname, '..', '..', '..', 'lib', 'resources', 'amplify-dynamodb-table', 'amplify-table-manager-lambda'),
     );
 
+    // Execution role shared between `gsiOnEventHandler` and `gsiIsCompleteHandler`.
+    // Defining a shared role prevents each lambda from creating its own (identical) role,
+    // slightly improving deployment speed.
+    //
+    // From: https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_lambda.Function.html#role
+    //     - The Role must be assumable by the 'lambda.amazonaws.com' service principal.'
+    //
+    //     - If you provide a Role, you must add the relevant AWS managed policies yourself.
+    //       The relevant managed policies are "service-role/AWSLambdaBasicExecutionRole" and
+    //       "service-role/AWSLambdaVPCAccessExecutionRole".
+    const amplifyTableManagerHandlerRole = new aws_iam.Role(scope, 'TableManagerHandlerRole', {
+      assumedBy: new aws_iam.ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies: [aws_iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
+    });
+    this.ddbManagerPolicy.attachToRole(amplifyTableManagerHandlerRole);
+
     // lambda that will handle DDB CFN events
     const gsiOnEventHandler = new aws_lambda.Function(scope, ResourceConstants.RESOURCES.TableManagerOnEventHandlerLogicalID, {
+      role: amplifyTableManagerHandlerRole,
       runtime: aws_lambda.Runtime.NODEJS_18_X,
       code: lambdaCode,
       handler: 'amplify-table-manager-handler.onEvent',
@@ -88,14 +105,13 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
 
     // lambda that will poll for provisioning to complete
     const gsiIsCompleteHandler = new aws_lambda.Function(scope, ResourceConstants.RESOURCES.TableManagerIsCompleteHandlerLogicalID, {
+      role: amplifyTableManagerHandlerRole,
       runtime: aws_lambda.Runtime.NODEJS_18_X,
       code: lambdaCode,
       handler: 'amplify-table-manager-handler.isComplete',
       timeout: Duration.minutes(14),
     });
 
-    this.ddbManagerPolicy.attachToRole(gsiOnEventHandler.role!);
-    this.ddbManagerPolicy.attachToRole(gsiIsCompleteHandler.role!);
     const customResourceProvider = new custom_resources.Provider(scope, ResourceConstants.RESOURCES.TableManagerCustomProviderLogicalID, {
       onEventHandler: gsiOnEventHandler,
       isCompleteHandler: gsiIsCompleteHandler,
