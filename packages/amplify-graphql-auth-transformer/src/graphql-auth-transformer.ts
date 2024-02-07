@@ -345,7 +345,9 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       if (filterInput) {
         const updatedFilterInput = { ...filterInput, fields: [...filterInput.fields] };
         ownerFields.forEach((ownerField) => {
-          updatedFilterInput.fields.push(makeInputValueDefinition(ownerField, makeNamedType('ModelStringInput')));
+          if (!filterInput.fields.some((field) => field.name.value === ownerField)) {
+            updatedFilterInput.fields.push(makeInputValueDefinition(ownerField, makeNamedType('ModelStringInput')));
+          }
         });
         context.output.updateInput(updatedFilterInput);
       }
@@ -353,7 +355,9 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       if (conditionInput) {
         const updatedConditionInput = { ...conditionInput, fields: [...conditionInput.fields] };
         ownerFields.forEach((ownerField) => {
-          updatedConditionInput.fields.push(makeInputValueDefinition(ownerField, makeNamedType('ModelStringInput')));
+          if (!conditionInput.fields.some((field) => field.name.value === ownerField)) {
+            updatedConditionInput.fields.push(makeInputValueDefinition(ownerField, makeNamedType('ModelStringInput')));
+          }
         });
         context.output.updateInput(updatedConditionInput);
       }
@@ -361,7 +365,9 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       if (subscriptionFilterInput) {
         const updatedSubscriptionFilterInput = { ...subscriptionFilterInput, fields: [...subscriptionFilterInput.fields] };
         ownerFields.forEach((ownerField) => {
-          updatedSubscriptionFilterInput.fields.push(makeInputValueDefinition(ownerField, makeNamedType('ModelStringInput')));
+          if (!subscriptionFilterInput.fields.some((field) => field.name.value === ownerField)) {
+            updatedSubscriptionFilterInput.fields.push(makeInputValueDefinition(ownerField, makeNamedType('ModelStringInput')));
+          }
         });
         context.output.updateInput(updatedSubscriptionFilterInput);
       }
