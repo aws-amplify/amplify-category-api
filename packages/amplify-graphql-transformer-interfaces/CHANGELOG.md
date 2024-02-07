@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.4.0-implicit-fields.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.3.3...@aws-amplify/graphql-transformer-interfaces@3.4.0-implicit-fields.0) (2024-02-07)
+
+### Features
+
+- add implicit owner fields to filter ([da16dec](https://github.com/aws-amplify/amplify-category-api/commit/da16dece44b31d0b885b4e7abe889779c9a3afb6))
+
 ## [3.3.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.3.2...@aws-amplify/graphql-transformer-interfaces@3.3.3) (2023-12-18)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces

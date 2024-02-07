@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.4.0-implicit-fields.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.3.6...@aws-amplify/graphql-relational-transformer@2.4.0-implicit-fields.0) (2024-02-07)
+
+### Bug Fixes
+
+- use correct subscription type ([be35600](https://github.com/aws-amplify/amplify-category-api/commit/be3560026efdd29a7b4bd1433e805508a552c8d6))
+
+### Features
+
+- add implicit relational fields to subscription filter input ([628b4ee](https://github.com/aws-amplify/amplify-category-api/commit/628b4eee6224c5fb976250bd93d1be7ddc9cd4dd))
+
 ## [2.3.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.3.5...@aws-amplify/graphql-relational-transformer@2.3.6) (2024-02-05)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer

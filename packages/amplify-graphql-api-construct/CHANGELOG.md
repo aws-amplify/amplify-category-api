@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.7-implicit-fields.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.5.6...@aws-amplify/graphql-api-construct@1.5.7-implicit-fields.0) (2024-02-07)
+
+**Note:** Version bump only for package @aws-amplify/graphql-api-construct
+
 ## [1.5.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.5.5...@aws-amplify/graphql-api-construct@1.5.6) (2024-02-05)
 
 **Note:** Version bump only for package @aws-amplify/graphql-api-construct

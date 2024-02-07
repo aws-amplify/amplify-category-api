@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.3-implicit-fields.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@2.5.2...@aws-amplify/graphql-searchable-transformer@2.5.3-implicit-fields.0) (2024-02-07)
+
+### Bug Fixes
+
+- use correct subscription type ([be35600](https://github.com/aws-amplify/amplify-category-api/commit/be3560026efdd29a7b4bd1433e805508a552c8d6))
+
 ## [2.5.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@2.5.1...@aws-amplify/graphql-searchable-transformer@2.5.2) (2024-02-05)
 
 **Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer

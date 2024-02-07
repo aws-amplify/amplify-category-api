@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.5.0-implicit-fields.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.4.5...@aws-amplify/graphql-model-transformer@2.5.0-implicit-fields.0) (2024-02-07)
+
+### Bug Fixes
+
+- use correct subscription type ([be35600](https://github.com/aws-amplify/amplify-category-api/commit/be3560026efdd29a7b4bd1433e805508a552c8d6))
+
+### Features
+
+- add implicit owner fields to filter ([da16dec](https://github.com/aws-amplify/amplify-category-api/commit/da16dece44b31d0b885b4e7abe889779c9a3afb6))
+- add implicit timestamp fields to filter ([0f373c8](https://github.com/aws-amplify/amplify-category-api/commit/0f373c815cd28f9b77dfed7ecd2ddb5d6003dd4a))
+
 ## [2.4.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.4.4...@aws-amplify/graphql-model-transformer@2.4.5) (2024-02-05)
 
 **Note:** Version bump only for package @aws-amplify/graphql-model-transformer

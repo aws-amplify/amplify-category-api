@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.5.0-implicit-fields.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.4.5...@aws-amplify/graphql-transformer-core@2.5.0-implicit-fields.0) (2024-02-07)
+
+### Bug Fixes
+
+- remove stray console.log ([b1dad30](https://github.com/aws-amplify/amplify-category-api/commit/b1dad30d2ac0b25095063d98e008586d31816b11))
+
+### Features
+
+- add implicit owner fields to filter ([da16dec](https://github.com/aws-amplify/amplify-category-api/commit/da16dece44b31d0b885b4e7abe889779c9a3afb6))
+
 ## [2.4.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.4.4...@aws-amplify/graphql-transformer-core@2.4.5) (2024-02-05)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-core
