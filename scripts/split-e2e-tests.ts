@@ -129,14 +129,27 @@ const RUN_SOLO: (string | RegExp)[] = [
   'src/__tests__/transformer-migrations/model-migration.test.ts',
   'src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-no-node-to-node.test.ts',
   'src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-had-node-to-node.test.ts',
+  /src\/__tests__\/api_1.*\.test\.ts/,
   // GraphQL E2E tests
   'src/__tests__/FunctionTransformerTestsV2.e2e.test.ts',
   'src/__tests__/HttpTransformer.e2e.test.ts',
   'src/__tests__/HttpTransformerV2.e2e.test.ts',
   // Deploy Velocity tests
   /src\/__tests__\/deploy-velocity\/.*\.test\.ts/,
-  // RDS tests
+  // SQL tests
   /src\/__tests__\/rds-.*\.test\.ts/,
+  // CDK tests
+  /src\/__tests__\/base-cdk.*\.test\.ts/,
+  'src/__tests__/amplify-table-1.test.ts',
+];
+
+const RUN_IN_ALL_REGIONS = [
+  // SQL tests one per supported engines
+  /src\/__tests__\/rds-.*-model-v2\.test\.ts/,
+  // DDB tests
+  'src/__tests__/api_1.test.ts',
+  // CDK tests
+  'src/__tests__/base-cdk.test.ts',
 ];
 
 const DEBUG_FLAG = '--debug';
@@ -165,10 +178,12 @@ const createJob = (os: OSType, jobIdx: number, runSolo = false): CandidateJob =>
   runSolo,
 });
 
-const getTestNameFromPath = (testSuitePath: string): string => {
+const getTestNameFromPath = (testSuitePath: string, region?: string): string => {
   const startIndex = testSuitePath.lastIndexOf('/') + 1;
   const endIndex = testSuitePath.lastIndexOf('.test');
-  return testSuitePath.substring(startIndex, endIndex).split('.e2e').join('').split('.').join('-');
+  const regionSuffix =
+    RUN_IN_ALL_REGIONS.find((allRegions) => testSuitePath === allRegions || testSuitePath.match(allRegions)) && region ? region : '';
+  return testSuitePath.substring(startIndex, endIndex).split('.e2e').join('').split('.').join('-').concat(regionSuffix);
 };
 
 const splitTests = (baseJobLinux: any, testDirectory: string, pickTests?: (testSuites: string[]) => string[]): BatchBuildJob[] => {
@@ -203,6 +218,16 @@ const splitTests = (baseJobLinux: any, testDirectory: string, pickTests?: (testS
       const USE_PARENT = USE_PARENT_ACCOUNT.some((usesParent) => test.startsWith(usesParent));
 
       if (RUN_SOLO.find((solo) => test === solo || test.match(solo))) {
+        if (RUN_IN_ALL_REGIONS.find((allRegions) => test === allRegions || test.match(allRegions))) {
+          AWS_REGIONS_TO_RUN_TESTS.forEach((region) => {
+            const newSoloJob = createJob(os, jobIdx, true);
+            jobIdx++;
+            newSoloJob.tests.push(test);
+            newSoloJob.region = region;
+            soloJobs.push(newSoloJob);
+          });
+          continue;
+        }
         const newSoloJob = createJob(os, jobIdx, true);
         jobIdx++;
         newSoloJob.tests.push(test);
@@ -238,7 +263,7 @@ const splitTests = (baseJobLinux: any, testDirectory: string, pickTests?: (testS
   const result: any[] = [];
   linuxJobs.forEach((j) => {
     if (j.tests.length !== 0) {
-      const names = j.tests.map((tn) => getTestNameFromPath(tn)).join('_');
+      const names = j.tests.map((tn) => getTestNameFromPath(tn, j.region)).join('_');
       const tmp = {
         ...JSON.parse(JSON.stringify(baseJobLinux)), // deep clone base job
         identifier: getIdentifier(names),
