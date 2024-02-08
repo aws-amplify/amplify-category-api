@@ -331,8 +331,11 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
         team: [buildTimeGroupName],
       };
       // Setup admin user client for subscription (user1)
-      const subscriberClient = getConfiguredAppsyncClientCognitoAuth(apiEndPoint, region, userMap[userName1]);
-      const subEmployeeHelper = createModelOperationHelpers(subscriberClient, schema)[modelName];
+      let subEmployeeHelper;
+      test('Should setup a client for subscriber', () => {
+        const subscriberClient = getConfiguredAppsyncClientCognitoAuth(apiEndPoint, region, userMap[userName1]);
+        subEmployeeHelper = createModelOperationHelpers(subscriberClient, schema)[modelName];
+      });
       test('Can listen to the create event', async () => {
         const onCreateSubscriptionResult = await subEmployeeHelper.subscribe(
           'onCreate',
@@ -428,13 +431,13 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
       describe('User can update fields of bio, notes and accolades of their own', () => {
         let updateEmployeeResult1;
         const updatedEmployee1 = {
-          id: employeeUser2.id,
+          id: 'E-2',
           bio: 'Bio2 updated',
           notes: 'My note 2 updated',
           accolades: ['Good Job!', 'Cool!'],
-          team: employeeUser2.team,
-          salary: employeeUser2.salary,
-          email: employeeUser2.email,
+          team: [buildTimeGroupName],
+          salary: 1000,
+          email: userName2,
         };
         test('should update the restricted fields successfully', async () => {
           updateEmployeeResult1 = await employeeUser2Client.update(updateResultSetName, omit(updatedEmployee1, 'team', 'salary', 'email'));
@@ -451,8 +454,13 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
       describe('User can update accolades for their teammates', () => {
         let updateEmployeeResult2;
         const updatedEmployee2 = {
-          ...employeeUser4,
-          accolades: [...employeeUser4.accolades, 'He has ownership'],
+          id: 'E-4',
+          bio: 'Bio4',
+          notes: 'My note 4',
+          email: userName4,
+          accolades: ['Awesome!', 'He has ownership'],
+          salary: 3000,
+          team: [buildTimeGroupName, runTimeGroupName],
         };
         test('should update the employee successfully', async () => {
           updateEmployeeResult2 = await employeeUser2Client.update(
@@ -467,10 +475,10 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
               accolades
             `,
           );
+          expect(updateEmployeeResult2.data[updateResultSetName]).toEqual(
+            expect.objectContaining(omit(updatedEmployee2, 'notes', 'salary', 'team')),
+          );
         });
-        expect(updateEmployeeResult2.data[updateResultSetName]).toEqual(
-          expect.objectContaining(omit(updatedEmployee2, 'notes', 'salary', 'team')),
-        );
         test('notes field is protected and cannot be read upon mutation', () => {
           expect(updateEmployeeResult2.data[updateResultSetName].notes).toBeNull();
         });
@@ -526,8 +534,11 @@ export const testRdsUserpoolStaticAndDynamicFieldAuth = (engine: ImportedRDSType
         team: [buildTimeGroupName],
       };
       // Setup non-admin user client for subscription (user2)
-      const subscriberClient = getConfiguredAppsyncClientCognitoAuth(apiEndPoint, region, userMap[userName2]);
-      const subEmployeeHelper = createModelOperationHelpers(subscriberClient, schema)[modelName];
+      let subEmployeeHelper;
+      test('Should setup a client for subscriber', () => {
+        const subscriberClient = getConfiguredAppsyncClientCognitoAuth(apiEndPoint, region, userMap[userName2]);
+        subEmployeeHelper = createModelOperationHelpers(subscriberClient, schema)[modelName];
+      });
       test('Can listen to the create event', async () => {
         const onCreateSubscriptionResult = await subEmployeeHelper.subscribe(
           'onCreate',
