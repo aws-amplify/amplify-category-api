@@ -1,5 +1,5 @@
 import { TransformerContextProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { Expression, printBlock, compoundExpression, set, ref, list, qref, methodCall, str, obj, iff, not, isNullOrEmpty } from 'graphql-mapping-template';
+import { Expression, printBlock, compoundExpression, set, ref, list, qref, methodCall, str, obj } from 'graphql-mapping-template';
 import _ from 'lodash';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../../types';
