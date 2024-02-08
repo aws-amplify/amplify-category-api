@@ -35,12 +35,7 @@ export class RDSIndexVTLGenerator implements IndexVTLGenerator {
           methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
         ),
         set(ref('lambdaInput.args.input'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
-        qref(methodCall(ref('lambdaInput.args.input.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments'), obj({})))),
-        qref(methodCall(ref('lambdaInput.args.put'), str('limit'), ref('limit'))),
-        iff(
-          not(isNullOrEmpty(ref('context.arguments.nextToken'))),
-          qref(methodCall(ref('lambdaInput.args.put'), str('nextToken'), ref('context.arguments.nextToken'))),
-        ),
+        qref(methodCall(ref('lambdaInput.args.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments'), obj({})))),
         obj({
           version: str('2018-05-29'),
           operation: str('Invoke'),
