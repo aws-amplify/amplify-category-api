@@ -277,6 +277,7 @@ function useChildAccountCredentials {
     if [ -z "$USE_PARENT_ACCOUNT" ]; then
         export AWS_PAGER=""
         export AWS_MAX_ATTEMPTS=5
+        export AWS_STS_REGIONAL_ENDPOINTS=regional
         parent_acct=$(aws sts get-caller-identity | jq -cr '.Account')
         child_accts=$(aws organizations list-accounts | jq -c "[.Accounts[].Id | select(. != \"$parent_acct\")]")
         org_size=$(echo $child_accts | jq 'length')

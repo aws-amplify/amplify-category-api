@@ -5,7 +5,10 @@ import * as yaml from 'js-yaml';
 
 const REPO_ROOT = join(__dirname, '..');
 const SUPPORTED_REGIONS_PATH = join(REPO_ROOT, 'scripts', 'e2e-test-regions.json');
-const AWS_REGIONS_TO_RUN_TESTS: string[] = JSON.parse(fs.readFileSync(SUPPORTED_REGIONS_PATH, 'utf-8'));
+const AMPLIFY_SUPPORTED_REGIONS: string[] = JSON.parse(fs.readFileSync(SUPPORTED_REGIONS_PATH, 'utf-8'));
+// const AWS_REGIONS_TO_RUN_TESTS = AMPLIFY_SUPPORTED_REGIONS.filter((region) => !['me-south-1', 'eu-south-1'].includes(region));
+const AWS_REGIONS_TO_RUN_TESTS = AMPLIFY_SUPPORTED_REGIONS;
+const SUPPORTED_OPT_IN_REGIONS = ['eu-south-1', 'ap-east-1'];
 type ForceTests = 'interactions' | 'containers';
 
 type TestTiming = {
@@ -195,6 +198,7 @@ const splitTests = (baseJobLinux: any, testDirectory: string, pickTests?: (testS
       });
 
       const USE_PARENT = USE_PARENT_ACCOUNT.some((usesParent) => test.startsWith(usesParent));
+      const nonOptInRegions = AWS_REGIONS_TO_RUN_TESTS.filter((region) => !SUPPORTED_OPT_IN_REGIONS.includes(region));
 
       if (RUN_SOLO.find((solo) => test === solo || test.match(solo))) {
         if (RUN_IN_ALL_REGIONS.find((allRegions) => test === allRegions || test.match(allRegions))) {
@@ -215,6 +219,10 @@ const splitTests = (baseJobLinux: any, testDirectory: string, pickTests?: (testS
         }
         if (USE_PARENT) {
           newSoloJob.useParentAccount = true;
+          // parent E2E account does not have opt-in regions. Choose non-opt-in region.
+          if (SUPPORTED_OPT_IN_REGIONS.includes(newSoloJob.region)) {
+            newSoloJob.region = nonOptInRegions[jobIdx % nonOptInRegions.length];
+          }
         }
         soloJobs.push(newSoloJob);
         continue;
@@ -227,6 +235,10 @@ const splitTests = (baseJobLinux: any, testDirectory: string, pickTests?: (testS
       }
       if (USE_PARENT) {
         currentJob.useParentAccount = true;
+        // parent E2E account does not have opt-in regions. Choose non-opt-in region.
+        if (SUPPORTED_OPT_IN_REGIONS.includes(currentJob.region)) {
+          currentJob.region = nonOptInRegions[jobIdx % nonOptInRegions.length];
+        }
       }
 
       // create a new job once the current job is full;

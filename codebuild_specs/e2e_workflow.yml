@@ -1266,7 +1266,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/transformer-migrations/searchable-migration.test.ts
-          CLI_REGION: eu-south-1
+          CLI_REGION: sa-east-1
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
