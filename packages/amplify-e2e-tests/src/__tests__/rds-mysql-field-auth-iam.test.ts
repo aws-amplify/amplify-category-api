@@ -9,6 +9,7 @@ describe('RDS MySQL IAM Mode field auth rules', () => {
     'CREATE TABLE Person1 (id INT PRIMARY KEY, firstName VARCHAR(255), lastName VARCHAR(255), ssn VARCHAR(20))',
     'CREATE TABLE Person2 (id INT PRIMARY KEY, firstName VARCHAR(255), lastName VARCHAR(255), ssn VARCHAR(20))',
     'CREATE TABLE Person3 (id INT PRIMARY KEY, firstName VARCHAR(255), lastName VARCHAR(255), ssn VARCHAR(20))',
+    'CREATE TABLE Person4 (id INT PRIMARY KEY, firstName VARCHAR(255), lastName VARCHAR(255), ssn VARCHAR(20))',
   ];
 
   testRdsIAMFieldAuth(ImportedRDSType.MYSQL, queries);
