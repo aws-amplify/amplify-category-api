@@ -135,7 +135,7 @@ export interface SqlModelDataSourceSecretsManagerDbConnectionConfig {
   /** The ARN of the managed secret with username, password, and hostname to use when connecting to the database. **/
   readonly secretArn: string;
 
-  /** The ARN of the customer managed encryption key for the secret. **/
+  /** The ARN of the customer managed encryption key for the secret. If not supplied, the secret is expected to be encrypted with the default AWS-managed key. **/
   readonly keyArn?: string;
 
   /** The port number of the database proxy, cluster, or instance. */
