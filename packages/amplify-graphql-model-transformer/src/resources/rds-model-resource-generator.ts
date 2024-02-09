@@ -26,6 +26,7 @@ import {
   createRdsPatchingLambda,
   createRdsPatchingLambdaRole,
   setRDSLayerMappings,
+  CredentialStorageMethod,
 } from '../resolvers/rds';
 import { ModelResourceGenerator } from './model-resource-generator';
 
@@ -117,20 +118,22 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
     const environment: { [key: string]: string } = {
       engine,
     };
-
+    let credentialStorageMethod;
     if (isSqlModelDataSourceSsmDbConnectionConfig(secretEntry)) {
-      environment.USE_SSM_CREDENTIALS = 'true';
+      environment.CREDENTIAL_STORAGE_METHOD = 'SSM';
       environment.username = secretEntry.usernameSsmPath;
       environment.password = secretEntry.passwordSsmPath;
       environment.host = secretEntry.hostnameSsmPath;
       environment.port = secretEntry.portSsmPath;
       environment.database = secretEntry.databaseNameSsmPath;
+      credentialStorageMethod = CredentialStorageMethod.SSM;
     } else if (isSqlModelDataSourceSecretsManagerDbConnectionConfig(secretEntry)) {
-      environment.USE_SECRETS_MANAGER_CREDENTIALS = 'true';
+      environment.CREDENTIAL_STORAGE_METHOD = 'SECRETS_MANAGER';
       environment.secretArn = secretEntry.secretArn;
       environment.port = secretEntry.port.toString();
       environment.database = secretEntry.databaseName;
       environment.host = secretEntry.hostname;
+      credentialStorageMethod = CredentialStorageMethod.SECRETS_MANAGER;
     }
 
     const lambda = createRdsLambda(
@@ -139,6 +142,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       role,
       layerVersionArn,
       resourceNames,
+      credentialStorageMethod,
       environment,
       strategy.vpcConfiguration,
       strategy.sqlLambdaProvisionedConcurrencyConfig,

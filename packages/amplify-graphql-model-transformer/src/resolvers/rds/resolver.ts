@@ -41,6 +41,15 @@ import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '
  */
 export type OPERATIONS = 'CREATE' | 'UPDATE' | 'DELETE' | 'GET' | 'LIST' | 'SYNC';
 
+/**
+ * Available credentials storage methods for the SQL lambda.
+ * This must match enum in rds-lambda/handler.ts
+ */
+export enum CredentialStorageMethod {
+  SSM = 'SSM',
+  SECRETS_MANAGER = 'SECRETS_MANAGER',
+}
+
 const OPERATION_KEY = '__operation';
 
 /**
@@ -67,6 +76,7 @@ export const createRdsLambda = (
   lambdaRole: IRole,
   layerVersionArn: string,
   resourceNames: SQLLambdaResourceNames,
+  credentialStorageMethod: CredentialStorageMethod | undefined,
   environment?: { [key: string]: string },
   sqlLambdaVpcConfig?: VpcConfig,
   sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig,
@@ -75,7 +85,7 @@ export const createRdsLambda = (
     ...environment,
   };
 
-  if (environment?.USE_SSM_CREDENTIALS) {
+  if (credentialStorageMethod === CredentialStorageMethod.SSM) {
     let ssmEndpoint = Fn.join('', ['ssm.', Fn.ref('AWS::Region'), '.amazonaws.com']); // Default SSM endpoint
     if (sqlLambdaVpcConfig) {
       const endpoints = addVpcEndpointForSecretsManager(scope, sqlLambdaVpcConfig, resourceNames);
@@ -86,7 +96,8 @@ export const createRdsLambda = (
     }
 
     lambdaEnvironment.SSM_ENDPOINT = ssmEndpoint;
-  } else if (environment?.USE_SECRETS_MANAGER_CREDENTIALS) {
+    lambdaEnvironment.CREDENTIAL_STORAGE_METHOD = CredentialStorageMethod.SSM;
+  } else if (credentialStorageMethod === CredentialStorageMethod.SECRETS_MANAGER) {
     let secretsManagerEndpoint = Fn.join('', ['secretsmanager.', Fn.ref('AWS::Region'), '.amazonaws.com']); // Default SSM endpoint
     if (sqlLambdaVpcConfig) {
       const endpoints = addVpcEndpointForSecretsManager(scope, sqlLambdaVpcConfig, resourceNames);
@@ -97,6 +108,7 @@ export const createRdsLambda = (
     }
 
     lambdaEnvironment.SECRETS_MANAGER_ENDPOINT = secretsManagerEndpoint;
+    lambdaEnvironment.CREDENTIAL_STORAGE_METHOD = CredentialStorageMethod.SECRETS_MANAGER;
   } else {
     throw new Error('Unable to determine if SSM or Secrets Manager should be used for credentials.');
   }

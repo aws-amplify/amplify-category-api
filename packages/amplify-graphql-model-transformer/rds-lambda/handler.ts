@@ -10,6 +10,14 @@ let secretsManagerClient: SecretsManagerClient;
 const delay = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 const WAIT_COMPLETE = 'WAIT_COMPLETE';
 
+/**
+ * This must match enum in src/resolvers/rds/resolver.ts
+ */
+enum CredentialStorageMethod {
+  SSM = 'SSM',
+  SECRETS_MANAGER = 'SECRETS_MANAGER',
+}
+
 export const run = async (event): Promise<any> => {
   if (!adapter) {
     const config = await getDBConfig();
@@ -114,9 +122,8 @@ const getDBConfig = async (): DBConfig => {
   const config: DBConfig = {
     engine: getDBEngine(),
   };
-  const useSsmCredentials = !!process.env.USE_SSM_CREDENTIALS;
-  const useSecretsManagerCredentials = !!process.env.USE_SECRETS_MANAGER_CREDENTIALS;
-  if (useSsmCredentials) {
+  const credentialStorageMethod = process.env.CREDENTIAL_STORAGE_METHOD;
+  if (credentialStorageMethod === CredentialStorageMethod.SSM) {
     if (!ssmClient) {
       createSSMClient();
     }
@@ -126,7 +133,7 @@ const getDBConfig = async (): DBConfig => {
     config.username = await getSSMValue(process.env.username);
     config.password = await getSSMValue(process.env.password);
     config.database = await getSSMValue(process.env.database);
-  } else if (useSecretsManagerCredentials) {
+  } else if (credentialStorageMethod === CredentialStorageMethod.SECRETS_MANAGER) {
     if (!secretsManagerClient) {
       createSecretsManagerClient();
     }
@@ -139,6 +146,8 @@ const getDBConfig = async (): DBConfig => {
     const secrets = await getSecretManagerValue(process.env.secretArn);
     config.username = secrets.username;
     config.password = secrets.password;
+  } else {
+    throw new Error('Unable to determine credentials storage method (SSM or SECRETS_MANAGER).');
   }
 
   if (!config.host || !config.port || !config.username || !config.password || !config.database) {
