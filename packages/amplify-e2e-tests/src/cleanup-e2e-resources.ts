@@ -10,8 +10,18 @@ import { deleteS3Bucket, sleep } from 'amplify-category-api-e2e-core';
 
 const REPO_ROOT = path.join(__dirname, '..', '..', '..');
 const SUPPORTED_REGIONS_PATH = path.join(REPO_ROOT, 'scripts', 'e2e-test-regions.json');
-const AWS_REGIONS_TO_RUN_TESTS: string[] = JSON.parse(fs.readFileSync(SUPPORTED_REGIONS_PATH, 'utf-8'));
+// const AWS_REGIONS_TO_RUN_TESTS: string[] = JSON.parse(fs.readFileSync(SUPPORTED_REGIONS_PATH, 'utf-8'));
 
+const AWS_REGIONS_TO_RUN_TESTS = [
+  'us-east-1',
+  'us-east-2',
+  'us-west-2',
+  'eu-west-2',
+  'eu-central-1',
+  'ap-northeast-1',
+  'ap-southeast-1',
+  'ap-southeast-2',
+];
 const reportPathDir = path.normalize(path.join(__dirname, '..', 'amplify-e2e-reports'));
 
 const MULTI_JOB_APP = '<Amplify App reused by multiple apps>';
@@ -696,9 +706,9 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
 };
 
 const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, filterPredicate: JobFilterPredicate): Promise<void> => {
-  const appPromises = AWS_REGIONS_TO_RUN_TESTS.filter((x) => x !== 'ap-east-1').map((region) => getAmplifyApps(account, region));
+  const appPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getAmplifyApps(account, region));
   console.log('before stack promises');
-  const stackPromises = ['us-east-1'].map((region) => getStacks(account, region));
+  const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getStacks(account, region));
   console.log('before bucket promises');
   const bucketPromise = getS3Buckets(account);
   const orphanBucketPromise = getOrphanS3TestBuckets(account);
