@@ -21,16 +21,16 @@ export const run = async (event): Promise<any> => {
 };
 
 const createSSMClient = (): void => {
-  const DNS_SEPERATOR = ':';
-  const endpoint = process.env.SSM_ENDPOINT?.split(DNS_SEPERATOR).pop();
+  const PORT_SEPERATOR = ':';
+  const endpoint = process.env.SSM_ENDPOINT?.split(PORT_SEPERATOR).pop();
   ssmClient = new SSMClient({
     endpoint: `https://${endpoint}`,
   });
 };
 
 const createSecretsManagerClient = (): void => {
-  const DNS_SEPERATOR = ':';
-  const endpoint = process.env.SECRETS_MANAGER_ENDPOINT?.split(DNS_SEPERATOR).pop();
+  const PORT_SEPERATOR = ':';
+  const endpoint = process.env.SECRETS_MANAGER_ENDPOINT?.split(PORT_SEPERATOR).pop();
   secretsManagerClient = new SecretsManagerClient({
     endpoint: `https://${endpoint}`,
   });
