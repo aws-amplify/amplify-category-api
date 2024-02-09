@@ -2,8 +2,10 @@ import { join } from 'path';
 import * as glob from 'glob';
 import * as fs from 'fs-extra';
 import * as yaml from 'js-yaml';
-import AWS_REGIONS_TO_RUN_TESTS from './e2e-test-regions.json';
 
+const REPO_ROOT = join(__dirname, '..');
+const SUPPORTED_REGIONS_PATH = join(REPO_ROOT, 'scripts', 'e2e-test-regions.json');
+const AWS_REGIONS_TO_RUN_TESTS: string[] = JSON.parse(fs.readFileSync(SUPPORTED_REGIONS_PATH, 'utf-8'));
 type ForceTests = 'interactions' | 'containers';
 
 type TestTiming = {
@@ -62,7 +64,6 @@ const USE_PARENT_ACCOUNT = [
   'src/__tests__/migration/api.key.migration5.test.ts',
   'src/__tests__/FunctionTransformerTestsV2.e2e.test.ts',
 ];
-const REPO_ROOT = join(__dirname, '..');
 const TEST_TIMINGS_PATH = join(REPO_ROOT, 'scripts', 'test-timings.data.json');
 const CODEBUILD_CONFIG_BASE_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_base.yml');
 const CODEBUILD_GENERATE_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow.yml');

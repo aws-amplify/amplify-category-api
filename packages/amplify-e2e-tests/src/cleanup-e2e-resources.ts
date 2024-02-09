@@ -630,7 +630,7 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
   });
   const assumeRoleResForE2EParent = await stsClient
     .assumeRole({
-      RoleArn: 'arn:aws:iam::182702232950:role/TestAccountRole-amplify-category-api',
+      RoleArn: process.env.TEST_ACCOUNT_ROLE,
       RoleSessionName: `testSession${Math.floor(Math.random() * 100000)}`,
       // One hour
       DurationSeconds: 1 * 60 * 60,
