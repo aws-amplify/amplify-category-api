@@ -35,7 +35,7 @@ export const isSqlModelDataSourceDbConnectionConfig = (obj: any): obj is SqlMode
 /**
  * Type predicate that returns true if the object is a SqlModelDataSourceSsmDbConnectionConfig.
  * @param obj the object to inspect
- * @returns true if the object is shaped like a SqlModelDataSourceDbConnectionConfig
+ * @returns true if the object is shaped like a SqlModelDataSourceSsmDbConnectionConfig
  */
 export const isSqlModelDataSourceSsmDbConnectionConfig = (obj: any): obj is SqlModelDataSourceSsmDbConnectionConfig => {
   return (
