@@ -10,18 +10,9 @@ import { deleteS3Bucket, sleep } from 'amplify-category-api-e2e-core';
 
 const REPO_ROOT = path.join(__dirname, '..', '..', '..');
 const SUPPORTED_REGIONS_PATH = path.join(REPO_ROOT, 'scripts', 'e2e-test-regions.json');
-// const AWS_REGIONS_TO_RUN_TESTS: string[] = JSON.parse(fs.readFileSync(SUPPORTED_REGIONS_PATH, 'utf-8'));
+const AWS_REGIONS_TO_RUN_TESTS_READ: string[] = JSON.parse(fs.readFileSync(SUPPORTED_REGIONS_PATH, 'utf-8'));
 
-const AWS_REGIONS_TO_RUN_TESTS = [
-  'us-east-1',
-  'us-east-2',
-  'us-west-2',
-  'eu-west-2',
-  'eu-central-1',
-  'ap-northeast-1',
-  'ap-southeast-1',
-  'ap-southeast-2',
-];
+const AWS_REGIONS_TO_RUN_TESTS = AWS_REGIONS_TO_RUN_TESTS_READ;
 const reportPathDir = path.normalize(path.join(__dirname, '..', 'amplify-e2e-reports'));
 
 const MULTI_JOB_APP = '<Amplify App reused by multiple apps>';
@@ -706,24 +697,27 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
 };
 
 const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, filterPredicate: JobFilterPredicate): Promise<void> => {
-  const appPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getAmplifyApps(account, region));
-  console.log('before stack promises');
-  const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getStacks(account, region));
-  console.log('before bucket promises');
-  const bucketPromise = getS3Buckets(account);
-  const orphanBucketPromise = getOrphanS3TestBuckets(account);
-  const orphanIamRolesPromise = getOrphanTestIamRoles(account);
+  const apps_a = [];
+  const stacks_a = [];
+  const buckets_a = [];
+  const orphanBuckets_a = [];
+  const orphanIamRoles_a = [];
 
-  const apps = (await Promise.all(appPromises)).flat();
-  console.log(`${generateAccountInfo(account, accountIndex)} Amplify Apps: ${apps.length}`);
-  const stacks = (await Promise.all(stackPromises)).flat();
-  console.log(`${generateAccountInfo(account, accountIndex)} CloudFormation Stacks: ${stacks.length}`);
-  const buckets = await bucketPromise;
-  console.log(`${generateAccountInfo(account, accountIndex)} S3 Buckets: ${buckets.length}`);
-  const orphanBuckets = await orphanBucketPromise;
-  const orphanIamRoles = await orphanIamRolesPromise;
-
-  const allResources = await mergeResourcesByCCIJob(apps, stacks, buckets, orphanBuckets, orphanIamRoles);
+  AWS_REGIONS_TO_RUN_TESTS.forEach(async (region) => {
+    console.log(`${generateAccountInfo(account, accountIndex)} is under cleanup in ${region}`);
+    const apps = await getAmplifyApps(account, region);
+    console.log(`${generateAccountInfo(account, accountIndex)} Amplify Apps: ${apps.length}`);
+    apps_a.push(...apps);
+    const stacks = await getStacks(account, region);
+    console.log(`${generateAccountInfo(account, accountIndex)} CloudFormation Stacks: ${stacks.length}`);
+    stacks_a.push(...stacks);
+    const buckets = await getS3Buckets(account);
+    console.log(`${generateAccountInfo(account, accountIndex)} S3 Buckets: ${buckets.length}`);
+    buckets_a.push(...buckets);
+    const orphanBucketPromise = await getOrphanS3TestBuckets(account);
+    const orphanIamRolesPromise = await getOrphanTestIamRoles(account);
+  });
+  const allResources = await mergeResourcesByCCIJob(apps_a, stacks_a, buckets_a, orphanBuckets_a, orphanIamRoles_a);
   const staleResources = _.pickBy(allResources, filterPredicate);
 
   generateReport(staleResources, accountIndex);
