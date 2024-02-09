@@ -7,7 +7,10 @@ import * as aws from 'aws-sdk';
 import _ from 'lodash';
 import fs from 'fs-extra';
 import { deleteS3Bucket, sleep } from 'amplify-category-api-e2e-core';
-import AWS_REGIONS_TO_RUN_TESTS from '../../../scripts/e2e-test-regions.json';
+
+const REPO_ROOT = path.join(__dirname, '..', '..', '..');
+const SUPPORTED_REGIONS_PATH = path.join(REPO_ROOT, 'scripts', 'e2e-test-regions.json');
+const AWS_REGIONS_TO_RUN_TESTS: string[] = JSON.parse(fs.readFileSync(SUPPORTED_REGIONS_PATH, 'utf-8'));
 
 const reportPathDir = path.normalize(path.join(__dirname, '..', 'amplify-e2e-reports'));
 
