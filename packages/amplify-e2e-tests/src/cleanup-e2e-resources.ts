@@ -760,7 +760,9 @@ const cleanup = async (): Promise<void> => {
   accounts.map((account, i) => {
     console.log(`${generateAccountInfo(account, i)} is under cleanup`);
   });
-  accounts.map(async (account, i) => await cleanupAccount(account, i, filterPredicate));
+  const oneAccount = accounts[0];
+  await cleanupAccount(oneAccount, 0, filterPredicate);
+  // accounts.map(async (account, i) => await cleanupAccount(account, i, filterPredicate));
   console.log('Done cleaning all accounts!');
 };
 
