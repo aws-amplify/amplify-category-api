@@ -51,7 +51,7 @@ export const isSqlModelDataSourceSsmDbConnectionConfig = (obj: any): obj is SqlM
 /**
  * Type predicate that returns true if the object is a SqlModelDataSourceSecretsManagerDbConnectionConfig.
  * @param obj the object to inspect
- * @returns true if the object is shaped like a SqlModelDataSourceDbConnectionConfig
+ * @returns true if the object is shaped like a SqlModelDataSourceSecretsManagerDbConnectionConfig
  */
 export const isSqlModelDataSourceSecretsManagerDbConnectionConfig = (
   obj: any,
