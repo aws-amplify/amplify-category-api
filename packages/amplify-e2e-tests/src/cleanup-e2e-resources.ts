@@ -697,14 +697,19 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
 
 const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, filterPredicate: JobFilterPredicate): Promise<void> => {
   const appPromises = AWS_REGIONS_TO_RUN_TESTS.filter((x) => x !== 'ap-east-1').map((region) => getAmplifyApps(account, region));
-  const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getStacks(account, region));
+  console.log('before stack promises');
+  const stackPromises = ['us-east-1'].map((region) => getStacks(account, region));
+  console.log('before bucket promises');
   const bucketPromise = getS3Buckets(account);
   const orphanBucketPromise = getOrphanS3TestBuckets(account);
   const orphanIamRolesPromise = getOrphanTestIamRoles(account);
 
   const apps = (await Promise.all(appPromises)).flat();
+  console.log(`${generateAccountInfo(account, accountIndex)} Amplify Apps: ${apps.length}`);
   const stacks = (await Promise.all(stackPromises)).flat();
+  console.log(`${generateAccountInfo(account, accountIndex)} CloudFormation Stacks: ${stacks.length}`);
   const buckets = await bucketPromise;
+  console.log(`${generateAccountInfo(account, accountIndex)} S3 Buckets: ${buckets.length}`);
   const orphanBuckets = await orphanBucketPromise;
   const orphanIamRoles = await orphanIamRolesPromise;
 
