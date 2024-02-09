@@ -7,18 +7,7 @@ import * as aws from 'aws-sdk';
 import _ from 'lodash';
 import fs from 'fs-extra';
 import { deleteS3Bucket, sleep } from 'amplify-category-api-e2e-core';
-
-// Ensure to update scripts/split-e2e-tests.ts is also updated this gets updated
-const AWS_REGIONS_TO_RUN_TESTS = [
-  'us-east-1',
-  'us-east-2',
-  'us-west-2',
-  'eu-west-2',
-  'eu-central-1',
-  'ap-northeast-1',
-  'ap-southeast-1',
-  'ap-southeast-2',
-];
+import AWS_REGIONS_TO_RUN_TESTS from '../../../scripts/e2e-test-regions.json';
 
 const reportPathDir = path.normalize(path.join(__dirname, '..', 'amplify-e2e-reports'));
 
@@ -164,7 +153,8 @@ const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccount
  * @returns Promise<AmplifyAppInfo[]> a list of Amplify Apps in the region with build info
  */
 const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<AmplifyAppInfo[]> => {
-  const amplifyClient = new aws.Amplify(getAWSConfig(account, region));
+  const config = getAWSConfig(account, region);
+  const amplifyClient = new aws.Amplify(config);
   const amplifyApps = await amplifyClient.listApps({ maxResults: 50 }).promise(); // keeping it to 50 as max supported is 50
   const result: AmplifyAppInfo[] = [];
   for (const app of amplifyApps.apps) {
@@ -640,7 +630,7 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
   });
   const assumeRoleResForE2EParent = await stsClient
     .assumeRole({
-      RoleArn: process.env.TEST_ACCOUNT_ROLE,
+      RoleArn: 'arn:aws:iam::182702232950:role/TestAccountRole-amplify-category-api',
       RoleSessionName: `testSession${Math.floor(Math.random() * 100000)}`,
       // One hour
       DurationSeconds: 1 * 60 * 60,
@@ -703,7 +693,7 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
 };
 
 const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, filterPredicate: JobFilterPredicate): Promise<void> => {
-  const appPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getAmplifyApps(account, region));
+  const appPromises = AWS_REGIONS_TO_RUN_TESTS.filter((x) => x !== 'ap-east-1').map((region) => getAmplifyApps(account, region));
   const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getStacks(account, region));
   const bucketPromise = getS3Buckets(account);
   const orphanBucketPromise = getOrphanS3TestBuckets(account);
