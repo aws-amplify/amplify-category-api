@@ -419,6 +419,17 @@ export const appendAmplifyInput = (schema: string, engine: ImportedRDSType): str
   return amplifyInput(engine) + '\n' + schema;
 };
 
+export const appendAmplifyInputWithoutGlobalAuthRule = (schema: string, engine: ImportedRDSType): string => {
+  const amplifyInput = (engineName: ImportedRDSType): string => {
+    return `
+      input AMPLIFY {
+        engine: String = "${engineName}",
+      }
+    `;
+  };
+  return amplifyInput(engine) + '\n' + schema;
+};
+
 export const updatePreAuthTrigger = (projRoot: string, usernameClaim: string) => {
   const backendFunctionDirPath = path.join(projRoot, 'amplify', 'backend', 'function');
   const functionName = fs.readdirSync(backendFunctionDirPath)[0];
@@ -452,3 +463,6 @@ export const expectedFieldErrors = (fields: string[], typeName: string, includeP
 
 export const expectedOperationError = (operation: string, typeName: string) =>
   `"GraphQL error: Not Authorized to access ${operation} on type ${typeName}"`;
+
+export const omit = <T extends {}, K extends keyof T>(obj: T, ...keys: K[]) =>
+  Object.fromEntries(Object.entries(obj).filter(([key]) => !keys.includes(key as K))) as Omit<T, K>;

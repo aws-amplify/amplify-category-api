@@ -9,7 +9,7 @@ const tempPassword = 'tempPassword';
 
 // setupUser will add user to a cognito group and make its status to be "CONFIRMED",
 // if groupName is specified, add the user to the group.
-export async function setupUser(userPoolId: string, username: string, password: string, groupName?: string) {
+export async function setupUser(userPoolId: string, username: string, password: string, groupName?: string | string[]) {
   const region = userPoolId.split('_')[0]; // UserPoolId is in format `region_randomid`
   const cognitoClient = getConfiguredCognitoClient(region);
   await cognitoClient
@@ -25,13 +25,25 @@ export async function setupUser(userPoolId: string, username: string, password: 
   await authenticateUser(username, tempPassword, password);
 
   if (groupName) {
-    await cognitoClient
-      .adminAddUserToGroup({
-        UserPoolId: userPoolId,
-        Username: username,
-        GroupName: groupName,
-      })
-      .promise();
+    if (Array.isArray(groupName)) {
+      groupName.forEach(async (group) => {
+        await cognitoClient
+          .adminAddUserToGroup({
+            UserPoolId: userPoolId,
+            Username: username,
+            GroupName: group,
+          })
+          .promise();
+      });
+    } else {
+      await cognitoClient
+        .adminAddUserToGroup({
+          UserPoolId: userPoolId,
+          Username: username,
+          GroupName: groupName,
+        })
+        .promise();
+    }
   }
 }
 

@@ -21,6 +21,7 @@ import { configureAmplify, getConfiguredAppsyncClientIAMAuth, getUserPoolId, set
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { SQL_TESTS_USE_BETA } from './sql-e2e-config';
 import {
+  appendAmplifyInputWithoutGlobalAuthRule,
   checkListItemExistence,
   checkListResponseErrors,
   checkOperationResult,
@@ -28,6 +29,7 @@ import {
   expectedFieldErrors,
   expectedOperationError,
   getDefaultDatabasePort,
+  omit,
 } from '../rds-v2-test-utils';
 import { Auth } from 'aws-amplify';
 import { schema, sqlCreateStatements } from '../__tests__/auth-test-schemas/userpool-iam-fields';
@@ -75,8 +77,6 @@ export const testRdsUserpoolIAMFieldAuth = (engine: ImportedRDSType, queries: st
     let postUser1Client: GQLQueryHelper, postUser2Client: GQLQueryHelper, postUser3Client: GQLQueryHelper;
 
     beforeAll(async () => {
-      console.log(sqlCreateStatements(engine));
-
       projRoot = await createNewProjectDir(projName);
       await initProjectAndImportSchema();
       await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.
@@ -186,7 +186,7 @@ export const testRdsUserpoolIAMFieldAuth = (engine: ImportedRDSType, queries: st
       });
       // Write RDS schema
       const rdsSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.sql.graphql');
-      const rdsSchema = appendAmplifyInput(schema, engine);
+      const rdsSchema = appendAmplifyInputWithoutGlobalAuthRule(schema, engine);
       writeFileSync(rdsSchemaFilePath, rdsSchema, 'utf8');
       // Enable unauthenticated access to the Cognito resource and push again
       await enableUserPoolUnauthenticatedAccess(projRoot);
@@ -515,17 +515,5 @@ export const testRdsUserpoolIAMFieldAuth = (engine: ImportedRDSType, queries: st
 
       return helper;
     };
-    const appendAmplifyInput = (schema: string, engine: ImportedRDSType): string => {
-      const amplifyInput = (engineName: ImportedRDSType): string => {
-        return `
-          input AMPLIFY {
-            engine: String = "${engineName}",
-          }
-        `;
-      };
-      return amplifyInput(engine) + '\n' + schema;
-    };
-    const omit = <T extends {}, K extends keyof T>(obj: T, ...keys: K[]) =>
-      Object.fromEntries(Object.entries(obj).filter(([key]) => !keys.includes(key as K))) as Omit<T, K>;
   });
 };
