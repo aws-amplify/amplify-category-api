@@ -11,7 +11,7 @@ import {
   isSqlModelDataSourceSsmDbConnectionConfig,
   isSqlModelDataSourceSecretsManagerDbConnectionConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { Token } from 'aws-cdk-lib';
+import { Token, Arn, ArnFormat } from 'aws-cdk-lib';
 import {
   CustomSqlDataSourceStrategy as ConstructCustomSqlDataSourceStrategy,
   ModelDataSourceStrategy as ConstructModelDataSourceStrategy,
@@ -205,19 +205,28 @@ export const validateDataSourceStrategy = (strategy: ConstructModelDataSourceStr
       );
     }
   } else if (isSqlModelDataSourceSecretsManagerDbConnectionConfig(dbConnectionConfig)) {
-    if (
-      !Token.isUnresolved(dbConnectionConfig.secretArn) &&
-      !dbConnectionConfig.secretArn.match(/^arn:aws:secretsmanager:\w+(?:-\w+)+:\d{12}:secret:[A-Za-z0-9]+(?:-[A-Za-z0-9]+)+$/)
-    ) {
-      throw new Error(`Invalid data source strategy "${strategy.name}". The value of secretArn is not a valid ARN.`);
+    if (!Token.isUnresolved(dbConnectionConfig.secretArn)) {
+      try {
+        const arnComponents = Arn.split(dbConnectionConfig.secretArn, ArnFormat.COLON_RESOURCE_NAME);
+        if (arnComponents.service !== 'secretsmanager' || arnComponents.resource !== 'secret') {
+          // error message does not matter because it inside try/catch
+          throw new Error();
+        }
+      } catch {
+        throw new Error(`Invalid data source strategy "${strategy.name}". The value of secretArn is not a valid Secrets Manager ARN.`);
+      }
     }
 
-    if (
-      dbConnectionConfig.keyArn &&
-      !Token.isUnresolved(dbConnectionConfig.keyArn) &&
-      !dbConnectionConfig.keyArn.match(/^arn:aws:kms:\w+(?:-\w+)+:\d{12}:key\/[A-Za-z0-9\-]+$/)
-    ) {
-      throw new Error(`Invalid data source strategy "${strategy.name}". The value of keyArn is not a valid ARN.`);
+    if (dbConnectionConfig.keyArn && !Token.isUnresolved(dbConnectionConfig.keyArn)) {
+      try {
+        const arnComponents = Arn.split(dbConnectionConfig.keyArn, ArnFormat.SLASH_RESOURCE_NAME);
+        if (arnComponents.service !== 'kms' || arnComponents.resource !== 'key') {
+          // error message does not matter because it inside try/catch
+          throw new Error();
+        }
+      } catch {
+        throw new Error(`Invalid data source strategy "${strategy.name}". The value of keyArn is not a valid KMS ARN.`);
+      }
     }
   } else {
     throw new Error(`Invalid data source strategy "${strategy.name}". dbConnectionConfig does not include SSM paths or Secret ARN.`);
