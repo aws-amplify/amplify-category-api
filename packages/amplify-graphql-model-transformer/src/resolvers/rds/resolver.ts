@@ -305,9 +305,9 @@ export const createRdsLambdaRole = (
       if (secretEntry.keyArn) {
         policyStatements.push(
           new PolicyStatement({
-            actions: ['secretsmanager:GetSecretValue'],
+            actions: ['kms:Decrypt'],
             effect: Effect.ALLOW,
-            resources: [secretEntry.secretArn],
+            resources: [secretEntry.keyArn],
           }),
         );
       }

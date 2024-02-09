@@ -46,7 +46,34 @@ Object {
     Object {
       "Action": "secretsmanager:GetSecretValue",
       "Effect": "Allow",
-      "Resource": "myfakearn",
+      "Resource": "myfakesecretarn",
+    },
+  ],
+  "Version": "2012-10-17",
+}
+`;
+
+exports[`ModelTransformer with SQL data sources: should assign secrets manager permissions with custom encryption key 1`] = `
+Object {
+  "Statement": Array [
+    Object {
+      "Action": Array [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:aws:logs:*:*:*",
+    },
+    Object {
+      "Action": "secretsmanager:GetSecretValue",
+      "Effect": "Allow",
+      "Resource": "myfakesecretarn",
+    },
+    Object {
+      "Action": "kms:Decrypt",
+      "Effect": "Allow",
+      "Resource": "myfakekeyarn",
     },
   ],
   "Version": "2012-10-17",
