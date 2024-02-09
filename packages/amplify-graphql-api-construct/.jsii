@@ -7398,7 +7398,7 @@
         {
           "abstract": true,
           "docs": {
-            "remarks": "*",
+            "remarks": "If not supplied, the secret is expected to be encrypted with the default AWS-managed key. *",
             "stability": "experimental",
             "summary": "The ARN of the customer managed encryption key for the secret."
           },
@@ -8071,5 +8071,5 @@
     }
   },
   "version": "1.5.5",
-  "fingerprint": "EHqFFlvmhcMqdDhOne2VdjgpigxrgWZynQ0YYoIt53Y="
+  "fingerprint": "F2tw+O4+/LB5CH5/oP5Ij6AZA8wRO8MNUH1zuopWSKI="
 }
