@@ -281,7 +281,7 @@ function useChildAccountCredentials {
         parent_acct=$(aws sts get-caller-identity | jq -cr '.Account')
         child_accts=$(aws organizations list-accounts | jq -c "[.Accounts[].Id | select(. != \"$parent_acct\")]")
         org_size=$(echo $child_accts | jq 'length')
-        opt_in_regions="eu-south-1 ap-east-1"
+        opt_in_regions="eu-south-1 ap-east-1 me-south-1"
         if echo "$opt_in_regions" | grep -qw "$CLI_REGION"; then
             child_accts=$(echo $child_accts | jq -c '.[]')
             for child_acct in $child_accts; do

@@ -361,7 +361,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/migration/api.key.migration2.test.ts
-          CLI_REGION: me-south-1
+          CLI_REGION: ap-northeast-1
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
@@ -1209,7 +1209,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-searchable.test.ts
-          CLI_REGION: me-south-1
+          CLI_REGION: us-east-1
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
@@ -1266,7 +1266,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/transformer-migrations/searchable-migration.test.ts
-          CLI_REGION: sa-east-1
+          CLI_REGION: ap-southeast-2
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry

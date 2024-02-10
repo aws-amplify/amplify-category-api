@@ -8,7 +8,7 @@ const SUPPORTED_REGIONS_PATH = join(REPO_ROOT, 'scripts', 'e2e-test-regions.json
 const AMPLIFY_SUPPORTED_REGIONS: string[] = JSON.parse(fs.readFileSync(SUPPORTED_REGIONS_PATH, 'utf-8'));
 // const AWS_REGIONS_TO_RUN_TESTS = AMPLIFY_SUPPORTED_REGIONS.filter((region) => !['me-south-1', 'eu-south-1'].includes(region));
 const AWS_REGIONS_TO_RUN_TESTS = AMPLIFY_SUPPORTED_REGIONS;
-const SUPPORTED_OPT_IN_REGIONS = ['eu-south-1', 'ap-east-1'];
+const SUPPORTED_OPT_IN_REGIONS = ['eu-south-1', 'ap-east-1', 'me-south-1'];
 type ForceTests = 'interactions' | 'containers';
 
 type TestTiming = {
