@@ -156,35 +156,39 @@ const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccount
  * @returns Promise<AmplifyAppInfo[]> a list of Amplify Apps in the region with build info
  */
 const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<AmplifyAppInfo[]> => {
+  const config = getAWSConfig(account, region);
+  const amplifyClient = new aws.Amplify(config);
+  const result: AmplifyAppInfo[] = [];
+  let amplifyApps = { apps: [] };
   try {
-    const config = getAWSConfig(account, region);
-    const amplifyClient = new aws.Amplify(config);
-    const amplifyApps = await amplifyClient.listApps({ maxResults: 50 }).promise(); // keeping it to 50 as max supported is 50
-    const result: AmplifyAppInfo[] = [];
-    for (const app of amplifyApps.apps) {
-      const backends: Record<string, StackInfo> = {};
-      try {
-        const backendEnvironments = await amplifyClient.listBackendEnvironments({ appId: app.appId, maxResults: 50 }).promise();
-        for (const backendEnv of backendEnvironments.backendEnvironments) {
-          const buildInfo = await getStackDetails(backendEnv.stackName, account, region);
-          if (buildInfo) {
-            backends[backendEnv.environmentName] = buildInfo;
-          }
-        }
-      } catch (e) {
-        console.log(e);
-      }
-      result.push({
-        appId: app.appId,
-        name: app.name,
-        region,
-        backends,
-      });
-    }
-    return result;
+    amplifyApps = await amplifyClient.listApps({ maxResults: 50 }).promise(); // keeping it to 50 as max supported is 50
   } catch (e) {
-    console.log(e);
+    // Do not fail the cleanup and continue
+    console.log(`Listing apps for account ${account}-${region} failed with error with code ${e?.code}. Skipping.`);
+    return result;
   }
+
+  for (const app of amplifyApps?.apps) {
+    const backends: Record<string, StackInfo> = {};
+    try {
+      const backendEnvironments = await amplifyClient.listBackendEnvironments({ appId: app.appId, maxResults: 50 }).promise();
+      for (const backendEnv of backendEnvironments.backendEnvironments) {
+        const buildInfo = await getStackDetails(backendEnv.stackName, account, region);
+        if (buildInfo) {
+          backends[backendEnv.environmentName] = buildInfo;
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    result.push({
+      appId: app.appId,
+      name: app.name,
+      region,
+      backends,
+    });
+  }
+  return result;
 };
 
 /**
@@ -232,9 +236,11 @@ const getStackDetails = async (stackName: string, account: AWSAccountInfo, regio
 };
 
 const getStacks = async (account: AWSAccountInfo, region: string): Promise<StackInfo[]> => {
+  const cfnClient = new aws.CloudFormation(getAWSConfig(account, region));
+  const results: StackInfo[] = [];
+  let stacks;
   try {
-    const cfnClient = new aws.CloudFormation(getAWSConfig(account, region));
-    const stacks = await cfnClient
+    stacks = await cfnClient
       .listStacks({
         StackStatusFilter: [
           'CREATE_COMPLETE',
@@ -249,24 +255,25 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
         ],
       })
       .promise();
-
-    // We are interested in only the root stacks that are deployed by amplify-cli
-    const rootStacks = stacks.StackSummaries.filter((stack) => !stack.RootId);
-    const results: StackInfo[] = [];
-    for (const stack of rootStacks) {
-      try {
-        const details = await getStackDetails(stack.StackName, account, region);
-        if (details) {
-          results.push(details);
-        }
-      } catch {
-        // don't want to barf and fail e2e tests
-      }
-    }
-    return results;
   } catch (e) {
-    console.log(e);
+    // Do not fail the cleanup and continue
+    console.log(`Listing stacks for account ${account}-${region} failed with error with code ${e?.code}. Skipping.`);
+    return results;
   }
+
+  // We are interested in only the root stacks that are deployed by amplify-cli
+  const rootStacks = stacks.StackSummaries.filter((stack) => !stack.RootId);
+  for (const stack of rootStacks) {
+    try {
+      const details = await getStackDetails(stack.StackName, account, region);
+      if (details) {
+        results.push(details);
+      }
+    } catch {
+      // don't want to barf and fail e2e tests
+    }
+  }
+  return results;
 };
 
 const getCodeBuildClient = (): CodeBuild => {
@@ -720,7 +727,7 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const staleResources = _.pickBy(allResources, filterPredicate);
 
   generateReport(staleResources, accountIndex);
-  // await deleteResources(account, accountIndex, staleResources);
+  await deleteResources(account, accountIndex, staleResources);
   console.log(`${generateAccountInfo(account, accountIndex)} Cleanup done!`);
 };
 
