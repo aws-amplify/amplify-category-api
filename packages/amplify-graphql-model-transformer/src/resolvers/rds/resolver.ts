@@ -88,7 +88,8 @@ export const createRdsLambda = (
   if (credentialStorageMethod === CredentialStorageMethod.SSM) {
     let ssmEndpoint = Fn.join('', ['ssm.', Fn.ref('AWS::Region'), '.amazonaws.com']); // Default SSM endpoint
     if (sqlLambdaVpcConfig) {
-      const endpoints = addVpcEndpointForSecretsManager(scope, sqlLambdaVpcConfig, resourceNames);
+      const services = ['ssm', 'ssmmessages', 'ec2', 'ec2messages', 'kms'];
+      const endpoints = addVpcEndpoints(scope, sqlLambdaVpcConfig, resourceNames, services);
       const endpointEntries = endpoints.find((endpoint) => endpoint.service === 'ssm')?.endpoint.attrDnsEntries;
       if (endpointEntries) {
         ssmEndpoint = Fn.select(0, endpointEntries);
@@ -100,7 +101,8 @@ export const createRdsLambda = (
   } else if (credentialStorageMethod === CredentialStorageMethod.SECRETS_MANAGER) {
     let secretsManagerEndpoint = Fn.join('', ['secretsmanager.', Fn.ref('AWS::Region'), '.amazonaws.com']); // Default SSM endpoint
     if (sqlLambdaVpcConfig) {
-      const endpoints = addVpcEndpointForSecretsManager(scope, sqlLambdaVpcConfig, resourceNames);
+      const services = ['secretsmanager'];
+      const endpoints = addVpcEndpoints(scope, sqlLambdaVpcConfig, resourceNames, services);
       const endpointEntries = endpoints.find((endpoint) => endpoint.service === 'secretsmanager')?.endpoint.attrDnsEntries;
       if (endpointEntries) {
         secretsManagerEndpoint = Fn.select(0, endpointEntries);
@@ -205,12 +207,12 @@ const addVpcEndpoint = (
   return endpoint;
 };
 
-const addVpcEndpointForSecretsManager = (
+const addVpcEndpoints = (
   scope: Construct,
   sqlLambdaVpcConfig: VpcConfig,
   resourceNames: SQLLambdaResourceNames,
+  services: string[],
 ): { service: string; endpoint: CfnVPCEndpoint }[] => {
-  const services = ['ssm', 'ssmmessages', 'ec2', 'ec2messages', 'kms', 'secretsmanager'];
   return services.map((service) => {
     return {
       service,
