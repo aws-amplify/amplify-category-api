@@ -340,7 +340,19 @@ export class SQLLambdaModelDataSourceStrategyFactory {
 }
 
 // @public
-export interface SqlModelDataSourceDbConnectionConfig {
+export type SqlModelDataSourceDbConnectionConfig = SqlModelDataSourceSecretsManagerDbConnectionConfig | SqlModelDataSourceSsmDbConnectionConfig;
+
+// @public
+export interface SqlModelDataSourceSecretsManagerDbConnectionConfig {
+    readonly databaseName: string;
+    readonly hostname: string;
+    readonly keyArn?: string;
+    readonly port: number;
+    readonly secretArn: string;
+}
+
+// @public
+export interface SqlModelDataSourceSsmDbConnectionConfig {
     readonly databaseNameSsmPath: string;
     readonly hostnameSsmPath: string;
     readonly passwordSsmPath: string;
