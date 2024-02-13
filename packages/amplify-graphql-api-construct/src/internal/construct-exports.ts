@@ -17,6 +17,11 @@ import { AmplifyGraphqlApiResources, FunctionSlot } from '../types';
 import { AmplifyDynamoDbTableWrapper } from '../amplify-dynamodb-table-wrapper';
 import { walkAndProcessNodes } from './construct-tree';
 
+/**
+ * Check if a resource is implementing table interface
+ * @param table table resource
+ * @returns whether the resource is a ITable or not
+ */
 function isITable(table: any): table is ITable {
   return 'tableArn' in table;
 }
@@ -79,10 +84,6 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
       tables[resourceName] = currentScope;
       return;
     }
-    // if () {
-    //   iTables[resourceName] = currentScope;
-    //   return;
-    // }
     if (currentScope instanceof CfnTable) {
       cfnTables[resourceName] = currentScope;
       return;
