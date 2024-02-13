@@ -19,11 +19,13 @@ import { walkAndProcessNodes } from './construct-tree';
 
 /**
  * Check if a resource is implementing table interface
+ * The required properties need to be present in the input
+ * https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_dynamodb.ITable.html#properties
  * @param table table resource
  * @returns whether the resource is a ITable or not
  */
 function isITable(table: any): table is ITable {
-  return 'tableArn' in table;
+  return 'env' in table && 'node' in table && 'stack' in table && 'tableArn' in table && 'tableName' in table;
 }
 /**
  * Everything below here is intended to help us gather the
