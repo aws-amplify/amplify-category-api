@@ -87,9 +87,7 @@ describe('CDK GraphQL Transformer', () => {
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'sql-models'));
     const name = await initCDKProject(projRoot, templatePath);
     writeDbDetails(dbDetails, projRoot);
-    // The CodegenAssets BucketDeployment resource takes a while. Set the timeout to 10m account for that. (Note that this is the "no output
-    // timeout"--the overall deployment is still allowed to take longer than 10m)
-    const outputs = await cdkDeploy(projRoot, '--all', { timeoutMs: 10 * 60 * 1000 });
+    const outputs = await cdkDeploy(projRoot, '--all');
     const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
 
     const description = 'todo description';
