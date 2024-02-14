@@ -544,7 +544,7 @@ describe('owner based @auth', () => {
     expect(out.schema).toMatchSnapshot();
   });
 
-  it('should not add subscription filter when subscription is disabled', async () => {
+  it('should not add subscription filter with implicit owner field when subscription is disabled', async () => {
     const authConfig: AppSyncAuthConfiguration = {
       defaultAuthentication: {
         authenticationType: 'AMAZON_COGNITO_USER_POOLS',

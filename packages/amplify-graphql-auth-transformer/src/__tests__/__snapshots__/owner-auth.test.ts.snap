@@ -828,7 +828,7 @@ type Subscription {
 "
 `;
 
-exports[`owner based @auth should not add subscription filter when subscription is disabled 1`] = `
+exports[`owner based @auth should not add subscription filter with implicit owner field when subscription is disabled 1`] = `
 "type Todo {
   owner: String
   content: String
