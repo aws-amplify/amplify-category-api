@@ -1,7 +1,7 @@
 import { parse } from 'graphql';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { PrimaryKeyTransformer, IndexTransformer } from '@aws-amplify/graphql-index-transformer';
-import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { validateModelSchema, constructDataSourceStrategies, MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
@@ -499,6 +499,43 @@ describe('owner based @auth', () => {
       schema: validSchema,
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
+    });
+    expect(out).toBeDefined();
+
+    validateModelSchema(parse(out.schema));
+    parse(out.schema);
+    expect(out.schema).toMatchSnapshot();
+  });
+
+  it('should successfully transform simple valid schema with implicit fields', async () => {
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [],
+    };
+    const validSchema = `
+      type Todo @model @auth(rules: [{ allow: owner }]) {
+        id: ID! @primaryKey
+        content: String
+      }
+    `;
+
+    const out = testTransform({
+      schema: validSchema,
+      authConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(validSchema, {
+        name: `MYSQLStrategy`,
+        dbType: MYSQL_DB_TYPE,
+        dbConnectionConfig: {
+          databaseNameSsmPath: '/databaseNameSsmPath',
+          hostnameSsmPath: '/hostnameSsmPath',
+          passwordSsmPath: '/passwordSsmPath',
+          portSsmPath: '/portSsmPath',
+          usernameSsmPath: '/usernameSsmPath',
+        },
+      }),
     });
     expect(out).toBeDefined();
 

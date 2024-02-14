@@ -1267,6 +1267,223 @@ type Subscription {
 "
 `;
 
+exports[`owner based @auth should successfully transform simple valid schema with implicit fields 2`] = `
+"type Todo {
+  id: ID!
+  content: String
+  owner: String
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelTodoConnection {
+  items: [Todo]!
+  nextToken: String
+}
+
+input ModelTodoFilterInput {
+  id: ModelIDInput
+  content: ModelStringInput
+  and: [ModelTodoFilterInput]
+  or: [ModelTodoFilterInput]
+  not: ModelTodoFilterInput
+}
+
+type Query {
+  getTodo(id: ID!): Todo
+  listTodos(id: ID, filter: ModelTodoFilterInput, limit: Int, nextToken: String, sortDirection: ModelSortDirection): ModelTodoConnection
+}
+
+input ModelTodoConditionInput {
+  content: ModelStringInput
+  and: [ModelTodoConditionInput]
+  or: [ModelTodoConditionInput]
+  not: ModelTodoConditionInput
+}
+
+input CreateTodoInput {
+  id: ID
+  content: String
+}
+
+input UpdateTodoInput {
+  id: ID!
+  content: String
+}
+
+input DeleteTodoInput {
+  id: ID!
+}
+
+type Mutation {
+  createTodo(input: CreateTodoInput!, condition: ModelTodoConditionInput): Todo
+  updateTodo(input: UpdateTodoInput!, condition: ModelTodoConditionInput): Todo
+  deleteTodo(input: DeleteTodoInput!, condition: ModelTodoConditionInput): Todo
+}
+
+input ModelSubscriptionTodoFilterInput {
+  id: ModelSubscriptionIDInput
+  content: ModelSubscriptionStringInput
+  and: [ModelSubscriptionTodoFilterInput]
+  or: [ModelSubscriptionTodoFilterInput]
+}
+
+type Subscription {
+  onCreateTodo(filter: ModelSubscriptionTodoFilterInput, owner: String): Todo @aws_subscribe(mutations: [\\"createTodo\\"])
+  onUpdateTodo(filter: ModelSubscriptionTodoFilterInput, owner: String): Todo @aws_subscribe(mutations: [\\"updateTodo\\"])
+  onDeleteTodo(filter: ModelSubscriptionTodoFilterInput, owner: String): Todo @aws_subscribe(mutations: [\\"deleteTodo\\"])
+}
+"
+`;
+
 exports[`owner based @auth sort key fields on @auth owner field owner field as part of global secondary index handles ownerfield as GSI field with default identity claim 1`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
