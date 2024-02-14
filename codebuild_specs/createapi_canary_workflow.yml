@@ -9,14 +9,6 @@ batch:
       buildspec: codebuild_specs/build_linux.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
-    - identifier: build_windows
-      buildspec: codebuild_specs/build_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-      depend-on:
-        - build_linux
     - identifier: test
       buildspec: codebuild_specs/test.yml
       env:
@@ -25,30 +17,6 @@ batch:
         - build_linux
     - identifier: mock_e2e_tests
       buildspec: codebuild_specs/mock_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-      depend-on:
-        - build_linux
-    - identifier: verify_cdk_version
-      buildspec: codebuild_specs/verify_cdk_version.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-      depend-on:
-        - build_linux
-    - identifier: verify_api_extract
-      buildspec: codebuild_specs/verify_api_extract.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-      depend-on:
-        - build_linux
-    - identifier: verify_yarn_lock
-      buildspec: codebuild_specs/verify_yarn_lock.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-      depend-on:
-        - build_linux
-    - identifier: verify_dependency_licenses_extract
-      buildspec: codebuild_specs/verify_dependency_licenses_extract.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
       depend-on:
@@ -65,7 +33,7 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts
+            src/__tests__/api_canary.test.ts
           CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
@@ -75,7 +43,7 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts
+            src/__tests__/api_canary.test.ts
           CLI_REGION: ap-northeast-2
       depend-on:
         - publish_to_local_registry
@@ -85,7 +53,7 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts
+            src/__tests__/api_canary.test.ts
           CLI_REGION: ap-south-1
       depend-on:
         - publish_to_local_registry
@@ -95,7 +63,7 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts
+            src/__tests__/api_canary.test.ts
           CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
@@ -105,7 +73,7 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts
+            src/__tests__/api_canary.test.ts
           CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
@@ -115,7 +83,7 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts
+            src/__tests__/api_canary.test.ts
           CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
@@ -125,7 +93,7 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts
+            src/__tests__/api_canary.test.ts
           CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
@@ -135,7 +103,7 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts
+            src/__tests__/api_canary.test.ts
           CLI_REGION: ca-central-1
       depend-on:
         - publish_to_local_registry
@@ -145,7 +113,7 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts
+            src/__tests__/api_canary.test.ts
           CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
@@ -155,7 +123,7 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts
+            src/__tests__/api_canary.test.ts
           CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
@@ -165,7 +133,7 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts
+            src/__tests__/api_canary.test.ts
           CLI_REGION: ap-east-1
       depend-on:
         - publish_to_local_registry
@@ -175,7 +143,7 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts
+            src/__tests__/api_canary.test.ts
           CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
@@ -185,7 +153,7 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts
+            src/__tests__/api_canary.test.ts
           CLI_REGION: ap-northeast-3
       depend-on:
         - publish_to_local_registry
@@ -195,7 +163,7 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts
+            src/__tests__/api_canary.test.ts
           CLI_REGION: eu-north-1
       depend-on:
         - publish_to_local_registry
@@ -205,7 +173,7 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts
+            src/__tests__/api_canary.test.ts
           CLI_REGION: eu-west-1
       depend-on:
         - publish_to_local_registry
@@ -215,7 +183,7 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts
+            src/__tests__/api_canary.test.ts
           CLI_REGION: eu-south-1
       depend-on:
         - publish_to_local_registry
@@ -225,7 +193,7 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts
+            src/__tests__/api_canary.test.ts
           CLI_REGION: eu-west-3
       depend-on:
         - publish_to_local_registry
@@ -235,7 +203,7 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts
+            src/__tests__/api_canary.test.ts
           CLI_REGION: me-south-1
       depend-on:
         - publish_to_local_registry
@@ -245,7 +213,7 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts
+            src/__tests__/api_canary.test.ts
           CLI_REGION: sa-east-1
       depend-on:
         - publish_to_local_registry
@@ -255,7 +223,7 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_1.test.ts|src/__tests__/resolvers.test.ts
+            src/__tests__/api_canary.test.ts
           CLI_REGION: us-west-1
       depend-on:
         - publish_to_local_registry
