@@ -175,8 +175,6 @@ input ModelUserFilterInput {
   and: [ModelUserFilterInput]
   or: [ModelUserFilterInput]
   not: ModelUserFilterInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
 }
 
 type Query {
@@ -190,8 +188,6 @@ input ModelUserConditionInput {
   and: [ModelUserConditionInput]
   or: [ModelUserConditionInput]
   not: ModelUserConditionInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
 }
 
 input CreateUserInput {
@@ -223,8 +219,6 @@ input ModelSubscriptionUserFilterInput {
   lastName: ModelSubscriptionStringInput
   and: [ModelSubscriptionUserFilterInput]
   or: [ModelSubscriptionUserFilterInput]
-  createdAt: ModelSubscriptionStringInput
-  updatedAt: ModelSubscriptionStringInput
 }
 
 type Subscription {
@@ -248,8 +242,6 @@ input ModelProfileFilterInput {
   and: [ModelProfileFilterInput]
   or: [ModelProfileFilterInput]
   not: ModelProfileFilterInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
 }
 
 input ModelProfileConditionInput {
@@ -258,8 +250,6 @@ input ModelProfileConditionInput {
   and: [ModelProfileConditionInput]
   or: [ModelProfileConditionInput]
   not: ModelProfileConditionInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
 }
 
 input CreateProfileInput {
@@ -284,8 +274,6 @@ input ModelSubscriptionProfileFilterInput {
   userLastName: ModelSubscriptionStringInput
   and: [ModelSubscriptionProfileFilterInput]
   or: [ModelSubscriptionProfileFilterInput]
-  createdAt: ModelSubscriptionStringInput
-  updatedAt: ModelSubscriptionStringInput
 }
 
 input ModelStringKeyConditionInput {
@@ -513,8 +501,6 @@ input ModelUserFilterInput {
   and: [ModelUserFilterInput]
   or: [ModelUserFilterInput]
   not: ModelUserFilterInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
 }
 
 type Query {
@@ -529,8 +515,6 @@ input ModelUserConditionInput {
   and: [ModelUserConditionInput]
   or: [ModelUserConditionInput]
   not: ModelUserConditionInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
 }
 
 input CreateUserInput {
@@ -561,8 +545,6 @@ input ModelSubscriptionUserFilterInput {
   name: ModelSubscriptionStringInput
   and: [ModelSubscriptionUserFilterInput]
   or: [ModelSubscriptionUserFilterInput]
-  createdAt: ModelSubscriptionStringInput
-  updatedAt: ModelSubscriptionStringInput
 }
 
 type Subscription {
@@ -586,7 +568,6 @@ input ModelProfileFilterInput {
   and: [ModelProfileFilterInput]
   or: [ModelProfileFilterInput]
   not: ModelProfileFilterInput
-  updatedAt: ModelStringInput
 }
 
 input ModelProfileConditionInput {
@@ -595,7 +576,6 @@ input ModelProfileConditionInput {
   and: [ModelProfileConditionInput]
   or: [ModelProfileConditionInput]
   not: ModelProfileConditionInput
-  updatedAt: ModelStringInput
 }
 
 input CreateProfileInput {
@@ -620,7 +600,6 @@ input ModelSubscriptionProfileFilterInput {
   userId: ModelSubscriptionStringInput
   and: [ModelSubscriptionProfileFilterInput]
   or: [ModelSubscriptionProfileFilterInput]
-  updatedAt: ModelSubscriptionStringInput
 }
 "
 `;

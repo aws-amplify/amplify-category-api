@@ -213,11 +213,11 @@ input ModelEmployeeFilterInput {
   firstName: ModelStringInput
   lastName: ModelStringInput
   type: ModelEmploymentTypeInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelEmployeeFilterInput]
   or: [ModelEmployeeFilterInput]
   not: ModelEmployeeFilterInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
 }
 
 input ModelEmployeeConditionInput {
@@ -260,10 +260,10 @@ input ModelSubscriptionEmployeeFilterInput {
   firstName: ModelSubscriptionStringInput
   lastName: ModelSubscriptionStringInput
   type: ModelSubscriptionStringInput
-  and: [ModelSubscriptionEmployeeFilterInput]
-  or: [ModelSubscriptionEmployeeFilterInput]
   createdAt: ModelSubscriptionStringInput
   updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionEmployeeFilterInput]
+  or: [ModelSubscriptionEmployeeFilterInput]
 }
 
 type Subscription {
@@ -1960,11 +1960,11 @@ type ModelUserConnection {
 input ModelUserFilterInput {
   id: ModelIDInput
   name: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelUserFilterInput]
   or: [ModelUserFilterInput]
   not: ModelUserFilterInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
 }
 
 input ModelUserConditionInput {
@@ -1993,10 +1993,10 @@ input DeleteUserInput {
 input ModelSubscriptionUserFilterInput {
   id: ModelSubscriptionIDInput
   name: ModelSubscriptionStringInput
-  and: [ModelSubscriptionUserFilterInput]
-  or: [ModelSubscriptionUserFilterInput]
   createdAt: ModelSubscriptionStringInput
   updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionUserFilterInput]
+  or: [ModelSubscriptionUserFilterInput]
 }
 
 input SearchableStringFilterInput {

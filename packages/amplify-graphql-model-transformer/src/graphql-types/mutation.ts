@@ -1,7 +1,12 @@
 import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { ModelResourceIDs, getBaseType, toPascalCase } from 'graphql-transformer-common';
-import { InputFieldWrapper, InputObjectDefinitionWrapper, ObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
+import {
+  InputFieldWrapper,
+  InputObjectDefinitionWrapper,
+  ObjectDefinitionWrapper,
+  isDynamoDbModel,
+} from '@aws-amplify/graphql-transformer-core';
 import { ModelDirectiveConfiguration } from '../directive';
 import { makeConditionFilterInput } from './common';
 
@@ -162,11 +167,25 @@ export const makeMutationConditionInput = (
   ctx: TransformerTransformSchemaStepContextProvider,
   name: string,
   object: ObjectTypeDefinitionNode,
+  modelDirectiveConfig: ModelDirectiveConfiguration,
 ): InputObjectTypeDefinitionNode => {
   const input = makeConditionFilterInput(ctx, name, object);
   const idField = input.fields.find((f) => f.name === 'id' && f.getTypeName() === 'ModelIDInput');
   if (idField) {
     input.removeField(idField);
   }
+
+  // add implicit timestamp fields to filter
+  if (isDynamoDbModel(ctx, object.name.value)) {
+    Object.values({ createdAt: 'createdAt', updatedAt: 'updatedAt', ...(modelDirectiveConfig?.timestamps || {}) }).forEach(
+      (timeStampFieldName) => {
+        if (!input.hasField(timeStampFieldName!)) {
+          const field = InputFieldWrapper.create(timeStampFieldName, 'ModelStringInput', true);
+          input.addField(field);
+        }
+      },
+    );
+  }
+
   return input.serialize();
 };

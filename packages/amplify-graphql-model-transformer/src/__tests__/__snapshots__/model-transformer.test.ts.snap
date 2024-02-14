@@ -166,11 +166,11 @@ type ModelTaskConnection {
 input ModelTaskFilterInput {
   id: ModelIntInput
   title: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelTaskFilterInput]
   or: [ModelTaskFilterInput]
   not: ModelTaskFilterInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
 }
 
 type Query {
@@ -211,10 +211,10 @@ type Mutation {
 input ModelSubscriptionTaskFilterInput {
   id: ModelSubscriptionIntInput
   title: ModelSubscriptionStringInput
-  and: [ModelSubscriptionTaskFilterInput]
-  or: [ModelSubscriptionTaskFilterInput]
   createdAt: ModelSubscriptionStringInput
   updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionTaskFilterInput]
+  or: [ModelSubscriptionTaskFilterInput]
 }
 
 type Subscription {
@@ -403,12 +403,12 @@ type ModelTestConnection {
 
 input ModelTestFilterInput {
   id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelTestFilterInput]
   or: [ModelTestFilterInput]
   not: ModelTestFilterInput
   _deleted: ModelBooleanInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
 }
 
 type Query {
@@ -455,11 +455,11 @@ type Mutation {
 
 input ModelSubscriptionTestFilterInput {
   id: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
   and: [ModelSubscriptionTestFilterInput]
   or: [ModelSubscriptionTestFilterInput]
   _deleted: ModelBooleanInput
-  createdAt: ModelSubscriptionStringInput
-  updatedAt: ModelSubscriptionStringInput
 }
 
 type Subscription {
@@ -479,12 +479,12 @@ type ModelEmailConnection {
 
 input ModelEmailFilterInput {
   id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelEmailFilterInput]
   or: [ModelEmailFilterInput]
   not: ModelEmailFilterInput
   _deleted: ModelBooleanInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
 }
 
 input ModelEmailConditionInput {
@@ -513,11 +513,11 @@ input DeleteEmailInput {
 
 input ModelSubscriptionEmailFilterInput {
   id: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
   and: [ModelSubscriptionEmailFilterInput]
   or: [ModelSubscriptionEmailFilterInput]
   _deleted: ModelBooleanInput
-  createdAt: ModelSubscriptionStringInput
-  updatedAt: ModelSubscriptionStringInput
 }
 "
 `;
@@ -891,12 +891,12 @@ type ModelAuthorConnection {
 input ModelAuthorFilterInput {
   id: ModelIDInput
   name: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelAuthorFilterInput]
   or: [ModelAuthorFilterInput]
   not: ModelAuthorFilterInput
   _deleted: ModelBooleanInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
 }
 
 input ModelAuthorConditionInput {
@@ -933,11 +933,11 @@ input DeleteAuthorInput {
 input ModelSubscriptionAuthorFilterInput {
   id: ModelSubscriptionIDInput
   name: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
   and: [ModelSubscriptionAuthorFilterInput]
   or: [ModelSubscriptionAuthorFilterInput]
   _deleted: ModelBooleanInput
-  createdAt: ModelSubscriptionStringInput
-  updatedAt: ModelSubscriptionStringInput
 }
 
 type ModelRequireConnection {
@@ -950,12 +950,12 @@ input ModelRequireFilterInput {
   id: ModelIDInput
   requiredField: ModelStringInput
   notRequiredField: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelRequireFilterInput]
   or: [ModelRequireFilterInput]
   not: ModelRequireFilterInput
   _deleted: ModelBooleanInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
 }
 
 input ModelRequireConditionInput {
@@ -992,11 +992,11 @@ input ModelSubscriptionRequireFilterInput {
   id: ModelSubscriptionIDInput
   requiredField: ModelSubscriptionStringInput
   notRequiredField: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
   and: [ModelSubscriptionRequireFilterInput]
   or: [ModelSubscriptionRequireFilterInput]
   _deleted: ModelBooleanInput
-  createdAt: ModelSubscriptionStringInput
-  updatedAt: ModelSubscriptionStringInput
 }
 
 type ModelCommentConnection {
@@ -1010,12 +1010,11 @@ input ModelCommentFilterInput {
   title: ModelStringInput
   content: ModelStringInput
   updatedOn: ModelIntInput
+  createdOn: ModelStringInput
   and: [ModelCommentFilterInput]
   or: [ModelCommentFilterInput]
   not: ModelCommentFilterInput
   _deleted: ModelBooleanInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
 }
 
 input ModelCommentConditionInput {
@@ -1026,8 +1025,7 @@ input ModelCommentConditionInput {
   or: [ModelCommentConditionInput]
   not: ModelCommentConditionInput
   _deleted: ModelBooleanInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
+  createdOn: ModelStringInput
 }
 
 input CreateCommentInput {
@@ -1056,11 +1054,10 @@ input ModelSubscriptionCommentFilterInput {
   title: ModelSubscriptionStringInput
   content: ModelSubscriptionStringInput
   updatedOn: ModelSubscriptionIntInput
+  createdOn: ModelSubscriptionStringInput
   and: [ModelSubscriptionCommentFilterInput]
   or: [ModelSubscriptionCommentFilterInput]
   _deleted: ModelBooleanInput
-  createdAt: ModelSubscriptionStringInput
-  updatedAt: ModelSubscriptionStringInput
 }
 "
 `;
@@ -4115,8 +4112,6 @@ input ModelPostFilterInput {
   or: [ModelPostFilterInput]
   not: ModelPostFilterInput
   _deleted: ModelBooleanInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
 }
 
 type Query {
@@ -4164,8 +4159,6 @@ input ModelSubscriptionPostFilterInput {
   and: [ModelSubscriptionPostFilterInput]
   or: [ModelSubscriptionPostFilterInput]
   _deleted: ModelBooleanInput
-  createdAt: ModelSubscriptionStringInput
-  updatedAt: ModelSubscriptionStringInput
 }
 
 type Subscription {
@@ -5774,12 +5767,12 @@ type ModelModelTypeConnection {
 input ModelModelTypeFilterInput {
   id: ModelIDInput
   title: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelModelTypeFilterInput]
   or: [ModelModelTypeFilterInput]
   not: ModelModelTypeFilterInput
   _deleted: ModelBooleanInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
 }
 
 type Query {
@@ -5826,11 +5819,11 @@ type Mutation {
 input ModelSubscriptionModelTypeFilterInput {
   id: ModelSubscriptionIDInput
   title: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
   and: [ModelSubscriptionModelTypeFilterInput]
   or: [ModelSubscriptionModelTypeFilterInput]
   _deleted: ModelBooleanInput
-  createdAt: ModelSubscriptionStringInput
-  updatedAt: ModelSubscriptionStringInput
 }
 
 type Subscription {
@@ -6011,12 +6004,12 @@ type ModelPostConnection {
 input ModelPostFilterInput {
   id: ModelIDInput
   str: ModelStringInput
+  createdOn: ModelStringInput
+  updatedOn: ModelStringInput
   and: [ModelPostFilterInput]
   or: [ModelPostFilterInput]
   not: ModelPostFilterInput
   _deleted: ModelBooleanInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
 }
 
 type Query {
@@ -6031,8 +6024,8 @@ input ModelPostConditionInput {
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
   _deleted: ModelBooleanInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
+  createdOn: ModelStringInput
+  updatedOn: ModelStringInput
 }
 
 input CreatePostInput {
@@ -6061,11 +6054,11 @@ type Mutation {
 input ModelSubscriptionPostFilterInput {
   id: ModelSubscriptionIDInput
   str: ModelSubscriptionStringInput
+  createdOn: ModelSubscriptionStringInput
+  updatedOn: ModelSubscriptionStringInput
   and: [ModelSubscriptionPostFilterInput]
   or: [ModelSubscriptionPostFilterInput]
   _deleted: ModelBooleanInput
-  createdAt: ModelSubscriptionStringInput
-  updatedAt: ModelSubscriptionStringInput
 }
 
 type Subscription {

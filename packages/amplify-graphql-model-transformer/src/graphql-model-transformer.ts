@@ -290,6 +290,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
     this.ensureModelSortDirectionEnum(ctx);
     this.typesWithModelDirective.forEach((type) => {
+      const defBeforeImplicitFields = ctx.output.getObject(type)!;
+      const typeName = defBeforeImplicitFields.name.value;
+      if (isDynamoDbModel(ctx, typeName)) {
+        // Update the field with auto generatable Fields
+        this.addAutoGeneratableFields(ctx, type);
+      }
+      // get def after implict timestamp fields have been added
       const def = ctx.output.getObject(type)!;
       const hasAuth = def.directives!.some((dir) => dir.name.value === 'auth');
 
@@ -299,17 +306,14 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       const queryFields = this.createQueryFields(ctx, def);
       ctx.output.addQueryFields(queryFields);
 
-      const mutationFields = this.createMutationFields(ctx, def);
+      // use def before implicit timestamp fields are added so that mutation inputs do no include the implicit timestamp fields
+      const mutationFields = this.createMutationFields(ctx, defBeforeImplicitFields);
       ctx.output.addMutationFields(mutationFields);
 
       const subscriptionsFields = this.createSubscriptionFields(ctx, def!);
       ctx.output.addSubscriptionFields(subscriptionsFields);
 
-      const typeName = def.name.value;
       if (isDynamoDbModel(ctx, typeName)) {
-        // Update the field with auto generatable Fields
-        this.addAutoGeneratableFields(ctx, type);
-
         if (ctx.isProjectUsingDataStore()) {
           this.addModelSyncFields(ctx, type);
         }
@@ -610,7 +614,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       const conditionTypeName = getConditionInputName(type.name.value);
 
       const filterInputs = createEnumModelFilters(ctx, type);
-      conditionInput = makeMutationConditionInput(ctx, conditionTypeName, type);
+      conditionInput = makeMutationConditionInput(ctx, conditionTypeName, type, this.modelDirectiveConfig.get(type.name.value)!);
       filterInputs.push(conditionInput);
       filterInputs.forEach((input) => {
         const conditionInputName = input.name.value;

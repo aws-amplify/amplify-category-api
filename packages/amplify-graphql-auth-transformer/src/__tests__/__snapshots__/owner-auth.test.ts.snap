@@ -767,11 +767,12 @@ type ModelTodoConnection {
 input ModelTodoFilterInput {
   owner: ModelStringInput
   content: ModelStringInput
+  id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelTodoFilterInput]
   or: [ModelTodoFilterInput]
   not: ModelTodoFilterInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
 }
 
 type Query {
@@ -813,10 +814,11 @@ type Mutation {
 
 input ModelSubscriptionTodoFilterInput {
   content: ModelSubscriptionStringInput
-  and: [ModelSubscriptionTodoFilterInput]
-  or: [ModelSubscriptionTodoFilterInput]
+  id: ModelSubscriptionIDInput
   createdAt: ModelSubscriptionStringInput
   updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionTodoFilterInput]
+  or: [ModelSubscriptionTodoFilterInput]
   owner: ModelStringInput
 }
 
@@ -995,11 +997,12 @@ type ModelTodoConnection {
 input ModelTodoFilterInput {
   owner: ModelStringInput
   content: ModelStringInput
+  id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelTodoFilterInput]
   or: [ModelTodoFilterInput]
   not: ModelTodoFilterInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
 }
 
 type Query {
@@ -1207,11 +1210,12 @@ type ModelTodoConnection {
 
 input ModelTodoFilterInput {
   content: ModelStringInput
+  id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelTodoFilterInput]
   or: [ModelTodoFilterInput]
   not: ModelTodoFilterInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
   owner: ModelStringInput
 }
 
@@ -1252,10 +1256,11 @@ type Mutation {
 
 input ModelSubscriptionTodoFilterInput {
   content: ModelSubscriptionStringInput
-  and: [ModelSubscriptionTodoFilterInput]
-  or: [ModelSubscriptionTodoFilterInput]
+  id: ModelSubscriptionIDInput
   createdAt: ModelSubscriptionStringInput
   updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionTodoFilterInput]
+  or: [ModelSubscriptionTodoFilterInput]
   owner: ModelStringInput
 }
 
