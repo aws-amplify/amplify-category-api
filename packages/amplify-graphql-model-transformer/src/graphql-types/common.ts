@@ -31,6 +31,7 @@ import {
   InputFieldWrapper,
   InputObjectDefinitionWrapper,
   ObjectDefinitionWrapper,
+  isDynamoDbModel,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   ATTRIBUTE_TYPES,
@@ -70,7 +71,9 @@ export const makeConditionFilterInput = (
   addListTypeConditions(input, name);
   addNonListTypeConditions(input, name);
   addDatastoreConditions(input, ctx);
-  addTimestampFields(input, false);
+  if (isDynamoDbModel(ctx, object.name.value)) {
+    addTimestampFields(input, false);
+  }
 
   return input;
 };
@@ -102,7 +105,9 @@ export const makeSubscriptionFilterInput = (
 
   addListTypeConditions(input, name);
   addDatastoreConditions(input, ctx);
-  addTimestampFields(input, true);
+  if (isDynamoDbModel(ctx, object.name.value)) {
+    addTimestampFields(input, true);
+  }
 
   return input;
 };

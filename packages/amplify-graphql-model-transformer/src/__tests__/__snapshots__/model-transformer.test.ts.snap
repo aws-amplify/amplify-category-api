@@ -4559,8 +4559,6 @@ input ModelNoteFilterInput {
   and: [ModelNoteFilterInput]
   or: [ModelNoteFilterInput]
   not: ModelNoteFilterInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
 }
 
 type Query {
@@ -4574,8 +4572,6 @@ input ModelNoteConditionInput {
   and: [ModelNoteConditionInput]
   or: [ModelNoteConditionInput]
   not: ModelNoteConditionInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
 }
 
 input CreateNoteInput {
@@ -4608,8 +4604,6 @@ input ModelSubscriptionNoteFilterInput {
   tags: ModelSubscriptionStringInput
   and: [ModelSubscriptionNoteFilterInput]
   or: [ModelSubscriptionNoteFilterInput]
-  createdAt: ModelSubscriptionStringInput
-  updatedAt: ModelSubscriptionStringInput
 }
 
 type Subscription {
@@ -5093,8 +5087,6 @@ input ModelNoteFilterInput {
   and: [ModelNoteFilterInput]
   or: [ModelNoteFilterInput]
   not: ModelNoteFilterInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
 }
 
 type Query {
@@ -5108,8 +5100,6 @@ input ModelNoteConditionInput {
   and: [ModelNoteConditionInput]
   or: [ModelNoteConditionInput]
   not: ModelNoteConditionInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
 }
 
 input CreateNoteInput {
@@ -5142,8 +5132,6 @@ input ModelSubscriptionNoteFilterInput {
   tags: ModelSubscriptionStringInput
   and: [ModelSubscriptionNoteFilterInput]
   or: [ModelSubscriptionNoteFilterInput]
-  createdAt: ModelSubscriptionStringInput
-  updatedAt: ModelSubscriptionStringInput
 }
 
 type Subscription {
