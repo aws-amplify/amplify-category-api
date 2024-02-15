@@ -31,7 +31,6 @@ import {
   InputFieldWrapper,
   InputObjectDefinitionWrapper,
   ObjectDefinitionWrapper,
-  isDynamoDbModel,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   ATTRIBUTE_TYPES,
