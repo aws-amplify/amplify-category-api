@@ -2,7 +2,7 @@
 import 'source-map-support/register';
 import { App, Stack, Duration, CfnOutput } from 'aws-cdk-lib';
 // @ts-ignore
-import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
+import { AmplifyGraphqlApi, AmplifyGraphqlDefinition, SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
 
 interface DBDetails {
   endpoint: string;
@@ -18,13 +18,7 @@ interface DBDetails {
       },
     ];
   };
-  ssmPaths: {
-    hostnameSsmPath: string;
-    portSsmPath: string;
-    usernameSsmPath: string;
-    passwordSsmPath: string;
-    databaseNameSsmPath: string;
-  };
+  dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
 }
 
 // DO NOT CHANGE THIS VALUE: The test uses it to find resources by name
@@ -59,7 +53,7 @@ const api = new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
         subnetAvailabilityZoneConfig: dbDetails.vpcConfig.subnetAvailabilityZones,
       },
       dbConnectionConfig: {
-        ...dbDetails.ssmPaths,
+        ...dbDetails.dbConnectionConfig,
       },
       sqlLambdaProvisionedConcurrencyConfig: {
         provisionedConcurrentExecutions: 2,

@@ -15,6 +15,7 @@ import {
   PutParameterCommandInput,
   PutParameterCommandOutput,
 } from '@aws-sdk/client-ssm';
+import { SecretsManagerClient, CreateSecretCommand, DeleteSecretCommand } from '@aws-sdk/client-secrets-manager';
 import { knex } from 'knex';
 import axios from 'axios';
 import { sleep } from './sleep';
@@ -434,6 +435,31 @@ export const storeDbConnectionConfig = async (options: {
   await Promise.all(promises);
 
   return paths;
+};
+
+export const deleteDbConnectionConfigWithSecretsManager = async (options: { region: string; secretArn: string }): Promise<void> => {
+  const client = new SecretsManagerClient({ region: options.region });
+
+  console.log('Deleting secret from Secrets Manager');
+  await client.send(new DeleteSecretCommand({ SecretId: options.secretArn }));
+};
+
+export const storeDbConnectionConfigWithSecretsManager = async (options: {
+  region: string;
+  secretName: string;
+  username: string;
+  password: string;
+  useCustomEncryptionKey?: boolean;
+}): Promise<{ secretArn: string; keyArn?: string }> => {
+  // TODO: custom encryption key
+  const secretsManagerClient = new SecretsManagerClient({ region: options.region });
+  const response = await secretsManagerClient.send(
+    new CreateSecretCommand({
+      Name: options.secretName,
+      SecretString: JSON.stringify({ username: options.username, password: options.password }),
+    }),
+  );
+  return { secretArn: response.ARN };
 };
 
 export const extractVpcConfigFromDbInstance = (

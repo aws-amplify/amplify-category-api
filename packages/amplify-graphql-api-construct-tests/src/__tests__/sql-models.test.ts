@@ -8,10 +8,14 @@ import {
   extractVpcConfigFromDbInstance,
   setupRDSInstanceAndData,
   storeDbConnectionConfig,
+  storeDbConnectionConfigWithSecretsManager,
+  deleteDbConnectionConfigWithSecretsManager,
 } from 'amplify-category-api-e2e-core';
 import { LambdaClient, GetProvisionedConcurrencyConfigCommand } from '@aws-sdk/client-lambda';
 import generator from 'generate-password';
-import { getResourceNamesForStrategyName } from '@aws-amplify/graphql-transformer-core';
+import { getResourceNamesForStrategyName, SQLLambdaResourceNames } from '@aws-amplify/graphql-transformer-core';
+import { isSqlModelDataSourceSecretsManagerDbConnectionConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { graphql } from '../graphql-request';
 
@@ -29,114 +33,224 @@ interface DBDetails {
       availabilityZone: string;
     }[];
   };
-  ssmPaths: {
-    hostnameSsmPath: string;
-    portSsmPath: string;
-    usernameSsmPath: string;
-    passwordSsmPath: string;
-    databaseNameSsmPath: string;
-  };
+  dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
 }
 
 describe('CDK GraphQL Transformer', () => {
-  let projRoot: string;
-  const projFolderName = 'sqlmodels';
+  describe('SSM Credential Store', () => {
+    let projRoot: string;
+    const projFolderName = 'sqlmodelsssm';
 
-  const [username, password, identifier] = generator.generateMultiple(3);
+    const [username, password, identifier] = generator.generateMultiple(3);
 
-  const region = process.env.CLI_REGION ?? 'us-west-2';
+    const region = process.env.CLI_REGION ?? 'us-west-2';
 
-  const dbname = 'default_db';
+    const dbname = 'default_db';
 
-  let dbDetails: DBDetails;
+    let dbDetails: DBDetails;
 
-  // DO NOT CHANGE THIS VALUE: The test uses it to find resources by name. It is hardcoded in the sql-models backend app
-  const strategyName = 'MySqlDBStrategy';
-  const resourceNames = getResourceNamesForStrategyName(strategyName);
+    // DO NOT CHANGE THIS VALUE: The test uses it to find resources by name. It is hardcoded in the sql-models-ssm backend app
+    const strategyName = 'MySqlDBStrategy';
+    const resourceNames = getResourceNamesForStrategyName(strategyName);
 
-  beforeAll(async () => {
-    dbDetails = await setupDatabase({
-      identifier,
-      engine: 'mysql',
-      dbname,
-      username,
-      password,
-      region,
+    beforeAll(async () => {
+      dbDetails = await setupDatabase({
+        identifier,
+        engine: 'mysql',
+        dbname,
+        username,
+        password,
+        region,
+      });
+    });
+
+    afterAll(async () => {
+      await cleanupDatabase({ identifier: identifier, region, dbDetails });
+    });
+
+    beforeEach(async () => {
+      projRoot = await createNewProjectDir(projFolderName);
+    });
+
+    afterEach(async () => {
+      try {
+        await cdkDestroy(projRoot, '--all');
+      } catch (err) {
+        console.log(`Error invoking 'cdk destroy': ${err}`);
+      }
+
+      deleteProjectDir(projRoot);
+    });
+
+    it('creates a GraphQL API from SQL-based models', async () => {
+      await testGraphQLAPIWithSQLDatasource({ projRoot, dbDetails, region, resourceNames, backend: 'sql-models-ssm' });
     });
   });
 
-  afterAll(async () => {
-    await cleanupDatabase({ identifier: identifier, region, dbDetails });
+  describe('Secrets Manager Credential Store default encryption key', () => {
+    let projRoot: string;
+    const projFolderName = 'sqlmodelssecretsmanager';
+
+    const [username, password, identifier] = generator.generateMultiple(3);
+
+    const region = process.env.CLI_REGION ?? 'us-west-2';
+
+    const dbname = 'default_db';
+
+    let dbDetails: DBDetails;
+
+    // DO NOT CHANGE THIS VALUE: The test uses it to find resources by name. It is hardcoded in the sql-models-secrets-manager backend app
+    const strategyName = 'MySqlDBStrategy';
+    const resourceNames = getResourceNamesForStrategyName(strategyName);
+
+    beforeAll(async () => {
+      dbDetails = await setupDatabase({
+        identifier,
+        engine: 'mysql',
+        dbname,
+        username,
+        password,
+        region,
+        useSecretsManager: true,
+      });
+    });
+
+    afterAll(async () => {
+      await cleanupDatabase({ identifier: identifier, region, dbDetails });
+    });
+
+    beforeEach(async () => {
+      projRoot = await createNewProjectDir(projFolderName);
+    });
+
+    afterEach(async () => {
+      try {
+        await cdkDestroy(projRoot, '--all');
+      } catch (err) {
+        console.log(`Error invoking 'cdk destroy': ${err}`);
+      }
+
+      deleteProjectDir(projRoot);
+    });
+
+    it('creates a GraphQL API from SQL-based models', async () => {
+      await testGraphQLAPIWithSQLDatasource({ projRoot, dbDetails, region, resourceNames, backend: 'sql-models-secrets-manager' });
+    });
   });
 
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir(projFolderName);
+  describe('Secrets Manager Credential Store custom encryption key', () => {
+    let projRoot: string;
+    const projFolderName = 'sqlmodelssecretsmanager';
+
+    const [username, password, identifier] = generator.generateMultiple(3);
+
+    const region = process.env.CLI_REGION ?? 'us-west-2';
+
+    const dbname = 'default_db';
+
+    let dbDetails: DBDetails;
+
+    // DO NOT CHANGE THIS VALUE: The test uses it to find resources by name. It is hardcoded in the sql-models-secrets-manager backend app
+    const strategyName = 'MySqlDBStrategy';
+    const resourceNames = getResourceNamesForStrategyName(strategyName);
+
+    beforeAll(async () => {
+      dbDetails = await setupDatabase({
+        identifier,
+        engine: 'mysql',
+        dbname,
+        username,
+        password,
+        region,
+        useSecretsManager: true,
+        useCustomEncryptionKey: true,
+      });
+    });
+
+    afterAll(async () => {
+      await cleanupDatabase({ identifier: identifier, region, dbDetails });
+    });
+
+    beforeEach(async () => {
+      projRoot = await createNewProjectDir(projFolderName);
+    });
+
+    afterEach(async () => {
+      try {
+        await cdkDestroy(projRoot, '--all');
+      } catch (err) {
+        console.log(`Error invoking 'cdk destroy': ${err}`);
+      }
+
+      deleteProjectDir(projRoot);
+    });
+
+    it('creates a GraphQL API from SQL-based models', async () => {
+      await testGraphQLAPIWithSQLDatasource({ projRoot, dbDetails, region, resourceNames, backend: 'sql-models-secrets-manager' });
+    });
   });
+});
 
-  afterEach(async () => {
-    try {
-      await cdkDestroy(projRoot, '--all');
-    } catch (err) {
-      console.log(`Error invoking 'cdk destroy': ${err}`);
-    }
+const testGraphQLAPIWithSQLDatasource = async (options: {
+  projRoot: string;
+  dbDetails: DBDetails;
+  region: string;
+  resourceNames: SQLLambdaResourceNames;
+  backend: string;
+}) => {
+  const { projRoot, dbDetails, region, resourceNames, backend } = options;
+  const templatePath = path.resolve(path.join(__dirname, 'backends', backend));
+  const name = await initCDKProject(projRoot, templatePath);
+  writeDbDetails(dbDetails, projRoot);
+  const outputs = await cdkDeploy(projRoot, '--all');
+  const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
 
-    deleteProjectDir(projRoot);
-  });
+  const description = 'todo description';
 
-  it('creates a GraphQL API from SQL-based models', async () => {
-    const templatePath = path.resolve(path.join(__dirname, 'backends', 'sql-models'));
-    const name = await initCDKProject(projRoot, templatePath);
-    writeDbDetails(dbDetails, projRoot);
-    const outputs = await cdkDeploy(projRoot, '--all');
-    const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
+  const result = await graphql(
+    apiEndpoint,
+    apiKey,
+    /* GraphQL */ `
+      mutation CREATE_TODO {
+        createTodo(input: { description: "${description}" }) {
+          id
+          description
+        }
+      }
+    `,
+  );
 
-    const description = 'todo description';
+  const todo = result.body.data.createTodo;
+  expect(todo).toBeDefined();
+  expect(todo.id).toBeDefined();
+  expect(todo.description).toEqual(description);
 
-    const result = await graphql(
-      apiEndpoint,
-      apiKey,
-      /* GraphQL */ `
-        mutation CREATE_TODO {
-          createTodo(input: { description: "${description}" }) {
+  const listResult = await graphql(
+    apiEndpoint,
+    apiKey,
+    /* GraphQL */ `
+      query LIST_TODOS {
+        listTodos {
+          items {
             id
             description
           }
         }
-      `,
-    );
+      }
+    `,
+  );
 
-    const todo = result.body.data.createTodo;
-    expect(todo).toBeDefined();
-    expect(todo.id).toBeDefined();
-    expect(todo.description).toEqual(description);
-
-    const listResult = await graphql(
-      apiEndpoint,
-      apiKey,
-      /* GraphQL */ `
-        query LIST_TODOS {
-          listTodos {
-            items {
-              id
-              description
-            }
-          }
-        }
-      `,
-    );
-
-    expect(listResult.body.data.listTodos.items.length).toEqual(1);
-    expect(todo.id).toEqual(listResult.body.data.listTodos.items[0].id);
-    const client = new LambdaClient({ region });
-    const functionName = outputs[name].SQLFunctionName;
-    const command = new GetProvisionedConcurrencyConfigCommand({
-      FunctionName: functionName,
-      Qualifier: resourceNames.sqlLambdaAliasName,
-    });
-    const response = await client.send(command);
-    expect(response.RequestedProvisionedConcurrentExecutions).toEqual(2);
+  expect(listResult.body.data.listTodos.items.length).toEqual(1);
+  expect(todo.id).toEqual(listResult.body.data.listTodos.items[0].id);
+  const client = new LambdaClient({ region });
+  const functionName = outputs[name].SQLFunctionName;
+  const command = new GetProvisionedConcurrencyConfigCommand({
+    FunctionName: functionName,
+    Qualifier: resourceNames.sqlLambdaAliasName,
   });
-});
+  const response = await client.send(command);
+  expect(response.RequestedProvisionedConcurrentExecutions).toEqual(2);
+};
 
 const setupDatabase = async (options: {
   identifier: string;
@@ -145,8 +259,10 @@ const setupDatabase = async (options: {
   username: string;
   password: string;
   region: string;
+  useSecretsManager?: boolean;
+  useCustomEncryptionKey?: boolean;
 }): Promise<DBDetails> => {
-  const { identifier, dbname, username, password, region } = options;
+  const { identifier, dbname, username, password, region, useSecretsManager, useCustomEncryptionKey } = options;
 
   console.log(`Setting up database '${identifier}'`);
 
@@ -157,37 +273,78 @@ const setupDatabase = async (options: {
     throw new Error('Failed to setup RDS instance');
   }
 
-  const ssmPaths = await storeDbConnectionConfig({
-    region,
-    pathPrefix: `/${identifier}/test`,
-    hostname: dbConfig.endpoint,
-    port: dbConfig.port,
-    databaseName: dbname,
-    username,
-    password,
-  });
-  if (!ssmPaths) {
-    throw new Error('Failed to store db connection config');
-  }
-  console.log(`Stored db connection config in SSM: ${JSON.stringify(ssmPaths)}`);
+  if (useSecretsManager) {
+    const { secretArn, keyArn } = await storeDbConnectionConfigWithSecretsManager({
+      region,
+      username,
+      password,
+      secretName: identifier,
+      useCustomEncryptionKey,
+    });
 
-  return {
-    endpoint: dbConfig.endpoint,
-    port: dbConfig.port,
-    dbName: dbname,
-    vpcConfig: extractVpcConfigFromDbInstance(dbConfig.dbInstance),
-    ssmPaths,
-  };
+    const dbConnectionConfig = {
+      databaseName: dbname,
+      hostname: dbConfig.endpoint,
+      port: dbConfig.port,
+      secretArn,
+      keyArn,
+    };
+
+    console.log(`Stored db connection config in Secrets manager: ${JSON.stringify(dbConnectionConfig)}`);
+
+    return {
+      endpoint: dbConfig.endpoint,
+      port: dbConfig.port,
+      dbName: dbname,
+      vpcConfig: extractVpcConfigFromDbInstance(dbConfig.dbInstance),
+      dbConnectionConfig,
+    };
+  } else {
+    const dbConnectionConfig = await storeDbConnectionConfig({
+      region,
+      pathPrefix: `/${identifier}/test`,
+      hostname: dbConfig.endpoint,
+      port: dbConfig.port,
+      databaseName: dbname,
+      username,
+      password,
+    });
+    if (!dbConnectionConfig) {
+      throw new Error('Failed to store db connection config');
+    }
+    console.log(`Stored db connection config in SSM: ${JSON.stringify(dbConnectionConfig)}`);
+
+    return {
+      endpoint: dbConfig.endpoint,
+      port: dbConfig.port,
+      dbName: dbname,
+      vpcConfig: extractVpcConfigFromDbInstance(dbConfig.dbInstance),
+      dbConnectionConfig,
+    };
+  }
 };
 
 const cleanupDatabase = async (options: { identifier: string; region: string; dbDetails: DBDetails }): Promise<void> => {
   const { identifier, region, dbDetails } = options;
   await deleteDBInstance(identifier, region);
 
-  await deleteDbConnectionConfig({
-    region,
-    ...dbDetails.ssmPaths,
-  });
+  const { dbConnectionConfig } = dbDetails;
+
+  if (isSqlModelDataSourceSecretsManagerDbConnectionConfig(dbConnectionConfig)) {
+    await deleteDbConnectionConfigWithSecretsManager({
+      region,
+      secretArn: dbConnectionConfig.secretArn,
+    });
+  } else {
+    await deleteDbConnectionConfig({
+      region,
+      hostnameSsmPath: dbConnectionConfig.hostnameSsmPath,
+      portSsmPath: dbConnectionConfig.portSsmPath,
+      usernameSsmPath: dbConnectionConfig.usernameSsmPath,
+      passwordSsmPath: dbConnectionConfig.passwordSsmPath,
+      databaseNameSsmPath: dbConnectionConfig.databaseNameSsmPath,
+    });
+  }
 };
 
 /**
