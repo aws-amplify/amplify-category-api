@@ -120,7 +120,7 @@ export function makeModelScalarFilterInputObject(type: string, supportsCondition
 export const makeModelSortDirectionEnumObject: () => EnumTypeDefinitionNode;
 
 // @public (undocumented)
-export const makeMutationConditionInput: (ctx: TransformerTransformSchemaStepContextProvider, name: string, object: ObjectTypeDefinitionNode) => InputObjectTypeDefinitionNode;
+export const makeMutationConditionInput: (ctx: TransformerTransformSchemaStepContextProvider, name: string, object: ObjectTypeDefinitionNode, modelDirectiveConfig: ModelDirectiveConfiguration) => InputObjectTypeDefinitionNode;
 
 // @public (undocumented)
 export function makeSizeInputType(): InputObjectTypeDefinitionNode;
