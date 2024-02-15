@@ -53,8 +53,8 @@ export const testRdsIAMFieldAuth = (engine: ImportedRDSType, queries: string[]):
     const apiName = projName;
 
     let projRoot;
-    let person1IAMPrivateClient, person2IAMPrivateClient, person3IAMPrivateClient;
-    let person1IAMPublicClient, person2IAMPublicClient, person3IAMPublicClient;
+    let person1IAMPrivateClient, person2IAMPrivateClient, person3IAMPrivateClient, person4IAMPrivateClient;
+    let person1IAMPublicClient, person2IAMPublicClient, person3IAMPublicClient, person4IAMPublicClient;
     let apiEndPoint;
 
     beforeAll(async () => {
@@ -105,9 +105,11 @@ export const testRdsIAMFieldAuth = (engine: ImportedRDSType, queries: string[]):
       person1IAMPrivateClient = constructModelHelper('Person1', authAppSyncClient);
       person2IAMPrivateClient = constructModelHelper('Person2', authAppSyncClient);
       person3IAMPrivateClient = constructModelHelper('Person3', authAppSyncClient);
+      person4IAMPrivateClient = constructModelHelper('Person4', authAppSyncClient);
       person1IAMPublicClient = constructModelHelper('Person1', unauthAppSyncClient);
       person2IAMPublicClient = constructModelHelper('Person2', unauthAppSyncClient);
       person3IAMPublicClient = constructModelHelper('Person3', unauthAppSyncClient);
+      person4IAMPublicClient = constructModelHelper('Person4', unauthAppSyncClient);
     };
 
     afterAll(async () => {
@@ -198,6 +200,15 @@ export const testRdsIAMFieldAuth = (engine: ImportedRDSType, queries: string[]):
           firstName: String
           lastName: String
           ssn: String @auth(rules: [{allow: private, provider: iam}, {allow: public, provider: iam, operations: [delete]}])
+        }
+
+        # IAM Private can't create a record with SSN value
+        # IAM Private can't delete a record
+        type Person4 @model @auth(rules: [{allow: private, provider: iam}, {allow: public, provider: iam}]) {
+          id: Int! @primaryKey
+          firstName: String
+          lastName: String
+          ssn: String @auth(rules: [{allow: private, provider: iam, operations: [read]}, {allow: public, provider: iam}])
         }
       `;
       writeFileSync(rdsSchemaFilePath, schema, 'utf8');
@@ -384,6 +395,44 @@ export const testRdsIAMFieldAuth = (engine: ImportedRDSType, queries: string[]):
       return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'onCreatePerson1 Subscription timed out', () => {
         subscription?.unsubscribe();
       });
+    });
+
+    test('Model Person1 - IAM Private can update with SSN', async () => {
+      const person = {
+        id: 1,
+        firstName: 'Person1-Updated-2',
+        lastName: 'Person1-Updated-2',
+        ssn: '999-99-9999',
+      };
+
+      const person1UpdateResponse = await person1IAMPrivateClient.update('updatePerson1', person);
+      expect(person1UpdateResponse.data.updatePerson1.id).toEqual(person.id);
+      expect(person1UpdateResponse.data.updatePerson1.firstName).toEqual(person.firstName);
+      expect(person1UpdateResponse.data.updatePerson1.lastName).toEqual(person.lastName);
+      expect(person1UpdateResponse.data.updatePerson1.ssn).toBeNull(); // Field is redacted
+
+      const person1Response = await person1IAMPrivateClient.get({ id: person.id });
+      expect(person1Response.data.getPerson1.id).toEqual(person.id);
+      expect(person1Response.data.getPerson1.firstName).toEqual(person.firstName);
+      expect(person1Response.data.getPerson1.lastName).toEqual(person.lastName);
+      expect(person1Response.data.getPerson1.ssn).toEqual(person.ssn);
+    });
+
+    test('Model Person1 - IAM Private can delete a record', async () => {
+      const person = {
+        id: 1,
+        firstName: 'Person1-Updated-2',
+        lastName: 'Person1-Updated-2',
+        ssn: '999-99-9999',
+      };
+
+      const person1DeleteResponse = await person1IAMPrivateClient.delete('deletePerson1', {
+        id: person.id,
+      });
+      expect(person1DeleteResponse.data.deletePerson1.id).toEqual(person.id);
+      expect(person1DeleteResponse.data.deletePerson1.firstName).toEqual(person.firstName);
+      expect(person1DeleteResponse.data.deletePerson1.lastName).toEqual(person.lastName);
+      expect(person1DeleteResponse.data.deletePerson1.ssn).toBeNull(); // Field is redacted
     });
 
     test('Model Person2 - IAM Public cannot create a record with SSN value', async () => {
@@ -583,6 +632,54 @@ export const testRdsIAMFieldAuth = (engine: ImportedRDSType, queries: string[]):
       return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'onCreatePerson3 Subscription timed out', () => {
         subscription?.unsubscribe();
       });
+    });
+
+    test('Model Person4 - IAM Private cannot create a record with SSN', async () => {
+      const person = {
+        id: 1,
+        firstName: 'Person1',
+        lastName: 'Person1',
+        ssn: '123-45-6789',
+      };
+      await expect(person4IAMPrivateClient.create('createPerson4', person)).rejects.toThrow(
+        'GraphQL error: Not Authorized to access createPerson4 on type Mutation',
+      );
+
+      const personResponse = await person4IAMPublicClient.get({ id: person.id });
+      expect(personResponse.data.getPerson4).toBeNull();
+    });
+
+    test('Model Person4 - IAM Private can create a record without SSN value', async () => {
+      const person = {
+        id: 1,
+        firstName: 'Person1',
+        lastName: 'Person1',
+      };
+      const personCreateResponse = await person4IAMPrivateClient.create('createPerson4', person, selectionSetWithoutSSN);
+      expect(personCreateResponse.data.createPerson4.id).toEqual(person.id);
+      expect(personCreateResponse.data.createPerson4.firstName).toEqual(person.firstName);
+      expect(personCreateResponse.data.createPerson4.lastName).toEqual(person.lastName);
+    });
+
+    test('Model Person4 - IAM Private cannot update a record including SSN', async () => {
+      const person = {
+        id: 1,
+        firstName: 'Person1',
+        lastName: 'Person1',
+        ssn: '999-99-9999',
+      };
+      await expect(person4IAMPrivateClient.update('updatePerson4', person)).rejects.toThrow(
+        'GraphQL error: Not Authorized to access updatePerson4 on type Mutation',
+      );
+    });
+
+    test('Model Person4 - IAM Private cannot delete a record', async () => {
+      const person = {
+        id: 1,
+      };
+      await expect(person4IAMPrivateClient.delete('deletePerson4', person)).rejects.toThrow(
+        'GraphQL error: Not Authorized to access deletePerson4 on type Mutation',
+      );
     });
 
     const constructModelHelper = (name: string, client): GQLQueryHelper => {
