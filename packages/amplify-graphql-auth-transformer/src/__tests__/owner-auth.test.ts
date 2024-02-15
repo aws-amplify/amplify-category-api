@@ -5,7 +5,7 @@ import { validateModelSchema, constructDataSourceStrategies, MYSQL_DB_TYPE } fro
 import { ResourceConstants } from 'graphql-transformer-common';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { testTransform, mockSqlDataSourceStrategy } from '@aws-amplify/graphql-transformer-test-utils';
 import { AuthTransformer } from '../graphql-auth-transformer';
 import { getField, getObjectType } from './test-helpers';
 
@@ -525,17 +525,7 @@ describe('owner based @auth', () => {
       schema: validSchema,
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
-      dataSourceStrategies: constructDataSourceStrategies(validSchema, {
-        name: `MYSQLStrategy`,
-        dbType: MYSQL_DB_TYPE,
-        dbConnectionConfig: {
-          databaseNameSsmPath: '/databaseNameSsmPath',
-          hostnameSsmPath: '/hostnameSsmPath',
-          passwordSsmPath: '/passwordSsmPath',
-          portSsmPath: '/portSsmPath',
-          usernameSsmPath: '/usernameSsmPath',
-        },
-      }),
+      dataSourceStrategies: constructDataSourceStrategies(validSchema, mockSqlDataSourceStrategy()),
     });
     expect(out).toBeDefined();
 
