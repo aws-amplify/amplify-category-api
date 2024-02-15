@@ -47,9 +47,9 @@ const retryWithRefreshedCredentials = async (event, debugMode): Promise<any> => 
 
 const isRetryableError = (error): boolean => {
   const postgresRetryableError = error.code === '28P01' && error.routine === 'auth_failed';
-  const mysqlRetruableError = error.errno === '1045' && error.code === 'ER_ACCESS_DENIED_ERROR';
+  const mysqlRetryableError = error.errno === '1045' && error.code === 'ER_ACCESS_DENIED_ERROR';
 
-  return postgresRetryableError || mysqlRetruableError;
+  return postgresRetryableError || mysqlRetryableError;
 }
 
 const createSSMClient = (): void => {
