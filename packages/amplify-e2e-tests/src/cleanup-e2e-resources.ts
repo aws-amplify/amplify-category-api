@@ -46,6 +46,7 @@ type AmplifyAppInfo = {
 type S3BucketInfo = {
   name: string;
   jobId?: string;
+  region: string;
   cbInfo?: CodeBuild.Build;
 };
 
@@ -119,7 +120,17 @@ const getOrphanS3TestBuckets = async (account: AWSAccountInfo): Promise<S3Bucket
   const s3Client = new aws.S3(getAWSConfig(account));
   const listBucketResponse = await s3Client.listBuckets().promise();
   const staleBuckets = listBucketResponse.Buckets.filter(testBucketStalenessFilter);
-  return staleBuckets.map((it) => ({ name: it.Name }));
+
+  const bucketInfos = await Promise.all(
+    staleBuckets.map(async (staleBucket): Promise<S3BucketInfo> => {
+      const region = await getBucketRegion(account, staleBucket.Name);
+      return {
+        name: staleBucket.Name,
+        region,
+      };
+    }),
+  );
+  return bucketInfos;
 };
 
 /**
@@ -277,18 +288,41 @@ const getJobCodeBuildDetails = async (jobIds: string[]): Promise<CodeBuild.Build
   }
 };
 
+const getBucketRegion = async (account: AWSAccountInfo, bucketName: string): Promise<string> => {
+  const awsConfig = getAWSConfig(account);
+  const s3Client = new aws.S3(awsConfig);
+  const location = await s3Client.getBucketLocation({ Bucket: bucketName }).promise();
+  const region = location.LocationConstraint ?? 'us-east-1';
+  return region;
+};
+
 const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> => {
-  const s3Client = new aws.S3(getAWSConfig(account));
+  const awsConfig = getAWSConfig(account);
+  const s3Client = new aws.S3(awsConfig);
   const buckets = await s3Client.listBuckets().promise();
   const result: S3BucketInfo[] = [];
   for (const bucket of buckets.Buckets) {
     try {
-      const bucketDetails = await s3Client.getBucketTagging({ Bucket: bucket.Name }).promise();
+      const region = await getBucketRegion(account, bucket.Name);
+      // This account has buckets created in eu-south-1, even though the account is opted into me-south-1. Attempting to process those
+      // buckets causes a failure. We'll skip them for now, until we can come up with a long term fix.
+      if (account.accountId === '535823242378' && region === 'eu-south-1') {
+        continue;
+      }
+
+      // Operations on buckets created in opt-in regions appear to require region-specific clients
+      const regionalizedClient = new aws.S3({
+        region,
+        ...(awsConfig as object),
+      });
+      console.log(`region: ${region}; bucket.Name: ${bucket.Name}`);
+      const bucketDetails = await regionalizedClient.getBucketTagging({ Bucket: bucket.Name }).promise();
       const jobId = getJobId(bucketDetails.TagSet);
       if (jobId) {
         result.push({
           name: bucket.Name,
           jobId,
+          region,
         });
       }
     } catch (e) {
@@ -297,6 +331,7 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
       }
       result.push({
         name: bucket.Name,
+        region: 'us-east-1',
       });
     }
   }
@@ -503,8 +538,12 @@ const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucke
   const { name } = bucket;
   try {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting S3 Bucket ${name}`);
-    const s3 = new aws.S3(getAWSConfig(account));
-    await deleteS3Bucket(name, s3);
+    const awsConfig = getAWSConfig(account);
+    const regionalizedS3Client = new aws.S3({
+      region: bucket.region,
+      ...(awsConfig as object),
+    });
+    await deleteS3Bucket(name, regionalizedS3Client);
   } catch (e) {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting bucket ${name} failed with error ${e.message}`);
     if (e.code === 'ExpiredTokenException') {
