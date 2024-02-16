@@ -304,11 +304,6 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
   for (const bucket of buckets.Buckets) {
     try {
       const region = await getBucketRegion(account, bucket.Name);
-      // This account has buckets created in eu-south-1, even though the account is opted into me-south-1. Attempting to process those
-      // buckets causes a failure. We'll skip them for now, until we can come up with a long term fix.
-      if (account.accountId === '535823242378' && region === 'eu-south-1') {
-        continue;
-      }
 
       // Operations on buckets created in opt-in regions appear to require region-specific clients
       const regionalizedClient = new aws.S3({
