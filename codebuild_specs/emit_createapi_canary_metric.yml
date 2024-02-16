@@ -12,4 +12,4 @@ phases:
     commands:
       - source ./shared-scripts.sh && _unassumeTestAccountCredentials
       - aws sts get-caller-identity
-      - source ./shared-scripts.sh && _scanArtifacts && _emitCreateApiCanaryMetric
+      - source ./shared-scripts.sh && _emitCreateApiCanaryMetric
