@@ -179,6 +179,8 @@ function _installCLIFromLocalRegistry {
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     # set longer timeout to avoid socket timeout error
+    npm config set fetch-retries 5
+    npm config set fetch-timeout 600000
     npm config set fetch-retry-mintimeout 20000
     npm config set fetch-retry-maxtimeout 120000
     npm install -g @aws-amplify/cli-internal
@@ -429,6 +431,17 @@ function _emitCanaryMetric {
   aws cloudwatch \
     put-metric-data \
     --metric-name CanarySuccessRate \
+    --namespace amplify-category-api-e2e-tests \
+    --unit Count \
+    --value $CODEBUILD_BUILD_SUCCEEDING \
+    --dimensions branch=main \
+    --region us-west-2
+}
+
+function _emitCreateApiCanaryMetric {
+  aws cloudwatch \
+    put-metric-data \
+    --metric-name CreateApiCanarySuccessRate \
     --namespace amplify-category-api-e2e-tests \
     --unit Count \
     --value $CODEBUILD_BUILD_SUCCEEDING \

@@ -227,6 +227,12 @@ batch:
           CLI_REGION: us-west-1
       depend-on:
         - publish_to_local_registry
+    - identifier: report_status
+      buildspec: codebuild_specs/emit_createapi_canary_metric.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+      depend-on:
+        - api_test_us_east_1
     # - identifier: cleanup_e2e_resources
     #   buildspec: codebuild_specs/cleanup_e2e_resources.yml
     #   env:
