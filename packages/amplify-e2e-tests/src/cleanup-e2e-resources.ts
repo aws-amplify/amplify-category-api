@@ -315,7 +315,6 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
         region,
         ...(awsConfig as object),
       });
-      console.log(`region: ${region}; bucket.Name: ${bucket.Name}`);
       const bucketDetails = await regionalizedClient.getBucketTagging({ Bucket: bucket.Name }).promise();
       const jobId = getJobId(bucketDetails.TagSet);
       if (jobId) {
@@ -327,12 +326,14 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
       }
     } catch (e) {
       if (e.code !== 'NoSuchTagSet' && e.code !== 'NoSuchBucket') {
-        throw e;
+        console.error(`Skipping processing ${account.accountId}, bucket ${bucket.Name}`, e);
+        // throw e;
+      } else {
+        result.push({
+          name: bucket.Name,
+          region: 'us-east-1',
+        });
       }
-      result.push({
-        name: bucket.Name,
-        region: 'us-east-1',
-      });
     }
   }
   return result;
