@@ -1218,8 +1218,7 @@ describe('RDS OIDC provider Auth tests', () => {
     checkOperationResult(onDeleteSubscriptionResult[0], todoRandomUpdated, `onDelete${modelName}`);
   });
 
-  // TODO: enable once fixed in auth utils
-  test.skip('logged in user can perform custom operations', async () => {
+  test('logged in user can perform custom operations', async () => {
     const appSyncClient = appSyncClients[oidcProvider][userName2];
     const todo = {
       id: Date.now().toString(),
@@ -1259,8 +1258,8 @@ describe('RDS OIDC provider Auth tests', () => {
     expect(getResult.data.customGetTodoPrivate[0].id).toEqual(todo.id);
     expect(getResult.data.customGetTodoPrivate[0].content).toEqual(todo.content);
   });
-  // TODO: enable once fixed in auth utils
-  test.skip('users in static group can perform custom operations', async () => {
+
+  test('users in static group can perform custom operations', async () => {
     const appSyncClient = appSyncClients[oidcProvider][userName1];
     const todo = {
       id: Date.now().toString(),
@@ -1300,8 +1299,8 @@ describe('RDS OIDC provider Auth tests', () => {
     expect(getResult.data.customGetTodoStaticGroup[0].id).toEqual(todo.id);
     expect(getResult.data.customGetTodoStaticGroup[0].content).toEqual(todo.content);
   });
-  // TODO: enable once fixed in auth utils
-  test.skip('users not in static group cannot perform custom operations', async () => {
+
+  test('users not in static group cannot perform custom operations', async () => {
     const appSyncClient = appSyncClients[oidcProvider][userName2];
     const todo = {
       id: Date.now().toString(),
