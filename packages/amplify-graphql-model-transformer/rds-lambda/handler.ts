@@ -47,10 +47,10 @@ const retryWithRefreshedCredentials = async (event, debugMode): Promise<any> => 
 
 const isRetryableError = (error): boolean => {
   // https://www.postgresql.org/docs/current/errcodes-appendix.html
-  const postgresRetryableError = error.code === '28P01' && error.routine === 'auth_failed';
+  const postgresRetryableError = error.code === '28P01';
 
   // https://dev.mysql.com/doc/mysql-errors/8.0/en/server-error-reference.html
-  const mysqlRetryableError = error.errno === '1045' && error.code === 'ER_ACCESS_DENIED_ERROR';
+  const mysqlRetryableError = error.errno === '1045';
 
   return postgresRetryableError || mysqlRetryableError;
 }
