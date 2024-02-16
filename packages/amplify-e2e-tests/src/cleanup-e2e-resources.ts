@@ -302,9 +302,9 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
   const buckets = await s3Client.listBuckets().promise();
   const result: S3BucketInfo[] = [];
   for (const bucket of buckets.Buckets) {
+    let region: string | undefined;
     try {
-      const region = await getBucketRegion(account, bucket.Name);
-
+      region = await getBucketRegion(account, bucket.Name);
       // Operations on buckets created in opt-in regions appear to require region-specific clients
       const regionalizedClient = new aws.S3({
         region,
@@ -320,14 +320,19 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
         });
       }
     } catch (e) {
-      if (e.code !== 'NoSuchTagSet' && e.code !== 'NoSuchBucket') {
-        console.error(`Skipping processing ${account.accountId}, bucket ${bucket.Name}`, e);
-        // throw e;
-      } else {
+      // TODO: Why do we process the bucket even with these particular errors?
+      if (e.code === 'NoSuchTagSet' || e.code === 'NoSuchBucket') {
         result.push({
           name: bucket.Name,
-          region: 'us-east-1',
+          region: region ?? 'us-east-1',
         });
+      } else if (e.code === 'InvalidToken') {
+        // We see some buckets in some accounts that were somehow created in an opt-in region different from the one to which the account is
+        // actually opted in. We don't quite know how this happened, but for now, we'll make a note of the inconsistency and continue
+        // processing the rest of the buckets.
+        console.error(`Skipping processing ${account.accountId}, bucket ${bucket.Name}`, e);
+      } else {
+        throw e;
       }
     }
   }
