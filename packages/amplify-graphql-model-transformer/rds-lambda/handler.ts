@@ -24,9 +24,36 @@ export const run = async (event): Promise<any> => {
     adapter = await getDBAdapter(config);
   }
   const debugMode = process.env.DEBUG_MODE === 'true';
-  const result = await adapter.executeRequest(event, debugMode);
-  return result;
+  try {
+    return await adapter.executeRequest(event, debugMode);
+  } catch (e) {
+    if (isRetryableError(e)) {
+      return await retryWithRefreshedCredentials(event, debugMode)
+    }
+    throw e;
+  }
 };
+
+const retryWithRefreshedCredentials = async (event, debugMode): Promise<any> => {
+  try {
+    const config = await getDBConfig();
+    adapter = await getDBAdapter(config);
+    return await adapter.executeRequest(event, debugMode);
+  } catch (err) {
+    adapter = null;
+    throw err;
+  }
+};
+
+const isRetryableError = (error): boolean => {
+  // https://www.postgresql.org/docs/current/errcodes-appendix.html
+  const postgresRetryableError = error.code === '28P01';
+
+  // https://dev.mysql.com/doc/mysql-errors/8.0/en/server-error-reference.html
+  const mysqlRetryableError = error.errno === '1045';
+
+  return postgresRetryableError || mysqlRetryableError;
+}
 
 const createSSMClient = (): void => {
   const PORT_SEPERATOR = ':';
