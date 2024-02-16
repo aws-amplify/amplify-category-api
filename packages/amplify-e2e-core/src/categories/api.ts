@@ -808,7 +808,7 @@ export function addV1RDSDataSource(projectDir: string) {
       .sendCarriageReturn() // This will throw an error 'No properly configured Aurora Serverless clusters found'.
       .wait('No properly configured Aurora Serverless clusters found')
       .run((err: Error) => {
-        if (err && !/Killed the process as no output receive for/.test(err.message)) {
+        if (err && !/Killed the process as no output received for/.test(err.message)) {
           reject(err);
         } else {
           resolve();
@@ -995,7 +995,7 @@ export function cancelAmplifyMockApi(cwd: string, settings: any = {}): Promise<v
       .wait('AppSync Mock endpoint is running')
       .sendCtrlC()
       .run((err: Error) => {
-        if (err && !/Killed the process as no output receive for/.test(err.message)) {
+        if (err && !/Killed the process as no output received for/.test(err.message)) {
           reject(err);
         } else {
           resolve();

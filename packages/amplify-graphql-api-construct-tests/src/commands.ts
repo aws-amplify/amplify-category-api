@@ -52,7 +52,7 @@ export type InitCDKProjectProps = {
  * @returns a promise which resolves to the stack name
  */
 export const initCDKProject = async (cwd: string, templatePath: string, props?: InitCDKProjectProps): Promise<string> => {
-  const { cdkVersion = '2.80.0', additionalDependencies = [] } = props ?? {};
+  const { cdkVersion = '2.97.0', additionalDependencies = [] } = props ?? {};
 
   await spawn(getNpxPath(), ['cdk', 'init', 'app', '--language', 'typescript'], {
     cwd,
@@ -84,12 +84,15 @@ export type CdkDeployProps = {
  * @returns the generated outputs file as a JSON object
  */
 export const cdkDeploy = async (cwd: string, option: string, props?: CdkDeployProps): Promise<any> => {
+  // The CodegenAssets BucketDeployment resource takes a while. Set the timeout to 10m account for that. (Note that this is the "no output
+  // timeout"--the overall deployment is still allowed to take longer than 10m)
+  const noOutputTimeout = props?.timeoutMs ?? 10 * 60 * 1000;
   await spawn(getNpxPath(), ['cdk', 'deploy', '--outputs-file', 'outputs.json', '--require-approval', 'never', option], {
     cwd,
     stripColors: true,
     // npx cdk does not work on verdaccio
     env: { npm_config_registry: 'https://registry.npmjs.org/' },
-    noOutputTimeout: props?.timeoutMs,
+    noOutputTimeout: noOutputTimeout,
   }).runAsync();
 
   return JSON.parse(readFileSync(path.join(cwd, 'outputs.json'), 'utf8'));
