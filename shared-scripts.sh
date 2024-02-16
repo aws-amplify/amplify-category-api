@@ -436,3 +436,14 @@ function _emitCanaryMetric {
     --dimensions branch=main \
     --region us-west-2
 }
+
+function _emitCreateApiCanaryMetric {
+  aws cloudwatch \
+    put-metric-data \
+    --metric-name CreateApiCanarySuccessRate \
+    --namespace amplify-category-api-e2e-tests \
+    --unit Count \
+    --value $CODEBUILD_BUILD_SUCCEEDING \
+    --dimensions branch=main \
+    --region us-west-2
+}
