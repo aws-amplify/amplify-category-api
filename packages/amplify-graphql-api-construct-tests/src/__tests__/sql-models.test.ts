@@ -83,7 +83,7 @@ describe('CDK GraphQL Transformer', () => {
     });
 
     it('creates a GraphQL API from SQL-based models', async () => {
-      await testGraphQLAPIWithSQLDatasource({ projRoot, dbDetails, region, resourceNames, backend: 'sql-models-ssm' });
+      await testGraphQLAPIWithSQLDatasource({ projRoot, dbDetails, region, resourceNames });
     });
   });
 
@@ -134,7 +134,7 @@ describe('CDK GraphQL Transformer', () => {
     });
 
     it('creates a GraphQL API from SQL-based models', async () => {
-      await testGraphQLAPIWithSQLDatasource({ projRoot, dbDetails, region, resourceNames, backend: 'sql-models-secrets-manager' });
+      await testGraphQLAPIWithSQLDatasource({ projRoot, dbDetails, region, resourceNames });
     });
   });
 
@@ -186,7 +186,7 @@ describe('CDK GraphQL Transformer', () => {
     });
 
     it('creates a GraphQL API from SQL-based models', async () => {
-      await testGraphQLAPIWithSQLDatasource({ projRoot, dbDetails, region, resourceNames, backend: 'sql-models-secrets-manager' });
+      await testGraphQLAPIWithSQLDatasource({ projRoot, dbDetails, region, resourceNames });
     });
   });
 });
@@ -198,8 +198,8 @@ const testGraphQLAPIWithSQLDatasource = async (options: {
   resourceNames: SQLLambdaResourceNames;
   backend: string;
 }) => {
-  const { projRoot, dbDetails, region, resourceNames, backend } = options;
-  const templatePath = path.resolve(path.join(__dirname, 'backends', backend));
+  const { projRoot, dbDetails, region, resourceNames } = options;
+  const templatePath = path.resolve(path.join(__dirname, 'backends', 'sql-models'));
   const name = await initCDKProject(projRoot, templatePath);
   writeDbDetails(dbDetails, projRoot);
   const outputs = await cdkDeploy(projRoot, '--all');
