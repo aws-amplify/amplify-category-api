@@ -91,7 +91,7 @@ describe('CDK GraphQL Transformer', () => {
     // Between the SQL Layer custom resource, Codegen asset auto delete custom resource, Codegen asset bucket deployment, and Lambda layer
     // provisioned concurrency, this test doesn't produce output frequently enough to keep nexpect happy. The test itself appears to be
     // stable, but we'll increase the timeout to account for slower deployment times in CICD.
-    const outputs = await cdkDeploy(projRoot, '--all', {timeoutMs: 30 * 60 * 1000});
+    const outputs = await cdkDeploy(projRoot, '--all', { timeoutMs: 50 * 60 * 1000 });
     const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
 
     const description = 'todo description';
