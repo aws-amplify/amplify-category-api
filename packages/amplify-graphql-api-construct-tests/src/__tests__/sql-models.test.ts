@@ -196,7 +196,6 @@ const testGraphQLAPIWithSQLDatasource = async (options: {
   dbDetails: DBDetails;
   region: string;
   resourceNames: SQLLambdaResourceNames;
-  backend: string;
 }) => {
   const { projRoot, dbDetails, region, resourceNames } = options;
   const templatePath = path.resolve(path.join(__dirname, 'backends', 'sql-models'));

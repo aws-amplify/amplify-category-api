@@ -16,6 +16,7 @@ import {
   PutParameterCommandOutput,
 } from '@aws-sdk/client-ssm';
 import { SecretsManagerClient, CreateSecretCommand, DeleteSecretCommand } from '@aws-sdk/client-secrets-manager';
+import { KMSClient, CreateKeyCommand, ScheduleKeyDeletionCommand } from '@aws-sdk/client-kms';
 import { knex } from 'knex';
 import axios from 'axios';
 import { sleep } from './sleep';
@@ -437,11 +438,20 @@ export const storeDbConnectionConfig = async (options: {
   return paths;
 };
 
-export const deleteDbConnectionConfigWithSecretsManager = async (options: { region: string; secretArn: string }): Promise<void> => {
-  const client = new SecretsManagerClient({ region: options.region });
-
+export const deleteDbConnectionConfigWithSecretsManager = async (options: {
+  region: string;
+  secretArn: string;
+  keyArn?: string;
+}): Promise<void> => {
   console.log('Deleting secret from Secrets Manager');
-  await client.send(new DeleteSecretCommand({ SecretId: options.secretArn }));
+  const secretsManagerClient = new SecretsManagerClient({ region: options.region });
+
+  await secretsManagerClient.send(new DeleteSecretCommand({ SecretId: options.secretArn }));
+  if (options.keyArn) {
+    const kmsClient = new KMSClient({ region: options.region });
+    // 7 days is the lowest possible value for the pending window
+    await kmsClient.send(new ScheduleKeyDeletionCommand({ KeyId: options.keyArn, PendingWindowInDays: 7 }));
+  }
 };
 
 export const storeDbConnectionConfigWithSecretsManager = async (options: {
@@ -451,15 +461,21 @@ export const storeDbConnectionConfigWithSecretsManager = async (options: {
   password: string;
   useCustomEncryptionKey?: boolean;
 }): Promise<{ secretArn: string; keyArn?: string }> => {
-  // TODO: custom encryption key
+  let encryptionKey = undefined;
+  if (options.useCustomEncryptionKey) {
+    const kmsClient = new KMSClient({ region: options.region });
+    const response = await kmsClient.send(new CreateKeyCommand({}));
+    encryptionKey = response.KeyMetadata;
+  }
   const secretsManagerClient = new SecretsManagerClient({ region: options.region });
   const response = await secretsManagerClient.send(
     new CreateSecretCommand({
       Name: options.secretName,
       SecretString: JSON.stringify({ username: options.username, password: options.password }),
+      KmsKeyId: encryptionKey.KeyId,
     }),
   );
-  return { secretArn: response.ARN };
+  return { secretArn: response.ARN, keyArn: encryptionKey.Arn };
 };
 
 export const extractVpcConfigFromDbInstance = (
