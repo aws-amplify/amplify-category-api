@@ -124,6 +124,7 @@ const RUN_SOLO: (string | RegExp)[] = [
   'src/__tests__/amplify-table-1.test.ts',
   'src/__tests__/api_canary.test.ts',
   'src/__tests__/admin-role.test.ts',
+  'src/__tests__/sql-models.test.ts',
 ];
 
 const RUN_IN_ALL_REGIONS = [

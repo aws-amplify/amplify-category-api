@@ -1008,13 +1008,13 @@ batch:
           CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
-    - identifier: single_gsi_single_record_relationships_sql_models
+    - identifier: single_gsi_single_record_relationships
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-single-record.test.ts|src/__tests__/relationships.test.ts|src/__tests__/sql-models.test.ts
+            src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-single-record.test.ts|src/__tests__/relationships.test.ts
           CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
@@ -1242,6 +1242,15 @@ batch:
         variables:
           TEST_SUITE: src/__tests__/deploy-velocity/single-gsi-100k-records.test.ts
           CLI_REGION: eu-west-3
+      depend-on:
+        - publish_to_local_registry
+    - identifier: sql_models
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/sql-models.test.ts
+          CLI_REGION: eu-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
