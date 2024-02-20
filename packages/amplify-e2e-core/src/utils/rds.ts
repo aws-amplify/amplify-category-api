@@ -472,10 +472,10 @@ export const storeDbConnectionConfigWithSecretsManager = async (options: {
     new CreateSecretCommand({
       Name: options.secretName,
       SecretString: JSON.stringify({ username: options.username, password: options.password }),
-      KmsKeyId: encryptionKey.KeyId,
+      KmsKeyId: encryptionKey?.KeyId,
     }),
   );
-  return { secretArn: response.ARN, keyArn: encryptionKey.Arn };
+  return { secretArn: response.ARN, keyArn: encryptionKey?.Arn };
 };
 
 export const extractVpcConfigFromDbInstance = (
