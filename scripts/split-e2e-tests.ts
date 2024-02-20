@@ -6,9 +6,8 @@ import * as yaml from 'js-yaml';
 const REPO_ROOT = join(__dirname, '..');
 const SUPPORTED_REGIONS_PATH = join(REPO_ROOT, 'scripts', 'e2e-test-regions.json');
 const AMPLIFY_SUPPORTED_REGIONS: string[] = JSON.parse(fs.readFileSync(SUPPORTED_REGIONS_PATH, 'utf-8'));
-// const AWS_REGIONS_TO_RUN_TESTS = AMPLIFY_SUPPORTED_REGIONS.filter((region) => !['me-south-1', 'eu-south-1'].includes(region));
 const AWS_REGIONS_TO_RUN_TESTS = AMPLIFY_SUPPORTED_REGIONS;
-const SUPPORTED_OPT_IN_REGIONS = ['eu-south-1', 'ap-east-1', 'me-south-1'];
+const SUPPORTED_OPT_IN_REGIONS = ['ap-east-1', 'eu-south-1', 'me-south-1'];
 type ForceTests = 'interactions' | 'containers';
 
 type TestTiming = {
@@ -123,15 +122,21 @@ const RUN_SOLO: (string | RegExp)[] = [
   // CDK tests
   /src\/__tests__\/base-cdk.*\.test\.ts/,
   'src/__tests__/amplify-table-1.test.ts',
+  'src/__tests__/api_canary.test.ts',
+  'src/__tests__/admin-role.test.ts',
+  'src/__tests__/SearchableWithAuthTests.e2e.test.ts',
 ];
 
 const RUN_IN_ALL_REGIONS = [
-  // SQL tests one per supported engines
-  /src\/__tests__\/rds-.*-model-v2\.test\.ts/,
   // DDB tests
-  'src/__tests__/api_1.test.ts',
+  'src/__tests__/api_canary.test.ts',
   // CDK tests
   'src/__tests__/base-cdk.test.ts',
+];
+
+const RUN_IN_NON_OPT_IN_REGIONS: (string | RegExp)[] = [
+  // SQL tests
+  /src\/__tests__\/rds-.*\.test\.ts/,
 ];
 
 const DEBUG_FLAG = '--debug';
@@ -220,6 +225,11 @@ const splitTests = (baseJobLinux: any, testDirectory: string, pickTests?: (testS
         if (USE_PARENT) {
           newSoloJob.useParentAccount = true;
           // parent E2E account does not have opt-in regions. Choose non-opt-in region.
+          if (SUPPORTED_OPT_IN_REGIONS.includes(newSoloJob.region)) {
+            newSoloJob.region = nonOptInRegions[jobIdx % nonOptInRegions.length];
+          }
+        }
+        if (RUN_IN_NON_OPT_IN_REGIONS.find((nonOptInTest) => test === nonOptInTest || test.match(nonOptInTest))) {
           if (SUPPORTED_OPT_IN_REGIONS.includes(newSoloJob.region)) {
             newSoloJob.region = nonOptInRegions[jobIdx % nonOptInRegions.length];
           }
