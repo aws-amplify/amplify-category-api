@@ -98,7 +98,11 @@ export const cdkDeploy = async (cwd: string, option: string, props?: CdkDeployPr
   // Checks and succeeds early (a no-op) if the account-region combination is already bootstrapped.
   await spawn(getNpxPath(), ['cdk', 'bootstrap'], commandOptions).runAsync();
 
-  await spawn(getNpxPath(), ['cdk', 'deploy', '--outputs-file', 'outputs.json', '--require-approval', 'never', option], commandOptions).runAsync();
+  await spawn(
+    getNpxPath(),
+    ['cdk', 'deploy', '--outputs-file', 'outputs.json', '--require-approval', 'never', option],
+    commandOptions,
+  ).runAsync();
 
   return JSON.parse(readFileSync(path.join(cwd, 'outputs.json'), 'utf8'));
 };
