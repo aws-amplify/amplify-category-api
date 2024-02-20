@@ -52,7 +52,7 @@ describe('CDK GraphQL Transformer', () => {
 
   let dbDetails: DBDetails;
 
-  // DO NOT CHANGE THIS VALUE: The test uses it to find resources by name. It is hardcoded in the sql-models-ssm backend app
+  // DO NOT CHANGE THIS VALUE: The test uses it to find resources by name. It is hardcoded in the sql-models backend app
   const strategyName = 'MySqlDBStrategy';
   const resourceNames = getResourceNamesForStrategyName(strategyName);
 
