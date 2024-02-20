@@ -10,6 +10,16 @@ env:
 phases:
   build:
     commands:
+      - codebuild-breakpoint
+      - source ./shared-scripts.sh && _setupE2ETestsLinux
+      - source ./shared-scripts.sh && _runE2ETestsLinux
+  post_build:
+    commands:
       - source ./shared-scripts.sh && _unassumeTestAccountCredentials
       - aws sts get-caller-identity
-      - source ./shared-scripts.sh && _emitCreateApiCanaryMetric
+      - source ./shared-scripts.sh && _scanArtifacts && _emitCreateApiCanaryMetric
+
+artifacts:
+  files:
+    - '**/*'
+  base-directory: $CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/amplify-e2e-reports
