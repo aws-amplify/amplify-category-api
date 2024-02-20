@@ -23,9 +23,9 @@
   },
   "dependencies": {
     "@aws-sdk/client-ec2": "3.338.0",
-    "@aws-sdk/client-kms": "^3.515.0",
+    "@aws-sdk/client-kms": "3.338.0",
     "@aws-sdk/client-rds": "3.338.0",
-    "@aws-sdk/client-secrets-manager": "^3.514.0",
+    "@aws-sdk/client-secrets-manager": "3.338.0",
     "@aws-sdk/client-ssm": "3.338.0",
     "@aws-sdk/client-sts": "3.338.0",
     "@aws-sdk/credential-providers": "3.338.0",
