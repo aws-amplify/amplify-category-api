@@ -123,8 +123,7 @@ const RUN_SOLO: (string | RegExp)[] = [
   /src\/__tests__\/base-cdk.*\.test\.ts/,
   'src/__tests__/amplify-table-1.test.ts',
   'src/__tests__/api_canary.test.ts',
-  'src/__tests__/admin-role.test.ts',
-  'src/__tests__/SearchableWithAuthTests.e2e.test.ts',
+  'src/__tests__/sql-models.test.ts',
 ];
 
 const RUN_IN_ALL_REGIONS = [
@@ -137,6 +136,8 @@ const RUN_IN_ALL_REGIONS = [
 const RUN_IN_NON_OPT_IN_REGIONS: (string | RegExp)[] = [
   // SQL tests
   /src\/__tests__\/rds-.*\.test\.ts/,
+  // Searchable tests
+  /src\/__tests__\/.*searchable.*\.test\.ts/,
 ];
 
 const DEBUG_FLAG = '--debug';
@@ -144,6 +145,8 @@ const DEBUG_FLAG = '--debug';
 const EXCLUDE_TEST_IDS: string[] = [];
 
 const MAX_WORKERS = 4;
+
+const nonOptInRegions = AWS_REGIONS_TO_RUN_TESTS.filter((region) => !SUPPORTED_OPT_IN_REGIONS.includes(region));
 
 // eslint-disable-next-line import/namespace
 const loadConfigBase = (): ConfigBase => yaml.load(fs.readFileSync(CODEBUILD_CONFIG_BASE_PATH, 'utf8')) as ConfigBase;
@@ -197,13 +200,7 @@ const splitTests = (baseJobLinux: any, testDirectory: string, pickTests?: (testS
     for (const test of testSuites) {
       const currentJob = osJobs[osJobs.length - 1];
 
-      const FORCE_REGION = Object.keys(FORCE_REGION_MAP).find((key) => {
-        const testName = getTestNameFromPath(test);
-        return testName.startsWith(key);
-      });
-
       const USE_PARENT = USE_PARENT_ACCOUNT.some((usesParent) => test.startsWith(usesParent));
-      const nonOptInRegions = AWS_REGIONS_TO_RUN_TESTS.filter((region) => !SUPPORTED_OPT_IN_REGIONS.includes(region));
 
       if (RUN_SOLO.find((solo) => test === solo || test.match(solo))) {
         if (RUN_IN_ALL_REGIONS.find((allRegions) => test === allRegions || test.match(allRegions))) {
@@ -219,36 +216,20 @@ const splitTests = (baseJobLinux: any, testDirectory: string, pickTests?: (testS
         const newSoloJob = createJob(os, jobIdx, true);
         jobIdx++;
         newSoloJob.tests.push(test);
-        if (FORCE_REGION) {
-          newSoloJob.region = FORCE_REGION_MAP[FORCE_REGION as ForceTests];
-        }
+
         if (USE_PARENT) {
           newSoloJob.useParentAccount = true;
-          // parent E2E account does not have opt-in regions. Choose non-opt-in region.
-          if (SUPPORTED_OPT_IN_REGIONS.includes(newSoloJob.region)) {
-            newSoloJob.region = nonOptInRegions[jobIdx % nonOptInRegions.length];
-          }
         }
-        if (RUN_IN_NON_OPT_IN_REGIONS.find((nonOptInTest) => test === nonOptInTest || test.match(nonOptInTest))) {
-          if (SUPPORTED_OPT_IN_REGIONS.includes(newSoloJob.region)) {
-            newSoloJob.region = nonOptInRegions[jobIdx % nonOptInRegions.length];
-          }
-        }
+        setJobRegion(test, newSoloJob, jobIdx);
         soloJobs.push(newSoloJob);
         continue;
       }
 
       // add the test
       currentJob.tests.push(test);
-      if (FORCE_REGION) {
-        currentJob.region = FORCE_REGION_MAP[FORCE_REGION as ForceTests];
-      }
+      setJobRegion(test, currentJob, jobIdx);
       if (USE_PARENT) {
         currentJob.useParentAccount = true;
-        // parent E2E account does not have opt-in regions. Choose non-opt-in region.
-        if (SUPPORTED_OPT_IN_REGIONS.includes(currentJob.region)) {
-          currentJob.region = nonOptInRegions[jobIdx % nonOptInRegions.length];
-        }
       }
 
       // create a new job once the current job is full;
@@ -282,6 +263,29 @@ const splitTests = (baseJobLinux: any, testDirectory: string, pickTests?: (testS
     }
   });
   return result;
+};
+
+const setJobRegion = (test: string, job: CandidateJob, jobIdx: number) => {
+  const FORCE_REGION = Object.keys(FORCE_REGION_MAP).find((key) => {
+    const testName = getTestNameFromPath(test);
+    return testName.startsWith(key);
+  });
+
+  if (FORCE_REGION) {
+    job.region = FORCE_REGION_MAP[FORCE_REGION as ForceTests];
+    return;
+  }
+
+  // Parent E2E account does not have opt-in regions. Choose non-opt-in region.
+  // If the tests are explicitly specified as to be run in non-opt-in regions, follow that.
+  if (
+    RUN_IN_NON_OPT_IN_REGIONS.find((nonOptInTest) => test.toLowerCase() === nonOptInTest || test.toLowerCase().match(nonOptInTest)) ||
+    USE_PARENT_ACCOUNT.some((usesParent) => test.startsWith(usesParent))
+  ) {
+    if (SUPPORTED_OPT_IN_REGIONS.includes(job.region)) {
+      job.region = nonOptInRegions[jobIdx % nonOptInRegions.length];
+    }
+  }
 };
 
 const main = (): void => {

@@ -164,7 +164,7 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
     amplifyApps = await amplifyClient.listApps({ maxResults: 50 }).promise(); // keeping it to 50 as max supported is 50
   } catch (e) {
     // Do not fail the cleanup and continue
-    console.log(`Listing apps for account ${account}-${region} failed with error with code ${e?.code}. Skipping.`);
+    console.log(`Listing apps for account ${account.accountId}-${region} failed with error with code ${e?.code}. Skipping.`);
     return result;
   }
 
@@ -257,7 +257,7 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
       .promise();
   } catch (e) {
     // Do not fail the cleanup and continue
-    console.log(`Listing stacks for account ${account}-${region} failed with error with code ${e?.code}. Skipping.`);
+    console.log(`Listing stacks for account ${account.accountId}-${region} failed with error with code ${e?.code}. Skipping.`);
     return results;
   }
 
