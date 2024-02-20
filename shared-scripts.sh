@@ -445,6 +445,6 @@ function _emitCreateApiCanaryMetric {
     --namespace amplify-category-api-e2e-tests \
     --unit Count \
     --value $CODEBUILD_BUILD_SUCCEEDING \
-    --dimensions branch=main \
+    --dimensions branch=main,region=$CLI_REGION \
     --region us-west-2
 }
