@@ -923,7 +923,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-had-node-to-node.test.ts
-          CLI_REGION: eu-south-1
+          CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: searchable_previous_deployment_no_node_to_node
@@ -933,7 +933,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-no-node-to-node.test.ts
-          CLI_REGION: ap-east-1
+          CLI_REGION: us-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: api_2
@@ -1399,14 +1399,14 @@ batch:
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        SearchableModelTransformer_SearchableWithAuthV2_SearchableWithAuthV2WithFF
+        SearchableWithAuthTests_SearchableModelTransformer_SearchableWithAuthV2_SearchableWithAuthV2WithFF
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/SearchableModelTransformer.e2e.test.ts|src/__tests__/SearchableWithAuthV2.e2e.test.ts|src/__tests__/SearchableWithAuthV2WithFF.e2e.test.ts
-          CLI_REGION: eu-south-1
+            src/__tests__/SearchableWithAuthTests.e2e.test.ts|src/__tests__/SearchableModelTransformer.e2e.test.ts|src/__tests__/SearchableWithAuthV2.e2e.test.ts|src/__tests__/SearchableWithAuthV2WithFF.e2e.test.ts
+          CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
     - identifier: FunctionTransformerTestsV2
@@ -1435,15 +1435,6 @@ batch:
         variables:
           TEST_SUITE: src/__tests__/HttpTransformerV2.e2e.test.ts
           CLI_REGION: ap-southeast-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: SearchableWithAuthTests
-      buildspec: codebuild_specs/graphql_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/SearchableWithAuthTests.e2e.test.ts
-          CLI_REGION: ap-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: cleanup_e2e_resources
