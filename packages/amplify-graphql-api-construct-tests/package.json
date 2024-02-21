@@ -38,8 +38,8 @@
     "@aws-amplify/graphql-transformer-core": "2.5.0",
     "@aws-amplify/graphql-transformer-interfaces": "3.4.0",
     "@types/node": "^16.11.56",
-    "aws-cdk-lib": "2.80.0",
-    "constructs": "10.0.5",
+    "aws-cdk-lib": "2.97.0",
+    "constructs": "10.3.0",
     "ts-node": "^8.10.2"
   },
   "jest": {
