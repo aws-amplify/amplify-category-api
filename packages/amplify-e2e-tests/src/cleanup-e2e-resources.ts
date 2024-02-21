@@ -8,9 +8,15 @@ import _ from 'lodash';
 import fs from 'fs-extra';
 import { deleteS3Bucket, sleep } from 'amplify-category-api-e2e-core';
 
-const REPO_ROOT = path.join(__dirname, '..', '..', '..');
-const SUPPORTED_REGIONS_PATH = path.join(REPO_ROOT, 'scripts', 'e2e-test-regions.json');
-const AWS_REGIONS_TO_RUN_TESTS: string[] = JSON.parse(fs.readFileSync(SUPPORTED_REGIONS_PATH, 'utf-8'));
+type TestRegion = {
+  name: string;
+  optIn: boolean;
+};
+
+const repoRoot = path.join(__dirname, '..', '..', '..');
+const supportedRegionsPath = path.join(repoRoot, 'scripts', 'e2e-test-regions.json');
+const suportedRegions: TestRegion[] = JSON.parse(fs.readFileSync(supportedRegionsPath, 'utf-8'));
+const testRegions = suportedRegions.map((region) => region.name);
 
 const reportPathDir = path.normalize(path.join(__dirname, '..', 'amplify-e2e-reports'));
 
@@ -163,9 +169,13 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
   try {
     amplifyApps = await amplifyClient.listApps({ maxResults: 50 }).promise(); // keeping it to 50 as max supported is 50
   } catch (e) {
-    // Do not fail the cleanup and continue
-    console.log(`Listing apps for account ${account.accountId}-${region} failed with error with code ${e?.code}. Skipping.`);
-    return result;
+    if (e?.code === 'UnrecognizedClientException') {
+      // Do not fail the cleanup and continue
+      console.log(`Listing apps for account ${account.accountId}-${region} failed with error with code ${e?.code}. Skipping.`);
+      return result;
+    } else {
+      throw e;
+    }
   }
 
   for (const app of amplifyApps?.apps) {
@@ -256,9 +266,13 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
       })
       .promise();
   } catch (e) {
-    // Do not fail the cleanup and continue
-    console.log(`Listing stacks for account ${account.accountId}-${region} failed with error with code ${e?.code}. Skipping.`);
-    return results;
+    if (e?.code === 'InvalidClientTokenId') {
+      // Do not fail the cleanup and continue
+      console.log(`Listing stacks for account ${account.accountId}-${region} failed with error with code ${e?.code}. Skipping.`);
+      return results;
+    } else {
+      throw e;
+    }
   }
 
   // We are interested in only the root stacks that are deployed by amplify-cli
@@ -711,8 +725,8 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
 };
 
 const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, filterPredicate: JobFilterPredicate): Promise<void> => {
-  const appPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getAmplifyApps(account, region));
-  const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getStacks(account, region));
+  const appPromises = testRegions.map((region) => getAmplifyApps(account, region));
+  const stackPromises = testRegions.map((region) => getStacks(account, region));
   const bucketPromise = getS3Buckets(account);
   const orphanBucketPromise = getOrphanS3TestBuckets(account);
   const orphanIamRolesPromise = getOrphanTestIamRoles(account);

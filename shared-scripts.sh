@@ -281,11 +281,10 @@ function useChildAccountCredentials {
         parent_acct=$(aws sts get-caller-identity | jq -cr '.Account')
         child_accts=$(aws organizations list-accounts | jq -c "[.Accounts[].Id | select(. != \"$parent_acct\")]")
         org_size=$(echo $child_accts | jq 'length')
-        opt_in_regions="eu-south-1 ap-east-1 me-south-1"
+        opt_in_regions=$(jq -r '.[] | select(.optIn == true) | .name' ./scripts/e2e-test-regions.json)
         if echo "$opt_in_regions" | grep -qw "$CLI_REGION"; then
-            child_accts=$(echo $child_accts | jq -c '.[]')
+            child_accts=$(echo $child_accts | jq -cr '.[]')
             for child_acct in $child_accts; do
-                child_acct=$(echo $child_acct | tr -d '"')
                 # Get enabled opt-in regions for the child account
                 enabled_regions=$(aws account list-regions --account-id $child_acct --region-opt-status-contains ENABLED)
                 # Check if given opt-in region is enabled for the child account

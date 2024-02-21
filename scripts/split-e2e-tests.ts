@@ -3,11 +3,18 @@ import * as glob from 'glob';
 import * as fs from 'fs-extra';
 import * as yaml from 'js-yaml';
 
+type TestRegion = {
+  name: string;
+  optIn: boolean;
+};
+
 const REPO_ROOT = join(__dirname, '..');
-const SUPPORTED_REGIONS_PATH = join(REPO_ROOT, 'scripts', 'e2e-test-regions.json');
-const AMPLIFY_SUPPORTED_REGIONS: string[] = JSON.parse(fs.readFileSync(SUPPORTED_REGIONS_PATH, 'utf-8'));
-const AWS_REGIONS_TO_RUN_TESTS = AMPLIFY_SUPPORTED_REGIONS;
-const SUPPORTED_OPT_IN_REGIONS = ['ap-east-1', 'eu-south-1', 'me-south-1'];
+
+const supportedRegionsPath = join(REPO_ROOT, 'scripts', 'e2e-test-regions.json');
+const suportedRegions: TestRegion[] = JSON.parse(fs.readFileSync(supportedRegionsPath, 'utf-8'));
+const testRegions = suportedRegions.map((region) => region.name);
+const nonOptInRegions = suportedRegions.filter((region) => !region.optIn).map((region) => region.name);
+
 type ForceTests = 'interactions' | 'containers';
 
 type TestTiming = {
@@ -146,8 +153,6 @@ const EXCLUDE_TEST_IDS: string[] = [];
 
 const MAX_WORKERS = 4;
 
-const nonOptInRegions = AWS_REGIONS_TO_RUN_TESTS.filter((region) => !SUPPORTED_OPT_IN_REGIONS.includes(region));
-
 // eslint-disable-next-line import/namespace
 const loadConfigBase = (): ConfigBase => yaml.load(fs.readFileSync(CODEBUILD_CONFIG_BASE_PATH, 'utf8')) as ConfigBase;
 
@@ -161,7 +166,7 @@ const loadTestTimings = (): { timingData: TestTiming[] } => JSON.parse(fs.readFi
 const getTestFiles = (dir: string, pattern = 'src/**/*.test.ts'): string[] => glob.sync(pattern, { cwd: dir });
 
 const createJob = (os: OSType, jobIdx: number, runSolo = false): CandidateJob => ({
-  region: AWS_REGIONS_TO_RUN_TESTS[jobIdx % AWS_REGIONS_TO_RUN_TESTS.length],
+  region: testRegions[jobIdx % testRegions.length],
   os,
   tests: [],
   useParentAccount: false,
@@ -172,7 +177,8 @@ const getTestNameFromPath = (testSuitePath: string, region?: string): string => 
   const startIndex = testSuitePath.lastIndexOf('/') + 1;
   const endIndex = testSuitePath.lastIndexOf('.test');
   const regionSuffix =
-    RUN_IN_ALL_REGIONS.find((allRegions) => testSuitePath === allRegions || testSuitePath.match(allRegions)) && region ? region : '';
+    RUN_IN_ALL_REGIONS.find((allRegions) => testSuitePath === allRegions || testSuitePath.match(allRegions)) && region ? `-${region}` : '';
+
   return testSuitePath.substring(startIndex, endIndex).split('.e2e').join('').split('.').join('-').concat(regionSuffix);
 };
 
@@ -204,7 +210,7 @@ const splitTests = (baseJobLinux: any, testDirectory: string, pickTests?: (testS
 
       if (RUN_SOLO.find((solo) => test === solo || test.match(solo))) {
         if (RUN_IN_ALL_REGIONS.find((allRegions) => test === allRegions || test.match(allRegions))) {
-          AWS_REGIONS_TO_RUN_TESTS.forEach((region) => {
+          testRegions.forEach((region) => {
             const newSoloJob = createJob(os, jobIdx, true);
             jobIdx++;
             newSoloJob.tests.push(test);
@@ -282,7 +288,7 @@ const setJobRegion = (test: string, job: CandidateJob, jobIdx: number) => {
     RUN_IN_NON_OPT_IN_REGIONS.find((nonOptInTest) => test.toLowerCase() === nonOptInTest || test.toLowerCase().match(nonOptInTest)) ||
     USE_PARENT_ACCOUNT.some((usesParent) => test.startsWith(usesParent))
   ) {
-    if (SUPPORTED_OPT_IN_REGIONS.includes(job.region)) {
+    if (!nonOptInRegions.includes(job.region)) {
       job.region = nonOptInRegions[jobIdx % nonOptInRegions.length];
     }
   }
