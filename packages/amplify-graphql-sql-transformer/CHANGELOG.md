@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.5-secrets-manager.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-sql-transformer@0.2.4...@aws-amplify/graphql-sql-transformer@0.2.5-secrets-manager.0) (2024-02-21)
+
+**Note:** Version bump only for package @aws-amplify/graphql-sql-transformer
+
 ## [0.2.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-sql-transformer@0.2.3...@aws-amplify/graphql-sql-transformer@0.2.4) (2024-01-30)
 
 **Note:** Version bump only for package @aws-amplify/graphql-sql-transformer

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0-secrets-manager.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.5.5...@aws-amplify/graphql-api-construct@1.6.0-secrets-manager.0) (2024-02-21)
+
+### Features
+
+- add secrets manager support for sql lambda auth ([#2103](https://github.com/aws-amplify/amplify-category-api/issues/2103)) ([fde423b](https://github.com/aws-amplify/amplify-category-api/commit/fde423bba09403c6bfd6788cc63546d629d756b6))
+
 ## [1.5.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.5.4...@aws-amplify/graphql-api-construct@1.5.5) (2024-01-30)
 
 ### Bug Fixes

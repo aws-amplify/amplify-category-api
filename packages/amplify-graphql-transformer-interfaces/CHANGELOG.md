@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.4.0-secrets-manager.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.3.3...@aws-amplify/graphql-transformer-interfaces@3.4.0-secrets-manager.0) (2024-02-21)
+
+### Features
+
+- add secrets manager support for sql lambda auth ([#2103](https://github.com/aws-amplify/amplify-category-api/issues/2103)) ([fde423b](https://github.com/aws-amplify/amplify-category-api/commit/fde423bba09403c6bfd6788cc63546d629d756b6))
+
 ## [3.3.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.3.2...@aws-amplify/graphql-transformer-interfaces@3.3.3) (2023-12-18)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces

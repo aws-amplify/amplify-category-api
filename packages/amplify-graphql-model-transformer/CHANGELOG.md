@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.5.0-secrets-manager.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.4.4...@aws-amplify/graphql-model-transformer@2.5.0-secrets-manager.0) (2024-02-21)
+
+### Features
+
+- add credential retry logic to sql lambda ([#2233](https://github.com/aws-amplify/amplify-category-api/issues/2233)) ([e766f7d](https://github.com/aws-amplify/amplify-category-api/commit/e766f7d4f2ea669c45d47de50f6163154b29fb71))
+- add secrets manager support for sql lambda auth ([#2103](https://github.com/aws-amplify/amplify-category-api/issues/2103)) ([fde423b](https://github.com/aws-amplify/amplify-category-api/commit/fde423bba09403c6bfd6788cc63546d629d756b6))
+
 ## [2.4.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.4.3...@aws-amplify/graphql-model-transformer@2.4.4) (2024-01-30)
 
 **Note:** Version bump only for package @aws-amplify/graphql-model-transformer

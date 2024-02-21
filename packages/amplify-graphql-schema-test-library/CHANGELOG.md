@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.21-secrets-manager.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@2.2.20...@aws-amplify/graphql-schema-test-library@2.2.21-secrets-manager.0) (2024-02-21)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-test-library
+
 ## [2.2.20](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@2.2.19...@aws-amplify/graphql-schema-test-library@2.2.20) (2024-01-30)
 
 **Note:** Version bump only for package @aws-amplify/graphql-schema-test-library

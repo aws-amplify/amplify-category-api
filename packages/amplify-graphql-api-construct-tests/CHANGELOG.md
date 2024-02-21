@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.6-secrets-manager.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.2.5...amplify-graphql-api-construct-tests@1.2.6-secrets-manager.0) (2024-02-21)
+
+**Note:** Version bump only for package amplify-graphql-api-construct-tests
+
 ## [1.2.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.2.4...amplify-graphql-api-construct-tests@1.2.5) (2024-01-30)
 
 **Note:** Version bump only for package amplify-graphql-api-construct-tests
