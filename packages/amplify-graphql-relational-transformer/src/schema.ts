@@ -237,6 +237,7 @@ export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration
       primaryKeyConnectionFieldType,
       field,
       sortKeyFields,
+      true,
     );
   }
 
@@ -392,6 +393,7 @@ export const ensureHasManyConnectionField = (
       primaryKeyConnectionFieldType,
       field,
       sortKeyFields,
+      true,
     );
   }
 };
@@ -662,13 +664,14 @@ const updateFilterConnectionInputWithConnectionFields = (
   primaryKeyConnectionFieldType: string,
   field: FieldDefinitionNode,
   sortKeyFields: FieldDefinitionNode[],
+  isSubscriptionFilter = false,
 ): void => {
   const updatedFields = [...input.fields!];
   updatedFields.push(
     ...getFilterConnectionInputFieldsWithConnectionField(
       updatedFields,
       connectionAttributeName,
-      generateModelScalarFilterInputName(primaryKeyConnectionFieldType, false),
+      generateModelScalarFilterInputName(primaryKeyConnectionFieldType, false, isSubscriptionFilter),
     ),
   );
   sortKeyFields.forEach((it) => {
@@ -676,7 +679,7 @@ const updateFilterConnectionInputWithConnectionFields = (
       ...getFilterConnectionInputFieldsWithConnectionField(
         updatedFields,
         getSortKeyConnectionAttributeName(object.name.value, field.name.value, it.name.value),
-        generateModelScalarFilterInputName(getBaseType(it.type), false),
+        generateModelScalarFilterInputName(getBaseType(it.type), false, isSubscriptionFilter),
       ),
     );
   });

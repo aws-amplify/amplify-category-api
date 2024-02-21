@@ -223,7 +223,6 @@ describe('custom primary key and relational directives', () => {
       medicalAppointmentConditionInput,
       medicalAppointmentCreateInput,
       medicalAppointmentUpdateInput,
-      medicalAppointmentSubscriptionFilterInput,
     ];
 
     inputs.forEach((it) => {
@@ -235,6 +234,24 @@ describe('custom primary key and relational directives', () => {
       expect(givenNameInputField).toBeDefined();
       expect(familyNameInputField).toBeDefined();
     });
+
+    // test subscription filter input has correct types
+    const ssnInputField = medicalAppointmentSubscriptionFilterInput.fields.find(
+      (f: any) => f.name.value === 'medicalAppointmentPatientSsn',
+    );
+    const givenNameInputField = medicalAppointmentSubscriptionFilterInput.fields.find(
+      (f: any) => f.name.value === 'medicalAppointmentPatientGivenName',
+    );
+    const familyNameInputField = medicalAppointmentSubscriptionFilterInput.fields.find(
+      (f: any) => f.name.value === 'medicalAppointmentPatientFamilyName',
+    );
+
+    expect(ssnInputField).toBeDefined();
+    expect(ssnInputField.type.name.value).toEqual('ModelSubscriptionIDInput');
+    expect(givenNameInputField).toBeDefined();
+    expect(givenNameInputField.type.name.value).toEqual('ModelSubscriptionStringInput');
+    expect(familyNameInputField).toBeDefined();
+    expect(familyNameInputField.type.name.value).toEqual('ModelSubscriptionStringInput');
   });
 
   it('adds belongsTo sortKeyFields connection fields', () => {
@@ -300,7 +317,7 @@ describe('custom primary key and relational directives', () => {
     expect(patientUpdateInput).toBeDefined();
     expect(patientSubscriptionFilterInput).toBeDefined();
 
-    const inputs = [patientFilterInput, patientConditionInput, patientCreateInput, patientUpdateInput, patientSubscriptionFilterInput];
+    const inputs = [patientFilterInput, patientConditionInput, patientCreateInput, patientUpdateInput];
 
     inputs.forEach((it) => {
       const primaryKeyConnectionField = it.fields.find((f: any) => f.name.value === 'patientMedicalAppointmentAppointmentReference');
@@ -309,6 +326,19 @@ describe('custom primary key and relational directives', () => {
       expect(primaryKeyConnectionField).toBeDefined();
       expect(sortKeyConnectionField).toBeDefined();
     });
+
+    // test subscription filter input has correct types
+    const primaryKeyConnectionField = patientSubscriptionFilterInput.fields.find(
+      (f: any) => f.name.value === 'patientMedicalAppointmentAppointmentReference',
+    );
+    const sortKeyConnectionField = patientSubscriptionFilterInput.fields.find(
+      (f: any) => f.name.value === 'patientMedicalAppointmentProvider',
+    );
+
+    expect(primaryKeyConnectionField).toBeDefined();
+    expect(primaryKeyConnectionField.type.name.value).toEqual('ModelSubscriptionIDInput');
+    expect(sortKeyConnectionField).toBeDefined();
+    expect(sortKeyConnectionField.type.name.value).toEqual('ModelSubscriptionStringInput');
   });
 
   it('adds hasMany sortKeyFields connection fields', () => {
@@ -381,7 +411,6 @@ describe('custom primary key and relational directives', () => {
       medicalAppointmentConditionInput,
       medicalAppointmentCreateInput,
       medicalAppointmentUpdateInput,
-      medicalAppointmentSubscriptionFilterInput,
     ];
 
     inputs.forEach((it) => {
@@ -393,6 +422,24 @@ describe('custom primary key and relational directives', () => {
       expect(givenNameInputField).toBeDefined();
       expect(familyNameInputField).toBeDefined();
     });
+
+    // test subscription filter input has correct types
+    const ssnInputField = medicalAppointmentSubscriptionFilterInput.fields.find(
+      (f: any) => f.name.value === 'patientMedicalAppointmentsSsn',
+    );
+    const givenNameInputField = medicalAppointmentSubscriptionFilterInput.fields.find(
+      (f: any) => f.name.value === 'patientMedicalAppointmentsGivenName',
+    );
+    const familyNameInputField = medicalAppointmentSubscriptionFilterInput.fields.find(
+      (f: any) => f.name.value === 'patientMedicalAppointmentsFamilyName',
+    );
+
+    expect(ssnInputField).toBeDefined();
+    expect(ssnInputField.type.name.value).toEqual('ModelSubscriptionIDInput');
+    expect(givenNameInputField).toBeDefined();
+    expect(givenNameInputField.type.name.value).toEqual('ModelSubscriptionStringInput');
+    expect(familyNameInputField).toBeDefined();
+    expect(familyNameInputField.type.name.value).toEqual('ModelSubscriptionStringInput');
   });
 
   it('uses primary key name for hasOne relational connection field old naming convention', () => {
