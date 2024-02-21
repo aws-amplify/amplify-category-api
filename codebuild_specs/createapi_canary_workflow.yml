@@ -127,16 +127,16 @@ batch:
           CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
-    # - identifier: api_test_ap_east_1
-    #   buildspec: codebuild_specs/run_canary_e2e_tests.yml
-    #   env:
-    #     compute-type: BUILD_GENERAL1_MEDIUM
-    #     variables:
-    #       TEST_SUITE: >-
-    #         src/__tests__/api_canary.test.ts
-    #       CLI_REGION: ap-east-1
-    #   depend-on:
-    #     - publish_to_local_registry
+    - identifier: api_test_ap_east_1
+      buildspec: codebuild_specs/run_canary_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/api_canary.test.ts
+          CLI_REGION: ap-east-1
+      depend-on:
+        - publish_to_local_registry
     - identifier: api_test_ap_northeast_1
       buildspec: codebuild_specs/run_canary_e2e_tests.yml
       env:
@@ -177,16 +177,16 @@ batch:
           CLI_REGION: eu-west-1
       depend-on:
         - publish_to_local_registry
-    # - identifier: api_test_eu_south_1
-    #   buildspec: codebuild_specs/run_canary_e2e_tests.yml
-    #   env:
-    #     compute-type: BUILD_GENERAL1_MEDIUM
-    #     variables:
-    #       TEST_SUITE: >-
-    #         src/__tests__/api_canary.test.ts
-    #       CLI_REGION: eu-south-1
-    #   depend-on:
-    #     - publish_to_local_registry
+    - identifier: api_test_eu_south_1
+      buildspec: codebuild_specs/run_canary_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/api_canary.test.ts
+          CLI_REGION: eu-south-1
+      depend-on:
+        - publish_to_local_registry
     - identifier: api_test_eu_west_3
       buildspec: codebuild_specs/run_canary_e2e_tests.yml
       env:
@@ -197,16 +197,16 @@ batch:
           CLI_REGION: eu-west-3
       depend-on:
         - publish_to_local_registry
-    # - identifier: api_test_me_south_1
-    #   buildspec: codebuild_specs/run_canary_e2e_tests.yml
-    #   env:
-    #     compute-type: BUILD_GENERAL1_MEDIUM
-    #     variables:
-    #       TEST_SUITE: >-
-    #         src/__tests__/api_canary.test.ts
-    #       CLI_REGION: me-south-1
-    #   depend-on:
-    #     - publish_to_local_registry
+    - identifier: api_test_me_south_1
+      buildspec: codebuild_specs/run_canary_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/api_canary.test.ts
+          CLI_REGION: me-south-1
+      depend-on:
+        - publish_to_local_registry
     - identifier: api_test_sa_east_1
       buildspec: codebuild_specs/run_canary_e2e_tests.yml
       env:
