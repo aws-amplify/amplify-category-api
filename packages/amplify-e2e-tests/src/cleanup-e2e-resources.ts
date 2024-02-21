@@ -8,17 +8,15 @@ import _ from 'lodash';
 import fs from 'fs-extra';
 import { deleteS3Bucket, sleep } from 'amplify-category-api-e2e-core';
 
-// Ensure to update scripts/split-e2e-tests.ts is also updated this gets updated
-const AWS_REGIONS_TO_RUN_TESTS = [
-  'us-east-1',
-  'us-east-2',
-  'us-west-2',
-  'eu-west-2',
-  'eu-central-1',
-  'ap-northeast-1',
-  'ap-southeast-1',
-  'ap-southeast-2',
-];
+type TestRegion = {
+  name: string;
+  optIn: boolean;
+};
+
+const repoRoot = path.join(__dirname, '..', '..', '..');
+const supportedRegionsPath = path.join(repoRoot, 'scripts', 'e2e-test-regions.json');
+const suportedRegions: TestRegion[] = JSON.parse(fs.readFileSync(supportedRegionsPath, 'utf-8'));
+const testRegions = suportedRegions.map((region) => region.name);
 
 const reportPathDir = path.normalize(path.join(__dirname, '..', 'amplify-e2e-reports'));
 
@@ -164,10 +162,23 @@ const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccount
  * @returns Promise<AmplifyAppInfo[]> a list of Amplify Apps in the region with build info
  */
 const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<AmplifyAppInfo[]> => {
-  const amplifyClient = new aws.Amplify(getAWSConfig(account, region));
-  const amplifyApps = await amplifyClient.listApps({ maxResults: 50 }).promise(); // keeping it to 50 as max supported is 50
+  const config = getAWSConfig(account, region);
+  const amplifyClient = new aws.Amplify(config);
   const result: AmplifyAppInfo[] = [];
-  for (const app of amplifyApps.apps) {
+  let amplifyApps = { apps: [] };
+  try {
+    amplifyApps = await amplifyClient.listApps({ maxResults: 50 }).promise(); // keeping it to 50 as max supported is 50
+  } catch (e) {
+    if (e?.code === 'UnrecognizedClientException') {
+      // Do not fail the cleanup and continue
+      console.log(`Listing apps for account ${account.accountId}-${region} failed with error with code ${e?.code}. Skipping.`);
+      return result;
+    } else {
+      throw e;
+    }
+  }
+
+  for (const app of amplifyApps?.apps) {
     const backends: Record<string, StackInfo> = {};
     try {
       const backendEnvironments = await amplifyClient.listBackendEnvironments({ appId: app.appId, maxResults: 50 }).promise();
@@ -236,25 +247,36 @@ const getStackDetails = async (stackName: string, account: AWSAccountInfo, regio
 
 const getStacks = async (account: AWSAccountInfo, region: string): Promise<StackInfo[]> => {
   const cfnClient = new aws.CloudFormation(getAWSConfig(account, region));
-  const stacks = await cfnClient
-    .listStacks({
-      StackStatusFilter: [
-        'CREATE_COMPLETE',
-        'ROLLBACK_FAILED',
-        'DELETE_FAILED',
-        'UPDATE_COMPLETE',
-        'UPDATE_ROLLBACK_FAILED',
-        'UPDATE_ROLLBACK_COMPLETE',
-        'IMPORT_COMPLETE',
-        'IMPORT_ROLLBACK_FAILED',
-        'IMPORT_ROLLBACK_COMPLETE',
-      ],
-    })
-    .promise();
+  const results: StackInfo[] = [];
+  let stacks;
+  try {
+    stacks = await cfnClient
+      .listStacks({
+        StackStatusFilter: [
+          'CREATE_COMPLETE',
+          'ROLLBACK_FAILED',
+          'DELETE_FAILED',
+          'UPDATE_COMPLETE',
+          'UPDATE_ROLLBACK_FAILED',
+          'UPDATE_ROLLBACK_COMPLETE',
+          'IMPORT_COMPLETE',
+          'IMPORT_ROLLBACK_FAILED',
+          'IMPORT_ROLLBACK_COMPLETE',
+        ],
+      })
+      .promise();
+  } catch (e) {
+    if (e?.code === 'InvalidClientTokenId') {
+      // Do not fail the cleanup and continue
+      console.log(`Listing stacks for account ${account.accountId}-${region} failed with error with code ${e?.code}. Skipping.`);
+      return results;
+    } else {
+      throw e;
+    }
+  }
 
   // We are interested in only the root stacks that are deployed by amplify-cli
   const rootStacks = stacks.StackSummaries.filter((stack) => !stack.RootId);
-  const results: StackInfo[] = [];
   for (const stack of rootStacks) {
     try {
       const details = await getStackDetails(stack.StackName, account, region);
@@ -703,8 +725,8 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
 };
 
 const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, filterPredicate: JobFilterPredicate): Promise<void> => {
-  const appPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getAmplifyApps(account, region));
-  const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getStacks(account, region));
+  const appPromises = testRegions.map((region) => getAmplifyApps(account, region));
+  const stackPromises = testRegions.map((region) => getStacks(account, region));
   const bucketPromise = getS3Buckets(account);
   const orphanBucketPromise = getOrphanS3TestBuckets(account);
   const orphanIamRolesPromise = getOrphanTestIamRoles(account);
