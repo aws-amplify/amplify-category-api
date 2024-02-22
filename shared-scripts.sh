@@ -282,7 +282,7 @@ function useChildAccountCredentials {
         parent_acct=$(aws sts get-caller-identity | jq -cr '.Account')
         child_accts=$(aws organizations list-accounts | jq -c "[.Accounts[].Id | select(. != \"$parent_acct\")]")
         org_size=$(echo $child_accts | jq 'length')
-        opt_in_regions=$(jq -r '.[] | select(.optIn == true) | .name' ./scripts/e2e-test-regions.json)
+        opt_in_regions=$(jq -r '.[] | select(.optIn == true) | .name' $CODEBUILD_SRC_DIR/scripts/e2e-test-regions.json)
         if echo "$opt_in_regions" | grep -qw "$CLI_REGION"; then
             child_accts=$(echo $child_accts | jq -cr '.[]')
             for child_acct in $child_accts; do
