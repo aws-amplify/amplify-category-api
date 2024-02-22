@@ -25,8 +25,8 @@
     "coverageProvider": "v8",
     "coverageThreshold": {
       "global": {
-        "branches": 81,
-        "functions": 84,
+        "branches": 78,
+        "functions": 78,
         "lines": 90
       }
     },
@@ -47,7 +47,13 @@
       "json",
       "node"
     ],
-    "testEnvironment": "../../FixJestEnvironment.js"
+    "testEnvironment": "../../FixJestEnvironment.js",
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/__tests__/"
+    ]
   },
   "devDependencies": {
     "@aws-amplify/graphql-auth-transformer": "3.3.6",

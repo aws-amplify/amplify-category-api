@@ -103,9 +103,9 @@
     "coverageProvider": "v8",
     "coverageThreshold": {
       "global": {
-        "branches": 70,
-        "functions": 45,
-        "lines": 50
+        "branches": 68,
+        "functions": 42,
+        "lines": 40
       }
     },
     "coverageReporters": [
@@ -115,6 +115,12 @@
     "moduleNameMapper": {
       "^csv-parse/sync": "<rootDir>/../../node_modules/csv-parse/dist/cjs/sync.cjs"
     },
-    "testEnvironment": "../../FixJestEnvironment.js"
+    "testEnvironment": "../../FixJestEnvironment.js",
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/__tests__/"
+    ]
   }
 }
