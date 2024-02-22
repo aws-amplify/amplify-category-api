@@ -65,9 +65,9 @@
     "coverageProvider": "v8",
     "coverageThreshold": {
       "global": {
-        "branches": 75,
-        "functions": 80,
-        "lines": 85
+        "branches": 65,
+        "functions": 77,
+        "lines": 73
       }
     },
     "coverageReporters": [
@@ -77,6 +77,12 @@
     "modulePathIgnorePatterns": [
       "overrides"
     ],
-    "testEnvironment": "../../FixJestEnvironment.js"
+    "testEnvironment": "../../FixJestEnvironment.js",
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/__tests__/"
+    ]
   }
 }
