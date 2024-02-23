@@ -129,8 +129,12 @@ const RUN_SOLO: (string | RegExp)[] = [
   // CDK tests
   /src\/__tests__\/base-cdk.*\.test\.ts/,
   'src/__tests__/amplify-table-1.test.ts',
+  'src/__tests__/amplify-table-3.test.ts',
   'src/__tests__/api_canary.test.ts',
   'src/__tests__/sql-models.test.ts',
+  'src/__tests__/amplify-table-2.test.ts',
+  'src/__tests__/admin-role.test.ts',
+  'src/__tests__/all-auth-modes.test.ts',
 ];
 
 const RUN_IN_ALL_REGIONS = [
