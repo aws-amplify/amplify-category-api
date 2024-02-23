@@ -86,13 +86,13 @@ export type CdkDeployProps = {
 export const cdkDeploy = async (cwd: string, option: string, props?: CdkDeployProps): Promise<any> => {
   // The CodegenAssets BucketDeployment resource takes a while. Set the timeout to 10m account for that. (Note that this is the "no output
   // timeout"--the overall deployment is still allowed to take longer than 10m)
-  // const noOutputTimeout = props?.timeoutMs ?? 10 * 60 * 1000;
+  const noOutputTimeout = props?.timeoutMs ?? 10 * 60 * 1000;
   const commandOptions = {
     cwd,
     stripColors: true,
     // npx cdk does not work on verdaccio
     env: { npm_config_registry: 'https://registry.npmjs.org/' },
-    noOutputTimeout: props?.timeoutMs,
+    noOutputTimeout,
   };
   // This prevents us from maintaining a separate CDK account bootstrap process as we add support for new accounts, regions.
   // Checks and succeeds early (a no-op) if the account-region combination is already bootstrapped.
