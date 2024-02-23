@@ -125,6 +125,7 @@ export interface AmplifyGraphqlApiProps {
     readonly apiName?: string;
     readonly authorizationModes: AuthorizationModes;
     readonly conflictResolution?: ConflictResolution;
+    readonly dataStoreConfiguration?: DataStoreConfiguration;
     readonly definition: IAmplifyGraphqlDefinition;
     readonly functionNameMap?: Record<string, IFunction>;
     readonly functionSlots?: FunctionSlot[];
@@ -179,10 +180,7 @@ export interface AutomergeConflictResolutionStrategy extends ConflictResolutionS
 export type ConflictDetectionType = 'VERSION' | 'NONE';
 
 // @public
-export interface ConflictResolution {
-    readonly models?: Record<string, ConflictResolutionStrategy>;
-    readonly project?: ConflictResolutionStrategy;
-}
+export type ConflictResolution = DataStoreConfiguration;
 
 // @public
 export type ConflictResolutionStrategy = AutomergeConflictResolutionStrategy | OptimisticConflictResolutionStrategy | CustomConflictResolutionStrategy;
@@ -203,6 +201,12 @@ export interface CustomSqlDataSourceStrategy {
     readonly fieldName: string;
     readonly strategy: SQLLambdaModelDataSourceStrategy;
     readonly typeName: 'Query' | 'Mutation';
+}
+
+// @public
+export interface DataStoreConfiguration {
+    readonly models?: Record<string, ConflictResolutionStrategy>;
+    readonly project?: ConflictResolutionStrategy;
 }
 
 // @public
