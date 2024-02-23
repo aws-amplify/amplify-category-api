@@ -122,6 +122,7 @@ export interface AmplifyGraphqlApiProps {
     readonly apiName?: string;
     readonly authorizationModes: AuthorizationModes;
     readonly conflictResolution?: ConflictResolution;
+    readonly dataStoreConfiguration?: DataStoreConfiguration;
     readonly definition: IAmplifyGraphqlDefinition;
     readonly functionNameMap?: Record<string, IFunction>;
     readonly functionSlots?: FunctionSlot[];
@@ -202,6 +203,9 @@ export interface CustomSqlDataSourceStrategy {
     readonly strategy: SQLLambdaModelDataSourceStrategy;
     readonly typeName: 'Query' | 'Mutation';
 }
+
+// @public
+export type DataStoreConfiguration = ConflictResolution;
 
 // @public
 export interface DefaultDynamoDbModelDataSourceStrategy {

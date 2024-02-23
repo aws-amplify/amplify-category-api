@@ -248,6 +248,11 @@ export interface ConflictResolution {
 }
 
 /**
+ * Project level configuration for DataStore conflict resolution.
+ */
+export type DataStoreConfiguration = ConflictResolution;
+
+/**
  * Params exposed to support configuring and overriding pipelined slots. This allows configuration of the underlying function,
  * including the request and response mapping templates.
  */
@@ -636,6 +641,7 @@ export interface AmplifyGraphqlApiProps {
   /**
    * Configure conflict resolution on the Api, which is required to enable DataStore Api functionality.
    * For more information, refer to https://docs.amplify.aws/lib/datastore/getting-started/q/platform/js/
+   * @deprecated, use dataStoreConfiguration instead.
    */
   readonly conflictResolution?: ConflictResolution;
 
@@ -676,6 +682,12 @@ export interface AmplifyGraphqlApiProps {
    * Strategy to store construct outputs. If no outputStorageStrategey is provided a default strategy will be used.
    */
   readonly outputStorageStrategy?: IBackendOutputStorageStrategy;
+
+  /**
+   * Configure DataStore conflict resolution on the Api. Conflict resolution is required to enable DataStore Api functionality.
+   * For more information, refer to https://docs.amplify.aws/lib/datastore/getting-started/q/platform/js/
+   */
+  readonly dataStoreConfiguration?: DataStoreConfiguration;
 }
 
 /**
