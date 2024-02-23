@@ -96,10 +96,7 @@
     "collectCoverage": true,
     "coverageProvider": "v8",
     "collectCoverageFrom": [
-      "src/**/*.ts",
-      "!**/node_modules/**",
-      "!src/__tests__/**",
-      "!lib/**"
+      "src/**/*.ts"
     ],
     "coverageReporters": [
       "clover",
@@ -122,7 +119,12 @@
     "moduleNameMapper": {
       "axios": "axios/dist/node/axios.cjs"
     },
-    "testEnvironment": "../../FixJestEnvironment.js"
+    "testEnvironment": "../../FixJestEnvironment.js",
+    "coveragePathIgnorePatterns": [
+      "/__tests__/",
+      "/lib/",
+      "/node_modules"
+    ]
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",

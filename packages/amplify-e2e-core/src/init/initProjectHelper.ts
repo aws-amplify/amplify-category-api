@@ -49,7 +49,13 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
   if (s?.name?.length > 20) console.warn('Project names should not be longer than 20 characters. This may cause tests to break.');
 
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), cliArgs, { cwd, stripColors: true, env, disableCIDetection: s.disableCIDetection })
+    const chain = spawn(getCLIPath(), cliArgs, {
+      cwd,
+      stripColors: true,
+      env,
+      disableCIDetection: s.disableCIDetection,
+      noOutputTimeout: 10 * 60 * 1000,
+    })
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')

@@ -3,6 +3,7 @@ module.exports = {
   collectCoverage: true,
   coverageProvider: 'v8',
   collectCoverageFrom: ['<rootDir>/src/**/*.{ts,js}'],
+  coveragePathIgnorePatterns: ['/__tests__/'],
   coverageReporters: ['cobertura', 'lcov', 'text', 'clover'],
   testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/dist/', '<rootDir>/src/__tests__/helpers/'],
   testEnvironment: 'jsdom',
