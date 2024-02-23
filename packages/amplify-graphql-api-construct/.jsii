@@ -3780,11 +3780,33 @@
         {
           "docs": {
             "stability": "stable",
+            "summary": "Set the deletion policy of the resource based on the removal policy specified."
+          },
+          "locationInModule": {
+            "filename": "src/amplify-dynamodb-table-wrapper.ts",
+            "line": 117
+          },
+          "name": "applyRemovalPolicy",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "removal policy to set."
+              },
+              "name": "policy",
+              "type": {
+                "fqn": "aws-cdk-lib.RemovalPolicy"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "stable",
             "summary": "Set the provisionedThroughtput for a specified GSI by name."
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 146
+            "line": 154
           },
           "name": "setGlobalSecondaryIndexProvisionedThroughput",
           "parameters": [
@@ -3818,7 +3840,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 116
+            "line": 124
           },
           "name": "billingMode",
           "type": {
@@ -3832,7 +3854,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 174
+            "line": 182
           },
           "name": "deletionProtectionEnabled",
           "type": {
@@ -3846,7 +3868,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 130
+            "line": 138
           },
           "name": "pointInTimeRecoveryEnabled",
           "type": {
@@ -3860,7 +3882,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 137
+            "line": 145
           },
           "name": "provisionedThroughput",
           "type": {
@@ -3874,7 +3896,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 167
+            "line": 175
           },
           "name": "sseSpecification",
           "type": {
@@ -3888,7 +3910,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 160
+            "line": 168
           },
           "name": "streamSpecification",
           "type": {
@@ -3902,7 +3924,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 123
+            "line": 131
           },
           "name": "timeToLiveAttribute",
           "type": {
@@ -7960,5 +7982,5 @@
     }
   },
   "version": "1.5.6",
-  "fingerprint": "SvOvsJZJtGh48GTfFeDR9pC5pCJAxPM/q1Eq8vtpVK0="
+  "fingerprint": "4T13C3a8T0VXwUOCR5PYLNjRHCjG5whCN2GdYrsfAvk="
 }

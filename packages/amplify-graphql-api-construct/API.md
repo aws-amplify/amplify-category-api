@@ -45,6 +45,7 @@ import { NestedStack } from 'aws-cdk-lib';
 import { NoneDataSource } from 'aws-cdk-lib/aws-appsync';
 import { OpenSearchDataSource } from 'aws-cdk-lib/aws-appsync';
 import { RdsDataSource } from 'aws-cdk-lib/aws-appsync';
+import { RemovalPolicy } from 'aws-cdk-lib';
 import { Resolver } from 'aws-cdk-lib/aws-appsync';
 import { StreamViewType } from 'aws-cdk-lib/aws-dynamodb';
 
@@ -70,6 +71,7 @@ export interface AmplifyDynamoDbModelDataSourceStrategy {
 // @public
 export class AmplifyDynamoDbTableWrapper {
     constructor(resource: CfnResource);
+    applyRemovalPolicy(policy: RemovalPolicy): void;
     set billingMode(billingMode: BillingMode);
     set deletionProtectionEnabled(deletionProtectionEnabled: boolean);
     static isAmplifyDynamoDbTableResource(x: any): x is CfnResource;
