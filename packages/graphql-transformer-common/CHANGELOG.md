@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.28.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.27.1...graphql-transformer-common@4.28.0) (2024-02-05)
+
+### Features
+
+- **api:** generate typescript data schema from sql schema internal representation ([#2225](https://github.com/aws-amplify/amplify-category-api/issues/2225)) ([460b077](https://github.com/aws-amplify/amplify-category-api/commit/460b0776af82932d2b42a2b7720b49b91fdbd45c))
+
 ## [4.27.1](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.27.0...graphql-transformer-common@4.27.1) (2023-12-18)
 
 **Note:** Version bump only for package graphql-transformer-common

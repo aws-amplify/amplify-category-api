@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformer-common",
-  "version": "4.27.1",
+  "version": "4.28.0",
   "description": "Common code and constants for AppSync Transformers",
   "repository": {
     "type": "git",
@@ -37,9 +37,9 @@
     "coverageProvider": "v8",
     "coverageThreshold": {
       "global": {
-        "branches": 63,
-        "functions": 11,
-        "lines": 27
+        "branches": 35,
+        "functions": 8,
+        "lines": 8
       }
     },
     "coverageReporters": [
@@ -58,6 +58,12 @@
       "jsx",
       "json",
       "node"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/__tests__/"
     ]
   }
 }

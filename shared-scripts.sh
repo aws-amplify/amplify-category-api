@@ -179,8 +179,11 @@ function _installCLIFromLocalRegistry {
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     # set longer timeout to avoid socket timeout error
-    npm config set fetch-retry-mintimeout 20000
-    npm config set fetch-retry-maxtimeout 120000
+    npm config set fetch-retries 5
+    npm config set fetch-timeout 600000
+    npm config set fetch-retry-mintimeout 30000
+    npm config set fetch-retry-maxtimeout 180000
+    npm config set maxsockets 1
     npm install -g @aws-amplify/cli-internal
     echo "using Amplify CLI version: "$(amplify --version)
     npm list -g --depth=1 | grep -e '@aws-amplify/amplify-category-api' -e 'amplify-codegen'
@@ -243,7 +246,7 @@ function _runCanaryTest {
     _loadTestAccountCredentials
     _setShell
     cd client-test-apps/js/api-model-relationship-app
-    yarn
+    yarn --network-timeout 180000
     retry yarn test:ci
 }
 function _scanArtifacts {
@@ -274,10 +277,26 @@ function _unassumeTestAccountCredentials {
 function useChildAccountCredentials {
     if [ -z "$USE_PARENT_ACCOUNT" ]; then
         export AWS_PAGER=""
+        export AWS_MAX_ATTEMPTS=5
+        export AWS_STS_REGIONAL_ENDPOINTS=regional
         parent_acct=$(aws sts get-caller-identity | jq -cr '.Account')
         child_accts=$(aws organizations list-accounts | jq -c "[.Accounts[].Id | select(. != \"$parent_acct\")]")
         org_size=$(echo $child_accts | jq 'length')
-        pick_acct=$(echo $child_accts | jq -cr ".[$RANDOM % $org_size]")
+        opt_in_regions=$(jq -r '.[] | select(.optIn == true) | .name' $CODEBUILD_SRC_DIR/scripts/e2e-test-regions.json)
+        if echo "$opt_in_regions" | grep -qw "$CLI_REGION"; then
+            child_accts=$(echo $child_accts | jq -cr '.[]')
+            for child_acct in $child_accts; do
+                # Get enabled opt-in regions for the child account
+                enabled_regions=$(aws account list-regions --account-id $child_acct --region-opt-status-contains ENABLED)
+                # Check if given opt-in region is enabled for the child account
+                if echo "$enabled_regions" | jq -e ".Regions[].RegionName == \"$CLI_REGION\""; then
+                    pick_acct=$child_acct
+                    break
+                fi
+            done
+        else
+            pick_acct=$(echo $child_accts | jq -cr ".[$RANDOM % $org_size]")
+        fi
         session_id=$((1 + $RANDOM % 10000))
         if [[ -z "$pick_acct" || -z "$session_id" ]]; then
           echo "Unable to find a child account. Falling back to parent AWS account"
@@ -433,5 +452,16 @@ function _emitCanaryMetric {
     --unit Count \
     --value $CODEBUILD_BUILD_SUCCEEDING \
     --dimensions branch=main \
+    --region us-west-2
+}
+
+function _emitCreateApiCanaryMetric {
+  aws cloudwatch \
+    put-metric-data \
+    --metric-name CreateApiCanarySuccessRate \
+    --namespace amplify-category-api-e2e-tests \
+    --unit Count \
+    --value $CODEBUILD_BUILD_SUCCEEDING \
+    --dimensions branch=main,region=$CLI_REGION \
     --region us-west-2
 }

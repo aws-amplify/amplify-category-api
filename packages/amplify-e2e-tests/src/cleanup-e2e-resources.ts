@@ -8,17 +8,15 @@ import _ from 'lodash';
 import fs from 'fs-extra';
 import { deleteS3Bucket, sleep } from 'amplify-category-api-e2e-core';
 
-// Ensure to update scripts/split-e2e-tests.ts is also updated this gets updated
-const AWS_REGIONS_TO_RUN_TESTS = [
-  'us-east-1',
-  'us-east-2',
-  'us-west-2',
-  'eu-west-2',
-  'eu-central-1',
-  'ap-northeast-1',
-  'ap-southeast-1',
-  'ap-southeast-2',
-];
+type TestRegion = {
+  name: string;
+  optIn: boolean;
+};
+
+const repoRoot = path.join(__dirname, '..', '..', '..');
+const supportedRegionsPath = path.join(repoRoot, 'scripts', 'e2e-test-regions.json');
+const suportedRegions: TestRegion[] = JSON.parse(fs.readFileSync(supportedRegionsPath, 'utf-8'));
+const testRegions = suportedRegions.map((region) => region.name);
 
 const reportPathDir = path.normalize(path.join(__dirname, '..', 'amplify-e2e-reports'));
 
@@ -46,6 +44,7 @@ type AmplifyAppInfo = {
 type S3BucketInfo = {
   name: string;
   jobId?: string;
+  region: string;
   cbInfo?: CodeBuild.Build;
 };
 
@@ -84,7 +83,8 @@ type AWSAccountInfo = {
 };
 
 const BUCKET_TEST_REGEX = /test/;
-const IAM_TEST_REGEX = /!RotateE2eAwsToken-e2eTestContextRole|-integtest$|^amplify-|^eu-|^us-|^ap-/;
+const IAM_TEST_REGEX =
+  /!RotateE2eAwsToken-e2eTestContextRole|-integtest$|^amplify-|^eu-|^us-|^ap-|^auth-exhaustive-tests|rds-schema-inspector-integtest|^amplify_e2e_tests_lambda|^JsonMockStack-jsonMockApi|^SubscriptionAuthV2Tests|^cdkamplifytable[0-9]*-/;
 const STALE_DURATION_MS = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
 
 const isCI = (): boolean => !!(process.env.CI && process.env.CODEBUILD);
@@ -118,7 +118,17 @@ const getOrphanS3TestBuckets = async (account: AWSAccountInfo): Promise<S3Bucket
   const s3Client = new aws.S3(getAWSConfig(account));
   const listBucketResponse = await s3Client.listBuckets().promise();
   const staleBuckets = listBucketResponse.Buckets.filter(testBucketStalenessFilter);
-  return staleBuckets.map((it) => ({ name: it.Name }));
+
+  const bucketInfos = await Promise.all(
+    staleBuckets.map(async (staleBucket): Promise<S3BucketInfo> => {
+      const region = await getBucketRegion(account, staleBucket.Name);
+      return {
+        name: staleBucket.Name,
+        region,
+      };
+    }),
+  );
+  return bucketInfos;
 };
 
 /**
@@ -152,10 +162,23 @@ const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccount
  * @returns Promise<AmplifyAppInfo[]> a list of Amplify Apps in the region with build info
  */
 const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<AmplifyAppInfo[]> => {
-  const amplifyClient = new aws.Amplify(getAWSConfig(account, region));
-  const amplifyApps = await amplifyClient.listApps({ maxResults: 50 }).promise(); // keeping it to 50 as max supported is 50
+  const config = getAWSConfig(account, region);
+  const amplifyClient = new aws.Amplify(config);
   const result: AmplifyAppInfo[] = [];
-  for (const app of amplifyApps.apps) {
+  let amplifyApps = { apps: [] };
+  try {
+    amplifyApps = await amplifyClient.listApps({ maxResults: 50 }).promise(); // keeping it to 50 as max supported is 50
+  } catch (e) {
+    if (e?.code === 'UnrecognizedClientException') {
+      // Do not fail the cleanup and continue
+      console.log(`Listing apps for account ${account.accountId}-${region} failed with error with code ${e?.code}. Skipping.`);
+      return result;
+    } else {
+      throw e;
+    }
+  }
+
+  for (const app of amplifyApps?.apps) {
     const backends: Record<string, StackInfo> = {};
     try {
       const backendEnvironments = await amplifyClient.listBackendEnvironments({ appId: app.appId, maxResults: 50 }).promise();
@@ -224,25 +247,36 @@ const getStackDetails = async (stackName: string, account: AWSAccountInfo, regio
 
 const getStacks = async (account: AWSAccountInfo, region: string): Promise<StackInfo[]> => {
   const cfnClient = new aws.CloudFormation(getAWSConfig(account, region));
-  const stacks = await cfnClient
-    .listStacks({
-      StackStatusFilter: [
-        'CREATE_COMPLETE',
-        'ROLLBACK_FAILED',
-        'DELETE_FAILED',
-        'UPDATE_COMPLETE',
-        'UPDATE_ROLLBACK_FAILED',
-        'UPDATE_ROLLBACK_COMPLETE',
-        'IMPORT_COMPLETE',
-        'IMPORT_ROLLBACK_FAILED',
-        'IMPORT_ROLLBACK_COMPLETE',
-      ],
-    })
-    .promise();
+  const results: StackInfo[] = [];
+  let stacks;
+  try {
+    stacks = await cfnClient
+      .listStacks({
+        StackStatusFilter: [
+          'CREATE_COMPLETE',
+          'ROLLBACK_FAILED',
+          'DELETE_FAILED',
+          'UPDATE_COMPLETE',
+          'UPDATE_ROLLBACK_FAILED',
+          'UPDATE_ROLLBACK_COMPLETE',
+          'IMPORT_COMPLETE',
+          'IMPORT_ROLLBACK_FAILED',
+          'IMPORT_ROLLBACK_COMPLETE',
+        ],
+      })
+      .promise();
+  } catch (e) {
+    if (e?.code === 'InvalidClientTokenId') {
+      // Do not fail the cleanup and continue
+      console.log(`Listing stacks for account ${account.accountId}-${region} failed with error with code ${e?.code}. Skipping.`);
+      return results;
+    } else {
+      throw e;
+    }
+  }
 
   // We are interested in only the root stacks that are deployed by amplify-cli
   const rootStacks = stacks.StackSummaries.filter((stack) => !stack.RootId);
-  const results: StackInfo[] = [];
   for (const stack of rootStacks) {
     try {
       const details = await getStackDetails(stack.StackName, account, region);
@@ -276,27 +310,52 @@ const getJobCodeBuildDetails = async (jobIds: string[]): Promise<CodeBuild.Build
   }
 };
 
+const getBucketRegion = async (account: AWSAccountInfo, bucketName: string): Promise<string> => {
+  const awsConfig = getAWSConfig(account);
+  const s3Client = new aws.S3(awsConfig);
+  const location = await s3Client.getBucketLocation({ Bucket: bucketName }).promise();
+  const region = location.LocationConstraint ?? 'us-east-1';
+  return region;
+};
+
 const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> => {
-  const s3Client = new aws.S3(getAWSConfig(account));
+  const awsConfig = getAWSConfig(account);
+  const s3Client = new aws.S3(awsConfig);
   const buckets = await s3Client.listBuckets().promise();
   const result: S3BucketInfo[] = [];
   for (const bucket of buckets.Buckets) {
+    let region: string | undefined;
     try {
-      const bucketDetails = await s3Client.getBucketTagging({ Bucket: bucket.Name }).promise();
+      region = await getBucketRegion(account, bucket.Name);
+      // Operations on buckets created in opt-in regions appear to require region-specific clients
+      const regionalizedClient = new aws.S3({
+        region,
+        ...(awsConfig as object),
+      });
+      const bucketDetails = await regionalizedClient.getBucketTagging({ Bucket: bucket.Name }).promise();
       const jobId = getJobId(bucketDetails.TagSet);
       if (jobId) {
         result.push({
           name: bucket.Name,
           jobId,
+          region,
         });
       }
     } catch (e) {
-      if (e.code !== 'NoSuchTagSet' && e.code !== 'NoSuchBucket') {
+      // TODO: Why do we process the bucket even with these particular errors?
+      if (e.code === 'NoSuchTagSet' || e.code === 'NoSuchBucket') {
+        result.push({
+          name: bucket.Name,
+          region: region ?? 'us-east-1',
+        });
+      } else if (e.code === 'InvalidToken') {
+        // We see some buckets in some accounts that were somehow created in an opt-in region different from the one to which the account is
+        // actually opted in. We don't quite know how this happened, but for now, we'll make a note of the inconsistency and continue
+        // processing the rest of the buckets.
+        console.error(`Skipping processing ${account.accountId}, bucket ${bucket.Name}`, e);
+      } else {
         throw e;
       }
-      result.push({
-        name: bucket.Name,
-      });
     }
   }
   return result;
@@ -502,8 +561,12 @@ const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucke
   const { name } = bucket;
   try {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting S3 Bucket ${name}`);
-    const s3 = new aws.S3(getAWSConfig(account));
-    await deleteS3Bucket(name, s3);
+    const awsConfig = getAWSConfig(account);
+    const regionalizedS3Client = new aws.S3({
+      region: bucket.region,
+      ...(awsConfig as object),
+    });
+    await deleteS3Bucket(name, regionalizedS3Client);
   } catch (e) {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting bucket ${name} failed with error ${e.message}`);
     if (e.code === 'ExpiredTokenException') {
@@ -662,8 +725,8 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
 };
 
 const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, filterPredicate: JobFilterPredicate): Promise<void> => {
-  const appPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getAmplifyApps(account, region));
-  const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getStacks(account, region));
+  const appPromises = testRegions.map((region) => getAmplifyApps(account, region));
+  const stackPromises = testRegions.map((region) => getStacks(account, region));
   const bucketPromise = getS3Buckets(account);
   const orphanBucketPromise = getOrphanS3TestBuckets(account);
   const orphanIamRolesPromise = getOrphanTestIamRoles(account);

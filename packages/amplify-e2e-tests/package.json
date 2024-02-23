@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-e2e-tests",
-  "version": "3.19.4",
+  "version": "3.20.0",
   "description": "E2e test suite",
   "repository": {
     "type": "git",
@@ -25,8 +25,9 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-app": "^5.0.21",
-    "@aws-amplify/graphql-transformer-core": "2.4.4",
-    "amplify-category-api-e2e-core": "4.4.6",
+    "@aws-amplify/graphql-schema-generator": "0.7.0",
+    "@aws-amplify/graphql-transformer-core": "2.4.5",
+    "amplify-category-api-e2e-core": "4.5.0",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-sdk": "^2.1113.0",
@@ -38,8 +39,8 @@
     "generate-password": "~1.7.0",
     "graphql": "^15.5.0",
     "graphql-tag": "^2.10.1",
-    "graphql-transformer-common": "4.27.1",
-    "graphql-transformer-core": "8.2.5",
+    "graphql-transformer-common": "4.28.0",
+    "graphql-transformer-core": "8.2.6",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
     "pluralize": "^8.0.0",
@@ -72,10 +73,7 @@
     ],
     "collectCoverage": false,
     "collectCoverageFrom": [
-      "src/**/*.ts",
-      "!**/node_modules/**",
-      "!src/__tests__/**",
-      "!**/*.d.ts"
+      "src/**/*.ts"
     ],
     "reporters": [
       "default",
@@ -114,8 +112,13 @@
       }
     },
     "moduleNameMapper": {
-      "axios": "axios/dist/node/axios.cjs"
-    }
+      "axios": "axios/dist/node/axios.cjs",
+      "^csv-parse/sync": "<rootDir>/../../node_modules/csv-parse/dist/cjs/sync.cjs"
+    },
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/__tests__/"
+    ]
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",

@@ -40,12 +40,21 @@ describe('CDK Auth Modes', () => {
       ],
     });
     const outputs = await cdkDeploy(projRoot, '--all');
-    const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey, ApiInvokerFunctionName: functionName } = outputs[name];
+    const {
+      awsAppsyncApiEndpoint: apiEndpoint,
+      awsAppsyncApiKey: apiKey,
+      ApiInvokerFunctionName: functionName,
+      awsAppsyncRegion: region,
+    } = outputs[name];
 
     const testTitle = crypto.randomUUID();
 
     // Validate that the lambda can be invoked to create a record via signed IAM admin role.
-    const invokeResult = await invokeGraphqlProxyLambda<CreateTodoHandlerEvent, CreateTodoResponseData>(functionName, { title: testTitle });
+    const invokeResult = await invokeGraphqlProxyLambda<CreateTodoHandlerEvent, CreateTodoResponseData>(
+      functionName,
+      { title: testTitle },
+      region,
+    );
 
     // And the result object is returned
     expect(invokeResult.createTodo.title).toEqual(testTitle);

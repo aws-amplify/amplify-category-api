@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-transformer-core",
-  "version": "2.4.4",
+  "version": "2.4.5",
   "description": "A framework to transform from GraphQL SDL to AWS CloudFormation.",
   "repository": {
     "type": "git",
@@ -31,7 +31,7 @@
     "@aws-amplify/graphql-transformer-interfaces": "3.3.3",
     "fs-extra": "^8.1.0",
     "graphql": "^15.5.0",
-    "graphql-transformer-common": "4.27.1",
+    "graphql-transformer-common": "4.28.0",
     "hjson": "^3.2.2",
     "lodash": "^4.17.21",
     "md5": "^2.3.0",
@@ -68,15 +68,21 @@
     "coverageProvider": "v8",
     "coverageThreshold": {
       "global": {
-        "branches": 69,
-        "functions": 31,
-        "lines": 56
+        "branches": 67,
+        "functions": 30,
+        "lines": 49
       }
     },
     "coverageReporters": [
       "clover",
       "text"
     ],
-    "testEnvironment": "../../FixJestEnvironment.js"
+    "testEnvironment": "../../FixJestEnvironment.js",
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/__tests__/"
+    ]
   }
 }
