@@ -100,7 +100,7 @@ describe('CDK GraphQL Transformer', () => {
   const testGraphQLAPI = async (connectionConfigName: string): Promise<void> => {
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'sql-models'));
     const name = await initCDKProject(projRoot, templatePath);
-    writeDbDetails({ ...dbDetails.dbConfig, dbConnectionConfig: dbDetails.connectionConfigs[connectionConfigName] }, projRoot);
+    writeDbDetails({ dbConfig: dbDetails.dbConfig, dbConnectionConfig: dbDetails.connectionConfigs[connectionConfigName] }, projRoot);
     const outputs = await cdkDeploy(projRoot, '--all');
     const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
 
@@ -301,20 +301,7 @@ const cleanupDatabase = async (options: { identifier: string; region: string; db
  * @param projRoot the destination directory to write the `db-details.json` file to
  */
 const writeDbDetails = (
-  dbDetails: {
-    endpoint: string;
-    port: number;
-    dbName: string;
-    vpcConfig: {
-      vpcId: string;
-      securityGroupIds: string[];
-      subnetAvailabilityZones: {
-        subnetId: string;
-        availabilityZone: string;
-      }[];
-    };
-    dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
-  },
+  dbDetails: Omit<DBDetails, 'connectionConfigs'> & { dbConnectionConfig: SqlModelDataSourceDbConnectionConfig },
   projRoot: string,
 ): void => {
   const detailsStr = JSON.stringify(dbDetails);
