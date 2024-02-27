@@ -194,6 +194,6 @@ test('allow: non-custom and provider: function error out for invalid combination
       transformers: [new ModelTransformer(), new AuthTransformer()],
     }),
   ).toThrowError(
-    "@auth directive with 'public' strategy only supports 'apiKey' (default) and 'iam' providers, but found 'function' assigned.",
+    "@auth directive with 'public' strategy only supports 'apiKey' (default) and 'identityPool' providers, but found 'function' assigned.",
   );
 });

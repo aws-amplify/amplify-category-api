@@ -243,7 +243,7 @@ describe('validation tests', () => {
     validationTest(
       publicIdentityPoolAuthDirective,
       userPoolsDefaultConfig,
-      "@auth directive with 'identityPool' provider found, but the project has no Cognito Identity Pool authentication provider configured.",
+      "@auth directive with 'identityPool' provider found, but the project has no IAM authentication provider configured.",
     );
   });
 

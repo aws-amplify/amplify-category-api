@@ -93,6 +93,7 @@ import {
   hasRelationalDirective,
   getAuthDirectiveRules,
   READ_MODEL_OPERATIONS,
+  isAuthProviderEqual,
 } from './utils';
 import { defaultIdentityClaimWarning, ownerCanReassignWarning, ownerFieldCaseWarning } from './utils/warnings';
 import { DDBAuthVTLGenerator } from './vtl-generator/ddb/ddb-vtl-generator';
@@ -493,7 +494,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         .getRoles()
         .map((role) => this.roleMap.get(role))
         .forEach((role) => {
-          if (!role.static && (role.provider === 'userPools' || role.provider === 'oidc')) {
+          if (!role.static && (isAuthProviderEqual(role.provider, 'userPools') || isAuthProviderEqual(role.provider, 'oidc'))) {
             removeSubscriptionFilterInputAttribute(context, modelName, role.entity);
           }
         });
@@ -1055,6 +1056,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
             roleDefinition = { provider: rule.provider, strategy: rule.allow, static: true };
             break;
           case 'iam':
+          case 'identityPool':
             roleName = `iam:${rule.allow}`;
             roleDefinition = {
               provider: rule.provider,
@@ -1123,7 +1125,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
 
   private doesTypeHaveRulesForOperation(acm: AccessControlMatrix, operation: ModelOperation): boolean {
     const rolesHasDefaultProvider = (roles: Array<string>): boolean =>
-      roles.some((r) => this.roleMap.get(r)!.provider! === this.configuredAuthProviders.default);
+      roles.some((r) => isAuthProviderEqual(this.roleMap.get(r)!.provider!, this.configuredAuthProviders.default));
     const roles = acm.getRolesPerOperation(operation, operation === 'delete');
     return rolesHasDefaultProvider(roles) || (roles.length === 0 && this.configuredAuthProviders.shouldAddDefaultServiceDirective);
   }
@@ -1133,7 +1135,9 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     // get the roles created for type
     roles.forEach((role) => providers.add(this.roleMap.get(role)!.provider));
     if (this.configuredAuthProviders.hasAdminRolesEnabled) {
-      providers.add('iam');
+      if (!providers.has('iam') && !providers.has('identityPool')) {
+        providers.add('identityPool');
+      }
     }
     return Array.from(providers);
   }
@@ -1195,7 +1199,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       if (!hasSeenType) {
         this.seenNonModelTypes.set(nonModelName, new Set<string>([...directives.map((dir) => dir.name.value)]));
         // since we haven't seen this type before we add it to the iam policy resource sets
-        const hasIAM = directives.some((dir) => dir.name.value === 'aws_iam') || this.configuredAuthProviders.default === 'iam';
+        const hasIAM = directives.some((dir) => dir.name.value === 'aws_iam') || isAuthProviderEqual(this.configuredAuthProviders.default, 'identityPool');
         if (hasIAM) {
           this.unauthPolicyResources.add(`${nonModelFieldType.name.value}/null`);
           this.authPolicyResources.add(`${nonModelFieldType.name.value}/null`);
@@ -1225,15 +1229,20 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     */
     const addDirectiveIfNeeded = (provider: AuthProvider, directiveName: string): void => {
       if (
-        (this.configuredAuthProviders.default !== provider && providers.some((p) => p === provider)) ||
-        (this.configuredAuthProviders.default === provider && providers.some((p) => p !== provider && addDefaultIfNeeded === true))
+        (!isAuthProviderEqual(this.configuredAuthProviders.default, provider) && providers.some((p) => isAuthProviderEqual(p, provider))) ||
+        (isAuthProviderEqual(this.configuredAuthProviders.default, provider) &&
+          providers.some((p) => !isAuthProviderEqual(p, provider) && addDefaultIfNeeded === true))
       ) {
         directives.push(makeDirective(directiveName, []));
       }
     };
 
+    const directivesAlreadyApplied = new Set<string>();
     AUTH_PROVIDER_DIRECTIVE_MAP.forEach((directiveName, authProvider) => {
-      addDirectiveIfNeeded(authProvider, directiveName);
+      if (!directivesAlreadyApplied.has(directiveName)) {
+        addDirectiveIfNeeded(authProvider, directiveName);
+        directivesAlreadyApplied.add(directiveName);
+      }
     });
     /*
       If we have any rules for the default provider AND those with other providers,
@@ -1246,8 +1255,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       cannot add @aws_api_key to other operations since their is no rule granted access to it
     */
     if (
-      providers.some((p) => p === this.configuredAuthProviders.default) &&
-      providers.some((p) => p !== this.configuredAuthProviders.default) &&
+      providers.some((p) => isAuthProviderEqual(p, this.configuredAuthProviders.default)) &&
+      providers.some((p) => !isAuthProviderEqual(p, this.configuredAuthProviders.default)) &&
       !directives.some((d) => d.name.value === AUTH_PROVIDER_DIRECTIVE_MAP.get(this.configuredAuthProviders.default))
     ) {
       directives.push(makeDirective(AUTH_PROVIDER_DIRECTIVE_MAP.get(this.configuredAuthProviders.default) as string, []));
@@ -1316,7 +1325,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       return;
     }
     this.generateIAMPolicyForAuthRole = rules.some(
-      (rule) => (rule.allow === 'private' || rule.allow === 'public') && rule.provider === 'iam',
+      (rule) => (rule.allow === 'private' || rule.allow === 'public') && isAuthProviderEqual(rule.provider, 'identityPool'),
     );
   }
 
@@ -1324,12 +1333,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     if (rules.length === 0 || this.generateIAMPolicyForUnauthRole === true) {
       return;
     }
-    this.generateIAMPolicyForUnauthRole = rules.some((rule) => rule.allow === 'public' && rule.provider === 'iam');
+    this.generateIAMPolicyForUnauthRole = rules.some((rule) => rule.allow === 'public' && isAuthProviderEqual(rule.provider, 'identityPool'));
   }
 
   private addOperationToResourceReferences(operationName: string, fieldName: string, roles: Array<string>): void {
-    const iamPublicRolesExist = roles.some((r) => this.roleMap.get(r)!.provider === 'iam' && this.roleMap.get(r)!.strategy === 'public');
-    const iamPrivateRolesExist = roles.some((r) => this.roleMap.get(r)!.provider === 'iam' && this.roleMap.get(r)!.strategy === 'private');
+    const iamPublicRolesExist = roles.some((r) => isAuthProviderEqual(this.roleMap.get(r)!.provider, 'identityPool') && this.roleMap.get(r)!.strategy === 'public');
+    const iamPrivateRolesExist = roles.some((r) => isAuthProviderEqual(this.roleMap.get(r)!.provider, 'identityPool') && this.roleMap.get(r)!.strategy === 'private');
 
     if (iamPublicRolesExist) {
       this.unauthPolicyResources.add(`${operationName}/${fieldName}`);
@@ -1344,8 +1353,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
    * TODO: Change Resource Ref Object/Field Functions to work with roles
    */
   private addTypeToResourceReferences(typeName: string, rules: AuthRule[]): void {
-    const iamPublicRulesExist = rules.some((r) => r.allow === 'public' && r.provider === 'iam' && r.generateIAMPolicy);
-    const iamPrivateRulesExist = rules.some((r) => r.allow === 'private' && r.provider === 'iam' && r.generateIAMPolicy);
+    const iamPublicRulesExist = rules.some((r) => r.allow === 'public' && isAuthProviderEqual(r.provider, 'identityPool') && r.generateIAMPolicy);
+    const iamPrivateRulesExist = rules.some((r) => r.allow === 'private' && isAuthProviderEqual(r.provider, 'identityPool') && r.generateIAMPolicy);
 
     if (iamPublicRulesExist) {
       this.unauthPolicyResources.add(`${typeName}/null`);
@@ -1357,8 +1366,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   }
 
   private addFieldToResourceReferences(typeName: string, fieldName: string, rules: AuthRule[]): void {
-    const iamPublicRulesExist = rules.some((r) => r.allow === 'public' && r.provider === 'iam' && r.generateIAMPolicy);
-    const iamPrivateRulesExist = rules.some((r) => r.allow === 'private' && r.provider === 'iam' && r.generateIAMPolicy);
+    const iamPublicRulesExist = rules.some((r) => r.allow === 'public' && isAuthProviderEqual(r.provider, 'identityPool') && r.generateIAMPolicy);
+    const iamPrivateRulesExist = rules.some((r) => r.allow === 'private' && isAuthProviderEqual(r.provider, 'identityPool') && r.generateIAMPolicy);
 
     if (iamPublicRulesExist) {
       this.unauthPolicyResources.add(`${typeName}/${fieldName}`);

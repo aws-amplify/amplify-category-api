@@ -126,6 +126,7 @@ export const authDirectiveDefinition = `
   enum AuthProvider {
     apiKey
     iam
+    identityPool
     oidc
     userPools
     function
