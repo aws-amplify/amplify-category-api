@@ -95,7 +95,12 @@ import {
   READ_MODEL_OPERATIONS,
   isAuthProviderEqual,
 } from './utils';
-import { defaultIdentityClaimWarning, ownerCanReassignWarning, ownerFieldCaseWarning } from './utils/warnings';
+import {
+  defaultIdentityClaimWarning,
+  deprecatedIAMProviderWarning,
+  ownerCanReassignWarning,
+  ownerFieldCaseWarning
+} from './utils/warnings';
 import { DDBAuthVTLGenerator } from './vtl-generator/ddb/ddb-vtl-generator';
 import { RDSAuthVTLGenerator } from './vtl-generator/rds/rds-vtl-generator';
 import { AuthVTLGenerator } from './vtl-generator/vtl-generator';
@@ -236,6 +241,10 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const reassignWarning = ownerCanReassignWarning(this.authModelConfig);
     if (reassignWarning) {
       this.warn(reassignWarning.message);
+    }
+    const iamProviderWarning = deprecatedIAMProviderWarning(this.rules);
+    if (iamProviderWarning) {
+      this.warn(iamProviderWarning);
     }
   };
 
