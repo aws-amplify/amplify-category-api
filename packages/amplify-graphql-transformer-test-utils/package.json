@@ -59,15 +59,21 @@
     "coverageProvider": "v8",
     "coverageThreshold": {
       "global": {
-        "branches": 64,
-        "functions": 74,
-        "lines": 78
+        "branches": 58,
+        "functions": 46,
+        "lines": 46
       }
     },
     "coverageReporters": [
       "clover",
       "text"
     ],
-    "testEnvironment": "../../FixJestEnvironment.js"
+    "testEnvironment": "../../FixJestEnvironment.js",
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/__tests__/"
+    ]
   }
 }

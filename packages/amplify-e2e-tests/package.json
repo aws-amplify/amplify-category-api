@@ -73,10 +73,7 @@
     ],
     "collectCoverage": false,
     "collectCoverageFrom": [
-      "src/**/*.ts",
-      "!**/node_modules/**",
-      "!src/__tests__/**",
-      "!**/*.d.ts"
+      "src/**/*.ts"
     ],
     "reporters": [
       "default",
@@ -117,7 +114,11 @@
     "moduleNameMapper": {
       "axios": "axios/dist/node/axios.cjs",
       "^csv-parse/sync": "<rootDir>/../../node_modules/csv-parse/dist/cjs/sync.cjs"
-    }
+    },
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/__tests__/"
+    ]
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",

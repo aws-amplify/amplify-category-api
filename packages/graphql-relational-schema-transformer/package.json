@@ -65,6 +65,12 @@
       "ts-jest": {
         "diagnostics": false
       }
-    }
+    },
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/__tests__/"
+    ]
   }
 }

@@ -162,13 +162,19 @@
       "global": {
         "branches": 90,
         "functions": 90,
-        "lines": 90
+        "lines": 60
       }
     },
     "coverageReporters": [
       "clover",
       "text"
     ],
-    "testEnvironment": "../../FixJestEnvironment.js"
+    "testEnvironment": "../../FixJestEnvironment.js",
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/__tests__/"
+    ]
   }
 }

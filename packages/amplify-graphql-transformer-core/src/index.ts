@@ -57,6 +57,10 @@ export {
   normalizeDbType,
   setResourceName,
   SQLLambdaResourceNames,
+  getFilterInputName,
+  getConditionInputName,
+  getSubscriptionFilterInputName,
+  getConnectionName,
 } from './utils';
 export type { SetResourceNameProps } from './utils';
 export * from './utils/operation-names';
