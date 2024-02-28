@@ -30,7 +30,7 @@ import {
   DEFAULT_UNIQUE_IDENTITY_CLAIM,
   IDENTITY_CLAIM_DELIMITER,
   isAuthProviderEqual,
-  RoleDefinition
+  RoleDefinition,
 } from '../../../utils';
 
 /**

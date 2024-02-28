@@ -99,7 +99,7 @@ import {
   defaultIdentityClaimWarning,
   deprecatedIAMProviderWarning,
   ownerCanReassignWarning,
-  ownerFieldCaseWarning
+  ownerFieldCaseWarning,
 } from './utils/warnings';
 import { DDBAuthVTLGenerator } from './vtl-generator/ddb/ddb-vtl-generator';
 import { RDSAuthVTLGenerator } from './vtl-generator/rds/rds-vtl-generator';
@@ -1208,7 +1208,9 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       if (!hasSeenType) {
         this.seenNonModelTypes.set(nonModelName, new Set<string>([...directives.map((dir) => dir.name.value)]));
         // since we haven't seen this type before we add it to the iam policy resource sets
-        const hasIAM = directives.some((dir) => dir.name.value === 'aws_iam') || isAuthProviderEqual(this.configuredAuthProviders.default, 'identityPool');
+        const hasIAM =
+          directives.some((dir) => dir.name.value === 'aws_iam') ||
+          isAuthProviderEqual(this.configuredAuthProviders.default, 'identityPool');
         if (hasIAM) {
           this.unauthPolicyResources.add(`${nonModelFieldType.name.value}/null`);
           this.authPolicyResources.add(`${nonModelFieldType.name.value}/null`);
@@ -1342,12 +1344,18 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     if (rules.length === 0 || this.generateIAMPolicyForUnauthRole === true) {
       return;
     }
-    this.generateIAMPolicyForUnauthRole = rules.some((rule) => rule.allow === 'public' && isAuthProviderEqual(rule.provider, 'identityPool'));
+    this.generateIAMPolicyForUnauthRole = rules.some(
+      (rule) => rule.allow === 'public' && isAuthProviderEqual(rule.provider, 'identityPool'),
+    );
   }
 
   private addOperationToResourceReferences(operationName: string, fieldName: string, roles: Array<string>): void {
-    const iamPublicRolesExist = roles.some((r) => isAuthProviderEqual(this.roleMap.get(r)!.provider, 'identityPool') && this.roleMap.get(r)!.strategy === 'public');
-    const iamPrivateRolesExist = roles.some((r) => isAuthProviderEqual(this.roleMap.get(r)!.provider, 'identityPool') && this.roleMap.get(r)!.strategy === 'private');
+    const iamPublicRolesExist = roles.some(
+      (r) => isAuthProviderEqual(this.roleMap.get(r)!.provider, 'identityPool') && this.roleMap.get(r)!.strategy === 'public',
+    );
+    const iamPrivateRolesExist = roles.some(
+      (r) => isAuthProviderEqual(this.roleMap.get(r)!.provider, 'identityPool') && this.roleMap.get(r)!.strategy === 'private',
+    );
 
     if (iamPublicRolesExist) {
       this.unauthPolicyResources.add(`${operationName}/${fieldName}`);
@@ -1362,8 +1370,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
    * TODO: Change Resource Ref Object/Field Functions to work with roles
    */
   private addTypeToResourceReferences(typeName: string, rules: AuthRule[]): void {
-    const iamPublicRulesExist = rules.some((r) => r.allow === 'public' && isAuthProviderEqual(r.provider, 'identityPool') && r.generateIAMPolicy);
-    const iamPrivateRulesExist = rules.some((r) => r.allow === 'private' && isAuthProviderEqual(r.provider, 'identityPool') && r.generateIAMPolicy);
+    const iamPublicRulesExist = rules.some(
+      (r) => r.allow === 'public' && isAuthProviderEqual(r.provider, 'identityPool') && r.generateIAMPolicy,
+    );
+    const iamPrivateRulesExist = rules.some(
+      (r) => r.allow === 'private' && isAuthProviderEqual(r.provider, 'identityPool') && r.generateIAMPolicy,
+    );
 
     if (iamPublicRulesExist) {
       this.unauthPolicyResources.add(`${typeName}/null`);
@@ -1375,8 +1387,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   }
 
   private addFieldToResourceReferences(typeName: string, fieldName: string, rules: AuthRule[]): void {
-    const iamPublicRulesExist = rules.some((r) => r.allow === 'public' && isAuthProviderEqual(r.provider, 'identityPool') && r.generateIAMPolicy);
-    const iamPrivateRulesExist = rules.some((r) => r.allow === 'private' && isAuthProviderEqual(r.provider, 'identityPool') && r.generateIAMPolicy);
+    const iamPublicRulesExist = rules.some(
+      (r) => r.allow === 'public' && isAuthProviderEqual(r.provider, 'identityPool') && r.generateIAMPolicy,
+    );
+    const iamPrivateRulesExist = rules.some(
+      (r) => r.allow === 'private' && isAuthProviderEqual(r.provider, 'identityPool') && r.generateIAMPolicy,
+    );
 
     if (iamPublicRulesExist) {
       this.unauthPolicyResources.add(`${typeName}/${fieldName}`);

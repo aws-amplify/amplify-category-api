@@ -29,8 +29,10 @@ export const deprecatedIAMProviderWarning = (rules: AuthRule[]): string | undefi
   const hasDeprecatedIAMProvider = rules.some((rule) => rule.provider === 'iam');
 
   if (hasDeprecatedIAMProvider) {
-    return "WARNING: Schema is using an @auth directive with deprecated provider 'iam'." +
-      " Replace 'iam' provider with 'identityPool' provider.";
+    return (
+      "WARNING: Schema is using an @auth directive with deprecated provider 'iam'." +
+      " Replace 'iam' provider with 'identityPool' provider."
+    );
   }
 
   return undefined;

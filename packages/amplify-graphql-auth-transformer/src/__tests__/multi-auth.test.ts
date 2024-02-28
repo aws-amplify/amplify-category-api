@@ -56,7 +56,8 @@ const ownerWithIAMAuthDirective = '@auth(rules: [{allow: owner, provider: iam }]
 const ownerWithIdentityPoolAuthDirective = '@auth(rules: [{allow: owner, provider: identityPool }])';
 const ownerRestrictedPublicAuthDirective = '@auth(rules: [{allow: owner},{allow: public, operations: [read]}])';
 const ownerRestrictedIAMPrivateAuthDirective = '@auth(rules: [{allow: owner},{allow: private, operations: [read], provider: iam }])';
-const ownerRestrictedIdentityPoolPrivateAuthDirective = '@auth(rules: [{allow: owner},{allow: private, operations: [read], provider: identityPool }])';
+const ownerRestrictedIdentityPoolPrivateAuthDirective =
+  '@auth(rules: [{allow: owner},{allow: private, operations: [read], provider: identityPool }])';
 const groupsAuthDirective = '@auth(rules: [{allow: groups, groups: ["admin"] }])';
 const groupsWithApiKeyAuthDirective = '@auth(rules: [{allow: groups, groups: ["admin"]}, {allow: public, operations: [read]}])';
 const groupsWithProviderAuthDirective = '@auth(rules: [{allow: groups,groups: ["admin"], provider: iam }])';

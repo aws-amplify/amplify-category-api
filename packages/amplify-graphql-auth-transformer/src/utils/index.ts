@@ -204,4 +204,4 @@ export const isAuthProviderEqual = (provider: AuthProvider, otherProvider: AuthP
   }
 
   return false;
-}
+};

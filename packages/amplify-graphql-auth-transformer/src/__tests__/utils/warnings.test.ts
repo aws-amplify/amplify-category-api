@@ -389,6 +389,8 @@ type Invoice
     expect(logs.length).toBe(1);
     const log = logs[0];
     expect(log.level).toBe(TransformerLogLevel.WARN);
-    expect(log.message).toBe("WARNING: Schema is using an @auth directive with deprecated provider 'iam'. Replace 'iam' provider with 'identityPool' provider.");
+    expect(log.message).toBe(
+      "WARNING: Schema is using an @auth directive with deprecated provider 'iam'. Replace 'iam' provider with 'identityPool' provider.",
+    );
   });
 });

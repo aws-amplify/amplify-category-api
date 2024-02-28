@@ -130,8 +130,9 @@ describe('subscriptions', () => {
 
     describe('identityPool', () => {
       it('renders for simple identityPool auth', () => {
-        expect(generateAuthExpressionForSubscriptions(configFromPartial({ hasIAM: true }), defaultRoleDefinitions.identityPool))
-          .toMatchSnapshot();
+        expect(
+          generateAuthExpressionForSubscriptions(configFromPartial({ hasIAM: true }), defaultRoleDefinitions.identityPool),
+        ).toMatchSnapshot();
       });
 
       it('renders for identityPool auth with no admin roles', () => {

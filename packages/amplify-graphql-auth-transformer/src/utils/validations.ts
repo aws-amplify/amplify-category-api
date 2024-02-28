@@ -55,7 +55,12 @@ found '${rule.provider}' assigned.`,
   // Private
   //
   if (rule.allow === 'private') {
-    if (rule.provider && !isAuthProviderEqual(rule.provider, 'userPools') && !isAuthProviderEqual(rule.provider, 'identityPool') && !isAuthProviderEqual(rule.provider, 'oidc')) {
+    if (
+      rule.provider &&
+      !isAuthProviderEqual(rule.provider, 'userPools') &&
+      !isAuthProviderEqual(rule.provider, 'identityPool') &&
+      !isAuthProviderEqual(rule.provider, 'oidc')
+    ) {
       throw new InvalidDirectiveError(
         `@auth directive with 'private' strategy only supports 'userPools' (default) and 'identityPool' providers, but \
 found '${rule.provider}' assigned.`,
