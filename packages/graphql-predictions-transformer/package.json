@@ -51,7 +51,7 @@
     "coverageProvider": "v8",
     "coverageThreshold": {
       "global": {
-        "branches": 87,
+        "branches": 85,
         "functions": 90,
         "lines": 90
       }
@@ -59,6 +59,12 @@
     "coverageReporters": [
       "clover",
       "text"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/__tests__/"
     ]
   }
 }

@@ -3,6 +3,18 @@ import * as glob from 'glob';
 import * as fs from 'fs-extra';
 import * as yaml from 'js-yaml';
 
+type TestRegion = {
+  name: string;
+  optIn: boolean;
+};
+
+const REPO_ROOT = join(__dirname, '..');
+
+const supportedRegionsPath = join(REPO_ROOT, 'scripts', 'e2e-test-regions.json');
+const suportedRegions: TestRegion[] = JSON.parse(fs.readFileSync(supportedRegionsPath, 'utf-8'));
+const testRegions = suportedRegions.map((region) => region.name);
+const nonOptInRegions = suportedRegions.filter((region) => !region.optIn).map((region) => region.name);
+
 type ForceTests = 'interactions' | 'containers';
 
 type TestTiming = {
@@ -43,18 +55,6 @@ type CandidateJob = {
   runSolo: boolean;
 };
 
-// Ensure to update packages/amplify-e2e-tests/src/cleanup-e2e-resources.ts is also updated this gets updated
-const AWS_REGIONS_TO_RUN_TESTS = [
-  'us-east-1',
-  'us-east-2',
-  'us-west-2',
-  'eu-west-2',
-  'eu-central-1',
-  'ap-northeast-1',
-  'ap-southeast-1',
-  'ap-southeast-2',
-];
-
 // Some services (eg. amazon lex, containers) are not available in all regions
 // Tests added to this list will always run in the specified region
 const FORCE_REGION_MAP = {
@@ -73,7 +73,6 @@ const USE_PARENT_ACCOUNT = [
   'src/__tests__/migration/api.key.migration5.test.ts',
   'src/__tests__/FunctionTransformerTestsV2.e2e.test.ts',
 ];
-const REPO_ROOT = join(__dirname, '..');
 const TEST_TIMINGS_PATH = join(REPO_ROOT, 'scripts', 'test-timings.data.json');
 const CODEBUILD_CONFIG_BASE_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_base.yml');
 const CODEBUILD_GENERATE_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow.yml');
@@ -118,14 +117,38 @@ const RUN_SOLO: (string | RegExp)[] = [
   'src/__tests__/transformer-migrations/model-migration.test.ts',
   'src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-no-node-to-node.test.ts',
   'src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-had-node-to-node.test.ts',
+  /src\/__tests__\/api_1.*\.test\.ts/,
   // GraphQL E2E tests
   'src/__tests__/FunctionTransformerTestsV2.e2e.test.ts',
   'src/__tests__/HttpTransformer.e2e.test.ts',
   'src/__tests__/HttpTransformerV2.e2e.test.ts',
   // Deploy Velocity tests
   /src\/__tests__\/deploy-velocity\/.*\.test\.ts/,
-  // RDS tests
+  // SQL tests
   /src\/__tests__\/rds-.*\.test\.ts/,
+  // CDK tests
+  /src\/__tests__\/base-cdk.*\.test\.ts/,
+  'src/__tests__/amplify-table-1.test.ts',
+  'src/__tests__/amplify-table-3.test.ts',
+  'src/__tests__/api_canary.test.ts',
+  'src/__tests__/sql-models.test.ts',
+  'src/__tests__/amplify-table-2.test.ts',
+  'src/__tests__/admin-role.test.ts',
+  'src/__tests__/all-auth-modes.test.ts',
+];
+
+const RUN_IN_ALL_REGIONS = [
+  // DDB tests
+  'src/__tests__/api_canary.test.ts',
+  // CDK tests
+  'src/__tests__/base-cdk.test.ts',
+];
+
+const RUN_IN_NON_OPT_IN_REGIONS: (string | RegExp)[] = [
+  // SQL tests
+  /src\/__tests__\/rds-.*\.test\.ts/,
+  // Searchable tests
+  /src\/__tests__\/.*searchable.*\.test\.ts/,
 ];
 
 const DEBUG_FLAG = '--debug';
@@ -147,17 +170,20 @@ const loadTestTimings = (): { timingData: TestTiming[] } => JSON.parse(fs.readFi
 const getTestFiles = (dir: string, pattern = 'src/**/*.test.ts'): string[] => glob.sync(pattern, { cwd: dir });
 
 const createJob = (os: OSType, jobIdx: number, runSolo = false): CandidateJob => ({
-  region: AWS_REGIONS_TO_RUN_TESTS[jobIdx % AWS_REGIONS_TO_RUN_TESTS.length],
+  region: testRegions[jobIdx % testRegions.length],
   os,
   tests: [],
   useParentAccount: false,
   runSolo,
 });
 
-const getTestNameFromPath = (testSuitePath: string): string => {
+const getTestNameFromPath = (testSuitePath: string, region?: string): string => {
   const startIndex = testSuitePath.lastIndexOf('/') + 1;
   const endIndex = testSuitePath.lastIndexOf('.test');
-  return testSuitePath.substring(startIndex, endIndex).split('.e2e').join('').split('.').join('-');
+  const regionSuffix =
+    RUN_IN_ALL_REGIONS.find((allRegions) => testSuitePath === allRegions || testSuitePath.match(allRegions)) && region ? `-${region}` : '';
+
+  return testSuitePath.substring(startIndex, endIndex).split('.e2e').join('').split('.').join('-').concat(regionSuffix);
 };
 
 const splitTests = (baseJobLinux: any, testDirectory: string, pickTests?: (testSuites: string[]) => string[]): BatchBuildJob[] => {
@@ -184,32 +210,34 @@ const splitTests = (baseJobLinux: any, testDirectory: string, pickTests?: (testS
     for (const test of testSuites) {
       const currentJob = osJobs[osJobs.length - 1];
 
-      const FORCE_REGION = Object.keys(FORCE_REGION_MAP).find((key) => {
-        const testName = getTestNameFromPath(test);
-        return testName.startsWith(key);
-      });
-
       const USE_PARENT = USE_PARENT_ACCOUNT.some((usesParent) => test.startsWith(usesParent));
 
       if (RUN_SOLO.find((solo) => test === solo || test.match(solo))) {
+        if (RUN_IN_ALL_REGIONS.find((allRegions) => test === allRegions || test.match(allRegions))) {
+          testRegions.forEach((region) => {
+            const newSoloJob = createJob(os, jobIdx, true);
+            jobIdx++;
+            newSoloJob.tests.push(test);
+            newSoloJob.region = region;
+            soloJobs.push(newSoloJob);
+          });
+          continue;
+        }
         const newSoloJob = createJob(os, jobIdx, true);
         jobIdx++;
         newSoloJob.tests.push(test);
-        if (FORCE_REGION) {
-          newSoloJob.region = FORCE_REGION_MAP[FORCE_REGION as ForceTests];
-        }
+
         if (USE_PARENT) {
           newSoloJob.useParentAccount = true;
         }
+        setJobRegion(test, newSoloJob, jobIdx);
         soloJobs.push(newSoloJob);
         continue;
       }
 
       // add the test
       currentJob.tests.push(test);
-      if (FORCE_REGION) {
-        currentJob.region = FORCE_REGION_MAP[FORCE_REGION as ForceTests];
-      }
+      setJobRegion(test, currentJob, jobIdx);
       if (USE_PARENT) {
         currentJob.useParentAccount = true;
       }
@@ -227,7 +255,7 @@ const splitTests = (baseJobLinux: any, testDirectory: string, pickTests?: (testS
   const result: any[] = [];
   linuxJobs.forEach((j) => {
     if (j.tests.length !== 0) {
-      const names = j.tests.map((tn) => getTestNameFromPath(tn)).join('_');
+      const names = j.tests.map((tn) => getTestNameFromPath(tn, j.region)).join('_');
       const tmp = {
         ...JSON.parse(JSON.stringify(baseJobLinux)), // deep clone base job
         identifier: getIdentifier(names),
@@ -245,6 +273,29 @@ const splitTests = (baseJobLinux: any, testDirectory: string, pickTests?: (testS
     }
   });
   return result;
+};
+
+const setJobRegion = (test: string, job: CandidateJob, jobIdx: number) => {
+  const FORCE_REGION = Object.keys(FORCE_REGION_MAP).find((key) => {
+    const testName = getTestNameFromPath(test);
+    return testName.startsWith(key);
+  });
+
+  if (FORCE_REGION) {
+    job.region = FORCE_REGION_MAP[FORCE_REGION as ForceTests];
+    return;
+  }
+
+  // Parent E2E account does not have opt-in regions. Choose non-opt-in region.
+  // If the tests are explicitly specified as to be run in non-opt-in regions, follow that.
+  if (
+    RUN_IN_NON_OPT_IN_REGIONS.find((nonOptInTest) => test.toLowerCase() === nonOptInTest || test.toLowerCase().match(nonOptInTest)) ||
+    USE_PARENT_ACCOUNT.some((usesParent) => test.startsWith(usesParent))
+  ) {
+    if (!nonOptInRegions.includes(job.region)) {
+      job.region = nonOptInRegions[jobIdx % nonOptInRegions.length];
+    }
+  }
 };
 
 const main = (): void => {
