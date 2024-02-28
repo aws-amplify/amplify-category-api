@@ -133,7 +133,6 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
   return {
     graphqlApi: GraphqlApi.fromGraphqlApiAttributes(scope, 'L2GraphqlApi', { graphqlApiId: cfnGraphqlApi.attrApiId }),
     tables,
-    amplifyDynamoDbTables,
     roles,
     functions,
     nestedStacks,
@@ -145,6 +144,7 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
       cfnFunctionConfigurations,
       cfnDataSources,
       cfnTables,
+      amplifyDynamoDbTables,
       cfnRoles,
       cfnFunctions,
       additionalCfnResources,

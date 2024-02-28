@@ -4597,13 +4597,34 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 734
+            "line": 739
           },
           "name": "additionalCfnResources",
           "type": {
             "collection": {
               "elementtype": {
                 "fqn": "aws-cdk-lib.CfnResource"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The Generated Amplify DynamoDb Table L1 resource wrapper, keyed by model type name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 724
+          },
+          "name": "amplifyDynamoDbTables",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper"
               },
               "kind": "map"
             }
@@ -4660,7 +4681,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 729
+            "line": 734
           },
           "name": "cfnFunctions",
           "type": {
@@ -4734,7 +4755,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 724
+            "line": 729
           },
           "name": "cfnRoles",
           "type": {
@@ -5049,31 +5070,10 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 741
+        "line": 746
       },
       "name": "AmplifyGraphqlApiResources",
       "properties": [
-        {
-          "abstract": true,
-          "docs": {
-            "stability": "stable",
-            "summary": "The Generated Amplify DynamoDb Table wrapped if produced, keyed by name."
-          },
-          "immutable": true,
-          "locationInModule": {
-            "filename": "src/types.ts",
-            "line": 755
-          },
-          "name": "amplifyDynamoDbTables",
-          "type": {
-            "collection": {
-              "elementtype": {
-                "fqn": "@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper"
-              },
-              "kind": "map"
-            }
-          }
-        },
         {
           "abstract": true,
           "docs": {
@@ -5120,7 +5120,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 745
+            "line": 750
           },
           "name": "graphqlApi",
           "type": {
@@ -5178,7 +5178,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 750
+            "line": 755
           },
           "name": "tables",
           "type": {
@@ -7982,5 +7982,5 @@
     }
   },
   "version": "1.5.6",
-  "fingerprint": "4T13C3a8T0VXwUOCR5PYLNjRHCjG5whCN2GdYrsfAvk="
+  "fingerprint": "r7SAtqv1xUamf1l70NuIiWM3+nNGYnBXv3rE8AOZcWo="
 }

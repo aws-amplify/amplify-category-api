@@ -108,6 +108,7 @@ export class AmplifyGraphqlApi extends Construct {
 // @public
 export interface AmplifyGraphqlApiCfnResources {
     readonly additionalCfnResources: Record<string, CfnResource>;
+    readonly amplifyDynamoDbTables: Record<string, AmplifyDynamoDbTableWrapper>;
     readonly cfnApiKey?: CfnApiKey;
     readonly cfnDataSources: Record<string, CfnDataSource>;
     readonly cfnFunctionConfigurations: Record<string, CfnFunctionConfiguration>;
@@ -136,7 +137,6 @@ export interface AmplifyGraphqlApiProps {
 
 // @public
 export interface AmplifyGraphqlApiResources {
-    readonly amplifyDynamoDbTables: Record<string, AmplifyDynamoDbTableWrapper>;
     readonly cfnResources: AmplifyGraphqlApiCfnResources;
     readonly functions: Record<string, IFunction>;
     readonly graphqlApi: IGraphqlApi;

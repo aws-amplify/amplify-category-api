@@ -48,7 +48,7 @@ describe('AmplifyGraphqlApi', () => {
           apiKeyConfig: { expires: cdk.Duration.days(7) },
         },
       });
-      expect(resources.amplifyDynamoDbTables['Todo']).toBeDefined();
+      expect(resources.cfnResources.amplifyDynamoDbTables['Todo']).toBeDefined();
       expect(resources.tables['Todo']).toBeDefined();
       expect(resources.cfnResources.cfnTables['Todo']).toBeUndefined();
     });
@@ -71,7 +71,7 @@ describe('AmplifyGraphqlApi', () => {
       });
       expect(resources.cfnResources.cfnTables['Todo']).toBeDefined();
       expect(resources.tables['Todo']).toBeDefined();
-      expect(resources.amplifyDynamoDbTables['Todo']).toBeUndefined();
+      expect(resources.cfnResources.amplifyDynamoDbTables['Todo']).toBeUndefined();
     });
   });
 });
