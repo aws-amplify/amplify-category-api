@@ -14,6 +14,7 @@ import {
   ObjectDefinitionWrapper,
   SyncUtils,
   TransformerModelBase,
+  ResolverConfig,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncDataSourceType,
@@ -278,6 +279,10 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     this.typesWithModelDirective.forEach((modelTypeName) => {
       const type = context.output.getObject(modelTypeName);
       context.providerRegistry.registerDataSourceProvider(type!, this);
+      const resolverConfig = context.getResolverConfig<ResolverConfig>();
+      if (resolverConfig?.models?.[modelTypeName]) {
+        throw new Error(`Conflict resolution is not supported for SQL models. Remove "${modelTypeName}" from dataStoreConfiguration.`);
+      }
     });
   };
 
