@@ -4,6 +4,7 @@ import {
   constructDataSourceStrategies,
   getResourceNamesForStrategy,
   validateModelSchema,
+  ConflictHandlerType,
 } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
 import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
@@ -48,5 +49,34 @@ describe('ModelTransformer with SQL data sources:', () => {
     expect(out.functions[`${resourceNames.sqlLambdaFunction}.zip`]).toBeDefined();
     expect(out.functions[`${resourceNames.sqlPatchingLambdaFunction}.zip`]).toBeDefined();
     validateModelSchema(parse(out.schema));
+  });
+
+  it('throw error when conflict resolution is enabled on sql model', async () => {
+    const validSchema = `
+      type Post @model {
+          id: ID! @primaryKey
+          title: String!
+      }
+      type Comment @model {
+        id: ID! @primaryKey
+        content: String
+      }
+    `;
+
+    expect(() =>
+      testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlStrategy),
+        resolverConfig: {
+          models: {
+            Post: {
+              ConflictDetection: 'VERSION',
+              ConflictHandler: ConflictHandlerType.AUTOMERGE,
+            },
+          },
+        },
+      }),
+    ).toThrow('Conflict resolution is not supported for SQL models. Remove "Post" from dataStoreConfiguration.');
   });
 });
