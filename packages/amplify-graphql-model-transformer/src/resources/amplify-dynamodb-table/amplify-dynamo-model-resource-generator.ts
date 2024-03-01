@@ -149,6 +149,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
 
     // construct a wrapper around the custom table to allow normal CDK operations on top of it
     const tableRepresentative = table.tableFromAttr;
+    setResourceName(tableRepresentative, { name: modelName, setOnDefaultChild: false });
 
     const cfnTable = table.node.defaultChild?.node.defaultChild as cdk.CfnCustomResource;
     setResourceName(cfnTable, { name: modelName, setOnDefaultChild: false });
