@@ -4,7 +4,6 @@ import { ResourceConstants } from 'graphql-transformer-common';
 import { HttpTransformer } from '@aws-amplify/graphql-http-transformer';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { default as moment } from 'moment';
-import { default as S3 } from 'aws-sdk/clients/s3';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { GraphQLClient } from '../GraphQLClient';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
@@ -72,6 +71,48 @@ beforeAll(async () => {
           headers: [{ key: "x-api-key", value: "fake-api-key" }]
         )
     }
+
+    type Todo @model {
+      id: ID!
+      name: String
+      note: Note
+    }
+
+    type Note {
+      id: ID!
+      simpleGet: CompObj @http(method: GET, url: "${apiUrl}posts/1")
+      simpleGet2: CompObj @http(url: "${apiUrl}posts/2")
+      complexPost(
+          id: Int,
+          title: String!,
+          body: String,
+          userId: Int
+      ): CompObj @http(method: POST, url: "${apiUrl}posts")
+      complexPut(
+          id: Int!,
+          title: String,
+          body: String,
+          userId: Int
+      ): CompObj @http(method: PUT, url: "${apiUrl}posts/:id")
+      deleter: String @http(method: DELETE, url: "${apiUrl}posts/4")
+      complexGet(
+          data: String!,
+          userId: Int!,
+          _limit: Int
+      ): [CompObj] @http(url: "${apiUrl}:data")
+      complexGet2(
+          dataType: String!,
+          postId: Int!,
+          secondType: String!,
+          id: Int
+      ): [PostComment] @http(url: "${apiUrl}:dataType/:postId/:secondType")
+      configGet: ConfigResponse @http(
+        method: GET,
+        url: "${apiUrl}config/\${aws_region}/\${env}/\${!ctx.source.id}",
+        headers: [{ key: "x-api-key", value: "fake-api-key" }]
+      )
+    }
+
     type CompObj {
         userId: Int
         id: Int
@@ -482,4 +523,329 @@ test('headers, parent data, environment, and region support', async () => {
   expect(response.data.createComment.configGet.env).toEqual('NONE');
   expect(response.data.createComment.configGet.region).toEqual(REGION);
   expect(response.data.createComment.configGet.commentId).toEqual(response.data.createComment.id);
+});
+
+describe('Non-Model types with Http resolvers', () => {
+  test('HTTP GET request', async () => {
+    try {
+      const response = await GRAPHQL_CLIENT.query(
+        `mutation {
+              createTodo(input: { name: "Hello, World!", note: { id: "1" } }) {
+                id
+                name
+                note {
+                  id
+                  simpleGet {
+                      id
+                      title
+                      body
+                  }
+                }
+              }
+          }`,
+        {},
+      );
+
+      const post1Title = 'sunt aut facere repellat provident occaecati excepturi optio reprehenderit';
+
+      expect(response.errors).toBeUndefined();
+      expect(response.data.createTodo.id).toBeDefined();
+      expect(response.data.createTodo.name).toEqual('Hello, World!');
+      expect(response.data.createTodo.note.simpleGet).toBeDefined();
+      expect(response.data.createTodo.note.id).toEqual('1');
+      expect(response.data.createTodo.note.simpleGet.title).toEqual(post1Title);
+    } catch (e) {
+      console.error(e);
+      // fail
+      expect(e).toBeUndefined();
+    }
+  });
+
+  test('HTTP POST request', async () => {
+    try {
+      const response = await GRAPHQL_CLIENT.query(
+        `mutation {
+          createTodo(input: { name: "Hello, World!", note: { id: "2" } }) {
+            id
+            name
+            note {
+              id
+              complexPost(
+                body: {
+                    title: "foo",
+                    body: "bar",
+                    userId: 2
+                }
+              ) {
+                id
+                title
+                body
+                userId
+              }
+            }
+          }
+        }`,
+        {},
+      );
+
+      expect(response.errors).toBeUndefined();
+      expect(response.data.createTodo.id).toBeDefined();
+      expect(response.data.createTodo.name).toEqual('Hello, World!');
+      expect(response.data.createTodo.note.complexPost).toBeDefined();
+      expect(response.data.createTodo.note.complexPost.title).toEqual('foo');
+      expect(response.data.createTodo.note.complexPost.userId).toEqual(2);
+    } catch (e) {
+      console.error(e);
+      // fail
+      expect(e).toBeUndefined();
+    }
+  });
+
+  test('HTTP PUT request', async () => {
+    try {
+      const response = await GRAPHQL_CLIENT.query(
+        `mutation {
+          createTodo(input: { name: "Hello, World!", note: { id: "3" } }) {
+                  id
+                  name
+                  note {
+                    complexPut(
+                      params: {
+                          id: "3"
+                      },
+                      body: {
+                          title: "foo",
+                          body: "bar",
+                          userId: 2
+                      }
+                    ) {
+                      id
+                      title
+                      body
+                      userId
+                    }
+                  }
+          }
+        }`,
+        {},
+      );
+
+      expect(response.errors).toBeUndefined();
+      expect(response.data.createTodo.id).toBeDefined();
+      expect(response.data.createTodo.name).toEqual('Hello, World!');
+      expect(response.data.createTodo.note.complexPut).toBeDefined();
+      expect(response.data.createTodo.note.complexPut.title).toEqual('foo');
+      expect(response.data.createTodo.note.complexPut.userId).toEqual(2);
+    } catch (e) {
+      console.error(e);
+      // fail
+      expect(e).toBeUndefined();
+    }
+  });
+
+  test('HTTP DELETE request', async () => {
+    try {
+      const response = await GRAPHQL_CLIENT.query(
+        `mutation {
+              createTodo(input: { name: "Hello, World!", note: { id: "3" } }) {
+                  id
+                  name
+                  note {
+                    deleter
+                  }
+              }
+          }`,
+        {},
+      );
+
+      expect(response.errors).toBeUndefined();
+      expect(response.data.createTodo.id).toBeDefined();
+      expect(response.data.createTodo.name).toEqual('Hello, World!');
+      expect(response.data.createTodo.note.deleter).not.toBeNull();
+    } catch (e) {
+      console.error(e);
+      // fail
+      expect(e).toBeUndefined();
+    }
+  });
+
+  test('GET with URL param and query values', async () => {
+    try {
+      const response = await GRAPHQL_CLIENT.query(
+        `mutation {
+            createTodo(input: { name: "Hello, World!", note: { id: "4" } }) {
+                  id
+                  name
+                  note {
+                    complexGet(
+                        params: {
+                            data: "posts"
+                        },
+                        query: {
+                            userId: 1,
+                            _limit: 7
+                        }
+                    ) {
+                        id
+                        title
+                        body
+                    }
+                  }
+              }
+          }`,
+        {},
+      );
+
+      expect(response.errors).toBeUndefined();
+      expect(response.data.createTodo.id).toBeDefined();
+      expect(response.data.createTodo.name).toEqual('Hello, World!');
+      expect(response.data.createTodo.note.complexGet).toBeDefined();
+      expect(response.data.createTodo.note.complexGet.length).toEqual(7);
+    } catch (e) {
+      console.error(e);
+      // fail
+      expect(e).toBeUndefined();
+    }
+  });
+
+  test('GET with multiple URL params and query values', async () => {
+    try {
+      const response = await GRAPHQL_CLIENT.query(
+        `mutation {
+            createTodo(input: { name: "Hello, World!", note: { id: "5" } }) {
+                  id
+                  name
+                  note {
+                    complexGet2(
+                      params: {
+                          dataType: "posts",
+                          postId: "1",
+                          secondType: "comments"
+                      },
+                      query: {
+                          id: 2
+                      }
+                    ) {
+                        id
+                        name
+                        email
+                    }
+                  }
+              }
+          }`,
+        {},
+      );
+
+      expect(response.errors).toBeUndefined();
+      expect(response.data.createTodo.id).toBeDefined();
+      expect(response.data.createTodo.name).toEqual('Hello, World!');
+      expect(response.data.createTodo.note.complexGet2).toBeDefined();
+      expect(response.data.createTodo.note.complexGet2[0].email).toEqual('Jayne_Kuhic@sydney.com');
+    } catch (e) {
+      console.error(e);
+      // fail
+      expect(e).toBeUndefined();
+    }
+  });
+
+  test('GET errors when missing a required Query input object', async () => {
+    try {
+      const response = await GRAPHQL_CLIENT.query(
+        `mutation {
+            createTodo(input: { name: "Hello, World!", note: { id: "6" } }) {
+                  id
+                  name
+                  note {
+                    complexGet(
+                        params: {
+                            data: "posts",
+                        }
+                    ) {
+                        id
+                        title
+                        body
+                    }
+                  }
+              }
+          }`,
+        {},
+      );
+
+      expect(response.data).toBeNull();
+      expect(response.errors).toBeDefined();
+      expect(response.errors).toHaveLength(1);
+      expect(response.errors[0].message).toEqual(
+        "Validation error of type MissingFieldArgument: Missing field argument query @ 'createTodo/note/complexGet'",
+      );
+    } catch (e) {
+      console.error(e);
+      // fail
+      expect(e).toBeUndefined();
+    }
+  });
+
+  test('POST errors when missing a non-null arg in query/body', async () => {
+    try {
+      const response = await GRAPHQL_CLIENT.query(
+        `mutation {
+            createTodo(input: { name: "Hello, World!", note: { id: "7" } }) {
+                  id
+                  name
+                  note {
+                    complexPost(
+                        body: {
+                            id: 1,
+                            body: "bar"
+                        }
+                    ) {
+                        id
+                        title
+                        body
+                    }
+                  }
+              }
+          }`,
+        {},
+      );
+
+      expect(response.data.createTodo.note.complexPost).toBeNull();
+      expect(response.errors).toBeDefined();
+      expect(response.errors).toHaveLength(1);
+      expect(response.errors[0].message).toEqual(
+        'An argument you marked as Non-Null is not present in the query nor the body of your request.',
+      );
+    } catch (e) {
+      console.error(e);
+      // fail
+      expect(e).toBeUndefined();
+    }
+  });
+
+  test('headers, parent data, environment, and region support', async () => {
+    const response = await GRAPHQL_CLIENT.query(
+      `mutation {
+        createTodo(input: { name: "Hello, World!", note: { id: "8" } }) {
+          id
+          name
+          note {
+            configGet {
+              apiKey
+              env
+              region
+              commentId
+            }
+          }
+        }
+      }`,
+      {},
+    );
+
+    expect(response.errors).toBeUndefined();
+    expect(response.data.createTodo.id).toBeDefined();
+    expect(response.data.createTodo.name).toEqual('Hello, World!');
+    expect(response.data.createTodo.note.configGet).toBeDefined();
+    expect(response.data.createTodo.note.configGet.apiKey).toEqual('fake-api-key');
+    expect(response.data.createTodo.note.configGet.env).toEqual('NONE');
+    expect(response.data.createTodo.note.configGet.region).toEqual(REGION);
+  });
 });
