@@ -157,7 +157,7 @@ export class AmplifyGraphqlApi extends Construct {
 
     if (conflictResolution && dataStoreConfiguration) {
       throw new Error(
-        `conflictResolution is deprecrated. conflictResolution and dataStoreConfiguration cannot be used together. Please use dataStoreConfiguration.`,
+        `conflictResolution is deprecated. conflictResolution and dataStoreConfiguration cannot be used together. Please use dataStoreConfiguration.`,
       );
     }
 
