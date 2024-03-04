@@ -8,20 +8,20 @@
   "bundled": {
     "@aws-amplify/backend-output-schemas": "^0.4.0",
     "@aws-amplify/backend-output-storage": "^0.2.2",
-    "@aws-amplify/graphql-auth-transformer": "3.3.6",
-    "@aws-amplify/graphql-default-value-transformer": "2.2.5",
-    "@aws-amplify/graphql-function-transformer": "2.1.17",
-    "@aws-amplify/graphql-http-transformer": "2.1.17",
-    "@aws-amplify/graphql-index-transformer": "2.3.5",
-    "@aws-amplify/graphql-maps-to-transformer": "3.4.6",
-    "@aws-amplify/graphql-model-transformer": "2.4.5",
-    "@aws-amplify/graphql-predictions-transformer": "2.1.17",
-    "@aws-amplify/graphql-relational-transformer": "2.3.6",
-    "@aws-amplify/graphql-searchable-transformer": "2.5.2",
-    "@aws-amplify/graphql-sql-transformer": "0.2.5",
-    "@aws-amplify/graphql-transformer": "1.3.10",
-    "@aws-amplify/graphql-transformer-core": "2.4.5",
-    "@aws-amplify/graphql-transformer-interfaces": "3.3.3",
+    "@aws-amplify/graphql-auth-transformer": "3.4.0",
+    "@aws-amplify/graphql-default-value-transformer": "2.3.0",
+    "@aws-amplify/graphql-function-transformer": "2.1.18",
+    "@aws-amplify/graphql-http-transformer": "2.1.18",
+    "@aws-amplify/graphql-index-transformer": "2.3.6",
+    "@aws-amplify/graphql-maps-to-transformer": "3.4.7",
+    "@aws-amplify/graphql-model-transformer": "2.5.0",
+    "@aws-amplify/graphql-predictions-transformer": "2.1.18",
+    "@aws-amplify/graphql-relational-transformer": "2.4.0",
+    "@aws-amplify/graphql-searchable-transformer": "2.6.0",
+    "@aws-amplify/graphql-sql-transformer": "0.2.6",
+    "@aws-amplify/graphql-transformer": "1.3.11",
+    "@aws-amplify/graphql-transformer-core": "2.5.0",
+    "@aws-amplify/graphql-transformer-interfaces": "3.4.0",
     "@aws-amplify/platform-core": "^0.2.0",
     "@aws-amplify/plugin-types": "^0.4.1",
     "charenc": "^0.0.2",
@@ -29,8 +29,8 @@
     "fs-extra": "^8.1.0",
     "graceful-fs": "^4.2.11",
     "graphql": "^15.5.0",
-    "graphql-mapping-template": "4.20.14",
-    "graphql-transformer-common": "4.28.0",
+    "graphql-mapping-template": "4.20.15",
+    "graphql-transformer-common": "4.28.1",
     "hjson": "^3.2.2",
     "immer": "^9.0.12",
     "is-buffer": "^2.0.5",
@@ -3780,11 +3780,33 @@
         {
           "docs": {
             "stability": "stable",
+            "summary": "Set the deletion policy of the resource based on the removal policy specified."
+          },
+          "locationInModule": {
+            "filename": "src/amplify-dynamodb-table-wrapper.ts",
+            "line": 117
+          },
+          "name": "applyRemovalPolicy",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "removal policy to set."
+              },
+              "name": "policy",
+              "type": {
+                "fqn": "aws-cdk-lib.RemovalPolicy"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "stable",
             "summary": "Set the provisionedThroughtput for a specified GSI by name."
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 146
+            "line": 154
           },
           "name": "setGlobalSecondaryIndexProvisionedThroughput",
           "parameters": [
@@ -3818,7 +3840,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 116
+            "line": 124
           },
           "name": "billingMode",
           "type": {
@@ -3832,7 +3854,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 174
+            "line": 182
           },
           "name": "deletionProtectionEnabled",
           "type": {
@@ -3846,7 +3868,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 130
+            "line": 138
           },
           "name": "pointInTimeRecoveryEnabled",
           "type": {
@@ -3860,7 +3882,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 137
+            "line": 145
           },
           "name": "provisionedThroughput",
           "type": {
@@ -3874,7 +3896,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 167
+            "line": 175
           },
           "name": "sseSpecification",
           "type": {
@@ -3888,7 +3910,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 160
+            "line": 168
           },
           "name": "streamSpecification",
           "type": {
@@ -3902,7 +3924,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 123
+            "line": 131
           },
           "name": "timeToLiveAttribute",
           "type": {
@@ -4575,13 +4597,34 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 734
+            "line": 739
           },
           "name": "additionalCfnResources",
           "type": {
             "collection": {
               "elementtype": {
                 "fqn": "aws-cdk-lib.CfnResource"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The Generated Amplify DynamoDb Table L1 resource wrapper, keyed by model type name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 724
+          },
+          "name": "amplifyDynamoDbTables",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper"
               },
               "kind": "map"
             }
@@ -4638,7 +4681,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 729
+            "line": 734
           },
           "name": "cfnFunctions",
           "type": {
@@ -4712,7 +4755,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 724
+            "line": 729
           },
           "name": "cfnRoles",
           "type": {
@@ -5027,31 +5070,10 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 741
+        "line": 746
       },
       "name": "AmplifyGraphqlApiResources",
       "properties": [
-        {
-          "abstract": true,
-          "docs": {
-            "stability": "stable",
-            "summary": "The Generated Amplify DynamoDb Table wrapped if produced, keyed by name."
-          },
-          "immutable": true,
-          "locationInModule": {
-            "filename": "src/types.ts",
-            "line": 755
-          },
-          "name": "amplifyDynamoDbTables",
-          "type": {
-            "collection": {
-              "elementtype": {
-                "fqn": "@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper"
-              },
-              "kind": "map"
-            }
-          }
-        },
         {
           "abstract": true,
           "docs": {
@@ -5098,7 +5120,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 745
+            "line": 750
           },
           "name": "graphqlApi",
           "type": {
@@ -5156,7 +5178,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 750
+            "line": 755
           },
           "name": "tables",
           "type": {
@@ -7959,6 +7981,6 @@
       "symbolId": "src/model-datasource-strategy-types:VpcConfig"
     }
   },
-  "version": "1.5.6",
-  "fingerprint": "SvOvsJZJtGh48GTfFeDR9pC5pCJAxPM/q1Eq8vtpVK0="
+  "version": "1.5.7",
+  "fingerprint": "e8ncCFZ/sLqXeq26nxehpoBSdABOdB8RpJDCG/hwjMs="
 }

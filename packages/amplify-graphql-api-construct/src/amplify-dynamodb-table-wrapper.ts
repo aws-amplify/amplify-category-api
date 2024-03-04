@@ -1,4 +1,4 @@
-import { CfnResource } from 'aws-cdk-lib';
+import { CfnResource, RemovalPolicy } from 'aws-cdk-lib';
 import { BillingMode, StreamViewType } from 'aws-cdk-lib/aws-dynamodb';
 
 const AMPLIFY_DYNAMODB_TABLE_RESOURCE_TYPE = 'Custom::AmplifyDynamoDBTable';
@@ -108,6 +108,14 @@ export class AmplifyDynamoDbTableWrapper {
     if (resource.cfnResourceType !== AMPLIFY_DYNAMODB_TABLE_RESOURCE_TYPE) {
       throw new Error(`Only CfnResource with type ${AMPLIFY_DYNAMODB_TABLE_RESOURCE_TYPE} can be used in AmplifyDynamoDbTable`);
     }
+  }
+
+  /**
+   * Set the deletion policy of the resource based on the removal policy specified.
+   * @param policy removal policy to set
+   */
+  applyRemovalPolicy(policy: RemovalPolicy): void {
+    this.resource.applyRemovalPolicy(policy);
   }
 
   /**

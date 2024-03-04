@@ -1,4 +1,6 @@
 import { Kind, DocumentNode } from 'graphql';
+import { makeInputValueDefinition, makeNamedType } from 'graphql-transformer-common';
+import { InputObjectDefinitionWrapper, InputFieldWrapper } from '@aws-amplify/graphql-transformer-core';
 import { TransformerOutput } from '../../transformer-context/output';
 import {
   DEFAULT_SCHEMA_DEFINITION,
@@ -106,19 +108,18 @@ describe('TransformerOutput', () => {
     };
     expect(() => new TransformerOutput(inputDocument)).not.toThrow();
   });
+  const inputDocumentWithNoOperations: DocumentNode = {
+    kind: Kind.DOCUMENT,
+    definitions: [
+      {
+        kind: Kind.SCHEMA_DEFINITION,
+        directives: [],
+        operationTypes: [],
+      },
+    ],
+  };
 
   describe('add default operations', () => {
-    const inputDocumentWithNoOperations: DocumentNode = {
-      kind: Kind.DOCUMENT,
-      definitions: [
-        {
-          kind: Kind.SCHEMA_DEFINITION,
-          directives: [],
-          operationTypes: [],
-        },
-      ],
-    };
-
     const inputDocumentWithAllOperations: DocumentNode = {
       kind: Kind.DOCUMENT,
       definitions: [DEFAULT_SCHEMA_DEFINITION],
@@ -201,5 +202,34 @@ describe('TransformerOutput', () => {
       output.addSubscriptionFields([]);
       expect(output.getSubscriptionTypeName()).toEqual('Subscription');
     });
+  });
+
+  test('adds and gets input', () => {
+    const output = new TransformerOutput(inputDocumentWithNoOperations);
+    const input = InputObjectDefinitionWrapper.create('myinput');
+    const inputField = InputFieldWrapper.create('owner', 'ModelStringInput', true);
+    input.addField(inputField);
+    output.addInput(input.serialize());
+    expect(output.getInput('myinput')?.fields?.[0]?.name.value).toEqual('owner');
+  });
+
+  test('returns undefined if input does not exist', () => {
+    const output = new TransformerOutput(inputDocumentWithNoOperations);
+    expect(output.getInput('noinput')).toBeUndefined();
+  });
+
+  test('updates input', () => {
+    const output = new TransformerOutput(inputDocumentWithNoOperations);
+    const input = InputObjectDefinitionWrapper.create('myinput');
+    const inputField = InputFieldWrapper.create('owner', 'ModelStringInput', true);
+    input.addField(inputField);
+    output.addInput(input.serialize());
+    expect(output.getInput('myinput')?.fields?.[0]?.name.value).toEqual('owner');
+
+    const newInput = InputObjectDefinitionWrapper.create('myinput');
+    const newInputField = InputFieldWrapper.create('newowner', 'ModelStringInput', true);
+    newInput.addField(newInputField);
+    output.updateInput(newInput.serialize());
+    expect(output.getInput('myinput')?.fields?.[0]?.name.value).toEqual('newowner');
   });
 });

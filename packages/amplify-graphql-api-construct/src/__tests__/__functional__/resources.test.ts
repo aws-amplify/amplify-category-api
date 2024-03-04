@@ -352,8 +352,7 @@ describe('generated resource access', () => {
         const stack = new cdk.Stack();
         const {
           resources: {
-            amplifyDynamoDbTables,
-            cfnResources: { cfnTables },
+            cfnResources: { cfnTables, amplifyDynamoDbTables },
           },
         } = new AmplifyGraphqlApi(stack, 'TestApi', {
           definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
@@ -380,8 +379,7 @@ describe('generated resource access', () => {
         const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
         const {
           resources: {
-            amplifyDynamoDbTables,
-            cfnResources: { cfnTables },
+            cfnResources: { cfnTables, amplifyDynamoDbTables },
           },
         } = new AmplifyGraphqlApi(stack, 'TestApi', {
           definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
@@ -405,8 +403,7 @@ describe('generated resource access', () => {
         const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
         const {
           resources: {
-            amplifyDynamoDbTables,
-            cfnResources: { cfnTables },
+            cfnResources: { cfnTables, amplifyDynamoDbTables },
           },
         } = new AmplifyGraphqlApi(stack, 'TestApi', {
           definition: AmplifyGraphqlDefinition.fromString(
@@ -435,8 +432,7 @@ describe('generated resource access', () => {
         const stack = new cdk.Stack();
         const {
           resources: {
-            amplifyDynamoDbTables,
-            cfnResources: { cfnTables },
+            cfnResources: { cfnTables, amplifyDynamoDbTables },
           },
         } = new AmplifyGraphqlApi(stack, 'TestApi', {
           definition: AmplifyGraphqlDefinition.fromString(
