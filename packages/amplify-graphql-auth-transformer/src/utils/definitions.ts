@@ -7,7 +7,7 @@ export type AuthStrategy = 'owner' | 'groups' | 'public' | 'private' | 'custom';
 /**
  * AuthProvider
  */
-export type AuthProvider = 'apiKey' | 'iam' | 'oidc' | 'userPools' | 'function';
+export type AuthProvider = 'apiKey' | 'iam' | 'identityPool' | 'oidc' | 'userPools' | 'function';
 /**
  * ModelMutation
  */
@@ -126,6 +126,7 @@ export const authDirectiveDefinition = `
   enum AuthProvider {
     apiKey
     iam
+    identityPool
     oidc
     userPools
     function

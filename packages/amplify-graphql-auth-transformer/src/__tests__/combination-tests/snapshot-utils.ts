@@ -52,6 +52,10 @@ export const authConfigs: Record<string, AppSyncAuthConfigurationEntry> = {
     authenticationType: 'AWS_IAM',
   },
 
+  identityPool: {
+    authenticationType: 'AWS_IAM',
+  },
+
   oidc: {
     authenticationType: 'OPENID_CONNECT',
     openIDConnectConfig: {
@@ -103,6 +107,11 @@ export const testRules: TestRules = {
     auth: authConfigs.iam,
   },
 
+  'public, identityPool': {
+    ruleTemplate: '{allow: public, provider: identityPool <EXT>}',
+    auth: authConfigs.identityPool,
+  },
+
   'private userPools': { ruleTemplate: '{allow: private <EXT>}', auth: authConfigs.userPool },
 
   'private oidc': {
@@ -111,6 +120,8 @@ export const testRules: TestRules = {
   },
 
   'private iam': { ruleTemplate: '{allow: private, provider: iam <EXT>}', auth: authConfigs.iam },
+
+  'private identityPool': { ruleTemplate: '{allow: private, provider: identityPool <EXT>}', auth: authConfigs.identityPool },
 
   'owner, userPools, implicit owner field': { ruleTemplate: '{allow: owner <EXT>}', auth: authConfigs.userPool },
 
