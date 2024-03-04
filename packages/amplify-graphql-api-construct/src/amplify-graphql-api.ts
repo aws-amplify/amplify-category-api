@@ -161,7 +161,7 @@ export class AmplifyGraphqlApi extends Construct {
       );
     }
 
-    const dataStoreConflictResolution = dataStoreConfiguration || conflictResolution;
+    this.dataStoreConfiguration = dataStoreConfiguration || conflictResolution;
 
     const dataSources = getMetadataDataSources(definition);
 
@@ -210,7 +210,7 @@ export class AmplifyGraphqlApi extends Construct {
       },
       authConfig,
       stackMapping: stackMappings ?? {},
-      resolverConfig: dataStoreConflictResolution ? convertToResolverConfig(dataStoreConflictResolution) : undefined,
+      resolverConfig: this.dataStoreConfiguration ? convertToResolverConfig(this.dataStoreConfiguration) : undefined,
       transformParameters: {
         ...defaultTranslationBehavior,
         ...(translationBehavior ?? {}),
@@ -226,7 +226,6 @@ export class AmplifyGraphqlApi extends Construct {
     this.codegenAssets = new CodegenAssets(this, 'AmplifyCodegenAssets', { modelSchema: definition.schema });
 
     this.resources = getGeneratedResources(this);
-    this.dataStoreConfiguration = dataStoreConflictResolution;
     this.generatedFunctionSlots = getGeneratedFunctionSlots(assetManager.resolverAssets);
     this.storeOutput(outputStorageStrategy);
 
