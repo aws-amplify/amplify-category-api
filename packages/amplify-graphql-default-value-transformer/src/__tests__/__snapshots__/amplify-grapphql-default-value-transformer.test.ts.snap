@@ -166,6 +166,8 @@ type ModelTestConnection {
 input ModelTestFilterInput {
   id: ModelIDInput
   stringValue: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelTestFilterInput]
   or: [ModelTestFilterInput]
   not: ModelTestFilterInput
@@ -181,6 +183,8 @@ input ModelTestConditionInput {
   and: [ModelTestConditionInput]
   or: [ModelTestConditionInput]
   not: ModelTestConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateTestInput {
@@ -206,6 +210,8 @@ type Mutation {
 input ModelSubscriptionTestFilterInput {
   id: ModelSubscriptionIDInput
   stringValue: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
   and: [ModelSubscriptionTestFilterInput]
   or: [ModelSubscriptionTestFilterInput]
 }
@@ -429,6 +435,8 @@ input ModelPostFilterInput {
   enumValue: ModelTagInput
   awsTimeValue: ModelStringInput
   awsDateTime: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelPostFilterInput]
   or: [ModelPostFilterInput]
   not: ModelPostFilterInput
@@ -458,6 +466,8 @@ input ModelPostConditionInput {
   and: [ModelPostConditionInput]
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreatePostInput {
@@ -525,6 +535,8 @@ input ModelSubscriptionPostFilterInput {
   enumValue: ModelSubscriptionStringInput
   awsTimeValue: ModelSubscriptionStringInput
   awsDateTime: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
   and: [ModelSubscriptionPostFilterInput]
   or: [ModelSubscriptionPostFilterInput]
 }

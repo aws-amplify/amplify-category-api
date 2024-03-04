@@ -200,12 +200,21 @@ export type GetArgumentsOptions = {
 };
 
 // @public (undocumented)
+export const getConditionInputName: (modelName: string) => string;
+
+// @public (undocumented)
+export const getConnectionName: (modelName: string) => string;
+
+// @public (undocumented)
 export const getDefaultStrategyNameForDbType: (dbType: ModelDataSourceStrategySqlDbType) => string;
 
 // Warning: (ae-forgotten-export) The symbol "Operation" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export const getFieldNameFor: (op: Operation, typeName: string) => string;
+
+// @public (undocumented)
+export const getFilterInputName: (modelName: string) => string;
 
 // @public (undocumented)
 export const getImportedRDSTypeFromStrategyDbType: (dbType: ModelDataSourceStrategyDbType) => ImportedRDSType;
@@ -242,6 +251,9 @@ export const getSortKeyFieldNames: (type: ObjectTypeDefinitionNode) => string[];
 
 // @public (undocumented)
 export const getStrategyDbTypeFromTypeNode: (type: TypeNode, ctx: TransformerContextProvider) => ModelDataSourceStrategyDbType;
+
+// @public (undocumented)
+export const getSubscriptionFilterInputName: (modelName: string) => string;
 
 // @public (undocumented)
 function getSyncConfig(ctx: TransformerTransformSchemaStepContextProvider, typeName: string): SyncConfig | undefined;
