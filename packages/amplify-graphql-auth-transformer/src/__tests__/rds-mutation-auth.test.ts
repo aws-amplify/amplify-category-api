@@ -552,6 +552,41 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
     ).not.toThrowError();
   });
 
+  it('should not throw error if auth is defined on a field with identityPool', async () => {
+    const validSchema = `
+      type Post @model
+        @auth(rules: [
+          {allow: private, provider: identityPool}
+          {allow: public, provider: identityPool}
+        ]) {
+          id: ID! @primaryKey
+            @auth(rules: [
+              {allow: private, provider: identityPool}
+            ])
+          title: String!
+            @auth(rules: [
+              {allow: private, provider: identityPool}
+            ])
+      }
+    `;
+
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AWS_IAM',
+      },
+      additionalAuthenticationProviders: [],
+    };
+
+    expect(() =>
+      testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
+        authConfig,
+        dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlStrategy),
+      }),
+    ).not.toThrowError();
+  });
+
   it('should allow field auth on mutation type', async () => {
     const validSchema = `
       type Post @model
