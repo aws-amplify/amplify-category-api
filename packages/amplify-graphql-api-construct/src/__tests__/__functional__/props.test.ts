@@ -268,7 +268,7 @@ describe('supports different props configurations', () => {
           authorizationModes: {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
-          dataStoreConfiguration: {
+          conflictResolution: {
             project: {
               handlerType: 'AUTOMERGE',
               detectionType: 'VERSION',
