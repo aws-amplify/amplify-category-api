@@ -24,8 +24,7 @@ import {
 import { GraphQLClient } from '../GraphQLClient';
 import { resolveTestRegion } from '../testSetup';
 
-// const region = resolveTestRegion();
-const region = 'ap-northeast-2';
+const region = resolveTestRegion();
 
 jest.setTimeout(2000000);
 
@@ -434,7 +433,7 @@ describe('@model with @auth', () => {
   });
 
   afterAll(async () => {
-    // await cleanupStackAfterTest(BUCKET_NAME, STACK_NAME, cf, { cognitoClient, userPoolId: USER_POOL_ID });
+    await cleanupStackAfterTest(BUCKET_NAME, STACK_NAME, cf, { cognitoClient, userPoolId: USER_POOL_ID });
   });
 
   /**
@@ -4807,7 +4806,7 @@ describe('@model with @auth', () => {
     });
   });
 
-  describe.only('Auth on Non-Model fields', () => {
+  describe('Auth on Non-Model fields', () => {
     const note = {
       content: 'Note content',
       adminContent: 'Admin content',
@@ -4994,7 +4993,7 @@ describe('@model with @auth', () => {
       expect(result.data.deleteTodo.note).toEqual(todoUpdated1.note);
     });
 
-    test('non-admin cannot create a record with admin protected non-model field', async () => {
+    test('non-admin cannot create admin protected non-model field', async () => {
       const createTodo = `mutation {
         createTodo(input: {
           name: "${todoWithoutAdminNoteField.name}"
@@ -5006,7 +5005,14 @@ describe('@model with @auth', () => {
           ${adminResultSet}
         }
       }`;
-      await expect(async () => await GRAPHQL_CLIENT_2.query(createTodo, {})).rejects.toThrowErrorMatchingInlineSnapshot(``);
+      const result = await GRAPHQL_CLIENT_2.query(createTodo, {});
+      expect(result.data).toBeDefined();
+      expect(result.data.createTodo.id).toBeDefined();
+      expect(result.data.createTodo.name).toEqual(todoWithoutAdminNoteField.name);
+      expect(result.data.createTodo.note.content).toEqual(note.content);
+      expect(result.data.createTodo.note.adminContent).toBeNull();
+      expect(result.errors.length).toEqual(1);
+      expect(result.errors[0].message).toEqual('Not Authorized to access adminContent on type Note');
     });
 
     test('admin can create a record with all fields', async () => {
@@ -5042,7 +5048,14 @@ describe('@model with @auth', () => {
           ${adminResultSet}
         }
       }`;
-      await expect(async () => await GRAPHQL_CLIENT_2.query(updateTodo, {})).rejects.toThrowErrorMatchingInlineSnapshot(``);
+      const result = await GRAPHQL_CLIENT_2.query(updateTodo, {});
+      expect(result.data).toBeDefined();
+      expect(result.data.updateTodo.id).toBeDefined();
+      expect(result.data.updateTodo.name).toEqual(todoUpdated1.name);
+      expect(result.data.updateTodo.note.content).toEqual(todoUpdated1.note.content);
+      expect(result.data.updateTodo.note.adminContent).toBeNull();
+      expect(result.errors.length).toEqual(1);
+      expect(result.errors[0].message).toEqual('Not Authorized to access adminContent on type Note');
     });
 
     test('non-admin cannot read the admin protected non-model field', async () => {
@@ -5052,8 +5065,11 @@ describe('@model with @auth', () => {
         }
       }`;
       const result = await GRAPHQL_CLIENT_2.query(getTodo, {});
-      expect(result.data).not.toBeDefined();
-      expect(result.errors.length).toBeGreaterThan(0);
+      expect(result.data).toBeDefined();
+      expect(result.data.getTodo.id).toBeDefined();
+      expect(result.data.getTodo.name).toEqual(todoUpdated1.name);
+      expect(result.data.getTodo.note.content).toEqual(todoUpdated1.note.content);
+      expect(result.data.getTodo.note.adminContent).toBeNull();
 
       const listTodos = `query {
         listTodos {
@@ -5064,7 +5080,7 @@ describe('@model with @auth', () => {
       }`;
       const result1 = await GRAPHQL_CLIENT_2.query(listTodos, {});
       expect(result1.data).toBeDefined();
-      expect(result1.data.listTodos.items.length).toEqual(0);
+      expect(result1.data.listTodos.items.length).toBeGreaterThan(0);
       expect(result1.errors.length).toBeGreaterThan(0);
     });
 
@@ -5076,7 +5092,14 @@ describe('@model with @auth', () => {
           ${adminResultSet}
         }
       }`;
-      await expect(async () => await GRAPHQL_CLIENT_2.query(deleteTodo, {})).rejects.toThrowErrorMatchingInlineSnapshot(``);
+      const result = await GRAPHQL_CLIENT_2.query(deleteTodo, {});
+      expect(result.data).toBeDefined();
+      expect(result.data.deleteTodo.id).toBeDefined();
+      expect(result.data.deleteTodo.name).toEqual(todoWithAdminNoteField.name);
+      expect(result.data.deleteTodo.note.content).toEqual(note.content);
+      expect(result.data.deleteTodo.note.adminContent).toBeNull();
+      expect(result.errors.length).toEqual(1);
+      expect(result.errors[0].message).toEqual('Not Authorized to access adminContent on type Note');
     });
   });
 });
