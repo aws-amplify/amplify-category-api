@@ -1,3 +1,4 @@
+import { toPascalCase } from 'graphql-transformer-common';
 import { ListValueNode, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
 
 export const getPrimaryKeyFields = (type: ObjectTypeDefinitionNode): string[] => {
@@ -12,4 +13,20 @@ export const getPrimaryKeyFields = (type: ObjectTypeDefinitionNode): string[] =>
     result.push(...sortKeys.values.map((v) => (v as StringValueNode).value as string));
   }
   return result;
+};
+
+export const getFilterInputName = (modelName: string): string => {
+  return toPascalCase(['Model', modelName, 'FilterInput']);
+};
+
+export const getConditionInputName = (modelName: string): string => {
+  return toPascalCase(['Model', modelName, 'ConditionInput']);
+};
+
+export const getSubscriptionFilterInputName = (modelName: string): string => {
+  return toPascalCase(['ModelSubscription', modelName, 'FilterInput']);
+};
+
+export const getConnectionName = (modelName: string): string => {
+  return toPascalCase(['Model', modelName, 'Connection']);
 };

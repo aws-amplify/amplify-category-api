@@ -719,6 +719,11 @@ export interface AmplifyGraphqlApiCfnResources {
   readonly cfnTables: Record<string, CfnTable>;
 
   /**
+   * The Generated Amplify DynamoDb Table L1 resource wrapper, keyed by model type name.
+   */
+  readonly amplifyDynamoDbTables: Record<string, AmplifyDynamoDbTableWrapper>;
+
+  /**
    * The Generated IAM Role L1 Resources, keyed by logicalId.
    */
   readonly cfnRoles: Record<string, CfnRole>;
@@ -748,11 +753,6 @@ export interface AmplifyGraphqlApiResources {
    * The Generated DynamoDB Table L2 Resources, keyed by logicalId.
    */
   readonly tables: Record<string, ITable>;
-
-  /**
-   * The Generated Amplify DynamoDb Table wrapped if produced, keyed by name.
-   */
-  readonly amplifyDynamoDbTables: Record<string, AmplifyDynamoDbTableWrapper>;
 
   /**
    * The Generated IAM Role L2 Resources, keyed by logicalId.

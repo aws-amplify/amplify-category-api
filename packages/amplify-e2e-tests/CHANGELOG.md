@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.20.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.20.0...amplify-category-api-e2e-tests@3.20.1) (2024-02-28)
+
+### Bug Fixes
+
+- **api:** clean stale cdk amplify table roles ([#2249](https://github.com/aws-amplify/amplify-category-api/issues/2249)) ([b7cd81d](https://github.com/aws-amplify/amplify-category-api/commit/b7cd81d763e17eb31d6f4fc0dde8391fe0579d8f))
+- cleanup script to run in all regions ([1a04aa7](https://github.com/aws-amplify/amplify-category-api/commit/1a04aa70dec5c105d0801e74ba6ad3061ca63006))
+
 # [3.20.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.19.4...amplify-category-api-e2e-tests@3.20.0) (2024-02-05)
 
 ### Features

@@ -22,6 +22,7 @@ import {
   makeValueNode,
   ModelResourceIDs,
   STANDARD_SCALARS,
+  APPSYNC_DEFINED_SCALARS,
   toPascalCase,
 } from 'graphql-transformer-common';
 import {
