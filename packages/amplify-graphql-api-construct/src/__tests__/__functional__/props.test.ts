@@ -285,25 +285,6 @@ describe('supports different props configurations', () => {
   it('supports a definition with a SQLModelDataSourceBinding with a VPC configuration', () => {
     verifySynth((stack) => {
       new AmplifyGraphqlApi(stack, 'TestApi', {
-        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
-          type Todo @model @auth(rules: [{ allow: public }]) {
-            description: String!
-          }
-        `),
-        authorizationModes: {
-          apiKeyConfig: { expires: cdk.Duration.days(7) },
-        },
-        dataStoreConfiguration: {
-          project: {
-            handlerType: 'AUTOMERGE',
-            detectionType: 'VERSION',
-          },
-        },
-      });
-    });
-
-    verifySynth((stack) => {
-      new AmplifyGraphqlApi(stack, 'TestApi', {
         definition: AmplifyGraphqlDefinition.fromString(
           /* GraphQL */ `
             type Todo @model @auth(rules: [{ allow: public }]) {
