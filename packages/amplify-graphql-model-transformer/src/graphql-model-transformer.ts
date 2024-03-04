@@ -14,6 +14,10 @@ import {
   ObjectDefinitionWrapper,
   SyncUtils,
   TransformerModelBase,
+  getFilterInputName,
+  getConditionInputName,
+  getSubscriptionFilterInputName,
+  getConnectionName,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncDataSourceType,
@@ -51,7 +55,6 @@ import {
   makeNamedType,
   makeNonNullType,
   makeValueNode,
-  toPascalCase,
   toUpper,
 } from 'graphql-transformer-common';
 import {
@@ -287,6 +290,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
     this.ensureModelSortDirectionEnum(ctx);
     this.typesWithModelDirective.forEach((type) => {
+      const defBeforeImplicitFields = ctx.output.getObject(type)!;
+      const typeName = defBeforeImplicitFields.name.value;
+      if (isDynamoDbModel(ctx, typeName)) {
+        // Update the field with auto generatable Fields
+        this.addAutoGeneratableFields(ctx, type);
+      }
+      // get def after implict timestamp fields have been added
       const def = ctx.output.getObject(type)!;
       const hasAuth = def.directives!.some((dir) => dir.name.value === 'auth');
 
@@ -296,17 +306,14 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       const queryFields = this.createQueryFields(ctx, def);
       ctx.output.addQueryFields(queryFields);
 
-      const mutationFields = this.createMutationFields(ctx, def);
+      // use def before implicit timestamp fields are added so that mutation inputs do no include the implicit timestamp fields
+      const mutationFields = this.createMutationFields(ctx, defBeforeImplicitFields);
       ctx.output.addMutationFields(mutationFields);
 
       const subscriptionsFields = this.createSubscriptionFields(ctx, def!);
       ctx.output.addSubscriptionFields(subscriptionsFields);
 
-      const typeName = def.name.value;
       if (isDynamoDbModel(ctx, typeName)) {
-        // Update the field with auto generatable Fields
-        this.addAutoGeneratableFields(ctx, type);
-
         if (ctx.isProjectUsingDataStore()) {
           this.addModelSyncFields(ctx, type);
         }
@@ -604,10 +611,10 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const knownModels = this.typesWithModelDirective;
     let conditionInput: InputObjectTypeDefinitionNode;
     if ([MutationFieldType.CREATE, MutationFieldType.DELETE, MutationFieldType.UPDATE].includes(operation.type as MutationFieldType)) {
-      const conditionTypeName = toPascalCase(['Model', type.name.value, 'ConditionInput']);
+      const conditionTypeName = getConditionInputName(type.name.value);
 
       const filterInputs = createEnumModelFilters(ctx, type);
-      conditionInput = makeMutationConditionInput(ctx, conditionTypeName, type);
+      conditionInput = makeMutationConditionInput(ctx, conditionTypeName, type, this.modelDirectiveConfig.get(type.name.value)!);
       filterInputs.push(conditionInput);
       filterInputs.forEach((input) => {
         const conditionInputName = input.name.value;
@@ -621,7 +628,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         return [makeInputValueDefinition('id', makeNonNullType(makeNamedType('ID')))];
 
       case QueryFieldType.LIST: {
-        const filterInputName = toPascalCase(['Model', type.name.value, 'FilterInput']);
+        const filterInputName = getFilterInputName(type.name.value);
         const filterInputs = createEnumModelFilters(ctx, type);
         filterInputs.push(makeListQueryFilterInput(ctx, filterInputName, type));
         filterInputs.forEach((input) => {
@@ -638,7 +645,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         ];
       }
       case QueryFieldType.SYNC: {
-        const syncFilterInputName = toPascalCase(['Model', type.name.value, 'FilterInput']);
+        const syncFilterInputName = getFilterInputName(type.name.value);
         const syncFilterInputs = makeListQueryFilterInput(ctx, syncFilterInputName, type);
         const conditionInputName = syncFilterInputs.name.value;
         if (!ctx.output.getType(conditionInputName)) {
@@ -699,7 +706,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       case SubscriptionFieldType.ON_CREATE:
       case SubscriptionFieldType.ON_DELETE:
       case SubscriptionFieldType.ON_UPDATE: {
-        const filterInputName = toPascalCase(['ModelSubscription', type.name.value, 'FilterInput']);
+        const filterInputName = getSubscriptionFilterInputName(type.name.value);
         const filterInputs = createEnumModelFilters(ctx, type);
         filterInputs.push(makeSubscriptionQueryFilterInput(ctx, filterInputName, type));
         filterInputs.forEach((input) => {
@@ -740,7 +747,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       case QueryFieldType.SYNC:
       case QueryFieldType.LIST: {
         const isSyncEnabled = ctx.isProjectUsingDataStore();
-        const connectionFieldName = toPascalCase(['Model', type.name.value, 'Connection']);
+        const connectionFieldName = getConnectionName(type.name.value);
         outputType = makeListQueryModel(type, connectionFieldName, isSyncEnabled);
         break;
       }

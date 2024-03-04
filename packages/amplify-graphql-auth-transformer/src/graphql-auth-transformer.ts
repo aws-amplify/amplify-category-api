@@ -10,6 +10,12 @@ import {
   isSqlModel,
   getModelDataSourceNameForTypeName,
   isModelType,
+  getFilterInputName,
+  getConditionInputName,
+  getSubscriptionFilterInputName,
+  getConnectionName,
+  InputFieldWrapper,
+  isDynamoDbModel,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
@@ -42,6 +48,7 @@ import {
   getBaseType,
   makeDirective,
   makeField,
+  makeInputValueDefinition,
   makeNamedType,
   ResourceConstants,
   ModelResourceIDs,
@@ -334,8 +341,41 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     this.authModelConfig.forEach((acm, modelName) => {
       const def = context.output.getObject(modelName)!;
       const modelHasSearchable = def.directives.some((dir) => dir.name.value === 'searchable');
+      const ownerFields = getOwnerFields(acm);
+      if (isDynamoDbModel(context, modelName)) {
+        const filterInput = context.output.getInput(getFilterInputName(modelName));
+        if (filterInput) {
+          const updatedFilterInput = { ...filterInput, fields: [...filterInput.fields] };
+          ownerFields.forEach((ownerField) => {
+            if (!filterInput.fields.some((field) => field.name.value === ownerField)) {
+              updatedFilterInput.fields.push(makeInputValueDefinition(ownerField, makeNamedType('ModelStringInput')));
+            }
+          });
+          context.output.updateInput(updatedFilterInput);
+        }
+        const conditionInput = context.output.getInput(getConditionInputName(modelName));
+        if (conditionInput) {
+          const updatedConditionInput = { ...conditionInput, fields: [...conditionInput.fields] };
+          ownerFields.forEach((ownerField) => {
+            if (!conditionInput.fields.some((field) => field.name.value === ownerField)) {
+              updatedConditionInput.fields.push(makeInputValueDefinition(ownerField, makeNamedType('ModelStringInput')));
+            }
+          });
+          context.output.updateInput(updatedConditionInput);
+        }
+        const subscriptionFilterInput = context.output.getInput(getSubscriptionFilterInputName(modelName));
+        if (subscriptionFilterInput) {
+          const updatedSubscriptionFilterInput = { ...subscriptionFilterInput, fields: [...subscriptionFilterInput.fields] };
+          ownerFields.forEach((ownerField) => {
+            if (!subscriptionFilterInput.fields.some((field) => field.name.value === ownerField)) {
+              updatedSubscriptionFilterInput.fields.push(makeInputValueDefinition(ownerField, makeNamedType('ModelStringInput')));
+            }
+          });
+          context.output.updateInput(updatedSubscriptionFilterInput);
+        }
+      }
       // collect ownerFields and them in the model
-      this.addFieldsToObject(context, modelName, getOwnerFields(acm));
+      this.addFieldsToObject(context, modelName, ownerFields);
       // Get the directives we need to add to the GraphQL nodes
       const providers = this.getAuthProviders(acm.getRoles());
       const addDefaultIfNeeded = providers.length === 0 ? this.configuredAuthProviders.shouldAddDefaultServiceDirective : false;
