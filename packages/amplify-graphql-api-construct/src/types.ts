@@ -233,6 +233,12 @@ export type ConflictResolutionStrategy =
   | CustomConflictResolutionStrategy;
 
 /**
+ * Project level configuration for conflict resolution.
+ * @deprecated use DataStoreConfiguration instead.
+ */
+export interface ConflictResolution extends DataStoreConfiguration {}
+
+/**
  * Project level configuration for DataStore
  */
 export interface DataStoreConfiguration {
@@ -246,12 +252,6 @@ export interface DataStoreConfiguration {
    */
   readonly models?: Record<string, ConflictResolutionStrategy>;
 }
-
-/**
- * Project level configuration for conflict resolution.
- * @deprecated use DataStoreConfiguration instead.
- */
-export type ConflictResolution = DataStoreConfiguration;
 
 /**
  * Params exposed to support configuring and overriding pipelined slots. This allows configuration of the underlying function,

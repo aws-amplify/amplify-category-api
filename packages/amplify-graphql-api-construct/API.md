@@ -181,7 +181,8 @@ export interface AutomergeConflictResolutionStrategy extends ConflictResolutionS
 export type ConflictDetectionType = 'VERSION' | 'NONE';
 
 // @public @deprecated
-export type ConflictResolution = DataStoreConfiguration;
+export interface ConflictResolution extends DataStoreConfiguration {
+}
 
 // @public
 export type ConflictResolutionStrategy = AutomergeConflictResolutionStrategy | OptimisticConflictResolutionStrategy | CustomConflictResolutionStrategy;

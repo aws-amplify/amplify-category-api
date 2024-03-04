@@ -4892,7 +4892,7 @@
           "name": "conflictResolution",
           "optional": true,
           "type": {
-            "fqn": "@aws-amplify/graphql-api-construct.DataStoreConfiguration"
+            "fqn": "@aws-amplify/graphql-api-construct.ConflictResolution"
           }
         },
         {
@@ -5654,6 +5654,26 @@
       ],
       "symbolId": "src/types:AutomergeConflictResolutionStrategy"
     },
+    "@aws-amplify/graphql-api-construct.ConflictResolution": {
+      "assembly": "@aws-amplify/graphql-api-construct",
+      "datatype": true,
+      "docs": {
+        "deprecated": "use DataStoreConfiguration instead.",
+        "stability": "deprecated",
+        "summary": "Project level configuration for conflict resolution."
+      },
+      "fqn": "@aws-amplify/graphql-api-construct.ConflictResolution",
+      "interfaces": [
+        "@aws-amplify/graphql-api-construct.DataStoreConfiguration"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "src/types.ts",
+        "line": 239
+      },
+      "name": "ConflictResolution",
+      "symbolId": "src/types:ConflictResolution"
+    },
     "@aws-amplify/graphql-api-construct.ConflictResolutionStrategyBase": {
       "assembly": "@aws-amplify/graphql-api-construct",
       "datatype": true,
@@ -5820,7 +5840,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 238
+        "line": 244
       },
       "name": "DataStoreConfiguration",
       "properties": [
@@ -5833,7 +5853,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 247
+            "line": 253
           },
           "name": "models",
           "optional": true,
@@ -5868,7 +5888,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 242
+            "line": 248
           },
           "name": "project",
           "optional": true,
@@ -8001,5 +8021,5 @@
     }
   },
   "version": "1.5.7",
-  "fingerprint": "guGmJtkt0OEQwKDoRSNolOQLifFWfmDCqEhM2wEvrfA="
+  "fingerprint": "4zUPY9GGQMLUoyqLcJ8qaYd1px8ITzqEedUQOmu9e/o="
 }
