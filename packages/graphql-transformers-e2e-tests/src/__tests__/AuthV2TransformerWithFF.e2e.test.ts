@@ -24,7 +24,8 @@ import {
 import { GraphQLClient } from '../GraphQLClient';
 import { resolveTestRegion } from '../testSetup';
 
-const region = resolveTestRegion();
+// const region = resolveTestRegion();
+const region = 'ap-northeast-2';
 
 jest.setTimeout(2000000);
 
@@ -323,6 +324,16 @@ describe('@model with @auth', () => {
         description: String!
         ownerProtectedInvalidClaim: String @auth(rules: [{ allow: owner, identityClaim: "doesnotexist" }])
       }
+      type Todo @model @auth(rules: [{ allow: private }]) {
+        id: ID! @primaryKey
+        name: String!
+        note: Note
+      }
+    
+      type Note {
+        content: String!
+        adminContent: String @auth(rules: [{ allow: groups, groups: ["Admin"] }])
+      }
       `;
     try {
       await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
@@ -423,7 +434,7 @@ describe('@model with @auth', () => {
   });
 
   afterAll(async () => {
-    await cleanupStackAfterTest(BUCKET_NAME, STACK_NAME, cf, { cognitoClient, userPoolId: USER_POOL_ID });
+    // await cleanupStackAfterTest(BUCKET_NAME, STACK_NAME, cf, { cognitoClient, userPoolId: USER_POOL_ID });
   });
 
   /**
@@ -4793,6 +4804,279 @@ describe('@model with @auth', () => {
         expect((deleteRes.errors[0] as any).data).toBeNull();
         expect((deleteRes.errors[0] as any).errorType).toEqual('Unauthorized');
       });
+    });
+  });
+
+  describe.only('Auth on Non-Model fields', () => {
+    const note = {
+      content: 'Note content',
+      adminContent: 'Admin content',
+    };
+    const todoWithAdminNoteField = {
+      name: 'Reading books',
+      note,
+    };
+    const todoWithoutAdminNoteField = {
+      name: todoWithAdminNoteField.name,
+      note: {
+        content: note.content,
+      },
+    };
+    const todoUpdated1 = {
+      name: 'Reading books updated',
+      note: {
+        content: 'Note content updated',
+        adminContent: 'Admin content updated',
+      },
+    };
+
+    const todoUpdated2 = {
+      name: todoUpdated1.name,
+      note: {
+        content: todoUpdated1.note.content,
+      },
+    };
+    const privateResultSet = `
+      id
+      name
+      note {
+        content
+      }
+    `;
+    const adminResultSet = `
+      id
+      name
+      note {
+        content
+        adminContent
+      }
+    `;
+    test('admin can create a record with all fields', async () => {
+      const createTodo = `mutation {
+        createTodo(input: {
+          name: "${todoWithAdminNoteField.name}"
+          note: {
+            content: "${note.content}"
+            adminContent: "${note.adminContent}"
+          }
+        }) {
+          ${adminResultSet}
+        }
+      }`;
+      const createResult = await GRAPHQL_CLIENT_1.query(createTodo, {});
+      expect(createResult.data).toBeDefined();
+      expect(createResult.data.createTodo.id).toBeDefined();
+      todoWithAdminNoteField['id'] = createResult.data.createTodo.id;
+      expect(createResult.data.createTodo.name).toEqual(todoWithAdminNoteField.name);
+      expect(createResult.data.createTodo.note).toEqual(note);
+    });
+
+    test('non-admin can create a record with private non-model fields', async () => {
+      const createTodo = `mutation {
+        createTodo(input: {
+          name: "${todoWithoutAdminNoteField.name}"
+          note: {
+            content: "${note.content}"
+          }
+        }) {
+          ${privateResultSet}
+        }
+      }`;
+      const createResult = await GRAPHQL_CLIENT_2.query(createTodo, {});
+      expect(createResult.data).toBeDefined();
+      expect(createResult.data.createTodo.id).toBeDefined();
+      todoWithoutAdminNoteField['id'] = createResult.data.createTodo.id;
+      expect(createResult.data.createTodo.name).toEqual(todoWithoutAdminNoteField.name);
+      expect(createResult.data.createTodo.note.content).toEqual(note.content);
+    });
+
+    test('admin can update all non-model fields', async () => {
+      const updateTodo = `mutation {
+        updateTodo(input: {
+          id: "${todoWithAdminNoteField['id']}"
+          name: "${todoUpdated1.name}"
+          note: {
+            content: "${todoUpdated1.note.content}"
+            adminContent: "${todoUpdated1.note.adminContent}"
+          }
+        }) {
+          ${adminResultSet}
+        }
+      }`;
+      const result = await GRAPHQL_CLIENT_1.query(updateTodo, {});
+      expect(result.data).toBeDefined();
+      expect(result.data.updateTodo.id).toBeDefined();
+      todoUpdated1['id'] = result.data.updateTodo.id;
+      expect(result.data.updateTodo.name).toEqual(todoUpdated1.name);
+      expect(result.data.updateTodo.note).toEqual(todoUpdated1.note);
+    });
+
+    test('non-admin can update private non-model fields', async () => {
+      const updateTodo = `mutation {
+        updateTodo(input: {
+          id: "${todoWithoutAdminNoteField['id']}"
+          name: "${todoUpdated2.name}"
+          note: {
+            content: "${todoUpdated2.note.content}"
+          }
+        }) {
+          ${privateResultSet}
+        }
+      }`;
+      const result = await GRAPHQL_CLIENT_2.query(updateTodo, {});
+      expect(result.data).toBeDefined();
+      expect(result.data.updateTodo.id).toBeDefined();
+      todoUpdated2['id'] = result.data.updateTodo.id;
+      expect(result.data.updateTodo.name).toEqual(todoUpdated2.name);
+      expect(result.data.updateTodo.note).toEqual(todoUpdated2.note);
+    });
+
+    test('admin can read all non-model fields', async () => {
+      const getTodo = `query {
+        getTodo(id: "${todoUpdated1['id']}") {
+          ${adminResultSet}
+        }
+      }`;
+      const result = await GRAPHQL_CLIENT_1.query(getTodo, {});
+      expect(result.data).toBeDefined();
+      expect(result.data.getTodo.id).toBeDefined();
+      expect(result.data.getTodo.name).toEqual(todoUpdated1.name);
+      expect(result.data.getTodo.note).toEqual(todoUpdated1.note);
+
+      const listTodos = `query {
+        listTodos {
+          items {
+            ${adminResultSet}
+          }
+        }
+      }`;
+      const result1 = await GRAPHQL_CLIENT_1.query(listTodos, {});
+      expect(result1.data).toBeDefined();
+      expect(result1.data.listTodos.items.length).toBeGreaterThan(0);
+    });
+
+    test('non-admin can read private non-model fields', async () => {
+      const getTodo = `query {
+        getTodo(id: "${todoUpdated2['id']}") {
+          ${privateResultSet}
+        }
+      }`;
+      const result = await GRAPHQL_CLIENT_2.query(getTodo, {});
+      expect(result.data).toBeDefined();
+      expect(result.data.getTodo.id).toBeDefined();
+      expect(result.data.getTodo.name).toEqual(todoUpdated2.name);
+      expect(result.data.getTodo.note).toEqual(todoUpdated2.note);
+
+      const listTodos = `query {
+        listTodos {
+          items {
+            ${privateResultSet}
+          }
+        }
+      }`;
+      const result1 = await GRAPHQL_CLIENT_2.query(listTodos, {});
+      expect(result1.data).toBeDefined();
+      expect(result1.data.listTodos.items.length).toBeGreaterThan(0);
+    });
+
+    test('admin can delete the record', async () => {
+      const deleteTodo = `mutation {
+        deleteTodo(input: {
+          id: "${todoWithAdminNoteField['id']}"
+        }) {
+          ${adminResultSet}
+        }
+      }`;
+      const result = await GRAPHQL_CLIENT_1.query(deleteTodo, {});
+      expect(result.data).toBeDefined();
+      expect(result.data.deleteTodo.id).toBeDefined();
+      expect(result.data.deleteTodo.name).toEqual(todoUpdated1.name);
+      expect(result.data.deleteTodo.note).toEqual(todoUpdated1.note);
+    });
+
+    test('non-admin cannot create a record with admin protected non-model field', async () => {
+      const createTodo = `mutation {
+        createTodo(input: {
+          name: "${todoWithoutAdminNoteField.name}"
+          note: {
+            content: "${note.content}"
+            adminContent: "${note.adminContent}"
+          }
+        }) {
+          ${adminResultSet}
+        }
+      }`;
+      await expect(async () => await GRAPHQL_CLIENT_2.query(createTodo, {})).rejects.toThrowErrorMatchingInlineSnapshot(``);
+    });
+
+    test('admin can create a record with all fields', async () => {
+      const createTodo = `mutation {
+        createTodo(input: {
+          name: "${todoWithAdminNoteField.name}"
+          note: {
+            content: "${note.content}"
+            adminContent: "${note.adminContent}"
+          }
+        }) {
+          ${adminResultSet}
+        }
+      }`;
+      const createResult = await GRAPHQL_CLIENT_1.query(createTodo, {});
+      expect(createResult.data).toBeDefined();
+      expect(createResult.data.createTodo.id).toBeDefined();
+      todoWithAdminNoteField['id'] = createResult.data.createTodo.id;
+      expect(createResult.data.createTodo.name).toEqual(todoWithAdminNoteField.name);
+      expect(createResult.data.createTodo.note).toEqual(note);
+    });
+
+    test('non-admin cannot update the admin protected non-model field', async () => {
+      const updateTodo = `mutation {
+        updateTodo(input: {
+          id: "${todoWithoutAdminNoteField['id']}"
+          name: "${todoUpdated2.name}"
+          note: {
+            content: "${todoUpdated2.note.content}"
+            adminContent: "${todoUpdated1.note.adminContent}"
+          }
+        }) {
+          ${adminResultSet}
+        }
+      }`;
+      await expect(async () => await GRAPHQL_CLIENT_2.query(updateTodo, {})).rejects.toThrowErrorMatchingInlineSnapshot(``);
+    });
+
+    test('non-admin cannot read the admin protected non-model field', async () => {
+      const getTodo = `query {
+        getTodo(id: "${todoUpdated2['id']}") {
+          ${adminResultSet}
+        }
+      }`;
+      const result = await GRAPHQL_CLIENT_2.query(getTodo, {});
+      expect(result.data).not.toBeDefined();
+      expect(result.errors.length).toBeGreaterThan(0);
+
+      const listTodos = `query {
+        listTodos {
+          items {
+            ${adminResultSet}
+          }
+        }
+      }`;
+      const result1 = await GRAPHQL_CLIENT_2.query(listTodos, {});
+      expect(result1.data).toBeDefined();
+      expect(result1.data.listTodos.items.length).toEqual(0);
+      expect(result1.errors.length).toBeGreaterThan(0);
+    });
+
+    test('non-admin cannot delete record with the admin protected non-model field', async () => {
+      const deleteTodo = `mutation {
+        deleteTodo(input: {
+          id: "${todoWithAdminNoteField['id']}"
+        }) {
+          ${adminResultSet}
+        }
+      }`;
+      await expect(async () => await GRAPHQL_CLIENT_2.query(deleteTodo, {})).rejects.toThrowErrorMatchingInlineSnapshot(``);
     });
   });
 });

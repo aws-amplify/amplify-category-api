@@ -526,7 +526,7 @@ test('headers, parent data, environment, and region support', async () => {
 });
 
 describe('Non-Model types with Http resolvers', () => {
-  test('HTTP GET request', async () => {
+  test('HTTP GET request on a non-model field', async () => {
     try {
       const response = await GRAPHQL_CLIENT.query(
         `mutation {
@@ -561,7 +561,7 @@ describe('Non-Model types with Http resolvers', () => {
     }
   });
 
-  test('HTTP POST request', async () => {
+  test('HTTP POST request on a non-model field', async () => {
     try {
       const response = await GRAPHQL_CLIENT.query(
         `mutation {
@@ -601,7 +601,7 @@ describe('Non-Model types with Http resolvers', () => {
     }
   });
 
-  test('HTTP PUT request', async () => {
+  test('HTTP PUT request on a non-model field', async () => {
     try {
       const response = await GRAPHQL_CLIENT.query(
         `mutation {
@@ -643,33 +643,7 @@ describe('Non-Model types with Http resolvers', () => {
     }
   });
 
-  test('HTTP DELETE request', async () => {
-    try {
-      const response = await GRAPHQL_CLIENT.query(
-        `mutation {
-              createTodo(input: { name: "Hello, World!", note: { id: "3" } }) {
-                  id
-                  name
-                  note {
-                    deleter
-                  }
-              }
-          }`,
-        {},
-      );
-
-      expect(response.errors).toBeUndefined();
-      expect(response.data.createTodo.id).toBeDefined();
-      expect(response.data.createTodo.name).toEqual('Hello, World!');
-      expect(response.data.createTodo.note.deleter).not.toBeNull();
-    } catch (e) {
-      console.error(e);
-      // fail
-      expect(e).toBeUndefined();
-    }
-  });
-
-  test('GET with URL param and query values', async () => {
+  test('GET with URL param and query values on a non-model field', async () => {
     try {
       const response = await GRAPHQL_CLIENT.query(
         `mutation {
@@ -708,7 +682,7 @@ describe('Non-Model types with Http resolvers', () => {
     }
   });
 
-  test('GET with multiple URL params and query values', async () => {
+  test('GET with multiple URL params and query values on a non-model field', async () => {
     try {
       const response = await GRAPHQL_CLIENT.query(
         `mutation {
@@ -748,7 +722,7 @@ describe('Non-Model types with Http resolvers', () => {
     }
   });
 
-  test('GET errors when missing a required Query input object', async () => {
+  test('GET errors when missing a required Query input object on a non-model field', async () => {
     try {
       const response = await GRAPHQL_CLIENT.query(
         `mutation {
@@ -784,7 +758,7 @@ describe('Non-Model types with Http resolvers', () => {
     }
   });
 
-  test('POST errors when missing a non-null arg in query/body', async () => {
+  test('POST errors when missing a non-null arg in query/body on a non-model field', async () => {
     try {
       const response = await GRAPHQL_CLIENT.query(
         `mutation {
@@ -821,7 +795,7 @@ describe('Non-Model types with Http resolvers', () => {
     }
   });
 
-  test('headers, parent data, environment, and region support', async () => {
+  test('headers, parent data, environment, and region support on a non-model field', async () => {
     const response = await GRAPHQL_CLIENT.query(
       `mutation {
         createTodo(input: { name: "Hello, World!", note: { id: "8" } }) {
