@@ -4879,7 +4879,7 @@
         {
           "abstract": true,
           "docs": {
-            "deprecated": ", use dataStoreConfiguration instead.",
+            "deprecated": "use dataStoreConfiguration instead.",
             "remarks": "For more information, refer to https://docs.amplify.aws/lib/datastore/getting-started/q/platform/js/",
             "stability": "deprecated",
             "summary": "Configure conflict resolution on the Api, which is required to enable DataStore Api functionality."
@@ -8001,5 +8001,5 @@
     }
   },
   "version": "1.5.7",
-  "fingerprint": "zoeZdKFyhfPihFPaWFuzCMcHAF7IuB3sbKaqtSNymrA="
+  "fingerprint": "guGmJtkt0OEQwKDoRSNolOQLifFWfmDCqEhM2wEvrfA="
 }

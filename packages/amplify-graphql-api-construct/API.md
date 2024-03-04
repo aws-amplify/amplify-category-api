@@ -124,6 +124,7 @@ export interface AmplifyGraphqlApiCfnResources {
 export interface AmplifyGraphqlApiProps {
     readonly apiName?: string;
     readonly authorizationModes: AuthorizationModes;
+    // @deprecated
     readonly conflictResolution?: ConflictResolution;
     readonly dataStoreConfiguration?: DataStoreConfiguration;
     readonly definition: IAmplifyGraphqlDefinition;
@@ -179,7 +180,7 @@ export interface AutomergeConflictResolutionStrategy extends ConflictResolutionS
 // @public
 export type ConflictDetectionType = 'VERSION' | 'NONE';
 
-// @public
+// @public @deprecated
 export type ConflictResolution = DataStoreConfiguration;
 
 // @public

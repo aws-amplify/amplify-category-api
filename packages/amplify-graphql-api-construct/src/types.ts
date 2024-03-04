@@ -249,7 +249,7 @@ export interface DataStoreConfiguration {
 
 /**
  * Project level configuration for conflict resolution.
- * @deprecated, use DataStoreConfiguration instead.
+ * @deprecated use DataStoreConfiguration instead.
  */
 export type ConflictResolution = DataStoreConfiguration;
 
@@ -642,7 +642,7 @@ export interface AmplifyGraphqlApiProps {
   /**
    * Configure conflict resolution on the Api, which is required to enable DataStore Api functionality.
    * For more information, refer to https://docs.amplify.aws/lib/datastore/getting-started/q/platform/js/
-   * @deprecated, use dataStoreConfiguration instead.
+   * @deprecated use dataStoreConfiguration instead.
    */
   readonly conflictResolution?: ConflictResolution;
 
