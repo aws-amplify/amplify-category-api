@@ -8,39 +8,41 @@ import {
   extractVpcConfigFromDbInstance,
   setupRDSInstanceAndData,
   storeDbConnectionConfig,
+  storeDbConnectionConfigWithSecretsManager,
+  deleteDbConnectionConfigWithSecretsManager,
 } from 'amplify-category-api-e2e-core';
 import { LambdaClient, GetProvisionedConcurrencyConfigCommand } from '@aws-sdk/client-lambda';
 import generator from 'generate-password';
-import { getResourceNamesForStrategyName } from '@aws-amplify/graphql-transformer-core';
+import { getResourceNamesForStrategyName, SQLLambdaResourceNames } from '@aws-amplify/graphql-transformer-core';
+import { isSqlModelDataSourceSecretsManagerDbConnectionConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { graphql } from '../graphql-request';
 
 jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
 
 interface DBDetails {
-  endpoint: string;
-  port: number;
-  dbName: string;
-  vpcConfig: {
-    vpcId: string;
-    securityGroupIds: string[];
-    subnetAvailabilityZones: {
-      subnetId: string;
-      availabilityZone: string;
-    }[];
+  dbConfig: {
+    endpoint: string;
+    port: number;
+    dbName: string;
+    vpcConfig: {
+      vpcId: string;
+      securityGroupIds: string[];
+      subnetAvailabilityZones: {
+        subnetId: string;
+        availabilityZone: string;
+      }[];
+    };
   };
-  ssmPaths: {
-    hostnameSsmPath: string;
-    portSsmPath: string;
-    usernameSsmPath: string;
-    passwordSsmPath: string;
-    databaseNameSsmPath: string;
+  connectionConfigs: {
+    [key: string]: SqlModelDataSourceDbConnectionConfig;
   };
 }
 
 describe('CDK GraphQL Transformer', () => {
   let projRoot: string;
-  const projFolderName = 'sqlmodels';
+  const projFolderName = 'sqlmodelsssm';
 
   const [username, password, identifier] = generator.generateMultiple(3);
 
@@ -83,10 +85,22 @@ describe('CDK GraphQL Transformer', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('creates a GraphQL API from SQL-based models', async () => {
+  test('creates a GraphQL API from SQL-based models with Secrets Manager Credential Store default encryption key', async () => {
+    await testGraphQLAPI('secretsManager');
+  });
+
+  test('creates a GraphQL API from SQL-based models with Secrets Manager Credential Store custom encryption key', async () => {
+    await testGraphQLAPI('secretsManagerCustomKey');
+  });
+
+  test('creates a GraphQL API from SQL-based models with SSM Credential Store', async () => {
+    await testGraphQLAPI('ssm');
+  });
+
+  const testGraphQLAPI = async (connectionConfigName: string): Promise<void> => {
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'sql-models'));
     const name = await initCDKProject(projRoot, templatePath);
-    writeDbDetails(dbDetails, projRoot);
+    writeDbDetails({ dbConfig: dbDetails.dbConfig, dbConnectionConfig: dbDetails.connectionConfigs[connectionConfigName] }, projRoot);
     const outputs = await cdkDeploy(projRoot, '--all');
     const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
 
@@ -96,13 +110,13 @@ describe('CDK GraphQL Transformer', () => {
       apiEndpoint,
       apiKey,
       /* GraphQL */ `
-        mutation CREATE_TODO {
-          createTodo(input: { description: "${description}" }) {
-            id
-            description
-          }
+      mutation CREATE_TODO {
+        createTodo(input: { description: "${description}" }) {
+          id
+          description
         }
-      `,
+      }
+    `,
     );
 
     const todo = result.body.data.createTodo;
@@ -135,7 +149,35 @@ describe('CDK GraphQL Transformer', () => {
     });
     const response = await client.send(command);
     expect(response.RequestedProvisionedConcurrentExecutions).toEqual(2);
-  });
+
+    await graphql(
+      apiEndpoint,
+      apiKey,
+      /* GraphQL */ `
+        mutation DELETE_TODO {
+          deleteTodo(input: { id: "${todo.id}" }) {
+            id
+          }
+        }
+      `,
+    );
+    const emptyListResult = await graphql(
+      apiEndpoint,
+      apiKey,
+      /* GraphQL */ `
+        query LIST_TODOS {
+          listTodos {
+            items {
+              id
+              description
+            }
+          }
+        }
+      `,
+    );
+
+    expect(emptyListResult.body.data.listTodos.items.length).toEqual(0);
+  };
 });
 
 const setupDatabase = async (options: {
@@ -157,7 +199,43 @@ const setupDatabase = async (options: {
     throw new Error('Failed to setup RDS instance');
   }
 
-  const ssmPaths = await storeDbConnectionConfig({
+  const { secretArn } = await storeDbConnectionConfigWithSecretsManager({
+    region,
+    username,
+    password,
+    secretName: `${identifier}-secret`,
+  });
+  if (!secretArn) {
+    throw new Error('Failed to store db connection config for secrets manager');
+  }
+  const dbConnectionConfigSecretsManager = {
+    databaseName: dbname,
+    hostname: dbConfig.endpoint,
+    port: dbConfig.port,
+    secretArn,
+  };
+  console.log(`Stored db connection config in Secrets manager: ${JSON.stringify(dbConnectionConfigSecretsManager)}`);
+
+  const { secretArn: secretArnWithCustomKey, keyArn } = await storeDbConnectionConfigWithSecretsManager({
+    region,
+    username,
+    password,
+    secretName: `${identifier}-secret-custom-key`,
+    useCustomEncryptionKey: true,
+  });
+  if (!secretArnWithCustomKey) {
+    throw new Error('Failed to store db connection config for secrets manager');
+  }
+  const dbConnectionConfigSecretsManagerCustomKey = {
+    databaseName: dbname,
+    hostname: dbConfig.endpoint,
+    port: dbConfig.port,
+    secretArn: secretArnWithCustomKey,
+    keyArn,
+  };
+  console.log(`Stored db connection config in Secrets manager: ${JSON.stringify(dbConnectionConfigSecretsManagerCustomKey)}`);
+
+  const dbConnectionConfigSSM = await storeDbConnectionConfig({
     region,
     pathPrefix: `/${identifier}/test`,
     hostname: dbConfig.endpoint,
@@ -166,17 +244,23 @@ const setupDatabase = async (options: {
     username,
     password,
   });
-  if (!ssmPaths) {
-    throw new Error('Failed to store db connection config');
+  if (!dbConnectionConfigSSM) {
+    throw new Error('Failed to store db connection config for SSM');
   }
-  console.log(`Stored db connection config in SSM: ${JSON.stringify(ssmPaths)}`);
+  console.log(`Stored db connection config in SSM: ${JSON.stringify(dbConnectionConfigSSM)}`);
 
   return {
-    endpoint: dbConfig.endpoint,
-    port: dbConfig.port,
-    dbName: dbname,
-    vpcConfig: extractVpcConfigFromDbInstance(dbConfig.dbInstance),
-    ssmPaths,
+    dbConfig: {
+      endpoint: dbConfig.endpoint,
+      port: dbConfig.port,
+      dbName: dbname,
+      vpcConfig: extractVpcConfigFromDbInstance(dbConfig.dbInstance),
+    },
+    connectionConfigs: {
+      ssm: dbConnectionConfigSSM,
+      secretsManager: dbConnectionConfigSecretsManager,
+      secretsManagerCustomKey: dbConnectionConfigSecretsManagerCustomKey,
+    },
   };
 };
 
@@ -184,10 +268,27 @@ const cleanupDatabase = async (options: { identifier: string; region: string; db
   const { identifier, region, dbDetails } = options;
   await deleteDBInstance(identifier, region);
 
-  await deleteDbConnectionConfig({
-    region,
-    ...dbDetails.ssmPaths,
-  });
+  const { connectionConfigs } = dbDetails;
+
+  await Promise.all(
+    Object.values(connectionConfigs).map((dbConnectionConfig) => {
+      if (isSqlModelDataSourceSecretsManagerDbConnectionConfig(dbConnectionConfig)) {
+        return deleteDbConnectionConfigWithSecretsManager({
+          region,
+          secretArn: dbConnectionConfig.secretArn,
+        });
+      } else {
+        return deleteDbConnectionConfig({
+          region,
+          hostnameSsmPath: dbConnectionConfig.hostnameSsmPath,
+          portSsmPath: dbConnectionConfig.portSsmPath,
+          usernameSsmPath: dbConnectionConfig.usernameSsmPath,
+          passwordSsmPath: dbConnectionConfig.passwordSsmPath,
+          databaseNameSsmPath: dbConnectionConfig.databaseNameSsmPath,
+        });
+      }
+    }),
+  );
 };
 
 /**
@@ -199,7 +300,10 @@ const cleanupDatabase = async (options: { identifier: string; region: string; db
  * @param dbDetails the details object
  * @param projRoot the destination directory to write the `db-details.json` file to
  */
-const writeDbDetails = (dbDetails: DBDetails, projRoot: string): void => {
+const writeDbDetails = (
+  dbDetails: Omit<DBDetails, 'connectionConfigs'> & { dbConnectionConfig: SqlModelDataSourceDbConnectionConfig },
+  projRoot: string,
+): void => {
   const detailsStr = JSON.stringify(dbDetails);
   const filePath = path.join(projRoot, 'db-details.json');
   fs.writeFileSync(filePath, detailsStr);
