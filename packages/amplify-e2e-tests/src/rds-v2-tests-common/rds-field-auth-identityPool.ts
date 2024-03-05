@@ -49,7 +49,7 @@ export const testRdsIdentityPoolFieldAuth = (engine: ImportedRDSType, queries: s
     const identifier = `integtest${db_identifier}`;
     const engineSuffix = engine === ImportedRDSType.MYSQL ? 'mysql' : 'pg';
     const engineName = engine === ImportedRDSType.MYSQL ? 'mysql' : 'postgres';
-    const projName = `${engineSuffix}modelauth2`;
+    const projName = `${engineSuffix}modelauth4`;
     const apiName = projName;
 
     let projRoot;
