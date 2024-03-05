@@ -33,6 +33,7 @@ type RDSConfig = {
   engine: 'mysql' | 'postgres';
   dbname: string;
   username: string;
+  password?: string;
   region: string;
   instanceClass?: string;
   storage?: number;
@@ -41,7 +42,7 @@ type RDSConfig = {
 
 /**
  * Creates a new RDS instance using the given input configuration and returns the details of the created RDS instance.
- * @param config Configuration of the database instance
+ * @param config Configuration of the database instance. If password is not passed an RDS managed password will be created.
  * @returns EndPoint address, port and database name of the created RDS instance.
  */
 export const createRDSInstance = async (
@@ -63,10 +64,11 @@ export const createRDSInstance = async (
     Engine: config.engine,
     DBName: config.dbname,
     MasterUsername: config.username,
+    MasterUserPassword: config.password,
     PubliclyAccessible: config.publiclyAccessible ?? true,
     CACertificateIdentifier: 'rds-ca-rsa2048-g1',
     // use RDS managed password, then retrieve the password and store in all other credential store options
-    ManageMasterUserPassword: true,
+    ManageMasterUserPassword: !config.password,
   };
   const command = new CreateDBInstanceCommand(params);
 
@@ -93,15 +95,20 @@ export const createRDSInstance = async (
     if (!dbInstance) {
       throw new Error('RDS Instance details are missing.');
     }
-    const masterUserSecret = rdsResponse.DBInstance?.MasterUserSecret;
-    const secretsManagerClient = new SecretsManagerClient({ region: config.region });
-    const secretManagerCommand = new GetSecretValueCommand({
-      SecretId: masterUserSecret.SecretArn,
-    });
-    const secretsManagerResponse = await secretsManagerClient.send(secretManagerCommand);
-    const { password } = JSON.parse(secretsManagerResponse.SecretString);
-    if (!password) {
-      throw new Error('Unable to get RDS instance master user password');
+    let password = config.password;
+    let masterUserSecret;
+    if (!config.password) {
+      masterUserSecret = rdsResponse.DBInstance?.MasterUserSecret;
+      const secretsManagerClient = new SecretsManagerClient({ region: config.region });
+      const secretManagerCommand = new GetSecretValueCommand({
+        SecretId: masterUserSecret.SecretArn,
+      });
+      const secretsManagerResponse = await secretsManagerClient.send(secretManagerCommand);
+      const { password: managedPassword } = JSON.parse(secretsManagerResponse.SecretString);
+      if (!managedPassword) {
+        throw new Error('Unable to get RDS instance master user password');
+      }
+      password = managedPassword;
     }
 
     return {
