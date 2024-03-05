@@ -96,6 +96,8 @@ export class TransformerContext implements TransformerContextProvider {
 
   public readonly inputDocument: DocumentNode;
 
+  public readonly importedAmplifyDynamoDBTableMap: Record<string, string>;
+
   constructor(options: TransformerContextConstructorOptions) {
     const {
       assetProvider,
@@ -111,6 +113,7 @@ export class TransformerContext implements TransformerContextProvider {
       stackMapping,
       synthParameters,
       transformParameters,
+      importedAmplifyDynamoDBTableMap,
     } = options;
     assetManager.setAssetProvider(assetProvider);
     this.authConfig = authConfig;
@@ -128,6 +131,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.stackManager = new StackManager(scope, nestedStackProvider, parameterProvider, stackMapping);
     this.synthParameters = synthParameters;
     this.transformParameters = transformParameters;
+    this.importedAmplifyDynamoDBTableMap = importedAmplifyDynamoDBTableMap ?? {};
   }
 
   /**

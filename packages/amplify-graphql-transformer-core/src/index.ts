@@ -73,6 +73,7 @@ export {
 } from './transformation/transformer-plugin-base';
 export { TransformerResolver, StackManager } from './transformer-context';
 export {
+  IMPORTED_DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
   DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
   DDB_DB_TYPE,
   DDB_DEFAULT_DATASOURCE_STRATEGY,

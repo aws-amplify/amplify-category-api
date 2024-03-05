@@ -676,6 +676,11 @@ export interface AmplifyGraphqlApiProps {
    * Strategy to store construct outputs. If no outputStorageStrategey is provided a default strategy will be used.
    */
   readonly outputStorageStrategy?: IBackendOutputStorageStrategy;
+
+  /**
+   * The table map for the imported tables. The key is the model type name defined in schema; the value is the table name of the existing table
+   */
+  readonly importedAmplifyDynamoDBTableMap?: Record<string, string>;
 }
 
 /**

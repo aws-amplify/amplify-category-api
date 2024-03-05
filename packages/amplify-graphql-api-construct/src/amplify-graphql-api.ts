@@ -51,6 +51,7 @@ import {
 } from './internal';
 import { getStackForScope, walkAndProcessNodes } from './internal/construct-tree';
 import { getDataSourceStrategiesProvider } from './internal/data-source-config';
+import { validateImportedTableMap } from './internal/imported-tables';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
@@ -152,7 +153,10 @@ export class AmplifyGraphqlApi extends Construct {
       translationBehavior,
       functionNameMap,
       outputStorageStrategy,
+      importedAmplifyDynamoDBTableMap,
     } = props;
+
+    validateImportedTableMap(definition, importedAmplifyDynamoDBTableMap);
 
     const dataSources = getMetadataDataSources(definition);
 
@@ -209,7 +213,7 @@ export class AmplifyGraphqlApi extends Construct {
       // CDK construct uses a custom resource. We'll define this explicitly here to remind ourselves that this value is unused in the CDK
       // construct flow
       rdsLayerMapping: undefined,
-      ...getDataSourceStrategiesProvider(definition),
+      ...getDataSourceStrategiesProvider(definition, importedAmplifyDynamoDBTableMap ?? {}),
     };
 
     executeTransform(executeTransformConfig);

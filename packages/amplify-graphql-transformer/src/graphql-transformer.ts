@@ -154,6 +154,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
     scope,
     sqlDirectiveDataSourceStrategies,
     synthParameters,
+    importedAmplifyDynamoDBTableMap,
   } = config;
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
@@ -169,6 +170,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
       scope,
       sqlDirectiveDataSourceStrategies,
       synthParameters,
+      importedAmplifyDynamoDBTableMap,
     });
   } finally {
     transform.getLogs().forEach(printLog);

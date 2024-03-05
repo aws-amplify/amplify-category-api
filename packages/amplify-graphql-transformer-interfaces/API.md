@@ -167,6 +167,8 @@ export interface DataSourceStrategiesProvider {
     // (undocumented)
     dataSourceStrategies: Record<string, ModelDataSourceStrategy>;
     // (undocumented)
+    importedAmplifyDynamoDBTableMap?: Record<string, string>;
+    // (undocumented)
     sqlDirectiveDataSourceStrategies?: SqlDirectiveDataSourceStrategy[];
 }
 
@@ -213,6 +215,14 @@ export interface GraphQLAPIProvider extends IConstruct {
 }
 
 // @public (undocumented)
+export interface ImportedAmplifyDynamoDbModelDataSourceStrategy {
+    // (undocumented)
+    readonly dbType: 'DYNAMODB';
+    // (undocumented)
+    readonly provisionStrategy: 'IMPORTED_AMPLIFY_TABLE';
+}
+
+// @public (undocumented)
 export interface InlineMappingTemplateProvider {
     // (undocumented)
     bind: (scope: Construct) => string;
@@ -234,7 +244,7 @@ export enum MappingTemplateType {
 }
 
 // @public (undocumented)
-export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
+export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | ImportedAmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
 
 // @public (undocumented)
 export interface ModelDataSourceStrategyBase {
@@ -436,7 +446,7 @@ export type SynthParameters = {
 export type TransformerAuthProvider = TransformerPluginProvider;
 
 // @public (undocumented)
-export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'dataSourceStrategies' | 'sqlDirectiveDataSourceStrategies' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager' | 'synthParameters'>;
+export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'dataSourceStrategies' | 'sqlDirectiveDataSourceStrategies' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager' | 'synthParameters' | 'importedAmplifyDynamoDBTableMap'>;
 
 // @public (undocumented)
 export interface TransformerContextMetadataProvider {
@@ -783,7 +793,7 @@ export interface TransformerSchemaHelperProvider {
 }
 
 // @public (undocumented)
-export type TransformerSchemaVisitStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'dataSourceStrategies' | 'sqlDirectiveDataSourceStrategies' | 'output' | 'providerRegistry' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper'>;
+export type TransformerSchemaVisitStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'dataSourceStrategies' | 'sqlDirectiveDataSourceStrategies' | 'output' | 'providerRegistry' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper' | 'importedAmplifyDynamoDBTableMap'>;
 
 // @public (undocumented)
 export type TransformerSecrets = {
@@ -794,7 +804,7 @@ export type TransformerSecrets = {
 export type TransformerTransformSchemaStepContextProvider = TransformerValidationStepContextProvider;
 
 // @public (undocumented)
-export type TransformerValidationStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'dataSourceStrategies' | 'sqlDirectiveDataSourceStrategies' | 'output' | 'providerRegistry' | 'dataSources' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper' | 'resolvers' | 'stackManager' | 'synthParameters'>;
+export type TransformerValidationStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'dataSourceStrategies' | 'sqlDirectiveDataSourceStrategies' | 'output' | 'providerRegistry' | 'dataSources' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper' | 'resolvers' | 'stackManager' | 'synthParameters' | 'importedAmplifyDynamoDBTableMap'>;
 
 // @public (undocumented)
 export interface TransformHostProvider {

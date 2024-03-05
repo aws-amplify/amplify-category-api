@@ -68,12 +68,16 @@ export const constructCustomSqlDataSourceStrategies = (
  * Extracts the data source provider from the definition. This jumps through some hoops to avoid changing the public interface. If we decide
  * to change the public interface to simplify the structure, then this process gets a lot simpler.
  */
-export const getDataSourceStrategiesProvider = (definition: IAmplifyGraphqlDefinition): DataSourceStrategiesProvider => {
+export const getDataSourceStrategiesProvider = (
+  definition: IAmplifyGraphqlDefinition,
+  importedAmplifyDynamoDBTableMap: Record<string, string>,
+): DataSourceStrategiesProvider => {
   const provider: DataSourceStrategiesProvider = {
     // We can directly use the interface strategies, even though the SQL strategies have the customSqlStatements field that is unused by the
     // transformer flavor of this type
     dataSourceStrategies: definition.dataSourceStrategies,
     sqlDirectiveDataSourceStrategies: [],
+    importedAmplifyDynamoDBTableMap,
   };
 
   // We'll collect all the custom SQL statements from the definition into a single map, and use that to make our
