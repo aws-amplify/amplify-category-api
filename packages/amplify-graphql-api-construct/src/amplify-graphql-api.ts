@@ -36,7 +36,7 @@ import type {
   FunctionSlot,
   IBackendOutputStorageStrategy,
   AddFunctionProps,
-  ConflictResolution,
+  DataStoreConfiguration,
   IAmplifyGraphqlDefinition,
 } from './types';
 import {
@@ -120,9 +120,9 @@ export class AmplifyGraphqlApi extends Construct {
   public readonly apiId: string;
 
   /**
-   * Conflict resolution setting
+   * DataStore conflict resolution setting
    */
-  private readonly conflictResolution: ConflictResolution | undefined;
+  private readonly dataStoreConfiguration: DataStoreConfiguration | undefined;
 
   /**
    * Be very careful editing this value. This is the string that is used to identify graphql stacks in BI metrics
@@ -152,7 +152,16 @@ export class AmplifyGraphqlApi extends Construct {
       translationBehavior,
       functionNameMap,
       outputStorageStrategy,
+      dataStoreConfiguration,
     } = props;
+
+    if (conflictResolution && dataStoreConfiguration) {
+      throw new Error(
+        `conflictResolution is deprecated. conflictResolution and dataStoreConfiguration cannot be used together. Please use dataStoreConfiguration.`,
+      );
+    }
+
+    this.dataStoreConfiguration = dataStoreConfiguration || conflictResolution;
 
     const dataSources = getMetadataDataSources(definition);
 
@@ -201,7 +210,7 @@ export class AmplifyGraphqlApi extends Construct {
       },
       authConfig,
       stackMapping: stackMappings ?? {},
-      resolverConfig: conflictResolution ? convertToResolverConfig(conflictResolution) : undefined,
+      resolverConfig: this.dataStoreConfiguration ? convertToResolverConfig(this.dataStoreConfiguration) : undefined,
       transformParameters: {
         ...defaultTranslationBehavior,
         ...(translationBehavior ?? {}),
@@ -217,7 +226,6 @@ export class AmplifyGraphqlApi extends Construct {
     this.codegenAssets = new CodegenAssets(this, 'AmplifyCodegenAssets', { modelSchema: definition.schema });
 
     this.resources = getGeneratedResources(this);
-    this.conflictResolution = conflictResolution;
     this.generatedFunctionSlots = getGeneratedFunctionSlots(assetManager.resolverAssets);
     this.storeOutput(outputStorageStrategy);
 
@@ -255,8 +263,8 @@ export class AmplifyGraphqlApi extends Construct {
       output.payload.awsAppsyncAdditionalAuthenticationTypes = additionalAuthTypes;
     }
 
-    if (this.conflictResolution?.project?.handlerType) {
-      output.payload.awsAppsyncConflictResolutionMode = this.conflictResolution?.project?.handlerType;
+    if (this.dataStoreConfiguration?.project?.handlerType) {
+      output.payload.awsAppsyncConflictResolutionMode = this.dataStoreConfiguration?.project?.handlerType;
     }
 
     outputStorageStrategy.addBackendOutputEntry(graphqlOutputKey, output);
