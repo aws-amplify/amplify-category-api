@@ -44,7 +44,7 @@ describe('CDK GraphQL Transformer', () => {
   let projRoot: string;
   const projFolderName = 'sqlmodelsssm';
 
-  const [username, password, identifier] = generator.generateMultiple(3);
+  const [username, identifier] = generator.generateMultiple(2);
 
   const region = process.env.CLI_REGION ?? 'us-west-2';
 
@@ -62,7 +62,6 @@ describe('CDK GraphQL Transformer', () => {
       engine: 'mysql',
       dbname,
       username,
-      password,
       region,
     });
   });
@@ -91,6 +90,10 @@ describe('CDK GraphQL Transformer', () => {
 
   test('creates a GraphQL API from SQL-based models with Secrets Manager Credential Store custom encryption key', async () => {
     await testGraphQLAPI('secretsManagerCustomKey');
+  });
+
+  test('creates a GraphQL API from SQL-based models with Secrets Manager Credential Store default encryption key', async () => {
+    await testGraphQLAPI('secretsManagerManagedSecret');
   });
 
   test('creates a GraphQL API from SQL-based models with SSM Credential Store', async () => {
@@ -185,10 +188,9 @@ const setupDatabase = async (options: {
   engine: 'mysql' | 'postgres';
   dbname: string;
   username: string;
-  password: string;
   region: string;
 }): Promise<DBDetails> => {
-  const { identifier, dbname, username, password, region } = options;
+  const { identifier, dbname, username, region } = options;
 
   console.log(`Setting up database '${identifier}'`);
 
@@ -202,7 +204,7 @@ const setupDatabase = async (options: {
   const { secretArn } = await storeDbConnectionConfigWithSecretsManager({
     region,
     username,
-    password,
+    password: dbConfig.password,
     secretName: `${identifier}-secret`,
   });
   if (!secretArn) {
@@ -219,7 +221,7 @@ const setupDatabase = async (options: {
   const { secretArn: secretArnWithCustomKey, keyArn } = await storeDbConnectionConfigWithSecretsManager({
     region,
     username,
-    password,
+    password: dbConfig.password,
     secretName: `${identifier}-secret-custom-key`,
     useCustomEncryptionKey: true,
   });
@@ -242,7 +244,7 @@ const setupDatabase = async (options: {
     port: dbConfig.port,
     databaseName: dbname,
     username,
-    password,
+    password: dbConfig.password,
   });
   if (!dbConnectionConfigSSM) {
     throw new Error('Failed to store db connection config for SSM');
@@ -260,6 +262,12 @@ const setupDatabase = async (options: {
       ssm: dbConnectionConfigSSM,
       secretsManager: dbConnectionConfigSecretsManager,
       secretsManagerCustomKey: dbConnectionConfigSecretsManagerCustomKey,
+      secretsManagerManagedSecret: {
+        databaseName: dbname,
+        hostname: dbConfig.endpoint,
+        port: dbConfig.port,
+        secretArn: dbConfig.managedSecretArn,
+      },
     },
   };
 };
