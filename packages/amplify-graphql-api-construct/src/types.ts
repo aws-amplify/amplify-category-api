@@ -752,6 +752,11 @@ export interface AmplifyGraphqlApiProps {
    * For more information, refer to https://docs.amplify.aws/lib/datastore/getting-started/q/platform/js/
    */
   readonly dataStoreConfiguration?: DataStoreConfiguration;
+
+  /**
+   * The table map for the imported tables. The key is the model type name defined in schema; the value is the table name of the existing table
+   */
+  readonly importedAmplifyDynamoDBTableMap?: Record<string, string>;
 }
 
 /**

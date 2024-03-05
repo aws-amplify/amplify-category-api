@@ -104,6 +104,8 @@ export class TransformerContext implements TransformerContextProvider {
 
   public readonly inputDocument: DocumentNode;
 
+  public readonly importedAmplifyDynamoDBTableMap: Record<string, string>;
+
   constructor(options: TransformerContextConstructorOptions) {
     const {
       assetProvider,
@@ -120,6 +122,7 @@ export class TransformerContext implements TransformerContextProvider {
       stackMapping,
       synthParameters,
       transformParameters,
+      importedAmplifyDynamoDBTableMap,
     } = options;
     this.authConfig = authConfig;
     this.sqlDirectiveDataSourceStrategies = sqlDirectiveDataSourceStrategies ?? [];
@@ -138,6 +141,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.assetProvider = assetProvider;
     this.synthParameters = synthParameters;
     this.transformParameters = transformParameters;
+    this.importedAmplifyDynamoDBTableMap = importedAmplifyDynamoDBTableMap ?? {};
   }
 
   /**

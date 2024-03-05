@@ -80,6 +80,7 @@ import { DynamoModelResourceGenerator } from './resources/dynamo-model-resource-
 import { RdsModelResourceGenerator } from './resources/rds-model-resource-generator';
 import { ModelTransformerOptions } from './types';
 import { AmplifyDynamoModelResourceGenerator } from './resources/amplify-dynamodb-table/amplify-dynamo-model-resource-generator';
+import { isImportedAmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-core/src/utils';
 
 /**
  * Nullable
@@ -89,6 +90,7 @@ export type Nullable<T> = T | null;
 // Keys for the resource generator map to reference the generator for various ModelDataSourceStrategies
 const ITERATIVE_TABLE_GENERATOR = 'AmplifyDDB';
 const SQL_LAMBDA_GENERATOR = 'SQL';
+const IMPORTED_AMPLIFY_TABLE_GENERATOR = 'ImportedAmplifyDDB';
 
 /**
  * ModelTransformer
@@ -102,7 +104,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
   private resourceGeneratorMap: Map<string, ModelResourceGenerator> = new Map<string, ModelResourceGenerator>();
 
-  private dataSourceStrategiesProvider: DataSourceStrategiesProvider = { dataSourceStrategies: {} };
+  private dataSourceStrategiesProvider: DataSourceStrategiesProvider = { dataSourceStrategies: {}, importedAmplifyDynamoDBTableMap: {} };
 
   /**
    * A Map to hold the directive configuration
@@ -114,14 +116,15 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     this.options = this.getOptions(options);
     this.resourceGeneratorMap.set(DDB_DB_TYPE, new DynamoModelResourceGenerator());
     this.resourceGeneratorMap.set(SQL_LAMBDA_GENERATOR, new RdsModelResourceGenerator());
-    this.resourceGeneratorMap.set(ITERATIVE_TABLE_GENERATOR, new AmplifyDynamoModelResourceGenerator());
+    const amplifyTableDynamoModelResourceGenerator = new AmplifyDynamoModelResourceGenerator();
+    this.resourceGeneratorMap.set(ITERATIVE_TABLE_GENERATOR, amplifyTableDynamoModelResourceGenerator);
   }
 
   before = (ctx: TransformerBeforeStepContextProvider): void => {
     // We only store this the model transformer because some of the required override methods need to pass through to the Resource
     // generators, but do not have access to the context
-    const { dataSourceStrategies, sqlDirectiveDataSourceStrategies } = ctx;
-    this.dataSourceStrategiesProvider = { dataSourceStrategies, sqlDirectiveDataSourceStrategies };
+    const { dataSourceStrategies, sqlDirectiveDataSourceStrategies, importedAmplifyDynamoDBTableMap } = ctx;
+    this.dataSourceStrategiesProvider = { dataSourceStrategies, sqlDirectiveDataSourceStrategies, importedAmplifyDynamoDBTableMap };
 
     const strategies = Object.values(dataSourceStrategies);
     const customSqlDataSources = sqlDirectiveDataSourceStrategies?.map((dss) => dss.strategy) ?? [];
@@ -133,7 +136,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       this.resourceGeneratorMap.get(SQL_LAMBDA_GENERATOR)?.enableGenerator();
       this.resourceGeneratorMap.get(SQL_LAMBDA_GENERATOR)?.enableUnprovisioned();
     }
-    if (strategies.some(isAmplifyDynamoDbModelDataSourceStrategy)) {
+    if (strategies.some(isAmplifyDynamoDbModelDataSourceStrategy) || strategies.some(isImportedAmplifyDynamoDbModelDataSourceStrategy)) {
       this.resourceGeneratorMap.get(ITERATIVE_TABLE_GENERATOR)?.enableGenerator();
       this.resourceGeneratorMap.get(ITERATIVE_TABLE_GENERATOR)?.enableProvisioned();
     }
@@ -871,6 +874,12 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       generator = this.resourceGeneratorMap.get(ITERATIVE_TABLE_GENERATOR);
     } else if (isSqlStrategy(strategy)) {
       generator = this.resourceGeneratorMap.get(SQL_LAMBDA_GENERATOR);
+    } else if (isImportedAmplifyDynamoDbModelDataSourceStrategy(strategy)) {
+      if (ctx.importedAmplifyDynamoDBTableMap && ctx.importedAmplifyDynamoDBTableMap[typeName]) {
+        generator = this.resourceGeneratorMap.get(ITERATIVE_TABLE_GENERATOR);
+      } else {
+        throw new Error(`Cannot find imported table mapping for model ${typeName}`);
+      }
     }
 
     if (!generator) {
