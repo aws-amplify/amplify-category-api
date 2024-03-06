@@ -76,7 +76,7 @@ export const constructCustomSqlDataSourceStrategies = (
  */
 export const getDataSourceStrategiesProvider = (
   definition: IAmplifyGraphqlDefinition,
-  importedAmplifyDynamoDBTableMap: Record<string, string>,
+  importedAmplifyDynamoDBTableMap: Record<string, string> = {},
 ): DataSourceStrategiesProvider => {
   const provider: DataSourceStrategiesProvider = {
     // We can directly use the interface strategies, even though the SQL strategies have the customSqlStatements field that is unused by the
