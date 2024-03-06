@@ -26,6 +26,7 @@ const defaultRoleDefinitions: Record<AuthProvider, Array<RoleDefinition>> = {
       provider: 'iam',
       strategy: 'public',
       static: true,
+      claim: 'testClaim',
     },
     {
       provider: 'iam',
