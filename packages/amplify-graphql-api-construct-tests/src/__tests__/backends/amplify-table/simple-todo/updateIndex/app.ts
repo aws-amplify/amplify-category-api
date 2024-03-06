@@ -30,7 +30,7 @@ const api = new AmplifyGraphqlApi(stack, 'GraphqlApi', {
   authorizationModes: {
     apiKeyConfig: { expires: Duration.days(7) },
   },
-  conflictResolution: {
+  dataStoreConfiguration: {
     project: {
       detectionType: 'VERSION',
       handlerType: 'AUTOMERGE',
