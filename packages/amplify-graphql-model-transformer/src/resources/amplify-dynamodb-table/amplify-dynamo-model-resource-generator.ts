@@ -62,6 +62,11 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
               apiId: ctx.api.apiId,
               envName: ctx.synthParameters.amplifyEnvironmentName,
             }),
+            ...Object.values(ctx.importedAmplifyDynamoDBTableMap ?? {}).map((tableName) =>
+              cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}', {
+                tableName,
+              }),
+            ),
           ],
         }),
       );
@@ -109,7 +114,9 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
   protected createModelTable(scope: Construct, def: ObjectTypeDefinitionNode, context: TransformerContextProvider): void {
     const modelName = def!.name.value;
     const tableLogicalName = ModelResourceIDs.ModelTableResourceID(modelName);
-    const tableName = context.resourceHelper.generateTableName(modelName);
+    const importedTableMap = context.importedAmplifyDynamoDBTableMap ?? {};
+    const isTableImported = importedTableMap[modelName] !== undefined;
+    const tableName = isTableImported ? importedTableMap[modelName] : context.resourceHelper.generateTableName(modelName);
 
     // Add parameters.
     const { readIops, writeIops, billingMode, pointInTimeRecovery, enableSSE } = this.createDynamoDBParameters(scope, true);
@@ -128,7 +135,11 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
       expression: cdk.Fn.conditionEquals(pointInTimeRecovery, 'true'),
     });
 
-    const removalPolicy = this.options.EnableDeletionProtection ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY;
+    const removalPolicy = isTableImported
+      ? cdk.RemovalPolicy.RETAIN
+      : this.options.EnableDeletionProtection
+      ? cdk.RemovalPolicy.RETAIN
+      : cdk.RemovalPolicy.DESTROY;
 
     // TODO: The attribute of encryption and TTL should be added
     const table = new AmplifyDynamoDBTable(scope, `${tableLogicalName}`, {
@@ -144,6 +155,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
       encryption: TableEncryption.DEFAULT,
       removalPolicy,
       ...(context.isProjectUsingDataStore() ? { timeToLiveAttribute: '_ttl' } : undefined),
+      ...(isTableImported ? { isImported: true } : undefined),
     });
     setResourceName(table, { name: modelName, setOnDefaultChild: false });
 

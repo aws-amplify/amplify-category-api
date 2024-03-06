@@ -9,6 +9,7 @@
 export type ModelDataSourceStrategy =
   | DefaultDynamoDbModelDataSourceStrategy
   | AmplifyDynamoDbModelDataSourceStrategy
+  | ImportedAmplifyDynamoDbModelDataSourceStrategy
   | SQLLambdaModelDataSourceStrategy;
 
 export interface ModelDataSourceStrategyBase {
@@ -39,6 +40,14 @@ export interface DefaultDynamoDbModelDataSourceStrategy extends ModelDataSourceS
 export interface AmplifyDynamoDbModelDataSourceStrategy extends ModelDataSourceStrategyBase {
   readonly dbType: 'DYNAMODB';
   readonly provisionStrategy: 'AMPLIFY_TABLE';
+}
+
+/**
+ * Use custom resource type 'Custom::ImportedAmplifyDynamoDBTable' to provision table.
+ */
+export interface ImportedAmplifyDynamoDbModelDataSourceStrategy {
+  readonly dbType: 'DYNAMODB';
+  readonly provisionStrategy: 'IMPORTED_AMPLIFY_TABLE';
 }
 
 /**
@@ -173,6 +182,9 @@ export interface DataSourceStrategiesProvider {
 
   /** Maps custom Query and Mutation fields to the ModelDataSourceStrategy used to resolve them. */
   sqlDirectiveDataSourceStrategies?: SqlDirectiveDataSourceStrategy[];
+
+  /** Maps GraphQL model names to the imported DynamoDB table names. */
+  importedAmplifyDynamoDBTableMap?: Record<string, string>;
 }
 
 /**

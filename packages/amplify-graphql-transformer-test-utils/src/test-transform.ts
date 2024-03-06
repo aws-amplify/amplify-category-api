@@ -20,6 +20,7 @@ export type TestTransformParameters = RDSLayerMappingProvider & {
   authConfig?: AppSyncAuthConfiguration;
   // Making this optional so test code can simply use a default DDB strategy for each model in the schema.
   dataSourceStrategies?: Record<string, ModelDataSourceStrategy>;
+  importedAmplifyDynamoDBTableMap?: Record<string, string>;
   overrideConfig?: OverrideConfig;
   resolverConfig?: ResolverConfig;
   schema: string;
@@ -49,6 +50,7 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     transformers,
     transformParameters,
     userDefinedSlots,
+    importedAmplifyDynamoDBTableMap,
   } = params;
 
   const transform = new GraphQLTransform({
@@ -81,6 +83,7 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     rdsLayerMapping,
     dataSourceStrategies: dataSourceStrategies ?? constructDataSourceStrategies(schema, DDB_DEFAULT_DATASOURCE_STRATEGY),
     sqlDirectiveDataSourceStrategies,
+    importedAmplifyDynamoDBTableMap: importedAmplifyDynamoDBTableMap ?? {},
   });
 
   const logs: any[] = [];
