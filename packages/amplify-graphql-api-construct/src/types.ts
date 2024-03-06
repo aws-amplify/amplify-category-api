@@ -28,6 +28,53 @@ export interface IAMAuthorizationConfig {
   /**
    * ID for the Cognito Identity Pool vending auth and unauth roles.
    * Format: `<region>:<id string>`
+   *
+   * @deprecated Use 'IdentityPoolAuthorizationConfig.identityPoolId' instead.
+   */
+  readonly identityPoolId?: string;
+
+  /**
+   * Authenticated user role, applies to { provider: iam, allow: private } access.
+   *
+   * @deprecated Use 'IdentityPoolAuthorizationConfig.authenticatedUserRole' instead.
+   */
+  readonly authenticatedUserRole?: IRole;
+
+  /**
+   * Unauthenticated user role, applies to { provider: iam, allow: public } access.
+   *
+   * @deprecated Use 'IdentityPoolAuthorizationConfig.unauthenticatedUserRole' instead.
+   */
+  readonly unauthenticatedUserRole?: IRole;
+
+  /**
+   * A list of IAM roles which will be granted full read/write access to the generated model if IAM auth is enabled.
+   * If an IRole is provided, the role `name` will be used for matching.
+   * If a string is provided, the raw value will be used for matching.
+   *
+   * @deprecated Use 'enableIamAuthorizationMode' and IAM Policy to control access for IAM principals.
+   * See https://docs.aws.amazon.com/service-authorization/latest/reference/list_awsappsync.html.
+   */
+  readonly allowListedRoles?: (IRole | string)[];
+
+  /**
+   * Enables access for IAM principals. If enabled @auth directive rules are not applied.
+   * Instead, access should be defined by IAM Policy, see https://docs.aws.amazon.com/service-authorization/latest/reference/list_awsappsync.html.
+   *
+   * Does not apply to authenticated and unauthenticated IAM Roles attached to Cognito Identity Pool.
+   * Use IdentityPoolAuthorizationConfig to configure their access.
+   */
+  readonly enableIamAuthorizationMode?: boolean;
+}
+
+/**
+ * Configuration for Cognito Identity Pool Authorization on the Graphql Api.
+ * @struct - required since this interface begins with an 'I'
+ */
+export interface IdentityPoolAuthorizationConfig {
+  /**
+   * ID for the Cognito Identity Pool vending auth and unauth roles.
+   * Format: `<region>:<id string>`
    */
   readonly identityPoolId: string;
 
@@ -40,13 +87,6 @@ export interface IAMAuthorizationConfig {
    * Unauthenticated user role, applies to { provider: iam, allow: public } access.
    */
   readonly unauthenticatedUserRole: IRole;
-
-  /**
-   * A list of IAM roles which will be granted full read/write access to the generated model if IAM auth is enabled.
-   * If an IRole is provided, the role `name` will be used for matching.
-   * If a string is provided, the raw value will be used for matching.
-   */
-  readonly allowListedRoles?: (IRole | string)[];
 }
 
 /**
@@ -138,6 +178,12 @@ export interface AuthorizationModes {
    * Applies to 'public' and 'private' auth strategies.
    */
   readonly iamConfig?: IAMAuthorizationConfig;
+
+  /**
+   * Cognito Identity Pool config, required if an 'identityPool' auth provider is specified in the Api.
+   * Applies to 'public' and 'private' auth strategies.
+   */
+  readonly identityPoolConfig?: IdentityPoolAuthorizationConfig;
 
   /**
    * Cognito UserPool config, required if a 'userPools' auth provider is specified in the Api.

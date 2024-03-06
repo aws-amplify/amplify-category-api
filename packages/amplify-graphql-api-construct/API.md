@@ -165,6 +165,7 @@ export interface AuthorizationModes {
     readonly apiKeyConfig?: ApiKeyAuthorizationConfig;
     readonly defaultAuthorizationMode?: 'AWS_IAM' | 'AMAZON_COGNITO_USER_POOLS' | 'OPENID_CONNECT' | 'API_KEY' | 'AWS_LAMBDA';
     readonly iamConfig?: IAMAuthorizationConfig;
+    readonly identityPoolConfig?: IdentityPoolAuthorizationConfig;
     readonly lambdaConfig?: LambdaAuthorizationConfig;
     readonly oidcConfig?: OIDCAuthorizationConfig;
     readonly userPoolConfig?: UserPoolAuthorizationConfig;
@@ -255,6 +256,13 @@ export interface IBackendOutputEntry {
 // @public
 export interface IBackendOutputStorageStrategy {
     addBackendOutputEntry(keyName: string, backendOutputEntry: IBackendOutputEntry): void;
+}
+
+// @public
+export interface IdentityPoolAuthorizationConfig {
+    readonly authenticatedUserRole: IRole;
+    readonly identityPoolId: string;
+    readonly unauthenticatedUserRole: IRole;
 }
 
 // @public

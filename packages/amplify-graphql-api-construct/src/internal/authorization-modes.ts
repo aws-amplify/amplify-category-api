@@ -181,8 +181,9 @@ const getSynthParameters = (authModes: AuthorizationModes): AuthSynthParameters 
   ...(authModes.userPoolConfig ? { userPoolId: authModes.userPoolConfig.userPool.userPoolId } : {}),
   ...(authModes?.iamConfig
     ? {
-        authenticatedUserRoleName: authModes.iamConfig.authenticatedUserRole.roleName,
-        unauthenticatedUserRoleName: authModes.iamConfig.unauthenticatedUserRole.roleName,
+    // TODO sobkamil here
+        authenticatedUserRoleName: authModes.iamConfig.authenticatedUserRole?.roleName,
+        unauthenticatedUserRoleName: authModes.iamConfig.unauthenticatedUserRole?.roleName,
       }
     : {}),
 });

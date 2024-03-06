@@ -29,6 +29,7 @@ import { IAMAuthorizationConfig } from '@aws-amplify/graphql-api-construct';
 import { IAmplifyGraphqlDefinition as IAmplifyDataDefinition } from '@aws-amplify/graphql-api-construct';
 import { IBackendOutputEntry } from '@aws-amplify/graphql-api-construct';
 import { IBackendOutputStorageStrategy } from '@aws-amplify/graphql-api-construct';
+import { IdentityPoolAuthorizationConfig } from '@aws-amplify/graphql-api-construct';
 import { LambdaAuthorizationConfig } from '@aws-amplify/graphql-api-construct';
 import { ModelDataSourceStrategy } from '@aws-amplify/graphql-api-construct';
 import { ModelDataSourceStrategyDbType } from '@aws-amplify/graphql-api-construct';
@@ -102,6 +103,8 @@ export { IAmplifyDataDefinition }
 export { IBackendOutputEntry }
 
 export { IBackendOutputStorageStrategy }
+
+export { IdentityPoolAuthorizationConfig }
 
 export { LambdaAuthorizationConfig }
 
