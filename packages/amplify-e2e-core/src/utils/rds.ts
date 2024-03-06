@@ -117,7 +117,7 @@ export const createRDSInstance = async (
       dbName: dbInstance.DBName as string,
       dbInstance,
       password,
-      managedSecretArn: masterUserSecret.SecretArn,
+      managedSecretArn: masterUserSecret?.SecretArn,
     };
   } catch (error) {
     console.error(error);
