@@ -235,7 +235,7 @@
     "cross-fetch": "^2.2.6",
     "trim-newlines": "^3.0.1",
     "aws-sdk": "^2.1141.0",
-    "aws-cdk-lib": "2.97.0",
+    "aws-cdk-lib": "2.129.0",
     "parse-path": "^5.0.0",
     "parse-url": "^8.1.0",
     "moment-timezone": "^0.5.35",
