@@ -80,7 +80,7 @@ import { DynamoModelResourceGenerator } from './resources/dynamo-model-resource-
 import { RdsModelResourceGenerator } from './resources/rds-model-resource-generator';
 import { ModelTransformerOptions } from './types';
 import { AmplifyDynamoModelResourceGenerator } from './resources/amplify-dynamodb-table/amplify-dynamo-model-resource-generator';
-import { isImportedAmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-core/src/utils';
+import { isImportedAmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-core';
 
 /**
  * Nullable
