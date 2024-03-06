@@ -5,18 +5,20 @@ import { App, Stack, Duration, CfnOutput } from 'aws-cdk-lib';
 import { AmplifyGraphqlApi, AmplifyGraphqlDefinition, SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
 
 interface DBDetails {
-  endpoint: string;
-  port: number;
-  dbName: string;
-  vpcConfig: {
-    vpcId: string;
-    securityGroupIds: string[];
-    subnetAvailabilityZones: [
-      {
-        subnetId: string;
-        availabilityZone: string;
-      },
-    ];
+  dbConfig: {
+    endpoint: string;
+    port: number;
+    dbName: string;
+    vpcConfig: {
+      vpcId: string;
+      securityGroupIds: string[];
+      subnetAvailabilityZones: [
+        {
+          subnetId: string;
+          availabilityZone: string;
+        },
+      ];
+    };
   };
   dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
 }
@@ -48,9 +50,9 @@ const api = new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
       name: STRATEGY_NAME,
       dbType: 'MYSQL',
       vpcConfiguration: {
-        vpcId: dbDetails.vpcConfig.vpcId,
-        securityGroupIds: dbDetails.vpcConfig.securityGroupIds,
-        subnetAvailabilityZoneConfig: dbDetails.vpcConfig.subnetAvailabilityZones,
+        vpcId: dbDetails.dbConfig.vpcConfig.vpcId,
+        securityGroupIds: dbDetails.dbConfig.vpcConfig.securityGroupIds,
+        subnetAvailabilityZoneConfig: dbDetails.dbConfig.vpcConfig.subnetAvailabilityZones,
       },
       dbConnectionConfig: {
         ...dbDetails.dbConnectionConfig,
