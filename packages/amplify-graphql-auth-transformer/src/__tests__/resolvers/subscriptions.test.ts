@@ -32,6 +32,7 @@ const defaultRoleDefinitions: Record<AuthProvider, Array<RoleDefinition>> = {
       provider: 'iam',
       strategy: 'private',
       static: true,
+      claim: 'testClaim',
     },
   ],
   identityPool: [
@@ -39,11 +40,13 @@ const defaultRoleDefinitions: Record<AuthProvider, Array<RoleDefinition>> = {
       provider: 'identityPool',
       strategy: 'public',
       static: true,
+      claim: 'testClaim',
     },
     {
       provider: 'identityPool',
       strategy: 'private',
       static: true,
+      claim: 'testClaim',
     },
   ],
   userPools: [
