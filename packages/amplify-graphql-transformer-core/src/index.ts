@@ -42,6 +42,7 @@ export {
   getSortKeyFieldNames,
   getStrategyDbTypeFromTypeNode,
   getTable,
+  isImportedAmplifyDynamoDbModelDataSourceStrategy,
   isAmplifyDynamoDbModelDataSourceStrategy,
   isBuiltInGraphqlNode,
   isDefaultDynamoDbModelDataSourceStrategy,

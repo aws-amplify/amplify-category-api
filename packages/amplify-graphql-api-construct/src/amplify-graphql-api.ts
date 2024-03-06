@@ -213,7 +213,7 @@ export class AmplifyGraphqlApi extends Construct {
       // CDK construct uses a custom resource. We'll define this explicitly here to remind ourselves that this value is unused in the CDK
       // construct flow
       rdsLayerMapping: undefined,
-      ...getDataSourceStrategiesProvider(definition, importedAmplifyDynamoDBTableMap ?? {}),
+      ...getDataSourceStrategiesProvider(definition, importedAmplifyDynamoDBTableMap),
     };
 
     executeTransform(executeTransformConfig);
