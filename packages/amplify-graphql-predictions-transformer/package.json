@@ -35,7 +35,7 @@
     "graphql-transformer-common": "4.28.1"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.97.0",
+    "aws-cdk-lib": "^2.129.0",
     "constructs": "^10.3.0"
   },
   "devDependencies": {

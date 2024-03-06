@@ -30,7 +30,7 @@
     "graphql": "^15.5.0"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.97.0",
+    "aws-cdk-lib": "^2.129.0",
     "constructs": "^10.3.0"
   },
   "jest": {
