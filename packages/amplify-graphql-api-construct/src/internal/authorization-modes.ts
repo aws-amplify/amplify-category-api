@@ -5,14 +5,13 @@ import { IRole, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import {
   AuthorizationModes,
   ApiKeyAuthorizationConfig,
-  IAMAuthorizationConfig,
   LambdaAuthorizationConfig,
   OIDCAuthorizationConfig,
   UserPoolAuthorizationConfig,
 } from '../types';
 
 type AuthorizationConfigMode =
-  | (IAMAuthorizationConfig & { type: 'AWS_IAM' })
+  | { type: 'AWS_IAM' }
   | (UserPoolAuthorizationConfig & { type: 'AMAZON_COGNITO_USER_POOLS' })
   | (OIDCAuthorizationConfig & { type: 'OPENID_CONNECT' })
   | (ApiKeyAuthorizationConfig & { type: 'API_KEY' })
@@ -79,7 +78,7 @@ const convertAuthConfigToAppSyncAuth = (authModes: AuthorizationModes): AppSyncA
     authModes.lambdaConfig ? { type: 'AWS_LAMBDA', ...authModes.lambdaConfig } : null,
     authModes.oidcConfig ? { type: 'OPENID_CONNECT', ...authModes.oidcConfig } : null,
     authModes.userPoolConfig ? { type: 'AMAZON_COGNITO_USER_POOLS', ...authModes.userPoolConfig } : null,
-    authModes.iamConfig ? { type: 'AWS_IAM', ...authModes.iamConfig } : null,
+    authModes.iamConfig || authModes.identityPoolConfig ? { type: 'AWS_IAM', ...authModes.iamConfig } : null,
   ].filter((mode) => mode) as AuthorizationConfigMode[];
   const authProviders = authConfig.map(convertAuthModeToAuthProvider);
 
@@ -116,7 +115,7 @@ const convertAuthConfigToAppSyncAuth = (authModes: AuthorizationModes): AppSyncA
 
 type AuthSynthParameters = Pick<
   SynthParameters,
-  'userPoolId' | 'authenticatedUserRoleName' | 'unauthenticatedUserRoleName' | 'identityPoolId' | 'adminRoles'
+  'userPoolId' | 'authenticatedUserRoleName' | 'unauthenticatedUserRoleName' | 'identityPoolId' | 'adminRoles' | 'enableIamAccess'
 >;
 
 interface AuthConfig {
@@ -177,11 +176,17 @@ const getAllowListedRoles = (authModes: AuthorizationModes): string[] =>
  */
 const getSynthParameters = (authModes: AuthorizationModes): AuthSynthParameters => ({
   adminRoles: getAllowListedRoles(authModes),
-  identityPoolId: authModes.iamConfig?.identityPoolId,
+  identityPoolId: authModes.identityPoolConfig?.identityPoolId ?? authModes.iamConfig?.identityPoolId,
+  enableIamAccess: authModes.iamConfig?.enableIamAuthorizationMode,
   ...(authModes.userPoolConfig ? { userPoolId: authModes.userPoolConfig.userPool.userPoolId } : {}),
+  ...(authModes?.identityPoolConfig
+    ? {
+        authenticatedUserRoleName: authModes.identityPoolConfig.authenticatedUserRole.roleName,
+        unauthenticatedUserRoleName: authModes.identityPoolConfig.unauthenticatedUserRole.roleName,
+      }
+    : {}),
   ...(authModes?.iamConfig
     ? {
-    // TODO sobkamil here
         authenticatedUserRoleName: authModes.iamConfig.authenticatedUserRole?.roleName,
         unauthenticatedUserRoleName: authModes.iamConfig.unauthenticatedUserRole?.roleName,
       }

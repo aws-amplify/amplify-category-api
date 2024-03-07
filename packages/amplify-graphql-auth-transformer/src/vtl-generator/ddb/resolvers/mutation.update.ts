@@ -48,6 +48,7 @@ import {
   generateOwnerClaimListExpression,
   generateOwnerMultiClaimExpression,
   generateInvalidClaimsCondition,
+  genericIamAccessExpression,
 } from './helpers';
 
 /**
@@ -89,7 +90,12 @@ const lambdaExpression = (roles: Array<RoleDefinition>): Expression | null => {
   return iff(equals(ref('util.authType()'), str(LAMBDA_AUTH_TYPE)), compoundExpression(expression));
 };
 
-const iamExpression = (roles: Array<RoleDefinition>, hasAdminRolesEnabled = false, hasIdentityPoolId: boolean): Expression => {
+const iamExpression = (
+  roles: Array<RoleDefinition>,
+  hasAdminRolesEnabled = false,
+  hasIdentityPoolId: boolean,
+  genericIamAccessEnabled: boolean,
+): Expression => {
   const expression = new Array<Expression>();
   // allow if using an admin role
   if (hasAdminRolesEnabled) {
@@ -112,9 +118,14 @@ const iamExpression = (roles: Array<RoleDefinition>, hasAdminRolesEnabled = fals
         );
       }
     });
-  } else {
+  }
+
+  if (genericIamAccessEnabled) {
+    expression.push(genericIamAccessExpression());
+  } else if (roles.length === 0) {
     expression.push(ref('util.unauthorized()'));
   }
+
   return iff(equals(ref('util.authType()'), str(IAM_AUTH_TYPE)), compoundExpression(expression));
 };
 
@@ -287,7 +298,9 @@ export const generateAuthExpressionForUpdate = (
     totalAuthExpressions.push(lambdaExpression(lambdaRoles));
   }
   if (providers.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.hasIdentityPoolId));
+    totalAuthExpressions.push(
+      iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.hasIdentityPoolId, providers.genericIamAccessEnabled),
+    );
   }
   if (providers.hasUserPools) {
     totalAuthExpressions.push(

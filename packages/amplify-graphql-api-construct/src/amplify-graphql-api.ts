@@ -160,6 +160,7 @@ export class AmplifyGraphqlApi extends Construct {
       dataSources,
     });
 
+    // TODO sobkamil add validation
     const { authConfig, authSynthParameters } = convertAuthorizationModesToTransformerAuthConfig(authorizationModes);
 
     validateFunctionSlots(functionSlots ?? []);

@@ -48,6 +48,7 @@ import {
   addAllowedFieldsIfElse,
   generateOwnerMultiClaimExpression,
   generateInvalidClaimsCondition,
+  genericIamAccessExpression,
 } from './helpers';
 
 /**
@@ -69,7 +70,12 @@ const apiKeyExpression = (roles: Array<RoleDefinition>): Expression | null => {
 /**
  * No need to combine allowed fields as the request can only be signed by one iam role
  */
-const iamExpression = (roles: Array<RoleDefinition>, hasAdminRolesEnabled = false, hasIdentityPoolId: boolean): Expression => {
+const iamExpression = (
+  roles: Array<RoleDefinition>,
+  hasAdminRolesEnabled = false,
+  hasIdentityPoolId: boolean,
+  genericIamAccessEnabled: boolean,
+): Expression => {
   const expression = new Array<Expression>();
   // allow if using an admin role
   if (hasAdminRolesEnabled) {
@@ -85,9 +91,14 @@ const iamExpression = (roles: Array<RoleDefinition>, hasAdminRolesEnabled = fals
         );
       }
     });
-  } else {
+  }
+
+  if (genericIamAccessEnabled) {
+    expression.push(genericIamAccessExpression());
+  } else if (roles.length === 0) {
     expression.push(ref('util.unauthorized()'));
   }
+
   return iff(equals(ref('util.authType()'), str(IAM_AUTH_TYPE)), compoundExpression(expression));
 };
 
@@ -282,7 +293,9 @@ export const generateAuthExpressionForCreate = (
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
   }
   if (providers.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.hasIdentityPoolId));
+    totalAuthExpressions.push(
+      iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.hasIdentityPoolId, providers.genericIamAccessEnabled),
+    );
   }
   if (providers.hasLambda) {
     totalAuthExpressions.push(lambdaExpression(lambdaRoles));

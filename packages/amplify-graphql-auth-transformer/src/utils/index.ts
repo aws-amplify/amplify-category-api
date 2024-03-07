@@ -190,6 +190,7 @@ export const getConfiguredAuthProviders = (context: TransformerBeforeStepContext
     hasLambda: providers.some((p) => p === 'AWS_LAMBDA'),
     hasIAM,
     shouldAddDefaultServiceDirective,
+    genericIamAccessEnabled: synthParameters.enableIamAccess,
   };
   return configuredProviders;
 };

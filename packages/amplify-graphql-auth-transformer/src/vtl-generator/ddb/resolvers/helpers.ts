@@ -152,6 +152,7 @@ export const iamExpression = (
   roles: Array<RoleDefinition>,
   adminRolesEnabled: boolean,
   hasIdentityPoolId: boolean,
+  genericIamAccessEnabled: boolean,
   fieldName: string = undefined,
 ): Expression => {
   const expression = new Array<Expression>();
@@ -165,10 +166,29 @@ export const iamExpression = (
         iff(not(ref(IS_AUTHORIZED_FLAG)), iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)), hasIdentityPoolId)),
       );
     });
-  } else {
+  }
+
+  if (genericIamAccessEnabled) {
+    expression.push(genericIamAccessExpression());
+  } else if (roles.length === 0) {
     expression.push(ref('util.unauthorized()'));
   }
+
   return iff(equals(ref('util.authType()'), str(IAM_AUTH_TYPE)), compoundExpression(expression));
+};
+
+/**
+ * Creates an expression that allows generic IAM access for principals not associated to CognitoIdentityPool
+ */
+export const genericIamAccessExpression = (): Expression => {
+  const doesNotHaveIdentityPoolExpression = and([
+    methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityPoolId')),
+    methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityId')),
+  ]);
+  return iff(
+    not(ref(IS_AUTHORIZED_FLAG)),
+    ifElse(doesNotHaveIdentityPoolExpression, set(ref(IS_AUTHORIZED_FLAG), bool(true)), ref('util.unauthorized()')),
+  );
 };
 
 /**
