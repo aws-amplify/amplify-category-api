@@ -1,5 +1,8 @@
 import {
+<<<<<<< HEAD
   ModelDataSourceStrategySqlDbType,
+=======
+>>>>>>> bdda07383 (belongsTo - split out datasource specific logic)
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
@@ -28,8 +31,12 @@ export class BelongsToDirectiveSQLTransformer implements DataSourceBasedDirectiv
     validateChildReferencesFields(config, context as TransformerContextProvider);
   };
 
+<<<<<<< HEAD
   /** no-op */
   generateResolvers = (_context: TransformerContextProvider, _config: BelongsToDirectiveConfiguration): void => {
+=======
+  generateResolvers = (context: TransformerContextProvider, config: BelongsToDirectiveConfiguration): void => {
+>>>>>>> bdda07383 (belongsTo - split out datasource specific logic)
     return;
   };
 
