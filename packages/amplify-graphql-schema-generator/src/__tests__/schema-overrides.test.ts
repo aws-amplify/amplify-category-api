@@ -1,7 +1,7 @@
 import { print, parse } from 'graphql';
 import { applySchemaOverrides, findMatchingField } from '../schema-generator';
 
-jest.spyOn(global.console, 'warn')
+jest.spyOn(global.console, 'warn');
 
 describe('apply schema overrides for JSON fields', () => {
   it('should retain JSON to List type edits', () => {
