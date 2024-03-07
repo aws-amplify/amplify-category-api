@@ -1,21 +1,16 @@
 /* eslint-disable no-param-reassign */
 import {
-  DDB_DB_TYPE,
   DirectiveWrapper,
   generateGetArgumentsInput,
   getStrategyDbTypeFromTypeNode,
-  InvalidDirectiveError,
-  isSqlDbType,
-  TransformerPluginBase,
-  isSqlModel,
+  InvalidDirectiveError, TransformerPluginBase
 } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
-  TransformerPreProcessContextProvider,
-  ModelDataSourceStrategyDbType,
+  TransformerPreProcessContextProvider
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 import {
@@ -28,7 +23,7 @@ import {
 } from 'graphql';
 import produce from 'immer';
 import { WritableDraft } from 'immer/dist/types/types-external';
-import { updateTableForConnection, setFieldMappingResolverReference } from './resolvers';
+import { getStrategyDbTypeFromModel } from '@aws-amplify/graphql-transformer-core/src/utils';
 import {
   addFieldsToDefinition,
   convertSortKeyFieldsToSortKeyConnectionFields,
@@ -38,21 +33,11 @@ import {
 } from './schema';
 import { HasManyDirectiveConfiguration } from './types';
 import {
-  ensureFieldsArray,
-  ensureReferencesArray,
-  getConnectionAttributeName,
-  getFieldsNodes,
-  getObjectPrimaryKey,
-  getReferencesNodes,
-  getRelatedType,
-  getRelatedTypeIndex,
-  registerHasManyForeignKeyMappings,
-  validateDisallowedDataStoreRelationships,
-  validateModelDirective,
-  validateParentReferencesFields,
-  validateRelatedModelDirective,
+  getConnectionAttributeName, getObjectPrimaryKey, getRelatedType, validateDisallowedDataStoreRelationships,
+  validateModelDirective, validateRelatedModelDirective
 } from './utils';
 import { getGenerator } from './resolver/generator-factory';
+import { getHasManyDirectiveTransformer } from './has-many/has-many-directive-transformer-factory';
 
 const directiveName = 'hasMany';
 const defaultLimit = 100;
@@ -60,9 +45,6 @@ const directiveDefinition = `
   directive @${directiveName}(indexName: String, fields: [String!], references: [String!], limit: Int = ${defaultLimit}) on FIELD_DEFINITION
 `;
 
-/**
- * Transformer for @hasMany directive
- */
 export class HasManyTransformer extends TransformerPluginBase {
   private directiveList: HasManyDirectiveConfiguration[] = [];
 
@@ -143,17 +125,8 @@ export class HasManyTransformer extends TransformerPluginBase {
   prepare = (context: TransformerPrepareStepContextProvider): void => {
     this.directiveList.forEach((config) => {
       const modelName = config.object.name.value;
-      if (isSqlModel(context as TransformerContextProvider, modelName)) {
-        setFieldMappingResolverReference(context, config.relatedType?.name?.value, modelName, config.field.name.value, true);
-        return;
-      }
-      registerHasManyForeignKeyMappings({
-        transformParameters: context.transformParameters,
-        resourceHelper: context.resourceHelper,
-        thisTypeName: modelName,
-        thisFieldName: config.field.name.value,
-        relatedType: config.relatedType,
-      });
+      const dbType = getStrategyDbTypeFromModel(context as TransformerContextProvider, modelName);
+      getHasManyDirectiveTransformer(dbType).prepare(context, config);
     });
   };
 
@@ -162,11 +135,7 @@ export class HasManyTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
-      if (dbType === DDB_DB_TYPE) {
-        config.relatedTypeIndex = getRelatedTypeIndex(config, context, config.indexName);
-      } else if (isSqlDbType(dbType)) {
-        validateParentReferencesFields(config, context);
-      }
+      getHasManyDirectiveTransformer(dbType).transformSchema(ctx, config);
       ensureHasManyConnectionField(config, context);
       extendTypeWithConnection(config, context);
     }
@@ -177,22 +146,12 @@ export class HasManyTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
-      if (dbType === DDB_DB_TYPE) {
-        updateTableForConnection(config, context);
-      }
-      makeQueryResolver(config, context, dbType);
+      getHasManyDirectiveTransformer(dbType).generateResolvers(ctx, config);
+      const generator = getGenerator(dbType);
+      generator.makeHasManyGetItemsConnectionWithKeyResolver(config, context);
     }
   };
 }
-
-const makeQueryResolver = (
-  config: HasManyDirectiveConfiguration,
-  ctx: TransformerContextProvider,
-  dbType: ModelDataSourceStrategyDbType,
-): void => {
-  const generator = getGenerator(dbType);
-  generator.makeHasManyGetItemsConnectionWithKeyResolver(config, ctx);
-};
 
 const validate = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field } = config;
@@ -200,16 +159,7 @@ const validate = (config: HasManyDirectiveConfiguration, ctx: TransformerContext
   const dbType = getStrategyDbTypeFromTypeNode(field.type, ctx);
   config.relatedType = getRelatedType(config, ctx);
 
-  if (dbType === DDB_DB_TYPE) {
-    ensureFieldsArray(config);
-    config.fieldNodes = getFieldsNodes(config, ctx);
-  }
-
-  if (isSqlDbType(dbType)) {
-    ensureReferencesArray(config);
-    getReferencesNodes(config, ctx);
-  }
-
+  getHasManyDirectiveTransformer(dbType).validate(ctx, config);
   validateModelDirective(config);
 
   if (!isListType(field.type)) {
