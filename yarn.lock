@@ -601,6 +601,11 @@
   resolved "https://registry.npmjs.org/@aws-cdk/asset-node-proxy-agent-v6/-/asset-node-proxy-agent-v6-2.0.1.tgz#6dc9b7cdb22ff622a7176141197962360c33e9ac"
   integrity sha512-DDt4SLdLOwWCjGtltH4VCST7hpOI5DzieuhGZsBpZ+AgJdSI2GCjklCXm0GCTwJG/SolkL5dtQXyUKgg9luBDg==
 
+"@aws-cdk/aws-cognito-identitypool-alpha@2.129.0-alpha.0":
+  version "2.129.0-alpha.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-cognito-identitypool-alpha/-/aws-cognito-identitypool-alpha-2.129.0-alpha.0.tgz#fce287c962f3ad93100dea5f4df3c5452d027fa8"
+  integrity sha512-SXqbvgK4UnMVFKrQhlq9bN+fyh0LPojM+2BF7Xq8eqsEXi8CXeW0blfT45dvwu4b4TIRrWMxmXCDt50BA2b+xA==
+
 "@aws-cdk/cfnspec@2.80.0-alpha.0":
   version "2.80.0-alpha.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/cfnspec/-/cfnspec-2.80.0-alpha.0.tgz#bb83ddadbb62d1905f6be17b0ec18eba22c9314d"
