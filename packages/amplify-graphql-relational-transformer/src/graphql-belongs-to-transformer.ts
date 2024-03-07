@@ -6,9 +6,8 @@ import {
   getStrategyDbTypeFromTypeNode,
   InvalidDirectiveError,
   TransformerPluginBase,
-  isSqlModel,
-  isSqlDbType,
 } from '@aws-amplify/graphql-transformer-core';
+import { getStrategyDbTypeFromModel } from '@aws-amplify/graphql-transformer-core/src/utils';
 import {
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
@@ -31,21 +30,14 @@ import { WritableDraft } from 'immer/dist/types/types-external';
 import { ensureBelongsToConnectionField } from './schema';
 import { BelongsToDirectiveConfiguration, ObjectDefinition } from './types';
 import {
-  ensureFieldsArray,
-  ensureReferencesArray,
-  getBelongsToReferencesNodes,
   getConnectionAttributeName,
-  getFieldsNodes,
   getObjectPrimaryKey,
   getRelatedType,
-  getRelatedTypeIndex,
-  registerHasOneForeignKeyMappings,
-  validateChildReferencesFields,
   validateModelDirective,
   validateRelatedModelDirective,
 } from './utils';
 import { getGenerator } from './resolver/generator-factory';
-import { setFieldMappingResolverReference } from './resolvers';
+import { getBelongsToDirectiveTransformer } from './belongs-to/belongs-to-directive-transformer-factory';
 
 const directiveName = 'belongsTo';
 const directiveDefinition = `
@@ -140,22 +132,12 @@ export class BelongsToTransformer extends TransformerPluginBase {
    */
   prepare = (context: TransformerPrepareStepContextProvider): void => {
     this.directiveList
-      .filter((config) => config.relationType === 'hasOne')
+      // .filter((config) => config.relationType === 'hasOne')
       .forEach((config) => {
         const modelName = config.object.name.value;
-        if (isSqlModel(context as TransformerContextProvider, modelName)) {
-          return;
-        }
-        // a belongsTo with hasOne behaves the same as hasOne
-        registerHasOneForeignKeyMappings({
-          transformParameters: context.transformParameters,
-          resourceHelper: context.resourceHelper,
-          thisTypeName: modelName,
-          thisFieldName: config.field.name.value,
-          relatedType: config.relatedType,
-        });
+        const dbType = getStrategyDbTypeFromModel(context as TransformerContextProvider, modelName);
+        getBelongsToDirectiveTransformer(dbType).prepare(context, config);
       });
-    setFieldMappingReferences(context, this.directiveList);
   };
 
   transformSchema = (ctx: TransformerTransformSchemaStepContextProvider): void => {
@@ -163,11 +145,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
-      if (dbType === DDB_DB_TYPE) {
-        config.relatedTypeIndex = getRelatedTypeIndex(config, context);
-      } else if (isSqlDbType(dbType)) {
-        validateChildReferencesFields(config, context);
-      }
+      getBelongsToDirectiveTransformer(dbType).transformSchema(ctx, config);
       ensureBelongsToConnectionField(config, context);
     }
   };
@@ -200,16 +178,7 @@ const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerConte
   }
 
   config.relatedType = getRelatedType(config, ctx);
-  if (dbType === DDB_DB_TYPE) {
-    ensureFieldsArray(config);
-    config.fieldNodes = getFieldsNodes(config, ctx);
-  }
-
-  if (isSqlDbType(dbType)) {
-    ensureReferencesArray(config);
-    getBelongsToReferencesNodes(config, ctx);
-  }
-
+  getBelongsToDirectiveTransformer(dbType).validate(ctx, config);
   validateModelDirective(config);
 
   if (isListType(field.type)) {
@@ -239,15 +208,4 @@ const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerConte
       `${config.relatedType.name.value} must have a relationship with ${object.name.value} in order to use @${directiveName}.`,
     );
   }
-};
-
-const setFieldMappingReferences = (context: TransformerPrepareStepContextProvider, directiveList: BelongsToDirectiveConfiguration[]) => {
-  directiveList.forEach((config) => {
-    const modelName = config.object.name.value;
-    const areFieldMappingsSupported = isSqlModel(context as TransformerContextProvider, modelName);
-    if (!areFieldMappingsSupported) {
-      return;
-    }
-    setFieldMappingResolverReference(context, config.relatedType?.name?.value, modelName, config.field.name.value);
-  });
 };
