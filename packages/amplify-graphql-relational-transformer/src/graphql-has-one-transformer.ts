@@ -34,6 +34,7 @@ import {
 } from 'graphql-transformer-common';
 import { produce } from 'immer';
 import { WritableDraft } from 'immer/dist/types/types-external';
+import { getStrategyDbTypeFromModel } from '@aws-amplify/graphql-transformer-core/src/utils';
 import {
   addFieldsToDefinition,
   convertSortKeyFieldsToSortKeyConnectionFields,
