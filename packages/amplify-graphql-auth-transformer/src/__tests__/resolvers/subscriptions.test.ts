@@ -26,11 +26,27 @@ const defaultRoleDefinitions: Record<AuthProvider, Array<RoleDefinition>> = {
       provider: 'iam',
       strategy: 'public',
       static: true,
+      claim: 'testClaim',
     },
     {
       provider: 'iam',
       strategy: 'private',
       static: true,
+      claim: 'testClaim',
+    },
+  ],
+  identityPool: [
+    {
+      provider: 'identityPool',
+      strategy: 'public',
+      static: true,
+      claim: 'testClaim',
+    },
+    {
+      provider: 'identityPool',
+      strategy: 'private',
+      static: true,
+      claim: 'testClaim',
     },
   ],
   userPools: [
@@ -116,6 +132,26 @@ describe('subscriptions', () => {
       });
     });
 
+    describe('identityPool', () => {
+      it('renders for simple identityPool auth', () => {
+        expect(
+          generateAuthExpressionForSubscriptions(configFromPartial({ hasIAM: true }), defaultRoleDefinitions.identityPool),
+        ).toMatchSnapshot();
+      });
+
+      it('renders for identityPool auth with no admin roles', () => {
+        expect(
+          generateAuthExpressionForSubscriptions(
+            configFromPartial({
+              hasIAM: true,
+              hasAdminRolesEnabled: false,
+            }),
+            defaultRoleDefinitions.identityPool,
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+
     describe('userPools', () => {
       it('renders for simple userPool auth', () => {
         expect(
@@ -173,6 +209,43 @@ describe('subscriptions', () => {
             hasUserPools: true,
           }),
           [...defaultRoleDefinitions.iam, ...defaultRoleDefinitions.userPools],
+        ),
+      ).toMatchSnapshot();
+    });
+
+    it('renders for apiKey + identityPool', () => {
+      expect(
+        generateAuthExpressionForSubscriptions(
+          configFromPartial({
+            hasApiKey: true,
+            hasIAM: true,
+          }),
+          [...defaultRoleDefinitions.apiKey, ...defaultRoleDefinitions.identityPool],
+        ),
+      ).toMatchSnapshot();
+    });
+
+    it('renders for apiKey + identityPool + userPools', () => {
+      expect(
+        generateAuthExpressionForSubscriptions(
+          configFromPartial({
+            hasApiKey: true,
+            hasIAM: true,
+            hasUserPools: true,
+          }),
+          [...defaultRoleDefinitions.apiKey, ...defaultRoleDefinitions.identityPool, ...defaultRoleDefinitions.userPools],
+        ),
+      ).toMatchSnapshot();
+    });
+
+    it('renders for identityPool + userPools', () => {
+      expect(
+        generateAuthExpressionForSubscriptions(
+          configFromPartial({
+            hasIAM: true,
+            hasUserPools: true,
+          }),
+          [...defaultRoleDefinitions.identityPool, ...defaultRoleDefinitions.userPools],
         ),
       ).toMatchSnapshot();
     });

@@ -140,6 +140,7 @@ export const createGraphQLClient = async (
             disableOffline: true,
           });
         }
+        case 'identityPool':
         case 'iam': {
           await Auth.signOut();
           const unauthCreds = await Auth.currentCredentials();
@@ -194,6 +195,7 @@ export const createGraphQLClient = async (
             },
           });
         }
+        case 'identityPool':
         case 'iam': {
           await Auth.signIn(USERNAME1, REAL_PASSWORD);
           const authCreds = await Auth.currentCredentials();
