@@ -25,6 +25,10 @@ import {
 } from 'graphql';
 import produce from 'immer';
 import { WritableDraft } from 'immer/dist/types/types-external';
+<<<<<<< HEAD
+=======
+import { getStrategyDbTypeFromModel } from '@aws-amplify/graphql-transformer-core/src/utils';
+>>>>>>> 68e8f8efb (hasMany - split out datasource specific logic)
 import {
   addFieldsToDefinition,
   convertSortKeyFieldsToSortKeyConnectionFields,
