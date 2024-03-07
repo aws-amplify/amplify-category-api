@@ -3,7 +3,8 @@ import {
   DirectiveWrapper,
   generateGetArgumentsInput,
   getStrategyDbTypeFromTypeNode,
-  InvalidDirectiveError, TransformerPluginBase
+  InvalidDirectiveError,
+  TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
@@ -41,8 +42,12 @@ import {
 } from './schema';
 import { HasOneDirectiveConfiguration, ObjectDefinition } from './types';
 import {
-  getConnectionAttributeName, getObjectPrimaryKey, getRelatedType, validateDisallowedDataStoreRelationships,
-  validateModelDirective, validateRelatedModelDirective
+  getConnectionAttributeName,
+  getObjectPrimaryKey,
+  getRelatedType,
+  validateDisallowedDataStoreRelationships,
+  validateModelDirective,
+  validateRelatedModelDirective,
 } from './utils';
 import { getGenerator } from './resolver/generator-factory';
 import { getHasOneDirectiveTransformer } from './has-one/has-one-directive-transformer-factory';
@@ -153,7 +158,7 @@ export class HasOneTransformer extends TransformerPluginBase {
   prepare = (context: TransformerPrepareStepContextProvider): void => {
     this.directiveList.forEach((config) => {
       const modelName = config.object.name.value;
-      const dbType = getStrategyDbTypeFromModel(context as TransformerContextProvider, modelName)
+      const dbType = getStrategyDbTypeFromModel(context as TransformerContextProvider, modelName);
       getHasOneDirectiveTransformer(dbType).prepare(context, config);
     });
   };

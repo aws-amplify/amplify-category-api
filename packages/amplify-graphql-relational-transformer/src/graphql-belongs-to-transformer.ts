@@ -132,7 +132,6 @@ export class BelongsToTransformer extends TransformerPluginBase {
    */
   prepare = (context: TransformerPrepareStepContextProvider): void => {
     this.directiveList
-      // .filter((config) => config.relationType === 'hasOne')
       .forEach((config) => {
         const modelName = config.object.name.value;
         const dbType = getStrategyDbTypeFromModel(context as TransformerContextProvider, modelName);
