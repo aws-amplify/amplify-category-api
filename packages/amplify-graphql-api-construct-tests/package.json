@@ -22,7 +22,6 @@
   },
   "dependencies": {
     "@aws-amplify/graphql-api-construct": "1.6.0",
-    "@aws-cdk/aws-cognito-identitypool-alpha": "2.80.0-alpha.0",
     "@aws-sdk/client-lambda": "3.338.0",
     "@aws-sdk/client-rds": "3.338.0",
     "@faker-js/faker": "^8.2.0",
