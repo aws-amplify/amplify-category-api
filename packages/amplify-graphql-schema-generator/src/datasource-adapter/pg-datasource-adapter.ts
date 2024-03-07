@@ -1,5 +1,4 @@
 import { knex } from 'knex';
-import { printer } from '@aws-amplify/amplify-prompts';
 import { invokeSchemaInspectorLambda } from '../utils/vpc-helper';
 import ora from 'ora';
 import { EnumType, Field, FieldDataType, FieldType, Index } from '../schema-representation';
@@ -76,7 +75,7 @@ export class PostgresDataSourceAdapter extends DataSourceAdapter {
         debug: false,
       });
     } catch (err) {
-      printer.info(err);
+      console.info(err);
       throw err;
     }
   }
