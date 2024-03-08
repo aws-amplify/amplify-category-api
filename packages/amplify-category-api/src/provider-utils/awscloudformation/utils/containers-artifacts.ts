@@ -79,13 +79,18 @@ export async function generateContainersArtifacts(
     srcPath,
     askForExposedContainer,
   );
-  const repositories = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'describeEcrRepositories');
 
+  console.log('Before Execute Provider Utils: describeEcrRepositories');
+  const repositories = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'describeEcrRepositories');
+  console.log('After Execute Provider Utils: describeEcrRepositories');
+
+  console.log('Before map repositories');
   const existingEcrRepositories: Set<string> = new Set(
     repositories
       .map(({ repositoryName }) => repositoryName)
       .filter((repositoryName) => repositoryName.startsWith(`${envName}-${categoryName}-${resourceName}-`)),
   );
+  console.log('After map repositories');
 
   const stack = new EcsStack(undefined, 'ContainersStack', {
     categoryName,
@@ -107,7 +112,11 @@ export async function generateContainersArtifacts(
     existingEcrRepositories,
   });
 
+  console.log('After New EcsStack');
+
   const cfn = stack.toCloudFormation();
+
+  console.log('After toCloudFormation');
 
   JSONUtilities.writeJson(path.normalize(path.join(resourceDir, cfnFileName(resourceName))), cfn);
 
