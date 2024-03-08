@@ -232,10 +232,15 @@ export interface FunctionSlotOverride {
 
 // @public
 export interface IAMAuthorizationConfig {
+    // @deprecated
     readonly allowListedRoles?: (IRole | string)[];
-    readonly authenticatedUserRole: IRole;
-    readonly identityPoolId: string;
-    readonly unauthenticatedUserRole: IRole;
+    // @deprecated
+    readonly authenticatedUserRole?: IRole;
+    readonly enableIamAuthorizationMode?: boolean;
+    // @deprecated
+    readonly identityPoolId?: string;
+    // @deprecated
+    readonly unauthenticatedUserRole?: IRole;
 }
 
 // @public
