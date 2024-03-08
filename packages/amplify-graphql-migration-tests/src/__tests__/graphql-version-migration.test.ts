@@ -25,7 +25,7 @@ describe('v1 to v2 migration', () => {
       const v1nestedStackNames = Object.keys(v1result.stacks).filter((stackName) => stackName !== 'ConnectionStack'); // The v1 transformer puts all connection resolvers in a 'ConnectionStack'. This stack does not define any data resources
 
       // verify root stack diff
-      const diff = cdkDiff.diffTemplate(v1result.rootStack, v2result.rootStack);
+      const diff = cdkDiff.fullDiff(v1result.rootStack, v2result.rootStack);
       v1nestedStackNames.forEach((stackName) => {
         try {
           expect([ResourceImpact.WILL_UPDATE, ResourceImpact.NO_CHANGE]).toContain(diff.resources.changes[stackName].changeImpact);
