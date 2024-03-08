@@ -25,14 +25,23 @@ import {
 } from 'graphql-mapping-template';
 import { FieldDefinitionNode } from 'graphql';
 import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
-import { API_KEY_AUTH_TYPE, DEFAULT_UNIQUE_IDENTITY_CLAIM, IDENTITY_CLAIM_DELIMITER, RoleDefinition } from '../../../utils';
+import {
+  API_KEY_AUTH_TYPE,
+  DEFAULT_UNIQUE_IDENTITY_CLAIM,
+  IAM_AUTH_TYPE,
+  IDENTITY_CLAIM_DELIMITER,
+  IS_AUTHORIZED_FLAG,
+  RoleDefinition,
+} from '../../../utils';
 
 /**
  * Generates default RDS expression
  */
-export const generateDefaultRDSExpression = (): string => {
+export const generateDefaultRDSExpression = (iamAccessEnabled: boolean): string => {
   const exp = ref('util.unauthorized()');
-  return printBlock('Default RDS Auth Resolver')(compoundExpression([exp, toJson(obj({}))]));
+  return printBlock('Default RDS Auth Resolver')(
+    generateIAMAccessCheck(iamAccessEnabled, compoundExpression([exp, toJson(obj({}))])),
+  );
 };
 
 export const generateAuthRulesFromRoles = (
@@ -267,4 +276,21 @@ export const generateFieldResolverForOwner = (entity: string): string => {
   ];
 
   return printBlock('Parse owner field auth for Get')(compoundExpression(expressions));
+};
+
+/**
+ * If generic IAM access is enabled add check that bypasses rules evaluation for any IAM principal
+ * that is not related to Cognito Identity Pool.
+ */
+export const generateIAMAccessCheck = (enableIamAccess: boolean, expression: Expression): Expression => {
+  if (!enableIamAccess) {
+    // No-op if generic IAM access is not enabled.
+    return expression;
+  }
+  const isNonCognitoIAMPrincipal = and([
+    equals(ref('util.authType()'), str(IAM_AUTH_TYPE)),
+    methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityPoolId')),
+    methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityId')),
+  ]);
+  return ifElse(isNonCognitoIAMPrincipal, emptyPayload, expression);
 };

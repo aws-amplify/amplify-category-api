@@ -33,6 +33,7 @@ export class RDSAuthVTLGenerator implements AuthVTLGenerator {
   ): string => generateAuthExpressionForUpdate(providers, roles, fields);
 
   generateAuthRequestExpression = (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode): string =>
+    // TODO sobolk revisit this later, do we need to do anything here ?
     generateAuthRequestExpression(ctx, def);
 
   generateAuthExpressionForDelete = (
@@ -49,6 +50,7 @@ export class RDSAuthVTLGenerator implements AuthVTLGenerator {
   ): string => generateAuthExpressionForField(providers, roles, fields, fieldName);
 
   generateFieldAuthResponse = (operation: string, fieldName: string, subscriptionsEnabled: boolean): string =>
+    // TODO sobolk revisit this later, do we need to do anything here ?
     generateFieldAuthResponse(operation, fieldName, subscriptionsEnabled);
 
   generateAuthExpressionForQueries = (
@@ -65,11 +67,12 @@ export class RDSAuthVTLGenerator implements AuthVTLGenerator {
     roles: Array<RoleDefinition>,
     fields: ReadonlyArray<FieldDefinitionNode>,
     allowedAggFields: Array<string>,
-  ): string => generateDefaultRDSExpression();
+  ): string => generateDefaultRDSExpression(providers.genericIamAccessEnabled);
 
   generateAuthExpressionForSubscriptions = (providers: ConfiguredAuthProviders, roles: Array<RoleDefinition>): string =>
     generateAuthExpressionForSubscriptions(providers, roles);
 
+  // TODO sobolk revisit this later, do we need to do anything here ?
   setDeniedFieldFlag = (operation: string, subscriptionsEnabled: boolean): string => setDeniedFieldFlag(operation, subscriptionsEnabled);
 
   generateAuthExpressionForRelationQuery = (
@@ -82,7 +85,9 @@ export class RDSAuthVTLGenerator implements AuthVTLGenerator {
     fields: ReadonlyArray<FieldDefinitionNode>,
   ): string => generateAuthExpressionForRelationQuery(ctx, def, field, relatedModelObject, providers, roles, fields);
 
+  // TODO sobolk revisit this later, do we need to do anything here ?
   generateFieldResolverForOwner = (entity: string): string => generateFieldResolverForOwner(entity);
 
+  // TODO sobolk revisit this later, do we need to do anything here ?
   generateSandboxExpressionForField = (sandboxEnabled: boolean): string => generateSandboxExpressionForField(sandboxEnabled);
 }
