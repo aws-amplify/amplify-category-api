@@ -38,7 +38,7 @@ describe('v1 to v2 migration', () => {
       // verify nested stack diffs
       const nestedStackDiffRules = getNestedStackDiffRules();
       v1nestedStackNames.forEach((stackName) => {
-        const nestedStackDiff = cdkDiff.diffTemplate(v1result.stacks[stackName], v2result.stacks[stackName]);
+        const nestedStackDiff = cdkDiff.fullDiff(v1result.stacks[stackName], v2result.stacks[stackName]);
         nestedStackDiffRules.forEach((rule) => rule(stackName, nestedStackDiff));
       });
     },
