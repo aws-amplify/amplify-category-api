@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "devDependencies": {
     "aws-cdk": "~2.129.0",
-    "@types/node": "^12.12.6",
-    "typescript": "^3.8.3"
+    "@types/node": "*",
+    "typescript": "*"
   },
   "dependencies": {
     "aws-cdk-lib": "2.129.0",
