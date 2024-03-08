@@ -11,7 +11,7 @@ export type DirectiveConfiguration = HasOneDirectiveConfiguration | HasManyDirec
 /**
  * Represents a subset of transformer methods based on a specific
  * data source (currently SQL / DDB Fields).
-*/
+ */
 export interface DataSourceBasedDirectiveTransformer<Config extends DirectiveConfiguration> {
   dbType: ModelDataSourceStrategyDbType;
   prepare: (context: TransformerPrepareStepContextProvider, config: Config) => void;

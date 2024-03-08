@@ -161,7 +161,7 @@ export const getStrategyDbTypeFromModel = (ctx: DataSourceStrategiesProvider, ty
     return 'DYNAMODB';
   }
   return getModelDataSourceStrategy(ctx, typename).dbType;
-;}
+};
 
 /**
  * Normalize known variants of a database type to its canonical representation. E.g.:

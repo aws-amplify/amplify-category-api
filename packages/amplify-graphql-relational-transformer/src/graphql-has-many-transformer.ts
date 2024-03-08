@@ -3,14 +3,15 @@ import {
   DirectiveWrapper,
   generateGetArgumentsInput,
   getStrategyDbTypeFromTypeNode,
-  InvalidDirectiveError, TransformerPluginBase
+  InvalidDirectiveError,
+  TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
-  TransformerPreProcessContextProvider
+  TransformerPreProcessContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 import {
@@ -33,8 +34,12 @@ import {
 } from './schema';
 import { HasManyDirectiveConfiguration } from './types';
 import {
-  getConnectionAttributeName, getObjectPrimaryKey, getRelatedType, validateDisallowedDataStoreRelationships,
-  validateModelDirective, validateRelatedModelDirective
+  getConnectionAttributeName,
+  getObjectPrimaryKey,
+  getRelatedType,
+  validateDisallowedDataStoreRelationships,
+  validateModelDirective,
+  validateRelatedModelDirective,
 } from './utils';
 import { getGenerator } from './resolver/generator-factory';
 import { getHasManyDirectiveTransformer } from './has-many/has-many-directive-transformer-factory';

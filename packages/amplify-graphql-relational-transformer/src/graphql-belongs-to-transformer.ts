@@ -131,12 +131,11 @@ export class BelongsToTransformer extends TransformerPluginBase {
    * During the prepare step, register any foreign keys that are renamed due to a model rename
    */
   prepare = (context: TransformerPrepareStepContextProvider): void => {
-    this.directiveList
-      .forEach((config) => {
-        const modelName = config.object.name.value;
-        const dbType = getStrategyDbTypeFromModel(context as TransformerContextProvider, modelName);
-        getBelongsToDirectiveTransformer(dbType).prepare(context, config);
-      });
+    this.directiveList.forEach((config) => {
+      const modelName = config.object.name.value;
+      const dbType = getStrategyDbTypeFromModel(context as TransformerContextProvider, modelName);
+      getBelongsToDirectiveTransformer(dbType).prepare(context, config);
+    });
   };
 
   transformSchema = (ctx: TransformerTransformSchemaStepContextProvider): void => {
