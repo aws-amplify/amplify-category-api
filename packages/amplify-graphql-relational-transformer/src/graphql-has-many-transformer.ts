@@ -3,6 +3,7 @@ import {
   DirectiveWrapper,
   generateGetArgumentsInput,
   getStrategyDbTypeFromTypeNode,
+  getStrategyDbTypeFromModel,
   InvalidDirectiveError,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
@@ -24,7 +25,6 @@ import {
 } from 'graphql';
 import produce from 'immer';
 import { WritableDraft } from 'immer/dist/types/types-external';
-import { getStrategyDbTypeFromModel } from '@aws-amplify/graphql-transformer-core/src/utils';
 import {
   addFieldsToDefinition,
   convertSortKeyFieldsToSortKeyConnectionFields,

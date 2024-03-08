@@ -4,10 +4,10 @@ import {
   DirectiveWrapper,
   generateGetArgumentsInput,
   getStrategyDbTypeFromTypeNode,
+  getStrategyDbTypeFromModel,
   InvalidDirectiveError,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
-import { getStrategyDbTypeFromModel } from '@aws-amplify/graphql-transformer-core/src/utils';
 import {
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
