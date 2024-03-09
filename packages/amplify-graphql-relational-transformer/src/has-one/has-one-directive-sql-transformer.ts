@@ -1,4 +1,5 @@
 import {
+  ModelDataSourceStrategySqlDbType,
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
@@ -9,8 +10,8 @@ import { validateParentReferencesFields, ensureReferencesArray, getReferencesNod
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
 
 export class HasOneDirectiveSQLTransformer implements DataSourceBasedDirectiveTransformer<HasOneDirectiveConfiguration> {
-  dbType: 'MYSQL' | 'POSTGRES';
-  constructor(dbType: 'MYSQL' | 'POSTGRES') {
+  dbType: ModelDataSourceStrategySqlDbType;
+  constructor(dbType: ModelDataSourceStrategySqlDbType) {
     this.dbType = dbType;
   }
 

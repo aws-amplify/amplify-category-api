@@ -158,7 +158,7 @@ export const isSqlStrategy = (strategy: ModelDataSourceStrategy): strategy is SQ
  */
 export const getStrategyDbTypeFromModel = (ctx: DataSourceStrategiesProvider, typename: string): ModelDataSourceStrategyDbType => {
   if (isBuiltInGraphqlType(typename)) {
-    return 'DYNAMODB';
+    return DDB_DB_TYPE;
   }
   return getModelDataSourceStrategy(ctx, typename).dbType;
 };

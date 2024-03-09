@@ -1,4 +1,5 @@
 import {
+  ModelDataSourceStrategySqlDbType,
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
@@ -9,8 +10,8 @@ import { ensureReferencesArray, validateChildReferencesFields, getBelongsToRefer
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
 
 export class BelongsToDirectiveSQLTransformer implements DataSourceBasedDirectiveTransformer<BelongsToDirectiveConfiguration> {
-  dbType: 'MYSQL' | 'POSTGRES';
-  constructor(dbType: 'MYSQL' | 'POSTGRES') {
+  dbType: ModelDataSourceStrategySqlDbType;
+  constructor(dbType: ModelDataSourceStrategySqlDbType) {
     this.dbType = dbType;
   }
 
