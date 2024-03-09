@@ -80,17 +80,13 @@ export async function generateContainersArtifacts(
     askForExposedContainer,
   );
 
-  console.log('Before Execute Provider Utils: describeEcrRepositories');
   const repositories = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'describeEcrRepositories');
-  console.log('After Execute Provider Utils: describeEcrRepositories');
-
-  console.log('Before map repositories');
+  
   const existingEcrRepositories: Set<string> = new Set(
     repositories
       .map(({ repositoryName }) => repositoryName)
       .filter((repositoryName) => repositoryName.startsWith(`${envName}-${categoryName}-${resourceName}-`)),
   );
-  console.log('After map repositories');
 
   const stack = new EcsStack(undefined, 'ContainersStack', {
     categoryName,
@@ -112,11 +108,7 @@ export async function generateContainersArtifacts(
     existingEcrRepositories,
   });
 
-  console.log('After New EcsStack');
-
   const cfn = stack.toCloudFormation();
-
-  console.log('After toCloudFormation');
 
   JSONUtilities.writeJson(path.normalize(path.join(resourceDir, cfnFileName(resourceName))), cfn);
 
@@ -238,19 +230,10 @@ export async function processDockerConfig(
     };
   }
 
-  console.log('Exposed container - Outside scope:');
-  console.log(JSON.stringify(exposedContainer, null, 2));
-
   fs.ensureDirSync(srcPath);
   fs.writeFileSync(path.join(srcPath, 'buildspec.yml'), buildspec);
 
   const secretsArns: Map<string, string> = new Map<string, string>();
-
-  console.log('Secrets - before If block:');
-  console.log(JSON.stringify(secrets, null, 2));
-
-  console.log('Is initial deploy:');
-  console.log(JSON.stringify(isInitialDeploy));
 
   if ((await shouldUpdateSecrets(context, secrets)) || isInitialDeploy) {
     // Normalizes paths
@@ -296,9 +279,6 @@ export async function processDockerConfig(
     if (errors.length > 0) {
       throw new Error(['Error(s) in secret file(s):'].concat(errors).join('\n'));
     }
-
-    console.log('Secrets - for await:');
-    console.log(JSON.stringify(secrets, null, 2));
 
     for await (const entries of Object.entries(secrets)) {
       const [secretName, secretFilePath] = entries;
@@ -368,18 +348,12 @@ async function checkContainerExposed(
       value: container,
     }));
 
-    console.log('Containers found:');
-    console.log(JSON.stringify(choices, null, 2));
-
     const { containerToExpose } = await inquirer.prompt({
       message: 'Select which container is the entrypoint',
       name: 'containerToExpose',
       type: 'list',
       choices,
     });
-
-    console.log('Container exposed:');
-    console.log(JSON.stringify(containerToExpose, null, 2));
 
     return {
       name: containerToExpose.name,

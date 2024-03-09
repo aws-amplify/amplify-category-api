@@ -253,9 +253,7 @@ export const updateResource = async (serviceWalkthroughPromise: Promise<ServiceC
   try {
     const askForExposedContainer = true;
     const { exposedContainer } = await generateContainersArtifacts(context, apiResource, askForExposedContainer);
-    console.log('After generateContainersArtifacts');
     await context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'exposedContainer', exposedContainer);
-    console.log('After updateamplifyMetaAfterResourceUpdate');
   } catch (err) {
     // Best effort to create templates
   }
