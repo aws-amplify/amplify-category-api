@@ -1,8 +1,5 @@
 import {
-<<<<<<< HEAD
   ModelDataSourceStrategySqlDbType,
-=======
->>>>>>> 68e8f8efb (hasMany - split out datasource specific logic)
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
@@ -12,19 +9,14 @@ import { HasManyDirectiveConfiguration } from '../types';
 import { validateParentReferencesFields, ensureReferencesArray, getReferencesNodes } from '../utils';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
 
-<<<<<<< HEAD
+
 /**
  * HasManyDirectiveSQLTransformer executes transformations based on `@hasMany(references: [String!])` configurations
  * and surrounding TransformerContextProviders for SQL data sources.
  */
 export class HasManyDirectiveSQLTransformer implements DataSourceBasedDirectiveTransformer<HasManyDirectiveConfiguration> {
   dbType: ModelDataSourceStrategySqlDbType;
-  constructor(dbType: ModelDataSourceStrategySqlDbType) {
-=======
-export class HasManyDirectiveSQLTransformer implements DataSourceBasedDirectiveTransformer<HasManyDirectiveConfiguration> {
-  dbType: 'MYSQL' | 'POSTGRES';
-  constructor(dbType: 'MYSQL' | 'POSTGRES') {
->>>>>>> 68e8f8efb (hasMany - split out datasource specific logic)
+  constructor(dbType: ModelDataSourceStrategySqlDbType) {)
     this.dbType = dbType;
   }
 
@@ -37,12 +29,8 @@ export class HasManyDirectiveSQLTransformer implements DataSourceBasedDirectiveT
     validateParentReferencesFields(config, context as TransformerContextProvider);
   };
 
-<<<<<<< HEAD
   /** no-op */
   generateResolvers = (_context: TransformerContextProvider, _config: HasManyDirectiveConfiguration): void => {
-=======
-  generateResolvers = (context: TransformerContextProvider, config: HasManyDirectiveConfiguration): void => {
->>>>>>> 68e8f8efb (hasMany - split out datasource specific logic)
     return;
   };
 
