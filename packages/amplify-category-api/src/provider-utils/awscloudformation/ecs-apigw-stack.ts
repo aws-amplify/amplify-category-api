@@ -1,4 +1,5 @@
 import * as apigw2 from 'aws-cdk-lib/aws-apigatewayv2';
+import * as apigw2alpha from '@aws-cdk/aws-apigatewayv2-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { ContainersStack, ContainersStackProps } from './base-api-stack';
@@ -16,13 +17,10 @@ export class EcsStack extends ContainersStack {
       createCloudMapService: true,
     });
 
-    console.log('After super');
     const { apiType } = this.ecsProps;
 
-    console.log('Before apiGateway');
     const { api } = this.apiGateway();
 
-    console.log('After apiGateway');
     switch (apiType) {
       case API_TYPE.GRAPHQL:
         new cdk.CfnOutput(this, 'GraphQLAPIEndpointOutput', { value: api.attrApiEndpoint });
@@ -47,7 +45,7 @@ export class EcsStack extends ContainersStack {
       corsConfiguration: {
         allowHeaders: ['*'],
         allowOrigins: ['*'],
-        allowMethods: Object.values(apigw2.HttpMethod).filter((m) => m !== apigw2.HttpMethod.ANY),
+        allowMethods: Object.values(apigw2alpha.HttpMethod).filter((m) => m !== apigw2alpha.HttpMethod.ANY),
       },
     });
 
@@ -59,9 +57,9 @@ export class EcsStack extends ContainersStack {
 
     const integration = new apigw2.CfnIntegration(this, 'ANYIntegration', {
       apiId: cdk.Fn.ref(api.logicalId),
-      integrationType: apigw2.HttpIntegrationType.HTTP_PROXY,
+      integrationType: apigw2alpha.HttpIntegrationType.HTTP_PROXY,
       connectionId: this.vpcLinkId,
-      connectionType: apigw2.HttpConnectionType.VPC_LINK,
+      connectionType: apigw2alpha.HttpConnectionType.VPC_LINK,
       integrationMethod: 'ANY',
       integrationUri: this.cloudMapService.attrArn,
       payloadFormatVersion: '1.0',
