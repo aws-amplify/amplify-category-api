@@ -16,10 +16,13 @@ export class EcsStack extends ContainersStack {
       createCloudMapService: true,
     });
 
+    console.log('After super');
     const { apiType } = this.ecsProps;
 
+    console.log('Before apiGateway');
     const { api } = this.apiGateway();
 
+    console.log('After apiGateway');
     switch (apiType) {
       case API_TYPE.GRAPHQL:
         new cdk.CfnOutput(this, 'GraphQLAPIEndpointOutput', { value: api.attrApiEndpoint });
