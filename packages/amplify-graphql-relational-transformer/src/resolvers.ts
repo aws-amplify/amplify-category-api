@@ -11,11 +11,15 @@ import { getConnectionAttributeName, getObjectPrimaryKey } from './utils';
 /**
  * adds GSI to the table if it doesn't already exists for connection
  */
-export const updateTableForConnection = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-  const { fields, indexName: incomingIndexName } = config;
+export const updateTableForConnection = (
+  config: HasManyDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+  relatedFields: string[]
+): void => {
+  const { indexName: incomingIndexName } = config;
 
   // If an index name or list of fields was specified, then we don't need to create a GSI here.
-  if (incomingIndexName || fields.length > 0) {
+  if (incomingIndexName || relatedFields.length > 0) {
     return;
   }
 
