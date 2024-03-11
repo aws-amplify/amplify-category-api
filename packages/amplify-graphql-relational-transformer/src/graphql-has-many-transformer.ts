@@ -131,7 +131,8 @@ export class HasManyTransformer extends TransformerPluginBase {
     this.directiveList.forEach((config) => {
       const modelName = config.object.name.value;
       const dbType = getStrategyDbTypeFromModel(context as TransformerContextProvider, modelName);
-      getHasManyDirectiveTransformer(dbType).prepare(context, config);
+      const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType);
+      dataSourceBasedTransformer.prepare(context, config);
     });
   };
 
@@ -140,7 +141,8 @@ export class HasManyTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
-      getHasManyDirectiveTransformer(dbType).transformSchema(ctx, config);
+      const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType);
+      dataSourceBasedTransformer.transformSchema(ctx, config);
       ensureHasManyConnectionField(config, context);
       extendTypeWithConnection(config, context);
     }
@@ -151,7 +153,8 @@ export class HasManyTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
-      getHasManyDirectiveTransformer(dbType).generateResolvers(ctx, config);
+      const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType);
+      dataSourceBasedTransformer.generateResolvers(ctx, config);
       const generator = getGenerator(dbType);
       generator.makeHasManyGetItemsConnectionWithKeyResolver(config, context);
     }
@@ -164,7 +167,8 @@ const validate = (config: HasManyDirectiveConfiguration, ctx: TransformerContext
   const dbType = getStrategyDbTypeFromTypeNode(field.type, ctx);
   config.relatedType = getRelatedType(config, ctx);
 
-  getHasManyDirectiveTransformer(dbType).validate(ctx, config);
+  const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType);
+  dataSourceBasedTransformer.validate(ctx, config);
   validateModelDirective(config);
 
   if (!isListType(field.type)) {

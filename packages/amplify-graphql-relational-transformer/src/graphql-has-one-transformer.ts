@@ -159,7 +159,8 @@ export class HasOneTransformer extends TransformerPluginBase {
     this.directiveList.forEach((config) => {
       const modelName = config.object.name.value;
       const dbType = getStrategyDbTypeFromModel(context as TransformerContextProvider, modelName);
-      getHasOneDirectiveTransformer(dbType).prepare(context, config);
+      const dataSourceBasedTransformer = getHasOneDirectiveTransformer(dbType);
+      dataSourceBasedTransformer.prepare(context, config);
     });
   };
 
@@ -168,7 +169,8 @@ export class HasOneTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
-      getHasOneDirectiveTransformer(dbType).transformSchema(ctx, config);
+      const dataSourceBasedTransformer = getHasOneDirectiveTransformer(dbType);
+      dataSourceBasedTransformer.transformSchema(ctx, config);
       ensureHasOneConnectionField(config, context);
     }
   };
@@ -189,7 +191,8 @@ const validate = (config: HasOneDirectiveConfiguration, ctx: TransformerContextP
 
   const dbType = getStrategyDbTypeFromTypeNode(field.type, ctx);
   config.relatedType = getRelatedType(config, ctx);
-  getHasOneDirectiveTransformer(dbType).validate(ctx, config);
+  const dataSourceBasedTransformer = getHasOneDirectiveTransformer(dbType);
+  dataSourceBasedTransformer.validate(ctx, config);
   validateModelDirective(config);
 
   if (isListType(field.type)) {
