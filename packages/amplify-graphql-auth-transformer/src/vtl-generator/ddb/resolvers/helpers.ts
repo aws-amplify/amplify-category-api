@@ -185,10 +185,7 @@ export const genericIamAccessExpression = (): Expression => {
     methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityPoolId')),
     methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityId')),
   ]);
-  return iff(
-    not(ref(IS_AUTHORIZED_FLAG)),
-    ifElse(doesNotHaveIdentityPoolExpression, set(ref(IS_AUTHORIZED_FLAG), bool(true)), ref('util.unauthorized()')),
-  );
+  return iff(not(ref(IS_AUTHORIZED_FLAG)), iff(doesNotHaveIdentityPoolExpression, set(ref(IS_AUTHORIZED_FLAG), bool(true))));
 };
 
 /**

@@ -19,11 +19,11 @@ const strategyProviders: Record<AuthStrategy, AuthProvider[]> = {
 const tests: { modelName: string; strategy: AuthStrategy; provider: AuthProvider; operation: ModelOperation }[] = [];
 
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
-const STACK_NAME = `auth-exhaustive-tests-3a-${BUILD_TIMESTAMP}`;
-const BUCKET_NAME = `auth-exhaustive-tests-bucket-3a-${BUILD_TIMESTAMP}`;
+const STACK_NAME = `auth-exhaustive-tests-3b-${BUILD_TIMESTAMP}`;
+const BUCKET_NAME = `auth-exhaustive-tests-bucket-3b-${BUILD_TIMESTAMP}`;
 const AUTH_ROLE_NAME = `${STACK_NAME}-authRole`;
 const UNAUTH_ROLE_NAME = `${STACK_NAME}-unauthRole`;
-const LOCAL_FS_BUILD_DIR = `/tmp/auth_v2_exhaustive_tests_3a_${BUILD_TIMESTAMP}/`;
+const LOCAL_FS_BUILD_DIR = `/tmp/auth_v2_exhaustive_tests_3b_${BUILD_TIMESTAMP}/`;
 
 let USER_POOL_ID: string;
 let IDENTITY_POOL_ID: string;
@@ -40,7 +40,7 @@ describe('e2e auth resolvers tests', () => {
 
     providers.forEach((provider) => {
       AUTH_TEST_OPERATIONS.forEach((operation) => {
-        const { modelName, schema } = generateTestModel(strategy, provider, operation);
+        const { modelName, schema } = generateTestModel(strategy, provider, operation, true);
         tests.push({
           modelName,
           strategy,
@@ -75,14 +75,14 @@ describe('e2e auth resolvers tests', () => {
   });
 
   afterAll(async () => {
-    //await cleanupAuthExhaustiveTest(STACK_NAME, BUCKET_NAME, AUTH_ROLE_NAME, UNAUTH_ROLE_NAME, USER_POOL_ID, IDENTITY_POOL_ID);
+    await cleanupAuthExhaustiveTest(STACK_NAME, BUCKET_NAME, AUTH_ROLE_NAME, UNAUTH_ROLE_NAME, USER_POOL_ID, IDENTITY_POOL_ID);
   });
 
   it.each(tests)(
     'should generate auth resolver logic that passes as expected for %o',
     async ({ modelName, strategy, provider, operation }) => {
       expect(true).toBeTruthy();
-      await testAuthResolver(GRAPHQL_ENDPOINT, modelName, strategy, provider, operation, ID_TOKEN, ACCESS_TOKEN, API_KEY);
+      await testAuthResolver(GRAPHQL_ENDPOINT, modelName, strategy, provider, operation, ID_TOKEN, ACCESS_TOKEN, API_KEY, false, true);
     },
   );
 });
