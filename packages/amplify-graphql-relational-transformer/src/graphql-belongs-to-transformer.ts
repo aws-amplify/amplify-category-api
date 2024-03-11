@@ -134,7 +134,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
     this.directiveList.forEach((config) => {
       const modelName = config.object.name.value;
       const dbType = getStrategyDbTypeFromModel(context as TransformerContextProvider, modelName);
-      const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType);
+      const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType, config);
       dataSourceBasedTransformer.prepare(context, config);
     });
   };
@@ -144,7 +144,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
-      const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType);
+      const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType, config);
       dataSourceBasedTransformer.transformSchema(ctx, config);
       ensureBelongsToConnectionField(config, context);
     }
@@ -178,7 +178,7 @@ const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerConte
   }
 
   config.relatedType = getRelatedType(config, ctx);
-  const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType);
+  const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType, config);
   dataSourceBasedTransformer.validate(ctx, config);
   validateModelDirective(config);
 

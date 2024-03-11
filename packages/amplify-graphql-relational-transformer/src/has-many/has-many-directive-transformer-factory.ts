@@ -14,14 +14,16 @@ export const getHasManyDirectiveTransformer = (
     case 'POSTGRES':
       return new HasManyDirectiveSQLTransformer(dbType);
     case 'DYNAMODB':
-      if (config.references.length >= 1 && config.fields.length === 0) {
+      // TODO: bifurcate and validate before getting to this stage.
+      if (config.references !== undefined && config.references.length >= 1) {
+        if (config.fields !== undefined && config.fields.length > 0) {
+          throw new Error('Something went wrong >> cannot have both references and fields.');
+        }
         return new HasManyDirectiveDDBReferencesTransformer(dbType);
-      } else if (config.fields.length >= 1 && config.references.length === 0) {
+      } else if (config.fields !== undefined && config.fields.length >= 1) {
         return new HasManyDirectiveDDBFieldsTransformer(dbType);
       } else {
-        throw new Error(
-          'Something went wrong >> cannot have both references and fields.'
-        )
+        throw new Error('Something went wrong >> cannot have both references and fields.');
       }
   }
 };

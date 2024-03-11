@@ -7,6 +7,7 @@ import { BelongsToDirectiveConfiguration } from '../types';
 import {
   ensureReferencesArray,
   getBelongsToReferencesNodes,
+  getRelatedTypeIndex,
   registerHasOneForeignKeyMappings,
   validateChildReferencesFields,
 } from '../utils';
@@ -38,7 +39,7 @@ export class BelongsToDirectiveDDBReferencesTransformer implements DataSourceBas
   };
 
   transformSchema = (context: TransformerTransformSchemaStepContextProvider, config: BelongsToDirectiveConfiguration): void => {
-    // config.relatedTypeIndex = getRelatedTypeIndex(config, context as TransformerContextProvider);
+    config.relatedTypeIndex = getRelatedTypeIndex(config, context as TransformerContextProvider);
     validateChildReferencesFields(config, context as TransformerContextProvider);
   };
 
