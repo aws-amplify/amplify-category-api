@@ -8,6 +8,12 @@ import { HasManyDirectiveConfiguration } from '../types';
 import { registerHasManyForeignKeyMappings, getRelatedTypeIndex, ensureFieldsArray, getFieldsNodes } from '../utils';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
 
+/**
+ * HasManyDirectiveDDBFieldsTransformer executes transformations based on `@hasMany(fields: [String!])` configurations
+ * and surrounding TransformerContextProviders for DynamoDB data sources.
+ *
+ * This should not be used for `@hasMany(references: [String!])` definitions.
+ */
 export class HasManyDirectiveDDBFieldsTransformer implements DataSourceBasedDirectiveTransformer<HasManyDirectiveConfiguration> {
   dbType: 'DYNAMODB';
   constructor(dbType: 'DYNAMODB') {

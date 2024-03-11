@@ -9,6 +9,10 @@ import { HasManyDirectiveConfiguration } from '../types';
 import { validateParentReferencesFields, ensureReferencesArray, getReferencesNodes } from '../utils';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
 
+/**
+ * HasManyDirectiveSQLTransformer executes transformations based on `@hasMany(references: [String!])` configurations
+ * and surrounding TransformerContextProviders for SQL data sources.
+ */
 export class HasManyDirectiveSQLTransformer implements DataSourceBasedDirectiveTransformer<HasManyDirectiveConfiguration> {
   dbType: ModelDataSourceStrategySqlDbType;
   constructor(dbType: ModelDataSourceStrategySqlDbType) {
@@ -24,7 +28,8 @@ export class HasManyDirectiveSQLTransformer implements DataSourceBasedDirectiveT
     validateParentReferencesFields(config, context as TransformerContextProvider);
   };
 
-  generateResolvers = (context: TransformerContextProvider, config: HasManyDirectiveConfiguration): void => {
+  /** no-op */
+  generateResolvers = (_context: TransformerContextProvider, _config: HasManyDirectiveConfiguration): void => {
     return;
   };
 

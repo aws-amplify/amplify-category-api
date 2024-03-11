@@ -7,6 +7,12 @@ import { HasOneDirectiveConfiguration } from '../types';
 import { getRelatedTypeIndex, ensureFieldsArray, getFieldsNodes, registerHasOneForeignKeyMappings } from '../utils';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
 
+/**
+ * HasOneDirectiveDDBFieldsTransformer executes transformations based on `@hasOne(fields: [String!])` configurations
+ * and surrounding TransformerContextProviders for DynamoDB data sources.
+ *
+ * This should not be used for `@hasOne(references: [String!])` definitions.
+ */
 export class HasOneDirectiveDDBFieldsTransformer implements DataSourceBasedDirectiveTransformer<HasOneDirectiveConfiguration> {
   dbType: 'DYNAMODB';
   constructor(dbType: 'DYNAMODB') {
@@ -28,6 +34,7 @@ export class HasOneDirectiveDDBFieldsTransformer implements DataSourceBasedDirec
     config.relatedTypeIndex = getRelatedTypeIndex(config, context as TransformerContextProvider);
   };
 
+  /** no-op */
   generateResolvers = (_context: TransformerContextProvider, _config: HasOneDirectiveConfiguration): void => {
     return;
   };

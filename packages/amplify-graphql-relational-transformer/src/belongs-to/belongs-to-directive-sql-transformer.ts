@@ -9,6 +9,10 @@ import { BelongsToDirectiveConfiguration } from '../types';
 import { ensureReferencesArray, validateChildReferencesFields, getBelongsToReferencesNodes } from '../utils';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
 
+/**
+ * BelongsToDirectiveSQLTransformer executes transformations based on `@belongsTo(references: [String!])` configurations
+ * and surrounding TransformerContextProviders for SQL data sources.
+ */
 export class BelongsToDirectiveSQLTransformer implements DataSourceBasedDirectiveTransformer<BelongsToDirectiveConfiguration> {
   dbType: ModelDataSourceStrategySqlDbType;
   constructor(dbType: ModelDataSourceStrategySqlDbType) {
@@ -24,7 +28,8 @@ export class BelongsToDirectiveSQLTransformer implements DataSourceBasedDirectiv
     validateChildReferencesFields(config, context as TransformerContextProvider);
   };
 
-  generateResolvers = (context: TransformerContextProvider, config: BelongsToDirectiveConfiguration): void => {
+  /** no-op */
+  generateResolvers = (_context: TransformerContextProvider, _config: BelongsToDirectiveConfiguration): void => {
     return;
   };
 

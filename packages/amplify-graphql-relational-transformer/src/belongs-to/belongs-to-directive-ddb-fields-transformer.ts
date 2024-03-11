@@ -7,6 +7,12 @@ import { BelongsToDirectiveConfiguration } from '../types';
 import { getRelatedTypeIndex, ensureFieldsArray, getFieldsNodes, registerHasOneForeignKeyMappings } from '../utils';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
 
+/**
+ * BelongsToDirectiveDDBFieldsTransformer executes transformations based on `@belongsTo(fields: [String!])` configurations
+ * and surrounding TransformerContextProviders for DynamoDB data sources.
+ *
+ * This should not be used for `@belongsTo(references: [String!])` definitions.
+ */
 export class BelongsToDirectiveDDBFieldsTransformer implements DataSourceBasedDirectiveTransformer<BelongsToDirectiveConfiguration> {
   dbType: 'DYNAMODB';
   constructor(dbType: 'DYNAMODB') {
@@ -31,7 +37,8 @@ export class BelongsToDirectiveDDBFieldsTransformer implements DataSourceBasedDi
     config.relatedTypeIndex = getRelatedTypeIndex(config, context as TransformerContextProvider);
   };
 
-  generateResolvers = (context: TransformerContextProvider, config: BelongsToDirectiveConfiguration): void => {
+  /** no-op */
+  generateResolvers = (_context: TransformerContextProvider, _config: BelongsToDirectiveConfiguration): void => {
     return;
   };
 

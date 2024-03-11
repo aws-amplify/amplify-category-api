@@ -9,6 +9,10 @@ import { HasOneDirectiveConfiguration } from '../types';
 import { validateParentReferencesFields, ensureReferencesArray, getReferencesNodes } from '../utils';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
 
+/**
+ * HasOneDirectiveSQLTransformer executes transformations based on `@hasOne(references: [String!])` configurations
+ * and surrounding TransformerContextProviders for SQL data sources.
+ */
 export class HasOneDirectiveSQLTransformer implements DataSourceBasedDirectiveTransformer<HasOneDirectiveConfiguration> {
   dbType: ModelDataSourceStrategySqlDbType;
   constructor(dbType: ModelDataSourceStrategySqlDbType) {
@@ -24,6 +28,7 @@ export class HasOneDirectiveSQLTransformer implements DataSourceBasedDirectiveTr
     validateParentReferencesFields(config, context as TransformerContextProvider);
   };
 
+  /** no-op */
   generateResolvers = (_context: TransformerContextProvider, _config: HasOneDirectiveConfiguration): void => {
     return;
   };
