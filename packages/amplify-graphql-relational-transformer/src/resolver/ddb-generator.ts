@@ -1,4 +1,4 @@
-import { MappingTemplate, getModelDataSourceNameForTypeName, getKeySchema, getTable } from '@aws-amplify/graphql-transformer-core';
+import { MappingTemplate, getModelDataSourceNameForTypeName, getKeySchema, getTable, getPrimaryKeyFields } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   DynamoDBMappingTemplate,
@@ -88,9 +88,13 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
    * @param config The connection directive configuration.
    * @param ctx The transformer context provider.
    */
-  makeHasManyGetItemsConnectionWithKeyResolver = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-    const { connectionFields, field, fields, indexName, limit, object, relatedType } = config;
-    const connectionAttributes: string[] = fields.length > 0 ? fields : connectionFields;
+  makeHasManyGetItemsConnectionWithKeyResolver = (
+    config: HasManyDirectiveConfiguration,
+    ctx: TransformerContextProvider,
+    relatedFields: string[],
+  ): void => {
+    const { connectionFields, field, indexName, limit, object, relatedType } = config;
+    const connectionAttributes: string[] = relatedFields.length > 0 ? relatedFields : connectionFields;
     if (connectionAttributes.length === 0) {
       throw new Error('Either connection fields or local fields should be populated.');
     }
