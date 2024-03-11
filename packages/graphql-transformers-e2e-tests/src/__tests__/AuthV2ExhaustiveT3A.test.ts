@@ -75,7 +75,7 @@ describe('e2e auth resolvers tests', () => {
   });
 
   afterAll(async () => {
-    //await cleanupAuthExhaustiveTest(STACK_NAME, BUCKET_NAME, AUTH_ROLE_NAME, UNAUTH_ROLE_NAME, USER_POOL_ID, IDENTITY_POOL_ID);
+    await cleanupAuthExhaustiveTest(STACK_NAME, BUCKET_NAME, AUTH_ROLE_NAME, UNAUTH_ROLE_NAME, USER_POOL_ID, IDENTITY_POOL_ID);
   });
 
   it.each(tests)(
