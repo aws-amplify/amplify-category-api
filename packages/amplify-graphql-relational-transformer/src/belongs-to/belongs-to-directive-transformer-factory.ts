@@ -22,12 +22,8 @@ export const getBelongsToDirectiveTransformer = (
           )
         }
         return new BelongsToDirectiveDDBReferencesTransformer(dbType);
-      } else if (config.fields !== undefined && config.fields.length >= 1) {
-        return new BelongsToDirectiveDDBFieldsTransformer(dbType);
       } else {
-        throw new Error(
-          'Something went wrong >> cannot have both references and fields.'
-        )
+        return new BelongsToDirectiveDDBFieldsTransformer(dbType);
       }
   }
 };
