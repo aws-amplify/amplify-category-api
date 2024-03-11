@@ -9,7 +9,6 @@ import { HasManyDirectiveConfiguration } from '../types';
 import { validateParentReferencesFields, ensureReferencesArray, getReferencesNodes } from '../utils';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
 
-
 /**
  * HasManyDirectiveSQLTransformer executes transformations based on `@hasMany(references: [String!])` configurations
  * and surrounding TransformerContextProviders for SQL data sources.

@@ -37,12 +37,8 @@ export class BelongsToDirectiveDDBFieldsTransformer implements DataSourceBasedDi
     config.relatedTypeIndex = getRelatedTypeIndex(config, context as TransformerContextProvider);
   };
 
-<<<<<<< HEAD
   /** no-op */
   generateResolvers = (_context: TransformerContextProvider, _config: BelongsToDirectiveConfiguration): void => {
-=======
-  generateResolvers = (context: TransformerContextProvider, config: BelongsToDirectiveConfiguration): void => {
->>>>>>> bdda07383 (belongsTo - split out datasource specific logic)
     return;
   };
 
