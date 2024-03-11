@@ -29,7 +29,6 @@ import {
 } from '@aws-sdk/client-lambda';
 import * as fs from 'fs-extra';
 import ora from 'ora';
-import { printer } from '@aws-amplify/amplify-prompts';
 import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { checkHostInDBClusters } from './vpc-helper-cluster';
 import { checkHostInDBProxies } from './vpc-helper-proxy';
@@ -60,13 +59,13 @@ export const getHostVpc = async (hostname: string, region: string): Promise<VpcC
 
   const clusterResult = await checkHostInDBClusters(hostname, region);
   if (clusterResult) {
-    printer.warn(warning('cluster'));
+    console.warn(warning('cluster'));
     return clusterResult;
   }
 
   const instanceResult = await checkHostInDBInstances(hostname, region);
   if (instanceResult) {
-    printer.warn(warning('instance'));
+    console.warn(warning('instance'));
     return instanceResult;
   }
 
@@ -104,7 +103,7 @@ export const provisionSchemaInspectorLambda = async (lambdaName: string, vpc: Vp
     }
   } catch (err) {
     spinner.fail('Failed to provision a function to introspect the database schema.');
-    printer.debug(`Error provisioning a function to introspect the database schema: ${err}`);
+    console.debug(`Error provisioning a function to introspect the database schema: ${err}`);
     throw err;
   }
   spinner.succeed('Successfully provisioned a function to introspect the database schema.');
