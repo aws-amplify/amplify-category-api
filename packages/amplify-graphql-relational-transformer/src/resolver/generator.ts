@@ -6,6 +6,7 @@ export abstract class RelationalResolverGenerator {
     config: HasManyDirectiveConfiguration,
     ctx: TransformerContextProvider,
     relatedFields: string[],
+    primaryKeyFields: string[],
   ): void;
 
   abstract makeHasOneGetItemConnectionWithKeyResolver(

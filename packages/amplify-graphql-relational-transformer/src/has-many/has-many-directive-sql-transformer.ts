@@ -9,6 +9,7 @@ import { HasManyDirectiveConfiguration } from '../types';
 import { validateParentReferencesFields, ensureReferencesArray, getReferencesNodes } from '../utils';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
 import { getGenerator } from '../resolver/generator-factory';
+import { getPrimaryKeyFields } from '@aws-amplify/graphql-transformer-core';
 
 /**
  * HasManyDirectiveSQLTransformer executes transformations based on `@hasMany(references: [String!])` configurations
@@ -31,7 +32,7 @@ export class HasManyDirectiveSQLTransformer implements DataSourceBasedDirectiveT
 
   generateResolvers = (context: TransformerContextProvider, config: HasManyDirectiveConfiguration): void => {
     const generator = getGenerator(this.dbType);
-    generator.makeHasManyGetItemsConnectionWithKeyResolver(config, context, config.references);
+    generator.makeHasManyGetItemsConnectionWithKeyResolver(config, context, config.references, getPrimaryKeyFields(config.object));
   };
 
   validate = (context: TransformerContextProvider, config: HasManyDirectiveConfiguration): void => {

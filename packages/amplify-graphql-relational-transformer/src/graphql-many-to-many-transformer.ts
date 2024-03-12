@@ -518,7 +518,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       updateTableForConnection(config, context, config.fields);
-      new DDBRelationalResolverGenerator().makeHasManyGetItemsConnectionWithKeyResolver(config, context, config.fields);
+      new DDBRelationalResolverGenerator().makeHasManyGetItemsConnectionWithKeyResolver(config, context, config.fields, config.fields);
     }
   };
 }
