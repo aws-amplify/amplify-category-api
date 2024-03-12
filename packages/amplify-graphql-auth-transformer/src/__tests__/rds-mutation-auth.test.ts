@@ -450,14 +450,17 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
     });
   });
 
-  it('should throw error if auth is defined on a field', async () => {
-    const invalidSchema = `
+  it('should not throw error if auth is defined on a field', async () => {
+    const validSchema = `
       type Post @model
         @auth(rules: [
           {allow: private, provider: iam}
           {allow: public, provider: iam}
         ]) {
           id: ID! @primaryKey
+            @auth(rules: [
+              {allow: private, provider: iam}
+            ])
           title: String!
             @auth(rules: [
               {allow: private, provider: iam}
@@ -474,14 +477,12 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
 
     expect(() =>
       testTransform({
-        schema: invalidSchema,
+        schema: validSchema,
         transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
         authConfig,
-        dataSourceStrategies: constructDataSourceStrategies(invalidSchema, mysqlStrategy),
+        dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlStrategy),
       }),
-    ).toThrow(
-      '@auth rules are not supported on fields on relational database models. Check field "title" on type "Post". Please use @auth on the type instead.',
-    );
+    ).not.toThrowError();
   });
 
   it('should allow field auth on mutation type', async () => {

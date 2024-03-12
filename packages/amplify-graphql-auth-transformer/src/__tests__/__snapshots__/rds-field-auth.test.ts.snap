@@ -1,0 +1,216 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Verify RDS Model level Auth rules on queries: should successfully transform different field auth rules 1`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"private\\",
+  \\"provider\\": \\"userPools\\"
+}))
+#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
+#if( !$authResult )
+  $util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on queries: should successfully transform different field auth rules 2`] = `
+"## [Start] Checking for allowed operations which can return this field. **
+#set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
+#if( $operation == \\"Mutation\\" )
+  $util.toJson(null)
+#else
+  $util.toJson($context.source[\\"authors\\"])
+#end
+## [End] Checking for allowed operations which can return this field. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on queries: should successfully transform different field auth rules 3`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"private\\",
+  \\"provider\\": \\"userPools\\"
+}))
+#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
+#if( !$authResult )
+  $util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on queries: should successfully transform different field auth rules 4`] = `
+"## [Start] Checking for allowed operations which can return this field. **
+#set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
+#if( $operation == \\"Mutation\\" )
+  $util.toJson(null)
+#else
+  $util.toJson($context.source[\\"owner\\"])
+#end
+## [End] Checking for allowed operations which can return this field. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on queries: should successfully transform different field auth rules 5`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"owner\\",
+  \\"provider\\": \\"userPools\\",
+  \\"ownerFieldName\\": \\"owner\\",
+  \\"ownerFieldType\\": \\"string\\",
+  \\"identityClaim\\": \\"user_id\\"
+}))
+#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
+#if( !$authResult )
+  $util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on queries: should successfully transform different field auth rules 6`] = `
+"## [Start] Checking for allowed operations which can return this field. **
+#set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
+#if( $operation == \\"Mutation\\" )
+  $util.toJson(null)
+#else
+  $util.toJson($context.source[\\"ownerContent\\"])
+#end
+## [End] Checking for allowed operations which can return this field. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on queries: should successfully transform different field auth rules 7`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"owner\\",
+  \\"provider\\": \\"userPools\\",
+  \\"ownerFieldName\\": \\"authors\\",
+  \\"ownerFieldType\\": \\"string[]\\"
+}))
+#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
+#if( !$authResult )
+  $util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on queries: should successfully transform different field auth rules 8`] = `
+"## [Start] Checking for allowed operations which can return this field. **
+#set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
+#if( $operation == \\"Mutation\\" )
+  $util.toJson(null)
+#else
+  $util.toJson($context.source[\\"ownersContent\\"])
+#end
+## [End] Checking for allowed operations which can return this field. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on queries: should successfully transform different field auth rules 9`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"private\\",
+  \\"provider\\": \\"userPools\\"
+}))
+#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
+#if( !$authResult )
+  $util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on queries: should successfully transform different field auth rules 10`] = `
+"## [Start] Checking for allowed operations which can return this field. **
+#set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
+#if( $operation == \\"Mutation\\" )
+  $util.toJson(null)
+#else
+  $util.toJson($context.source[\\"privateContent\\"])
+#end
+## [End] Checking for allowed operations which can return this field. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on queries: should successfully transform different field auth rules 11`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"apiKey\\"
+}))
+#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
+#if( !$authResult )
+  $util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on queries: should successfully transform different field auth rules 12`] = `
+"## [Start] Checking for allowed operations which can return this field. **
+#set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
+#if( $operation == \\"Mutation\\" )
+  $util.toJson(null)
+#else
+  $util.toJson($context.source[\\"publicContent\\"])
+#end
+## [End] Checking for allowed operations which can return this field. **"
+`;
