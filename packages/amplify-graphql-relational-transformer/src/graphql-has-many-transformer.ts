@@ -164,13 +164,13 @@ const validate = (config: HasManyDirectiveConfiguration, ctx: TransformerContext
   const dbType = getStrategyDbTypeFromTypeNode(field.type, ctx);
   config.relatedType = getRelatedType(config, ctx);
 
-  const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType, config);
-  dataSourceBasedTransformer.validate(ctx, config);
   validateModelDirective(config);
-
   if (!isListType(field.type)) {
     throw new InvalidDirectiveError(`@${directiveName} must be used with a list. Use @hasOne for non-list types.`);
   }
+
+  const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType, config);
+  dataSourceBasedTransformer.validate(ctx, config);
 
   config.connectionFields = [];
   validateRelatedModelDirective(config);

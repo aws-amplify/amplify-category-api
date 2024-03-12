@@ -6,6 +6,8 @@ import {
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
 import { BelongsToDirectiveConfiguration } from '../types';
 import { ensureFieldsArray, getFieldsNodes, getRelatedTypeIndex, registerHasOneForeignKeyMappings } from '../utils';
+import { getStrategyDbTypeFromModel, getStrategyDbTypeFromTypeNode } from '@aws-amplify/graphql-transformer-core';
+import { getGenerator } from '../resolver/generator-factory';
 
 /**
  * BelongsToDirectiveDDBFieldsTransformer executes transformations based on `@belongsTo(fields: [String!])` configurations
@@ -38,8 +40,9 @@ export class BelongsToDirectiveDDBFieldsTransformer implements DataSourceBasedDi
   };
 
   /** no-op */
-  generateResolvers = (_context: TransformerContextProvider, _config: BelongsToDirectiveConfiguration): void => {
-    return;
+  generateResolvers = (context: TransformerContextProvider, config: BelongsToDirectiveConfiguration): void => {
+    const generator = getGenerator(this.dbType);
+    generator.makeBelongsToGetItemConnectionWithKeyResolver(config, context);
   };
 
   validate = (context: TransformerContextProvider, config: BelongsToDirectiveConfiguration): void => {

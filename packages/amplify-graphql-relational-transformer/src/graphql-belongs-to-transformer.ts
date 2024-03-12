@@ -155,8 +155,8 @@ export class BelongsToTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
-      const generator = getGenerator(dbType);
-      generator.makeBelongsToGetItemConnectionWithKeyResolver(config, context);
+      const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType, config);
+      dataSourceBasedTransformer.generateResolvers(ctx, config);
     }
   };
 }
