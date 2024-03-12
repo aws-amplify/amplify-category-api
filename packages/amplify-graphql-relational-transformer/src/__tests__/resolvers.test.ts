@@ -32,6 +32,8 @@ describe('makeQueryConnectionWithKeyResolver', () => {
           connectionFields: [],
         }),
         createPartialMock(),
+        [],
+        []
       ),
     ).toThrowErrorMatchingInlineSnapshot('"Either connection fields or local fields should be populated."');
   });

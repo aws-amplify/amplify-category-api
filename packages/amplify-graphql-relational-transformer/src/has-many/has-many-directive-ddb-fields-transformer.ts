@@ -7,6 +7,7 @@ import { updateTableForConnection } from '../resolvers';
 import { HasManyDirectiveConfiguration } from '../types';
 import { registerHasManyForeignKeyMappings, getRelatedTypeIndex, ensureFieldsArray, getFieldsNodes } from '../utils';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
+import { getGenerator } from '../resolver/generator-factory';
 
 /**
  * HasManyDirectiveDDBFieldsTransformer executes transformations based on `@hasMany(fields: [String!])` configurations
@@ -36,7 +37,9 @@ export class HasManyDirectiveDDBFieldsTransformer implements DataSourceBasedDire
   };
 
   generateResolvers = (context: TransformerContextProvider, config: HasManyDirectiveConfiguration): void => {
-    updateTableForConnection(config, context);
+    updateTableForConnection(config, context, config.fields);
+    const generator = getGenerator(this.dbType);
+    generator.makeHasManyGetItemsConnectionWithKeyResolver(config, context, config.fields, config.fields);
   };
 
   validate = (context: TransformerContextProvider, config: HasManyDirectiveConfiguration): void => {
