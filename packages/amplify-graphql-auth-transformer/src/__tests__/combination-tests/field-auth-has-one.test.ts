@@ -103,8 +103,6 @@ describe('Auth field-level auth combinations: hasOne/belongsTo', () => {
             fieldRuleExt: undefined,
             modelRuleName,
             modelRuleExt: undefined,
-            expectedErrorMessage:
-              '@auth rules are not supported on fields on relational database models. Check field "id" on type "Person". Please use @auth on the type instead.',
           }),
         );
       }
