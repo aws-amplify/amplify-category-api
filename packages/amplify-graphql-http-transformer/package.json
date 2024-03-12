@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-http-transformer",
-  "version": "2.1.16",
+  "version": "2.1.18",
   "description": "Amplify GraphQL @http transformer",
   "repository": {
     "type": "git",
@@ -28,14 +28,14 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "2.4.4",
-    "@aws-amplify/graphql-transformer-interfaces": "3.3.3",
+    "@aws-amplify/graphql-transformer-core": "2.5.0",
+    "@aws-amplify/graphql-transformer-interfaces": "3.4.0",
     "graphql": "^15.5.0",
-    "graphql-mapping-template": "4.20.14",
-    "graphql-transformer-common": "4.27.1"
+    "graphql-mapping-template": "4.20.15",
+    "graphql-transformer-common": "4.28.1"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "0.4.4"
+    "@aws-amplify/graphql-transformer-test-utils": "0.4.6"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.80.0",
@@ -70,6 +70,12 @@
     "modulePathIgnorePatterns": [
       "overrides"
     ],
-    "testEnvironment": "../../FixJestEnvironment.js"
+    "testEnvironment": "../../FixJestEnvironment.js",
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/__tests__/"
+    ]
   }
 }

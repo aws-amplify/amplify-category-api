@@ -503,6 +503,8 @@ export interface TransformerContextOutputProvider {
     // (undocumented)
     addUnionExtension(obj: UnionTypeExtensionNode): void;
     // (undocumented)
+    getInput(name: string): InputObjectTypeDefinitionNode | undefined;
+    // (undocumented)
     getMutation(): ObjectTypeDefinitionNode | undefined;
     // (undocumented)
     getMutationTypeName(): string | undefined;
@@ -528,6 +530,8 @@ export interface TransformerContextOutputProvider {
     putSchema: (obj: SchemaDefinitionNode) => void;
     // (undocumented)
     putType(obj: TypeDefinitionNode): void;
+    // (undocumented)
+    updateInput(obj: InputObjectTypeDefinitionNode): void;
     // (undocumented)
     updateObject(obj: ObjectTypeDefinitionNode): void;
 }

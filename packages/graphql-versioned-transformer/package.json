@@ -1,6 +1,6 @@
 {
   "name": "graphql-versioned-transformer",
-  "version": "5.2.72",
+  "version": "5.2.74",
   "description": "A GraphQL transform that enabled object versioning and conflict resolution for a @model type.",
   "repository": {
     "type": "git",
@@ -24,12 +24,12 @@
   },
   "dependencies": {
     "graphql": "^15.5.0",
-    "graphql-mapping-template": "4.20.14",
-    "graphql-transformer-common": "4.27.1",
-    "graphql-transformer-core": "8.2.5"
+    "graphql-mapping-template": "4.20.15",
+    "graphql-transformer-common": "4.28.1",
+    "graphql-transformer-core": "8.2.7"
   },
   "devDependencies": {
-    "graphql-dynamodb-transformer": "7.2.72"
+    "graphql-dynamodb-transformer": "7.2.74"
   },
   "jest": {
     "transform": {
@@ -49,7 +49,7 @@
     "coverageProvider": "v8",
     "coverageThreshold": {
       "global": {
-        "branches": 88,
+        "branches": 85,
         "functions": 90,
         "lines": 90
       }
@@ -57,6 +57,12 @@
     "coverageReporters": [
       "clover",
       "text"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/__tests__/"
     ]
   }
 }

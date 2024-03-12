@@ -30,7 +30,7 @@ const api = new AmplifyGraphqlApi(stack, 'GraphqlApi', {
   authorizationModes: {
     apiKeyConfig: { expires: Duration.days(7) },
   },
-  conflictResolution: {
+  dataStoreConfiguration: {
     project: {
       detectionType: 'VERSION',
       handlerType: 'AUTOMERGE',
@@ -38,7 +38,7 @@ const api = new AmplifyGraphqlApi(stack, 'GraphqlApi', {
   },
 });
 
-const todoTable = api.resources.amplifyDynamoDbTables['Todo'];
+const todoTable = api.resources.cfnResources.amplifyDynamoDbTables['Todo'];
 todoTable.billingMode = BillingMode.PROVISIONED;
 todoTable.provisionedThroughput = {
   readCapacityUnits: 5,

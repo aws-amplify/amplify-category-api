@@ -501,6 +501,20 @@ export function toUpper(word: string): string;
 export const transformedArgsRef: ReferenceNode;
 
 // @public (undocumented)
+export const TYPESCRIPT_DATA_SCHEMA_CONSTANTS: {
+    SCHEMA_PACKAGE: string;
+    MODEL_METHOD: string;
+    SCHEMA_METHOD: string;
+    IDENTIFIER_METHOD: string;
+    ARRAY_METHOD: string;
+    REQUIRED_METHOD: string;
+    STRING_METHOD: string;
+    ENUM_METHOD: string;
+    REFERENCE_A: string;
+    EXPORT_VARIABLE_NAME: string;
+};
+
+// @public (undocumented)
 export function unwrapNonNull(type: TypeNode): any;
 
 // @public (undocumented)

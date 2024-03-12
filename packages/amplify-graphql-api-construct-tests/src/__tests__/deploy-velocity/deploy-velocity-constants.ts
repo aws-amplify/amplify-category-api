@@ -66,7 +66,7 @@ export const MUTATION_FOUR_FIELD_CREATE = (uuid: string, i: number): string =>
   `mut${i}: createTodo(input: { field1: "${uuid}", field2: "${uuid}", field3: "${uuid}", field4: "${uuid}" }) { id }`;
 
 export const API_POST_PROCESSOR_SET_PROVISIONED_THROUGHPUT_TWO_GSIS = (api: AmplifyGraphqlApi): void => {
-  const table = api.resources.amplifyDynamoDbTables.Todo;
+  const table = api.resources.cfnResources.amplifyDynamoDbTables.Todo;
   table.billingMode = BillingMode.PROVISIONED; // This will require `BillingMode` be imported in the generated file.
   table.provisionedThroughput = { readCapacityUnits: 10, writeCapacityUnits: 10 };
 };

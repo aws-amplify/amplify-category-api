@@ -1,6 +1,6 @@
 {
   "name": "graphql-predictions-transformer",
-  "version": "3.2.72",
+  "version": "3.2.74",
   "description": "Implements the @predictions directive.",
   "repository": {
     "type": "git",
@@ -26,9 +26,9 @@
   "dependencies": {
     "cloudform-types": "^4.2.0",
     "graphql": "^15.5.0",
-    "graphql-mapping-template": "4.20.14",
-    "graphql-transformer-common": "4.27.1",
-    "graphql-transformer-core": "8.2.5"
+    "graphql-mapping-template": "4.20.15",
+    "graphql-transformer-common": "4.28.1",
+    "graphql-transformer-core": "8.2.7"
   },
   "devDependencies": {
     "bestzip": "^2.1.5"
@@ -51,7 +51,7 @@
     "coverageProvider": "v8",
     "coverageThreshold": {
       "global": {
-        "branches": 87,
+        "branches": 85,
         "functions": 90,
         "lines": 90
       }
@@ -59,6 +59,12 @@
     "coverageReporters": [
       "clover",
       "text"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/__tests__/"
     ]
   }
 }

@@ -213,6 +213,8 @@ input ModelEmployeeFilterInput {
   firstName: ModelStringInput
   lastName: ModelStringInput
   type: ModelEmploymentTypeInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelEmployeeFilterInput]
   or: [ModelEmployeeFilterInput]
   not: ModelEmployeeFilterInput
@@ -225,6 +227,8 @@ input ModelEmployeeConditionInput {
   and: [ModelEmployeeConditionInput]
   or: [ModelEmployeeConditionInput]
   not: ModelEmployeeConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateEmployeeInput {
@@ -256,6 +260,8 @@ input ModelSubscriptionEmployeeFilterInput {
   firstName: ModelSubscriptionStringInput
   lastName: ModelSubscriptionStringInput
   type: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
   and: [ModelSubscriptionEmployeeFilterInput]
   or: [ModelSubscriptionEmployeeFilterInput]
 }
@@ -1954,6 +1960,8 @@ type ModelUserConnection {
 input ModelUserFilterInput {
   id: ModelIDInput
   name: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelUserFilterInput]
   or: [ModelUserFilterInput]
   not: ModelUserFilterInput
@@ -1964,6 +1972,8 @@ input ModelUserConditionInput {
   and: [ModelUserConditionInput]
   or: [ModelUserConditionInput]
   not: ModelUserConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateUserInput {
@@ -1983,6 +1993,8 @@ input DeleteUserInput {
 input ModelSubscriptionUserFilterInput {
   id: ModelSubscriptionIDInput
   name: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
   and: [ModelSubscriptionUserFilterInput]
   or: [ModelSubscriptionUserFilterInput]
 }

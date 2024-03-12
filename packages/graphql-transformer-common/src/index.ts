@@ -12,3 +12,4 @@ export * from './dynamodbUtils';
 export * from './SyncResourceIDs';
 export * from './PredictionsResourceIDs';
 export * from './transformedArgs';
+export * from './TypescriptSchemaConstants';

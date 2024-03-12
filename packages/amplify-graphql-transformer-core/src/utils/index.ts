@@ -1,4 +1,10 @@
-export { getPrimaryKeyFields } from './model-util';
+export {
+  getPrimaryKeyFields,
+  getFilterInputName,
+  getConditionInputName,
+  getSubscriptionFilterInputName,
+  getConnectionName,
+} from './model-util';
 export { DirectiveWrapper, GetArgumentsOptions, generateGetArgumentsInput } from './directive-wrapper';
 export { collectDirectives, collectDirectivesByTypeNames } from './type-map-utils';
 export { stripDirectives } from './strip-directives';
