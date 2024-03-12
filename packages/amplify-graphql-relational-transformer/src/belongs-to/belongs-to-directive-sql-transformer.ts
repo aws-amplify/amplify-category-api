@@ -35,6 +35,6 @@ export class BelongsToDirectiveSQLTransformer implements DataSourceBasedDirectiv
 
   validate = (context: TransformerContextProvider, config: BelongsToDirectiveConfiguration): void => {
     ensureReferencesArray(config);
-    getBelongsToReferencesNodes(config, context);
+    config.fieldNodes = getBelongsToReferencesNodes(config, context);
   };
 }

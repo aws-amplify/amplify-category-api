@@ -39,7 +39,6 @@ export class BelongsToDirectiveDDBReferencesTransformer implements DataSourceBas
   };
 
   transformSchema = (context: TransformerTransformSchemaStepContextProvider, config: BelongsToDirectiveConfiguration): void => {
-    config.relatedTypeIndex = getRelatedTypeIndex(config, context as TransformerContextProvider);
     validateChildReferencesFields(config, context as TransformerContextProvider);
   };
 
@@ -50,6 +49,6 @@ export class BelongsToDirectiveDDBReferencesTransformer implements DataSourceBas
 
   validate = (context: TransformerContextProvider, config: BelongsToDirectiveConfiguration): void => {
     ensureReferencesArray(config);
-    getBelongsToReferencesNodes(config, context);
+    config.fieldNodes = getBelongsToReferencesNodes(config, context);
   };
 }
