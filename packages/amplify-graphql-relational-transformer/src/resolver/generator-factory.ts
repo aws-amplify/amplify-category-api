@@ -4,7 +4,9 @@ import { RDSRelationalResolverGenerator } from './rds-generator';
 import { DDBRelationalResolverGenerator } from './ddb-generator';
 import { RelationalResolverGenerator } from './generator';
 
-export const getGenerator = (dbType: ModelDataSourceStrategyDbType): RelationalResolverGenerator => {
+export const getGenerator = (
+  dbType: ModelDataSourceStrategyDbType
+): RelationalResolverGenerator => {
   switch (dbType) {
     case POSTGRES_DB_TYPE:
       return new RDSRelationalResolverGenerator();
