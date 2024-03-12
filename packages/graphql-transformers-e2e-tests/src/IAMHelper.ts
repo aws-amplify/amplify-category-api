@@ -1,10 +1,12 @@
 import { IAM, Credentials } from 'aws-sdk';
 import { resolveTestRegion } from './testSetup';
+import { default as STS } from 'aws-sdk/clients/sts';
 
 const REGION = resolveTestRegion();
 
 export class IAMHelper {
   client: IAM;
+  sts = new STS();
 
   constructor(region: string = REGION, credentials?: Credentials) {
     this.client = new IAM({
@@ -168,6 +170,51 @@ export class IAMHelper {
       .detachRolePolicy({
         PolicyArn: policyArn,
         RoleName: roleName,
+      })
+      .promise();
+  }
+
+  async createRole(name: string): Promise<IAM.Role> {
+    const accountDetails = await this.sts.getCallerIdentity({}).promise();
+    const currentAccountId = accountDetails.Account;
+    const role = await this.client
+      .createRole({
+        RoleName: name,
+        AssumeRolePolicyDocument: `{
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": "sts:AssumeRole",
+              "Principal": {
+                "AWS": "${currentAccountId}"
+              },
+              "Condition": {}
+            }
+          ]
+        }`,
+      })
+      .promise();
+    return role.Role;
+  }
+
+  async createAppSyncDataPolicy(policyName: string, region: string, appsyncApiIds: Array<string>) {
+    const accountDetails = await this.sts.getCallerIdentity({}).promise();
+    const currentAccountId = accountDetails.Account;
+    const policyStatement = {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Effect: 'Allow',
+          Action: ['appsync:GraphQL'],
+          Resource: appsyncApiIds.map((appsyncApiId) => `arn:aws:appsync:${region}:${currentAccountId}:apis/${appsyncApiId}/*`),
+        },
+      ],
+    };
+    return await this.client
+      .createPolicy({
+        PolicyDocument: JSON.stringify(policyStatement),
+        PolicyName: policyName,
       })
       .promise();
   }
