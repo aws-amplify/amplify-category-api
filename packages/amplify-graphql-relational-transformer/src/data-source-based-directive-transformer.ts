@@ -6,7 +6,10 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from './types';
 
-export type DirectiveConfiguration = HasOneDirectiveConfiguration | HasManyDirectiveConfiguration | BelongsToDirectiveConfiguration;
+export type RelationalDirectiveConfiguration =
+  | HasOneDirectiveConfiguration
+  | HasManyDirectiveConfiguration
+  | BelongsToDirectiveConfiguration;
 
 /**
  * Represents a subset of transformer methods based on a specific
@@ -15,7 +18,7 @@ export type DirectiveConfiguration = HasOneDirectiveConfiguration | HasManyDirec
  * Each method is to be invoked by the applicable relational transformer when iterating through
  * its directive configurations the applicable transformer step.
  */
-export interface DataSourceBasedDirectiveTransformer<Config extends DirectiveConfiguration> {
+export interface DataSourceBasedDirectiveTransformer<Config extends RelationalDirectiveConfiguration> {
   // Constrains the DataSourceBasedDirectiveTransformer to a specific database type
   dbType: ModelDataSourceStrategyDbType;
   prepare: (context: TransformerPrepareStepContextProvider, config: Config) => void;
