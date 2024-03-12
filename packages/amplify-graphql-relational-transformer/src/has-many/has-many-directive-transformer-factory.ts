@@ -20,8 +20,12 @@ export const getHasManyDirectiveTransformer = (
           throw new Error('Something went wrong >> cannot have both references and fields.');
         }
         return new HasManyDirectiveDDBReferencesTransformer(dbType);
-      } else {
+      } else if (config.fields !== undefined && config.fields.length >= 1) {
+        if (config.references !== undefined && config.references.length > 0) {
+          throw new Error('Something went wrong >> cannot have both references and fields.');
+        }
         return new HasManyDirectiveDDBFieldsTransformer(dbType);
       }
+      throw new Error('Something went wrong >> cannot have both references and fields.');
   }
 };

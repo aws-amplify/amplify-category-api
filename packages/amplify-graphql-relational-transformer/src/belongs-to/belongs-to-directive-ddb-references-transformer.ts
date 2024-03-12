@@ -11,6 +11,7 @@ import {
   getBelongsToReferencesNodes, registerHasOneForeignKeyMappings,
   validateChildReferencesFields
 } from '../utils';
+import { DDBRelationalReferencesResolverGenerator } from '../resolver/ddb-references-generator';
 
 /**
  * BelongsToDirectiveDDBReferencesTransformer executes transformations based on `@belongsTo(references: [String!])` configurations
@@ -40,9 +41,8 @@ export class BelongsToDirectiveDDBReferencesTransformer implements DataSourceBas
     validateChildReferencesFields(config, context as TransformerContextProvider);
   };
 
-  /** no-op */
-  generateResolvers = (_context: TransformerContextProvider, _config: BelongsToDirectiveConfiguration): void => {
-    return;
+  generateResolvers = (context: TransformerContextProvider, config: BelongsToDirectiveConfiguration): void => {
+    new DDBRelationalReferencesResolverGenerator().makeBelongsToGetItemConnectionWithKeyResolver(config, context);
   };
 
   validate = (context: TransformerContextProvider, config: BelongsToDirectiveConfiguration): void => {

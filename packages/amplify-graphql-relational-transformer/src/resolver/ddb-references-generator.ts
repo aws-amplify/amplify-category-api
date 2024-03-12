@@ -233,11 +233,11 @@ export class DDBRelationalReferencesResolverGenerator extends RelationalResolver
     config: HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration,
     ctx: TransformerContextProvider,
   ): void => {
-    const { connectionFields, field, fields, object, relatedType, relatedTypeIndex } = config;
-    if (relatedTypeIndex.length === 0) {
-      throw new Error('Expected relatedType index fields to be set for connection.');
-    }
-    const localFields = fields.length > 0 ? fields : connectionFields;
+    const { connectionFields, field, references, object, relatedType } = config;
+    // if (relatedTypeIndex.length === 0) {
+    //   throw new Error('Expected relatedType index fields to be set for connection.');
+    // }
+    const localFields = references.length > 0 ? references : connectionFields;
     const table = getTable(ctx, relatedType);
     const { keySchema } = table as any;
     const dataSourceName = getModelDataSourceNameForTypeName(ctx, relatedType.name.value);
@@ -253,7 +253,7 @@ export class DDBRelationalReferencesResolverGenerator extends RelationalResolver
     };
 
     // Add a composite sort key or simple sort key if there is one.
-    if (relatedTypeIndex.length > 2) {
+    if (localFields.length > 2) {
       const rangeKeyFields = localFields.slice(1);
       const sortKeyName = keySchema[1].attributeName;
       const condensedSortKeyValue = condenseRangeKey(rangeKeyFields.map((keyField) => `\${ctx.source.${keyField}}`));
@@ -263,7 +263,7 @@ export class DDBRelationalReferencesResolverGenerator extends RelationalResolver
       totalExpressionValues[':sortKeyName'] = ref(
         `util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank("${condensedSortKeyValue}", "${NONE_VALUE}")))`,
       );
-    } else if (relatedTypeIndex.length === 2) {
+    } else if (localFields.length === 2) {
       const sortKeyName = keySchema[1].attributeName;
       totalExpressions.push('#sortKeyName = :sortKeyName');
       totalExpressionNames['#sortKeyName'] = str(sortKeyName);
