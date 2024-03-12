@@ -6,7 +6,69 @@ import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { ModelResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { getSortKeyFields } from './schema';
 import { HasManyDirectiveConfiguration } from './types';
-import { getConnectionAttributeName, getObjectPrimaryKey } from './utils';
+import { getConnectionAttributeName, getObjectPrimaryKey, getRelatedType } from './utils';
+
+export const updateTableForReferencesConnection = (
+  config: HasManyDirectiveConfiguration,
+  ctx: TransformerContextProvider
+): void => {
+  const { field, fieldNodes, indexName: incomingIndexName, object, references, relatedType } = config;
+
+  if (incomingIndexName) {
+    // TODO: log warning or throw that indexName isn't supported for DDB references
+    // Ideally validate this further up the chain.
+  }
+
+  if (references.length < 1) {
+    throw new Error( // TODO: better error message
+      'references should not be empty here'
+    )
+  }
+
+  const mappedObjectName = ctx.resourceHelper.getModelNameMapping(object.name.value);
+  const indexName = `gsi-${mappedObjectName}.${field.name.value}`;
+  config.indexName = indexName;
+
+  const table = getTable(ctx, relatedType);
+  const gsis = table.globalSecondaryIndexes;
+  if (gsis.some((gsi: any) => gsi.indexName === indexName)) {
+    return; // TODO: is there a more readable way to do this? maybe `find`?
+  }
+
+  // TODO: account for multiple references
+  const fieldNode = fieldNodes[0]
+  const partitionKeyName = fieldNode.name.value;
+  // Grabbing the type of the related field.
+  // TODO: Validate types of related field and primary's pk match
+  // -- ideally further up the chain
+  const partitionKeyType = attributeTypeFromType(fieldNode.type, ctx)
+
+  table.addGlobalSecondaryIndex({
+    indexName,
+    projectionType: 'ALL',
+    partitionKey: {
+      name: partitionKeyName,
+      type: partitionKeyType,
+    },
+    sortKey: undefined,
+    readCapacity: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
+    writeCapacity: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
+  });
+
+  const gsi = gsis.find((g: any) => g.indexName === indexName);
+
+  const newIndex = {
+    indexName,
+    keySchema: gsi.keySchema,
+    projection: { projectionType: 'ALL' },
+    provisionedThroughput: cdk.Fn.conditionIf(ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling, cdk.Fn.ref('AWS::NoValue'), {
+      ReadCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
+      WriteCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
+    }),
+  };
+
+  overrideIndexAtCfnLevel(ctx, relatedType.name.value, table, newIndex);
+}
 
 /**
  * adds GSI to the table if it doesn't already exists for connection
