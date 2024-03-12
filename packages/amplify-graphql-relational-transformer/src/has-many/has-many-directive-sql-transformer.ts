@@ -1,15 +1,15 @@
+import { getPrimaryKeyFields } from '@aws-amplify/graphql-transformer-core';
 import {
   ModelDataSourceStrategySqlDbType,
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { setFieldMappingResolverReference } from '../resolvers';
-import { HasManyDirectiveConfiguration } from '../types';
-import { validateParentReferencesFields, ensureReferencesArray, getReferencesNodes } from '../utils';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
 import { getGenerator } from '../resolver/generator-factory';
-import { getPrimaryKeyFields } from '@aws-amplify/graphql-transformer-core';
+import { setFieldMappingResolverReference } from '../resolvers';
+import { HasManyDirectiveConfiguration } from '../types';
+import { ensureReferencesArray, getReferencesNodes, validateParentReferencesFields } from '../utils';
 
 /**
  * HasManyDirectiveSQLTransformer executes transformations based on `@hasMany(references: [String!])` configurations

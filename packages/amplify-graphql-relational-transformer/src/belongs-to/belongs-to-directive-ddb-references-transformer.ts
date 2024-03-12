@@ -3,16 +3,14 @@ import {
   TransformerPrepareStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
+import { setFieldMappingResolverReference } from '../resolvers';
 import { BelongsToDirectiveConfiguration } from '../types';
 import {
   ensureReferencesArray,
-  getBelongsToReferencesNodes,
-  getRelatedTypeIndex,
-  registerHasOneForeignKeyMappings,
-  validateChildReferencesFields,
+  getBelongsToReferencesNodes, registerHasOneForeignKeyMappings,
+  validateChildReferencesFields
 } from '../utils';
-import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
-import { setFieldMappingResolverReference } from '../resolvers';
 
 /**
  * BelongsToDirectiveDDBReferencesTransformer executes transformations based on `@belongsTo(references: [String!])` configurations
