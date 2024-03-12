@@ -1,7 +1,7 @@
 import { join } from 'path';
 import _ from 'lodash';
 import * as fs from 'fs-extra';
-import { parse, ObjectTypeDefinitionNode, Kind, visit, FieldDefinitionNode, StringValueNode } from 'graphql';
+import { parse, ObjectTypeDefinitionNode, Kind, visit, FieldDefinitionNode, StringValueNode, valueFromASTUntyped, TypeNode } from 'graphql';
 import axios from 'axios';
 import {
   getProjectMeta,
@@ -10,7 +10,7 @@ import {
   addRDSPortInboundRule,
   getAppSyncApi,
 } from 'amplify-category-api-e2e-core';
-import { getBaseType, isArrayOrObject, toPascalCase } from 'graphql-transformer-common';
+import { getBaseType, isArrayOrObject, isListType, toPascalCase } from 'graphql-transformer-common';
 import { GQLQueryHelper } from '../query-utils/gql-helper';
 import {
   getConfiguredAppsyncClientAPIKeyAuth,
@@ -197,19 +197,23 @@ const getFieldStatement = (field: FieldDefinitionNode, isPrimaryKey: boolean, en
   const fieldType = field.type;
   const isNonNull = fieldType.kind === Kind.NON_NULL_TYPE;
   const baseType = getBaseType(fieldType);
-  const columnType = isArrayOrObject(fieldType, []) ? getArrayStringFieldType(engine) : convertToSQLType(baseType);
+  const columnType = isArrayOrObject(fieldType, []) ? getArrayOrObjectFieldType(fieldType, engine) : convertToSQLType(baseType);
+  // Check if @default is defined on field
+  const defaultDir = field.directives.find((dir) => dir.name.value === 'default');
+  const defaultValueNode = defaultDir?.arguments.find((arg) => arg.name.value === 'value');
+  const fieldDefaultValue = defaultDir && defaultValueNode ? valueFromASTUntyped(defaultValueNode.value) : undefined;
   const sql = `${convertToDBSpecificName(fieldName, engine)} ${columnType} ${isNonNull ? 'NOT NULL' : ''} ${
     isPrimaryKey ? 'PRIMARY KEY' : ''
-  }`;
+  } ${fieldDefaultValue ? `DEFAULT ${fieldDefaultValue}` : ''}`;
   return sql;
 };
 
-const getArrayStringFieldType = (engine: ImportedRDSType): string => {
+const getArrayOrObjectFieldType = (fieldType: TypeNode, engine: ImportedRDSType): string => {
   switch (engine) {
     case ImportedRDSType.MYSQL:
       return 'JSON'; // MySQL does not support array types
     case ImportedRDSType.POSTGRESQL:
-      return 'VARCHAR[]';
+      return isListType(fieldType) ? 'VARCHAR[]' : 'json';
     default:
       return 'VARCHAR[]';
   }
@@ -351,7 +355,13 @@ export const getAppSyncEndpoint = (projRoot: string, apiName: string): string =>
   return GraphQLAPIEndpointOutput as string;
 };
 
-export const checkOperationResult = (result: any, expected: any, resultSetName: string, isList: boolean = false): void => {
+export const checkOperationResult = (
+  result: any,
+  expected: any,
+  resultSetName: string,
+  isList: boolean = false,
+  errors?: string[],
+): void => {
   expect(result).toBeDefined();
   expect(result.data).toBeDefined();
   expect(result.data[resultSetName]).toBeDefined();
@@ -365,12 +375,36 @@ export const checkOperationResult = (result: any, expected: any, resultSetName: 
     delete item['__typename'];
     expect(item).toEqual(expected[index]);
   });
+
+  if (errors && errors.length > 0) {
+    expect(result.errors).toBeDefined();
+    expect(result.errors).toHaveLength(errors.length);
+    errors.map((error: string) => {
+      expect(result.errors).toContain(error);
+    });
+  }
 };
 
-export const checkListItemExistence = (result: any, resultSetName: string, id: string, shouldExist: boolean = false) => {
+export const checkListItemExistence = (
+  result: any,
+  resultSetName: string,
+  primaryKeyValue: string,
+  shouldExist = false,
+  primaryKeyName = 'id',
+) => {
   expect(result.data[`${resultSetName}`]).toBeDefined();
   expect(result.data[`${resultSetName}`].items).toBeDefined();
-  expect(result.data[`${resultSetName}`].items?.filter((item: any) => item?.id === id)?.length).toEqual(shouldExist ? 1 : 0);
+  expect(result.data[`${resultSetName}`].items?.filter((item: any) => item[primaryKeyName] === primaryKeyValue)?.length).toEqual(
+    shouldExist ? 1 : 0,
+  );
+};
+
+export const checkListResponseErrors = (result: any, errors: string[]) => {
+  expect(result.errors).toBeDefined();
+  expect(result.errors?.length).toBeGreaterThan(0);
+  errors.map((error: string) => {
+    expect(result.errors.findIndex((receivedError: any) => receivedError.message === error)).toBeGreaterThanOrEqual(0);
+  });
 };
 
 export const appendAmplifyInput = (schema: string, engine: ImportedRDSType): string => {
@@ -379,6 +413,17 @@ export const appendAmplifyInput = (schema: string, engine: ImportedRDSType): str
       input AMPLIFY {
         engine: String = "${engineName}",
         globalAuthRule: AuthRule = {allow: public}
+      }
+    `;
+  };
+  return amplifyInput(engine) + '\n' + schema;
+};
+
+export const appendAmplifyInputWithoutGlobalAuthRule = (schema: string, engine: ImportedRDSType): string => {
+  const amplifyInput = (engineName: ImportedRDSType): string => {
+    return `
+      input AMPLIFY {
+        engine: String = "${engineName}",
       }
     `;
   };
@@ -404,3 +449,20 @@ export const updatePreAuthTrigger = (projRoot: string, usernameClaim: string) =>
         `;
   fs.writeFileSync(triggerHandlerFilePath, func);
 };
+
+export const expectNullFields = (result: any, nullFields: string[]) => {
+  nullFields.map((field) => {
+    expect(result[field]).toBeNull();
+  });
+};
+
+export const expectedFieldErrors = (fields: string[], typeName: string, includePrefix = true) =>
+  fields.map(
+    (field) => `${includePrefix ? '"GraphQL error: ' : ''}Not Authorized to access ${field} on type ${typeName}${includePrefix ? '"' : ''}`,
+  );
+
+export const expectedOperationError = (operation: string, typeName: string) =>
+  `"GraphQL error: Not Authorized to access ${operation} on type ${typeName}"`;
+
+export const omit = <T extends {}, K extends keyof T>(obj: T, ...keys: K[]) =>
+  Object.fromEntries(Object.entries(obj).filter(([key]) => !keys.includes(key as K))) as Omit<T, K>;

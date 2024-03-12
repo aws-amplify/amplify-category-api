@@ -60,6 +60,10 @@ type CandidateJob = {
 const FORCE_REGION_MAP = {
   interactions: 'us-west-2',
   containers: 'us-east-1',
+  'rds-pg-userpool-auth-fields': 'ap-northeast-2',
+  'rds-pg-oidc-auth-fields': 'ap-northeast-2',
+  'rds-mysql-userpool-auth-fields': 'ap-northeast-2',
+  'rds-mysql-oidc-auth-fields': 'ap-northeast-2',
 };
 
 // some tests require additional time, the parent account can handle longer tests (up to 90 minutes)
