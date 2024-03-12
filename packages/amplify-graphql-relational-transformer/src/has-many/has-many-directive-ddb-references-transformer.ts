@@ -3,7 +3,7 @@ import {
   TransformerPrepareStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { setFieldMappingResolverReference, updateTableForConnection } from '../resolvers';
+import { setFieldMappingResolverReference, updateTableForConnection, updateTableForReferencesConnection } from '../resolvers';
 import { HasManyDirectiveConfiguration } from '../types';
 import { registerHasManyForeignKeyMappings, validateParentReferencesFields, ensureReferencesArray, getReferencesNodes, getRelatedTypeIndex } from '../utils';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
@@ -34,18 +34,17 @@ export class HasManyDirectiveDDBReferencesTransformer implements DataSourceBased
   };
 
   transformSchema = (context: TransformerTransformSchemaStepContextProvider, config: HasManyDirectiveConfiguration): void => {
-    config.relatedTypeIndex = getRelatedTypeIndex(config, context as TransformerContextProvider, config.indexName);
     validateParentReferencesFields(config, context as TransformerContextProvider);
   };
 
   generateResolvers = (context: TransformerContextProvider, config: HasManyDirectiveConfiguration): void => {
-    updateTableForConnection(config, context, config.references);
+    updateTableForReferencesConnection(config, context);
     const generator = getGenerator(this.dbType);
     generator.makeHasManyGetItemsConnectionWithKeyResolver(config, context, config.references);
   };
 
   validate = (context: TransformerContextProvider, config: HasManyDirectiveConfiguration): void => {
     ensureReferencesArray(config);
-    getReferencesNodes(config, context);
+    config.fieldNodes = getReferencesNodes(config, context);
   };
 }
