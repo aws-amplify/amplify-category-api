@@ -92,19 +92,23 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
     config: HasManyDirectiveConfiguration,
     ctx: TransformerContextProvider,
     relatedFields: string[],
+    primaryKeyFields: string[],
   ): void => {
     const { connectionFields, field, indexName, limit, object, relatedType } = config;
     const connectionAttributes: string[] = relatedFields.length > 0 ? relatedFields : connectionFields;
     if (connectionAttributes.length === 0) {
       throw new Error('Either connection fields or local fields should be populated.');
     }
+
+    // const primaryKeyFields: string[] = getPrimaryKeyFields(object);
     const table = getTable(ctx, relatedType);
     const dataSourceName = getModelDataSourceNameForTypeName(ctx, relatedType.name.value);
     const dataSource = ctx.api.host.getDataSource(dataSourceName);
     const keySchema = getKeySchema(table, indexName);
+
     const setup: Expression[] = [
       set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${limit})`)),
-      ...connectionAttributes
+      ...primaryKeyFields
         .slice(1)
         .map((ca, idx) =>
           set(
@@ -192,8 +196,8 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
               ref(PARTITION_KEY_VALUE),
               methodCall(
                 ref('util.defaultIfNull'),
-                ref(`ctx.stash.connectionAttributes.get("${connectionAttributes[0]}")`),
-                ref(`ctx.source.${connectionAttributes[0]}`),
+                ref(`ctx.stash.connectionAttributes.get("${primaryKeyFields[0]}")`),
+                ref(`ctx.source.${primaryKeyFields[0]}`),
               ),
             ),
             ifElse(

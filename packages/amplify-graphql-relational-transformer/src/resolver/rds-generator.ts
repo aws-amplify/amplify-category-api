@@ -35,8 +35,15 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
    * @param config The connection directive configuration.
    * @param ctx The transformer context provider.
    */
-  makeHasManyGetItemsConnectionWithKeyResolver = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-    const { field, references, object, relatedType } = config;
+  makeHasManyGetItemsConnectionWithKeyResolver = (
+    config: HasManyDirectiveConfiguration,
+    ctx: TransformerContextProvider,
+    relatedFields: string[],
+    primaryKeyFields: string[],
+  ): void => {
+    const { field, object, relatedType } = config;
+    const references = relatedFields;
+
     const relatedStrategy = getModelDataSourceStrategy(ctx, relatedType.name.value);
     if (!isSqlStrategy(relatedStrategy)) {
       throw new Error('The @hasMany directive is only supported for SQL data sources.');
@@ -46,14 +53,13 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     const mappedTableName = ctx.resourceHelper.getModelNameMapping(relatedType.name.value);
 
     const connectionCondition: Expression[] = [];
-    const primaryKeys = getPrimaryKeyFields(object);
     references.forEach((r, index) => {
       connectionCondition.push(
         qref(
           methodCall(
             ref('lambdaInput.args.filter.put'),
             str(r),
-            obj({ eq: ref(`util.defaultIfNull($ctx.source.${primaryKeys[index]}, "")`) }),
+            obj({ eq: ref(`util.defaultIfNull($ctx.source.${primaryKeyFields[index]}, "")`) }),
           ),
         ),
       );
