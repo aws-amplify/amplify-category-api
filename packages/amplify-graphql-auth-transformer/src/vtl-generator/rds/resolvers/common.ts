@@ -39,9 +39,7 @@ import {
  */
 export const generateDefaultRDSExpression = (iamAccessEnabled: boolean): string => {
   const exp = ref('util.unauthorized()');
-  return printBlock('Default RDS Auth Resolver')(
-    generateIAMAccessCheck(iamAccessEnabled, compoundExpression([exp, toJson(obj({}))])),
-  );
+  return printBlock('Default RDS Auth Resolver')(generateIAMAccessCheck(iamAccessEnabled, compoundExpression([exp, toJson(obj({}))])));
 };
 
 export const generateAuthRulesFromRoles = (

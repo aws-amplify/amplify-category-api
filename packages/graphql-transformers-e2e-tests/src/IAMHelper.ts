@@ -148,7 +148,7 @@ export class IAMHelper {
       .promise();
   }
 
-  async attachLambdaExecutionPolicy(policyArn: string, roleName: string) {
+  async attachPolicy(policyArn: string, roleName: string) {
     return await this.client
       .attachRolePolicy({
         PolicyArn: policyArn,
@@ -165,7 +165,7 @@ export class IAMHelper {
     return await this.client.deleteRole({ RoleName: roleName }).promise();
   }
 
-  async detachLambdaExecutionPolicy(policyArn: string, roleName: string) {
+  async detachPolicy(policyArn: string, roleName: string) {
     return await this.client
       .detachRolePolicy({
         PolicyArn: policyArn,

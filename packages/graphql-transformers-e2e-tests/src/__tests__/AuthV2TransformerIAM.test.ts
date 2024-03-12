@@ -207,7 +207,7 @@ describe('@model with @auth - iam access', () => {
         getApiId(finishedStackWithoutIamAccess.Outputs),
       ])
     ).Policy.Arn;
-    await iamHelper.attachLambdaExecutionPolicy(BASIC_ROLE_NAME_APPSYNC_POLICY_ARN, BASIC_ROLE_NAME);
+    await iamHelper.attachPolicy(BASIC_ROLE_NAME_APPSYNC_POLICY_ARN, BASIC_ROLE_NAME);
     // Wait for any propagation to avoid random failures when we assume the role below.
     await new Promise<void>((res) => setTimeout(() => res(), 5000));
 
@@ -254,18 +254,6 @@ describe('@model with @auth - iam access', () => {
         mutation: gql`
           mutation {
             createPostPrivateIAM(input: { title: "Hello, World!" }) {
-              id
-              title
-            }
-          }
-        `,
-        fetchPolicy: 'no-cache',
-      });
-
-      await apiKeyGraphqlClient.mutate({
-        mutation: gql`
-          mutation {
-            createPostWithPrivateField(input: { title: "Hello, World!" }) {
               id
               title
             }
@@ -385,41 +373,41 @@ describe('@model with @auth - iam access', () => {
   });
 
   afterAll(async () => {
-    // await Promise.all([
-    //   cleanupStackAfterTest(BUCKET_NAME_WITHOUT_IAM_ACCESS, STACK_NAME_WITHOUT_IAM_ACCESS, cf),
-    //   cleanupStackAfterTest(
-    //     BUCKET_NAME_WITH_IAM_ACCESS,
-    //     STACK_NAME_WITH_IAM_ACCESS,
-    //     cf,
-    //     { cognitoClient, userPoolId: USER_POOL_ID },
-    //     { identityClient: cognitoIdentityClient, identityPoolId: IDENTITY_POOL_ID },
-    //   ),
-    // ]);
-    // try {
-    //   await iamHelper.deleteRole(AUTH_ROLE_NAME);
-    // } catch (e) {
-    //   console.warn(`Error during auth role cleanup ${e}`);
-    // }
-    // try {
-    //   await iamHelper.deleteRole(UNAUTH_ROLE_NAME);
-    // } catch (e) {
-    //   console.warn(`Error during unauth role cleanup ${e}`);
-    // }
-    // try {
-    //   await iamHelper.detachLambdaExecutionPolicy(BASIC_ROLE_NAME_APPSYNC_POLICY_ARN, BASIC_ROLE_NAME);
-    // } catch (e) {
-    //   console.warn(`Error during detaching basic role policy ${e}`);
-    // }
-    // try {
-    //   await iamHelper.deletePolicy(BASIC_ROLE_NAME_APPSYNC_POLICY_ARN);
-    // } catch (e) {
-    //   console.warn(`Error during deleting basic role policy ${e}`);
-    // }
-    // try {
-    //   await iamHelper.deleteRole(BASIC_ROLE_NAME);
-    // } catch (e) {
-    //   console.warn(`Error during basic role cleanup ${e}`);
-    // }
+    await Promise.all([
+      cleanupStackAfterTest(BUCKET_NAME_WITHOUT_IAM_ACCESS, STACK_NAME_WITHOUT_IAM_ACCESS, cf),
+      cleanupStackAfterTest(
+        BUCKET_NAME_WITH_IAM_ACCESS,
+        STACK_NAME_WITH_IAM_ACCESS,
+        cf,
+        { cognitoClient, userPoolId: USER_POOL_ID },
+        { identityClient: cognitoIdentityClient, identityPoolId: IDENTITY_POOL_ID },
+      ),
+    ]);
+    try {
+      await iamHelper.deleteRole(AUTH_ROLE_NAME);
+    } catch (e) {
+      console.warn(`Error during auth role cleanup ${e}`);
+    }
+    try {
+      await iamHelper.deleteRole(UNAUTH_ROLE_NAME);
+    } catch (e) {
+      console.warn(`Error during unauth role cleanup ${e}`);
+    }
+    try {
+      await iamHelper.detachPolicy(BASIC_ROLE_NAME_APPSYNC_POLICY_ARN, BASIC_ROLE_NAME);
+    } catch (e) {
+      console.warn(`Error during detaching basic role policy ${e}`);
+    }
+    try {
+      await iamHelper.deletePolicy(BASIC_ROLE_NAME_APPSYNC_POLICY_ARN);
+    } catch (e) {
+      console.warn(`Error during deleting basic role policy ${e}`);
+    }
+    try {
+      await iamHelper.deleteRole(BASIC_ROLE_NAME);
+    } catch (e) {
+      console.warn(`Error during basic role cleanup ${e}`);
+    }
   });
 
   it('can access PostPublicIAM', async () => {

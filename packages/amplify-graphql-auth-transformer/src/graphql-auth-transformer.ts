@@ -379,7 +379,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       // Get the directives we need to add to the GraphQL nodes
       const providers = this.getAuthProviders(acm.getRoles());
       const addDefaultIfNeeded = providers.length === 0 ? this.configuredAuthProviders.shouldAddDefaultServiceDirective : false;
-      const directives = this.getServiceDirectives(providers, addDefaultIfNeeded);
+      const directives = this.getServiceDirectives(providers, context.synthParameters.enableIamAccess, addDefaultIfNeeded);
       if (modelHasSearchable) {
         providers.forEach((p) => searchableAggregateServiceDirectives.add(p));
       }
@@ -393,14 +393,18 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       // protect the non model field
       const [typeName, fieldName] = typeFieldName.split(':');
       const providers = this.getAuthProviders(acm.getRoles());
-      const directives = this.getServiceDirectives(providers, false);
+      const directives = this.getServiceDirectives(providers, context.synthParameters.enableIamAccess, false);
       if (directives.length > 0) {
         addDirectivesToField(context, typeName, fieldName, directives);
       }
     });
     // add the service directives to the searchable aggregate types
     if (searchableAggregateServiceDirectives.size > 0) {
-      const serviceDirectives = this.getServiceDirectives(Array.from(searchableAggregateServiceDirectives), false);
+      const serviceDirectives = this.getServiceDirectives(
+        Array.from(searchableAggregateServiceDirectives),
+        context.synthParameters.enableIamAccess,
+        false,
+      );
       SEARCHABLE_AGGREGATE_TYPES.forEach((aggType) => {
         extendTypeWithDirectives(context, aggType, serviceDirectives);
       });
@@ -597,7 +601,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       if (operationName) {
         const includeDefault = this.doesTypeHaveRulesForOperation(acm, operation);
         const providers = this.getAuthProviders(acm.getRolesPerOperation(operation, operation === 'delete'));
-        const operationDirectives = this.getServiceDirectives(providers, includeDefault);
+        const operationDirectives = this.getServiceDirectives(providers, ctx.synthParameters.enableIamAccess, includeDefault);
         if (operationDirectives.length > 0) {
           addDirectivesToOperation(ctx, typeName, operationName, operationDirectives);
         }
@@ -1231,7 +1235,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     nonModelFieldTypes.forEach((nonModelFieldType) => {
       const nonModelName = nonModelFieldType.name.value;
       const hasSeenType = this.seenNonModelTypes.has(nonModelFieldType.name.value);
-      let directives = this.getServiceDirectives(providers, hasSeenType);
+      let directives = this.getServiceDirectives(providers, ctx.synthParameters.enableIamAccess, hasSeenType);
       if (!hasSeenType) {
         this.seenNonModelTypes.set(nonModelName, new Set<string>([...directives.map((dir) => dir.name.value)]));
         // since we haven't seen this type before we add it to the iam policy resource sets
@@ -1253,11 +1257,18 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     });
   }
 
-  private getServiceDirectives(providers: Readonly<Array<AuthProvider>>, addDefaultIfNeeded = true): Array<DirectiveNode> {
-    if (providers.length === 0) {
-      return [];
-    }
+  private getServiceDirectives(
+    providers: Readonly<Array<AuthProvider>>,
+    enableIamAccess: boolean,
+    addDefaultIfNeeded = true,
+  ): Array<DirectiveNode> {
     const directives: Array<DirectiveNode> = [];
+    if (enableIamAccess) {
+      directives.push(makeDirective('aws_iam', []));
+    }
+    if (providers.length === 0) {
+      return directives;
+    }
     /*
       We only add a service directive if it's not the default or
       it's the default but there are other rules under different providers.
@@ -1265,8 +1276,9 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     */
     const addDirectiveIfNeeded = (provider: AuthProvider, directiveName: string): void => {
       if (
-        (this.configuredAuthProviders.default !== provider && providers.some((p) => p === provider)) ||
-        (this.configuredAuthProviders.default === provider && providers.some((p) => p !== provider && addDefaultIfNeeded === true))
+        ((this.configuredAuthProviders.default !== provider && providers.some((p) => p === provider)) ||
+          (this.configuredAuthProviders.default === provider && providers.some((p) => p !== provider && addDefaultIfNeeded === true))) &&
+        !directives.some((d) => d.name.value === directiveName)
       ) {
         directives.push(makeDirective(directiveName, []));
       }
