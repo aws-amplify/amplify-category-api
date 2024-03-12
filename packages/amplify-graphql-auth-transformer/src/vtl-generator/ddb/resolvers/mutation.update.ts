@@ -48,7 +48,7 @@ import {
   generateOwnerClaimListExpression,
   generateOwnerMultiClaimExpression,
   generateInvalidClaimsCondition,
-  genericIamAccessExpression,
+  generateIAMAccessCheck,
 } from './helpers';
 
 /**
@@ -118,15 +118,14 @@ const iamExpression = (
         );
       }
     });
-  }
-
-  if (genericIamAccessEnabled) {
-    expression.push(genericIamAccessExpression());
-  } else if (roles.length === 0) {
+  } else {
     expression.push(ref('util.unauthorized()'));
   }
 
-  return iff(equals(ref('util.authType()'), str(IAM_AUTH_TYPE)), compoundExpression(expression));
+  return iff(
+    equals(ref('util.authType()'), str(IAM_AUTH_TYPE)),
+    generateIAMAccessCheck(genericIamAccessEnabled, compoundExpression(expression)),
+  );
 };
 
 const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Expression[] => {

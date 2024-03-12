@@ -40,7 +40,7 @@ import {
   generateOwnerClaimListExpression,
   generateOwnerMultiClaimExpression,
   generateInvalidClaimsCondition,
-  genericIamAccessExpression,
+  generateIAMAccessCheck,
 } from './helpers';
 
 /**
@@ -72,15 +72,14 @@ const iamExpression = (
     roles.forEach((role) => {
       expression.push(iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)), hasIdentityPoolId));
     });
-  }
-
-  if (genericIamAccessEnabled) {
-    expression.push(genericIamAccessExpression());
-  } else if (roles.length === 0) {
+  } else {
     expression.push(ref('util.unauthorized()'));
   }
 
-  return iff(equals(ref('util.authType()'), str(IAM_AUTH_TYPE)), compoundExpression(expression));
+  return iff(
+    equals(ref('util.authType()'), str(IAM_AUTH_TYPE)),
+    generateIAMAccessCheck(genericIamAccessEnabled, compoundExpression(expression)),
+  );
 };
 
 /**
