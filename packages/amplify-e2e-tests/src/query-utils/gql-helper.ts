@@ -24,6 +24,8 @@ type SubscriptionCompleteSelectionSet = {
   onDelete: string;
 };
 
+type ErrorPolicy = 'none' | 'ignore' | 'all';
+
 export class GQLQueryHelper {
   constructor(private client: AWSAppSyncClient<any>, private name: string, private selectionSet: SelectionSet) {}
 
@@ -96,8 +98,24 @@ export class GQLQueryHelper {
     return deleteResult;
   };
 
-  get = async (input: any, selectionSet?: string): Promise<any> => {
-    const finalSelectionSet = selectionSet ?? this.selectionSet.query.get;
+  get = async (
+    input: any,
+    selectionSet?: string,
+    isCompleteQuery = true,
+    errorPolicy: ErrorPolicy = 'none',
+    primaryKeyName = 'id',
+  ): Promise<any> => {
+    let completeSelectionSet = selectionSet;
+    if (selectionSet && !isCompleteQuery) {
+      completeSelectionSet = `
+        query GetModel($${primaryKeyName}: ID!) {
+          get${this.name}(${primaryKeyName}: $${primaryKeyName}) {
+            ${selectionSet}
+          }
+        }
+      `;
+    }
+    const finalSelectionSet = completeSelectionSet ?? this.selectionSet.query.get;
     const getQuery = /* GraphQL */ `
       ${finalSelectionSet}
     `;
@@ -110,13 +128,32 @@ export class GQLQueryHelper {
       `,
       fetchPolicy: 'no-cache',
       variables: getInput,
+      errorPolicy,
     });
 
     return getResult;
   };
 
-  list = async (input?: any, selectionSet?: string): Promise<any> => {
-    const finalSelectionSet = selectionSet ?? this.selectionSet.query.list;
+  list = async (
+    input?: any,
+    selectionSet?: string,
+    operation?: string,
+    isCompleteQuery = true,
+    errorPolicy: ErrorPolicy = 'none',
+  ): Promise<any> => {
+    let completeSelectionSet = selectionSet;
+    if (selectionSet && !isCompleteQuery) {
+      completeSelectionSet = `
+        query ListModels {
+          ${operation || `list${this.name}s`} {
+            items {
+              ${selectionSet}
+            }
+          }
+        }
+      `;
+    }
+    const finalSelectionSet = completeSelectionSet ?? this.selectionSet.query.list;
     const listQuery = /* GraphQL */ `
       ${finalSelectionSet}
     `;
@@ -129,13 +166,30 @@ export class GQLQueryHelper {
       `,
       fetchPolicy: 'no-cache',
       variables: listInput,
+      errorPolicy,
     });
 
     return listResult;
   };
 
-  subscribe = async (operation: string, mutationsToSubscribe: (() => Promise<any>)[], input?: any, selectionSet?: string): Promise<any> => {
-    const finalSelectionSet = selectionSet ?? this.selectionSet.subscription[operation];
+  subscribe = async (
+    operation: string,
+    mutationsToSubscribe: (() => Promise<any>)[],
+    input?: any,
+    selectionSet?: string,
+    isCompleteSelectionSet = true,
+  ): Promise<any> => {
+    let completeSelectionSet = selectionSet;
+    if (selectionSet && !isCompleteSelectionSet) {
+      completeSelectionSet = `
+        subscription ModelSubscription {
+          ${operation}${this.name} {
+            ${selectionSet}
+          }
+        }
+      `;
+    }
+    const finalSelectionSet = completeSelectionSet ?? this.selectionSet.subscription[operation];
     const subscriptionOperation = /* GraphQL */ `
       ${finalSelectionSet}
     `;
@@ -149,6 +203,7 @@ export class GQLQueryHelper {
         ${subscriptionOperation}
       `,
       variables: subscriptionInput,
+      fetchPolicy: 'no-cache',
     });
     const subscription = observer.subscribe({
       next: (result: any) => {
