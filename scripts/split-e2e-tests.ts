@@ -15,6 +15,12 @@ const suportedRegions: TestRegion[] = JSON.parse(fs.readFileSync(supportedRegion
 const testRegions = suportedRegions.map((region) => region.name);
 const nonOptInRegions = suportedRegions.filter((region) => !region.optIn).map((region) => region.name);
 
+// https://github.com/aws-amplify/amplify-cli/blob/d55917fd83140817a4447b3def1736f75142df44/packages/amplify-provider-awscloudformation/src/aws-regions.js#L4-L17
+const v1TransformerSupportedRegionsPath = join(REPO_ROOT, 'scripts', 'v1-transformer-supported-regions.json');
+const v1TransformerSupportedRegions = JSON.parse(fs.readFileSync(v1TransformerSupportedRegionsPath, 'utf-8')).map(
+  (region: TestRegion) => region.name,
+);
+
 type ForceTests = 'interactions' | 'containers';
 
 type TestTiming = {
@@ -64,7 +70,6 @@ const FORCE_REGION_MAP = {
   'rds-pg-oidc-auth-fields': 'ap-northeast-2',
   'rds-mysql-userpool-auth-fields': 'ap-northeast-2',
   'rds-mysql-oidc-auth-fields': 'ap-northeast-2',
-  'schema-searchable': 'us-east-1',
 };
 
 // some tests require additional time, the parent account can handle longer tests (up to 90 minutes)
@@ -155,6 +160,8 @@ const RUN_IN_NON_OPT_IN_REGIONS: (string | RegExp)[] = [
   // Searchable tests
   /src\/__tests__\/.*searchable.*\.test\.ts/,
 ];
+
+const RUN_IN_V1_TRANSFORMER_REGIONS = ['src/__tests__/schema-searchable.test.ts'];
 
 const DEBUG_FLAG = '--debug';
 
@@ -288,6 +295,12 @@ const setJobRegion = (test: string, job: CandidateJob, jobIdx: number) => {
 
   if (FORCE_REGION) {
     job.region = FORCE_REGION_MAP[FORCE_REGION as ForceTests];
+    return;
+  }
+
+  // There are no opt-in regions in V1 transformer supported regions
+  if (RUN_IN_V1_TRANSFORMER_REGIONS.some((runInV1Transformer) => test.startsWith(runInV1Transformer))) {
+    job.region = v1TransformerSupportedRegions[jobIdx % v1TransformerSupportedRegions.length];
     return;
   }
 
