@@ -7,10 +7,14 @@ const jsonServerRootDirectory = path.join(__dirname, '..', 'resources', 'jsonSer
 export const deployJsonServer = () => {
   const jsonServerLambdaDirectory = path.join(jsonServerRootDirectory, 'src-server');
   const outputValuesFile = path.join(jsonServerRootDirectory, 'cdk.out', 'outputs.json');
+  const env = {
+    npm_config_registry: 'https://registry.npmjs.org/',
+  };
 
   const yarnCdkResult = execa.sync('yarn', [], {
     cwd: jsonServerRootDirectory,
     stdio: 'inherit',
+    env,
   });
 
   if (yarnCdkResult.exitCode !== 0) {
@@ -20,6 +24,7 @@ export const deployJsonServer = () => {
   const yarnServerResult = execa.sync('yarn', [], {
     cwd: jsonServerLambdaDirectory,
     stdio: 'inherit',
+    env,
   });
 
   if (yarnServerResult.exitCode !== 0) {
@@ -29,6 +34,7 @@ export const deployJsonServer = () => {
   const cdkBootstrapResult = execa.sync('npx', ['cdk', 'bootstrap', '--require-approval', 'never'], {
     cwd: jsonServerRootDirectory,
     stdio: 'inherit',
+    env,
   });
 
   if (cdkBootstrapResult.exitCode !== 0) {
@@ -38,6 +44,7 @@ export const deployJsonServer = () => {
   const cdkDeployResult = execa.sync('npx', ['cdk', 'deploy', '--outputsFile', outputValuesFile, '--require-approval', 'never'], {
     cwd: jsonServerRootDirectory,
     stdio: 'inherit',
+    env,
   });
 
   if (cdkDeployResult.exitCode !== 0) {
