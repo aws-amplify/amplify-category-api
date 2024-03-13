@@ -31,6 +31,7 @@ import {
   TypeDefinitionNode,
   TypeExtensionNode,
   UnionTypeDefinitionNode,
+  DirectiveDefinitionNode,
 } from 'graphql';
 import _ from 'lodash';
 import { DocumentNode } from 'graphql/language';
@@ -99,6 +100,9 @@ export interface TransformOption extends DataSourceStrategiesProvider, RDSLayerM
 export type StackMapping = { [resourceId: string]: string };
 
 export class GraphQLTransform {
+  public directives: DirectiveDefinitionNode[];
+  public typeDefinitions: TypeDefinitionNode[];
+
   private transformers: TransformerPluginProvider[];
 
   private stackMappingOverrides: StackMapping;
@@ -124,6 +128,9 @@ export class GraphQLTransform {
     }
     const sortedTransformers = sortTransformerPlugins(options.transformers);
     this.transformers = sortedTransformers;
+
+    this.directives = this.transformers.map((transformer) => transformer.directive);
+    this.typeDefinitions = this.transformers.map((transformer) => transformer.typeDefinitions).flat();
 
     this.authConfig = options.authConfig || {
       defaultAuthentication: {

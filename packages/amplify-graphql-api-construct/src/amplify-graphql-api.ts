@@ -29,6 +29,7 @@ import { IEventBus } from 'aws-cdk-lib/aws-events';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { IServerlessCluster } from 'aws-cdk-lib/aws-rds';
 import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
+import { print } from 'graphql';
 import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
 import type {
   AmplifyGraphqlApiResources,
@@ -118,6 +119,11 @@ export class AmplifyGraphqlApi extends Construct {
    * Generated Api Id. May be a CDK Token.
    */
   public readonly apiId: string;
+
+  /**
+   * Directive definitions used in the GraphQL transform.
+   */
+  public readonly directives: string;
 
   /**
    * DataStore conflict resolution setting
@@ -221,7 +227,11 @@ export class AmplifyGraphqlApi extends Construct {
       ...getDataSourceStrategiesProvider(definition),
     };
 
-    executeTransform(executeTransformConfig);
+    const transform = executeTransform(executeTransformConfig);
+    const directives = transform.directives.map((directive) => print(directive));
+    const typeDefinitions = transform.typeDefinitions.map((typeDefinition) => print(typeDefinition));
+
+    this.directives = directives.join('\n') + '\n' + typeDefinitions.join('\n');
 
     this.codegenAssets = new CodegenAssets(this, 'AmplifyCodegenAssets', { modelSchema: definition.schema });
 

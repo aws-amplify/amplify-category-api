@@ -140,9 +140,9 @@ export const defaultPrintTransformerLog = (log: TransformerLog): void => {
 /**
  * Construct a GraphQLTransform, and execute using the provided schema and optional datasource configuration.
  * @param config the configuration for the transform.
- * @returns the transformed api deployment resources.
+ * @returns the GraphQLTransform object after transformation
  */
-export const executeTransform = (config: ExecuteTransformConfig): void => {
+export const executeTransform = (config: ExecuteTransformConfig): GraphQLTransform => {
   const {
     assetProvider,
     dataSourceStrategies,
@@ -170,6 +170,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
       sqlDirectiveDataSourceStrategies,
       synthParameters,
     });
+    return transform;
   } finally {
     transform.getLogs().forEach(printLog);
   }
