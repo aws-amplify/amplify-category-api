@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.6.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.5.0...@aws-amplify/graphql-model-transformer@2.6.0) (2024-03-13)
+
+### Features
+
+- expose table representative & access refactor for amplify managed table in api construct ([8777cd1](https://github.com/aws-amplify/amplify-category-api/commit/8777cd1d9609ef4d85c5ea3c95b249cc13ade6e4))
+
 # [2.5.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.4.5...@aws-amplify/graphql-model-transformer@2.5.0) (2024-02-28)
 
 ### Features
