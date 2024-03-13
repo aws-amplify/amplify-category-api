@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.2.7...amplify-graphql-api-construct-tests@1.3.0) (2024-03-13)
+
+### Features
+
+- expose table representative & access refactor for amplify managed table in api construct ([8777cd1](https://github.com/aws-amplify/amplify-category-api/commit/8777cd1d9609ef4d85c5ea3c95b249cc13ade6e4))
+- replace conflictResolution with dataStoreConfiguration ([#2298](https://github.com/aws-amplify/amplify-category-api/issues/2298)) ([b5fb92b](https://github.com/aws-amplify/amplify-category-api/commit/b5fb92b5ae5b9eab3acfa44f7977d9159116c6f9))
+
 ## [1.2.7](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.2.6...amplify-graphql-api-construct-tests@1.2.7) (2024-02-28)
 
 **Note:** Version bump only for package amplify-graphql-api-construct-tests
