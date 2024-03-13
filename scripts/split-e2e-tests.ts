@@ -64,6 +64,7 @@ const FORCE_REGION_MAP = {
   'rds-pg-oidc-auth-fields': 'ap-northeast-2',
   'rds-mysql-userpool-auth-fields': 'ap-northeast-2',
   'rds-mysql-oidc-auth-fields': 'ap-northeast-2',
+  'schema-searchable': 'us-east-1',
 };
 
 // some tests require additional time, the parent account can handle longer tests (up to 90 minutes)
