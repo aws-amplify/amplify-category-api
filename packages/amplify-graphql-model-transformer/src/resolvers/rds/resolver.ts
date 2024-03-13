@@ -158,12 +158,11 @@ export const createRdsLambda = (
  * because it would have no effect.
  */
 export const createLayerVersionCustomResource = (scope: Construct, resourceNames: SQLLambdaResourceNames): AwsCustomResource => {
-  const { SQLLayerVersionManifestBucket, SQLLayerVersionManifestBucketRegion, SQLLayerVersionManifestKeyPrefix } =
-    ResourceConstants.RESOURCES;
+  const { SQLLayerManifestBucket, SQLLayerManifestBucketRegion, SQLLayerVersionManifestKeyPrefix } = ResourceConstants.RESOURCES;
 
   const key = Fn.join('', [SQLLayerVersionManifestKeyPrefix, Fn.ref('AWS::Region')]);
 
-  const manifestArn = `arn:aws:s3:::${SQLLayerVersionManifestBucket}/${key}`;
+  const manifestArn = `arn:aws:s3:::${SQLLayerManifestBucket}/${key}`;
 
   const resourceName = resourceNames.sqlLayerVersionResolverCustomResource;
   const customResource = new AwsCustomResource(scope, resourceName, {
@@ -171,9 +170,43 @@ export const createLayerVersionCustomResource = (scope: Construct, resourceNames
     onUpdate: {
       service: 'S3',
       action: 'getObject',
-      region: SQLLayerVersionManifestBucketRegion,
+      region: SQLLayerManifestBucketRegion,
       parameters: {
-        Bucket: SQLLayerVersionManifestBucket,
+        Bucket: SQLLayerManifestBucket,
+        Key: key,
+      },
+      // Make the physical ID change each time we do a deployment, so we always check for the latest version. This means we will never have
+      // a strictly no-op deployment, but the SQL Lambda configuration won't change unless the actual layer value changes
+      physicalResourceId: PhysicalResourceId.of(`${resourceName}-${Date.now().toString()}`),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({
+      resources: [manifestArn],
+    }),
+  });
+
+  return customResource;
+};
+
+/**
+ * Generates an AwsCustomResource to resolve the SNS Topic ARNs that the lambda used for updating the SQL Lambda Layer version installed into the customer
+ * account.
+ */
+export const createSNSTopicARNCustomResource = (scope: Construct, resourceNames: SQLLambdaResourceNames): AwsCustomResource => {
+  const { SQLLayerManifestBucket, SQLLayerManifestBucketRegion, SQLSNSTopicARNManifestKeyPrefix } = ResourceConstants.RESOURCES;
+
+  const key = Fn.join('', [SQLSNSTopicARNManifestKeyPrefix, Fn.ref('AWS::Region')]);
+
+  const manifestArn = `arn:aws:s3:::${SQLLayerManifestBucket}/${key}`;
+
+  const resourceName = resourceNames.sqlSNSTopicARNResolverCustomResource;
+  const customResource = new AwsCustomResource(scope, resourceName, {
+    resourceType: 'Custom::SQLSNSTopicARNCustomResource',
+    onUpdate: {
+      service: 'S3',
+      action: 'getObject',
+      region: SQLLayerManifestBucketRegion,
+      parameters: {
+        Bucket: SQLLayerManifestBucket,
         Key: key,
       },
       // Make the physical ID change each time we do a deployment, so we always check for the latest version. This means we will never have

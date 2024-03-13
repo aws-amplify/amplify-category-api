@@ -18,7 +18,6 @@ import { existsSync, readFileSync } from 'fs-extra';
 import generator from 'generate-password';
 import { ObjectTypeDefinitionNode, parse } from 'graphql';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { ResourceConstants } from 'graphql-transformer-common';
 import gql from 'graphql-tag';
 import {
   ImportedRDSType,
@@ -37,7 +36,6 @@ export const testRDSModel = (engine: ImportedRDSType, queries: string[]): void =
   const CDK_VPC_ENDPOINT_TYPE = 'AWS::EC2::VPCEndpoint';
   const CDK_SUBSCRIPTION_TYPE = 'AWS::SNS::Subscription';
   const APPSYNC_DATA_SOURCE_TYPE = 'AWS::AppSync::DataSource';
-  const { AmplifySQLLayerNotificationTopicAccount, AmplifySQLLayerNotificationTopicName } = ResourceConstants.RESOURCES;
 
   describe(`RDS Model Directive - ${engine}`, () => {
     const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
@@ -138,13 +136,6 @@ export const testRDSModel = (engine: ImportedRDSType, queries: string[]): void =
       );
 
       // Validate subscription
-      const expectedTopicArn = {
-        'Fn::Join': [
-          ':',
-          ['arn:aws:sns', { Ref: 'AWS::Region' }, `${AmplifySQLLayerNotificationTopicAccount}:${AmplifySQLLayerNotificationTopicName}`],
-        ],
-      };
-
       // Counterintuitively, the subscription actually gets created with the resource prefix of the FUNCTION that gets triggered,
       // rather than the scope created specifically for the subscription
       const rdsPatchingSubscription = getResource(resources, resourceNames.sqlPatchingLambdaFunction, CDK_SUBSCRIPTION_TYPE);
@@ -154,7 +145,6 @@ export const testRDSModel = (engine: ImportedRDSType, queries: string[]): void =
       expect(rdsPatchingSubscription.Properties.Protocol).toEqual('lambda');
       expect(rdsPatchingSubscription.Properties.Endpoint).toBeDefined();
       expect(rdsPatchingSubscription.Properties.TopicArn).toBeDefined();
-      expect(rdsPatchingSubscription.Properties.TopicArn).toMatchObject(expectedTopicArn);
       expect(rdsPatchingSubscription.Properties.Region).toBeDefined();
       expect(rdsPatchingSubscription.Properties.FilterPolicy).toBeDefined();
       expect(rdsPatchingSubscription.Properties.FilterPolicy.Region).toBeDefined();

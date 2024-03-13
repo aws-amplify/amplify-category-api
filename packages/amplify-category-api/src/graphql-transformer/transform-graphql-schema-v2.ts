@@ -401,7 +401,7 @@ export const getUserOverridenSlots = (userDefinedSlots: Record<string, UserDefin
     .filter((slotName) => slotName !== undefined);
 
 const getRDSLayerMapping = async (context: $TSContext, useBetaSqlLayer = false): Promise<RDSLayerMapping> => {
-  const bucket = `${ResourceConstants.RESOURCES.SQLLayerVersionManifestBucket}${useBetaSqlLayer ? '-beta' : ''}`;
+  const bucket = `${ResourceConstants.RESOURCES.SQLLayerManifestBucket}${useBetaSqlLayer ? '-beta' : ''}`;
   const region = context.amplify.getProjectMeta().providers.awscloudformation.Region;
   const url = `https://${bucket}.s3.amazonaws.com/${ResourceConstants.RESOURCES.SQLLayerVersionManifestKeyPrefix}${region}`;
   const response = await fetch(url);
