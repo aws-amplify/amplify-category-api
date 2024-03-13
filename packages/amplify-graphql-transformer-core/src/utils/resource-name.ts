@@ -110,6 +110,9 @@ export interface SQLLambdaResourceNames {
   /** The CDK logical ID of the topic imported from the Amplify Notification Topic ARN */
   sqlPatchingTopic: string;
 
+  /** SQL patching lambda's SNS Topic ARN is resolved by a custom resource with this name. */
+  sqlSNSTopicARNResolverCustomResource: string;
+
   /** The name of the stack holding the SQL Lambda and associated resources */
   sqlStack: string;
 
@@ -151,6 +154,7 @@ export const getResourceNamesForStrategyName = (strategyName: string): SQLLambda
     sqlPatchingLambdaFunction: `SQLLambdaLayerPatchingFunction${strategyName}`,
     sqlPatchingSubscription: `SQLLambdaLayerPatchingSubscription${strategyName}`,
     sqlPatchingTopic: `SQLLambdaLayerPatchingTopic${strategyName}`,
+    sqlSNSTopicARNResolverCustomResource: `SQLLambdaLayerPatchingTopicARNResolver${strategyName}`,
     sqlStack: `SQLApiStack${strategyName}`,
     sqlVpcEndpointPrefix: `SQLVpcEndpoint${strategyName}`,
   };

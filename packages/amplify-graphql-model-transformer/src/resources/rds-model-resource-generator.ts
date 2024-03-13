@@ -27,6 +27,7 @@ import {
   createRdsPatchingLambdaRole,
   setRDSLayerMappings,
   CredentialStorageMethod,
+  createSNSTopicARNCustomResource,
 } from '../resolvers/rds';
 import { ModelResourceGenerator } from './model-resource-generator';
 
@@ -101,8 +102,6 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
     const engine = getImportedRDSTypeFromStrategyDbType(dbType);
     const dbConnectionConfig = strategy.dbConnectionConfig;
     const secretEntry = strategy.dbConnectionConfig;
-    const { AmplifySQLLayerNotificationTopicAccount, AmplifySQLLayerNotificationTopicName } = ResourceConstants.RESOURCES;
-
     const lambdaRoleScope = context.stackManager.getScopeFor(resourceNames.sqlLambdaExecutionRole, resourceNames.sqlStack);
     const lambdaScope = context.stackManager.getScopeFor(resourceNames.sqlLambdaFunction, resourceNames.sqlStack);
 
@@ -162,14 +161,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
     });
 
     // Add SNS subscription for patching notifications
-    const topicArn = Fn.join(':', [
-      'arn',
-      'aws',
-      'sns',
-      Fn.ref('AWS::Region'),
-      AmplifySQLLayerNotificationTopicAccount,
-      AmplifySQLLayerNotificationTopicName,
-    ]);
+    const topicArn = resolveSNSTopicARN(lambdaScope, resourceNames);
 
     const patchingSubscriptionScope = context.stackManager.getScopeFor(resourceNames.sqlPatchingSubscription, resourceNames.sqlStack);
     const snsTopic = Topic.fromTopicArn(patchingSubscriptionScope, resourceNames.sqlPatchingTopic, topicArn);
@@ -238,4 +230,14 @@ const resolveLayerVersion = (scope: Construct, context: TransformerContextProvid
     layerVersionArn = layerVersionCustomResource.getResponseField('Body');
   }
   return layerVersionArn;
+};
+
+/**
+ * Resolves the SNS topic ARN that the patching lambda in the customer's account subscribes to listen for lambda layer updates from the service.
+ * The returned value is a reference to the ARN that will be resolved at deploy time as
+ * the 'Body' response field from the AwsCustomResource's invocation of s3::GetObject.
+ */
+const resolveSNSTopicARN = (scope: Construct, resourceNames: SQLLambdaResourceNames): string => {
+  const layerVersionCustomResource = createSNSTopicARNCustomResource(scope, resourceNames);
+  return layerVersionCustomResource.getResponseField('Body');
 };
