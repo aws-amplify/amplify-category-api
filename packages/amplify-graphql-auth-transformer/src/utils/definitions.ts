@@ -1,4 +1,5 @@
 import { GetArgumentsOptions } from '@aws-amplify/graphql-transformer-core';
+import { AuthDirective } from '@aws-amplify/graphql-directives';
 
 /**
  * AuthStrategy
@@ -104,41 +105,4 @@ export interface ConfiguredAuthProviders {
   shouldAddDefaultServiceDirective: boolean;
 }
 
-export const authDirectiveDefinition = `
-  directive @auth(rules: [AuthRule!]!) on OBJECT | FIELD_DEFINITION
-  input AuthRule {
-    allow: AuthStrategy!
-    provider: AuthProvider
-    identityClaim: String
-    groupClaim: String
-    ownerField: String
-    groupsField: String
-    groups: [String]
-    operations: [ModelOperation]
-  }
-  enum AuthStrategy {
-    owner
-    groups
-    private
-    public
-    custom
-  }
-  enum AuthProvider {
-    apiKey
-    iam
-    oidc
-    userPools
-    function
-  }
-  enum ModelOperation {
-    create
-    update
-    delete
-    read
-    list
-    get
-    sync
-    listen
-    search
-  }
-`;
+export const authDirectiveDefinition = AuthDirective.definition;

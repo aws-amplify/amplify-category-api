@@ -17,6 +17,7 @@ import {
   TransformerPreProcessContextProvider,
   ModelDataSourceStrategyDbType,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { BelongsToDirective } from '@aws-amplify/graphql-directives';
 import {
   DirectiveNode,
   DocumentNode,
@@ -47,11 +48,6 @@ import {
 import { getGenerator } from './resolver/generator-factory';
 import { setFieldMappingResolverReference } from './resolvers';
 
-const directiveName = 'belongsTo';
-const directiveDefinition = `
-  directive @${directiveName}(fields: [String!], references: [String!]) on FIELD_DEFINITION
-`;
-
 /**
  * Transformer for @belongsTo directive
  */
@@ -59,7 +55,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
   private directiveList: BelongsToDirectiveConfiguration[] = [];
 
   constructor() {
-    super('amplify-belongs-to-transformer', directiveDefinition);
+    super('amplify-belongs-to-transformer', BelongsToDirective.definition);
   }
 
   field = (
@@ -71,7 +67,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
     const directiveWrapped = new DirectiveWrapper(directive);
     const args = directiveWrapped.getArguments(
       {
-        directiveName,
+        directiveName: BelongsToDirective.name,
         object: parent as ObjectTypeDefinitionNode,
         field: definition,
         directive,
@@ -98,7 +94,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
 
       objectDefs?.forEach((def) => {
         const filteredFields = def?.fields?.filter((field) =>
-          field?.directives?.some((dir) => dir.name.value === directiveName && objectTypeMap.get(getBaseType(field.type))),
+          field?.directives?.some((dir) => dir.name.value === BelongsToDirective.name && objectTypeMap.get(getBaseType(field.type))),
         );
         filteredFields?.forEach((field) => {
           const relatedType = objectTypeMap.get(getBaseType(field.type));
@@ -213,7 +209,7 @@ const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerConte
   validateModelDirective(config);
 
   if (isListType(field.type)) {
-    throw new InvalidDirectiveError(`@${directiveName} cannot be used with lists.`);
+    throw new InvalidDirectiveError(`@${BelongsToDirective.name} cannot be used with lists.`);
   }
 
   config.connectionFields = [];
@@ -236,7 +232,7 @@ const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerConte
 
   if (!isBiRelation && dbType === DDB_DB_TYPE) {
     throw new InvalidDirectiveError(
-      `${config.relatedType.name.value} must have a relationship with ${object.name.value} in order to use @${directiveName}.`,
+      `${config.relatedType.name.value} must have a relationship with ${object.name.value} in order to use @${BelongsToDirective.name}.`,
     );
   }
 };

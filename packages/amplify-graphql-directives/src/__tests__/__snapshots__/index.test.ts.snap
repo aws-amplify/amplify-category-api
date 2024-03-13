@@ -1,0 +1,332 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Directive Definitions AuthDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @auth(rules: [AuthRule!]!) on OBJECT | FIELD_DEFINITION
+  input AuthRule {
+    allow: AuthStrategy!
+    provider: AuthProvider
+    identityClaim: String
+    groupClaim: String
+    ownerField: String
+    groupsField: String
+    groups: [String]
+    operations: [ModelOperation]
+  }
+  enum AuthStrategy {
+    owner
+    groups
+    private
+    public
+    custom
+  }
+  enum AuthProvider {
+    apiKey
+    iam
+    oidc
+    userPools
+    function
+  }
+  enum ModelOperation {
+    create
+    update
+    delete
+    read
+    list
+    get
+    sync
+    listen
+    search
+  }
+",
+  "name": "auth",
+}
+`;
+
+exports[`Directive Definitions AwsApiKeyDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @aws_api_key on FIELD_DEFINITION | OBJECT
+",
+  "name": "aws_api_key",
+}
+`;
+
+exports[`Directive Definitions AwsAuthDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @aws_auth(cognito_groups: [String!]!) on FIELD_DEFINITION
+",
+  "name": "aws_auth",
+}
+`;
+
+exports[`Directive Definitions AwsCognitoUserPoolsDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @aws_cognito_user_pools(cognito_groups: [String!]) on FIELD_DEFINITION | OBJECT
+",
+  "name": "aws_cognito_user_pools",
+}
+`;
+
+exports[`Directive Definitions AwsIamDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @aws_iam on FIELD_DEFINITION | OBJECT
+",
+  "name": "aws_iam",
+}
+`;
+
+exports[`Directive Definitions AwsLambdaDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @aws_lambda on FIELD_DEFINITION | OBJECT
+",
+  "name": "aws_lambda",
+}
+`;
+
+exports[`Directive Definitions AwsOidcDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @aws_oidc on FIELD_DEFINITION | OBJECT
+",
+  "name": "aws_oidc",
+}
+`;
+
+exports[`Directive Definitions AwsSubscribeDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @aws_subscribe(mutations: [String!]!) on FIELD_DEFINITION
+",
+  "name": "aws_subscribe",
+}
+`;
+
+exports[`Directive Definitions BelongsToDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @belongsTo(fields: [String!], references: [String!]) on FIELD_DEFINITION
+",
+  "name": "belongsTo",
+}
+`;
+
+exports[`Directive Definitions DefaultDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @defaultTo(value: String!) on FIELD_DEFINITION
+",
+  "name": "defaultTo",
+}
+`;
+
+exports[`Directive Definitions DeprecatedDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @deprecated(reason: String) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION | ENUM | ENUM_VALUE
+",
+  "name": "deprecated",
+}
+`;
+
+exports[`Directive Definitions FunctionDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @function(name: String!, region: String, accountId: String) repeatable on FIELD_DEFINITION
+",
+  "name": "function",
+}
+`;
+
+exports[`Directive Definitions HasManyDirective 1`] = `
+Object {
+  "defaults": Object {
+    "limit": 100,
+  },
+  "definition": "
+  directive @hasMany(indexName: String, fields: [String!], references: [String!], limit: Int = 100) on FIELD_DEFINITION
+",
+  "name": "hasMany",
+}
+`;
+
+exports[`Directive Definitions HasOneDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @hasOne(fields: [String!], references: [String!]) on FIELD_DEFINITION
+",
+  "name": "hasOne",
+}
+`;
+
+exports[`Directive Definitions HttpDirective 1`] = `
+Object {
+  "defaults": Object {
+    "headers": Array [],
+    "method": "GET",
+  },
+  "definition": "
+  directive @http(method: HttpMethod = GET, url: String!, headers: [HttpHeader] = []) on FIELD_DEFINITION
+  enum HttpMethod {
+    GET
+    POST
+    PUT
+    DELETE
+    PATCH
+  }
+  input HttpHeader {
+    key: String
+    value: String
+  }
+",
+  "name": "http",
+}
+`;
+
+exports[`Directive Definitions IndexDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @index(name: String, sortKeyFields: [String], queryField: String) repeatable on FIELD_DEFINITION
+",
+  "name": "index",
+}
+`;
+
+exports[`Directive Definitions ManyToManyDirective 1`] = `
+Object {
+  "defaults": Object {
+    "limit": 100,
+  },
+  "definition": "
+  directive @manyToMany(relationName: String!, limit: Int = 100) on FIELD_DEFINITION
+",
+  "name": "manyToMany",
+}
+`;
+
+exports[`Directive Definitions MapsToDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @mapsTo(name: String!) on OBJECT
+",
+  "name": "mapsTo",
+}
+`;
+
+exports[`Directive Definitions ModelDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @model(
+    queries: ModelQueryMap
+    mutations: ModelMutationMap
+    subscriptions: ModelSubscriptionMap
+    timestamps: TimestampConfiguration
+  ) on OBJECT
+  input ModelMutationMap {
+    create: String
+    update: String
+    delete: String
+  }
+  input ModelQueryMap {
+    get: String
+    list: String
+  }
+  input ModelSubscriptionMap {
+    onCreate: [String]
+    onUpdate: [String]
+    onDelete: [String]
+    level: ModelSubscriptionLevel
+  }
+  enum ModelSubscriptionLevel {
+    off
+    public
+    on
+  }
+  input TimestampConfiguration {
+    createdAt: String
+    updatedAt: String
+  }
+",
+  "name": "model",
+}
+`;
+
+exports[`Directive Definitions PredictionsDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @predictions(actions: [PredictionsActions!]!) on FIELD_DEFINITION
+  enum PredictionsActions {
+    identifyText
+    identifyLabels
+    convertTextToSpeech
+    translateText
+  }
+",
+  "name": "predictions",
+}
+`;
+
+exports[`Directive Definitions PrimaryKeyDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @primaryKey(sortKeyFields: [String]) on FIELD_DEFINITION
+",
+  "name": "primaryKey",
+}
+`;
+
+exports[`Directive Definitions RefersToDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @refersTo(name: String!) on OBJECT | FIELD_DEFINITION
+",
+  "name": "refersTo",
+}
+`;
+
+exports[`Directive Definitions SearchableDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @searchable(queries: SearchableQueryMap) on OBJECT
+  input SearchableQueryMap {
+    search: String
+  }
+",
+  "name": "searchable",
+}
+`;
+
+exports[`Directive Definitions SqlDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @sql(statement: String, reference: String) on FIELD_DEFINITION
+",
+  "name": "sql",
+}
+`;
