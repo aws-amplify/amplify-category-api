@@ -81,7 +81,7 @@ export async function generateContainersArtifacts(
   );
 
   const repositories = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'describeEcrRepositories');
-  
+
   const existingEcrRepositories: Set<string> = new Set(
     repositories
       .map(({ repositoryName }) => repositoryName)

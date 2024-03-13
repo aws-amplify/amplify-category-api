@@ -27,7 +27,7 @@ THE SOFTWARE.
 
 -----
 
-The following software may be included in this product: @ampproject/remapping, @aws-cdk/aws-service-spec, @aws-cdk/service-spec-types, @aws-crypto/ie11-detection, @aws-crypto/sha1-browser, @aws-crypto/sha256-browser, @aws-crypto/sha256-universal, @aws-crypto/supports-web-crypto, @cdklabs/tskb, @hutson/parse-repository-url, @xtuc/long, ejs, jsii-docgen, long, spdx-correct, teeny-request, validate-npm-package-license, xcode. A copy of the source code may be downloaded from git+https://github.com/ampproject/remapping.git (@ampproject/remapping), https://github.com/cdklabs/awscdk-service-spec (@aws-cdk/aws-service-spec), https://github.com/cdklabs/awscdk-service-spec (@aws-cdk/service-spec-types), git@github.com:aws/aws-sdk-js-crypto-helpers.git (@aws-crypto/ie11-detection), git@github.com:aws/aws-sdk-js-crypto-helpers.git (@aws-crypto/sha1-browser), git@github.com:aws/aws-sdk-js-crypto-helpers.git (@aws-crypto/sha256-browser), git@github.com:aws/aws-sdk-js-crypto-helpers.git (@aws-crypto/sha256-universal), git@github.com:aws/aws-sdk-js-crypto-helpers.git (@aws-crypto/supports-web-crypto), https://gitlab.com/hyper-expanse/open-source/parse-repository-url.git (@hutson/parse-repository-url), https://github.com/dcodeIO/long.js.git (@xtuc/long), git://github.com/mde/ejs.git (ejs), https://github.com/cdklabs/jsii-docgen (jsii-docgen), https://github.com/dcodeIO/long.js.git (long), https://github.com/jslicense/spdx-correct.js.git (spdx-correct), https://github.com/googleapis/teeny-request.git (teeny-request), https://github.com/kemitchell/validate-npm-package-license.js.git (validate-npm-package-license), https://github.com/apache/cordova-node-xcode.git (xcode). This software contains the following license and notice below:
+The following software may be included in this product: @ampproject/remapping, @aws-crypto/ie11-detection, @aws-crypto/sha1-browser, @aws-crypto/sha256-browser, @aws-crypto/sha256-universal, @aws-crypto/supports-web-crypto, @hutson/parse-repository-url, @xtuc/long, ejs, jsii-docgen, long, spdx-correct, teeny-request, validate-npm-package-license, xcode. A copy of the source code may be downloaded from git+https://github.com/ampproject/remapping.git (@ampproject/remapping), git@github.com:aws/aws-sdk-js-crypto-helpers.git (@aws-crypto/ie11-detection), git@github.com:aws/aws-sdk-js-crypto-helpers.git (@aws-crypto/sha1-browser), git@github.com:aws/aws-sdk-js-crypto-helpers.git (@aws-crypto/sha256-browser), git@github.com:aws/aws-sdk-js-crypto-helpers.git (@aws-crypto/sha256-universal), git@github.com:aws/aws-sdk-js-crypto-helpers.git (@aws-crypto/supports-web-crypto), https://gitlab.com/hyper-expanse/open-source/parse-repository-url.git (@hutson/parse-repository-url), https://github.com/dcodeIO/long.js.git (@xtuc/long), git://github.com/mde/ejs.git (ejs), https://github.com/cdklabs/jsii-docgen (jsii-docgen), https://github.com/dcodeIO/long.js.git (long), https://github.com/jslicense/spdx-correct.js.git (spdx-correct), https://github.com/googleapis/teeny-request.git (teeny-request), https://github.com/kemitchell/validate-npm-package-license.js.git (validate-npm-package-license), https://github.com/apache/cordova-node-xcode.git (xcode). This software contains the following license and notice below:
 
 Apache License
                            Version 2.0, January 2004
@@ -922,7 +922,7 @@ Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
 -----
 
-The following software may be included in this product: @aws-cdk/aws-apigatewayv2-alpha. A copy of the source code may be downloaded from https://github.com/aws/aws-cdk.git. This software contains the following license and notice below:
+The following software may be included in this product: @aws-cdk/aws-apigatewayv2-alpha, @aws-cdk/cloudformation-diff. A copy of the source code may be downloaded from https://github.com/aws/aws-cdk.git (@aws-cdk/aws-apigatewayv2-alpha), https://github.com/aws/aws-cdk.git (@aws-cdk/cloudformation-diff). This software contains the following license and notice below:
 
 Apache License
                            Version 2.0, January 2004
@@ -1346,7 +1346,7 @@ Copyright 2018-2024 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
 -----
 
-The following software may be included in this product: @aws-cdk/cloudformation-diff. A copy of the source code may be downloaded from https://github.com/aws/aws-cdk.git. This software contains the following license and notice below:
+The following software may be included in this product: @aws-cdk/cfnspec. A copy of the source code may be downloaded from https://github.com/aws/aws-cdk.git. This software contains the following license and notice below:
 
 Apache License
                            Version 2.0, January 2004
@@ -1536,7 +1536,7 @@ Apache License
       same "printed page" as the copyright notice for easier
       identification within third-party archives.
 
-   Copyright 2018-2024 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+   Copyright 2018-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -1554,7 +1554,7 @@ Apache License
 NOTICE
 
 AWS Cloud Development Kit (AWS CDK)
-Copyright 2018-2024 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+Copyright 2018-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
 -----
 
