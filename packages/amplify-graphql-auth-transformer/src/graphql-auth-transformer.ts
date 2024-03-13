@@ -63,6 +63,7 @@ import {
   getSortKeyConnectionAttributeName,
   getObjectPrimaryKey,
 } from '@aws-amplify/graphql-relational-transformer';
+import { AuthDirective } from '@aws-amplify/graphql-directives';
 import { AccessControlMatrix } from './accesscontrol';
 import {
   AUTH_PROVIDER_DIRECTIVE_MAP,
@@ -75,7 +76,6 @@ import {
   MODEL_OPERATIONS,
   SEARCHABLE_AGGREGATE_TYPES,
   AuthRule,
-  authDirectiveDefinition,
   ConfiguredAuthProviders,
   getConfiguredAuthProviders,
   collectFieldNames,
@@ -181,7 +181,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
    * constructor for creating AuthTransformer
    */
   constructor() {
-    super('amplify-auth-transformer', authDirectiveDefinition);
+    super('amplify-auth-transformer', AuthDirective.definition);
     this.modelDirectiveConfig = new Map();
     this.seenNonModelTypes = new Map();
     this.authModelConfig = new Map();

@@ -5,30 +5,25 @@ import {
   TransformerPreProcessContextProvider,
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { MapsToDirective } from '@aws-amplify/graphql-directives';
 import { ObjectTypeDefinitionNode, DirectiveNode, ObjectTypeExtensionNode } from 'graphql';
 import { createMappingLambda } from './field-mapping-lambda';
 import { attachFilterAndConditionInputMappingSlot, attachInputMappingSlot, attachResponseMappingSlot } from './field-mapping-resolvers';
 import { shouldBeAppliedToModel, getMappedName, updateTypeMapping, setTypeMappingInSchema } from './graphql-name-mapping';
 
-const directiveName = 'mapsTo';
-
-const directiveDefinition = `
-  directive @${directiveName}(name: String!) on OBJECT
-`;
-
 export class MapsToTransformer extends TransformerPluginBase {
   constructor() {
-    super('amplify-maps-to-transformer', directiveDefinition, TransformerPluginType.GENERIC);
+    super('amplify-maps-to-transformer', MapsToDirective.definition, TransformerPluginType.GENERIC);
   }
 
   /**
    * During the AST tree walking, the mapsTo transformer registers any renamed models with the ctx.resourceHelper.
    */
   object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider): void => {
-    shouldBeAppliedToModel(definition, directiveName);
+    shouldBeAppliedToModel(definition, MapsToDirective.name);
     shouldBeAppliedToDDBModels(definition, ctx as TransformerContextProvider);
     const modelName = definition.name.value;
-    const mappedName = getMappedName(definition, directive, directiveName, ctx.inputDocument);
+    const mappedName = getMappedName(definition, directive, MapsToDirective.name, ctx.inputDocument);
     updateTypeMapping(modelName, mappedName, ctx.resourceHelper.setModelNameMapping);
   };
 
@@ -37,7 +32,7 @@ export class MapsToTransformer extends TransformerPluginBase {
    * @param context The pre-processing context for the transformer, used to store type mappings
    */
   preMutateSchema = (context: TransformerPreProcessContextProvider): void => {
-    setTypeMappingInSchema(context, directiveName);
+    setTypeMappingInSchema(context, MapsToDirective.name);
   };
 
   /**
@@ -111,6 +106,6 @@ export const shouldBeAppliedToDDBModels = (
 ): void => {
   const modelName = definition.name.value;
   if (!isDynamoDbModel(ctx, modelName)) {
-    throw new Error(`${directiveName} is only supported on DynamoDB models. ${modelName} is not a DDB model.`);
+    throw new Error(`${MapsToDirective.name} is only supported on DynamoDB models. ${modelName} is not a DDB model.`);
   }
 };

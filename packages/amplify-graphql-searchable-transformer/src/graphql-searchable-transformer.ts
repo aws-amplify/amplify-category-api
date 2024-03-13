@@ -13,6 +13,7 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { SearchableDirective } from '@aws-amplify/graphql-directives';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import { ArnFormat, CfnCondition, Fn } from 'aws-cdk-lib';
@@ -265,15 +266,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
   searchableObjectNames: string[];
 
   constructor() {
-    super(
-      'amplify-searchable-transformer',
-      /* GraphQL */ `
-        directive @searchable(queries: SearchableQueryMap) on OBJECT
-        input SearchableQueryMap {
-          search: String
-        }
-      `,
-    );
+    super('amplify-searchable-transformer', SearchableDirective.definition);
     this.searchableObjectTypeDefinitions = [];
     this.searchableObjectNames = [];
   }
