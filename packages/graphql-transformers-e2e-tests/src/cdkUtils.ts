@@ -1,55 +1,46 @@
 import path from 'path';
 import fs from 'fs-extra';
-import * as execa from 'execa';
+import { nspawn as spawn } from 'amplify-category-api-e2e-core';
 
 const jsonServerRootDirectory = path.join(__dirname, '..', 'resources', 'jsonServer');
 
-export const deployJsonServer = () => {
+const npm_config_registry = 'https://registry.npmjs.org/';
+const local_registry = 'http://localhost:4873/';
+
+const env = {
+  npm_config_registry,
+};
+
+export const deployJsonServer = async (): Promise<{
+  apiUrl: string;
+}> => {
+  await setYarnRegistry(jsonServerRootDirectory, npm_config_registry);
   const jsonServerLambdaDirectory = path.join(jsonServerRootDirectory, 'src-server');
   const outputValuesFile = path.join(jsonServerRootDirectory, 'cdk.out', 'outputs.json');
-  const env = {
-    npm_config_registry: 'https://registry.npmjs.org/',
-  };
 
-  const yarnCdkResult = execa.sync('yarn', [], {
+  await spawn('yarn', [], {
     cwd: jsonServerRootDirectory,
-    stdio: 'inherit',
+    stripColors: true,
     env,
-  });
+  }).runAsync();
 
-  if (yarnCdkResult.exitCode !== 0) {
-    throw new Error(`'yarn' failed with exit code: ${yarnCdkResult.exitCode}`);
-  }
-
-  const yarnServerResult = execa.sync('yarn', [], {
+  await spawn('yarn', [], {
     cwd: jsonServerLambdaDirectory,
-    stdio: 'inherit',
+    stripColors: true,
     env,
-  });
+  }).runAsync();
 
-  if (yarnServerResult.exitCode !== 0) {
-    throw new Error(`'yarn' failed with exit code: ${yarnServerResult.exitCode}`);
-  }
-
-  const cdkBootstrapResult = execa.sync('npx', ['cdk', 'bootstrap', '--require-approval', 'never'], {
+  await spawn('npx', ['cdk', 'bootstrap', '--require-approval', 'never'], {
     cwd: jsonServerRootDirectory,
-    stdio: 'inherit',
+    stripColors: true,
     env,
-  });
+  }).runAsync();
 
-  if (cdkBootstrapResult.exitCode !== 0) {
-    throw new Error(`CDK bootstrap failed with exit code: ${cdkBootstrapResult.exitCode}`);
-  }
-
-  const cdkDeployResult = execa.sync('npx', ['cdk', 'deploy', '--outputsFile', outputValuesFile, '--require-approval', 'never'], {
+  await spawn('npx', ['cdk', 'deploy', '--outputsFile', outputValuesFile, '--require-approval', 'never'], {
     cwd: jsonServerRootDirectory,
-    stdio: 'inherit',
+    stripColors: true,
     env,
-  });
-
-  if (cdkDeployResult.exitCode !== 0) {
-    throw new Error(`CDK deploy failed with exit code: ${cdkDeployResult.exitCode}`);
-  }
+  }).runAsync();
 
   if (!fs.existsSync(outputValuesFile)) {
     throw new Error(`CDK deploy failed, output values file: ${outputValuesFile} does not exist`);
@@ -60,19 +51,26 @@ export const deployJsonServer = () => {
 
   const stackOutputs = outputValues['JsonMockStack'];
   const apiUrl = stackOutputs[Object.keys(stackOutputs)[0]];
+  await setYarnRegistry(jsonServerRootDirectory, local_registry);
 
   return {
     apiUrl,
   };
 };
 
-export const destroyJsonServer = () => {
-  const processResult = execa.sync('npx', ['cdk', 'destroy', '--force'], {
+export const destroyJsonServer = async (): Promise<void> => {
+  await setYarnRegistry(jsonServerRootDirectory, npm_config_registry);
+  await spawn('npx', ['cdk', 'destroy', '--force'], {
     cwd: jsonServerRootDirectory,
-    stdio: 'inherit',
-  });
+    stripColors: true,
+    env,
+  }).runAsync();
+  await setYarnRegistry(jsonServerRootDirectory, local_registry);
+};
 
-  if (processResult.exitCode !== 0) {
-    throw new Error(`CDK destroy failed with exit code: ${processResult.exitCode}`);
-  }
+const setYarnRegistry = async (cwd: string, registry: string): Promise<void> => {
+  await spawn('yarn', ['config', 'set', 'registry', registry], {
+    cwd,
+    stripColors: true,
+  });
 };
