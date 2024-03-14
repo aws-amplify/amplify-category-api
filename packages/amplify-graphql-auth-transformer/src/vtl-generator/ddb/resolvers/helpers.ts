@@ -188,7 +188,7 @@ export const generateIAMAccessCheck = (enableIamAccess: boolean, expression: Exp
     methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityPoolId')),
     methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityId')),
   ]);
-  return ifElse(isGenericIamAccess, set(ref(IS_AUTHORIZED_FLAG), bool(true)), expression);
+  return ifElse(isGenericIamAccess, compoundExpression([setHasAuthExpression, set(ref(IS_AUTHORIZED_FLAG), bool(true))]), expression);
 };
 
 /**

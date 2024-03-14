@@ -9,17 +9,18 @@ import {
   setupRDSInstanceAndData,
   storeDbConnectionConfig,
 } from 'amplify-category-api-e2e-core';
+import { AdminCreateUserCommand, CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import { LambdaClient, GetProvisionedConcurrencyConfigCommand } from '@aws-sdk/client-lambda';
-import { CognitoIdentityProviderClient, AdminCreateUserCommand } from '@aws-sdk/client-cognito-identity-provider';
+import { AssumeRoleCommand, Credentials, STSClient } from '@aws-sdk/client-sts';
 import generator from 'generate-password';
 import { getResourceNamesForStrategyName } from '@aws-amplify/graphql-transformer-core';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { graphql } from '../graphql-request';
 import Amplify, { Auth } from 'aws-amplify';
-import { ICredentials } from '@aws-amplify/core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { AssumeRoleCommand, Credentials, STSClient } from '@aws-sdk/client-sts';
 import { gql } from 'graphql-transformer-core';
+
+import { ICredentials } from '@aws-amplify/core';
 
 jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
 
@@ -60,7 +61,6 @@ describe('CDK GraphQL Transformer', () => {
   // DO NOT CHANGE THIS VALUE: The test uses it to find resources by name. It is hardcoded in the sql-models backend app
   const strategyName = 'MySqlDBStrategy';
   const resourceNames = getResourceNamesForStrategyName(strategyName);
-
   let outputs: any;
   let outputsWithIam: any;
 
@@ -74,36 +74,52 @@ describe('CDK GraphQL Transformer', () => {
   let graphqlClientWithIAMAccessBasicRole: AWSAppSyncClient<any>;
 
   beforeAll(async () => {
-    projRoot = await createNewProjectDir(projFolderName);
-    projRootWithIam = await createNewProjectDir(projFolderName);
-    dbDetails = await setupDatabase({
-      identifier,
-      engine: 'mysql',
-      dbname,
-      username,
-      password,
-      region,
-    });
-    const templatePath = path.resolve(path.join(__dirname, 'backends', 'sql-models'));
-    const name = await initCDKProject(projRoot, templatePath, { additionalDependencies: ['@aws-amplify/auth-construct-alpha@^0.5.6'] });
-    const nameWithIam = await initCDKProject(projRootWithIam, templatePath, {
-      additionalDependencies: ['@aws-amplify/auth-construct-alpha@^0.5.6'],
-    });
-    writeDbDetails(dbDetails, projRoot);
-    writeDbDetails(dbDetails, projRootWithIam);
-    [outputs, outputsWithIam] = await Promise.all([
-      cdkDeploy(projRoot, '--all'),
-      cdkDeploy(projRootWithIam, '--all', {
-        env: {
-          ENABLE_IAM_AUTHORIZATION_MODE: 'true',
-        },
-      }),
-    ]);
-    outputs = outputs[name];
-    outputsWithIam = outputsWithIam[nameWithIam];
-
-    console.log(JSON.stringify(outputs, null, 2));
-    console.log(JSON.stringify(outputsWithIam, null, 2));
+    // projRoot = await createNewProjectDir(projFolderName);
+    // projRootWithIam = await createNewProjectDir(projFolderName);
+    // dbDetails = await setupDatabase({
+    //   identifier,
+    //   engine: 'mysql',
+    //   dbname,
+    //   username,
+    //   password,
+    //   region,
+    // });
+    // const templatePath = path.resolve(path.join(__dirname, 'backends', 'sql-models'));
+    // const name = await initCDKProject(projRoot, templatePath, { additionalDependencies: ['@aws-amplify/auth-construct-alpha@^0.5.6'] });
+    // const nameWithIam = await initCDKProject(projRootWithIam, templatePath, {
+    //   additionalDependencies: ['@aws-amplify/auth-construct-alpha@^0.5.6'],
+    // });
+    // writeDbDetails(dbDetails, projRoot);
+    // writeDbDetails(dbDetails, projRootWithIam);
+    // [outputs, outputsWithIam] = await Promise.all([
+    //   cdkDeploy(projRoot, '--all'),
+    //   cdkDeploy(projRootWithIam, '--all', {
+    //     env: {
+    //       ENABLE_IAM_AUTHORIZATION_MODE: 'true',
+    //     },
+    //   }),
+    // ]);
+    // outputs = outputs[name];
+    // outputsWithIam = outputsWithIam[nameWithIam];
+    outputs = {
+      awsAppsyncApiEndpoint: 'https://2wucfjuj3bfdvingogkumuhm4q.appsync-api.us-west-2.amazonaws.com/graphql',
+      awsAppsyncApiKey: 'da2-gumlqsigrjgqlngyjjotudtjje',
+      SQLFunctionName: 'sqlmodels-cb8ebc008-2e13e-SQLFunctionMySqlDBStrate-ib5qyheXUf9Z',
+      userPoolId: 'us-west-2_xEn9prd48',
+      webClientId: '7695j4ntc41i6achtd3s91rjfb',
+      identityPoolId: 'us-west-2:eb703d71-c3a6-4954-b10d-7066c1a7eff9',
+      authRegion: 'us-west-2',
+      BasicRoleArn: 'arn:aws:iam::595032847868:role/sqlmodels-cb8ebc008-2e13ed23-BasicRole0C9C42EF-ZiidazdKoIcy',
+    };
+    outputsWithIam = {
+      awsAppsyncApiEndpoint: 'https://e64rivmzezdohdj2gjg6paiozi.appsync-api.us-west-2.amazonaws.com/graphql',
+      awsAppsyncApiKey: 'da2-733eyvevdrhyflc2sewfscjyca',
+      userPoolId: 'us-west-2_8ET42t87v',
+      webClientId: '461og1qs4ru5fmrbkko8jkgv7c',
+      identityPoolId: 'us-west-2:cd782ca8-3ed5-4929-831b-b3ce432e6072',
+      authRegion: 'us-west-2',
+      BasicRoleArn: 'arn:aws:iam::595032847868:role/sqlmodels-cb8ebc008-c4913162-BasicRole0C9C42EF-eKU3F41RZLgv',
+    };
 
     const cognitoRolesCredentials = await getCognitoIamCredentials(outputs);
     const cognitoRolesWithIamCredentials = await getCognitoIamCredentials(outputsWithIam);
@@ -227,7 +243,45 @@ describe('CDK GraphQL Transformer', () => {
     // await cleanupDatabase({ identifier: identifier, region, dbDetails });
   });
 
-  it('provisions lambda with desired configuration', async () => {
+  it('creates a GraphQL API from SQL-based models', async () => {
+    const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs;
+
+    const description = 'todo description';
+
+    const result = await graphql(
+      apiEndpoint,
+      apiKey,
+      /* GraphQL */ `
+        mutation CREATE_TODO {
+          createTodo(input: { description: "${description}" }) {
+            id
+            description
+          }
+        }
+      `,
+    );
+
+    const todo = result.body.data.createTodo;
+    expect(todo).toBeDefined();
+    expect(todo.id).toBeDefined();
+    expect(todo.description).toEqual(description);
+
+    const listResult = await graphql(
+      apiEndpoint,
+      apiKey,
+      /* GraphQL */ `
+        query LIST_TODOS {
+          listTodos {
+            items {
+              id
+              description
+            }
+          }
+        }
+      `,
+    );
+
+    expect(listResult.body.data.listTodos.items.length).toBeGreaterThanOrEqual(1);
     const client = new LambdaClient({ region });
     const functionName = outputs.SQLFunctionName;
     const command = new GetProvisionedConcurrencyConfigCommand({
@@ -239,7 +293,10 @@ describe('CDK GraphQL Transformer', () => {
   });
 
   it('can access Todo', async () => {
-    for (const graphqlClient of [graphqlClientApiKey, graphqlClientWithIAMAccessApiKey, graphqlClientWithIAMAccessBasicRole]) {
+    for (const graphqlClient of [
+      graphqlClientApiKey,
+      graphqlClientWithIAMAccessApiKey,
+      graphqlClientWithIAMAccessBasicRole]) {
       await testHasCRUDLAccess(graphqlClient, 'Todo', 'Todos');
     }
   });
@@ -551,16 +608,16 @@ const getCognitoIamCredentials = async (
 
   const cognitoClient = new CognitoIdentityProviderClient({ region: authRegion });
 
-  await cognitoClient.send(
-    new AdminCreateUserCommand({
-      UserPoolId: userPoolId,
-      UserAttributes: [{ Name: 'email', Value: username }],
-      Username: username,
-      TemporaryPassword: tmpPassword,
-      DesiredDeliveryMediums: [],
-      MessageAction: 'SUPPRESS',
-    }),
-  );
+  // await cognitoClient.send(
+  //   new AdminCreateUserCommand({
+  //     UserPoolId: userPoolId,
+  //     UserAttributes: [{ Name: 'email', Value: username }],
+  //     Username: username,
+  //     TemporaryPassword: tmpPassword,
+  //     DesiredDeliveryMediums: [],
+  //     MessageAction: 'SUPPRESS',
+  //   }),
+  // );
 
   Amplify.configure({
     Auth: {
@@ -571,13 +628,13 @@ const getCognitoIamCredentials = async (
     },
   });
 
-  const signInResult = await Auth.signIn(username, tmpPassword);
-
-  if (signInResult.challengeName === 'NEW_PASSWORD_REQUIRED') {
-    const { requiredAttributes } = signInResult.challengeParam;
-
-    await Auth.completeNewPassword(signInResult, realPassword, requiredAttributes);
-  }
+  // const signInResult = await Auth.signIn(username, tmpPassword);
+  //
+  // if (signInResult.challengeName === 'NEW_PASSWORD_REQUIRED') {
+  //   const { requiredAttributes } = signInResult.challengeParam;
+  //
+  //   await Auth.completeNewPassword(signInResult, realPassword, requiredAttributes);
+  // }
 
   await Auth.signIn(username, realPassword);
 
@@ -587,9 +644,6 @@ const getCognitoIamCredentials = async (
   return { authRoleCredentials: userCredentials, unauthRoleCredentials: unauthCredentials };
 };
 
-/**
- * Gets credentials of basic IAM role (i.e. non-cognito IAM principal).
- */
 const getBasicRoleCredentials = async (outputs: any): Promise<Credentials> => {
   const { BasicRoleArn } = outputs;
   const sts = new STSClient({});

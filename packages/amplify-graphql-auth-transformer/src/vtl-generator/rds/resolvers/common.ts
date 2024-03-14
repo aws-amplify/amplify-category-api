@@ -33,6 +33,7 @@ import {
   IS_AUTHORIZED_FLAG,
   RoleDefinition,
 } from '../../../utils';
+import { setHasAuthExpression } from '../../ddb/resolvers/helpers';
 
 /**
  * Generates default RDS expression
@@ -290,5 +291,5 @@ export const generateIAMAccessCheck = (enableIamAccess: boolean, expression: Exp
     methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityPoolId')),
     methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityId')),
   ]);
-  return ifElse(isNonCognitoIAMPrincipal, emptyPayload, expression);
+  return ifElse(isNonCognitoIAMPrincipal, compoundExpression([setHasAuthExpression, emptyPayload]), expression);
 };
