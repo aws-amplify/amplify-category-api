@@ -34,7 +34,7 @@ import {
 /**
  * Default directives used by the GraphQL transform.
  */
-export const DefaultDirectives: Directive[] = [
+export const DefaultDirectives: readonly Directive[] = [
   AuthDirective,
   AwsApiKeyDirective,
   AwsAuthDirective,
@@ -61,4 +61,4 @@ export const DefaultDirectives: Directive[] = [
   SqlDirective,
 ];
 
-export const V1Directives: Directive[] = [ConnectionDirective, KeyDirective, VersionedDirective];
+export const V1Directives: readonly Directive[] = [ConnectionDirective, KeyDirective, VersionedDirective];

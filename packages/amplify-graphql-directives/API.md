@@ -38,7 +38,7 @@ export const ConnectionDirective: Directive;
 export const DefaultDirective: Directive;
 
 // @public (undocumented)
-export const DefaultDirectives: Directive[];
+export const DefaultDirectives: readonly Directive[];
 
 // @public (undocumented)
 export const DeprecatedDirective: Directive;
@@ -98,7 +98,7 @@ export const SearchableDirective: Directive;
 export const SqlDirective: Directive;
 
 // @public (undocumented)
-export const V1Directives: Directive[];
+export const V1Directives: readonly Directive[];
 
 // @public (undocumented)
 export const VersionedDirective: Directive;
