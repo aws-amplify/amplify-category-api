@@ -250,6 +250,9 @@ export const getResourceNamesForStrategyName: (strategyName: string) => SQLLambd
 export const getSortKeyFieldNames: (type: ObjectTypeDefinitionNode) => string[];
 
 // @public (undocumented)
+export const getStrategyDbTypeFromModel: (ctx: DataSourceStrategiesProvider, typename: string) => ModelDataSourceStrategyDbType;
+
+// @public (undocumented)
 export const getStrategyDbTypeFromTypeNode: (type: TypeNode, ctx: TransformerContextProvider) => ModelDataSourceStrategyDbType;
 
 // @public (undocumented)

@@ -1,12 +1,10 @@
 /* eslint-disable no-param-reassign */
 import {
-  DDB_DB_TYPE,
   DirectiveWrapper,
   generateGetArgumentsInput,
   getStrategyDbTypeFromTypeNode,
+  getStrategyDbTypeFromModel,
   InvalidDirectiveError,
-  isSqlModel,
-  isSqlDbType,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
 import {
@@ -44,22 +42,15 @@ import {
 } from './schema';
 import { HasOneDirectiveConfiguration, ObjectDefinition } from './types';
 import {
-  ensureFieldsArray,
-  ensureReferencesArray,
   getConnectionAttributeName,
-  getFieldsNodes,
   getObjectPrimaryKey,
-  getReferencesNodes,
   getRelatedType,
-  getRelatedTypeIndex,
-  registerHasOneForeignKeyMappings,
   validateDisallowedDataStoreRelationships,
   validateModelDirective,
-  validateParentReferencesFields,
   validateRelatedModelDirective,
 } from './utils';
 import { getGenerator } from './resolver/generator-factory';
-import { setFieldMappingResolverReference } from './resolvers';
+import { getHasOneDirectiveTransformer } from './has-one/has-one-directive-transformer-factory';
 
 const directiveName = 'hasOne';
 const directiveDefinition = `
@@ -167,17 +158,9 @@ export class HasOneTransformer extends TransformerPluginBase {
   prepare = (context: TransformerPrepareStepContextProvider): void => {
     this.directiveList.forEach((config) => {
       const modelName = config.object.name.value;
-      if (isSqlModel(context as TransformerContextProvider, modelName)) {
-        setFieldMappingResolverReference(context, config.relatedType?.name?.value, modelName, config.field.name.value);
-        return;
-      }
-      registerHasOneForeignKeyMappings({
-        transformParameters: context.transformParameters,
-        resourceHelper: context.resourceHelper,
-        thisTypeName: modelName,
-        thisFieldName: config.field.name.value,
-        relatedType: config.relatedType,
-      });
+      const dbType = getStrategyDbTypeFromModel(context as TransformerContextProvider, modelName);
+      const dataSourceBasedTransformer = getHasOneDirectiveTransformer(dbType);
+      dataSourceBasedTransformer.prepare(context, config);
     });
   };
 
@@ -186,11 +169,8 @@ export class HasOneTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
-      if (dbType === DDB_DB_TYPE) {
-        config.relatedTypeIndex = getRelatedTypeIndex(config, context);
-      } else if (isSqlDbType(dbType)) {
-        validateParentReferencesFields(config, context);
-      }
+      const dataSourceBasedTransformer = getHasOneDirectiveTransformer(dbType);
+      dataSourceBasedTransformer.transformSchema(ctx, config);
       ensureHasOneConnectionField(config, context);
     }
   };
@@ -211,17 +191,8 @@ const validate = (config: HasOneDirectiveConfiguration, ctx: TransformerContextP
 
   const dbType = getStrategyDbTypeFromTypeNode(field.type, ctx);
   config.relatedType = getRelatedType(config, ctx);
-
-  if (dbType === DDB_DB_TYPE) {
-    ensureFieldsArray(config);
-    config.fieldNodes = getFieldsNodes(config, ctx);
-  }
-
-  if (isSqlDbType(dbType)) {
-    ensureReferencesArray(config);
-    getReferencesNodes(config, ctx);
-  }
-
+  const dataSourceBasedTransformer = getHasOneDirectiveTransformer(dbType);
+  dataSourceBasedTransformer.validate(ctx, config);
   validateModelDirective(config);
 
   if (isListType(field.type)) {
