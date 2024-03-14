@@ -160,7 +160,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test('Test HTTP GET request', async () => {
+test('HTTP GET request', async () => {
   try {
     const response = await GRAPHQL_CLIENT.query(
       `mutation {
@@ -191,7 +191,7 @@ test('Test HTTP GET request', async () => {
   }
 });
 
-test('Test HTTP GET request 2', async () => {
+test('HTTP GET request 2', async () => {
   try {
     const response = await GRAPHQL_CLIENT.query(
       `mutation {
@@ -222,7 +222,7 @@ test('Test HTTP GET request 2', async () => {
   }
 });
 
-test('Test HTTP POST request', async () => {
+test('HTTP POST request', async () => {
   try {
     const response = await GRAPHQL_CLIENT.query(
       `mutation {
@@ -259,7 +259,7 @@ test('Test HTTP POST request', async () => {
   }
 });
 
-test('Test HTTP PUT request', async () => {
+test('HTTP PUT request', async () => {
   try {
     const response = await GRAPHQL_CLIENT.query(
       `mutation {
@@ -299,7 +299,7 @@ test('Test HTTP PUT request', async () => {
   }
 });
 
-test('Test HTTP DELETE request', async () => {
+test('HTTP DELETE request', async () => {
   try {
     const response = await GRAPHQL_CLIENT.query(
       `mutation {
@@ -323,7 +323,7 @@ test('Test HTTP DELETE request', async () => {
   }
 });
 
-test('Test GET with URL param and query values', async () => {
+test('GET with URL param and query values', async () => {
   try {
     const response = await GRAPHQL_CLIENT.query(
       `mutation {
@@ -360,7 +360,7 @@ test('Test GET with URL param and query values', async () => {
   }
 });
 
-test('Test GET with multiple URL params and query values', async () => {
+test('GET with multiple URL params and query values', async () => {
   try {
     const response = await GRAPHQL_CLIENT.query(
       `mutation {
@@ -398,7 +398,7 @@ test('Test GET with multiple URL params and query values', async () => {
   }
 });
 
-test('Test that GET errors when missing a required Query input object', async () => {
+test('that GET errors when missing a required Query input object', async () => {
   try {
     const response = await GRAPHQL_CLIENT.query(
       `mutation {
@@ -432,7 +432,7 @@ test('Test that GET errors when missing a required Query input object', async ()
   }
 });
 
-test('Test that POST errors when missing a non-null arg in query/body', async () => {
+test('that POST errors when missing a non-null arg in query/body', async () => {
   try {
     const response = await GRAPHQL_CLIENT.query(
       `mutation {
