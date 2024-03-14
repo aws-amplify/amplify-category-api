@@ -177,6 +177,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
 
   private unauthPolicyResources = new Set<string>();
 
+  private modelsWithoutAuthDirective = new Set<string>();
+
   /**
    * constructor for creating AuthTransformer
    */
@@ -203,17 +205,25 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       throw new TransformerContractError('Types annotated with @auth must also be annotated with @model.');
     }
     const typeName = def.name.value;
-    let isJoinType = false;
-    // check if type is a joinedType
-    if (context.metadata.has('joinTypeList')) {
-      isJoinType = context.metadata.get<Array<string>>('joinTypeList')!.includes(typeName);
-    }
     const isSqlDataSource = isModelType(context, typeName) && isSqlModel(context, typeName);
     const getAuthRulesOptions = merge({ isField: false, isSqlDataSource }, generateGetArgumentsInput(context.transformParameters));
     this.rules = getAuthDirectiveRules(new DirectiveWrapper(directive), getAuthRulesOptions);
 
     // validate rules
     validateRules(this.rules, this.configuredAuthProviders, def.name.value, context);
+    // create access control for object
+    this.onObject(def, context);
+  };
+
+  private onObject = (def: ObjectTypeDefinitionNode, context: TransformerSchemaVisitStepContextProvider): void => {
+    const modelDirective = def.directives?.find((dir) => dir.name.value === 'model');
+    const typeName = def.name.value;
+    let isJoinType = false;
+    // check if type is a joinedType
+    if (context.metadata.has('joinTypeList')) {
+      isJoinType = context.metadata.get<Array<string>>('joinTypeList')!.includes(typeName);
+    }
+
     // create access control for object
     const acm = new AccessControlMatrix({
       name: def.name.value,
@@ -331,6 +341,19 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   };
 
   transformSchema = (context: TransformerTransformSchemaStepContextProvider): void => {
+    if (context.synthParameters.enableIamAccess) {
+      // If generic IAM access is enabled we should process all models even those not annotated with @auth
+      context.inputDocument.definitions.forEach((definitionNode) => {
+        if (definitionNode.kind === 'ObjectTypeDefinition') {
+          const typeName = definitionNode.name.value;
+          const hasModelDirective = definitionNode.directives?.some((dir) => dir.name.value === 'model');
+          if (hasModelDirective && !this.authModelConfig.has(typeName)) {
+            this.onObject(definitionNode, context);
+            this.modelsWithoutAuthDirective.add(typeName);
+          }
+        }
+      });
+    }
     const searchableAggregateServiceDirectives = new Set<AuthProvider>();
     const getOwnerFields = (acm: AccessControlMatrix): string[] =>
       acm.getRoles().reduce((prev: string[], role: string) => {
@@ -412,6 +435,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     this.generateIAMPolicies(context);
     // generate auth resolver code
     this.authModelConfig.forEach((acm, modelName) => {
+      if (this.modelsWithoutAuthDirective.has(modelName)) {
+        // Don't generate resolvers for types not annotated with @auth directive.
+        // Just make sure they receive proper service directive.
+        // Access will be handled by Appsync for them.
+        return;
+      }
       const indexKeyName = `${modelName}:indicies`;
       const def = context.output.getObject(modelName)!;
       const modelNameConfig = this.modelDirectiveConfig.get(modelName);

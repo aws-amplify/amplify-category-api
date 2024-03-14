@@ -35,7 +35,7 @@ describe('ddb', () => {
       transformers: [new ModelTransformer(), new AuthTransformer()],
     });
     expect(out).toBeDefined();
-    expectOperationsWithDirectives(out.schema, '@aws_api_key', '@aws_iam');
+    expectOperationsWithDirectives(out.schema, ['@aws_iam', '@aws_api_key'], ['@aws_api_key', '@aws_iam']);
     expectResolversWithIamAccessCheck(out.resolvers, 'ddb');
   });
 
@@ -65,7 +65,7 @@ describe('ddb', () => {
       transformers: [new ModelTransformer(), new AuthTransformer()],
     });
     expect(out).toBeDefined();
-    expectOperationsWithDirectives(out.schema);
+    expectOperationsWithDirectives(out.schema, [], []);
     expectResolversWithoutIamAccessCheck(out.resolvers);
   });
 
@@ -91,7 +91,7 @@ describe('ddb', () => {
       transformers: [new ModelTransformer(), new AuthTransformer()],
     });
     expect(out).toBeDefined();
-    expectOperationsWithDirectives(out.schema);
+    expectOperationsWithDirectives(out.schema, [], []);
     expectResolversWithIamAccessCheck(out.resolvers, 'ddb');
   });
 
@@ -117,7 +117,7 @@ describe('ddb', () => {
       transformers: [new ModelTransformer(), new AuthTransformer()],
     });
     expect(out).toBeDefined();
-    expectOperationsWithDirectives(out.schema);
+    expectOperationsWithDirectives(out.schema, [], []);
     expectResolversWithoutIamAccessCheck(out.resolvers);
   });
 
@@ -147,8 +147,38 @@ describe('ddb', () => {
       transformers: [new ModelTransformer(), new AuthTransformer()],
     });
     expect(out).toBeDefined();
-    expectOperationsWithDirectives(out.schema, '@aws_iam');
+    expectOperationsWithDirectives(out.schema, ['@aws_iam'], ['@aws_iam']);
     expectResolversWithIamAccessCheck(out.resolvers, 'ddb');
+  });
+
+  test('simple model with no auth directive and non default AWS_IAM mode', () => {
+    const validSchema = `
+      type Post @model {
+        id: ID!
+        title: String!
+        createdAt: String
+        updatedAt: String
+      }`;
+    const out = testTransform({
+      schema: validSchema,
+      authConfig: {
+        defaultAuthentication: {
+          authenticationType: 'API_KEY',
+        },
+        additionalAuthenticationProviders: [
+          {
+            authenticationType: 'AWS_IAM',
+          },
+        ],
+      },
+      synthParameters: {
+        enableIamAccess: true,
+      },
+      transformers: [new ModelTransformer(), new AuthTransformer()],
+    });
+    expect(out).toBeDefined();
+    expectOperationsWithDirectives(out.schema, ['@aws_iam', '@aws_api_key'], ['@aws_api_key', '@aws_iam']);
+    expectNoResolvers(out.resolvers);
   });
 });
 
@@ -181,7 +211,7 @@ describe('rds', () => {
       dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlStrategy),
     });
     expect(out).toBeDefined();
-    expectOperationsWithDirectives(out.schema, '@aws_api_key', '@aws_iam');
+    expectOperationsWithDirectives(out.schema, ['@aws_iam', '@aws_api_key'], ['@aws_api_key', '@aws_iam']);
     expectResolversWithIamAccessCheck(out.resolvers, 'rds');
   });
 
@@ -212,7 +242,7 @@ describe('rds', () => {
       dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlStrategy),
     });
     expect(out).toBeDefined();
-    expectOperationsWithDirectives(out.schema);
+    expectOperationsWithDirectives(out.schema, [], []);
     expectResolversWithoutIamAccessCheck(out.resolvers);
   });
 
@@ -239,7 +269,7 @@ describe('rds', () => {
       dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlStrategy),
     });
     expect(out).toBeDefined();
-    expectOperationsWithDirectives(out.schema);
+    expectOperationsWithDirectives(out.schema, [], []);
     expectResolversWithIamAccessCheck(out.resolvers, 'rds');
   });
 
@@ -266,7 +296,7 @@ describe('rds', () => {
       dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlStrategy),
     });
     expect(out).toBeDefined();
-    expectOperationsWithDirectives(out.schema);
+    expectOperationsWithDirectives(out.schema, [], []);
     expectResolversWithoutIamAccessCheck(out.resolvers);
   });
 
@@ -297,32 +327,64 @@ describe('rds', () => {
       dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlStrategy),
     });
     expect(out).toBeDefined();
-    expectOperationsWithDirectives(out.schema, '@aws_iam');
+    expectOperationsWithDirectives(out.schema, ['@aws_iam'], ['@aws_iam']);
     expectResolversWithIamAccessCheck(out.resolvers, 'rds');
+  });
+
+  test('simple model with no auth directive and non default AWS_IAM mode', () => {
+    const validSchema = `
+      type Post @model {
+        id: ID! @primaryKey
+        title: String!
+        createdAt: String
+        updatedAt: String
+      }`;
+    const out = testTransform({
+      schema: validSchema,
+      authConfig: {
+        defaultAuthentication: {
+          authenticationType: 'API_KEY',
+        },
+        additionalAuthenticationProviders: [
+          {
+            authenticationType: 'AWS_IAM',
+          },
+        ],
+      },
+      synthParameters: {
+        enableIamAccess: true,
+      },
+      transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlStrategy),
+    });
+    expect(out).toBeDefined();
+    expectOperationsWithDirectives(out.schema, ['@aws_iam', '@aws_api_key'], ['@aws_api_key', '@aws_iam']);
+    expectNoResolvers(out.resolvers);
   });
 });
 
-const expectOperationsWithDirectives = (schema: string, ...expectedDirectives: string[]): void => {
-  let directives = '';
-  if (expectedDirectives && expectedDirectives.length > 0) {
-    directives = ` ${expectedDirectives.join(' ')}\n`;
-  } else {
-    // This asserts that directives are blank.
-    directives = '\n';
+const expectOperationsWithDirectives = (schema: string, expectedModelDirectives: string[], expectedOperationDirectives: string[]): void => {
+  let modelDirectives = '';
+  if (expectedModelDirectives && expectedModelDirectives.length > 0) {
+    modelDirectives = ` ${expectedModelDirectives.join(' ')}`;
   }
-  expect(schema).toContain(`Post${directives}`);
-  expect(schema).toContain(`createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post${directives}`);
-  expect(schema).toContain(`updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post${directives}`);
-  expect(schema).toContain(`deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post${directives}`);
-  expect(schema).toContain(`getPost(id: ID!): Post${directives}`);
+  let operationDirectives = '';
+  if (expectedOperationDirectives && expectedOperationDirectives.length > 0) {
+    operationDirectives = ` ${expectedOperationDirectives.join(' ')}`;
+  }
+  expect(schema).toContain(`type Post${modelDirectives} {`);
+  expect(schema).toContain(`createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post${operationDirectives}\n`);
+  expect(schema).toContain(`updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post${operationDirectives}\n`);
+  expect(schema).toContain(`deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post${operationDirectives}\n`);
+  expect(schema).toContain(`getPost(id: ID!): Post${operationDirectives}`);
   expect(schema).toContain(
-    `onCreatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: ["createPost"])${directives}`,
+    `onCreatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: ["createPost"])${operationDirectives}\n`,
   );
   expect(schema).toContain(
-    `onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: ["updatePost"])${directives}`,
+    `onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: ["updatePost"])${operationDirectives}\n`,
   );
   expect(schema).toContain(
-    `onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: ["deletePost"])${directives}`,
+    `onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: ["deletePost"])${operationDirectives}\n`,
   );
 };
 
@@ -395,4 +457,15 @@ const expectResolversWithoutIamAccessCheck = (resolvers: Record<string, string>)
   expect(resolvers['Subscription.onDeletePost.auth.1.req.vtl']).not.toContain(IAM_ACCESS_CHECK_DDB);
   expect(resolvers['Subscription.onDeletePost.auth.1.req.vtl']).not.toContain(IAM_ACCESS_CHECK_RDS);
   expect(resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toMatchSnapshot();
+};
+
+const expectNoResolvers = (resolvers: Record<string, string>): void => {
+  expect(resolvers['Mutation.createPost.auth.1.req.vtl']).toBeUndefined();
+  expect(resolvers['Mutation.updatePost.auth.1.res.vtl']).toBeUndefined();
+  expect(resolvers['Mutation.deletePost.auth.1.res.vtl']).toBeUndefined();
+  expect(resolvers['Query.getPost.auth.1.req.vtl']).toBeUndefined();
+  expect(resolvers['Query.listPosts.auth.1.req.vtl']).toBeUndefined();
+  expect(resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toBeUndefined();
+  expect(resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toBeUndefined();
+  expect(resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toBeUndefined();
 };
