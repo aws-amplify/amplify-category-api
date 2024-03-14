@@ -47,7 +47,7 @@ import {
   getGeneratedResources,
   getGeneratedFunctionSlots,
   CodegenAssets,
-  getAdditionalAuthenticationTypes,
+  getAdditionalAuthenticationTypes, validateAuthorizationModes,
 } from './internal';
 import { getStackForScope, walkAndProcessNodes } from './internal/construct-tree';
 import { getDataSourceStrategiesProvider } from './internal/data-source-config';
@@ -160,7 +160,7 @@ export class AmplifyGraphqlApi extends Construct {
       dataSources,
     });
 
-    // TODO sobkamil add validation
+    validateAuthorizationModes(authorizationModes);
     const { authConfig, authSynthParameters } = convertAuthorizationModesToTransformerAuthConfig(authorizationModes);
 
     validateFunctionSlots(functionSlots ?? []);

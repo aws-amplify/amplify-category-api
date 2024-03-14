@@ -17,6 +17,39 @@ type AuthorizationConfigMode =
   | (ApiKeyAuthorizationConfig & { type: 'API_KEY' })
   | (LambdaAuthorizationConfig & { type: 'AWS_LAMBDA' });
 
+export const validateAuthorizationModes = (authorizationModes: AuthorizationModes) => {
+  const hasDeprecatedIdentityPoolSettings =
+    authorizationModes.iamConfig?.authenticatedUserRole ||
+    authorizationModes.iamConfig?.unauthenticatedUserRole ||
+    authorizationModes.iamConfig?.identityPoolId;
+  const hasAllDeprecatedIdentityPoolSettings =
+    authorizationModes.iamConfig?.authenticatedUserRole &&
+    authorizationModes.iamConfig?.unauthenticatedUserRole &&
+    authorizationModes.iamConfig?.identityPoolId;
+  const hasDeprecatedSettings =
+    authorizationModes.iamConfig?.authenticatedUserRole ||
+    authorizationModes.iamConfig?.unauthenticatedUserRole ||
+    authorizationModes.iamConfig?.identityPoolId ||
+    authorizationModes.iamConfig?.allowListedRoles ||
+    authorizationModes.adminRoles;
+  const hasUnDeprecatedSettings =
+    typeof authorizationModes.iamConfig?.enableIamAuthorizationMode !== 'undefined' || authorizationModes.identityPoolConfig;
+
+  if (hasDeprecatedSettings && hasUnDeprecatedSettings) {
+    throw new Error(
+      "Cannot use deprecated 'authorizationModes.iamConfig' options with 'authorizationModes.identityPoolConfig'" +
+        " or 'authorizationModes.iamConfig.enableIamAuthorizationMode'",
+    );
+  }
+
+  if (hasDeprecatedIdentityPoolSettings && !hasAllDeprecatedIdentityPoolSettings) {
+    throw new Error(
+      "'authorizationModes.iamConfig.authenticatedUserRole', 'authorizationModes.iamConfig.unauthenticatedUserRole' and" +
+        " 'authorizationModes.iamConfig.identityPoolId' must be provided.",
+    );
+  }
+};
+
 /**
  * Converts a single auth mode config into the amplify-internal representation.
  * @param authMode the auth mode to convert into the Appsync CDK representation.
