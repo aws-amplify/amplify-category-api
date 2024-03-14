@@ -35,6 +35,9 @@ export const BelongsToDirective: Directive;
 export const DefaultDirective: Directive;
 
 // @public (undocumented)
+export const DefaultDirectives: Directive[];
+
+// @public (undocumented)
 export const DeprecatedDirective: Directive;
 
 // @public (undocumented)
