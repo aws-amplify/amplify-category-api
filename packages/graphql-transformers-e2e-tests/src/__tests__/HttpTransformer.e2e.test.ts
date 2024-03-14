@@ -135,6 +135,7 @@ beforeAll(async () => {
     await cf.wait(5, () => Promise.resolve());
 
     expect(finishedStack).toBeDefined();
+    console.log('Finished Stack: ', JSON.stringify(finishedStack, null, 4));
 
     const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
     const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput);
