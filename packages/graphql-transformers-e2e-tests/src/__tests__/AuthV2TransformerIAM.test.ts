@@ -61,9 +61,11 @@ describe('@model with @auth - iam access', () => {
   let IDENTITY_POOL_ID: string;
   let GRAPHQL_ENDPOINT_WITH_IAM_ACCESS: string;
   let GRAPHQL_ENDPOINT_WITHOUT_IAM_ACCESS: string;
+  let GRAPHQL_CLIENT_API_KEY_WITH_IAM_ACCESS: AWSAppSyncClient<any>;
   let GRAPHQL_CLIENT_AUTH_ROLE_WITH_IAM_ACCESS: AWSAppSyncClient<any>;
   let GRAPHQL_CLIENT_UNAUTH_ROLE_WITH_IAM_ACCESS: AWSAppSyncClient<any>;
   let GRAPHQL_CLIENT_BASIC_ROLE_WITH_IAM_ACCESS: AWSAppSyncClient<any>;
+  let GRAPHQL_CLIENT_API_KEY_WITHOUT_IAM_ACCESS: AWSAppSyncClient<any>;
   let GRAPHQL_CLIENT_AUTH_ROLE_WITHOUT_IAM_ACCESS: AWSAppSyncClient<any>;
   let GRAPHQL_CLIENT_UNAUTH_ROLE_WITHOUT_IAM_ACCESS: AWSAppSyncClient<any>;
   let GRAPHQL_CLIENT_BASIC_ROLE_WITHOUT_IAM_ACCESS: AWSAppSyncClient<any>;
@@ -83,7 +85,6 @@ describe('@model with @auth - iam access', () => {
     const schema = `
       type PostPublicIAM @model
           @auth(rules: [
-              { allow: public, provider: apiKey }
               { allow: public, provider: iam }
           ]) {
           id: ID!
@@ -92,7 +93,6 @@ describe('@model with @auth - iam access', () => {
       
       type PostPrivateIAM @model
           @auth(rules: [
-              { allow: public, provider: apiKey }
               { allow: private, provider: iam }
           ]) {
           id: ID!
@@ -211,70 +211,6 @@ describe('@model with @auth - iam access', () => {
     // Wait for any propagation to avoid random failures when we assume the role below.
     await new Promise<void>((res) => setTimeout(() => res(), 5000));
 
-    // Add starter data
-    const apiKeyGraphqlClientWithIamAccess = new AWSAppSyncClient({
-      url: GRAPHQL_ENDPOINT_WITH_IAM_ACCESS,
-      region: region,
-      auth: {
-        type: AUTH_TYPE.API_KEY,
-        apiKey: apiKeyWithIamAccess,
-      },
-      offlineConfig: {
-        keyPrefix: 'apikey',
-      },
-      disableOffline: true,
-    });
-    const apiKeyGraphqlClientWithoutIamAccess = new AWSAppSyncClient({
-      url: GRAPHQL_ENDPOINT_WITHOUT_IAM_ACCESS,
-      region: region,
-      auth: {
-        type: AUTH_TYPE.API_KEY,
-        apiKey: apiKeyWithoutIamAccess,
-      },
-      offlineConfig: {
-        keyPrefix: 'apikey',
-      },
-      disableOffline: true,
-    });
-
-    for (const apiKeyGraphqlClient of [apiKeyGraphqlClientWithIamAccess, apiKeyGraphqlClientWithoutIamAccess]) {
-      await apiKeyGraphqlClient.mutate({
-        mutation: gql`
-          mutation {
-            createPostPublicIAM(input: { title: "Hello, World!" }) {
-              id
-              title
-            }
-          }
-        `,
-        fetchPolicy: 'no-cache',
-      });
-
-      await apiKeyGraphqlClient.mutate({
-        mutation: gql`
-          mutation {
-            createPostPrivateIAM(input: { title: "Hello, World!" }) {
-              id
-              title
-            }
-          }
-        `,
-        fetchPolicy: 'no-cache',
-      });
-
-      await apiKeyGraphqlClient.mutate({
-        mutation: gql`
-          mutation {
-            createPostWithNoIAMProvider(input: { title: "Hello, World!" }) {
-              id
-              title
-            }
-          }
-        `,
-        fetchPolicy: 'no-cache',
-      });
-    }
-
     configureAmplify(USER_POOL_ID, userPoolClientId, IDENTITY_POOL_ID);
     await signupUser(USER_POOL_ID, USERNAME, TMP_PASSWORD);
     await authenticateUser(USERNAME, TMP_PASSWORD, REAL_PASSWORD);
@@ -291,6 +227,31 @@ describe('@model with @auth - iam access', () => {
         })
         .promise()
     ).Credentials;
+
+    GRAPHQL_CLIENT_API_KEY_WITH_IAM_ACCESS = new AWSAppSyncClient({
+      url: GRAPHQL_ENDPOINT_WITH_IAM_ACCESS,
+      region: region,
+      auth: {
+        type: AUTH_TYPE.API_KEY,
+        apiKey: apiKeyWithIamAccess,
+      },
+      offlineConfig: {
+        keyPrefix: 'apikey',
+      },
+      disableOffline: true,
+    });
+    GRAPHQL_CLIENT_API_KEY_WITHOUT_IAM_ACCESS = new AWSAppSyncClient({
+      url: GRAPHQL_ENDPOINT_WITHOUT_IAM_ACCESS,
+      region: region,
+      auth: {
+        type: AUTH_TYPE.API_KEY,
+        apiKey: apiKeyWithoutIamAccess,
+      },
+      offlineConfig: {
+        keyPrefix: 'apikey',
+      },
+      disableOffline: true,
+    });
 
     GRAPHQL_CLIENT_AUTH_ROLE_WITH_IAM_ACCESS = new AWSAppSyncClient({
       url: GRAPHQL_ENDPOINT_WITH_IAM_ACCESS,
@@ -422,6 +383,8 @@ describe('@model with @auth - iam access', () => {
 
   it('cannot access PostPublicIAM', async () => {
     for (const graphqlClient of [
+      GRAPHQL_CLIENT_API_KEY_WITH_IAM_ACCESS,
+      GRAPHQL_CLIENT_API_KEY_WITHOUT_IAM_ACCESS,
       GRAPHQL_CLIENT_AUTH_ROLE_WITH_IAM_ACCESS,
       GRAPHQL_CLIENT_AUTH_ROLE_WITHOUT_IAM_ACCESS,
       GRAPHQL_CLIENT_BASIC_ROLE_WITHOUT_IAM_ACCESS,
@@ -442,6 +405,8 @@ describe('@model with @auth - iam access', () => {
 
   it('cannot access PostPrivateIAM', async () => {
     for (const graphqlClient of [
+      GRAPHQL_CLIENT_API_KEY_WITH_IAM_ACCESS,
+      GRAPHQL_CLIENT_API_KEY_WITHOUT_IAM_ACCESS,
       GRAPHQL_CLIENT_UNAUTH_ROLE_WITH_IAM_ACCESS,
       GRAPHQL_CLIENT_UNAUTH_ROLE_WITHOUT_IAM_ACCESS,
       GRAPHQL_CLIENT_BASIC_ROLE_WITHOUT_IAM_ACCESS,
@@ -451,7 +416,11 @@ describe('@model with @auth - iam access', () => {
   });
 
   it('can access PostWithNoIAMProviders', async () => {
-    for (const graphqlClient of [GRAPHQL_CLIENT_BASIC_ROLE_WITH_IAM_ACCESS]) {
+    for (const graphqlClient of [
+      GRAPHQL_CLIENT_BASIC_ROLE_WITH_IAM_ACCESS,
+      GRAPHQL_CLIENT_API_KEY_WITH_IAM_ACCESS,
+      GRAPHQL_CLIENT_API_KEY_WITHOUT_IAM_ACCESS,
+    ]) {
       await testHasCRUDLAccess(graphqlClient, 'PostWithNoIAMProvider', 'PostWithNoIAMProviders');
     }
   });
