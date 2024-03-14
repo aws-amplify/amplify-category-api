@@ -224,15 +224,146 @@ export class DDBRelationalReferencesResolverGenerator extends RelationalResolver
     ctx.resolvers.addResolver(object.name.value, field.name.value, resolver);
   };
 
+  makeHasOneGetItemConnectionWithKeyResolver = (
+    config: HasOneDirectiveConfiguration,
+    ctx: TransformerContextProvider,
+  ): void => {
+    const { references, field, indexName, object, relatedType } = config;
+    const connectionAttributes: string[] = references;
+    if (connectionAttributes.length === 0) {
+      throw new Error('Either connection fields or local fields should be populated.');
+    }
+
+    const primaryKeyFields = getPrimaryKeyFields(config.object);
+    // const primaryKeyFields: string[] = getPrimaryKeyFields(object);
+    const table = getTable(ctx, relatedType);
+    const dataSourceName = getModelDataSourceNameForTypeName(ctx, relatedType.name.value);
+    const dataSource = ctx.api.host.getDataSource(dataSourceName);
+    const keySchema = getKeySchema(table, indexName);
+
+    const setup: Expression[] = [
+      ...primaryKeyFields
+        .slice(1)
+        .map((ca, idx) =>
+          set(
+            ref(`${SORT_KEY_VALUE}${idx}`),
+            methodCall(ref('util.defaultIfNull'), ref(`ctx.stash.connectionAttibutes.get("${ca}")`), ref(`ctx.source.${ca}`)),
+          ),
+        ),
+      set(ref('query'), this.makeExpression(keySchema, connectionAttributes)),
+    ];
+
+    // If the key schema has a sort key but one is not provided for the query, let a sort key be
+    // passed in via $ctx.args.
+    if (keySchema[1] && !connectionAttributes[1]) {
+      const sortKeyFieldName = keySchema[1].attributeName;
+      const sortKeyField = relatedType.fields!.find((f) => f.name.value === sortKeyFieldName);
+
+      if (sortKeyField) {
+        setup.push(applyKeyConditionExpression(sortKeyFieldName, attributeTypeFromScalar(sortKeyField.type), 'query'));
+      } else {
+        const sortKeyFieldNames = sortKeyFieldName.split(ModelResourceIDs.ModelCompositeKeySeparator());
+
+        setup.push(applyCompositeKeyConditionExpression(sortKeyFieldNames, 'query', toCamelCase(sortKeyFieldNames), sortKeyFieldName));
+      }
+    }
+    // add setup filter to query
+    setup.push(
+      setArgs,
+      ifElse(
+        not(isNullOrEmpty(authFilter)),
+        compoundExpression([
+          set(ref('filter'), authFilter),
+          iff(not(isNullOrEmpty(ref('args.filter'))), set(ref('filter'), obj({ and: list([ref('filter'), ref('args.filter')]) }))),
+        ]),
+        iff(not(isNullOrEmpty(ref('args.filter'))), set(ref('filter'), ref('args.filter'))),
+      ),
+      iff(
+        not(isNullOrEmpty(ref('filter'))),
+        compoundExpression([
+          set(
+            ref('filterExpression'),
+            methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref('filter'))),
+          ),
+          iff(
+            not(methodCall(ref('util.isNullOrBlank'), ref('filterExpression.expression'))),
+            compoundExpression([
+              iff(
+                equals(methodCall(ref('filterExpression.expressionValues.size')), int(0)),
+                qref(methodCall(ref('filterExpression.remove'), str('expressionValues'))),
+              ),
+              set(ref('filter'), ref('filterExpression')),
+            ]),
+          ),
+        ]),
+      ),
+    );
+
+    const queryArguments = {
+      query: raw('$util.toJson($query)'),
+      scanIndexForward: ifElse(
+        ref('context.args.sortDirection'),
+        ifElse(equals(ref('context.args.sortDirection'), str('ASC')), bool(true), bool(false)),
+        bool(true),
+      ),
+      filter: ifElse(ref('filter'), ref('util.toJson($filter)'), nul()),
+      limit: ref('limit'),
+      nextToken: ifElse(ref('context.args.nextToken'), ref('util.toJson($context.args.nextToken)'), nul()),
+    } as any;
+
+    if (indexName) {
+      queryArguments.index = str(indexName);
+    }
+
+    const queryObj = DynamoDBMappingTemplate.query(queryArguments);
+    const resolverResourceId = ResolverResourceIDs.ResolverResourceID(object.name.value, field.name.value);
+    const resolver = ctx.resolvers.generateQueryResolver(
+      object.name.value,
+      field.name.value,
+      resolverResourceId,
+      dataSource as any,
+      MappingTemplate.s3MappingTemplateFromString(
+        print(
+          compoundExpression([
+            iff(ref('ctx.stash.deniedField'), raw('#return($util.toJson(null))')),
+            set(
+              ref(PARTITION_KEY_VALUE),
+              methodCall(
+                ref('util.defaultIfNull'),
+                ref(`ctx.stash.connectionAttributes.get("${primaryKeyFields[0]}")`),
+                ref(`ctx.source.${primaryKeyFields[0]}`),
+              ),
+            ),
+            ifElse(
+              methodCall(ref('util.isNull'), ref(PARTITION_KEY_VALUE)),
+              compoundExpression([set(ref('result'), obj({ items: list([]) })), raw('#return($result)')]),
+              compoundExpression([...setup, queryObj]),
+            ),
+          ]),
+        ),
+        `${object.name.value}.${field.name.value}.req.vtl`,
+      ),
+      MappingTemplate.s3MappingTemplateFromString(
+        print(
+          DynamoDBMappingTemplate.dynamoDBResponse(
+            false,
+            compoundExpression([iff(raw('!$result'), set(ref('result'), ref('ctx.result'))), raw('$util.toJson($result)')]),
+          ),
+        ),
+        `${object.name.value}.${field.name.value}.res.vtl`,
+      ),
+    );
+
+    resolver.setScope(ctx.stackManager.getScopeFor(resolverResourceId, CONNECTION_STACK));
+    ctx.resolvers.addResolver(object.name.value, field.name.value, resolver);
+  };
+
   /**
    * Create a get item resolver for singular connections.
    * @param config The connection directive configuration.
    * @param ctx The transformer context provider.
    */
-  makeHasOneGetItemConnectionWithKeyResolver = (
-    config: HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration,
-    ctx: TransformerContextProvider,
-  ): void => {
+  makeBelongsToGetItemConnectionWithKeyResolver = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
     const { connectionFields, field, references, object, relatedType } = config;
     // if (relatedTypeIndex.length === 0) {
     //   throw new Error('Expected relatedType index fields to be set for connection.');
@@ -357,9 +488,5 @@ export class DDBRelationalReferencesResolverGenerator extends RelationalResolver
         isPartitionKey ? `$${PARTITION_KEY_VALUE}` : `$ctx.source.${fieldName}`
       }, "${NONE_VALUE}")))`,
     );
-  };
-
-  makeBelongsToGetItemConnectionWithKeyResolver = (config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-    this.makeHasOneGetItemConnectionWithKeyResolver(config, ctx);
   };
 }

@@ -6,6 +6,7 @@ export type HasOneDirectiveConfiguration = {
   object: ObjectTypeDefinitionNode;
   field: FieldDefinitionNode;
   directive: DirectiveNode;
+  indexName: string;
   fields: string[];
   references: string[];
   fieldNodes: FieldDefinitionNode[];

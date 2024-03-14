@@ -53,7 +53,7 @@ test('fails if the provided indexName does not exist.', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
     }),
-  ).toThrowError() // 'Index notDefault does not exist for model Test1');
+  ).toThrowError(); // 'Index notDefault does not exist for model Test1');
   // TODO: throws schema validation error
 });
 
@@ -76,7 +76,7 @@ test('fails if a partial sort key is provided', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer()],
     }),
-  ).toThrowError() // 'Invalid @hasMany directive on testObj. Partial sort keys are not accepted.');
+  ).toThrowError(); // 'Invalid @hasMany directive on testObj. Partial sort keys are not accepted.');
   // TODO: Received message: "email is not a field in Test1"
 });
 
@@ -191,7 +191,7 @@ test('fails if @hasMany was used with a related type that is not a model', () =>
         new HasOneTransformer(),
         new HasManyTransformer(),
         new BelongsToTransformer(),
-    ],
+      ],
       dataSourceStrategies: {
         Test: DDB_DEFAULT_DATASOURCE_STRATEGY,
         Test1: DDB_DEFAULT_DATASOURCE_STRATEGY,
@@ -239,7 +239,7 @@ test('fails if an empty list of fields is passed in', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasManyTransformer()],
     }),
-  ).toThrowError() // 'No fields passed to @hasMany directive.');
+  ).toThrowError(); // 'No fields passed to @hasMany directive.');
   // TODO: Received message: "Something went wrong >> cannot have both references and fields."
 });
 
@@ -248,21 +248,21 @@ test('fails if any of the fields passed in are not in the parent model', () => {
     type Test @model {
       id: ID!
       email: String
-      testObj: [Test1] @hasMany(references: ["id", "name"])
+      testObj: [Test1] @hasMany(references: ["friendId", "name"])
     }
 
     type Test1 @model {
-      id: ID! @primaryKey(sortKeyFields: ["name"])
-      friendID: ID!
-      name: String!
+      id: ID! @primaryKey
+      friendId: ID!
+      friend: Test @belongsTo(references: ["friendId", "name"])
     }`;
 
   expect(() =>
     testTransform({
       schema: inputSchema,
-      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('The number of references provided to @hasMany must match the number of primary keys on Test.');
+  ).toThrowError('name is not a field in Test1');
 });
 
 test('has many query case', () => {
@@ -281,12 +281,7 @@ test('has many query case', () => {
     }`;
   const out = testTransform({
     schema: inputSchema,
-    transformers: [
-        new ModelTransformer(),
-        new PrimaryKeyTransformer(),
-        new HasManyTransformer(),
-        new BelongsToTransformer(),
-    ],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
   });
 
   expect(out).toBeDefined();
@@ -340,8 +335,8 @@ test('bidirectional has many query case', () => {
   expect(postsField).toBeDefined();
   expect(postsField.type.kind).toEqual(Kind.NAMED_TYPE);
   // TODO: Why isn't there an `id`? Should there be?
-//   expect(postsField.arguments.length).toEqual(5);
-//   expect(postsField.arguments.find((f: any) => f.name.value === 'id')).toBeDefined();
+  //   expect(postsField.arguments.length).toEqual(5);
+  //   expect(postsField.arguments.find((f: any) => f.name.value === 'id')).toBeDefined();
   expect(postsField.arguments.find((f: any) => f.name.value === 'filter')).toBeDefined();
   expect(postsField.arguments.find((f: any) => f.name.value === 'limit')).toBeDefined();
   expect(postsField.arguments.find((f: any) => f.name.value === 'nextToken')).toBeDefined();
@@ -356,18 +351,61 @@ test('bidirectional has many query case', () => {
   expect(userField.type.kind).toEqual(Kind.NAMED_TYPE);
 });
 
+test('hasMany belongsTo DDB homogeneous references query', () => {
+  const inputSchema = `
+    type Primary @model {
+      id: ID!
+      name: String!
+      relateds: [Related] @hasMany(references: ["primaryID"])
+    }
+
+    type Related @model {
+      id: ID!
+      primaryID: ID!
+      primary: Primary @belongsTo(references: ["primaryID"])
+  }
+  `
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [
+        new ModelTransformer(),
+        new PrimaryKeyTransformer(),
+        new HasManyTransformer(),
+        new BelongsToTransformer(),
+    ],
+  });
+
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+  // expect((out.stacks as any).ConnectionStack.Resources.TestotherPartsResolver).toBeTruthy();
+
+  const testObjType = schema.definitions.find((def: any) => def.name && def.name.value === 'Primary') as any;
+  expect(testObjType).toBeDefined();
+
+  const relatedField = testObjType.fields.find((f: any) => f.name.value === 'relateds');
+  expect(relatedField).toBeDefined();
+  expect((relatedField.type as any).name.value).toEqual('ModelRelatedConnection');
+  expect(relatedField.type.kind).toEqual(Kind.NAMED_TYPE);
+  expect(relatedField.arguments.length).toEqual(4);
+  expect(relatedField.arguments.find((f: any) => f.name.value === 'filter')).toBeDefined();
+  expect(relatedField.arguments.find((f: any) => f.name.value === 'limit')).toBeDefined();
+  expect(relatedField.arguments.find((f: any) => f.name.value === 'nextToken')).toBeDefined();
+  expect(relatedField.arguments.find((f: any) => f.name.value === 'sortDirection')).toBeDefined();
+});
+
 test('has many query with a composite sort key', () => {
     // TODO: InvalidDirectiveError: The number of references provided to @hasMany must match the number of primary keys on Test.
   const inputSchema = `
     type Test @model {
-      id: ID!
+      id: ID! @primaryKey(sortKeyFields: ["email", "name"])
       email: String!
       name: String!
       otherParts: [Test1] @hasMany(references: ["friendId", "email", "name"])
     }
 
     type Test1 @model {
-      id: ID! @primaryKey(sortKeyFields: ["email", "name"])
+      id: ID!
       friendId: ID!
       email: String!
       name: String!
@@ -401,3 +439,653 @@ test('has many query with a composite sort key', () => {
   expect(relatedField.arguments.find((f: any) => f.name.value === 'nextToken')).toBeDefined();
   expect(relatedField.arguments.find((f: any) => f.name.value === 'sortDirection')).toBeDefined();
 });
+
+test('has many query with a composite sort key passed in as an argument', () => {
+  const inputSchema = `
+    type Test @model {
+      id: ID!
+      email: String!
+      name: String!
+      otherParts: [Test1] @hasMany(references: ["friendID"])
+    }
+
+    type Test1 @model {
+      id: ID! @primaryKey(sortKeyFields: ["email", "name"])
+      friendID: ID!
+      email: String!
+      name: String!
+      test: Test @belongsTo(references: "friendID")
+    }`;
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+  });
+
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+
+  const testObjType = schema.definitions.find((def: any) => def.name && def.name.value === 'Test') as any;
+  expect(testObjType).toBeDefined();
+
+  const relatedField = testObjType.fields.find((f: any) => f.name.value === 'otherParts');
+  expect(relatedField).toBeDefined();
+  expect(relatedField.type.kind).toEqual(Kind.NAMED_TYPE);
+  expect((relatedField.type as any).name.value).toEqual('ModelTest1Connection');
+  expect(relatedField.arguments.length).toEqual(4);
+  // TODO: evaluate if this should exist (it doesn't)
+  // expect(relatedField.arguments.find((f: any) => f.name.value === 'emailName')).toBeDefined();
+  expect(relatedField.arguments.find((f: any) => f.name.value === 'filter')).toBeDefined();
+  expect(relatedField.arguments.find((f: any) => f.name.value === 'limit')).toBeDefined();
+  expect(relatedField.arguments.find((f: any) => f.name.value === 'nextToken')).toBeDefined();
+  expect(relatedField.arguments.find((f: any) => f.name.value === 'sortDirection')).toBeDefined();
+});
+
+test('many to many query', () => {
+  const inputSchema = `
+    type Post @model {
+      id: ID!
+      title: String!
+      editors: [PostEditor] @hasMany(references: ["editorID"])
+    }
+
+    type PostEditor @model(queries: null) {
+      id: ID!
+      postID: ID!
+      editorID: ID!
+      post: Post! @belongsTo(references: ["postID"])
+      editor: User! @belongsTo(references: ["editorID"])
+    }
+
+    type User @model {
+      id: ID!
+      username: String!
+      posts: [PostEditor] @hasMany(references: ["postID"])
+    }`;
+
+  const out = testTransform({
+    schema: inputSchema,
+    resolverConfig: {
+      project: {
+        ConflictDetection: 'VERSION',
+        ConflictHandler: ConflictHandlerType.AUTOMERGE,
+      },
+    },
+    transformers: [
+      new ModelTransformer(),
+      new IndexTransformer(),
+      new HasOneTransformer(),
+      new HasManyTransformer(),
+      new BelongsToTransformer(),
+    ],
+    transformParameters: {
+      enableAutoIndexQueryNames: false,
+      respectPrimaryKeyAttributesOnConnectionField: false,
+      secondaryKeyAsGSI: false,
+    },
+  });
+
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+  expect(schema).toMatchSnapshot();
+});
+
+
+test('has many references with user-defined non-ID primary key', () => {
+  const inputSchema = `
+    type Post @model {
+      id: ID!
+      title: String! @primaryKey
+      comments: [Comment] @hasMany(references: "postTitleID")
+    }
+    type Comment @model {
+      id: ID!
+      content: String
+      postTitleID: String
+      post: Post @belongsTo(references: "postTitleID")
+    }`;
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+    transformParameters: { respectPrimaryKeyAttributesOnConnectionField: false },
+  });
+
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+
+  const postType = schema.definitions.find((def: any) => def.name && def.name.value === 'Post') as any;
+  expect(postType).toBeDefined();
+
+  const commentField = postType.fields.find((f: any) => f.name.value === 'comments');
+  expect(commentField).toBeDefined();
+  expect(commentField.type.kind).toEqual(Kind.NAMED_TYPE);
+  expect((commentField.type as any).name.value).toEqual('ModelCommentConnection');
+  expect(commentField.arguments.length).toEqual(4);
+  expect(commentField.arguments.find((f: any) => f.name.value === 'filter')).toBeDefined();
+  expect(commentField.arguments.find((f: any) => f.name.value === 'limit')).toBeDefined();
+  expect(commentField.arguments.find((f: any) => f.name.value === 'nextToken')).toBeDefined();
+  expect(commentField.arguments.find((f: any) => f.name.value === 'sortDirection')).toBeDefined();
+
+  const commentCreateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateCommentInput') as any;
+  expect(commentCreateInput).toBeDefined();
+  expect(commentCreateInput.fields.length).toEqual(3);
+  expect(commentCreateInput.fields.find((f: any) => f.name.value === 'id')).toBeDefined();
+  expect(commentCreateInput.fields.find((f: any) => f.name.value === 'content')).toBeDefined();
+  expect(commentCreateInput.fields.find((f: any) => f.name.value === 'postTitleID')).toBeDefined();
+
+  const commentUpdateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateCommentInput') as any;
+  expect(commentUpdateInput).toBeDefined();
+  expect(commentUpdateInput.fields.length).toEqual(3);
+  expect(commentUpdateInput.fields.find((f: any) => f.name.value === 'id')).toBeDefined();
+  expect(commentUpdateInput.fields.find((f: any) => f.name.value === 'content')).toBeDefined();
+  expect(commentUpdateInput.fields.find((f: any) => f.name.value === 'postTitleID')).toBeDefined();
+
+  const commentType = schema.definitions.find((def: any) => def.name && def.name.value === 'Comment') as any;
+  expect(commentType).toBeDefined();
+
+  const commentFilterInput = schema.definitions.find((def: any) => def.name && def.name.value === 'ModelCommentFilterInput') as any;
+  expect(commentFilterInput).toBeDefined();
+  expect(commentFilterInput.fields.find((f: any) => f.name.value === 'id')).toBeDefined();
+  expect(commentFilterInput.fields.find((f: any) => f.name.value === 'content')).toBeDefined();
+
+  const commentConditionInput = schema.definitions.find((def: any) => def.name && def.name.value === 'ModelCommentConditionInput') as any;
+  expect(commentConditionInput).toBeDefined();
+  expect(commentConditionInput.fields.find((f: any) => f.name.value === 'content')).toBeDefined();
+});
+
+test('the limit of 100 is used by default', () => {
+  const inputSchema = `
+    type Post @model {
+      id: ID!
+      title: String!
+      comments: [Comment] @hasMany(references: "postID")
+    }
+
+    type Comment @model {
+      id: ID!
+      content: String
+      postID: ID
+      post: Post @belongsTo(references: "postID")
+    }`;
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+  });
+
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+  expect(out.resolvers['Post.comments.req.vtl']).toContain('#set( $limit = $util.defaultIfNull($context.args.limit, 100) )');
+});
+
+test('the default limit argument can be overridden', () => {
+  const inputSchema = `
+
+  type Post @model {
+    id: ID!
+    title: String!
+    comments: [Comment] @hasMany(references: "postID", limit: 50)
+  }
+
+  type Comment @model {
+    id: ID!
+    content: String
+    postID: ID
+    post: Post @belongsTo(references: "postID")
+  }`;
+
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+  });
+
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+  expect(out.resolvers['Post.comments.req.vtl']).toContain('#set( $limit = $util.defaultIfNull($context.args.limit, 50) )');
+});
+
+test('validates VTL of a complex schema', () => {
+  const inputSchema = `
+    type Child @model {
+      id: ID! @primaryKey(sortKeyFields: ["name"])
+      name: String!
+      parents: [Parent] @hasMany(references: ["childID", "childName"])
+    }
+
+    type Parent @model {
+      id: ID!
+      childID: ID!
+      childName: String!
+      child: Child @belongsTo(references: ["childID", "childName"])
+    }
+
+    type User @model {
+      id: ID! @primaryKey(sortKeyFields: ["name", "surname"])
+      name: String!
+      surname: String!
+      postID: ID!
+      post: Post @belongsTo(references: "postID")
+      friendships: [Friendship] @hasMany(references: ["friendID"])
+      postModel: PostModel @hasOne(references: ["authorID", "authorName", "authorSurname"])
+    }
+
+    type Friendship @model {
+      id: ID!
+      userID: ID! @index(name: "byUser", sortKeyFields: ["friendID"])
+      friendID: ID!
+      friend: User @belongsTo(references: ["friendID"])
+    }
+
+    type UserModel @model {
+      id: ID! @primaryKey(sortKeyFields: ["rollNumber"])
+      rollNumber: Int!
+      name: String!
+      surname: String!
+      authorPosts: [PostAuthor] @hasMany(references: ["userModelID", "userModelRollNumber"])
+      postModelID: ID!
+      postModel: PostModel @belongsTo(references: ["postModelID"])
+    }
+
+    type PostModel @model {
+      id: ID!
+      authorID: ID!
+      authorName: String!
+      authorSurname: String!
+      postContents: [String]
+      authors: [UserModel] @hasMany(references: "postModelID")
+      singleAuthor: User @belongsTo(references: ["authorID", "authorName", "authorSurname"])
+    }
+
+    type Post @model {
+      id: ID!
+      authorID: ID!
+      postContents: [String]
+      authors: [User] @hasMany(references: ["postID"], limit: 50)
+      postAuthor: PostAuthor @hasOne(references: "postID")
+    }
+
+    type PostAuthor @model {
+      id: ID!
+      authorID: ID! @index(name: "byAuthor", sortKeyFields: ["postID"])
+      postID: ID!
+      userModelID: ID!
+      userModelRollNumber: Int!
+      userModel: UserModel @belongsTo(references: ["userModelID", "userModelRollNumber"])
+      post: Post @belongsTo(references: "postID")
+    }`;
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [
+      new ModelTransformer(),
+      new PrimaryKeyTransformer(),
+      new IndexTransformer(),
+      new HasOneTransformer(),
+      new HasManyTransformer(),
+      new BelongsToTransformer(),
+    ],
+    transformParameters: {
+      respectPrimaryKeyAttributesOnConnectionField: false,
+      enableAutoIndexQueryNames: false,
+      secondaryKeyAsGSI: false,
+    },
+  });
+
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+  expect(out.resolvers).toMatchSnapshot();
+});
+
+// test('@hasMany and @hasMany can point at each other if DataStore is not enabled', () => {
+//   const inputSchema = `
+//     type Blog @model {
+//       id: ID!
+//       posts: [Post] @hasMany
+//     }
+
+//     type Post @model {
+//       id: ID!
+//       blog: [Blog] @hasMany
+//     }`;
+//   const out = testTransform({
+//     schema: inputSchema,
+//     transformers: [new ModelTransformer(), new HasManyTransformer()],
+//   });
+
+//   expect(out).toBeDefined();
+//   const schema = parse(out.schema);
+//   validateModelSchema(schema);
+// });
+
+// test('@hasMany and @hasMany cannot point at each other if DataStore is enabled', () => {
+//   const inputSchema = `
+//     type Blog @model {
+//       id: ID!
+//       posts: [Post] @hasMany
+//     }
+
+//     type Post @model {
+//       id: ID!
+//       blog: [Blog] @hasMany
+//     }`;
+//   expect(() =>
+//     testTransform({
+//       schema: inputSchema,
+//       resolverConfig: {
+//         project: {
+//           ConflictDetection: 'VERSION',
+//           ConflictHandler: ConflictHandlerType.AUTOMERGE,
+//         },
+//       },
+//       transformers: [new ModelTransformer(), new HasOneTransformer(), new HasManyTransformer()],
+//     }),
+//   ).toThrowError('Blog and Post cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.');
+// });
+
+// test('recursive @hasMany relationships are supported if DataStore is enabled', () => {
+//   const inputSchema = `
+//     type Blog @model {
+//       id: ID!
+//       posts: [Blog] @hasMany
+//     }`;
+//   const out = testTransform({
+//     schema: inputSchema,
+//     resolverConfig: {
+//       project: {
+//         ConflictDetection: 'VERSION',
+//         ConflictHandler: ConflictHandlerType.AUTOMERGE,
+//       },
+//     },
+//     transformers: [new ModelTransformer(), new HasManyTransformer()],
+//   });
+
+//   expect(out).toBeDefined();
+//   const schema = parse(out.schema);
+//   validateModelSchema(schema);
+// });
+
+// test('has many with queries null generate correct filter input objects for scalar list type', () => {
+//   const inputSchema = `
+//     type Foo @model {
+//       bars: [Bar] @hasMany
+//     }
+
+//     type Bar @model(queries: null) {
+//       strings: [String]
+//     }`;
+//   const out = testTransform({
+//     schema: inputSchema,
+//     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
+//   });
+
+//   expect(out).toBeDefined();
+//   const schema = parse(out.schema);
+//   validateModelSchema(schema);
+
+//   const barFilterInput = schema.definitions.find((def: any) => def.name && def.name.value === 'ModelBarFilterInput') as any;
+//   expect(barFilterInput).toBeDefined();
+
+//   const stringField = barFilterInput.fields.find((f: any) => f.name.value === 'strings');
+//   expect(stringField).toBeDefined();
+//   expect(stringField.type.name.value).toMatch('ModelStringInput');
+// });
+
+// test('has many with queries null generate correct filter input objects for enum type', () => {
+//   const inputSchema = `
+//     type IssueList @model {
+//       id: ID!
+//       issues: [Issue] @hasMany
+//     }
+
+//     type Issue @model {
+//       id: ID!
+//       title: String!
+//       description: String
+//       status: IssueStatus!
+//     }
+
+//     enum IssueStatus {
+//       open
+//       closed
+//     }`;
+//   const out = testTransform({
+//     schema: inputSchema,
+//     transformers: [new ModelTransformer(), new HasManyTransformer()],
+//   });
+
+//   expect(out).toBeDefined();
+//   const schema = parse(out.schema);
+//   validateModelSchema(schema);
+
+//   const issueFilterInput = schema.definitions.find((def: any) => def.name && def.name.value === 'ModelIssueFilterInput') as any;
+//   expect(issueFilterInput).toBeDefined();
+
+//   const statusField = issueFilterInput.fields.find((f: any) => f.name.value === 'status');
+//   expect(statusField).toBeDefined();
+//   expect(statusField.type.name.value).toMatch('ModelIssueStatusInput');
+// });
+
+// describe('Pre Processing Has Many Tests', () => {
+//   let transformer: GraphQLTransform;
+
+//   beforeEach(() => {
+//     transformer = new GraphQLTransform({
+//       transformers: [new ModelTransformer(), new HasManyTransformer()],
+//     });
+//   });
+
+//   test('Should generate connecting field when one is not provided', () => {
+//     const schema = `
+//     type Blog @model {
+//       id: ID!
+//       postsField: [Post] @hasMany
+//     }
+
+//     type Post @model {
+//       id: ID!
+//     }
+//     `;
+
+//     const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
+//     expect(hasGeneratedField(updatedSchemaDoc, 'Post', 'blogPostsFieldId')).toBeTruthy();
+//   });
+
+//   test('Should create sort key field when specified on custom primary key', () => {
+//     const schema = `
+//     type Blog @model {
+//       id: ID! @primaryKey(sortKeyFields: ["value"])
+//       postsField: [Post] @hasMany
+//       value: String!
+//     }
+
+//     type Post @model {
+//       id: ID!
+//     }
+//     `;
+
+//     const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
+//     expect(hasGeneratedField(updatedSchemaDoc, 'Post', 'blogPostsFieldId')).toBeTruthy();
+//     expect(hasGeneratedField(updatedSchemaDoc, 'Post', 'blogPostsFieldValue', 'String')).toBeTruthy();
+//   });
+// });
+
+// describe('@hasMany connection field nullability tests', () => {
+//   test('Should not affect the nullability of connection fields of the other side update input when the @hasMany field is non-nullable', () => {
+//     const inputSchema = `
+//       type Todo @model {
+//         todoid: ID! @primaryKey(sortKeyFields:["name"])
+//         name: String!
+//         title: String!
+//         priority: Int
+//         tasks: [Task]! @hasMany
+//       }
+//       type Task @model {
+//         taskid: ID! @primaryKey(sortKeyFields:["name"])
+//         name: String!
+//         description: String
+//       }
+//     `;
+//     const out = testTransform({
+//       schema: inputSchema,
+//       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
+//     });
+
+//     expect(out).toBeDefined();
+//     const schema = parse(out.schema);
+//     validateModelSchema(schema);
+//     const connectionFieldName1 = 'todoTasksTodoid';
+//     const connectionFieldName2 = 'todoTasksName';
+//     // Type definition
+//     const objType = schema.definitions.find((def: any) => def.name && def.name.value === 'Task') as any;
+//     expect(objType).toBeDefined();
+//     const relatedField1 = objType.fields.find((f: any) => f.name.value === connectionFieldName1);
+//     expect(relatedField1).toBeDefined();
+//     expect(relatedField1.type.kind).toBe(Kind.NON_NULL_TYPE);
+//     expect(relatedField1.type.type.name.value).toBe('ID');
+//     const relatedField2 = objType.fields.find((f: any) => f.name.value === connectionFieldName2);
+//     expect(relatedField2).toBeDefined();
+//     expect(relatedField2.type.kind).toBe(Kind.NON_NULL_TYPE);
+//     expect(relatedField2.type.type.name.value).toBe('String');
+//     // Create Input
+//     const createInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTaskInput') as any;
+//     expect(createInput).toBeDefined();
+//     expect(createInput.fields.length).toEqual(5);
+//     const createInputConnectedField1 = createInput.fields.find((f: any) => f.name.value === connectionFieldName1);
+//     expect(createInputConnectedField1).toBeDefined();
+//     expect(createInputConnectedField1.type.kind).toBe(Kind.NON_NULL_TYPE);
+//     expect(createInputConnectedField1.type.type.name.value).toBe('ID');
+//     const createInputConnectedField2 = createInput.fields.find((f: any) => f.name.value === connectionFieldName2);
+//     expect(createInputConnectedField2).toBeDefined();
+//     expect(createInputConnectedField2.type.kind).toBe(Kind.NON_NULL_TYPE);
+//     expect(createInputConnectedField2.type.type.name.value).toBe('String');
+//     // Update Input
+//     const updateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTaskInput') as any;
+//     expect(updateInput).toBeDefined();
+//     expect(updateInput.fields.length).toEqual(5);
+//     const updateInputConnectedField1 = updateInput.fields.find((f: any) => f.name.value === connectionFieldName1);
+//     expect(updateInputConnectedField1).toBeDefined();
+//     expect(updateInputConnectedField1.type.kind).toBe(Kind.NAMED_TYPE);
+//     expect(updateInputConnectedField1.type.name.value).toBe('ID');
+//     const updateInputConnectedField2 = updateInput.fields.find((f: any) => f.name.value === connectionFieldName2);
+//     expect(updateInputConnectedField2).toBeDefined();
+//     expect(updateInputConnectedField2.type.kind).toBe(Kind.NAMED_TYPE);
+//     expect(updateInputConnectedField2.type.name.value).toBe('String');
+//   });
+// });
+
+// describe('@hasMany directive with RDS datasource', () => {
+//   const mySqlStrategy = mockSqlDataSourceStrategy();
+
+//   test('happy case should generate correct resolvers', () => {
+//     const inputSchema = `
+//       type Blog @model {
+//         id: String! @primaryKey
+//         content: String
+//         posts: [Post] @hasMany(references: ["blogId"])
+//       }
+//       type Post @model {
+//         id: String! @primaryKey
+//         content: String
+//         blogId: String
+//       }
+//     `;
+
+//     const out = testTransform({
+//       schema: inputSchema,
+//       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
+//       dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
+//     });
+//     expect(out).toBeDefined();
+//     const schema = parse(out.schema);
+//     validateModelSchema(schema);
+//     expect(out.schema).toMatchSnapshot();
+//     expect(out.resolvers['Blog.posts.req.vtl']).toBeDefined();
+//     expect(out.resolvers['Blog.posts.req.vtl']).toMatchSnapshot();
+//     expect(out.resolvers['Blog.posts.res.vtl']).toBeDefined();
+//     expect(out.resolvers['Blog.posts.res.vtl']).toMatchSnapshot();
+//   });
+
+//   test('composite key should generate correct resolvers', () => {
+//     const inputSchema = `
+//       type System @model {
+//         systemId: String! @primaryKey(sortKeyFields: ["systemName"])
+//         systemName: String!
+//         details: String
+//         parts: [Part] @hasMany(references: ["systemId", "systemName"])
+//       }
+//       type Part @model {
+//         partId: String! @primaryKey
+//         partName: String
+//         systemId: String!
+//         systemName: String!
+//       }
+//     `;
+
+//     const out = testTransform({
+//       schema: inputSchema,
+//       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
+//       dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
+//     });
+//     expect(out).toBeDefined();
+//     const schema = parse(out.schema);
+//     validateModelSchema(schema);
+//     expect(out.schema).toMatchSnapshot();
+//     expect(out.resolvers['System.parts.req.vtl']).toBeDefined();
+//     expect(out.resolvers['System.parts.req.vtl']).toMatchSnapshot();
+//     expect(out.resolvers['System.parts.res.vtl']).toBeDefined();
+//     expect(out.resolvers['System.parts.res.vtl']).toMatchSnapshot();
+//   });
+// });
+
+
+// MARK: N/A w/ references. Maybe add an expected failure assertion here for validation.
+// test('has many with implicit index and fields', () => {
+//   const inputSchema = `
+//     type Post @model {
+//       id: ID!
+//       title: String!
+//       comments: [Comment] @hasMany
+//     }
+//     type Comment @model {
+//       id: ID!
+//       content: String
+//     }`;
+//   const out = testTransform({
+//     schema: inputSchema,
+//     transformers: [new ModelTransformer(), new HasManyTransformer()],
+//   });
+
+//   expect(out).toBeDefined();
+//   const schema = parse(out.schema);
+//   validateModelSchema(schema);
+
+//   const postType = schema.definitions.find((def: any) => def.name && def.name.value === 'Post') as any;
+//   expect(postType).toBeDefined();
+
+//   const commentField = postType.fields.find((f: any) => f.name.value === 'comments');
+//   expect(commentField).toBeDefined();
+//   expect(commentField.type.kind).toEqual(Kind.NAMED_TYPE);
+//   expect((commentField.type as any).name.value).toEqual('ModelCommentConnection');
+//   expect(commentField.arguments.length).toEqual(4);
+//   expect(commentField.arguments.find((f: any) => f.name.value === 'filter')).toBeDefined();
+//   expect(commentField.arguments.find((f: any) => f.name.value === 'limit')).toBeDefined();
+//   expect(commentField.arguments.find((f: any) => f.name.value === 'nextToken')).toBeDefined();
+//   expect(commentField.arguments.find((f: any) => f.name.value === 'sortDirection')).toBeDefined();
+
+//   const commentCreateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateCommentInput') as any;
+//   expect(commentCreateInput).toBeDefined();
+//   expect(commentCreateInput.fields.length).toEqual(3);
+//   expect(commentCreateInput.fields.find((f: any) => f.name.value === 'id')).toBeDefined();
+//   expect(commentCreateInput.fields.find((f: any) => f.name.value === 'content')).toBeDefined();
+//   expect(commentCreateInput.fields.find((f: any) => f.name.value === 'postCommentsId')).toBeDefined();
+
+//   const commentUpdateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateCommentInput') as any;
+//   expect(commentUpdateInput).toBeDefined();
+//   expect(commentUpdateInput.fields.length).toEqual(3);
+//   expect(commentUpdateInput.fields.find((f: any) => f.name.value === 'id')).toBeDefined();
+//   expect(commentUpdateInput.fields.find((f: any) => f.name.value === 'content')).toBeDefined();
+//   expect(commentUpdateInput.fields.find((f: any) => f.name.value === 'postCommentsId')).toBeDefined();
+// });
