@@ -20,6 +20,7 @@ export type {
   FunctionSlot,
   FunctionSlotOverride,
   ConflictResolution,
+  DataStoreConfiguration,
   ConflictDetectionType,
   OptimisticConflictResolutionStrategy,
   CustomConflictResolutionStrategy,

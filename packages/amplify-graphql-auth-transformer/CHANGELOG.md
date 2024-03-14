@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.4.0...@aws-amplify/graphql-auth-transformer@3.4.1) (2024-03-13)
+
+### Bug Fixes
+
+- field auth resolver to use "validateUsingSource" auth util method ([#2170](https://github.com/aws-amplify/amplify-category-api/issues/2170)) ([b344d0d](https://github.com/aws-amplify/amplify-category-api/commit/b344d0d3b4b0ad430dd3572954b2e93ea887b28d))
+
 # [3.4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.3.6...@aws-amplify/graphql-auth-transformer@3.4.0) (2024-02-28)
 
 ### Features

@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.20.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.20.1...amplify-category-api-e2e-tests@3.20.2) (2024-03-13)
+
+### Bug Fixes
+
+- field auth resolver to use "validateUsingSource" auth util method ([#2170](https://github.com/aws-amplify/amplify-category-api/issues/2170)) ([b344d0d](https://github.com/aws-amplify/amplify-category-api/commit/b344d0d3b4b0ad430dd3572954b2e93ea887b28d))
+- **rds:** userpool & iam e2e tests ([#2238](https://github.com/aws-amplify/amplify-category-api/issues/2238)) ([52726b3](https://github.com/aws-amplify/amplify-category-api/commit/52726b30889a69c0031f04f0f4c915b3ae1e381c))
+
 ## [3.20.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.20.0...amplify-category-api-e2e-tests@3.20.1) (2024-02-28)
 
 ### Bug Fixes
