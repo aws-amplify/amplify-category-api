@@ -10,6 +10,7 @@ import {
   AwsOidcDirective,
   AwsSubscribeDirective,
   BelongsToDirective,
+  ConnectionDirective,
   DefaultDirective,
   DeprecatedDirective,
   FunctionDirective,
@@ -17,6 +18,7 @@ import {
   HasOneDirective,
   HttpDirective,
   IndexDirective,
+  KeyDirective,
   ManyToManyDirective,
   MapsToDirective,
   ModelDirective,
@@ -25,6 +27,7 @@ import {
   RefersToDirective,
   SearchableDirective,
   SqlDirective,
+  VersionedDirective,
 } from './directives';
 
 // This list should match constructTransformerChain in packages/amplify-graphql-transformer/src/graphql-transformer.ts
@@ -57,3 +60,5 @@ export const DefaultDirectives: Directive[] = [
   SearchableDirective,
   SqlDirective,
 ];
+
+export const V1Directives: Directive[] = [ConnectionDirective, KeyDirective, VersionedDirective];

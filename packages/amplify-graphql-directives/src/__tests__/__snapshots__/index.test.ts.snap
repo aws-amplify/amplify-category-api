@@ -125,6 +125,23 @@ Object {
 }
 `;
 
+exports[`Directive Definitions ConnectionDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @connection(
+    name: String
+    keyField: String
+    sortField: String
+    keyName: String
+    limit: Int
+    fields: [String!]
+  ) on FIELD_DEFINITION
+",
+  "name": "connection",
+}
+`;
+
 exports[`Directive Definitions DefaultDirective 1`] = `
 Object {
   "defaults": Object {},
@@ -208,6 +225,16 @@ Object {
   directive @index(name: String, sortKeyFields: [String], queryField: String) repeatable on FIELD_DEFINITION
 ",
   "name": "index",
+}
+`;
+
+exports[`Directive Definitions KeyDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @key(name: String, fields: [String!]!, queryField: String) repeatable on OBJECT
+",
+  "name": "key",
 }
 `;
 
@@ -329,4 +356,54 @@ Object {
 ",
   "name": "sql",
 }
+`;
+
+exports[`Directive Definitions VersionedDirective 1`] = `
+Object {
+  "defaults": Object {
+    "versionField": "version",
+    "versionInput": "expectedVersion",
+  },
+  "definition": "
+  directive @versioned(versionField: String = \\"version\\", versionInput: String = \\"expectedVersion\\") on OBJECT
+",
+  "name": "versioned",
+}
+`;
+
+exports[`Directive Definitions include correct directives in V1 directives 1`] = `
+Array [
+  "connection",
+  "key",
+  "versioned",
+]
+`;
+
+exports[`Directive Definitions include correct directives in default directives 1`] = `
+Array [
+  "auth",
+  "aws_api_key",
+  "aws_auth",
+  "aws_cognito_user_pools",
+  "aws_iam",
+  "aws_lambda",
+  "aws_oidc",
+  "aws_subscribe",
+  "belongsTo",
+  "defaultTo",
+  "deprecated",
+  "function",
+  "hasMany",
+  "hasOne",
+  "http",
+  "index",
+  "manyToMany",
+  "mapsTo",
+  "model",
+  "predictions",
+  "primaryKey",
+  "refersTo",
+  "searchable",
+  "sql",
+]
 `;

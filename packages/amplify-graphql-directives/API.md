@@ -32,6 +32,9 @@ export const AwsSubscribeDirective: Directive;
 export const BelongsToDirective: Directive;
 
 // @public (undocumented)
+export const ConnectionDirective: Directive;
+
+// @public (undocumented)
 export const DefaultDirective: Directive;
 
 // @public (undocumented)
@@ -68,6 +71,9 @@ export const HttpDirective: Directive;
 export const IndexDirective: Directive;
 
 // @public (undocumented)
+export const KeyDirective: Directive;
+
+// @public (undocumented)
 export const ManyToManyDirective: Directive;
 
 // @public (undocumented)
@@ -90,6 +96,12 @@ export const SearchableDirective: Directive;
 
 // @public (undocumented)
 export const SqlDirective: Directive;
+
+// @public (undocumented)
+export const V1Directives: Directive[];
+
+// @public (undocumented)
+export const VersionedDirective: Directive;
 
 // (No @packageDocumentation comment for this package)
 

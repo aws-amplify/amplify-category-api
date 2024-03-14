@@ -1,58 +1,11 @@
 import { parse } from 'graphql';
-import {
-  AuthDirective,
-  AwsApiKeyDirective,
-  AwsAuthDirective,
-  AwsCognitoUserPoolsDirective,
-  AwsIamDirective,
-  AwsLambdaDirective,
-  AwsOidcDirective,
-  AwsSubscribeDirective,
-  BelongsToDirective,
-  DefaultDirective,
-  DeprecatedDirective,
-  FunctionDirective,
-  HasManyDirective,
-  HasOneDirective,
-  HttpDirective,
-  IndexDirective,
-  ManyToManyDirective,
-  MapsToDirective,
-  ModelDirective,
-  PredictionsDirective,
-  PrimaryKeyDirective,
-  RefersToDirective,
-  SearchableDirective,
-  SqlDirective,
-} from '..';
+import * as Directives from '..';
+import type { Directive } from '..';
+import { DefaultDirectives, V1Directives } from '..';
 
 describe('Directive Definitions', () => {
-  test.each([
-    ['AuthDirective', AuthDirective],
-    ['AwsApiKeyDirective', AwsApiKeyDirective],
-    ['AwsAuthDirective', AwsAuthDirective],
-    ['AwsCognitoUserPoolsDirective', AwsCognitoUserPoolsDirective],
-    ['AwsIamDirective', AwsIamDirective],
-    ['AwsLambdaDirective', AwsLambdaDirective],
-    ['AwsOidcDirective', AwsOidcDirective],
-    ['AwsSubscribeDirective', AwsSubscribeDirective],
-    ['BelongsToDirective', BelongsToDirective],
-    ['DefaultDirective', DefaultDirective],
-    ['DeprecatedDirective', DeprecatedDirective],
-    ['FunctionDirective', FunctionDirective],
-    ['HasManyDirective', HasManyDirective],
-    ['HasOneDirective', HasOneDirective],
-    ['HttpDirective', HttpDirective],
-    ['IndexDirective', IndexDirective],
-    ['ManyToManyDirective', ManyToManyDirective],
-    ['MapsToDirective', MapsToDirective],
-    ['ModelDirective', ModelDirective],
-    ['PredictionsDirective', PredictionsDirective],
-    ['PrimaryKeyDirective', PrimaryKeyDirective],
-    ['RefersToDirective', RefersToDirective],
-    ['SearchableDirective', SearchableDirective],
-    ['SqlDirective', SqlDirective],
-  ])('%s', (_, directive) => {
+  // remove lists of Directives, i.e. DefaultDirectives and V1Directives
+  test.each(Object.entries(Directives).filter(([_, directive]) => !Array.isArray(directive)))('%s', (_, directive: Directive) => {
     // assert valid graphql syntax
     expect(() => parse(directive.definition)).not.toThrow();
 
@@ -60,35 +13,23 @@ describe('Directive Definitions', () => {
     expect(directive).toMatchSnapshot();
   });
 
-  test('no negative interactions', () => {
-    const directives = [
-      AuthDirective,
-      AwsApiKeyDirective,
-      AwsAuthDirective,
-      AwsCognitoUserPoolsDirective,
-      AwsIamDirective,
-      AwsLambdaDirective,
-      AwsOidcDirective,
-      AwsSubscribeDirective,
-      BelongsToDirective,
-      DefaultDirective,
-      DeprecatedDirective,
-      FunctionDirective,
-      HasManyDirective,
-      HasOneDirective,
-      HttpDirective,
-      IndexDirective,
-      ManyToManyDirective,
-      MapsToDirective,
-      ModelDirective,
-      PredictionsDirective,
-      PrimaryKeyDirective,
-      RefersToDirective,
-      SearchableDirective,
-      SqlDirective,
-    ]
-      .map((directive) => directive.definition)
-      .join('\n');
+  test('include correct directives in default directives', () => {
+    expect(DefaultDirectives.map((directive) => directive.name)).toMatchSnapshot();
+  });
+
+  test('no negative interactions for default directives', () => {
+    const directives = DefaultDirectives.map((directive) => directive.definition).join('\n');
+
+    // asserts directives can be parsed together
+    expect(() => parse(directives)).not.toThrow();
+  });
+
+  test('include correct directives in V1 directives', () => {
+    expect(V1Directives.map((directive) => directive.name)).toMatchSnapshot();
+  });
+
+  test('no negative interactions for V1 directives', () => {
+    const directives = V1Directives.map((directive) => directive.definition).join('\n');
 
     // asserts directives can be parsed together
     expect(() => parse(directives)).not.toThrow();

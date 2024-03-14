@@ -1,5 +1,6 @@
 export type { Directive } from './directive';
 export * from './app-sync';
+export * from './v1';
 export { AuthDirective } from './auth';
 export { BelongsToDirective } from './belongs-to';
 export { DefaultDirective } from './default';
