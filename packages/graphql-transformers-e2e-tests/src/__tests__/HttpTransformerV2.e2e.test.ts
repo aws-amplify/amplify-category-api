@@ -33,7 +33,7 @@ function outputValueSelector(key: string) {
 }
 
 beforeAll(async () => {
-  const { apiUrl } = await deployJsonServer();
+  const { apiUrl } = deployJsonServer();
 
   const validSchema = `
     type Comment @model {
@@ -183,7 +183,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await destroyJsonServer();
+  destroyJsonServer();
 
   await cleanupStackAfterTest(BUCKET_NAME, STACK_NAME, cf);
 });
