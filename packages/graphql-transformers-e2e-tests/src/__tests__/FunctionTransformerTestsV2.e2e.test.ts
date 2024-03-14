@@ -40,8 +40,8 @@ let CROSS_ACCOUNT_LAMBDA_EXECUTION_POLICY_ARN = '';
 
 let GRAPHQL_CLIENT = undefined;
 
-const LAMBDA_HELPER = new LambdaHelper();
-const IAM_HELPER = new IAMHelper();
+const LAMBDA_HELPER = new LambdaHelper(region);
+const IAM_HELPER = new IAMHelper(region);
 const shortWaitForResource = 5000;
 const longWaitForResource = 10000;
 
@@ -183,6 +183,25 @@ beforeAll(async () => {
     }
     type Arguments {
         msg: String!
+    }
+    type Todo @model @auth(rules: [{ allow: public }]) {
+      id: ID!
+      name: String
+      note: Note
+    }
+    type Note {
+      id: ID!
+      echo(msg: String!): Context @function(name: "${ECHO_FUNCTION_NAME}")
+      echoEnv(msg: String!): Context @function(name: "long-prefix-e2e-test-functions-echo-\${env}-v2-${BUILD_TIMESTAMP}")
+      duplicate(msg: String!): Context @function(name: "long-prefix-e2e-test-functions-echo-dev-v2-${BUILD_TIMESTAMP}")
+      pipeline(msg: String!): String
+          @function(name: "${ECHO_FUNCTION_NAME}")
+          @function(name: "${HELLO_FUNCTION_NAME}")
+      pipelineReverse(msg: String!): Context
+          @function(name: "${HELLO_FUNCTION_NAME}")
+          @function(name: "${ECHO_FUNCTION_NAME}")
+      echoFromSameAccount(msg: String!): Context @function(name: "${ECHO_FUNCTION_NAME}", accountId: "${currAccountId}")
+      echoFromDifferentAccount(msg: String!): Context @function(name: "${ECHO_FUNCTION_NAME}", accountId: "${otherAccountId}")
     }
     `;
   try {
@@ -390,6 +409,167 @@ test('echo function with accountId as the different AWS account', async () => {
   expect(response.data.echoFromDifferentAccount.arguments.msg).toEqual('Hello');
   expect(response.data.echoFromDifferentAccount.typeName).toEqual('Query');
   expect(response.data.echoFromDifferentAccount.fieldName).toEqual('echoFromDifferentAccount');
+});
+
+describe('Non-Model types with custom function resolvers', () => {
+  const todoInput = {
+    name: 'todo1',
+    note: {
+      id: '1',
+    },
+  };
+  test('simple echo function on a non-model field', async () => {
+    const response = await GRAPHQL_CLIENT.query(
+      `mutation {
+        createTodo(input: { name: "${todoInput.name}", note: { id: "${todoInput.note.id}" } }) {
+          id
+          name
+          note {
+            id
+            echo(msg: "Hello") {
+              arguments {
+                  msg
+              }
+              typeName
+              fieldName
+            }
+          }
+        }
+      }`,
+      {},
+    );
+    expect(response.data.createTodo.id).toBeDefined();
+    todoInput['id'] = response.data.createTodo.id;
+    expect(response.data.createTodo.name).toEqual('todo1');
+    expect(response.data.createTodo.note.id).toEqual('1');
+    expect(response.data.createTodo.note.echo.arguments.msg).toEqual('Hello');
+    expect(response.data.createTodo.note.echo.typeName).toEqual('Note');
+    expect(response.data.createTodo.note.echo.fieldName).toEqual('echo');
+  });
+
+  test('simple echoEnv function on a non-model field', async () => {
+    const response = await GRAPHQL_CLIENT.query(
+      `mutation {
+        updateTodo(input: { id: "${todoInput['id']}", name: "todo101", note: { id: "101" } }) {
+          id
+          name
+          note {
+            id
+            echoEnv(msg: "Hello Again") {
+              arguments {
+                  msg
+              }
+              typeName
+              fieldName
+            }
+          }
+        }
+      }`,
+      {},
+    );
+    expect(response.data.updateTodo.name).toEqual('todo101');
+    expect(response.data.updateTodo.note.id).toEqual('101');
+    todoInput.note.id = '101';
+    todoInput.name = 'todo101';
+    expect(response.data.updateTodo.note.echoEnv.arguments.msg).toEqual('Hello Again');
+    expect(response.data.updateTodo.note.echoEnv.typeName).toEqual('Note');
+    expect(response.data.updateTodo.note.echoEnv.fieldName).toEqual('echoEnv');
+  });
+
+  test('simple duplicate function on a non-model field', async () => {
+    const response = await GRAPHQL_CLIENT.query(
+      `query {
+        getTodo(id: "${todoInput['id']}") {
+          id
+          name
+          note {
+            id
+            duplicate(msg: "Hello") {
+              arguments {
+                  msg
+              }
+              typeName
+              fieldName
+            }
+          }
+        }
+      }`,
+      {},
+    );
+    expect(response.data.getTodo.name).toEqual(todoInput.name);
+    expect(response.data.getTodo.note.id).toEqual(todoInput.note.id);
+    expect(response.data.getTodo.note.duplicate.arguments.msg).toEqual('Hello');
+    expect(response.data.getTodo.note.duplicate.typeName).toEqual('Note');
+    expect(response.data.getTodo.note.duplicate.fieldName).toEqual('duplicate');
+  });
+
+  test('pipeline of @function(s) on a non-model field', async () => {
+    const response = await GRAPHQL_CLIENT.query(
+      `query {
+        getTodo(id: "${todoInput['id']}") {
+          id
+          name
+          note {
+            id
+            pipeline(msg: "IGNORED")
+            pipelineReverse(msg: "hello from pipelineReverse") {
+              arguments {
+                  msg
+              }
+              typeName
+              fieldName
+            }
+          }
+        }
+      }`,
+      {},
+    );
+    expect(response.data.getTodo.name).toEqual(todoInput.name);
+    expect(response.data.getTodo.note.id).toEqual(todoInput.note.id);
+    expect(response.data.getTodo.note.pipelineReverse.arguments.msg).toEqual('hello from pipelineReverse');
+    expect(response.data.getTodo.note.pipelineReverse.typeName).toEqual('Note');
+    expect(response.data.getTodo.note.pipelineReverse.fieldName).toEqual('pipelineReverse');
+    expect(response.data.getTodo.note.pipeline).toEqual('Hello, world!');
+  });
+
+  test('echo function in same and different AWS accounts on a non-model field', async () => {
+    const response = await GRAPHQL_CLIENT.query(
+      `query {
+        getTodo(id: "${todoInput['id']}") {
+          id
+          name
+          note {
+            id
+            echoFromSameAccount(msg: "hello from same account") {
+              arguments {
+                  msg
+              }
+              typeName
+              fieldName
+            }
+            echoFromDifferentAccount(msg: "hello from different account") {
+              arguments {
+                  msg
+              }
+              typeName
+              fieldName
+            }
+          }
+        }
+      }`,
+      {},
+    );
+    expect(response.data.getTodo.name).toEqual(todoInput.name);
+    expect(response.data.getTodo.note.id).toEqual(todoInput.note.id);
+
+    expect(response.data.getTodo.note.echoFromSameAccount.arguments.msg).toEqual('hello from same account');
+    expect(response.data.getTodo.note.echoFromSameAccount.typeName).toEqual('Note');
+    expect(response.data.getTodo.note.echoFromSameAccount.fieldName).toEqual('echoFromSameAccount');
+
+    expect(response.data.getTodo.note.echoFromDifferentAccount.arguments.msg).toEqual('hello from different account');
+    expect(response.data.getTodo.note.echoFromDifferentAccount.typeName).toEqual('Note');
+    expect(response.data.getTodo.note.echoFromDifferentAccount.fieldName).toEqual('echoFromDifferentAccount');
+  });
 });
 
 function wait(ms: number) {
