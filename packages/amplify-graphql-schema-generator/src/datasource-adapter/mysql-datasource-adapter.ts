@@ -1,5 +1,4 @@
 import { knex } from 'knex';
-import { printer } from '@aws-amplify/amplify-prompts';
 import { invokeSchemaInspectorLambda } from '../utils/vpc-helper';
 import ora from 'ora';
 import { Field, Index } from '../schema-representation';
@@ -74,7 +73,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
         debug: false,
       });
     } catch (err) {
-      printer.info(err);
+      console.info(err);
       throw err;
     }
   }
