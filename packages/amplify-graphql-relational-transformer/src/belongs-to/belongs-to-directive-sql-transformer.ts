@@ -7,7 +7,7 @@ import {
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
 import { setFieldMappingResolverReference } from '../resolvers';
 import { BelongsToDirectiveConfiguration } from '../types';
-import { ensureReferencesArray, getBelongsToReferencesNodes, validateChildReferencesFields } from '../utils';
+import { ensureReferencesArray, getBelongsToReferencesNodes, validateChildReferencesFieldsHomogeneousSql } from '../utils';
 import { getStrategyDbTypeFromTypeNode } from '@aws-amplify/graphql-transformer-core';
 import { getGenerator } from '../resolver/generator-factory';
 
@@ -27,7 +27,7 @@ export class BelongsToDirectiveSQLTransformer implements DataSourceBasedDirectiv
   };
 
   transformSchema = (context: TransformerTransformSchemaStepContextProvider, config: BelongsToDirectiveConfiguration): void => {
-    validateChildReferencesFields(config, context as TransformerContextProvider);
+    validateChildReferencesFieldsHomogeneousSql(config, context as TransformerContextProvider);
   };
 
   /** no-op */

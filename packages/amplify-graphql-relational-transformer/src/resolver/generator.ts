@@ -14,5 +14,5 @@ export abstract class RelationalResolverGenerator {
     ctx: TransformerContextProvider,
   ): void;
 
-  abstract makeBelongsToGetItemConnectionWithKeyResolver(config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void;
+  abstract makeBelongsToGetItemConnectionWithKeyResolver(config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void;
 }

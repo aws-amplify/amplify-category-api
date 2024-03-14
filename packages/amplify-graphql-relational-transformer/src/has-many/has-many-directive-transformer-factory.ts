@@ -15,17 +15,26 @@ export const getHasManyDirectiveTransformer = (
       return new HasManyDirectiveSQLTransformer(dbType);
     case 'DYNAMODB':
       // TODO: bifurcate and validate before getting to this stage.
-      if (config.references !== undefined && config.references.length >= 1) {
+      if (config.references && config.references.length >= 1) {
         if (config.fields !== undefined && config.fields.length > 0) {
           throw new Error('Something went wrong >> cannot have both references and fields.');
         }
         return new HasManyDirectiveDDBReferencesTransformer(dbType);
-      } else if (config.fields !== undefined && config.fields.length >= 1) {
-        if (config.references !== undefined && config.references.length > 0) {
-          throw new Error('Something went wrong >> cannot have both references and fields.');
-        }
+      } else {
         return new HasManyDirectiveDDBFieldsTransformer(dbType);
       }
-      throw new Error('Something went wrong >> cannot have both references and fields.');
+    // // TODO: bifurcate and validate before getting to this stage.
+    // if (config.references !== undefined && config.references.length >= 1) {
+    //   if (config.fields !== undefined && config.fields.length > 0) {
+    //     throw new Error('Something went wrong >> cannot have both references and fields.');
+    //   }
+    //   return new HasManyDirectiveDDBReferencesTransformer(dbType);
+    // } else if (config.fields !== undefined && config.fields.length >= 1) {
+    //   if (config.references !== undefined && config.references.length > 0) {
+    //     throw new Error('Something went wrong >> cannot have both references and fields.');
+    //   }
+    //   return new HasManyDirectiveDDBFieldsTransformer(dbType);
+    // }
+    // throw new Error('Something went wrong >> cannot have both references and fields.');
   }
 };

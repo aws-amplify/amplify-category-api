@@ -5,11 +5,11 @@ import * as cdk from 'aws-cdk-lib';
 import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { ModelResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { getSortKeyFields } from './schema';
-import { HasManyDirectiveConfiguration } from './types';
+import { HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from './types';
 import { getConnectionAttributeName, getObjectPrimaryKey, getRelatedType } from './utils';
 
 export const updateTableForReferencesConnection = (
-  config: HasManyDirectiveConfiguration,
+  config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration,
   ctx: TransformerContextProvider
 ): void => {
   const { field, fieldNodes, indexName: incomingIndexName, object, references, relatedType } = config;
@@ -43,6 +43,12 @@ export const updateTableForReferencesConnection = (
   // -- ideally further up the chain
   const partitionKeyType = attributeTypeFromType(fieldNode.type, ctx)
 
+  const respectPrimaryKeyAttributesOnConnectionField: boolean = ctx.transformParameters.respectPrimaryKeyAttributesOnConnectionField;
+
+  const sortKeyAttributeDefinitions = respectPrimaryKeyAttributesOnConnectionField
+  ? getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject(ctx, object, field, fieldNodes.slice(1))
+  : undefined;
+
   table.addGlobalSecondaryIndex({
     indexName,
     projectionType: 'ALL',
@@ -50,7 +56,12 @@ export const updateTableForReferencesConnection = (
       name: partitionKeyName,
       type: partitionKeyType,
     },
-    sortKey: undefined,
+    sortKey: sortKeyAttributeDefinitions
+    ? {
+        name: sortKeyAttributeDefinitions.sortKeyName,
+        type: sortKeyAttributeDefinitions.sortKeyType,
+      }
+    : undefined,
     readCapacity: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
     writeCapacity: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
   });
@@ -109,7 +120,7 @@ export const updateTableForConnection = (
     ? attributeTypeFromType(getObjectPrimaryKey(object).type, ctx)
     : 'S';
   const sortKeyAttributeDefinitions = respectPrimaryKeyAttributesOnConnectionField
-    ? getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject(ctx, object, field)
+    ? getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject(ctx, object, field, getSortKeyFields(ctx, object))
     : undefined;
   table.addGlobalSecondaryIndex({
     indexName,
@@ -155,8 +166,10 @@ const getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject = (
   ctx: TransformerContextProvider,
   object: ObjectTypeDefinitionNode,
   hasManyField: FieldDefinitionNode,
+  fieldDefinitions: FieldDefinitionNode[],
 ): SortKeyAttributeDefinitions | undefined => {
-  const sortKeyFields = getSortKeyFields(ctx, object);
+  // const sortKeyFields = getSortKeyFields(ctx, object);
+  const sortKeyFields = fieldDefinitions
   if (!sortKeyFields.length) {
     return undefined;
   }

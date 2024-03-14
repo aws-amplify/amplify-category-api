@@ -500,7 +500,7 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
     );
   };
 
-  makeBelongsToGetItemConnectionWithKeyResolver = (config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void => {
+  makeBelongsToGetItemConnectionWithKeyResolver = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
     this.makeHasOneGetItemConnectionWithKeyResolver(config, ctx);
   };
 }
