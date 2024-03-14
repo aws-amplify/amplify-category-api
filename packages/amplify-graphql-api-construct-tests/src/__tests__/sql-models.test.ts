@@ -14,7 +14,6 @@ import { CognitoIdentityProviderClient, AdminCreateUserCommand } from '@aws-sdk/
 import generator from 'generate-password';
 import { getResourceNamesForStrategyName } from '@aws-amplify/graphql-transformer-core';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
-import { graphql } from '../graphql-request';
 import Amplify, { Auth } from 'aws-amplify';
 import { ICredentials } from '@aws-amplify/core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
@@ -101,9 +100,6 @@ describe('CDK GraphQL Transformer', () => {
     ]);
     outputs = outputs[name];
     outputsWithIam = outputsWithIam[nameWithIam];
-
-    console.log(JSON.stringify(outputs, null, 2));
-    console.log(JSON.stringify(outputsWithIam, null, 2));
 
     const cognitoRolesCredentials = await getCognitoIamCredentials(outputs);
     const cognitoRolesWithIamCredentials = await getCognitoIamCredentials(outputsWithIam);
@@ -216,15 +212,15 @@ describe('CDK GraphQL Transformer', () => {
   });
 
   afterAll(async () => {
-    // try {
-    //   await Promise.all([cdkDestroy(projRoot, '--all'), cdkDestroy(projRootWithIam, '--all')]);
-    // } catch (err) {
-    //   console.log(`Error invoking 'cdk destroy': ${err}`);
-    // }
-    //
-    // deleteProjectDir(projRoot);
-    // deleteProjectDir(projRootWithIam);
-    // await cleanupDatabase({ identifier: identifier, region, dbDetails });
+    try {
+      await Promise.all([cdkDestroy(projRoot, '--all'), cdkDestroy(projRootWithIam, '--all')]);
+    } catch (err) {
+      console.log(`Error invoking 'cdk destroy': ${err}`);
+    }
+
+    deleteProjectDir(projRoot);
+    deleteProjectDir(projRootWithIam);
+    await cleanupDatabase({ identifier: identifier, region, dbDetails });
   });
 
   it('provisions lambda with desired configuration', async () => {
