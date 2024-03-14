@@ -14,18 +14,65 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **"
 `;
 
+exports[`subscriptions generateAuthExpressionForSubscriptions iam renders for iam access 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+$util.unauthorized()
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`subscriptions generateAuthExpressionForSubscriptions iam renders for iam access with roles 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+    #if( !$isAuthorized )
+      #if( $ctx.identity.userArn == $ctx.stash.testClaim )
+        #set( $isAuthorized = true )
+      #end
+    #end
+    #if( !$isAuthorized )
+      #if( $ctx.identity.userArn == $ctx.stash.testClaim )
+        #set( $isAuthorized = true )
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
 exports[`subscriptions generateAuthExpressionForSubscriptions iam renders for iam auth with no admin roles 1`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #if( $util.authType() == \\"IAM Authorization\\" )
   #if( !$isAuthorized )
-    #if( $ctx.identity.userArn == $ctx.stash.undefined )
+    #if( $ctx.identity.userArn == $ctx.stash.testClaim )
       #set( $isAuthorized = true )
     #end
   #end
   #if( !$isAuthorized )
-    #if( $ctx.identity.userArn == $ctx.stash.undefined )
+    #if( $ctx.identity.userArn == $ctx.stash.testClaim )
       #set( $isAuthorized = true )
     #end
   #end
@@ -43,12 +90,12 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #if( $util.authType() == \\"IAM Authorization\\" )
   #if( !$isAuthorized )
-    #if( $ctx.identity.userArn == $ctx.stash.undefined )
+    #if( $ctx.identity.userArn == $ctx.stash.testClaim )
       #set( $isAuthorized = true )
     #end
   #end
   #if( !$isAuthorized )
-    #if( $ctx.identity.userArn == $ctx.stash.undefined )
+    #if( $ctx.identity.userArn == $ctx.stash.testClaim )
       #set( $isAuthorized = true )
     #end
   #end
@@ -231,12 +278,12 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
   #if( !$isAuthorized )
-    #if( $ctx.identity.userArn == $ctx.stash.undefined )
+    #if( $ctx.identity.userArn == $ctx.stash.testClaim )
       #set( $isAuthorized = true )
     #end
   #end
   #if( !$isAuthorized )
-    #if( $ctx.identity.userArn == $ctx.stash.undefined )
+    #if( $ctx.identity.userArn == $ctx.stash.testClaim )
       #set( $isAuthorized = true )
     #end
   #end
@@ -320,12 +367,12 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
   #if( !$isAuthorized )
-    #if( $ctx.identity.userArn == $ctx.stash.undefined )
+    #if( $ctx.identity.userArn == $ctx.stash.testClaim )
       #set( $isAuthorized = true )
     #end
   #end
   #if( !$isAuthorized )
-    #if( $ctx.identity.userArn == $ctx.stash.undefined )
+    #if( $ctx.identity.userArn == $ctx.stash.testClaim )
       #set( $isAuthorized = true )
     #end
   #end
@@ -343,12 +390,12 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #if( $util.authType() == \\"IAM Authorization\\" )
   #if( !$isAuthorized )
-    #if( $ctx.identity.userArn == $ctx.stash.undefined )
+    #if( $ctx.identity.userArn == $ctx.stash.testClaim )
       #set( $isAuthorized = true )
     #end
   #end
   #if( !$isAuthorized )
-    #if( $ctx.identity.userArn == $ctx.stash.undefined )
+    #if( $ctx.identity.userArn == $ctx.stash.testClaim )
       #set( $isAuthorized = true )
     #end
   #end

@@ -161,4 +161,133 @@ describe('auth modes', () => {
       });
     });
   });
+
+  it('renders with identity pool auth', () => {
+    verifySynth((stack) => {
+      const identityPool = new cognito.CfnIdentityPool(stack, 'TestIdentityPool', { allowUnauthenticatedIdentities: true });
+      const appsync = new iam.ServicePrincipal('appsync.amazonaws.com');
+      const authenticatedUserRole = new iam.Role(stack, 'AuthRole', { assumedBy: appsync });
+      const unauthenticatedUserRole = new iam.Role(stack, 'UnauthRole', { assumedBy: appsync });
+
+      new AmplifyGraphqlApi(stack, 'TestApi', {
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+          type Todo @model @auth(rules: [{ provider: iam, allow: public }, { provider: iam, allow: private }]) {
+            description: String!
+          }
+        `),
+        authorizationModes: {
+          identityPoolConfig: {
+            identityPoolId: identityPool.logicalId,
+            authenticatedUserRole,
+            unauthenticatedUserRole,
+          },
+        },
+      });
+    });
+  });
+
+  it('renders with IAM access enabled', () => {
+    verifySynth((stack) => {
+      new AmplifyGraphqlApi(stack, 'TestApi', {
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+          type Todo @model @auth(rules: [{ provider: iam, allow: public }, { provider: iam, allow: private }]) {
+            description: String!
+          }
+        `),
+        authorizationModes: {
+          iamConfig: {
+            enableIamAuthorizationMode: true,
+          },
+        },
+      });
+    });
+  });
+
+  it('throws if deprecated and un-deprecated IAM and identityPool settings are used', () => {
+    expect(() => {
+      verifySynth((stack) => {
+        const identityPool = new cognito.CfnIdentityPool(stack, 'TestIdentityPool', { allowUnauthenticatedIdentities: true });
+        const appsync = new iam.ServicePrincipal('appsync.amazonaws.com');
+        const authenticatedUserRole = new iam.Role(stack, 'AuthRole', { assumedBy: appsync });
+        const unauthenticatedUserRole = new iam.Role(stack, 'UnauthRole', { assumedBy: appsync });
+
+        new AmplifyGraphqlApi(stack, 'TestApi', {
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+            type Todo @model @auth(rules: [{ provider: iam, allow: public }, { provider: iam, allow: private }]) {
+              description: String!
+            }
+          `),
+          authorizationModes: {
+            iamConfig: {
+              identityPoolId: identityPool.logicalId,
+              authenticatedUserRole,
+              unauthenticatedUserRole,
+              enableIamAuthorizationMode: true,
+            },
+          },
+        });
+      });
+    }).toThrow(
+      "Cannot use deprecated 'authorizationModes.iamConfig' options with 'authorizationModes.identityPoolConfig' " +
+      "or 'authorizationModes.iamConfig.enableIamAuthorizationMode'",
+    );
+    expect(() => {
+      verifySynth((stack) => {
+        const identityPool = new cognito.CfnIdentityPool(stack, 'TestIdentityPool', { allowUnauthenticatedIdentities: true });
+        const appsync = new iam.ServicePrincipal('appsync.amazonaws.com');
+        const authenticatedUserRole = new iam.Role(stack, 'AuthRole', { assumedBy: appsync });
+        const unauthenticatedUserRole = new iam.Role(stack, 'UnauthRole', { assumedBy: appsync });
+
+        new AmplifyGraphqlApi(stack, 'TestApi', {
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+            type Todo @model @auth(rules: [{ provider: iam, allow: public }, { provider: iam, allow: private }]) {
+              description: String!
+            }
+          `),
+          authorizationModes: {
+            iamConfig: {
+              identityPoolId: identityPool.logicalId,
+              authenticatedUserRole,
+              unauthenticatedUserRole,
+            },
+            identityPoolConfig: {
+              identityPoolId: identityPool.logicalId,
+              authenticatedUserRole,
+              unauthenticatedUserRole,
+            }
+          },
+        });
+      });
+    }).toThrow(
+      "Cannot use deprecated 'authorizationModes.iamConfig' options with 'authorizationModes.identityPoolConfig' " +
+      "or 'authorizationModes.iamConfig.enableIamAuthorizationMode'",
+    );
+  });
+
+  it('throws if deprecated IAM settings are missing required values', () => {
+    expect(() => {
+      verifySynth((stack) => {
+        const appsync = new iam.ServicePrincipal('appsync.amazonaws.com');
+        const authenticatedUserRole = new iam.Role(stack, 'AuthRole', { assumedBy: appsync });
+        const unauthenticatedUserRole = new iam.Role(stack, 'UnauthRole', { assumedBy: appsync });
+
+        new AmplifyGraphqlApi(stack, 'TestApi', {
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+            type Todo @model @auth(rules: [{ provider: iam, allow: public }, { provider: iam, allow: private }]) {
+              description: String!
+            }
+          `),
+          authorizationModes: {
+            iamConfig: {
+              authenticatedUserRole,
+              unauthenticatedUserRole,
+            },
+          },
+        });
+      });
+    }).toThrow(
+      "'authorizationModes.iamConfig.authenticatedUserRole', 'authorizationModes.iamConfig.unauthenticatedUserRole'" +
+      " and 'authorizationModes.iamConfig.identityPoolId' must be provided.",
+    );
+  });
 });
