@@ -416,88 +416,7 @@ describe('@model with @auth - iam access', () => {
       GRAPHQL_CLIENT_UNAUTH_ROLE_WITHOUT_IAM_ACCESS,
       GRAPHQL_CLIENT_BASIC_ROLE_WITH_IAM_ACCESS,
     ]) {
-      const listPostPublicIAMResponse = (await graphqlClient.query({
-        query: gql`
-          query {
-            listPostPublicIAM {
-              items {
-                createdAt
-                id
-                title
-                updatedAt
-              }
-            }
-          }
-        `,
-        fetchPolicy: 'no-cache',
-      })) as any;
-      expect(listPostPublicIAMResponse.data.listPostPublicIAM.items.length).toBeGreaterThan(0);
-      for (const listItem of listPostPublicIAMResponse.data.listPostPublicIAM.items) {
-        expect(listItem.id).toBeDefined();
-        expect(listItem.title).toBeDefined();
-        expect(listItem.createdAt).toBeDefined();
-        expect(listItem.updatedAt).toBeDefined();
-        const getResponse = (await graphqlClient.query({
-          query: gql`
-            query MyQuery {
-              getPostPublicIAM(id: "${listItem.id}") {
-                createdAt
-                id
-                title
-                updatedAt
-              }
-            }
-          `,
-          fetchPolicy: 'no-cache',
-        })) as any;
-        expect(getResponse.data.getPostPublicIAM.id).toBeDefined();
-        expect(getResponse.data.getPostPublicIAM.title).toBeDefined();
-        expect(getResponse.data.getPostPublicIAM.createdAt).toBeDefined();
-        expect(getResponse.data.getPostPublicIAM.updatedAt).toBeDefined();
-      }
-
-      const createResponse = (await graphqlClient.mutate({
-        mutation: gql`
-          mutation {
-            createPostPublicIAM(input: { title: "Test post" }) {
-              id
-              title
-            }
-          }
-        `,
-        fetchPolicy: 'no-cache',
-      })) as any;
-
-      expect(createResponse.data.createPostPublicIAM.id).toBeDefined();
-      expect(createResponse.data.createPostPublicIAM.title).toBeDefined();
-
-      const updateResponse = (await graphqlClient.mutate({
-        mutation: gql`
-          mutation {
-            updatePostPublicIAM(input: { id: "${createResponse.data.createPostPublicIAM.id}", title: "Test post 2" }) {
-              id
-              title
-            }
-          }
-        `,
-        fetchPolicy: 'no-cache',
-      })) as any;
-
-      expect(updateResponse.data.updatePostPublicIAM.id).toBeDefined();
-      expect(updateResponse.data.updatePostPublicIAM.title).toBeDefined();
-
-      const deleteResponse = (await graphqlClient.mutate({
-        mutation: gql`
-          mutation {
-            deletePostPublicIAM(input: { id: "${createResponse.data.createPostPublicIAM.id}" }) {
-              id
-            }
-          }
-        `,
-        fetchPolicy: 'no-cache',
-      })) as any;
-
-      expect(deleteResponse.data.deletePostPublicIAM.id).toBeDefined();
+      await testHasCRUDLAccess(graphqlClient, 'PostPublicIAM');
     }
   });
 
@@ -507,80 +426,7 @@ describe('@model with @auth - iam access', () => {
       GRAPHQL_CLIENT_AUTH_ROLE_WITHOUT_IAM_ACCESS,
       GRAPHQL_CLIENT_BASIC_ROLE_WITHOUT_IAM_ACCESS,
     ]) {
-      await expect(
-        graphqlClient.query({
-          query: gql`
-            query {
-              listPostPublicIAM {
-                items {
-                  createdAt
-                  id
-                  title
-                  updatedAt
-                }
-              }
-            }
-          `,
-          fetchPolicy: 'no-cache',
-        }),
-      ).rejects.toThrowError('GraphQL error: Not Authorized to access listPostPublicIAM on type Query');
-
-      await expect(
-        graphqlClient.query({
-          query: gql`
-            query MyQuery {
-              getPostPublicIAM(id: "some-id") {
-                createdAt
-                id
-                title
-                updatedAt
-              }
-            }
-          `,
-          fetchPolicy: 'no-cache',
-        }),
-      ).rejects.toThrowError('GraphQL error: Not Authorized to access getPostPublicIAM on type Query');
-
-      await expect(
-        graphqlClient.mutate({
-          mutation: gql`
-            mutation {
-              createPostPublicIAM(input: { title: "Test post" }) {
-                id
-                title
-              }
-            }
-          `,
-          fetchPolicy: 'no-cache',
-        }),
-      ).rejects.toThrowError('GraphQL error: Not Authorized to access createPostPublicIAM on type Mutation');
-
-      await expect(
-        graphqlClient.mutate({
-          mutation: gql`
-            mutation {
-              updatePostPublicIAM(input: { id: "some-id", title: "Test post 2" }) {
-                id
-                title
-              }
-            }
-          `,
-          fetchPolicy: 'no-cache',
-        }),
-      ).rejects.toThrowError('GraphQL error: Not Authorized to access updatePostPublicIAM on type Mutation');
-
-      await expect(
-        graphqlClient.mutate({
-          mutation: gql`
-            mutation {
-              deletePostPublicIAM(input: { id: "some-id" }) {
-                id
-              }
-            }
-          `,
-          fetchPolicy: 'no-cache',
-        }),
-      ).rejects.toThrowError('GraphQL error: Not Authorized to access deletePostPublicIAM on type Mutation');
+      await testDoesNotHaveCRUDLAccess(graphqlClient, 'PostPublicIAM');
     }
   });
 
@@ -590,88 +436,7 @@ describe('@model with @auth - iam access', () => {
       GRAPHQL_CLIENT_AUTH_ROLE_WITHOUT_IAM_ACCESS,
       GRAPHQL_CLIENT_BASIC_ROLE_WITH_IAM_ACCESS,
     ]) {
-      const listPostPrivateIAMResponse = (await graphqlClient.query({
-        query: gql`
-          query {
-            listPostPrivateIAM {
-              items {
-                createdAt
-                id
-                title
-                updatedAt
-              }
-            }
-          }
-        `,
-        fetchPolicy: 'no-cache',
-      })) as any;
-      expect(listPostPrivateIAMResponse.data.listPostPrivateIAM.items.length).toBeGreaterThan(0);
-      for (const listItem of listPostPrivateIAMResponse.data.listPostPrivateIAM.items) {
-        expect(listItem.id).toBeDefined();
-        expect(listItem.title).toBeDefined();
-        expect(listItem.createdAt).toBeDefined();
-        expect(listItem.updatedAt).toBeDefined();
-        const getResponse = (await graphqlClient.query({
-          query: gql`
-            query MyQuery {
-              getPostPrivateIAM(id: "${listItem.id}") {
-                createdAt
-                id
-                title
-                updatedAt
-              }
-            }
-          `,
-          fetchPolicy: 'no-cache',
-        })) as any;
-        expect(getResponse.data.getPostPrivateIAM.id).toBeDefined();
-        expect(getResponse.data.getPostPrivateIAM.title).toBeDefined();
-        expect(getResponse.data.getPostPrivateIAM.createdAt).toBeDefined();
-        expect(getResponse.data.getPostPrivateIAM.updatedAt).toBeDefined();
-      }
-
-      const createResponse = (await graphqlClient.mutate({
-        mutation: gql`
-          mutation {
-            createPostPrivateIAM(input: { title: "Test post" }) {
-              id
-              title
-            }
-          }
-        `,
-        fetchPolicy: 'no-cache',
-      })) as any;
-
-      expect(createResponse.data.createPostPrivateIAM.id).toBeDefined();
-      expect(createResponse.data.createPostPrivateIAM.title).toBeDefined();
-
-      const updateResponse = (await graphqlClient.mutate({
-        mutation: gql`
-          mutation {
-            updatePostPrivateIAM(input: { id: "${createResponse.data.createPostPrivateIAM.id}", title: "Test post 2" }) {
-              id
-              title
-            }
-          }
-        `,
-        fetchPolicy: 'no-cache',
-      })) as any;
-
-      expect(updateResponse.data.updatePostPrivateIAM.id).toBeDefined();
-      expect(updateResponse.data.updatePostPrivateIAM.title).toBeDefined();
-
-      const deleteResponse = (await graphqlClient.mutate({
-        mutation: gql`
-          mutation {
-            deletePostPrivateIAM(input: { id: "${createResponse.data.createPostPrivateIAM.id}" }) {
-              id
-            }
-          }
-        `,
-        fetchPolicy: 'no-cache',
-      })) as any;
-
-      expect(deleteResponse.data.deletePostPrivateIAM.id).toBeDefined();
+      await testHasCRUDLAccess(graphqlClient, 'PostPrivateIAM');
     }
   });
 
@@ -681,177 +446,13 @@ describe('@model with @auth - iam access', () => {
       GRAPHQL_CLIENT_UNAUTH_ROLE_WITHOUT_IAM_ACCESS,
       GRAPHQL_CLIENT_BASIC_ROLE_WITHOUT_IAM_ACCESS,
     ]) {
-      await expect(
-        graphqlClient.query({
-          query: gql`
-            query {
-              listPostPrivateIAM {
-                items {
-                  createdAt
-                  id
-                  title
-                  updatedAt
-                }
-              }
-            }
-          `,
-          fetchPolicy: 'no-cache',
-        }),
-      ).rejects.toThrowError(
-        /GraphQL error: Not Authorized to access listPostPrivateIAM on type Query|Network error: Response not successful: Received status code 401/,
-      );
-
-      await expect(
-        graphqlClient.query({
-          query: gql`
-            query MyQuery {
-              getPostPrivateIAM(id: "some-id") {
-                createdAt
-                id
-                title
-                updatedAt
-              }
-            }
-          `,
-          fetchPolicy: 'no-cache',
-        }),
-      ).rejects.toThrowError(
-        /GraphQL error: Not Authorized to access getPostPrivateIAM on type Query|Network error: Response not successful: Received status code 401/,
-      );
-
-      await expect(
-        graphqlClient.mutate({
-          mutation: gql`
-            mutation {
-              createPostPrivateIAM(input: { title: "Test post" }) {
-                id
-                title
-              }
-            }
-          `,
-          fetchPolicy: 'no-cache',
-        }),
-      ).rejects.toThrowError(
-        /GraphQL error: Not Authorized to access createPostPrivateIAM on type Mutation|Network error: Response not successful: Received status code 401/,
-      );
-
-      await expect(
-        graphqlClient.mutate({
-          mutation: gql`
-            mutation {
-              updatePostPrivateIAM(input: { id: "some-id", title: "Test post 2" }) {
-                id
-                title
-              }
-            }
-          `,
-          fetchPolicy: 'no-cache',
-        }),
-      ).rejects.toThrowError(
-        /GraphQL error: Not Authorized to access updatePostPrivateIAM on type Mutation|Network error: Response not successful: Received status code 401/,
-      );
-
-      await expect(
-        graphqlClient.mutate({
-          mutation: gql`
-            mutation {
-              deletePostPrivateIAM(input: { id: "some-id" }) {
-                id
-              }
-            }
-          `,
-          fetchPolicy: 'no-cache',
-        }),
-      ).rejects.toThrowError(
-        /GraphQL error: Not Authorized to access deletePostPrivateIAM on type Mutation|Network error: Response not successful: Received status code 401/,
-      );
+      await testDoesNotHaveCRUDLAccess(graphqlClient, 'PostPrivateIAM');
     }
   });
 
   it('can access PostWithNoIAMProviders', async () => {
     for (const graphqlClient of [GRAPHQL_CLIENT_BASIC_ROLE_WITH_IAM_ACCESS]) {
-      const listPostWithNoIAMProvidersResponse = (await graphqlClient.query({
-        query: gql`
-          query {
-            listPostWithNoIAMProviders {
-              items {
-                createdAt
-                id
-                title
-                updatedAt
-              }
-            }
-          }
-        `,
-        fetchPolicy: 'no-cache',
-      })) as any;
-      expect(listPostWithNoIAMProvidersResponse.data.listPostWithNoIAMProviders.items.length).toBeGreaterThan(0);
-      for (const listItem of listPostWithNoIAMProvidersResponse.data.listPostWithNoIAMProviders.items) {
-        expect(listItem.id).toBeDefined();
-        expect(listItem.title).toBeDefined();
-        expect(listItem.createdAt).toBeDefined();
-        expect(listItem.updatedAt).toBeDefined();
-        const getResponse = (await graphqlClient.query({
-          query: gql`
-            query MyQuery {
-              getPostWithNoIAMProvider(id: "${listItem.id}") {
-                createdAt
-                id
-                title
-                updatedAt
-              }
-            }
-          `,
-          fetchPolicy: 'no-cache',
-        })) as any;
-        expect(getResponse.data.getPostWithNoIAMProvider.id).toBeDefined();
-        expect(getResponse.data.getPostWithNoIAMProvider.title).toBeDefined();
-        expect(getResponse.data.getPostWithNoIAMProvider.createdAt).toBeDefined();
-        expect(getResponse.data.getPostWithNoIAMProvider.updatedAt).toBeDefined();
-      }
-
-      const createResponse = (await graphqlClient.mutate({
-        mutation: gql`
-          mutation {
-            createPostWithNoIAMProvider(input: { title: "Test post" }) {
-              id
-              title
-            }
-          }
-        `,
-        fetchPolicy: 'no-cache',
-      })) as any;
-
-      expect(createResponse.data.createPostWithNoIAMProvider.id).toBeDefined();
-      expect(createResponse.data.createPostWithNoIAMProvider.title).toBeDefined();
-
-      const updateResponse = (await graphqlClient.mutate({
-        mutation: gql`
-          mutation {
-            updatePostWithNoIAMProvider(input: { id: "${createResponse.data.createPostWithNoIAMProvider.id}", title: "Test post 2" }) {
-              id
-              title
-            }
-          }
-        `,
-        fetchPolicy: 'no-cache',
-      })) as any;
-
-      expect(updateResponse.data.updatePostWithNoIAMProvider.id).toBeDefined();
-      expect(updateResponse.data.updatePostWithNoIAMProvider.title).toBeDefined();
-
-      const deleteResponse = (await graphqlClient.mutate({
-        mutation: gql`
-          mutation {
-            deletePostWithNoIAMProvider(input: { id: "${createResponse.data.createPostWithNoIAMProvider.id}" }) {
-              id
-            }
-          }
-        `,
-        fetchPolicy: 'no-cache',
-      })) as any;
-
-      expect(deleteResponse.data.deletePostWithNoIAMProvider.id).toBeDefined();
+      await testHasCRUDLAccess(graphqlClient, 'PostWithNoIAMProvider', 'PostWithNoIAMProviders');
     }
   });
 
@@ -863,90 +464,176 @@ describe('@model with @auth - iam access', () => {
       GRAPHQL_CLIENT_UNAUTH_ROLE_WITHOUT_IAM_ACCESS,
       GRAPHQL_CLIENT_BASIC_ROLE_WITHOUT_IAM_ACCESS,
     ]) {
-      await expect(
-        graphqlClient.query({
-          query: gql`
-            query {
-              listPostWithNoIAMProviders {
-                items {
-                  createdAt
-                  id
-                  title
-                  updatedAt
-                }
-              }
-            }
-          `,
-          fetchPolicy: 'no-cache',
-        }),
-      ).rejects.toThrowError(
-        /GraphQL error: Not Authorized to access listPostWithNoIAMProviders on type Query|Network error: Response not successful: Received status code 401/,
-      );
-
-      await expect(
-        graphqlClient.query({
-          query: gql`
-            query MyQuery {
-              getPostWithNoIAMProvider(id: "some-id") {
-                createdAt
-                id
-                title
-                updatedAt
-              }
-            }
-          `,
-          fetchPolicy: 'no-cache',
-        }),
-      ).rejects.toThrowError(
-        /GraphQL error: Not Authorized to access getPostWithNoIAMProvider on type Query|Network error: Response not successful: Received status code 401/,
-      );
-
-      await expect(
-        graphqlClient.mutate({
-          mutation: gql`
-            mutation {
-              createPostWithNoIAMProvider(input: { title: "Test post" }) {
-                id
-                title
-              }
-            }
-          `,
-          fetchPolicy: 'no-cache',
-        }),
-      ).rejects.toThrowError(
-        /GraphQL error: Not Authorized to access createPostWithNoIAMProvider on type Mutation|Network error: Response not successful: Received status code 401/,
-      );
-
-      await expect(
-        graphqlClient.mutate({
-          mutation: gql`
-            mutation {
-              updatePostWithNoIAMProvider(input: { id: "some-id", title: "Test post 2" }) {
-                id
-                title
-              }
-            }
-          `,
-          fetchPolicy: 'no-cache',
-        }),
-      ).rejects.toThrowError(
-        /GraphQL error: Not Authorized to access updatePostWithNoIAMProvider on type Mutation|Network error: Response not successful: Received status code 401/,
-      );
-
-      await expect(
-        graphqlClient.mutate({
-          mutation: gql`
-            mutation {
-              deletePostWithNoIAMProvider(input: { id: "some-id" }) {
-                id
-              }
-            }
-          `,
-          fetchPolicy: 'no-cache',
-        }),
-      ).rejects.toThrowError(
-        /GraphQL error: Not Authorized to access deletePostWithNoIAMProvider on type Mutation|Network error: Response not successful: Received status code 401/,
-      );
+      await testDoesNotHaveCRUDLAccess(graphqlClient, 'PostWithNoIAMProvider', 'PostWithNoIAMProviders');
     }
   });
 });
+
+const testHasCRUDLAccess = async (graphqlClient: AWSAppSyncClient<any>, modelName: string, modelListName?: string): Promise<void> => {
+  if (!modelListName) {
+    modelListName = modelName;
+  }
+  const createResponse = (await graphqlClient.mutate({
+    mutation: gql`
+          mutation {
+            create${modelName}(input: { title: "some title" }) {
+              id
+              title
+            }
+          }
+        `,
+    fetchPolicy: 'no-cache',
+  })) as any;
+  expect(createResponse.data[`create${modelName}`].id).toBeTruthy();
+  expect(createResponse.data[`create${modelName}`].title).toBeTruthy();
+
+  const listResponse = (await graphqlClient.query({
+    query: gql`
+          query {
+            list${modelListName} {
+              items {
+                id
+                title
+              }
+            }
+          }
+        `,
+    fetchPolicy: 'no-cache',
+  })) as any;
+  expect(listResponse.data[`list${modelListName}`].items.length).toBeGreaterThan(0);
+
+  const sampleItemId = createResponse.data[`create${modelName}`].id;
+  const getResponse = (await graphqlClient.query({
+    query: gql`
+          query {
+            get${modelName}(id: "${sampleItemId}") {
+              id
+              title
+            }
+          }
+        `,
+    fetchPolicy: 'no-cache',
+  })) as any;
+  expect(getResponse.data[`get${modelName}`].id).toBeTruthy();
+  expect(getResponse.data[`get${modelName}`].title).toBeTruthy();
+
+  const updateResponse = (await graphqlClient.mutate({
+    mutation: gql`
+          mutation {
+            update${modelName}(input: { id: "${sampleItemId}", title: "some updated title" }) {
+              id
+              title
+            }
+          }
+        `,
+    fetchPolicy: 'no-cache',
+  })) as any;
+  expect(updateResponse.data[`update${modelName}`].id).toBeTruthy();
+  expect(updateResponse.data[`update${modelName}`].title).toBeTruthy();
+
+  const deleteResponse = (await graphqlClient.mutate({
+    mutation: gql`
+          mutation {
+            delete${modelName}(input: { id: "${sampleItemId}" }) {
+              id
+              title
+            }
+          }
+        `,
+    fetchPolicy: 'no-cache',
+  })) as any;
+
+  expect(deleteResponse.data[`delete${modelName}`].id).toBeTruthy();
+  expect(deleteResponse.data[`delete${modelName}`].title).toBeTruthy();
+};
+
+const testDoesNotHaveCRUDLAccess = async (
+  graphqlClient: AWSAppSyncClient<any>,
+  modelName: string,
+  modelListName?: string,
+): Promise<void> => {
+  if (!modelListName) {
+    modelListName = modelName;
+  }
+  await expect(
+    graphqlClient.mutate({
+      mutation: gql`
+          mutation {
+            create${modelName}(input: { title: "some title" }) {
+              id
+              title
+            }
+          }
+        `,
+      fetchPolicy: 'no-cache',
+    }),
+  ).rejects.toThrowError(
+    /GraphQL error: Not Authorized to access .* on type Mutation|Network error: Response not successful: Received status code 401/,
+  );
+
+  await expect(
+    graphqlClient.query({
+      query: gql`
+          query {
+            list${modelListName} {
+              items {
+                id
+                title
+              }
+            }
+          }
+        `,
+      fetchPolicy: 'no-cache',
+    }),
+  ).rejects.toThrowError(
+    /GraphQL error: Not Authorized to access .* on type Query|Network error: Response not successful: Received status code 401/,
+  );
+
+  await expect(
+    graphqlClient.query({
+      query: gql`
+          query {
+            get${modelName}(id: "some-id") {
+              id
+              title
+            }
+          }
+        `,
+      fetchPolicy: 'no-cache',
+    }),
+  ).rejects.toThrowError(
+    /GraphQL error: Not Authorized to access .* on type Query|Network error: Response not successful: Received status code 401/,
+  );
+
+  await expect(
+    graphqlClient.mutate({
+      mutation: gql`
+          mutation {
+            update${modelName}(input: { id: "some-id", title: "some updated title" }) {
+              id
+              title
+            }
+          }
+        `,
+      fetchPolicy: 'no-cache',
+    }),
+  ).rejects.toThrowError(
+    /GraphQL error: Not Authorized to access .* on type Mutation|Network error: Response not successful: Received status code 401/,
+  );
+
+  await expect(
+    graphqlClient.mutate({
+      mutation: gql`
+          mutation {
+            delete${modelName}(input: { id: "some-id" }) {
+              id
+              title
+            }
+          }
+        `,
+      fetchPolicy: 'no-cache',
+    }),
+  ).rejects.toThrowError(
+    /GraphQL error: Not Authorized to access .* on type Mutation|Network error: Response not successful: Received status code 401/,
+  );
+};
