@@ -219,11 +219,13 @@ export const constructAuthorizedInputStatement = (keyName: string): Expression =
 /**
  * Generates sandbox expression for field
  */
-export const generateSandboxExpressionForField = (sandboxEnabled: boolean): string => {
+export const generateSandboxExpressionForField = (sandboxEnabled: boolean, genericIamAccessEnabled: boolean): string => {
   let exp: Expression;
   if (sandboxEnabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY_AUTH_TYPE)), methodCall(ref('util.unauthorized')));
   else exp = ref('util.unauthorized()');
-  return printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(compoundExpression([exp, toJson(obj({}))]));
+  return printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(
+    generateIAMAccessCheck(genericIamAccessEnabled, compoundExpression([exp, toJson(obj({}))])),
+  );
 };
 
 export const emptyPayload = toJson(raw(JSON.stringify({ version: '2018-05-29', payload: {} })));

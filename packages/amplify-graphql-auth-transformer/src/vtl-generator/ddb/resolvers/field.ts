@@ -44,6 +44,7 @@ import {
   generateOwnerClaimListExpression,
   generateOwnerMultiClaimExpression,
   generateInvalidClaimsCondition,
+  generateIAMAccessCheck,
 } from './helpers';
 
 // Field Read VTL Functions
@@ -206,9 +207,11 @@ export const setDeniedFieldFlag = (operation: string, subscriptionsEnabled: bool
 /**
  * Generates sandbox expression for field
  */
-export const generateSandboxExpressionForField = (sandboxEnabled: boolean): string => {
+export const generateSandboxExpressionForField = (sandboxEnabled: boolean, genericIamAccessEnabled: boolean): string => {
   let exp: Expression;
   if (sandboxEnabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY_AUTH_TYPE)), methodCall(ref('util.unauthorized')));
   else exp = methodCall(ref('util.unauthorized'));
-  return printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(compoundExpression([exp, toJson(obj({}))]));
+  return printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(
+    generateIAMAccessCheck(genericIamAccessEnabled, compoundExpression([exp, toJson(obj({}))])),
+  );
 };

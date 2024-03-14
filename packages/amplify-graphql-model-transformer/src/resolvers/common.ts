@@ -1,18 +1,53 @@
-import { iff, ref, notEquals, methodCall, compoundExpression, obj, printBlock, toJson, str, not } from 'graphql-mapping-template';
+import {
+  iff,
+  ref,
+  notEquals,
+  methodCall,
+  compoundExpression,
+  obj,
+  printBlock,
+  toJson,
+  str,
+  not,
+  Expression,
+  and,
+  ifElse,
+  set,
+  bool,
+} from 'graphql-mapping-template';
 
 const API_KEY = 'API Key Authorization';
 /**
  * Util function to generate sandbox mode expression
  */
-export const generateAuthExpressionForSandboxMode = (enabled: boolean): string => {
+export const generateAuthExpressionForSandboxMode = (
+  isSandboxModeEnabled: boolean,
+  genericIamAccessEnabled: boolean | undefined,
+): string => {
   let exp;
 
-  if (enabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY)), methodCall(ref('util.unauthorized')));
+  if (isSandboxModeEnabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY)), methodCall(ref('util.unauthorized')));
   else exp = methodCall(ref('util.unauthorized'));
 
-  return printBlock(`Sandbox Mode ${enabled ? 'Enabled' : 'Disabled'}`)(
-    compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), exp), toJson(obj({}))]),
+  return printBlock(`Sandbox Mode ${isSandboxModeEnabled ? 'Enabled' : 'Disabled'}`)(
+    compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), generateIAMAccessCheck(genericIamAccessEnabled, exp)), toJson(obj({}))]),
   );
+};
+
+/**
+ * Creates an expression that allows generic IAM access for principals not associated to CognitoIdentityPool
+ */
+const generateIAMAccessCheck = (enableIamAccess: boolean | undefined, expression: Expression): Expression => {
+  if (!enableIamAccess) {
+    // No-op if generic IAM access is not enabled.
+    return expression;
+  }
+
+  const isGenericIamAccess = and([
+    methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityPoolId')),
+    methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityId')),
+  ]);
+  return iff(not(isGenericIamAccess), expression);
 };
 
 /**

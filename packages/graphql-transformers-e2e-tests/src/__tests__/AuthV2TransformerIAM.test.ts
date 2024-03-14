@@ -106,6 +106,11 @@ describe('@model with @auth - iam access', () => {
           id: ID!
           title: String
       }
+      
+      type PostWithNoAuthDirective @model {
+          id: ID!
+          title: String
+      }
       `;
 
     await awsS3Client.createBucket({ Bucket: BUCKET_NAME_WITH_IAM_ACCESS }).promise();
@@ -434,6 +439,26 @@ describe('@model with @auth - iam access', () => {
       GRAPHQL_CLIENT_BASIC_ROLE_WITHOUT_IAM_ACCESS,
     ]) {
       await testDoesNotHaveCRUDLAccess(graphqlClient, 'PostWithNoIAMProvider', 'PostWithNoIAMProviders');
+    }
+  });
+
+  it('can access PostWithNoAuthDirective', async () => {
+    for (const graphqlClient of [GRAPHQL_CLIENT_BASIC_ROLE_WITH_IAM_ACCESS]) {
+      await testHasCRUDLAccess(graphqlClient, 'PostWithNoAuthDirective', 'PostWithNoAuthDirectives');
+    }
+  });
+
+  it('cannot access PostWithNoAuthDirective', async () => {
+    for (const graphqlClient of [
+      GRAPHQL_CLIENT_AUTH_ROLE_WITH_IAM_ACCESS,
+      GRAPHQL_CLIENT_AUTH_ROLE_WITHOUT_IAM_ACCESS,
+      GRAPHQL_CLIENT_UNAUTH_ROLE_WITH_IAM_ACCESS,
+      GRAPHQL_CLIENT_UNAUTH_ROLE_WITHOUT_IAM_ACCESS,
+      GRAPHQL_CLIENT_BASIC_ROLE_WITHOUT_IAM_ACCESS,
+      GRAPHQL_CLIENT_API_KEY_WITH_IAM_ACCESS,
+      GRAPHQL_CLIENT_API_KEY_WITHOUT_IAM_ACCESS,
+    ]) {
+      await testDoesNotHaveCRUDLAccess(graphqlClient, 'PostWithNoAuthDirective', 'PostWithNoAuthDirectives');
     }
   });
 });

@@ -72,7 +72,7 @@ import {
   makeUpdateInputField,
   propagateApiKeyToNestedTypes,
 } from './graphql-types';
-import { API_KEY_DIRECTIVE } from './definitions';
+import { API_KEY_DIRECTIVE, APPSYNC_AUTH_CONFIGURATION_TYPE_TO_SERVICE_DIRECTIVE_MAP, AWS_IAM_DIRECTIVE } from './definitions';
 import { ModelDirectiveConfiguration, SubscriptionLevel } from './directive';
 import { ModelResourceGenerator } from './resources/model-resource-generator';
 import { DynamoModelResourceGenerator } from './resources/dynamo-model-resource-generator';
@@ -319,22 +319,47 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         }
       }
       // global auth check
-      if (!hasAuth && ctx.transformParameters.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
-        const apiKeyDirArray = [makeDirective(API_KEY_DIRECTIVE, [])];
-        extendTypeWithDirectives(ctx, def.name.value, apiKeyDirArray);
-        propagateApiKeyToNestedTypes(ctx as TransformerContextProvider, def, new Set<string>());
-        queryFields.forEach((operationField) => {
-          const operationName = operationField.name.value;
-          addDirectivesToOperation(ctx, ctx.output.getQueryTypeName()!, operationName, apiKeyDirArray);
-        });
-        mutationFields.forEach((operationField) => {
-          const operationName = operationField.name.value;
-          addDirectivesToOperation(ctx, ctx.output.getMutationTypeName()!, operationName, apiKeyDirArray);
-        });
-        subscriptionsFields.forEach((operationField) => {
-          const operationName = operationField.name.value;
-          addDirectivesToOperation(ctx, ctx.output.getSubscriptionTypeName()!, operationName, apiKeyDirArray);
-        });
+      if (!hasAuth) {
+        const serviceDirectiveNames = new Set<string>();
+
+        const defaultServiceDirectiveName = APPSYNC_AUTH_CONFIGURATION_TYPE_TO_SERVICE_DIRECTIVE_MAP.get(
+          ctx.authConfig.defaultAuthentication.authenticationType,
+        );
+        if (ctx.transformParameters.sandboxModeEnabled && ctx.synthParameters.enableIamAccess) {
+          serviceDirectiveNames.add(API_KEY_DIRECTIVE);
+          serviceDirectiveNames.add(AWS_IAM_DIRECTIVE);
+          if (defaultServiceDirectiveName) {
+            serviceDirectiveNames.add(defaultServiceDirectiveName);
+          }
+        } else if (ctx.transformParameters.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
+          serviceDirectiveNames.add(API_KEY_DIRECTIVE);
+          if (defaultServiceDirectiveName) {
+            serviceDirectiveNames.add(defaultServiceDirectiveName);
+          }
+        } else if (ctx.synthParameters.enableIamAccess && ctx.authConfig.defaultAuthentication.authenticationType !== 'AWS_IAM') {
+          serviceDirectiveNames.add(AWS_IAM_DIRECTIVE);
+          if (defaultServiceDirectiveName) {
+            serviceDirectiveNames.add(defaultServiceDirectiveName);
+          }
+        }
+        const serviceDirectives: DirectiveNode[] = [...serviceDirectiveNames].map((directiveName) => makeDirective(directiveName, []));
+
+        if (serviceDirectives.length > 0) {
+          extendTypeWithDirectives(ctx, def.name.value, serviceDirectives);
+          propagateApiKeyToNestedTypes(ctx as TransformerContextProvider, def, new Set<string>());
+          queryFields.forEach((operationField) => {
+            const operationName = operationField.name.value;
+            addDirectivesToOperation(ctx, ctx.output.getQueryTypeName()!, operationName, serviceDirectives);
+          });
+          mutationFields.forEach((operationField) => {
+            const operationName = operationField.name.value;
+            addDirectivesToOperation(ctx, ctx.output.getMutationTypeName()!, operationName, serviceDirectives);
+          });
+          subscriptionsFields.forEach((operationField) => {
+            const operationName = operationField.name.value;
+            addDirectivesToOperation(ctx, ctx.output.getSubscriptionTypeName()!, operationName, serviceDirectives);
+          });
+        }
       }
     });
   };
