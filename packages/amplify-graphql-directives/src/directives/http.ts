@@ -1,7 +1,8 @@
 import { Directive } from './directive';
 
+export type HttpDirectiveDefaults = { method: string; headers: string[] };
 const name = 'http';
-const defaults = {
+const defaults: HttpDirectiveDefaults = {
   method: 'GET',
   headers: [],
 };
@@ -22,7 +23,7 @@ const definition = /* GraphQL */ `
   }
 `;
 
-export const HttpDirective: Directive = {
+export const HttpDirective: Directive<HttpDirectiveDefaults> = {
   name,
   definition,
   defaults,

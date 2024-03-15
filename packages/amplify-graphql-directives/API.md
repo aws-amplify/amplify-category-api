@@ -44,11 +44,9 @@ export const DefaultDirectives: readonly Directive[];
 export const DeprecatedDirective: Directive;
 
 // @public (undocumented)
-export interface Directive {
+export interface Directive<Defaults extends DirectiveDefaults = DirectiveDefaults> {
     // (undocumented)
-    readonly defaults: {
-        [field: string]: any;
-    };
+    readonly defaults: Defaults;
     // (undocumented)
     readonly definition: string;
     // (undocumented)
@@ -56,16 +54,31 @@ export interface Directive {
 }
 
 // @public (undocumented)
+export interface DirectiveDefaults {
+}
+
+// @public (undocumented)
 export const FunctionDirective: Directive;
 
 // @public (undocumented)
-export const HasManyDirective: Directive;
+export const HasManyDirective: Directive<HasManyDirectiveDefaults>;
+
+// @public (undocumented)
+export type HasManyDirectiveDefaults = {
+    limit: number;
+};
 
 // @public (undocumented)
 export const HasOneDirective: Directive;
 
 // @public (undocumented)
-export const HttpDirective: Directive;
+export const HttpDirective: Directive<HttpDirectiveDefaults>;
+
+// @public (undocumented)
+export type HttpDirectiveDefaults = {
+    method: string;
+    headers: string[];
+};
 
 // @public (undocumented)
 export const IndexDirective: Directive;
@@ -74,7 +87,12 @@ export const IndexDirective: Directive;
 export const KeyDirective: Directive;
 
 // @public (undocumented)
-export const ManyToManyDirective: Directive;
+export const ManyToManyDirective: Directive<ManyToManyDirectiveDefaults>;
+
+// @public (undocumented)
+export type ManyToManyDirectiveDefaults = {
+    limit: number;
+};
 
 // @public (undocumented)
 export const MapsToDirective: Directive;
@@ -101,7 +119,13 @@ export const SqlDirective: Directive;
 export const V1Directives: readonly Directive[];
 
 // @public (undocumented)
-export const VersionedDirective: Directive;
+export const VersionedDirective: Directive<VersionedDirectiveDefaults>;
+
+// @public (undocumented)
+export type VersionedDirectiveDefaults = {
+    versionField: string;
+    versionInput: string;
+};
 
 // (No @packageDocumentation comment for this package)
 
