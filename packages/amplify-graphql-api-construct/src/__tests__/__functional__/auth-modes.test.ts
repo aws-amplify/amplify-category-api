@@ -229,7 +229,7 @@ describe('auth modes', () => {
       });
     }).toThrow(
       "Cannot use deprecated 'authorizationModes.iamConfig' options with 'authorizationModes.identityPoolConfig' " +
-      "or 'authorizationModes.iamConfig.enableIamAuthorizationMode'",
+        "or 'authorizationModes.iamConfig.enableIamAuthorizationMode'",
     );
     expect(() => {
       verifySynth((stack) => {
@@ -254,13 +254,13 @@ describe('auth modes', () => {
               identityPoolId: identityPool.logicalId,
               authenticatedUserRole,
               unauthenticatedUserRole,
-            }
+            },
           },
         });
       });
     }).toThrow(
       "Cannot use deprecated 'authorizationModes.iamConfig' options with 'authorizationModes.identityPoolConfig' " +
-      "or 'authorizationModes.iamConfig.enableIamAuthorizationMode'",
+        "or 'authorizationModes.iamConfig.enableIamAuthorizationMode'",
     );
   });
 
@@ -287,7 +287,7 @@ describe('auth modes', () => {
       });
     }).toThrow(
       "'authorizationModes.iamConfig.authenticatedUserRole', 'authorizationModes.iamConfig.unauthenticatedUserRole'" +
-      " and 'authorizationModes.iamConfig.identityPoolId' must be provided.",
+        " and 'authorizationModes.iamConfig.identityPoolId' must be provided.",
     );
   });
 });

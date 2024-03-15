@@ -64,7 +64,7 @@ const api = new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
         id: ID! @primaryKey
         description: String!
       }
-      
+
       type TodoWithNoAuthDirective @model @refersTo(name: "todosWithNoAuthDirective") {
         id: ID! @primaryKey
         description: String!

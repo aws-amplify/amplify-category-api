@@ -14,7 +14,8 @@ import {
   ifElse,
   set,
   bool,
-  equals, parens,
+  equals,
+  parens,
 } from 'graphql-mapping-template';
 
 const API_KEY = 'API Key Authorization';
