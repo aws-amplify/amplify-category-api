@@ -30,6 +30,7 @@ export interface IAMAuthorizationConfig {
    * Format: `<region>:<id string>`
    *
    * @deprecated Use 'IdentityPoolAuthorizationConfig.identityPoolId' instead.
+   * See https://docs.amplify.aws/cli/react/tools/cli/migration/iam-auth-updates-for-cdk-construct for details.
    */
   readonly identityPoolId?: string;
 
@@ -37,6 +38,7 @@ export interface IAMAuthorizationConfig {
    * Authenticated user role, applies to { provider: iam, allow: private } access.
    *
    * @deprecated Use 'IdentityPoolAuthorizationConfig.authenticatedUserRole' instead.
+   * See https://docs.amplify.aws/cli/react/tools/cli/migration/iam-auth-updates-for-cdk-construct for details.
    */
   readonly authenticatedUserRole?: IRole;
 
@@ -44,6 +46,7 @@ export interface IAMAuthorizationConfig {
    * Unauthenticated user role, applies to { provider: iam, allow: public } access.
    *
    * @deprecated Use 'IdentityPoolAuthorizationConfig.unauthenticatedUserRole' instead.
+   * See https://docs.amplify.aws/cli/react/tools/cli/migration/iam-auth-updates-for-cdk-construct for details.
    */
   readonly unauthenticatedUserRole?: IRole;
 
@@ -53,7 +56,7 @@ export interface IAMAuthorizationConfig {
    * If a string is provided, the raw value will be used for matching.
    *
    * @deprecated Use 'enableIamAuthorizationMode' and IAM Policy to control access for IAM principals.
-   * See https://docs.aws.amazon.com/service-authorization/latest/reference/list_awsappsync.html.
+   * See https://docs.amplify.aws/cli/react/tools/cli/migration/iam-auth-updates-for-cdk-construct for details.
    */
   readonly allowListedRoles?: (IRole | string)[];
 
@@ -174,8 +177,10 @@ export interface AuthorizationModes {
   readonly defaultAuthorizationMode?: 'AWS_IAM' | 'AMAZON_COGNITO_USER_POOLS' | 'OPENID_CONNECT' | 'API_KEY' | 'AWS_LAMBDA';
 
   /**
-   * IAM Auth config, required if IAM authorization should be controlled by IAM policies rather than @auth directives.
-   * Applies to any IAM principal except Cognito Identity Pool roles.
+   * IAM Auth config, required to allow IAM-based access to this API.
+   * This applies to any IAM principal except Amazon Cognito identity pool's authenticated and unauthenticated roles.
+   * This behavior was has recently been improved.
+   * See https://docs.amplify.aws/cli/react/tools/cli/migration/iam-auth-updates-for-cdk-construct for details.
    */
   readonly iamConfig?: IAMAuthorizationConfig;
 
