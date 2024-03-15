@@ -228,6 +228,7 @@ export class DDBRelationalReferencesResolverGenerator extends RelationalResolver
     config: HasOneDirectiveConfiguration,
     ctx: TransformerContextProvider,
   ): void => {
+    // TODO: Adapt this for hasOne
     const { references, field, indexName, object, relatedType } = config;
     const connectionAttributes: string[] = references;
     if (connectionAttributes.length === 0) {
@@ -365,9 +366,6 @@ export class DDBRelationalReferencesResolverGenerator extends RelationalResolver
    */
   makeBelongsToGetItemConnectionWithKeyResolver = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
     const { connectionFields, field, references, object, relatedType } = config;
-    // if (relatedTypeIndex.length === 0) {
-    //   throw new Error('Expected relatedType index fields to be set for connection.');
-    // }
     const localFields = references.length > 0 ? references : connectionFields;
     const table = getTable(ctx, relatedType);
     const { keySchema } = table as any;

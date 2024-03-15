@@ -378,7 +378,7 @@ test('hasMany belongsTo DDB homogeneous references query', () => {
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
-  // expect((out.stacks as any).ConnectionStack.Resources.TestotherPartsResolver).toBeTruthy();
+  expect((out.stacks as any).ConnectionStack.Resources.PrimaryrelatedsResolver).toBeTruthy();
 
   const testObjType = schema.definitions.find((def: any) => def.name && def.name.value === 'Primary') as any;
   expect(testObjType).toBeDefined();
@@ -739,306 +739,306 @@ test('validates VTL of a complex schema', () => {
   expect(out.resolvers).toMatchSnapshot();
 });
 
-// test('@hasMany and @hasMany can point at each other if DataStore is not enabled', () => {
-//   const inputSchema = `
-//     type Blog @model {
-//       id: ID!
-//       posts: [Post] @hasMany
-//     }
+test('@hasMany and @hasMany can point at each other if DataStore is not enabled', () => {
+  const inputSchema = `
+    type Blog @model {
+      id: ID!
+      posts: [Post] @hasMany
+    }
 
-//     type Post @model {
-//       id: ID!
-//       blog: [Blog] @hasMany
-//     }`;
-//   const out = testTransform({
-//     schema: inputSchema,
-//     transformers: [new ModelTransformer(), new HasManyTransformer()],
-//   });
+    type Post @model {
+      id: ID!
+      blog: [Blog] @hasMany
+    }`;
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new HasManyTransformer()],
+  });
 
-//   expect(out).toBeDefined();
-//   const schema = parse(out.schema);
-//   validateModelSchema(schema);
-// });
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+});
 
-// test('@hasMany and @hasMany cannot point at each other if DataStore is enabled', () => {
-//   const inputSchema = `
-//     type Blog @model {
-//       id: ID!
-//       posts: [Post] @hasMany
-//     }
+test('@hasMany and @hasMany cannot point at each other if DataStore is enabled', () => {
+  const inputSchema = `
+    type Blog @model {
+      id: ID!
+      posts: [Post] @hasMany
+    }
 
-//     type Post @model {
-//       id: ID!
-//       blog: [Blog] @hasMany
-//     }`;
-//   expect(() =>
-//     testTransform({
-//       schema: inputSchema,
-//       resolverConfig: {
-//         project: {
-//           ConflictDetection: 'VERSION',
-//           ConflictHandler: ConflictHandlerType.AUTOMERGE,
-//         },
-//       },
-//       transformers: [new ModelTransformer(), new HasOneTransformer(), new HasManyTransformer()],
-//     }),
-//   ).toThrowError('Blog and Post cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.');
-// });
+    type Post @model {
+      id: ID!
+      blog: [Blog] @hasMany
+    }`;
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      resolverConfig: {
+        project: {
+          ConflictDetection: 'VERSION',
+          ConflictHandler: ConflictHandlerType.AUTOMERGE,
+        },
+      },
+      transformers: [new ModelTransformer(), new HasOneTransformer(), new HasManyTransformer()],
+    }),
+  ).toThrowError('Blog and Post cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.');
+});
 
-// test('recursive @hasMany relationships are supported if DataStore is enabled', () => {
-//   const inputSchema = `
-//     type Blog @model {
-//       id: ID!
-//       posts: [Blog] @hasMany
-//     }`;
-//   const out = testTransform({
-//     schema: inputSchema,
-//     resolverConfig: {
-//       project: {
-//         ConflictDetection: 'VERSION',
-//         ConflictHandler: ConflictHandlerType.AUTOMERGE,
-//       },
-//     },
-//     transformers: [new ModelTransformer(), new HasManyTransformer()],
-//   });
+test('recursive @hasMany relationships are supported if DataStore is enabled', () => {
+  const inputSchema = `
+    type Blog @model {
+      id: ID!
+      posts: [Blog] @hasMany
+    }`;
+  const out = testTransform({
+    schema: inputSchema,
+    resolverConfig: {
+      project: {
+        ConflictDetection: 'VERSION',
+        ConflictHandler: ConflictHandlerType.AUTOMERGE,
+      },
+    },
+    transformers: [new ModelTransformer(), new HasManyTransformer()],
+  });
 
-//   expect(out).toBeDefined();
-//   const schema = parse(out.schema);
-//   validateModelSchema(schema);
-// });
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+});
 
-// test('has many with queries null generate correct filter input objects for scalar list type', () => {
-//   const inputSchema = `
-//     type Foo @model {
-//       bars: [Bar] @hasMany
-//     }
+test('has many with queries null generate correct filter input objects for scalar list type', () => {
+  const inputSchema = `
+    type Foo @model {
+      bars: [Bar] @hasMany
+    }
 
-//     type Bar @model(queries: null) {
-//       strings: [String]
-//     }`;
-//   const out = testTransform({
-//     schema: inputSchema,
-//     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
-//   });
+    type Bar @model(queries: null) {
+      strings: [String]
+    }`;
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
+  });
 
-//   expect(out).toBeDefined();
-//   const schema = parse(out.schema);
-//   validateModelSchema(schema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
 
-//   const barFilterInput = schema.definitions.find((def: any) => def.name && def.name.value === 'ModelBarFilterInput') as any;
-//   expect(barFilterInput).toBeDefined();
+  const barFilterInput = schema.definitions.find((def: any) => def.name && def.name.value === 'ModelBarFilterInput') as any;
+  expect(barFilterInput).toBeDefined();
 
-//   const stringField = barFilterInput.fields.find((f: any) => f.name.value === 'strings');
-//   expect(stringField).toBeDefined();
-//   expect(stringField.type.name.value).toMatch('ModelStringInput');
-// });
+  const stringField = barFilterInput.fields.find((f: any) => f.name.value === 'strings');
+  expect(stringField).toBeDefined();
+  expect(stringField.type.name.value).toMatch('ModelStringInput');
+});
 
-// test('has many with queries null generate correct filter input objects for enum type', () => {
-//   const inputSchema = `
-//     type IssueList @model {
-//       id: ID!
-//       issues: [Issue] @hasMany
-//     }
+test('has many with queries null generate correct filter input objects for enum type', () => {
+  const inputSchema = `
+    type IssueList @model {
+      id: ID!
+      issues: [Issue] @hasMany
+    }
 
-//     type Issue @model {
-//       id: ID!
-//       title: String!
-//       description: String
-//       status: IssueStatus!
-//     }
+    type Issue @model {
+      id: ID!
+      title: String!
+      description: String
+      status: IssueStatus!
+    }
 
-//     enum IssueStatus {
-//       open
-//       closed
-//     }`;
-//   const out = testTransform({
-//     schema: inputSchema,
-//     transformers: [new ModelTransformer(), new HasManyTransformer()],
-//   });
+    enum IssueStatus {
+      open
+      closed
+    }`;
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new HasManyTransformer()],
+  });
 
-//   expect(out).toBeDefined();
-//   const schema = parse(out.schema);
-//   validateModelSchema(schema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
 
-//   const issueFilterInput = schema.definitions.find((def: any) => def.name && def.name.value === 'ModelIssueFilterInput') as any;
-//   expect(issueFilterInput).toBeDefined();
+  const issueFilterInput = schema.definitions.find((def: any) => def.name && def.name.value === 'ModelIssueFilterInput') as any;
+  expect(issueFilterInput).toBeDefined();
 
-//   const statusField = issueFilterInput.fields.find((f: any) => f.name.value === 'status');
-//   expect(statusField).toBeDefined();
-//   expect(statusField.type.name.value).toMatch('ModelIssueStatusInput');
-// });
+  const statusField = issueFilterInput.fields.find((f: any) => f.name.value === 'status');
+  expect(statusField).toBeDefined();
+  expect(statusField.type.name.value).toMatch('ModelIssueStatusInput');
+});
 
-// describe('Pre Processing Has Many Tests', () => {
-//   let transformer: GraphQLTransform;
+describe('Pre Processing Has Many Tests', () => {
+  let transformer: GraphQLTransform;
 
-//   beforeEach(() => {
-//     transformer = new GraphQLTransform({
-//       transformers: [new ModelTransformer(), new HasManyTransformer()],
-//     });
-//   });
+  beforeEach(() => {
+    transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer(), new HasManyTransformer()],
+    });
+  });
 
-//   test('Should generate connecting field when one is not provided', () => {
-//     const schema = `
-//     type Blog @model {
-//       id: ID!
-//       postsField: [Post] @hasMany
-//     }
+  test('Should generate connecting field when one is not provided', () => {
+    const schema = `
+    type Blog @model {
+      id: ID!
+      postsField: [Post] @hasMany
+    }
 
-//     type Post @model {
-//       id: ID!
-//     }
-//     `;
+    type Post @model {
+      id: ID!
+    }
+    `;
 
-//     const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
-//     expect(hasGeneratedField(updatedSchemaDoc, 'Post', 'blogPostsFieldId')).toBeTruthy();
-//   });
+    const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
+    expect(hasGeneratedField(updatedSchemaDoc, 'Post', 'blogPostsFieldId')).toBeTruthy();
+  });
 
-//   test('Should create sort key field when specified on custom primary key', () => {
-//     const schema = `
-//     type Blog @model {
-//       id: ID! @primaryKey(sortKeyFields: ["value"])
-//       postsField: [Post] @hasMany
-//       value: String!
-//     }
+  test('Should create sort key field when specified on custom primary key', () => {
+    const schema = `
+    type Blog @model {
+      id: ID! @primaryKey(sortKeyFields: ["value"])
+      postsField: [Post] @hasMany
+      value: String!
+    }
 
-//     type Post @model {
-//       id: ID!
-//     }
-//     `;
+    type Post @model {
+      id: ID!
+    }
+    `;
 
-//     const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
-//     expect(hasGeneratedField(updatedSchemaDoc, 'Post', 'blogPostsFieldId')).toBeTruthy();
-//     expect(hasGeneratedField(updatedSchemaDoc, 'Post', 'blogPostsFieldValue', 'String')).toBeTruthy();
-//   });
-// });
+    const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
+    expect(hasGeneratedField(updatedSchemaDoc, 'Post', 'blogPostsFieldId')).toBeTruthy();
+    expect(hasGeneratedField(updatedSchemaDoc, 'Post', 'blogPostsFieldValue', 'String')).toBeTruthy();
+  });
+});
 
-// describe('@hasMany connection field nullability tests', () => {
-//   test('Should not affect the nullability of connection fields of the other side update input when the @hasMany field is non-nullable', () => {
-//     const inputSchema = `
-//       type Todo @model {
-//         todoid: ID! @primaryKey(sortKeyFields:["name"])
-//         name: String!
-//         title: String!
-//         priority: Int
-//         tasks: [Task]! @hasMany
-//       }
-//       type Task @model {
-//         taskid: ID! @primaryKey(sortKeyFields:["name"])
-//         name: String!
-//         description: String
-//       }
-//     `;
-//     const out = testTransform({
-//       schema: inputSchema,
-//       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
-//     });
+describe('@hasMany connection field nullability tests', () => {
+  test('Should not affect the nullability of connection fields of the other side update input when the @hasMany field is non-nullable', () => {
+    const inputSchema = `
+      type Todo @model {
+        todoid: ID! @primaryKey(sortKeyFields:["name"])
+        name: String!
+        title: String!
+        priority: Int
+        tasks: [Task]! @hasMany
+      }
+      type Task @model {
+        taskid: ID! @primaryKey(sortKeyFields:["name"])
+        name: String!
+        description: String
+      }
+    `;
+    const out = testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
+    });
 
-//     expect(out).toBeDefined();
-//     const schema = parse(out.schema);
-//     validateModelSchema(schema);
-//     const connectionFieldName1 = 'todoTasksTodoid';
-//     const connectionFieldName2 = 'todoTasksName';
-//     // Type definition
-//     const objType = schema.definitions.find((def: any) => def.name && def.name.value === 'Task') as any;
-//     expect(objType).toBeDefined();
-//     const relatedField1 = objType.fields.find((f: any) => f.name.value === connectionFieldName1);
-//     expect(relatedField1).toBeDefined();
-//     expect(relatedField1.type.kind).toBe(Kind.NON_NULL_TYPE);
-//     expect(relatedField1.type.type.name.value).toBe('ID');
-//     const relatedField2 = objType.fields.find((f: any) => f.name.value === connectionFieldName2);
-//     expect(relatedField2).toBeDefined();
-//     expect(relatedField2.type.kind).toBe(Kind.NON_NULL_TYPE);
-//     expect(relatedField2.type.type.name.value).toBe('String');
-//     // Create Input
-//     const createInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTaskInput') as any;
-//     expect(createInput).toBeDefined();
-//     expect(createInput.fields.length).toEqual(5);
-//     const createInputConnectedField1 = createInput.fields.find((f: any) => f.name.value === connectionFieldName1);
-//     expect(createInputConnectedField1).toBeDefined();
-//     expect(createInputConnectedField1.type.kind).toBe(Kind.NON_NULL_TYPE);
-//     expect(createInputConnectedField1.type.type.name.value).toBe('ID');
-//     const createInputConnectedField2 = createInput.fields.find((f: any) => f.name.value === connectionFieldName2);
-//     expect(createInputConnectedField2).toBeDefined();
-//     expect(createInputConnectedField2.type.kind).toBe(Kind.NON_NULL_TYPE);
-//     expect(createInputConnectedField2.type.type.name.value).toBe('String');
-//     // Update Input
-//     const updateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTaskInput') as any;
-//     expect(updateInput).toBeDefined();
-//     expect(updateInput.fields.length).toEqual(5);
-//     const updateInputConnectedField1 = updateInput.fields.find((f: any) => f.name.value === connectionFieldName1);
-//     expect(updateInputConnectedField1).toBeDefined();
-//     expect(updateInputConnectedField1.type.kind).toBe(Kind.NAMED_TYPE);
-//     expect(updateInputConnectedField1.type.name.value).toBe('ID');
-//     const updateInputConnectedField2 = updateInput.fields.find((f: any) => f.name.value === connectionFieldName2);
-//     expect(updateInputConnectedField2).toBeDefined();
-//     expect(updateInputConnectedField2.type.kind).toBe(Kind.NAMED_TYPE);
-//     expect(updateInputConnectedField2.type.name.value).toBe('String');
-//   });
-// });
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+    const connectionFieldName1 = 'todoTasksTodoid';
+    const connectionFieldName2 = 'todoTasksName';
+    // Type definition
+    const objType = schema.definitions.find((def: any) => def.name && def.name.value === 'Task') as any;
+    expect(objType).toBeDefined();
+    const relatedField1 = objType.fields.find((f: any) => f.name.value === connectionFieldName1);
+    expect(relatedField1).toBeDefined();
+    expect(relatedField1.type.kind).toBe(Kind.NON_NULL_TYPE);
+    expect(relatedField1.type.type.name.value).toBe('ID');
+    const relatedField2 = objType.fields.find((f: any) => f.name.value === connectionFieldName2);
+    expect(relatedField2).toBeDefined();
+    expect(relatedField2.type.kind).toBe(Kind.NON_NULL_TYPE);
+    expect(relatedField2.type.type.name.value).toBe('String');
+    // Create Input
+    const createInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTaskInput') as any;
+    expect(createInput).toBeDefined();
+    expect(createInput.fields.length).toEqual(5);
+    const createInputConnectedField1 = createInput.fields.find((f: any) => f.name.value === connectionFieldName1);
+    expect(createInputConnectedField1).toBeDefined();
+    expect(createInputConnectedField1.type.kind).toBe(Kind.NON_NULL_TYPE);
+    expect(createInputConnectedField1.type.type.name.value).toBe('ID');
+    const createInputConnectedField2 = createInput.fields.find((f: any) => f.name.value === connectionFieldName2);
+    expect(createInputConnectedField2).toBeDefined();
+    expect(createInputConnectedField2.type.kind).toBe(Kind.NON_NULL_TYPE);
+    expect(createInputConnectedField2.type.type.name.value).toBe('String');
+    // Update Input
+    const updateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTaskInput') as any;
+    expect(updateInput).toBeDefined();
+    expect(updateInput.fields.length).toEqual(5);
+    const updateInputConnectedField1 = updateInput.fields.find((f: any) => f.name.value === connectionFieldName1);
+    expect(updateInputConnectedField1).toBeDefined();
+    expect(updateInputConnectedField1.type.kind).toBe(Kind.NAMED_TYPE);
+    expect(updateInputConnectedField1.type.name.value).toBe('ID');
+    const updateInputConnectedField2 = updateInput.fields.find((f: any) => f.name.value === connectionFieldName2);
+    expect(updateInputConnectedField2).toBeDefined();
+    expect(updateInputConnectedField2.type.kind).toBe(Kind.NAMED_TYPE);
+    expect(updateInputConnectedField2.type.name.value).toBe('String');
+  });
+});
 
-// describe('@hasMany directive with RDS datasource', () => {
-//   const mySqlStrategy = mockSqlDataSourceStrategy();
+describe('@hasMany directive with RDS datasource', () => {
+  const mySqlStrategy = mockSqlDataSourceStrategy();
 
-//   test('happy case should generate correct resolvers', () => {
-//     const inputSchema = `
-//       type Blog @model {
-//         id: String! @primaryKey
-//         content: String
-//         posts: [Post] @hasMany(references: ["blogId"])
-//       }
-//       type Post @model {
-//         id: String! @primaryKey
-//         content: String
-//         blogId: String
-//       }
-//     `;
+  test('happy case should generate correct resolvers', () => {
+    const inputSchema = `
+      type Blog @model {
+        id: String! @primaryKey
+        content: String
+        posts: [Post] @hasMany(references: ["blogId"])
+      }
+      type Post @model {
+        id: String! @primaryKey
+        content: String
+        blogId: String
+      }
+    `;
 
-//     const out = testTransform({
-//       schema: inputSchema,
-//       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
-//       dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
-//     });
-//     expect(out).toBeDefined();
-//     const schema = parse(out.schema);
-//     validateModelSchema(schema);
-//     expect(out.schema).toMatchSnapshot();
-//     expect(out.resolvers['Blog.posts.req.vtl']).toBeDefined();
-//     expect(out.resolvers['Blog.posts.req.vtl']).toMatchSnapshot();
-//     expect(out.resolvers['Blog.posts.res.vtl']).toBeDefined();
-//     expect(out.resolvers['Blog.posts.res.vtl']).toMatchSnapshot();
-//   });
+    const out = testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
+    });
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['Blog.posts.req.vtl']).toBeDefined();
+    expect(out.resolvers['Blog.posts.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Blog.posts.res.vtl']).toBeDefined();
+    expect(out.resolvers['Blog.posts.res.vtl']).toMatchSnapshot();
+  });
 
-//   test('composite key should generate correct resolvers', () => {
-//     const inputSchema = `
-//       type System @model {
-//         systemId: String! @primaryKey(sortKeyFields: ["systemName"])
-//         systemName: String!
-//         details: String
-//         parts: [Part] @hasMany(references: ["systemId", "systemName"])
-//       }
-//       type Part @model {
-//         partId: String! @primaryKey
-//         partName: String
-//         systemId: String!
-//         systemName: String!
-//       }
-//     `;
+  test('composite key should generate correct resolvers', () => {
+    const inputSchema = `
+      type System @model {
+        systemId: String! @primaryKey(sortKeyFields: ["systemName"])
+        systemName: String!
+        details: String
+        parts: [Part] @hasMany(references: ["systemId", "systemName"])
+      }
+      type Part @model {
+        partId: String! @primaryKey
+        partName: String
+        systemId: String!
+        systemName: String!
+      }
+    `;
 
-//     const out = testTransform({
-//       schema: inputSchema,
-//       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
-//       dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
-//     });
-//     expect(out).toBeDefined();
-//     const schema = parse(out.schema);
-//     validateModelSchema(schema);
-//     expect(out.schema).toMatchSnapshot();
-//     expect(out.resolvers['System.parts.req.vtl']).toBeDefined();
-//     expect(out.resolvers['System.parts.req.vtl']).toMatchSnapshot();
-//     expect(out.resolvers['System.parts.res.vtl']).toBeDefined();
-//     expect(out.resolvers['System.parts.res.vtl']).toMatchSnapshot();
-//   });
-// });
+    const out = testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
+    });
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['System.parts.req.vtl']).toBeDefined();
+    expect(out.resolvers['System.parts.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['System.parts.res.vtl']).toBeDefined();
+    expect(out.resolvers['System.parts.res.vtl']).toMatchSnapshot();
+  });
+});
 
 
 // MARK: N/A w/ references. Maybe add an expected failure assertion here for validation.
