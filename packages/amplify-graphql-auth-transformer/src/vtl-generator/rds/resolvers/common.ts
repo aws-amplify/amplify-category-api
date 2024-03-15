@@ -25,14 +25,7 @@ import {
 } from 'graphql-mapping-template';
 import { FieldDefinitionNode } from 'graphql';
 import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
-import {
-  API_KEY_AUTH_TYPE,
-  DEFAULT_UNIQUE_IDENTITY_CLAIM,
-  IAM_AUTH_TYPE,
-  IDENTITY_CLAIM_DELIMITER,
-  IS_AUTHORIZED_FLAG,
-  RoleDefinition,
-} from '../../../utils';
+import { API_KEY_AUTH_TYPE, DEFAULT_UNIQUE_IDENTITY_CLAIM, IAM_AUTH_TYPE, IDENTITY_CLAIM_DELIMITER, RoleDefinition } from '../../../utils';
 import { setHasAuthExpression } from '../../ddb/resolvers/helpers';
 
 /**
@@ -220,12 +213,19 @@ export const constructAuthorizedInputStatement = (keyName: string): Expression =
  * Generates sandbox expression for field
  */
 export const generateSandboxExpressionForField = (sandboxEnabled: boolean, genericIamAccessEnabled: boolean): string => {
-  let exp: Expression;
-  if (sandboxEnabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY_AUTH_TYPE)), methodCall(ref('util.unauthorized')));
-  else exp = ref('util.unauthorized()');
-  return printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(
-    generateIAMAccessCheck(genericIamAccessEnabled, compoundExpression([exp, toJson(obj({}))])),
-  );
+  let exp: Expression = methodCall(ref('util.unauthorized'));
+  if (sandboxEnabled) {
+    exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY_AUTH_TYPE)), exp);
+  }
+  if (genericIamAccessEnabled) {
+    const isNonCognitoIAMPrincipal = and([
+      equals(ref('util.authType()'), str(IAM_AUTH_TYPE)),
+      methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityPoolId')),
+      methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityId')),
+    ]);
+    exp = iff(not(parens(isNonCognitoIAMPrincipal)), exp);
+  }
+  return printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(compoundExpression([exp, toJson(obj({}))]));
 };
 
 export const emptyPayload = toJson(raw(JSON.stringify({ version: '2018-05-29', payload: {} })));

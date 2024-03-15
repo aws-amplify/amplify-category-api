@@ -22,6 +22,8 @@ import {
   obj,
   list,
   or,
+  and,
+  parens,
 } from 'graphql-mapping-template';
 import {
   RoleDefinition,
@@ -32,6 +34,7 @@ import {
   fieldIsList,
   IS_AUTHORIZED_FLAG,
   API_KEY_AUTH_TYPE,
+  IAM_AUTH_TYPE,
 } from '../../../utils';
 import {
   generateStaticRoleExpression,
@@ -44,7 +47,6 @@ import {
   generateOwnerClaimListExpression,
   generateOwnerMultiClaimExpression,
   generateInvalidClaimsCondition,
-  generateIAMAccessCheck,
 } from './helpers';
 
 // Field Read VTL Functions
@@ -208,10 +210,17 @@ export const setDeniedFieldFlag = (operation: string, subscriptionsEnabled: bool
  * Generates sandbox expression for field
  */
 export const generateSandboxExpressionForField = (sandboxEnabled: boolean, genericIamAccessEnabled: boolean): string => {
-  let exp: Expression;
-  if (sandboxEnabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY_AUTH_TYPE)), methodCall(ref('util.unauthorized')));
-  else exp = methodCall(ref('util.unauthorized'));
-  return printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(
-    generateIAMAccessCheck(genericIamAccessEnabled, compoundExpression([exp, toJson(obj({}))])),
-  );
+  let exp: Expression = methodCall(ref('util.unauthorized'));
+  if (sandboxEnabled) {
+    exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY_AUTH_TYPE)), exp);
+  }
+  if (genericIamAccessEnabled) {
+    const isNonCognitoIAMPrincipal = and([
+      equals(ref('util.authType()'), str(IAM_AUTH_TYPE)),
+      methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityPoolId')),
+      methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityId')),
+    ]);
+    exp = iff(not(parens(isNonCognitoIAMPrincipal)), exp);
+  }
+  return printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(compoundExpression([exp, toJson(obj({}))]));
 };

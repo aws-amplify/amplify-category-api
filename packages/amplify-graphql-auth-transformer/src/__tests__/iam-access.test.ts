@@ -7,6 +7,8 @@ import { constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-
 const IAM_ACCESS_CHECK_DDB = '#if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )';
 const IAM_ACCESS_CHECK_RDS =
   '#if( $util.authType() == "IAM Authorization" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )';
+const IAM_ACCESS_CHECK_POST_AUTH =
+  '#if( !($util.authType() == "IAM Authorization" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId)) )';
 
 describe('ddb', () => {
   test('simple model with apiKey and iam access', () => {
@@ -401,27 +403,51 @@ const expectResolversWithIamAccessCheck = (resolvers: Record<string, string>, da
   expect(resolvers['Mutation.createPost.auth.1.req.vtl']).toBeDefined();
   expect(resolvers['Mutation.createPost.auth.1.req.vtl']).toContain(expectedIamCheck);
   expect(resolvers['Mutation.createPost.auth.1.req.vtl']).toMatchSnapshot();
+  expect(resolvers['Mutation.createPost.postAuth.1.req.vtl']).toBeDefined();
+  expect(resolvers['Mutation.createPost.postAuth.1.req.vtl']).toContain(IAM_ACCESS_CHECK_POST_AUTH);
+  expect(resolvers['Mutation.createPost.postAuth.1.req.vtl']).toMatchSnapshot();
   expect(resolvers['Mutation.updatePost.auth.1.res.vtl']).toBeDefined();
   expect(resolvers['Mutation.updatePost.auth.1.res.vtl']).toContain(expectedIamCheck);
   expect(resolvers['Mutation.updatePost.auth.1.res.vtl']).toMatchSnapshot();
+  expect(resolvers['Mutation.updatePost.postAuth.1.req.vtl']).toBeDefined();
+  expect(resolvers['Mutation.updatePost.postAuth.1.req.vtl']).toContain(IAM_ACCESS_CHECK_POST_AUTH);
+  expect(resolvers['Mutation.updatePost.postAuth.1.req.vtl']).toMatchSnapshot();
   expect(resolvers['Mutation.deletePost.auth.1.res.vtl']).toBeDefined();
   expect(resolvers['Mutation.deletePost.auth.1.res.vtl']).toContain(expectedIamCheck);
   expect(resolvers['Mutation.deletePost.auth.1.res.vtl']).toMatchSnapshot();
+  expect(resolvers['Mutation.deletePost.postAuth.1.req.vtl']).toBeDefined();
+  expect(resolvers['Mutation.deletePost.postAuth.1.req.vtl']).toContain(IAM_ACCESS_CHECK_POST_AUTH);
+  expect(resolvers['Mutation.deletePost.postAuth.1.req.vtl']).toMatchSnapshot();
   expect(resolvers['Query.getPost.auth.1.req.vtl']).toBeDefined();
   expect(resolvers['Query.getPost.auth.1.req.vtl']).toContain(expectedIamCheck);
   expect(resolvers['Query.getPost.auth.1.req.vtl']).toMatchSnapshot();
+  expect(resolvers['Query.getPost.postAuth.1.req.vtl']).toBeDefined();
+  expect(resolvers['Query.getPost.postAuth.1.req.vtl']).toContain(IAM_ACCESS_CHECK_POST_AUTH);
+  expect(resolvers['Query.getPost.postAuth.1.req.vtl']).toMatchSnapshot();
   expect(resolvers['Query.listPosts.auth.1.req.vtl']).toBeDefined();
   expect(resolvers['Query.listPosts.auth.1.req.vtl']).toContain(expectedIamCheck);
   expect(resolvers['Query.listPosts.auth.1.req.vtl']).toMatchSnapshot();
+  expect(resolvers['Query.listPosts.postAuth.1.req.vtl']).toBeDefined();
+  expect(resolvers['Query.listPosts.postAuth.1.req.vtl']).toContain(IAM_ACCESS_CHECK_POST_AUTH);
+  expect(resolvers['Query.listPosts.postAuth.1.req.vtl']).toMatchSnapshot();
   expect(resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toBeDefined();
   expect(resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain(expectedIamCheck);
   expect(resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toMatchSnapshot();
+  expect(resolvers['Subscription.onCreatePost.postAuth.1.req.vtl']).toBeDefined();
+  expect(resolvers['Subscription.onCreatePost.postAuth.1.req.vtl']).toContain(IAM_ACCESS_CHECK_POST_AUTH);
+  expect(resolvers['Subscription.onCreatePost.postAuth.1.req.vtl']).toMatchSnapshot();
   expect(resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toBeDefined();
   expect(resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain(expectedIamCheck);
   expect(resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toMatchSnapshot();
+  expect(resolvers['Subscription.onUpdatePost.postAuth.1.req.vtl']).toBeDefined();
+  expect(resolvers['Subscription.onUpdatePost.postAuth.1.req.vtl']).toContain(IAM_ACCESS_CHECK_POST_AUTH);
+  expect(resolvers['Subscription.onUpdatePost.postAuth.1.req.vtl']).toMatchSnapshot();
   expect(resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toBeDefined();
   expect(resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain(expectedIamCheck);
   expect(resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toMatchSnapshot();
+  expect(resolvers['Subscription.onDeletePost.postAuth.1.req.vtl']).toBeDefined();
+  expect(resolvers['Subscription.onDeletePost.postAuth.1.req.vtl']).toContain(IAM_ACCESS_CHECK_POST_AUTH);
+  expect(resolvers['Subscription.onDeletePost.postAuth.1.req.vtl']).toMatchSnapshot();
 };
 
 const expectResolversWithoutIamAccessCheck = (resolvers: Record<string, string>): void => {
@@ -429,34 +455,58 @@ const expectResolversWithoutIamAccessCheck = (resolvers: Record<string, string>)
   expect(resolvers['Mutation.createPost.auth.1.req.vtl']).not.toContain(IAM_ACCESS_CHECK_DDB);
   expect(resolvers['Mutation.createPost.auth.1.req.vtl']).not.toContain(IAM_ACCESS_CHECK_RDS);
   expect(resolvers['Mutation.createPost.auth.1.req.vtl']).toMatchSnapshot();
+  expect(resolvers['Mutation.createPost.postAuth.1.req.vtl']).toBeDefined();
+  expect(resolvers['Mutation.createPost.postAuth.1.req.vtl']).not.toContain(IAM_ACCESS_CHECK_POST_AUTH);
+  expect(resolvers['Mutation.createPost.postAuth.1.req.vtl']).toMatchSnapshot();
   expect(resolvers['Mutation.updatePost.auth.1.res.vtl']).toBeDefined();
   expect(resolvers['Mutation.updatePost.auth.1.res.vtl']).not.toContain(IAM_ACCESS_CHECK_DDB);
   expect(resolvers['Mutation.updatePost.auth.1.res.vtl']).not.toContain(IAM_ACCESS_CHECK_RDS);
   expect(resolvers['Mutation.updatePost.auth.1.res.vtl']).toMatchSnapshot();
+  expect(resolvers['Mutation.updatePost.postAuth.1.req.vtl']).toBeDefined();
+  expect(resolvers['Mutation.updatePost.postAuth.1.req.vtl']).not.toContain(IAM_ACCESS_CHECK_POST_AUTH);
+  expect(resolvers['Mutation.updatePost.postAuth.1.req.vtl']).toMatchSnapshot();
   expect(resolvers['Mutation.deletePost.auth.1.res.vtl']).toBeDefined();
   expect(resolvers['Mutation.deletePost.auth.1.res.vtl']).not.toContain(IAM_ACCESS_CHECK_DDB);
   expect(resolvers['Mutation.deletePost.auth.1.res.vtl']).not.toContain(IAM_ACCESS_CHECK_RDS);
   expect(resolvers['Mutation.deletePost.auth.1.res.vtl']).toMatchSnapshot();
+  expect(resolvers['Mutation.deletePost.postAuth.1.req.vtl']).toBeDefined();
+  expect(resolvers['Mutation.deletePost.postAuth.1.req.vtl']).not.toContain(IAM_ACCESS_CHECK_POST_AUTH);
+  expect(resolvers['Mutation.deletePost.postAuth.1.req.vtl']).toMatchSnapshot();
   expect(resolvers['Query.getPost.auth.1.req.vtl']).toBeDefined();
   expect(resolvers['Query.getPost.auth.1.req.vtl']).not.toContain(IAM_ACCESS_CHECK_DDB);
   expect(resolvers['Query.getPost.auth.1.req.vtl']).not.toContain(IAM_ACCESS_CHECK_RDS);
   expect(resolvers['Query.getPost.auth.1.req.vtl']).toMatchSnapshot();
+  expect(resolvers['Query.getPost.postAuth.1.req.vtl']).toBeDefined();
+  expect(resolvers['Query.getPost.postAuth.1.req.vtl']).not.toContain(IAM_ACCESS_CHECK_POST_AUTH);
+  expect(resolvers['Query.getPost.postAuth.1.req.vtl']).toMatchSnapshot();
   expect(resolvers['Query.listPosts.auth.1.req.vtl']).toBeDefined();
   expect(resolvers['Query.listPosts.auth.1.req.vtl']).not.toContain(IAM_ACCESS_CHECK_DDB);
   expect(resolvers['Query.listPosts.auth.1.req.vtl']).not.toContain(IAM_ACCESS_CHECK_RDS);
   expect(resolvers['Query.listPosts.auth.1.req.vtl']).toMatchSnapshot();
+  expect(resolvers['Query.listPosts.postAuth.1.req.vtl']).toBeDefined();
+  expect(resolvers['Query.listPosts.postAuth.1.req.vtl']).not.toContain(IAM_ACCESS_CHECK_POST_AUTH);
+  expect(resolvers['Query.listPosts.postAuth.1.req.vtl']).toMatchSnapshot();
   expect(resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toBeDefined();
   expect(resolvers['Subscription.onCreatePost.auth.1.req.vtl']).not.toContain(IAM_ACCESS_CHECK_DDB);
   expect(resolvers['Subscription.onCreatePost.auth.1.req.vtl']).not.toContain(IAM_ACCESS_CHECK_RDS);
   expect(resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toMatchSnapshot();
+  expect(resolvers['Subscription.onCreatePost.postAuth.1.req.vtl']).toBeDefined();
+  expect(resolvers['Subscription.onCreatePost.postAuth.1.req.vtl']).not.toContain(IAM_ACCESS_CHECK_POST_AUTH);
+  expect(resolvers['Subscription.onCreatePost.postAuth.1.req.vtl']).toMatchSnapshot();
   expect(resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toBeDefined();
   expect(resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).not.toContain(IAM_ACCESS_CHECK_DDB);
   expect(resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).not.toContain(IAM_ACCESS_CHECK_RDS);
   expect(resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toMatchSnapshot();
+  expect(resolvers['Subscription.onUpdatePost.postAuth.1.req.vtl']).toBeDefined();
+  expect(resolvers['Subscription.onUpdatePost.postAuth.1.req.vtl']).not.toContain(IAM_ACCESS_CHECK_POST_AUTH);
+  expect(resolvers['Subscription.onUpdatePost.postAuth.1.req.vtl']).toMatchSnapshot();
   expect(resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toBeDefined();
   expect(resolvers['Subscription.onDeletePost.auth.1.req.vtl']).not.toContain(IAM_ACCESS_CHECK_DDB);
   expect(resolvers['Subscription.onDeletePost.auth.1.req.vtl']).not.toContain(IAM_ACCESS_CHECK_RDS);
   expect(resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toMatchSnapshot();
+  expect(resolvers['Subscription.onDeletePost.postAuth.1.req.vtl']).toBeDefined();
+  expect(resolvers['Subscription.onDeletePost.postAuth.1.req.vtl']).not.toContain(IAM_ACCESS_CHECK_POST_AUTH);
+  expect(resolvers['Subscription.onDeletePost.postAuth.1.req.vtl']).toMatchSnapshot();
 };
 
 const expectNoResolvers = (resolvers: Record<string, string>): void => {

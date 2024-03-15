@@ -70,7 +70,7 @@ import {
   makeModelSortDirectionEnumObject,
   makeMutationConditionInput,
   makeUpdateInputField,
-  propagateApiKeyToNestedTypes,
+  propagateDirectivesToNestedTypes,
 } from './graphql-types';
 import { API_KEY_DIRECTIVE, APPSYNC_AUTH_CONFIGURATION_TYPE_TO_SERVICE_DIRECTIVE_MAP, AWS_IAM_DIRECTIVE } from './definitions';
 import { ModelDirectiveConfiguration, SubscriptionLevel } from './directive';
@@ -346,7 +346,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
         if (serviceDirectives.length > 0) {
           extendTypeWithDirectives(ctx, def.name.value, serviceDirectives);
-          propagateApiKeyToNestedTypes(ctx as TransformerContextProvider, def, new Set<string>());
+          propagateDirectivesToNestedTypes(ctx as TransformerContextProvider, def, new Set<string>(), serviceDirectives);
           queryFields.forEach((operationField) => {
             const operationName = operationField.name.value;
             addDirectivesToOperation(ctx, ctx.output.getQueryTypeName()!, operationName, serviceDirectives);
