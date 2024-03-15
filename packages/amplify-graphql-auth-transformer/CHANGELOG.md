@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.5.0-iam-auth-with-identityPool-provider-1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.4.1...@aws-amplify/graphql-auth-transformer@3.5.0-iam-auth-with-identityPool-provider-1.0) (2024-03-15)
+
+### Features
+
+- deprecate iam auth provider and rename it to identityPool ([#2320](https://github.com/aws-amplify/amplify-category-api/issues/2320)) ([34dc975](https://github.com/aws-amplify/amplify-category-api/commit/34dc975226ee1b5494bf25af6f88105b5150f37d))
+
 ## [3.4.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.4.0...@aws-amplify/graphql-auth-transformer@3.4.1) (2024-03-13)
 
 ### Bug Fixes

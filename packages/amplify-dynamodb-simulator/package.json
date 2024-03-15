@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-dynamodb-simulator",
-  "version": "2.4.16",
+  "version": "2.4.17-iam-auth-with-identityPool-provider-1.0",
   "description": "DynamoDB emulator NodeJS wrapper",
   "private": "true",
   "repository": {

@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.1-iam-auth-with-identityPool-provider-1.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.3.0...amplify-graphql-api-construct-tests@1.3.1-iam-auth-with-identityPool-provider-1.0) (2024-03-15)
+
+**Note:** Version bump only for package amplify-graphql-api-construct-tests
+
 # [1.3.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.2.7...amplify-graphql-api-construct-tests@1.3.0) (2024-03-13)
 
 ### Features

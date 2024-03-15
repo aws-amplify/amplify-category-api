@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0-iam-auth-with-identityPool-provider-1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.6.0...@aws-amplify/data-construct@1.7.0-iam-auth-with-identityPool-provider-1.0) (2024-03-15)
+
+### Features
+
+- non-Cognito IAM authorization ([e58db10](https://github.com/aws-amplify/amplify-category-api/commit/e58db10db155a3bc36cb6b2b4dd0519653290fb0))
+
 # [1.6.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.5.7...@aws-amplify/data-construct@1.6.0) (2024-03-13)
 
 ### Features
