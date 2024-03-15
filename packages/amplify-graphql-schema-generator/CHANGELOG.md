@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.3-iam-auth.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.7.2...@aws-amplify/graphql-schema-generator@0.7.3-iam-auth.0) (2024-03-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
 ## [0.7.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.7.1...@aws-amplify/graphql-schema-generator@0.7.2) (2024-03-13)
 
 **Note:** Version bump only for package @aws-amplify/graphql-schema-generator

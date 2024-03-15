@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.9.9-iam-auth.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.9.8...@aws-amplify/amplify-category-api@5.9.9-iam-auth.0) (2024-03-15)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
 ## [5.9.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.9.7...@aws-amplify/amplify-category-api@5.9.8) (2024-03-13)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api

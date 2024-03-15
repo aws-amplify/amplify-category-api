@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.1-iam-auth.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.4.0...@aws-amplify/graphql-transformer-interfaces@3.4.1-iam-auth.0) (2024-03-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces
+
 # [3.4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.3.3...@aws-amplify/graphql-transformer-interfaces@3.4.0) (2024-02-28)
 
 ### Features

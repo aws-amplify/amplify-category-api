@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.19-iam-auth.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@2.1.18...@aws-amplify/graphql-predictions-transformer@2.1.19-iam-auth.0) (2024-03-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-predictions-transformer
+
 ## [2.1.18](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@2.1.17...@aws-amplify/graphql-predictions-transformer@2.1.18) (2024-02-28)
 
 **Note:** Version bump only for package @aws-amplify/graphql-predictions-transformer
