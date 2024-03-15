@@ -155,8 +155,6 @@ export class HasManyTransformer extends TransformerPluginBase {
       const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
       const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType);
       dataSourceBasedTransformer.generateResolvers(ctx, config);
-      const generator = getGenerator(dbType);
-      generator.makeHasManyGetItemsConnectionWithKeyResolver(config, context);
     }
   };
 }
