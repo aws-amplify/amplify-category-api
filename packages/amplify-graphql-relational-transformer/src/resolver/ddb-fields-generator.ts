@@ -46,7 +46,7 @@ const CONNECTION_STACK = 'ConnectionStack';
 const authFilter = ref('ctx.stash.authFilter');
 const PARTITION_KEY_VALUE = 'partitionKeyValue';
 
-export class DDBRelationalResolverGenerator extends RelationalResolverGenerator {
+export class DDBFieldsRelationalResolverGenerator extends RelationalResolverGenerator {
   makeExpression = (keySchema: any[], connectionAttributes: string[]): ObjectNode => {
     if (keySchema[1] && connectionAttributes[1]) {
       let condensedSortKeyValue;
