@@ -174,8 +174,8 @@ export interface AuthorizationModes {
   readonly defaultAuthorizationMode?: 'AWS_IAM' | 'AMAZON_COGNITO_USER_POOLS' | 'OPENID_CONNECT' | 'API_KEY' | 'AWS_LAMBDA';
 
   /**
-   * IAM Auth config, required if an 'iam' auth provider is specified in the Api.
-   * Applies to 'public' and 'private' auth strategies.
+   * IAM Auth config, required if IAM authorization should be controlled by IAM policies rather than @auth directives.
+   * Applies to any IAM principal except Cognito Identity Pool roles.
    */
   readonly iamConfig?: IAMAuthorizationConfig;
 
