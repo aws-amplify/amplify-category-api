@@ -287,6 +287,24 @@ describe('CDK GraphQL Transformer', () => {
       await testDoesNotHaveCRUDLAccess(graphqlClient, 'TodoWithPublicIam');
     }
   });
+
+  it('can access TodoWithNoAuthDirective', async () => {
+    for (const graphqlClient of [graphqlClientApiKey, graphqlClientWithIAMAccessApiKey, graphqlClientWithIAMAccessBasicRole]) {
+      await testHasCRUDLAccess(graphqlClient, 'TodoWithNoAuthDirective', 'TodoWithNoAuthDirectives');
+    }
+  });
+
+  it('cannot access TodoWithNoAuthDirective', async () => {
+    for (const graphqlClient of [
+      graphqlClientAuthRole,
+      graphqlClientUnauthRole,
+      graphqlClientWithIAMAccessAuthRole,
+      graphqlClientWithIAMAccessUnauthRole,
+      graphqlClientBasicRole,
+    ]) {
+      await testDoesNotHaveCRUDLAccess(graphqlClient, 'TodoWithNoAuthDirective', 'TodoWithNoAuthDirectives');
+    }
+  });
 });
 
 const testHasCRUDLAccess = async (graphqlClient: AWSAppSyncClient<any>, modelName: string, modelListName?: string): Promise<void> => {
@@ -474,6 +492,7 @@ const setupDatabase = async (options: {
     'CREATE TABLE todos (id VARCHAR(40) PRIMARY KEY, description VARCHAR(256))',
     'CREATE TABLE todosWithPrivateIam (id VARCHAR(40) PRIMARY KEY, description VARCHAR(256))',
     'CREATE TABLE todosWithPublicIam (id VARCHAR(40) PRIMARY KEY, description VARCHAR(256))',
+    'CREATE TABLE todosWithNoAuthDirective (id VARCHAR(40) PRIMARY KEY, description VARCHAR(256))',
   ];
 
   const dbConfig = await setupRDSInstanceAndData(options, queries);
