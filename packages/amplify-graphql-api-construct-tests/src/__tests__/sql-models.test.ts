@@ -10,11 +10,16 @@ import {
   storeDbConnectionConfig,
   storeDbConnectionConfigWithSecretsManager,
   deleteDbConnectionConfigWithSecretsManager,
+  deleteDbConnectionStringConfig,
 } from 'amplify-category-api-e2e-core';
 import { LambdaClient, GetProvisionedConcurrencyConfigCommand } from '@aws-sdk/client-lambda';
 import generator from 'generate-password';
-import { getResourceNamesForStrategyName, SQLLambdaResourceNames } from '@aws-amplify/graphql-transformer-core';
-import { isSqlModelDataSourceSecretsManagerDbConnectionConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { getResourceNamesForStrategyName } from '@aws-amplify/graphql-transformer-core';
+import {
+  isSqlModelDataSourceSecretsManagerDbConnectionConfig,
+  isSqlModelDataSourceSsmDbConnectionConfig,
+  isSqlModelDataSourceSsmDbConnectionStringConfig,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { graphql } from '../graphql-request';
@@ -285,7 +290,7 @@ const cleanupDatabase = async (options: { identifier: string; region: string; db
           region,
           secretArn: dbConnectionConfig.secretArn,
         });
-      } else {
+      } else if (isSqlModelDataSourceSsmDbConnectionConfig(dbConnectionConfig)) {
         return deleteDbConnectionConfig({
           region,
           hostnameSsmPath: dbConnectionConfig.hostnameSsmPath,
@@ -293,6 +298,11 @@ const cleanupDatabase = async (options: { identifier: string; region: string; db
           usernameSsmPath: dbConnectionConfig.usernameSsmPath,
           passwordSsmPath: dbConnectionConfig.passwordSsmPath,
           databaseNameSsmPath: dbConnectionConfig.databaseNameSsmPath,
+        });
+      } else if (isSqlModelDataSourceSsmDbConnectionStringConfig(dbConnectionConfig)) {
+        return deleteDbConnectionStringConfig({
+          region,
+          connectionStringSsmPath: dbConnectionConfig.connectionStringSsmPath,
         });
       }
     }),
