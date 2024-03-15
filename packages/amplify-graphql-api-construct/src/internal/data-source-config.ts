@@ -195,7 +195,7 @@ export const validateDataSourceStrategy = (strategy: ConstructModelDataSourceStr
   }
 
   const dbConnectionConfig = strategy.dbConnectionConfig;
-  if (isSqlModelDataSourceSsmDbConnectionConfig(dbConnectionConfig)) {
+  if (isSqlModelDataSourceSsmDbConnectionConfig(dbConnectionConfig) || isSqlModelDataSourceSsmDbConnectionConfig(dbConnectionConfig)) {
     const invalidSSMPaths = Object.values(dbConnectionConfig).filter((value) => typeof value === 'string' && !isValidSSMPath(value));
     if (invalidSSMPaths.length > 0) {
       throw new Error(

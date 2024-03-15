@@ -15,15 +15,21 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { ResolverConfig } from 'graphql-transformer-core';
 
 // @public (undocumented)
-export function addAdminQueriesApi(context: $TSContext, apiProps: {
+export function addAdminQueriesApi(
+context: $TSContext,
+apiProps: {
     apiName: string;
     functionName: string;
     authResourceName: string;
     dependsOn: Record<string, any>[];
-}): Promise<void>;
+},
+): Promise<void>;
 
 // @public (undocumented)
-export const addGraphQLAuthorizationMode: (context: $TSContext, args: Record<string, any>) => Promise<{
+export const addGraphQLAuthorizationMode: (
+context: $TSContext,
+args: Record<string, any>,
+) => Promise<{
     authenticationType: string;
 }>;
 
@@ -58,16 +64,20 @@ const console_2: (context: $TSContext) => Promise<void>;
 export { console_2 as console }
 
 // @public (undocumented)
-export function convertDeperecatedRestApiPaths(deprecatedParametersFileName: string, deprecatedParametersFilePath: string, resourceName: string): {};
+export function convertDeperecatedRestApiPaths(
+deprecatedParametersFileName: string,
+deprecatedParametersFilePath: string,
+resourceName: string,
+): {};
 
 // @public (undocumented)
 export enum DEPLOYMENT_MECHANISM {
     // (undocumented)
-    FULLY_MANAGED = "FULLY_MANAGED",
+    FULLY_MANAGED = 'FULLY_MANAGED',
     // (undocumented)
-    INDENPENDENTLY_MANAGED = "INDENPENDENTLY_MANAGED",
+    INDENPENDENTLY_MANAGED = 'INDENPENDENTLY_MANAGED',
     // (undocumented)
-    SELF_MANAGED = "SELF_MANAGED"
+    SELF_MANAGED = 'SELF_MANAGED',
 }
 
 // Warning: (ae-forgotten-export) The symbol "ContainersStack" needs to be exported by the entry point index.d.ts
@@ -93,10 +103,17 @@ export const executeAmplifyHeadlessCommand: (context: $TSContext, headlessPayloa
 // Warning: (ae-forgotten-export) The symbol "ContainerArtifactsMetadata" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export function generateContainersArtifacts(context: $TSContext, resource: ApiResource, askForExposedContainer?: boolean): Promise<ContainerArtifactsMetadata>;
+export function generateContainersArtifacts(
+context: $TSContext,
+resource: ApiResource,
+askForExposedContainer?: boolean,
+): Promise<ContainerArtifactsMetadata>;
 
 // @public (undocumented)
-export const getAuthConfig: (context: $TSContext, resourceName: string) => Promise<{
+export const getAuthConfig: (
+context: $TSContext,
+resourceName: string,
+) => Promise<{
     defaultAuthentication: any;
     additionalAuthenticationProviders: any[];
 }>;
@@ -118,13 +135,19 @@ export function getGitHubOwnerRepoFromPath(path: string): {
 };
 
 // @public (undocumented)
-export const getPermissionPolicies: (context: $TSContext, resourceOpsMapping: Record<string, any>) => Promise<{
+export const getPermissionPolicies: (
+context: $TSContext,
+resourceOpsMapping: Record<string, any>,
+) => Promise<{
     permissionPolicies: any[];
     resourceAttributes: any[];
 }>;
 
 // @public (undocumented)
-export const getResolverConfig: (context: $TSContext, resourceName: string) => Promise<ResolverConfig>;
+export const getResolverConfig: (
+context: $TSContext,
+resourceName: string,
+) => Promise<ResolverConfig>;
 
 // @public (undocumented)
 export const getTransformerVersion: (context: any) => Promise<number>;
@@ -142,10 +165,15 @@ export const isDataStoreEnabled: (context: $TSContext) => Promise<boolean>;
 export const migrate: (context: $TSContext, serviceName?: string) => Promise<void>;
 
 // @public (undocumented)
-export const NETWORK_STACK_LOGICAL_ID = "NetworkStack";
+export const NETWORK_STACK_LOGICAL_ID = 'NetworkStack';
 
 // @public (undocumented)
-export function processDockerConfig(context: $TSContext, resource: ApiResource, srcPath: string, askForExposedContainer?: boolean): Promise<{
+export function processDockerConfig(
+context: $TSContext,
+resource: ApiResource,
+srcPath: string,
+askForExposedContainer?: boolean,
+): Promise<{
     containersPorts: number[];
     containers: Container[];
     isInitialDeploy: boolean;
@@ -169,21 +197,27 @@ export const transformCategoryStack: (context: $TSContext, resource: Record<stri
 // Warning: (ae-forgotten-export) The symbol "DeploymentResources" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export const transformGraphQLSchema: (context: $TSContext, options: any) => Promise<DeploymentResources | DeploymentResources_2 | undefined>;
+export const transformGraphQLSchema: (
+context: $TSContext,
+options: any,
+) => Promise<DeploymentResources | DeploymentResources_2 | undefined>;
 
 // @public (undocumented)
-export function updateAdminQueriesApi(context: $TSContext, apiProps: {
+export function updateAdminQueriesApi(
+context: $TSContext,
+apiProps: {
     apiName: string;
     functionName: string;
     authResourceName: string;
     dependsOn: Record<string, any>[];
-}): Promise<void>;
+},
+): Promise<void>;
 
 // Warnings were encountered during analysis:
 //
-// src/provider-utils/awscloudformation/utils/containers-artifacts.ts:30:3 - (ae-forgotten-export) The symbol "ResourceDependency" needs to be exported by the entry point index.d.ts
-// src/provider-utils/awscloudformation/utils/containers-artifacts.ts:35:3 - (ae-forgotten-export) The symbol "API_TYPE" needs to be exported by the entry point index.d.ts
-// src/provider-utils/awscloudformation/utils/containers-artifacts.ts:124:42 - (ae-forgotten-export) The symbol "Container" needs to be exported by the entry point index.d.ts
+// src/provider-utils/awscloudformation/utils/containers-artifacts.ts:30:1 - (ae-forgotten-export) The symbol "ResourceDependency" needs to be exported by the entry point index.d.ts
+// src/provider-utils/awscloudformation/utils/containers-artifacts.ts:35:1 - (ae-forgotten-export) The symbol "API_TYPE" needs to be exported by the entry point index.d.ts
+// src/provider-utils/awscloudformation/utils/containers-artifacts.ts:317:1 - (ae-forgotten-export) The symbol "Container" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

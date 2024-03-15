@@ -160,6 +160,10 @@ const getDBConfig = async (): DBConfig => {
     config.username = await getSSMValue(process.env.username);
     config.password = await getSSMValue(process.env.password);
     config.database = await getSSMValue(process.env.database);
+    const connectionString = process.env.connectionString;
+    if (connectionString) {
+      config.connectionString = await getSSMValue(connectionString);
+    }
   } else if (credentialStorageMethod === CredentialStorageMethod.SECRETS_MANAGER) {
     if (!secretsManagerClient) {
       createSecretsManagerClient();

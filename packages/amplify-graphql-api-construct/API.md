@@ -361,7 +361,7 @@ export class SQLLambdaModelDataSourceStrategyFactory {
 }
 
 // @public
-export type SqlModelDataSourceDbConnectionConfig = SqlModelDataSourceSecretsManagerDbConnectionConfig | SqlModelDataSourceSsmDbConnectionConfig;
+export type SqlModelDataSourceDbConnectionConfig = SqlModelDataSourceSecretsManagerDbConnectionConfig | SqlModelDataSourceSsmDbConnectionConfig | SqlModelDataSourceSsmDbConnectionStringConfig;
 
 // @public
 export interface SqlModelDataSourceSecretsManagerDbConnectionConfig {
@@ -379,6 +379,11 @@ export interface SqlModelDataSourceSsmDbConnectionConfig {
     readonly passwordSsmPath: string;
     readonly portSsmPath: string;
     readonly usernameSsmPath: string;
+}
+
+// @public
+export interface SqlModelDataSourceSsmDbConnectionStringConfig {
+    readonly connectionStringSsmPath: string;
 }
 
 // @public

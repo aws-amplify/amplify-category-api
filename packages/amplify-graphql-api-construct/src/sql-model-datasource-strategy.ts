@@ -29,7 +29,11 @@ export const isSQLLambdaModelDataSourceStrategy = (obj: any): obj is SQLLambdaMo
  * @returns true if the object is shaped like a SqlModelDataSourceDbConnectionConfig
  */
 export const isSqlModelDataSourceDbConnectionConfig = (obj: any): obj is SqlModelDataSourceDbConnectionConfig => {
-  return isSqlModelDataSourceSsmDbConnectionConfig(obj) || isSqlModelDataSourceSecretsManagerDbConnectionConfig(obj);
+  return (
+    isSqlModelDataSourceSsmDbConnectionConfig(obj) ||
+    isSqlModelDataSourceSecretsManagerDbConnectionConfig(obj) ||
+    isSqlModelDataSourceSsmDbConnectionStringConfig(obj)
+  );
 };
 
 /**
@@ -63,6 +67,15 @@ export const isSqlModelDataSourceSecretsManagerDbConnectionConfig = (
     typeof obj.databaseName === 'string' &&
     typeof obj.hostname == 'string'
   );
+};
+
+/**
+ * Type predicate that returns true if the object is a SqlModelDataSourceSsmDbConnectionStringConfig.
+ * @param obj the object to inspect
+ * @returns true if the object is shaped like a SqlModelDataSourceSsmDbConnectionStringConfig
+ */
+export const isSqlModelDataSourceSsmDbConnectionStringConfig = (obj: any): obj is SqlModelDataSourceSecretsManagerDbConnectionConfig => {
+  return (typeof obj === 'object' || typeof obj === 'function') && typeof obj.connectionStringSsmPath === 'string';
 };
 
 /**
