@@ -410,11 +410,11 @@ export const deleteDbConnectionConfig = async (options: {
   await ssmClient.send(new DeleteParametersCommand(input));
 };
 
-export const deleteDbConnectionStringConfig = async (options: { region: string; connectionStringSsmPath: string }): Promise<void> => {
+export const deleteDbConnectionStringConfig = async (options: { region: string; connectionUriSsmPath: string }): Promise<void> => {
   const ssmClient = new SSMClient({ region: options.region });
 
   const input: DeleteParametersCommandInput = {
-    Names: [options.connectionStringSsmPath],
+    Names: [options.connectionUriSsmPath],
   };
 
   console.log('Deleting SSM parameters');

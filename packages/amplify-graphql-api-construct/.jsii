@@ -7346,7 +7346,7 @@
       "kind": "class",
       "locationInModule": {
         "filename": "src/sql-model-datasource-strategy.ts",
-        "line": 71
+        "line": 85
       },
       "methods": [
         {
@@ -7357,7 +7357,7 @@
           },
           "locationInModule": {
             "filename": "src/sql-model-datasource-strategy.ts",
-            "line": 78
+            "line": 92
           },
           "name": "fromCustomSqlFiles",
           "parameters": [
@@ -7720,7 +7720,7 @@
             "filename": "src/model-datasource-strategy-types.ts",
             "line": 135
           },
-          "name": "connectionStringSsmPath",
+          "name": "connectionUriSsmPath",
           "type": {
             "primitive": "string"
           }
