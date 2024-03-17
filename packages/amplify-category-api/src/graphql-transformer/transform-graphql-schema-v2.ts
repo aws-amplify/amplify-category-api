@@ -16,6 +16,7 @@ import {
   ModelDataSourceStrategyDbType,
   ModelDataSourceStrategySqlDbType,
   RDSLayerMapping,
+  RDSSNSTopicMapping,
   SQLLambdaModelDataSourceStrategy,
   SqlDirectiveDataSourceStrategy,
   SqlModelDataSourceDbConnectionConfig,
@@ -343,8 +344,10 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
 
   // Read the RDS Mapping S3 Manifest only if the schema contains SQL models or @sql directives.
   let rdsLayerMapping: RDSLayerMapping | undefined = undefined;
+  let rdsSnsTopicMapping: RDSSNSTopicMapping | undefined = undefined;
   if (containsSqlModelOrDirective(dataSourceStrategies, sqlDirectiveDataSourceStrategies)) {
     rdsLayerMapping = await getRDSLayerMapping(context, useBetaSqlLayer);
+    rdsSnsTopicMapping = await getRDSSNSTopicMapping(context, useBetaSqlLayer);
   }
 
   const transformManager = new TransformManager(
@@ -367,6 +370,7 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
     sqlDirectiveDataSourceStrategies,
     printTransformerLog,
     rdsLayerMapping,
+    rdsSnsTopicMapping,
   });
 
   const transformOutput: DeploymentResources = {
@@ -415,6 +419,24 @@ const getRDSLayerMapping = async (context: $TSContext, useBetaSqlLayer = false):
     return mapping as RDSLayerMapping;
   } else {
     throw new Error(`Unable to retrieve layer mapping from ${url} with status code ${response.status}.`);
+  }
+};
+
+const getRDSSNSTopicMapping = async (context: $TSContext, useBetaSqlLayer = false): Promise<RDSSNSTopicMapping> => {
+  const bucket = `${ResourceConstants.RESOURCES.SQLLayerManifestBucket}${useBetaSqlLayer ? '-beta' : ''}`;
+  const region = context.amplify.getProjectMeta().providers.awscloudformation.Region;
+  const url = `https://${bucket}.s3.amazonaws.com/${ResourceConstants.RESOURCES.SQLSNSTopicARNManifestKeyPrefix}${region}`;
+  const response = await fetch(url);
+  if (response.status === 200) {
+    const result = await response.text();
+    const mapping = {
+      [region]: {
+        topicArn: result,
+      },
+    };
+    return mapping as RDSSNSTopicMapping;
+  } else {
+    throw new Error(`Unable to retrieve sns topic ARN mapping from ${url} with status code ${response.status}.`);
   }
 };
 

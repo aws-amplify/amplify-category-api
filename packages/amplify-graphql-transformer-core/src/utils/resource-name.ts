@@ -86,6 +86,12 @@ export interface SQLLambdaResourceNames {
    */
   sqlLayerVersionMapping: string;
 
+  /**
+   * A mapping that stores Patching SNS Topic ARNs by region. The Gen1 resource generator updates this map at deployment time by retrieving the
+   * latest manifests from an S3 bucket.
+   */
+  sqlSNSTopicArnMapping: string;
+
   /** In the CDK construct flow, Lambda Layer versions are resolved by a custom resource with this name. */
   sqlLayerVersionResolverCustomResource: string;
 
@@ -148,6 +154,7 @@ export const getResourceNamesForStrategyName = (strategyName: string): SQLLambda
     sqlLambdaExecutionRolePolicy: `SQLLambdaRolePolicy${strategyName}`,
     sqlLambdaFunction,
     sqlLayerVersionMapping: `SQLLayerVersionMapping${strategyName}`,
+    sqlSNSTopicArnMapping: `SQLSNSTopicArnMapping${strategyName}`,
     sqlLayerVersionResolverCustomResource: `SQLLayerVersionCustomResource${strategyName}`,
     sqlPatchingLambdaExecutionRole: `SQLPatchingLambdaRole${strategyName}`,
     sqlPatchingLambdaExecutionRolePolicy: `SQLPatchingLambdaRolePolicy${strategyName}`,

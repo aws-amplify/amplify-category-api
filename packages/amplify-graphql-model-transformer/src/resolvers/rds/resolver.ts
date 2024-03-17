@@ -29,6 +29,7 @@ import {
   isSqlModelDataSourceSsmDbConnectionConfig,
   isSqlModelDataSourceSecretsManagerDbConnectionConfig,
   isSqlModelDataSourceSsmDbConnectionStringConfig,
+  RDSSNSTopicMapping,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction, LayerVersion, Runtime, Alias, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
@@ -62,6 +63,18 @@ const OPERATION_KEY = '__operation';
  */
 export const setRDSLayerMappings = (scope: Construct, mapping: RDSLayerMapping, resourceNames: SQLLambdaResourceNames): CfnMapping =>
   new CfnMapping(scope, resourceNames.sqlLayerVersionMapping, {
+    mapping,
+  });
+
+/**
+ * Define RDS Patching SNS Topic ARN region mappings. The optional `mapping` can be specified in place of the defaults that are hardcoded at the time
+ * this package is published. For the CLI flow, the `mapping` will be downloaded at runtime during the `amplify push` flow. For the CDK,
+ * the layer version will be resolved by a custom CDK resource.
+ * @param scope Construct
+ * @param mapping an RDSSNSTopicMapping to use in place of the defaults
+ */
+export const setRDSSNSTopicMappings = (scope: Construct, mapping: RDSSNSTopicMapping, resourceNames: SQLLambdaResourceNames): CfnMapping =>
+  new CfnMapping(scope, resourceNames.sqlSNSTopicArnMapping, {
     mapping,
   });
 
