@@ -132,7 +132,7 @@ export type SqlModelDataSourceDbConnectionConfig =
  */
 export interface SqlModelDataSourceSsmDbConnectionStringConfig {
   /** The SSM Path to the secure connection string used for connecting to the database. **/
-  readonly connectionStringSsmPath: string;
+  readonly connectionUriSsmPath: string;
 }
 
 /**

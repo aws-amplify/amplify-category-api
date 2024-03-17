@@ -130,7 +130,7 @@ export type SqlModelDataSourceDbConnectionConfig =
  */
 export interface SqlModelDataSourceSsmDbConnectionStringConfig {
   /** The SSM Path to the secure connection string used for connecting to the database. **/
-  readonly connectionStringSsmPath: string;
+  readonly connectionUriSsmPath: string;
 }
 
 /*
@@ -284,6 +284,6 @@ export const isSqlModelDataSourceSecretsManagerDbConnectionConfig = (
  * @param obj the object to inspect
  * @returns true if the object is shaped like a SqlModelDataSourceSsmDbConnectionStringConfig
  */
-export const isSqlModelDataSourceSsmDbConnectionStringConfig = (obj: any): obj is SqlModelDataSourceSecretsManagerDbConnectionConfig => {
-  return (typeof obj === 'object' || typeof obj === 'function') && typeof obj.connectionStringSsmPath === 'string';
+export const isSqlModelDataSourceSsmDbConnectionStringConfig = (obj: any): obj is SqlModelDataSourceSsmDbConnectionStringConfig => {
+  return (typeof obj === 'object' || typeof obj === 'function') && typeof obj.connectionUriSsmPath === 'string';
 };
