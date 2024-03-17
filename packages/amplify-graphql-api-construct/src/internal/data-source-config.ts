@@ -10,6 +10,7 @@ import {
   DataSourceStrategiesProvider,
   isSqlModelDataSourceSsmDbConnectionConfig,
   isSqlModelDataSourceSecretsManagerDbConnectionConfig,
+  isSqlModelDataSourceSsmDbConnectionStringConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Token, Arn, ArnFormat } from 'aws-cdk-lib';
 import {
@@ -195,7 +196,10 @@ export const validateDataSourceStrategy = (strategy: ConstructModelDataSourceStr
   }
 
   const dbConnectionConfig = strategy.dbConnectionConfig;
-  if (isSqlModelDataSourceSsmDbConnectionConfig(dbConnectionConfig) || isSqlModelDataSourceSsmDbConnectionConfig(dbConnectionConfig)) {
+  if (
+    isSqlModelDataSourceSsmDbConnectionConfig(dbConnectionConfig) ||
+    isSqlModelDataSourceSsmDbConnectionStringConfig(dbConnectionConfig)
+  ) {
     const invalidSSMPaths = Object.values(dbConnectionConfig).filter((value) => typeof value === 'string' && !isValidSSMPath(value));
     if (invalidSSMPaths.length > 0) {
       throw new Error(
