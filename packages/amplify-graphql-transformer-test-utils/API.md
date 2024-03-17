@@ -27,6 +27,7 @@ import { ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-transform
 import type { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ProvisionedConcurrencyConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import type { RDSLayerMappingProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import type { RDSSNSTopicMappingProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
 import type { SqlDirectiveDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
@@ -206,7 +207,7 @@ export const testTransform: (params: TestTransformParameters) => DeploymentResou
 };
 
 // @public (undocumented)
-export type TestTransformParameters = RDSLayerMappingProvider & {
+export type TestTransformParameters = RDSLayerMappingProvider & RDSSNSTopicMappingProvider & {
     authConfig?: AppSyncAuthConfiguration;
     dataSourceStrategies?: Record<string, ModelDataSourceStrategy>;
     overrideConfig?: OverrideConfig;
@@ -241,7 +242,7 @@ export class TransformManager {
 
 // Warnings were encountered during analysis:
 //
-// src/test-transform.ts:23:3 - (ae-forgotten-export) The symbol "OverrideConfig" needs to be exported by the entry point index.d.ts
+// src/test-transform.ts:24:3 - (ae-forgotten-export) The symbol "OverrideConfig" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

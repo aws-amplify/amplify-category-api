@@ -311,6 +311,20 @@ export interface RDSLayerMappingProvider {
 }
 
 // @public (undocumented)
+export interface RDSSNSTopicMapping {
+    // (undocumented)
+    readonly [key: string]: {
+        topicArn: string;
+    };
+}
+
+// @public (undocumented)
+export interface RDSSNSTopicMappingProvider {
+    // (undocumented)
+    rdsSnsTopicMapping?: RDSSNSTopicMapping;
+}
+
+// @public (undocumented)
 type ReadonlyArray_2<T> = Readonly<Array<Readonly<T>>>;
 export { ReadonlyArray_2 as ReadonlyArray }
 
@@ -537,7 +551,7 @@ export interface TransformerContextOutputProvider {
 }
 
 // @public (undocumented)
-export interface TransformerContextProvider extends DataSourceStrategiesProvider, RDSLayerMappingProvider {
+export interface TransformerContextProvider extends DataSourceStrategiesProvider, RDSLayerMappingProvider, RDSSNSTopicMappingProvider {
     // (undocumented)
     api: GraphQLAPIProvider;
     // (undocumented)

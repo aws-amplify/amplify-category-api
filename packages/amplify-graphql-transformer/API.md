@@ -12,6 +12,7 @@ import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import type { RDSLayerMappingProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import type { RDSSNSTopicMappingProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
 import { SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces';
@@ -30,7 +31,7 @@ export const constructTransformerChain: (options?: TransformerFactoryArgs) => Tr
 export const executeTransform: (config: ExecuteTransformConfig) => void;
 
 // @public (undocumented)
-export type ExecuteTransformConfig = TransformConfig & DataSourceStrategiesProvider & RDSLayerMappingProvider & {
+export type ExecuteTransformConfig = TransformConfig & DataSourceStrategiesProvider & RDSLayerMappingProvider & RDSSNSTopicMappingProvider & {
     schema: string;
     printTransformerLog?: (log: TransformerLog) => void;
     scope: Construct;

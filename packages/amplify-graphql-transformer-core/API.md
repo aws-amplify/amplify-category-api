@@ -59,6 +59,8 @@ import { OperationTypeDefinitionNode } from 'graphql';
 import { QueryFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSLayerMappingProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { RDSSNSTopicMapping } from '@aws-amplify/graphql-transformer-interfaces';
+import { RDSSNSTopicMappingProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { S3MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { SchemaDefinitionNode } from 'graphql';
 import { SqlDirectiveDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
@@ -279,7 +281,7 @@ export class GraphQLTransform {
     // Warning: (ae-forgotten-export) The symbol "TransformOption" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    transform({ assetProvider, dataSourceStrategies, nestedStackProvider, parameterProvider, rdsLayerMapping, schema, scope, sqlDirectiveDataSourceStrategies, synthParameters, }: TransformOption): void;
+    transform({ assetProvider, dataSourceStrategies, nestedStackProvider, parameterProvider, rdsLayerMapping, rdsSnsTopicMapping, schema, scope, sqlDirectiveDataSourceStrategies, synthParameters, }: TransformOption): void;
 }
 
 // @public (undocumented)
@@ -551,6 +553,10 @@ export interface SQLLambdaResourceNames {
     sqlPatchingSubscription: string;
     // (undocumented)
     sqlPatchingTopic: string;
+    // (undocumented)
+    sqlSNSTopicArnMapping: string;
+    // (undocumented)
+    sqlSNSTopicARNResolverCustomResource: string;
     // (undocumented)
     sqlStack: string;
     // (undocumented)

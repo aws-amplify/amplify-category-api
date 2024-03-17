@@ -9,6 +9,7 @@ import {
   NestedStackProvider,
   RDSLayerMapping,
   RDSLayerMappingProvider,
+  RDSSNSTopicMappingProvider,
   StackManagerProvider,
   SynthParameters,
   TransformerContextMetadataProvider,
@@ -17,6 +18,7 @@ import {
   TransformerDataSourceManagerProvider,
   TransformParameterProvider,
   TransformParameters,
+  RDSSNSTopicMapping,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode } from 'graphql';
 import { Construct } from 'constructs';
@@ -50,7 +52,10 @@ export class TransformerContextMetadata implements TransformerContextMetadataPro
   }
 }
 
-export interface TransformerContextConstructorOptions extends DataSourceStrategiesProvider, RDSLayerMappingProvider {
+export interface TransformerContextConstructorOptions
+  extends DataSourceStrategiesProvider,
+    RDSLayerMappingProvider,
+    RDSSNSTopicMappingProvider {
   assetProvider: AssetProvider;
   authConfig: AppSyncAuthConfiguration;
   inputDocument: DocumentNode;
@@ -90,6 +95,8 @@ export class TransformerContext implements TransformerContextProvider {
 
   public readonly rdsLayerMapping?: RDSLayerMapping;
 
+  public readonly rdsSnsTopicMapping?: RDSSNSTopicMapping;
+
   public metadata: TransformerContextMetadata;
 
   public readonly synthParameters: SynthParameters;
@@ -106,6 +113,7 @@ export class TransformerContext implements TransformerContextProvider {
       nestedStackProvider,
       parameterProvider,
       rdsLayerMapping,
+      rdsSnsTopicMapping,
       resolverConfig,
       scope,
       stackMapping,
@@ -122,6 +130,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.output = new TransformerOutput(inputDocument);
     this.providerRegistry = new TransformerContextProviderRegistry();
     this.rdsLayerMapping = rdsLayerMapping;
+    this.rdsSnsTopicMapping = rdsSnsTopicMapping;
     this.resolverConfig = resolverConfig;
     this.resolvers = new ResolverManager();
     this.resourceHelper = new TransformerResourceHelper(synthParameters);
