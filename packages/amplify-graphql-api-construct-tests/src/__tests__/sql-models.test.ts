@@ -287,7 +287,7 @@ const cleanupDatabase = async (options: { identifier: string; region: string; db
       } else if (isSqlModelDataSourceSsmDbConnectionStringConfig(dbConnectionConfig)) {
         return deleteDbConnectionStringConfig({
           region,
-          connectionStringSsmPath: dbConnectionConfig.connectionStringSsmPath,
+          connectionUriSsmPath: dbConnectionConfig.connectionUriSsmPath,
         });
       }
     }),

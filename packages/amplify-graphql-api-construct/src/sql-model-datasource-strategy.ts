@@ -7,6 +7,7 @@ import {
   SqlModelDataSourceSsmDbConnectionConfig,
   SqlModelDataSourceSecretsManagerDbConnectionConfig,
 } from './model-datasource-strategy-types';
+import { SqlModelDataSourceSsmDbConnectionStringConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
 /**
  * Type predicate that returns true if the object is a SQLLambdaModelDataSourceStrategy.
@@ -74,8 +75,8 @@ export const isSqlModelDataSourceSecretsManagerDbConnectionConfig = (
  * @param obj the object to inspect
  * @returns true if the object is shaped like a SqlModelDataSourceSsmDbConnectionStringConfig
  */
-export const isSqlModelDataSourceSsmDbConnectionStringConfig = (obj: any): obj is SqlModelDataSourceSecretsManagerDbConnectionConfig => {
-  return (typeof obj === 'object' || typeof obj === 'function') && typeof obj.connectionStringSsmPath === 'string';
+export const isSqlModelDataSourceSsmDbConnectionStringConfig = (obj: any): obj is SqlModelDataSourceSsmDbConnectionStringConfig => {
+  return (typeof obj === 'object' || typeof obj === 'function') && typeof obj.connectionUriSsmPath === 'string';
 };
 
 /**
