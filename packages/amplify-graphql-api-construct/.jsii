@@ -7233,7 +7233,7 @@
       "kind": "class",
       "locationInModule": {
         "filename": "src/sql-model-datasource-strategy.ts",
-        "line": 71
+        "line": 85
       },
       "methods": [
         {
@@ -7244,7 +7244,7 @@
           },
           "locationInModule": {
             "filename": "src/sql-model-datasource-strategy.ts",
-            "line": 78
+            "line": 92
           },
           "name": "fromCustomSqlFiles",
           "parameters": [
@@ -7607,7 +7607,7 @@
             "filename": "src/model-datasource-strategy-types.ts",
             "line": 135
           },
-          "name": "connectionStringSsmPath",
+          "name": "connectionUriSsmPath",
           "type": {
             "primitive": "string"
           }
@@ -8170,5 +8170,5 @@
     }
   },
   "version": "1.6.0",
-  "fingerprint": "fEtaJqNS+gRtbCXJT4q+wbaBcLHzj9sfndO0JHCv6iE="
+  "fingerprint": "qAmc/YAKODGLJJMJOpKHoHSNeSBI0bQQ61nz3Ypuh2M="
 }

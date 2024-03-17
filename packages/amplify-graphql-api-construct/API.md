@@ -370,7 +370,7 @@ export interface SqlModelDataSourceSsmDbConnectionConfig {
 
 // @public
 export interface SqlModelDataSourceSsmDbConnectionStringConfig {
-    readonly connectionStringSsmPath: string;
+    readonly connectionUriSsmPath: string;
 }
 
 // @public
