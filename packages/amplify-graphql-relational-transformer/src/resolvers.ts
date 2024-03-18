@@ -10,7 +10,7 @@ import { getConnectionAttributeName, getObjectPrimaryKey } from './utils';
 
 export const updateTableForReferencesConnection = (
   config: HasManyDirectiveConfiguration, // TODO: Add support for HasOneDirectiveConfiguration
-  ctx: TransformerContextProvider
+  ctx: TransformerContextProvider,
 ): void => {
   const { field, fieldNodes, indexName: incomingIndexName, object, references, relatedType } = config;
 
@@ -20,9 +20,7 @@ export const updateTableForReferencesConnection = (
   }
 
   if (references.length < 1) {
-    throw new Error( // TODO: better error message
-      'references should not be empty here'
-    )
+    throw new Error('references should not be empty here'); // TODO: better error message
   }
 
   const mappedObjectName = ctx.resourceHelper.getModelNameMapping(object.name.value);
@@ -38,17 +36,17 @@ export const updateTableForReferencesConnection = (
     return;
   }
 
-  const fieldNode = fieldNodes[0]
+  const fieldNode = fieldNodes[0];
   const partitionKeyName = fieldNode.name.value;
   // Grabbing the type of the related field.
   // TODO: Validate types of related field and primary's pk match
   // -- ideally further up the chain
-  const partitionKeyType = attributeTypeFromType(fieldNode.type, ctx)
+  const partitionKeyType = attributeTypeFromType(fieldNode.type, ctx);
   const respectPrimaryKeyAttributesOnConnectionField: boolean = ctx.transformParameters.respectPrimaryKeyAttributesOnConnectionField;
 
   const sortKey = respectPrimaryKeyAttributesOnConnectionField
-  ? getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject(ctx, object, field, fieldNodes.slice(1))
-  : undefined;
+    ? getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject(ctx, object, field, fieldNodes.slice(1))
+    : undefined;
 
   addGlobalSecondaryIndex(table, {
     indexName: indexName,
@@ -57,7 +55,7 @@ export const updateTableForReferencesConnection = (
     ctx: ctx,
     relatedTypeName: relatedType.name.value,
   });
-}
+};
 
 /**
  * adds GSI to the table if it doesn't already exists for connection
@@ -97,26 +95,26 @@ export const updateTableForConnection = (config: HasManyDirectiveConfiguration, 
     ? getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject(ctx, object, field, getSortKeyFields(ctx, object))
     : undefined;
 
-    addGlobalSecondaryIndex(table, {
-      indexName: indexName,
-      partitionKey: { name: partitionKeyName, type: partitionKeyType },
-      sortKey: sortKey,
-      ctx: ctx,
-      relatedTypeName: relatedType.name.value,
-    });
+  addGlobalSecondaryIndex(table, {
+    indexName: indexName,
+    partitionKey: { name: partitionKeyName, type: partitionKeyType },
+    sortKey: sortKey,
+    ctx: ctx,
+    relatedTypeName: relatedType.name.value,
+  });
 };
 
 const addGlobalSecondaryIndex = (
   table: any,
   props: {
-    indexName: string,
-    partitionKey: KeyAttributeDefinition,
-    sortKey: KeyAttributeDefinition | undefined,
-    ctx: TransformerContextProvider,
-    relatedTypeName: string,
-  }
+    indexName: string;
+    partitionKey: KeyAttributeDefinition;
+    sortKey: KeyAttributeDefinition | undefined;
+    ctx: TransformerContextProvider;
+    relatedTypeName: string;
+  },
 ): void => {
-  const { indexName, partitionKey, sortKey, ctx, relatedTypeName } = props
+  const { indexName, partitionKey, sortKey, ctx, relatedTypeName } = props;
 
   table.addGlobalSecondaryIndex({
     indexName,
@@ -151,12 +149,12 @@ const addGlobalSecondaryIndex = (
   };
 
   overrideIndexAtCfnLevel(ctx, relatedTypeName, table, newIndex);
-}
+};
 
 type KeyAttributeDefinition = {
   name: string;
-  type: 'S' | 'N'
-}
+  type: 'S' | 'N';
+};
 
 const getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject = (
   ctx: TransformerContextProvider,
