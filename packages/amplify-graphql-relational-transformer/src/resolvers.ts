@@ -31,7 +31,7 @@ export const updateTableForReferencesConnection = (
     // Ideally validate this further up the chain.
   }
 
-  if (references.length < 1) {
+  if (references.length < 1 || referenceNodes.length < 1) {
     throw new Error('references should not be empty here'); // TODO: better error message
   }
 
