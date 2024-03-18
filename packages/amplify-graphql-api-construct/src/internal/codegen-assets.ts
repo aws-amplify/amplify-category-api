@@ -31,12 +31,14 @@ export class CodegenAssets extends Construct {
     const bucket = new Bucket(this, `${id}Bucket`, {
       removalPolicy: RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
-      // Enabling CORS to allow console to access the codegen assets. 
-      cors: [{
-        allowedMethods: [HttpMethods.GET, HttpMethods.HEAD],
-        allowedHeaders: ['*'],
-        allowedOrigins: [ CONSOLE_SERVICE_ENDPOINT ],
-      }],
+      // Enabling CORS to allow console to access the codegen assets.
+      cors: [
+        {
+          allowedMethods: [HttpMethods.GET, HttpMethods.HEAD],
+          allowedHeaders: ['*'],
+          allowedOrigins: [CONSOLE_SERVICE_ENDPOINT],
+        },
+      ],
     });
 
     const deployment = new BucketDeployment(this, `${id}Deployment`, {
