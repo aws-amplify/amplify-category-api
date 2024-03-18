@@ -8,6 +8,18 @@ import { getSortKeyFields } from './schema';
 import { HasManyDirectiveConfiguration } from './types';
 import { getConnectionAttributeName, getObjectPrimaryKey } from './utils';
 
+/**
+ * Creates a GSI on the table of the `relatedType` based on the config's `references` / `referenceNodes`
+ *
+ * @remarks
+ * This method sets the `indexName` property of the `config` to the GSI name created on the
+ * table of the `relatedType`
+ *
+ * Preconditions: `config.references >= 1` and `config.referenceNodes >= 1`
+ *
+ * @param config The `HasManyDirectiveConfiguration` for DDB references.
+ * @param ctx The `TransformerContextProvider` for DDB references.
+ */
 export const updateTableForReferencesConnection = (
   config: HasManyDirectiveConfiguration, // TODO: Add support for HasOneDirectiveConfiguration
   ctx: TransformerContextProvider,
