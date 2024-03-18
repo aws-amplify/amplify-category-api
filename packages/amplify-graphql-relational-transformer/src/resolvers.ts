@@ -27,8 +27,8 @@ export const updateTableForReferencesConnection = (
   const indexName = `gsi-${mappedObjectName}.${field.name.value}`;
   config.indexName = indexName;
 
-  const table = getTable(ctx, relatedType);
-  const gsis = table.globalSecondaryIndexes;
+  const relatedTable = getTable(ctx, relatedType);
+  const gsis = relatedTable.globalSecondaryIndexes;
   if (gsis.some((gsi: any) => gsi.indexName === indexName)) {
     // TODO: In the existing `fields` based implementation, this returns.
     // However, this is likely a schema misconfiguration in the `references`
@@ -48,7 +48,7 @@ export const updateTableForReferencesConnection = (
     ? getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject(ctx, object, field, referenceNodes.slice(1))
     : undefined;
 
-  addGlobalSecondaryIndex(table, {
+  addGlobalSecondaryIndex(relatedTable, {
     indexName: indexName,
     partitionKey: { name: partitionKeyName, type: partitionKeyType },
     sortKey: sortKey,
