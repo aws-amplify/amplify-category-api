@@ -23,6 +23,7 @@ export type HasManyDirectiveConfiguration = {
   fields: string[];
   references: string[];
   fieldNodes: FieldDefinitionNode[];
+  referenceNodes: FieldDefinitionNode[];
   relatedType: ObjectTypeDefinitionNode;
   relatedTypeIndex: FieldDefinitionNode[];
   connectionFields: string[];
@@ -54,6 +55,7 @@ export type ManyToManyDirectiveConfiguration = {
   fields: string[];
   references: string[];
   fieldNodes: FieldDefinitionNode[];
+  referenceNodes: FieldDefinitionNode[];
   relatedType: ObjectTypeDefinitionNode;
   relatedTypeIndex: FieldDefinitionNode[];
   connectionFields: string[];
