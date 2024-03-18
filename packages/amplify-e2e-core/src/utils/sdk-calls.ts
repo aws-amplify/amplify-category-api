@@ -205,3 +205,33 @@ export const listAttachedRolePolicies = async (roleName: string, region: string)
   const service = new IAM({ region });
   return (await service.listAttachedRolePolicies({ RoleName: roleName }).promise()).AttachedPolicies;
 };
+
+export const getBucketNameFromModelSchemaS3Uri = (uri: string | null): string => {
+  const pattern = /(s3:\/\/)(.*)(\/.*)/;
+  const matches = uri.match(pattern);
+  // Sample Input Uri looks like 's3://bucket-name/model-schema.graphql'.
+  // The output of string.match returns an array which looks like the below. The third element is the bucket name.
+  // [
+  //     "s3://bucket-name/model-schema.graphql",
+  //     "s3://",
+  //     "bucket-name",
+  //     "/model-schema.graphql"
+  // ]
+  const HOST_INDEX = 2;
+  if (!matches) {
+    return null;
+  }
+  if (matches.length && matches.length > 2) {
+    return matches[HOST_INDEX];
+  }
+  return null;
+};
+
+export const getBucketCorsPolicy = async (bucketName: string, region: string): Promise<Record<string, any>[]> => {
+  const service = new S3({ region });
+  const params = {
+    Bucket: bucketName,
+  };
+  const corsPolicy = await service.getBucketCors(params).promise();
+  return corsPolicy.CORSRules;
+};
