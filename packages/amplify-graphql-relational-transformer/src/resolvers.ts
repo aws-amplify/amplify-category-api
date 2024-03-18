@@ -10,7 +10,7 @@ import { getConnectionAttributeName, getObjectPrimaryKey } from './utils';
 
 export const updateTableForReferencesConnection = (
   config: HasManyDirectiveConfiguration, // TODO: Add support for HasOneDirectiveConfiguration
-  ctx: TransformerContextProvider
+  ctx: TransformerContextProvider,
 ): void => {
   const { field, fieldNodes, indexName: incomingIndexName, object, references, relatedType } = config;
 
@@ -20,9 +20,7 @@ export const updateTableForReferencesConnection = (
   }
 
   if (references.length < 1) {
-    throw new Error( // TODO: better error message
-      'references should not be empty here'
-    )
+    throw new Error('references should not be empty here'); // TODO: better error message
   }
 
   const mappedObjectName = ctx.resourceHelper.getModelNameMapping(object.name.value);
@@ -38,17 +36,17 @@ export const updateTableForReferencesConnection = (
     return;
   }
 
-  const fieldNode = fieldNodes[0]
+  const fieldNode = fieldNodes[0];
   const partitionKeyName = fieldNode.name.value;
   // Grabbing the type of the related field.
   // TODO: Validate types of related field and primary's pk match
   // -- ideally further up the chain
-  const partitionKeyType = attributeTypeFromType(fieldNode.type, ctx)
+  const partitionKeyType = attributeTypeFromType(fieldNode.type, ctx);
   const respectPrimaryKeyAttributesOnConnectionField: boolean = ctx.transformParameters.respectPrimaryKeyAttributesOnConnectionField;
 
   const sortKey = respectPrimaryKeyAttributesOnConnectionField
-  ? getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject(ctx, object, field, fieldNodes.slice(1))
-  : undefined;
+    ? getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject(ctx, object, field, fieldNodes.slice(1))
+    : undefined;
 
   addGlobalSecondaryIndex(table, {
     indexName: indexName,
@@ -57,7 +55,7 @@ export const updateTableForReferencesConnection = (
     ctx: ctx,
     relatedTypeName: relatedType.name.value,
   });
-}
+};
 
 /**
  * Creates a GSI on the table of the `relatedType` based on the config's `references` / `referenceNodes`
