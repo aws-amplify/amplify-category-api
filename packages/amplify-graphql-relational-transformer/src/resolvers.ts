@@ -12,7 +12,7 @@ export const updateTableForReferencesConnection = (
   config: HasManyDirectiveConfiguration, // TODO: Add support for HasOneDirectiveConfiguration
   ctx: TransformerContextProvider,
 ): void => {
-  const { field, fieldNodes, indexName: incomingIndexName, object, references, relatedType } = config;
+  const { field, referenceNodes, indexName: incomingIndexName, object, references, relatedType } = config;
 
   if (incomingIndexName) {
     // TODO: log warning or throw that indexName isn't supported for DDB references
@@ -36,16 +36,16 @@ export const updateTableForReferencesConnection = (
     return;
   }
 
-  const fieldNode = fieldNodes[0];
-  const partitionKeyName = fieldNode.name.value;
+  const referenceNode = referenceNodes[0];
+  const partitionKeyName = referenceNode.name.value;
   // Grabbing the type of the related field.
   // TODO: Validate types of related field and primary's pk match
   // -- ideally further up the chain
-  const partitionKeyType = attributeTypeFromType(fieldNode.type, ctx);
+  const partitionKeyType = attributeTypeFromType(referenceNode.type, ctx);
   const respectPrimaryKeyAttributesOnConnectionField: boolean = ctx.transformParameters.respectPrimaryKeyAttributesOnConnectionField;
 
   const sortKey = respectPrimaryKeyAttributesOnConnectionField
-    ? getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject(ctx, object, field, fieldNodes.slice(1))
+    ? getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject(ctx, object, field, referenceNodes.slice(1))
     : undefined;
 
   addGlobalSecondaryIndex(table, {
