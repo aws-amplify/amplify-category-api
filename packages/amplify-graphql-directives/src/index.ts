@@ -2,6 +2,7 @@ export * from './directives';
 import type { Directive } from './directives';
 import {
   AuthDirective,
+  AuthDirectiveV1,
   AwsApiKeyDirective,
   AwsAuthDirective,
   AwsCognitoUserPoolsDirective,
@@ -14,18 +15,23 @@ import {
   DefaultDirective,
   DeprecatedDirective,
   FunctionDirective,
+  FunctionDirectiveV1,
   HasManyDirective,
   HasOneDirective,
   HttpDirective,
+  HttpDirectiveV1,
   IndexDirective,
   KeyDirective,
   ManyToManyDirective,
   MapsToDirective,
   ModelDirective,
+  ModelDirectiveV1,
   PredictionsDirective,
+  PredictionsDirectiveV1,
   PrimaryKeyDirective,
   RefersToDirective,
   SearchableDirective,
+  SearchableDirectiveV1,
   SqlDirective,
   VersionedDirective,
 } from './directives';
@@ -61,4 +67,14 @@ export const DefaultDirectives: readonly Directive[] = [
   SqlDirective,
 ];
 
-export const V1Directives: readonly Directive[] = [ConnectionDirective, KeyDirective, VersionedDirective];
+export const V1Directives: readonly Directive[] = [
+  AuthDirectiveV1,
+  ConnectionDirective,
+  FunctionDirectiveV1,
+  HttpDirectiveV1,
+  KeyDirective,
+  ModelDirectiveV1,
+  PredictionsDirectiveV1,
+  SearchableDirectiveV1,
+  VersionedDirective,
+];
