@@ -1,4 +1,5 @@
-import { Transformer, TransformerContext, TransformerContractError, gql } from 'graphql-transformer-core';
+import { Transformer, TransformerContext, TransformerContractError } from 'graphql-transformer-core';
+import { HttpDirectiveV1 } from '@aws-amplify/graphql-directives';
 import {
   DirectiveNode,
   ObjectTypeDefinitionNode,
@@ -7,6 +8,7 @@ import {
   InterfaceTypeDefinitionNode,
   InputValueDefinitionNode,
   print,
+  parse,
 } from 'graphql';
 import { getDirectiveArgument, isScalar, ResolverResourceIDs, HttpResourceIDs } from 'graphql-transformer-common';
 import { ResourceFactory } from './resources';
@@ -39,23 +41,7 @@ export class HttpTransformer extends Transformer {
   static urlRegex = /(http(s)?:\/\/)|(\/.*)/g;
 
   constructor() {
-    super(
-      'HttpTransformer',
-      gql`
-        directive @http(method: HttpMethod = GET, url: String!, headers: [HttpHeader] = []) on FIELD_DEFINITION
-        enum HttpMethod {
-          GET
-          POST
-          PUT
-          DELETE
-          PATCH
-        }
-        input HttpHeader {
-          key: String
-          value: String
-        }
-      `,
-    );
+    super('HttpTransformer', parse(HttpDirectiveV1.definition));
     this.resources = new ResourceFactory();
   }
 

@@ -1,6 +1,7 @@
 import path = require('path');
-import { Transformer, TransformerContext, getDirectiveArguments, gql, InvalidDirectiveError } from 'graphql-transformer-core';
-import { DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode } from 'graphql';
+import { Transformer, TransformerContext, getDirectiveArguments, InvalidDirectiveError } from 'graphql-transformer-core';
+import { SearchableDirectiveV1 } from '@aws-amplify/graphql-directives';
+import { DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode, parse } from 'graphql';
 import {
   makeNamedType,
   blankObjectExtension,
@@ -45,15 +46,7 @@ export class SearchableModelTransformer extends Transformer {
   resources: ResourceFactory;
 
   constructor() {
-    super(
-      `SearchableModelTransformer`,
-      gql`
-        directive @searchable(queries: SearchableQueryMap) on OBJECT
-        input SearchableQueryMap {
-          search: String
-        }
-      `,
-    );
+    super(`SearchableModelTransformer`, parse(SearchableDirectiveV1.definition));
     this.resources = new ResourceFactory();
   }
 
