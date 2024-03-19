@@ -8,6 +8,9 @@
 export const AuthDirective: Directive;
 
 // @public (undocumented)
+export const AuthDirectiveV1: Directive;
+
+// @public (undocumented)
 export const AwsApiKeyDirective: Directive;
 
 // @public (undocumented)
@@ -61,6 +64,9 @@ export interface DirectiveDefaults {
 export const FunctionDirective: Directive;
 
 // @public (undocumented)
+export const FunctionDirectiveV1: Directive;
+
+// @public (undocumented)
 export const HasManyDirective: Directive<HasManyDirectiveDefaults>;
 
 // @public (undocumented)
@@ -79,6 +85,11 @@ export type HttpDirectiveDefaults = {
     method: string;
     headers: string[];
 };
+
+// Warning: (ae-forgotten-export) The symbol "HttpDirectiveV1Defaults" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export const HttpDirectiveV1: Directive<HttpDirectiveV1Defaults>;
 
 // @public (undocumented)
 export const IndexDirective: Directive;
@@ -101,7 +112,13 @@ export const MapsToDirective: Directive;
 export const ModelDirective: Directive;
 
 // @public (undocumented)
+export const ModelDirectiveV1: Directive;
+
+// @public (undocumented)
 export const PredictionsDirective: Directive;
+
+// @public (undocumented)
+export const PredictionsDirectiveV1: Directive;
 
 // @public (undocumented)
 export const PrimaryKeyDirective: Directive;
@@ -111,6 +128,9 @@ export const RefersToDirective: Directive;
 
 // @public (undocumented)
 export const SearchableDirective: Directive;
+
+// @public (undocumented)
+export const SearchableDirectiveV1: Directive;
 
 // @public (undocumented)
 export const SqlDirective: Directive;
