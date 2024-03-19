@@ -6,8 +6,8 @@ import {
   SqlModelDataSourceDbConnectionConfig,
   SqlModelDataSourceSsmDbConnectionConfig,
   SqlModelDataSourceSecretsManagerDbConnectionConfig,
+  SqlModelDataSourceSsmDbConnectionStringConfig,
 } from './model-datasource-strategy-types';
-import { SqlModelDataSourceSsmDbConnectionStringConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
 /**
  * Type predicate that returns true if the object is a SQLLambdaModelDataSourceStrategy.
