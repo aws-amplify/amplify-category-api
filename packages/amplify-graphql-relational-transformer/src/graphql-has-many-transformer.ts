@@ -61,7 +61,7 @@ export class HasManyTransformer extends TransformerPluginBase {
     const directiveWrapped = new DirectiveWrapper(directive);
     const args = directiveWrapped.getArguments(
       {
-        directiveName: HasManyDirective.definition,
+        directiveName: HasManyDirective.name,
         object: parent as ObjectTypeDefinitionNode,
         field: definition,
         directive,
