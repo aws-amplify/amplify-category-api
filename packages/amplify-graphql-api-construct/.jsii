@@ -45,8 +45,8 @@
     "zod": "^3.22.3"
   },
   "dependencies": {
-    "aws-cdk-lib": "^2.80.0",
-    "constructs": "^10.0.5"
+    "aws-cdk-lib": "^2.129.0",
+    "constructs": "^10.3.0"
   },
   "dependencyClosure": {
     "@aws-cdk/asset-awscli-v1": {
@@ -101,29 +101,29 @@
         }
       }
     },
-    "@aws-cdk/asset-node-proxy-agent-v5": {
+    "@aws-cdk/asset-node-proxy-agent-v6": {
       "targets": {
         "dotnet": {
-          "namespace": "Amazon.CDK.Asset.NodeProxyAgentV5",
-          "packageId": "Amazon.CDK.Asset.NodeProxyAgentV5"
+          "namespace": "Amazon.CDK.Asset.NodeProxyAgentV6",
+          "packageId": "Amazon.CDK.Asset.NodeProxyAgentV6"
         },
         "go": {
           "moduleName": "github.com/cdklabs/awscdk-asset-node-proxy-agent-go",
-          "packageName": "nodeproxyagentv5"
+          "packageName": "nodeproxyagentv6"
         },
         "java": {
           "maven": {
-            "artifactId": "cdk-asset-node-proxy-agent-v5",
+            "artifactId": "cdk-asset-node-proxy-agent-v6",
             "groupId": "software.amazon.awscdk"
           },
-          "package": "software.amazon.awscdk.cdk.asset.node.proxy.agent.v5"
+          "package": "software.amazon.awscdk.cdk.asset.node.proxy.agent.v6"
         },
         "js": {
-          "npm": "@aws-cdk/asset-node-proxy-agent-v5"
+          "npm": "@aws-cdk/asset-node-proxy-agent-v6"
         },
         "python": {
-          "distName": "aws-cdk.asset-node-proxy-agent-v5",
-          "module": "aws_cdk.asset_node_proxy_agent_v5"
+          "distName": "aws-cdk.asset-node-proxy-agent-v6",
+          "module": "aws_cdk.asset_node_proxy_agent_v6"
         }
       }
     },
@@ -259,6 +259,8 @@
             }
           }
         },
+        "aws-cdk-lib.aws_apigatewayv2_authorizers": {},
+        "aws-cdk-lib.aws_apigatewayv2_integrations": {},
         "aws-cdk-lib.aws_appconfig": {
           "targets": {
             "dotnet": {
@@ -389,6 +391,19 @@
             }
           }
         },
+        "aws-cdk-lib.aws_arczonalshift": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.ARCZonalShift"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.arczonalshift"
+            },
+            "python": {
+              "module": "aws_cdk.aws_arczonalshift"
+            }
+          }
+        },
         "aws-cdk-lib.aws_athena": {
           "targets": {
             "dotnet": {
@@ -467,6 +482,19 @@
             }
           }
         },
+        "aws-cdk-lib.aws_b2bi": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.B2BI"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.b2bi"
+            },
+            "python": {
+              "module": "aws_cdk.aws_b2bi"
+            }
+          }
+        },
         "aws-cdk-lib.aws_backup": {
           "targets": {
             "dotnet": {
@@ -486,7 +514,7 @@
               "package": "Amazon.CDK.AWS.BackupGateway"
             },
             "java": {
-              "package": "services.backupgateway"
+              "package": "software.amazon.awscdk.services.backupgateway"
             },
             "python": {
               "module": "aws_cdk.aws_backupgateway"
@@ -503,6 +531,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_batch"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_bedrock": {
+          "targets": {
+            "dotnet": {
+              "namespace": "Amazon.CDK.AWS.Bedrock"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.bedrock"
+            },
+            "python": {
+              "module": "aws_cdk.aws_bedrock"
             }
           }
         },
@@ -581,6 +622,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_chatbot"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_cleanrooms": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.CleanRooms"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.cleanrooms"
+            },
+            "python": {
+              "module": "aws_cdk.aws_cleanrooms"
             }
           }
         },
@@ -962,6 +1016,19 @@
             }
           }
         },
+        "aws-cdk-lib.aws_datazone": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.DataZone"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.datazone"
+            },
+            "python": {
+              "module": "aws_cdk.aws_datazone"
+            }
+          }
+        },
         "aws-cdk-lib.aws_dax": {
           "targets": {
             "dotnet": {
@@ -1313,6 +1380,19 @@
             }
           }
         },
+        "aws-cdk-lib.aws_entityresolution": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.EntityResolution"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.entityresolution"
+            },
+            "python": {
+              "module": "aws_cdk.aws_entityresolution"
+            }
+          }
+        },
         "aws-cdk-lib.aws_events": {
           "targets": {
             "dotnet": {
@@ -1557,6 +1637,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_guardduty"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_healthimaging": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.HealthImaging"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.healthimaging"
+            },
+            "python": {
+              "module": "aws_cdk.aws_healthimaging"
             }
           }
         },
@@ -2210,6 +2303,19 @@
             }
           }
         },
+        "aws-cdk-lib.aws_mediapackagev2": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.MediaPackageV2"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.mediapackagev2"
+            },
+            "python": {
+              "module": "aws_cdk.aws_mediapackagev2"
+            }
+          }
+        },
         "aws-cdk-lib.aws_mediastore": {
           "targets": {
             "dotnet": {
@@ -2285,6 +2391,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_neptune"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_neptunegraph": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.NeptuneGraph"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.neptunegraph"
+            },
+            "python": {
+              "module": "aws_cdk.aws_neptunegraph"
             }
           }
         },
@@ -2424,7 +2543,7 @@
               "package": "Amazon.CDK.AWS.OSIS"
             },
             "java": {
-              "package": "services.osis"
+              "package": "software.amazon.awscdk.services.osis"
             },
             "python": {
               "module": "aws_cdk.aws_osis"
@@ -2441,6 +2560,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_panorama"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_pcaconnectorad": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.PCAConnectorAD"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.pcaconnectorad"
+            },
+            "python": {
+              "module": "aws_cdk.aws_pcaconnectorad"
             }
           }
         },
@@ -2502,7 +2634,7 @@
               "package": "Amazon.CDK.AWS.Proton"
             },
             "java": {
-              "package": "services.proton"
+              "package": "software.amazon.awscdk.services.proton"
             },
             "python": {
               "module": "aws_cdk.aws_proton"
@@ -2821,6 +2953,19 @@
             }
           }
         },
+        "aws-cdk-lib.aws_s3express": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.S3Express"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.s3express"
+            },
+            "python": {
+              "module": "aws_cdk.aws_s3express"
+            }
+          }
+        },
         "aws-cdk-lib.aws_s3objectlambda": {
           "targets": {
             "dotnet": {
@@ -2987,6 +3132,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_ses_actions"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_shield": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.Shield"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.shield"
+            },
+            "python": {
+              "module": "aws_cdk.aws_shield"
             }
           }
         },
@@ -3198,6 +3356,19 @@
             }
           }
         },
+        "aws-cdk-lib.aws_verifiedpermissions": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.VerifiedPermissions"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.verifiedpermissions"
+            },
+            "python": {
+              "module": "aws_cdk.aws_verifiedpermissions"
+            }
+          }
+        },
         "aws-cdk-lib.aws_voiceid": {
           "targets": {
             "dotnet": {
@@ -3286,6 +3457,32 @@
             },
             "python": {
               "module": "aws_cdk.aws_workspaces"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_workspacesthinclient": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.WorkSpacesThinClient"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.workspacesthinclient"
+            },
+            "python": {
+              "module": "aws_cdk.aws_workspacesthinclient"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_workspacesweb": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.WorkSpacesWeb"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.workspacesweb"
+            },
+            "python": {
+              "module": "aws_cdk.aws_workspacesweb"
             }
           }
         },
@@ -5037,7 +5234,7 @@
             "custom": {
               "aws-amplify": "/graphql-transformer-core >= 2.1.1"
             },
-            "remarks": "These custom transformers must be implemented with aws-cdk-lib >=2.80.0, and",
+            "remarks": "These custom transformers must be implemented with aws-cdk-lib >=2.129.0, and",
             "stability": "experimental",
             "summary": "Provide a list of additional custom transformers which are injected into the transform process."
           },
@@ -8132,5 +8329,5 @@
     }
   },
   "version": "1.6.0",
-  "fingerprint": "C0VXkxPFCBh6W1H9yfqkeGmab7zndoRgpNOmXR6IjoM="
+  "fingerprint": "bYaWpPjXnl/F6WNqToNkpKLv9i8L5AOc7ZjKKC0isfM="
 }

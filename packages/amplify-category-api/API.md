@@ -183,7 +183,7 @@ export function updateAdminQueriesApi(context: $TSContext, apiProps: {
 //
 // src/provider-utils/awscloudformation/utils/containers-artifacts.ts:30:3 - (ae-forgotten-export) The symbol "ResourceDependency" needs to be exported by the entry point index.d.ts
 // src/provider-utils/awscloudformation/utils/containers-artifacts.ts:35:3 - (ae-forgotten-export) The symbol "API_TYPE" needs to be exported by the entry point index.d.ts
-// src/provider-utils/awscloudformation/utils/containers-artifacts.ts:124:42 - (ae-forgotten-export) The symbol "Container" needs to be exported by the entry point index.d.ts
+// src/provider-utils/awscloudformation/utils/containers-artifacts.ts:125:42 - (ae-forgotten-export) The symbol "Container" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
