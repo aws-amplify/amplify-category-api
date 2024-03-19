@@ -1,6 +1,6 @@
 import { Directive } from './directive';
 
-const name = 'defaultTo';
+const name = 'default';
 const definition = /* GraphQL */ `
   directive @${name}(value: String!) on FIELD_DEFINITION
 `;

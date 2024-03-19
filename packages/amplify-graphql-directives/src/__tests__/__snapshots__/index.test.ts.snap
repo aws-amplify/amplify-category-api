@@ -227,9 +227,9 @@ exports[`Directive Definitions DefaultDirective 1`] = `
 Object {
   "defaults": Object {},
   "definition": "
-  directive @defaultTo(value: String!) on FIELD_DEFINITION
+  directive @default(value: String!) on FIELD_DEFINITION
 ",
-  "name": "defaultTo",
+  "name": "default",
 }
 `;
 
@@ -579,7 +579,7 @@ Array [
   "aws_oidc",
   "aws_subscribe",
   "belongsTo",
-  "defaultTo",
+  "default",
   "deprecated",
   "function",
   "hasMany",
