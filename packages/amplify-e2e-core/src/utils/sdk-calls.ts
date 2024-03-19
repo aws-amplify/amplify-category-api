@@ -206,7 +206,7 @@ export const listAttachedRolePolicies = async (roleName: string, region: string)
   return (await service.listAttachedRolePolicies({ RoleName: roleName }).promise()).AttachedPolicies;
 };
 
-export const getBucketNameFromModelSchemaS3Uri = (uri: string | null): string => {
+export const getBucketNameFromModelSchemaS3Uri = (uri: string | null): string | null => {
   const pattern = /(s3:\/\/)(.*)(\/.*)/;
   const matches = uri.match(pattern);
   // Sample Input Uri looks like 's3://bucket-name/model-schema.graphql'.
@@ -217,12 +217,12 @@ export const getBucketNameFromModelSchemaS3Uri = (uri: string | null): string =>
   //     "bucket-name",
   //     "/model-schema.graphql"
   // ]
-  const HOST_INDEX = 2;
+  const BUCKET_NAME_INDEX = 2;
   if (!matches) {
     return null;
   }
-  if (matches.length && matches.length > 2) {
-    return matches[HOST_INDEX];
+  if (matches.length && matches.length > BUCKET_NAME_INDEX) {
+    return matches[BUCKET_NAME_INDEX];
   }
   return null;
 };
