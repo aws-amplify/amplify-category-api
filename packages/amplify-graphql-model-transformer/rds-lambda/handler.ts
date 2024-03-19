@@ -146,24 +146,25 @@ const getSecretManagerValue = async (secretArn: string | undefined): Promise<{ u
 
 
 const getDBConfig = async (): DBConfig => {
-  const config: DBConfig = {
-    engine: getDBEngine(),
-  };
+  const config: DBConfig = {};
   const credentialStorageMethod = process.env.CREDENTIAL_STORAGE_METHOD;
   if (credentialStorageMethod === CredentialStorageMethod.SSM) {
     if (!ssmClient) {
       createSSMClient();
     }
 
+    const connectionString = process.env.connectionString;
+    if (connectionString) {
+      config.connectionString = await getSSMValue(connectionString);
+      return config;
+    }
+
+    config.engine = getDBEngine(),
     config.host = await getSSMValue(process.env.host);
     config.port = Number.parseInt(await getSSMValue(process.env.port)) || 3306;
     config.username = await getSSMValue(process.env.username);
     config.password = await getSSMValue(process.env.password);
     config.database = await getSSMValue(process.env.database);
-    const connectionString = process.env.connectionString;
-    if (connectionString) {
-      config.connectionString = await getSSMValue(connectionString);
-    }
   } else if (credentialStorageMethod === CredentialStorageMethod.SECRETS_MANAGER) {
     if (!secretsManagerClient) {
       createSecretsManagerClient();
