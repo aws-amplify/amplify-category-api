@@ -48,6 +48,12 @@ export const updateTableForReferencesConnection = (
     return;
   }
 
+  // `referenceNodes` are ordered based on the `references` argument in the `@<relational-directive>(references:)`
+  // argument. If we've gotten this far, the array is not empty and the passed `references` args represent valid
+  // fields on the related type.
+  //
+  // The first element (required) is the parition key of the GSI we're about to create.
+  // Any remaining elements (optional) represent the sort key of the GSI we're about to create.
   const referenceNode = referenceNodes[0];
   const partitionKeyName = referenceNode.name.value;
   // Grabbing the type of the related field.
