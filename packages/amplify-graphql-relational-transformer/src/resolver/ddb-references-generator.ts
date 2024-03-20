@@ -59,10 +59,11 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
    * @param ctx The transformer context provider.
    */
   makeHasManyGetItemsConnectionWithKeyResolver = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-    const { connectionFields, field, indexName, limit, object, references, relatedType } = config;
-    const connectionAttributes: string[] = references.length > 0 ? references : connectionFields;
-    if (connectionAttributes.length === 0) {
-      throw new Error('Either connection fields or references should be populated.');
+    const { field, indexName, limit, object, references, relatedType } = config;
+
+    if (references.length < 1) {
+      // TODO: Better error message
+      throw new Error('references should be populated.');
     }
 
     const primaryKeyFields: string[] = getPrimaryKeyFields(object);
@@ -81,23 +82,9 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
             methodCall(ref('util.defaultIfNull'), ref(`ctx.stash.connectionAttibutes.get("${ca}")`), ref(`ctx.source.${ca}`)),
           ),
         ),
-      set(ref('query'), this.makeExpression(keySchema, connectionAttributes)),
+      set(ref('query'), this.makeExpression(keySchema, references)),
     ];
 
-    // If the key schema has a sort key but one is not provided for the query, let a sort key be
-    // passed in via $ctx.args.
-    if (keySchema[1] && !connectionAttributes[1]) {
-      const sortKeyFieldName = keySchema[1].attributeName;
-      const sortKeyField = relatedType.fields!.find((f) => f.name.value === sortKeyFieldName);
-
-      if (sortKeyField) {
-        setup.push(applyKeyConditionExpression(sortKeyFieldName, attributeTypeFromScalar(sortKeyField.type), 'query'));
-      } else {
-        const sortKeyFieldNames = sortKeyFieldName.split(ModelResourceIDs.ModelCompositeKeySeparator());
-
-        setup.push(applyCompositeKeyConditionExpression(sortKeyFieldNames, 'query', toCamelCase(sortKeyFieldNames), sortKeyFieldName));
-      }
-    }
     // add setup filter to query
     setup.push(
       setArgs,
@@ -199,8 +186,7 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
    * @param ctx The transformer context provider.
    */
   makeBelongsToGetItemConnectionWithKeyResolver = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-    const { connectionFields, field, references, object, relatedType } = config;
-    const localFields = references.length > 0 ? references : connectionFields;
+    const { field, references, object, relatedType } = config;
     const table = getTable(ctx, relatedType);
     const { keySchema } = table as any;
     const dataSourceName = getModelDataSourceNameForTypeName(ctx, relatedType.name.value);
@@ -212,12 +198,12 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
     };
 
     const totalExpressionValues: Record<string, Expression> = {
-      ':partitionValue': this.buildKeyValueExpression(localFields[0], ctx.output.getObject(object.name.value)!, true),
+      ':partitionValue': this.buildKeyValueExpression(references[0], ctx.output.getObject(object.name.value)!, true),
     };
 
     // Add a composite sort key or simple sort key if there is one.
-    if (localFields.length > 2) {
-      const rangeKeyFields = localFields.slice(1);
+    if (references.length > 2) {
+      const rangeKeyFields = references.slice(1);
       const sortKeyName = keySchema[1].attributeName;
       const condensedSortKeyValue = condenseRangeKey(rangeKeyFields.map((keyField) => `\${ctx.source.${keyField}}`));
 
@@ -226,11 +212,11 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
       totalExpressionValues[':sortKeyName'] = ref(
         `util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank("${condensedSortKeyValue}", "${NONE_VALUE}")))`,
       );
-    } else if (localFields.length === 2) {
+    } else if (references.length === 2) {
       const sortKeyName = keySchema[1].attributeName;
       totalExpressions.push('#sortKeyName = :sortKeyName');
       totalExpressionNames['#sortKeyName'] = str(sortKeyName);
-      totalExpressionValues[':sortKeyName'] = this.buildKeyValueExpression(localFields[1], ctx.output.getObject(object.name.value)!);
+      totalExpressionValues[':sortKeyName'] = this.buildKeyValueExpression(references[1], ctx.output.getObject(object.name.value)!);
     }
 
     const resolverResourceId = ResolverResourceIDs.ResolverResourceID(object.name.value, field.name.value);
@@ -247,14 +233,14 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
               ref(PARTITION_KEY_VALUE),
               methodCall(
                 ref('util.defaultIfNull'),
-                ref(`ctx.stash.connectionAttibutes.get("${localFields[0]}")`),
-                ref(`ctx.source.${localFields[0]}`),
+                ref(`ctx.stash.connectionAttibutes.get("${references[0]}")`),
+                ref(`ctx.source.${references[0]}`),
               ),
             ),
             ifElse(
               or([
                 methodCall(ref('util.isNull'), ref(PARTITION_KEY_VALUE)),
-                ...localFields.slice(1).map((f) => raw(`$util.isNull($ctx.source.${f})`)),
+                ...references.slice(1).map((f) => raw(`$util.isNull($ctx.source.${f})`)),
               ]),
               raw('#return'),
               compoundExpression([
