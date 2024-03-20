@@ -83,6 +83,7 @@ export class HasManyTransformer extends TransformerPluginBase {
    * so that it represents any schema modifications the plugin needs
    */
   mutateSchema = (context: TransformerPreProcessContextProvider): DocumentNode => {
+    // TODO: Split out fields and references based logic
     const resultDoc: DocumentNode = produce(context.inputDocument, (draftDoc) => {
       const connectingFieldsMap = new Map<string, Array<WritableDraft<FieldDefinitionNode>>>(); // key: type name | value: connecting field
       const filteredDefs = draftDoc?.definitions?.filter(
