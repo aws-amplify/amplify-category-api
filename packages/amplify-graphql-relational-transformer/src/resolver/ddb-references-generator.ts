@@ -45,50 +45,14 @@ import {
 } from 'graphql-transformer-common';
 import { condenseRangeKey } from '../resolvers';
 import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from '../types';
-import { RelationalResolverGenerator } from './generator';
+import { DDBRelationalResolverGenerator } from './ddb-generator';
 
 const SORT_KEY_VALUE = 'sortKeyValue';
 const CONNECTION_STACK = 'ConnectionStack';
 const authFilter = ref('ctx.stash.authFilter');
 const PARTITION_KEY_VALUE = 'partitionKeyValue';
 
-export class DDBRelationalReferencesResolverGenerator extends RelationalResolverGenerator {
-  makeExpression = (keySchema: any[], connectionAttributes: string[]): ObjectNode => {
-    if (keySchema[1] && connectionAttributes[1]) {
-      let condensedSortKeyValue;
-
-      if (connectionAttributes.length > 2) {
-        const rangeKeyFields = connectionAttributes.slice(1);
-
-        condensedSortKeyValue = rangeKeyFields
-          .map((keyField, idx) => `\${${SORT_KEY_VALUE}${idx}}`)
-          .join(ModelResourceIDs.ModelCompositeKeySeparator());
-      }
-
-      return obj({
-        expression: str('#partitionKey = :partitionKey AND #sortKey = :sortKey'),
-        expressionNames: obj({
-          '#partitionKey': str(keySchema[0].attributeName),
-          '#sortKey': str(keySchema[1].attributeName),
-        }),
-        expressionValues: obj({
-          ':partitionKey': ref(`util.dynamodb.toDynamoDB($${PARTITION_KEY_VALUE})`),
-          ':sortKey': ref(`util.dynamodb.toDynamoDB(${condensedSortKeyValue ? `"${condensedSortKeyValue}"` : `$${SORT_KEY_VALUE}0`})`),
-        }),
-      });
-    }
-
-    return obj({
-      expression: str('#partitionKey = :partitionKey'),
-      expressionNames: obj({
-        '#partitionKey': str(keySchema[0].attributeName),
-      }),
-      expressionValues: obj({
-        ':partitionKey': ref(`util.dynamodb.toDynamoDB($${PARTITION_KEY_VALUE})`),
-      }),
-    });
-  };
-
+export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResolverGenerator {
   /**
    * Create a resolver that queries an item in DynamoDB.
    * @param config The connection directive configuration.
@@ -343,18 +307,5 @@ export class DDBRelationalReferencesResolverGenerator extends RelationalResolver
 
     resolver.setScope(ctx.stackManager.getScopeFor(resolverResourceId, CONNECTION_STACK));
     ctx.resolvers.addResolver(object.name.value, field.name.value, resolver);
-  };
-
-  buildKeyValueExpression = (fieldName: string, object: ObjectTypeDefinitionNode, isPartitionKey = false): Expression => {
-    const field = object.fields?.find((it) => it.name.value === fieldName);
-
-    // can be auto-generated
-    const attributeType = field ? attributeTypeFromScalar(field.type) : 'S';
-
-    return ref(
-      `util.parseJson($util.dynamodb.toDynamoDBJson($util.${attributeType === 'S' ? 'defaultIfNullOrBlank' : 'defaultIfNull'}(${
-        isPartitionKey ? `$${PARTITION_KEY_VALUE}` : `$ctx.source.${fieldName}`
-      }, "${NONE_VALUE}")))`,
-    );
   };
 }
