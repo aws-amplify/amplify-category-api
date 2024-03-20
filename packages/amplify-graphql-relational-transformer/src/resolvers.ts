@@ -48,67 +48,6 @@ export const updateTableForReferencesConnection = (
     return;
   }
 
-  const referenceNode = referenceNodes[0];
-  const partitionKeyName = referenceNode.name.value;
-  // Grabbing the type of the related field.
-  // TODO: Validate types of related field and primary's pk match
-  // -- ideally further up the chain
-  const partitionKeyType = attributeTypeFromType(referenceNode.type, ctx);
-  const respectPrimaryKeyAttributesOnConnectionField: boolean = ctx.transformParameters.respectPrimaryKeyAttributesOnConnectionField;
-
-  const sortKey = respectPrimaryKeyAttributesOnConnectionField
-    ? getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject(ctx, object, field, referenceNodes.slice(1))
-    : undefined;
-
-  addGlobalSecondaryIndex(relatedTable, {
-    indexName: indexName,
-    partitionKey: { name: partitionKeyName, type: partitionKeyType },
-    sortKey: sortKey,
-    ctx: ctx,
-    relatedTypeName: relatedType.name.value,
-  });
-};
-
-/**
- * Creates a GSI on the table of the `relatedType` based on the config's `references` / `referenceNodes`
- *
- * @remarks
- * This method sets the `indexName` property of the `config` to the GSI name created on the
- * table of the `relatedType`
- *
- * Preconditions: `config.references >= 1` and `config.referenceNodes >= 1`
- *
- * @param config The `HasManyDirectiveConfiguration` for DDB references.
- * @param ctx The `TransformerContextProvider` for DDB references.
- */
-export const updateTableForReferencesConnection = (
-  config: HasManyDirectiveConfiguration, // TODO: Add support for HasOneDirectiveConfiguration
-  ctx: TransformerContextProvider,
-): void => {
-  const { field, referenceNodes, indexName: incomingIndexName, object, references, relatedType } = config;
-
-  if (incomingIndexName) {
-    // TODO: log warning or throw that indexName isn't supported for DDB references
-    // Ideally validate this further up the chain.
-  }
-
-  if (references.length < 1 || referenceNodes.length < 1) {
-    throw new Error('references should not be empty here'); // TODO: better error message
-  }
-
-  const mappedObjectName = ctx.resourceHelper.getModelNameMapping(object.name.value);
-  const indexName = `gsi-${mappedObjectName}.${field.name.value}`;
-  config.indexName = indexName;
-
-  const relatedTable = getTable(ctx, relatedType);
-  const gsis = relatedTable.globalSecondaryIndexes;
-  if (gsis.some((gsi: any) => gsi.indexName === indexName)) {
-    // TODO: In the existing `fields` based implementation, this returns.
-    // However, this is likely a schema misconfiguration in the `references`
-    // world because we don't support specifying indexName.
-    return;
-  }
-
   // `referenceNodes` are ordered based on the `references` argument in the `@<relational-directive>(references:)`
   // argument. If we've gotten this far, the array is not empty and the passed `references` args represent valid
   // fields on the related type.
