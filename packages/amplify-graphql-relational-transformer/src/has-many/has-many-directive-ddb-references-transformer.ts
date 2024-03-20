@@ -39,8 +39,7 @@ export class HasManyDirectiveDDBReferencesTransformer implements DataSourceBased
 
   generateResolvers = (context: TransformerContextProvider, config: HasManyDirectiveConfiguration): void => {
     updateTableForReferencesConnection(config, context);
-    new DDBRelationalReferencesResolverGenerator()
-      .makeHasManyGetItemsConnectionWithKeyResolver(config, context);
+    new DDBRelationalReferencesResolverGenerator().makeHasManyGetItemsConnectionWithKeyResolver(config, context);
   };
 
   validate = (context: TransformerContextProvider, config: HasManyDirectiveConfiguration): void => {
