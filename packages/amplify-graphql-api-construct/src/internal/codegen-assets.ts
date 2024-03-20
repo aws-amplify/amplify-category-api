@@ -8,11 +8,7 @@ export type CodegenAssetsProps = {
 };
 
 const MODEL_SCHEMA_KEY = 'model-schema.graphql';
-const CONSOLE_SERVICE_ENDPOINT = Fn.join('', [
-  'https://',
-  Fn.ref('AWS::Region'),
-  '.console.aws.amazon.com/amplify',
-]);
+const CONSOLE_SERVICE_ENDPOINT = Fn.join('', ['https://', Fn.ref('AWS::Region'), '.console.aws.amazon.com/amplify']);
 
 /**
  * Construct an S3 URI string for a given bucket and key.
