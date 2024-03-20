@@ -65,7 +65,7 @@ import {
   getSortKeyFieldsNoContext,
 } from './schema';
 import { HasOneTransformer } from './graphql-has-one-transformer';
-import { DDBFieldsRelationalResolverGenerator } from './resolver/ddb-fields-generator';
+import { DDBRelationalResolverGenerator } from './resolver/ddb-generator';
 
 const directiveName = 'manyToMany';
 const defaultLimit = 100;
@@ -518,7 +518,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       updateTableForConnection(config, context);
-      new DDBFieldsRelationalResolverGenerator().makeHasManyGetItemsConnectionWithKeyResolver(config, context);
+      new DDBRelationalResolverGenerator().makeHasManyGetItemsConnectionWithKeyResolver(config, context);
     }
   };
 }
