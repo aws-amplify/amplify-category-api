@@ -1,4 +1,4 @@
-import { RemovalPolicy } from 'aws-cdk-lib';
+import { RemovalPolicy, Fn } from 'aws-cdk-lib';
 import { Bucket, HttpMethods, IBucket } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
@@ -8,7 +8,11 @@ export type CodegenAssetsProps = {
 };
 
 const MODEL_SCHEMA_KEY = 'model-schema.graphql';
-const CONSOLE_SERVICE_ENDPOINT = 'https://*.console.aws.amazon.com/amplify';
+const CONSOLE_SERVICE_ENDPOINT = Fn.join('', [
+  'https://',
+  Fn.ref('AWS::Region'),
+  '.console.aws.amazon.com/amplify',
+]);
 
 /**
  * Construct an S3 URI string for a given bucket and key.

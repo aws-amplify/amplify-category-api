@@ -44,7 +44,7 @@ describe('CDK GraphQL Transformer', () => {
           expect.objectContaining({
             AllowedHeaders: expect.arrayContaining(['*']),
             AllowedMethods: expect.arrayContaining(['GET', 'HEAD']),
-            AllowedOrigins: expect.arrayContaining(['https://*.console.aws.amazon.com/amplify']),
+            AllowedOrigins: expect.arrayContaining([`https://${region}.console.aws.amazon.com/amplify`]),
           }),
         ]),
       );
