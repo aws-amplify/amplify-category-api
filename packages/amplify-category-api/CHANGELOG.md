@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.10.0-cors-rule.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.9.8...@aws-amplify/amplify-category-api@5.10.0-cors-rule.0) (2024-03-20)
+
+### Features
+
+- add secrets manager as credential store for sql lambda ([#2289](https://github.com/aws-amplify/amplify-category-api/issues/2289)) ([affdb98](https://github.com/aws-amplify/amplify-category-api/commit/affdb988b499591c3a96608f772b637ddd8c3a0c))
+
 ## [5.9.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.9.7...@aws-amplify/amplify-category-api@5.9.8) (2024-03-13)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api

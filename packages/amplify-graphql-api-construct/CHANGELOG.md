@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0-cors-rule.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.6.0...@aws-amplify/graphql-api-construct@1.7.0-cors-rule.0) (2024-03-20)
+
+### Features
+
+- add secrets manager as credential store for sql lambda ([#2289](https://github.com/aws-amplify/amplify-category-api/issues/2289)) ([affdb98](https://github.com/aws-amplify/amplify-category-api/commit/affdb988b499591c3a96608f772b637ddd8c3a0c))
+- **api:** enable cors on codegen asset bucket ([5513930](https://github.com/aws-amplify/amplify-category-api/commit/55139304e590357863393f3c8e1cec1989c4940d))
+
 # [1.6.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.5.7...@aws-amplify/graphql-api-construct@1.6.0) (2024-03-13)
 
 ### Features

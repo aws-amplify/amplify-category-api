@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-e2e-tests",
-  "version": "3.20.2",
+  "version": "3.20.3-cors-rule.0",
   "description": "E2e test suite",
   "repository": {
     "type": "git",
@@ -25,9 +25,9 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-app": "^5.0.21",
-    "@aws-amplify/graphql-schema-generator": "0.7.2",
-    "@aws-amplify/graphql-transformer-core": "2.5.0",
-    "amplify-category-api-e2e-core": "4.5.2",
+    "@aws-amplify/graphql-schema-generator": "0.7.3-cors-rule.0",
+    "@aws-amplify/graphql-transformer-core": "2.5.1-cors-rule.0",
+    "amplify-category-api-e2e-core": "4.6.0-cors-rule.0",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-sdk": "^2.1113.0",
@@ -52,7 +52,7 @@
     "@aws-amplify/amplify-cli-core": "^4.2.10"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-interfaces": "3.4.0",
+    "@aws-amplify/graphql-transformer-interfaces": "3.5.0-cors-rule.0",
     "@types/lodash": "^4.14.149",
     "@types/ws": "^7.4.4",
     "ts-node": "^8.10.2"
