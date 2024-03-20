@@ -50,11 +50,3 @@ export const OPERATION_KEY = '__operation';
 export const API_KEY_DIRECTIVE = 'aws_api_key';
 
 export const AWS_IAM_DIRECTIVE = 'aws_iam';
-
-export const APPSYNC_AUTH_CONFIGURATION_TYPE_TO_SERVICE_DIRECTIVE_MAP = new Map<string, string>([
-  ['API_KEY', 'aws_api_key'],
-  ['AWS_IAM', 'aws_iam'],
-  ['OPENID_CONNECT', 'aws_oidc'],
-  ['AMAZON_COGNITO_USER_POOLS', 'aws_cognito_user_pools'],
-  ['AWS_LAMBDA', 'aws_lambda'],
-]);

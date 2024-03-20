@@ -179,7 +179,7 @@ describe('ddb', () => {
       transformers: [new ModelTransformer(), new AuthTransformer()],
     });
     expect(out).toBeDefined();
-    expectOperationsWithDirectives(out.schema, ['@aws_iam', '@aws_api_key'], ['@aws_iam', '@aws_api_key']);
+    expectOperationsWithDirectives(out.schema, ['@aws_iam'], ['@aws_iam']);
     expectNoResolvers(out.resolvers);
   });
 });
@@ -360,7 +360,7 @@ describe('rds', () => {
       dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlStrategy),
     });
     expect(out).toBeDefined();
-    expectOperationsWithDirectives(out.schema, ['@aws_iam', '@aws_api_key'], ['@aws_iam', '@aws_api_key']);
+    expectOperationsWithDirectives(out.schema, ['@aws_iam'], ['@aws_iam']);
     expectNoResolvers(out.resolvers);
   });
 });

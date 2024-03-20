@@ -72,7 +72,7 @@ import {
   makeUpdateInputField,
   propagateDirectivesToNestedTypes,
 } from './graphql-types';
-import { API_KEY_DIRECTIVE, APPSYNC_AUTH_CONFIGURATION_TYPE_TO_SERVICE_DIRECTIVE_MAP, AWS_IAM_DIRECTIVE } from './definitions';
+import { API_KEY_DIRECTIVE, AWS_IAM_DIRECTIVE } from './definitions';
 import { ModelDirectiveConfiguration, SubscriptionLevel } from './directive';
 import { ModelResourceGenerator } from './resources/model-resource-generator';
 import { DynamoModelResourceGenerator } from './resources/dynamo-model-resource-generator';
@@ -322,25 +322,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       if (!hasAuth) {
         const serviceDirectiveNames = new Set<string>();
 
-        const defaultServiceDirectiveName = APPSYNC_AUTH_CONFIGURATION_TYPE_TO_SERVICE_DIRECTIVE_MAP.get(
-          ctx.authConfig.defaultAuthentication.authenticationType,
-        );
         if (ctx.transformParameters.sandboxModeEnabled && ctx.synthParameters.enableIamAccess) {
           serviceDirectiveNames.add(API_KEY_DIRECTIVE);
           serviceDirectiveNames.add(AWS_IAM_DIRECTIVE);
-          if (defaultServiceDirectiveName) {
-            serviceDirectiveNames.add(defaultServiceDirectiveName);
-          }
         } else if (ctx.transformParameters.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
           serviceDirectiveNames.add(API_KEY_DIRECTIVE);
-          if (defaultServiceDirectiveName) {
-            serviceDirectiveNames.add(defaultServiceDirectiveName);
-          }
         } else if (ctx.synthParameters.enableIamAccess && ctx.authConfig.defaultAuthentication.authenticationType !== 'AWS_IAM') {
           serviceDirectiveNames.add(AWS_IAM_DIRECTIVE);
-          if (defaultServiceDirectiveName) {
-            serviceDirectiveNames.add(defaultServiceDirectiveName);
-          }
         }
         const serviceDirectives: DirectiveNode[] = [...serviceDirectiveNames].map((directiveName) => makeDirective(directiveName, []));
 

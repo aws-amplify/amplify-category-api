@@ -1378,7 +1378,7 @@ describe('ModelTransformer:', () => {
     expect(todoStack.Parameters).toMatchObject(modelParams);
   });
 
-  it('sandbox auth enabled should add apiKey and default directives if not default mode of auth', () => {
+  it('sandbox auth enabled should add apiKey if not default mode of auth', () => {
     const validSchema = `
     type Post @model {
       id: ID!
@@ -1415,16 +1415,14 @@ describe('ModelTransformer:', () => {
     const postType = getObjectType(schema, 'Post')!;
     expect(postType).toBeDefined();
     expect(postType.directives).toBeDefined();
-    expect(postType.directives!.length).toEqual(2);
+    expect(postType.directives!.length).toEqual(1);
     expect(postType.directives!.some((dir) => dir.name.value === 'aws_api_key')).toEqual(true);
-    expect(postType.directives!.some((dir) => dir.name.value === 'aws_cognito_user_pools')).toEqual(true);
 
     const tagType = getObjectType(schema, 'Tag')!;
     expect(tagType).toBeDefined();
     expect(tagType.directives).toBeDefined();
-    expect(tagType.directives!.length).toEqual(2);
+    expect(tagType.directives!.length).toEqual(1);
     expect(tagType.directives!.some((dir) => dir.name.value === 'aws_api_key')).toEqual(true);
-    expect(tagType.directives!.some((dir) => dir.name.value === 'aws_cognito_user_pools')).toEqual(true);
 
     // check operations
     const queryType = getObjectType(schema, 'Query')!;
@@ -1436,11 +1434,10 @@ describe('ModelTransformer:', () => {
 
     for (const field of [...queryType.fields!, ...mutationType.fields!, ...subscriptionType.fields!]) {
       expect(field.directives!.some((dir) => dir.name.value === 'aws_api_key')).toEqual(true);
-      expect(field.directives!.some((dir) => dir.name.value === 'aws_cognito_user_pools')).toEqual(true);
     }
   });
 
-  it('iam auth enabled should add aws_iam and default directives if not default mode of auth', () => {
+  it('iam auth enabled should add aws_iam if not default mode of auth', () => {
     const validSchema = `
     type Post @model {
       id: ID!
@@ -1480,16 +1477,14 @@ describe('ModelTransformer:', () => {
     const postType = getObjectType(schema, 'Post')!;
     expect(postType).toBeDefined();
     expect(postType.directives).toBeDefined();
-    expect(postType.directives!.length).toEqual(2);
+    expect(postType.directives!.length).toEqual(1);
     expect(postType.directives!.some((dir) => dir.name.value === 'aws_iam')).toEqual(true);
-    expect(postType.directives!.some((dir) => dir.name.value === 'aws_cognito_user_pools')).toEqual(true);
 
     const tagType = getObjectType(schema, 'Tag')!;
     expect(tagType).toBeDefined();
     expect(tagType.directives).toBeDefined();
-    expect(tagType.directives!.length).toEqual(2);
+    expect(tagType.directives!.length).toEqual(1);
     expect(tagType.directives!.some((dir) => dir.name.value === 'aws_iam')).toEqual(true);
-    expect(tagType.directives!.some((dir) => dir.name.value === 'aws_cognito_user_pools')).toEqual(true);
 
     // check operations
     const queryType = getObjectType(schema, 'Query')!;
@@ -1501,11 +1496,10 @@ describe('ModelTransformer:', () => {
 
     for (const field of [...queryType.fields!, ...mutationType.fields!, ...subscriptionType.fields!]) {
       expect(field.directives!.some((dir) => dir.name.value === 'aws_iam')).toEqual(true);
-      expect(field.directives!.some((dir) => dir.name.value === 'aws_cognito_user_pools')).toEqual(true);
     }
   });
 
-  it('iam and sandbox auth enabled should add aws_iam and aws_api_key and default directives if not default mode of auth', () => {
+  it('iam and sandbox auth enabled should add aws_iam and aws_api_key if not default mode of auth', () => {
     const validSchema = `
     type Post @model {
       id: ID!
@@ -1548,17 +1542,15 @@ describe('ModelTransformer:', () => {
     const postType = getObjectType(schema, 'Post')!;
     expect(postType).toBeDefined();
     expect(postType.directives).toBeDefined();
-    expect(postType.directives!.length).toEqual(3);
+    expect(postType.directives!.length).toEqual(2);
     expect(postType.directives!.some((dir) => dir.name.value === 'aws_iam')).toEqual(true);
-    expect(postType.directives!.some((dir) => dir.name.value === 'aws_cognito_user_pools')).toEqual(true);
     expect(postType.directives!.some((dir) => dir.name.value === 'aws_api_key')).toEqual(true);
 
     const tagType = getObjectType(schema, 'Tag')!;
     expect(tagType).toBeDefined();
     expect(tagType.directives).toBeDefined();
-    expect(tagType.directives!.length).toEqual(3);
+    expect(tagType.directives!.length).toEqual(2);
     expect(tagType.directives!.some((dir) => dir.name.value === 'aws_iam')).toEqual(true);
-    expect(tagType.directives!.some((dir) => dir.name.value === 'aws_cognito_user_pools')).toEqual(true);
     expect(tagType.directives!.some((dir) => dir.name.value === 'aws_api_key')).toEqual(true);
 
     // check operations
@@ -1571,7 +1563,6 @@ describe('ModelTransformer:', () => {
 
     for (const field of [...queryType.fields!, ...mutationType.fields!, ...subscriptionType.fields!]) {
       expect(field.directives!.some((dir) => dir.name.value === 'aws_iam')).toEqual(true);
-      expect(field.directives!.some((dir) => dir.name.value === 'aws_cognito_user_pools')).toEqual(true);
       expect(field.directives!.some((dir) => dir.name.value === 'aws_api_key')).toEqual(true);
     }
   });
