@@ -17,7 +17,17 @@ type AuthorizationConfigMode =
   | (ApiKeyAuthorizationConfig & { type: 'API_KEY' })
   | (LambdaAuthorizationConfig & { type: 'AWS_LAMBDA' });
 
-export const validateAuthorizationModes = (authorizationModes: AuthorizationModes) => {
+/**
+ * Validates authorization modes.
+ *
+ * Rules:
+ * 1. Validates that deprecated settings ('iamConfig.authenticatedUserRole', 'iamConfig.unauthenticatedUserRole',
+ *    'iamConfig.identityPoolId', 'iamConfig.allowListedRoles' and 'adminRoles') are mutually exclusive with new settings that
+ *    replaced them ('iamConfig.enableIamAuthorizationMode' and any of 'authorizationModes.identityPoolConfig')
+ * 2. If deprecated identity pool settings are used ('iamConfig.authenticatedUserRole', 'iamConfig.unauthenticatedUserRole',
+ *    and 'iamConfig.identityPoolId') validate that all are provided.
+ */
+export const validateAuthorizationModes = (authorizationModes: AuthorizationModes): void => {
   const hasDeprecatedIdentityPoolSettings =
     authorizationModes.iamConfig?.authenticatedUserRole ||
     authorizationModes.iamConfig?.unauthenticatedUserRole ||
