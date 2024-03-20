@@ -109,9 +109,9 @@ export const updateTableForConnection = (config: HasManyDirectiveConfiguration, 
   const partitionKeyType = respectPrimaryKeyAttributesOnConnectionField
     ? attributeTypeFromType(getObjectPrimaryKey(object).type, ctx)
     : 'S';
-  const sortKey = respectPrimaryKeyAttributesOnConnectionField
-    ? getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject(ctx, object, field, getSortKeyFields(ctx, object))
-    : undefined;
+
+  // TODO: Add support for sortKey in GSI
+  const sortKey = undefined;
 
   addGlobalSecondaryIndex(table, {
     indexName: indexName,
