@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs';
-import { copySync, moveSync, readFileSync } from 'fs-extra';
+import { copySync, moveSync, readFileSync, writeFileSync } from 'fs-extra';
 import { getScriptRunnerPath, nspawn as spawn } from 'amplify-category-api-e2e-core';
 
 /**
@@ -38,8 +38,24 @@ const copyTemplateDirectory = (projectPath: string, templatePath: string): void 
   moveSync(path.join(binDir, 'app.ts'), path.join(binDir, `${path.basename(projectPath)}.ts`), { overwrite: true });
 };
 
+/**
+ * Adds additional values to cdk context persisted in cdk.json file.
+ */
+const appendToCDKContext = (projectPath: string, additionalContext: Record<string, string>): void => {
+  const cdkJsonPath = path.join(projectPath, 'cdk.json');
+  const cdkJson = JSON.parse(readFileSync(cdkJsonPath, 'utf-8'));
+  if (!cdkJson.context) {
+    cdkJson.context = {};
+  }
+  Object.entries(additionalContext).forEach(([contextKey, contextValue]) => {
+    cdkJson.context[contextKey] = contextValue;
+  });
+  writeFileSync(cdkJsonPath, JSON.stringify(cdkJson, null, 2));
+};
+
 export type InitCDKProjectProps = {
   construct?: CdkConstruct;
+  cdkContext?: Record<string, string>;
   cdkVersion?: string;
   additionalDependencies?: Array<string>;
 };
@@ -65,6 +81,10 @@ export const initCDKProject = async (cwd: string, templatePath: string, props?: 
     .sendYes()
     .runAsync();
 
+  if (props?.cdkContext) {
+    appendToCDKContext(cwd, props.cdkContext);
+  }
+
   copyTemplateDirectory(cwd, templatePath);
 
   const deps = [getPackagedConstructPath(props?.construct ?? 'GraphqlApi'), `aws-cdk-lib@${cdkVersion}`, ...additionalDependencies];
@@ -74,8 +94,7 @@ export const initCDKProject = async (cwd: string, templatePath: string, props?: 
 };
 
 export type CdkDeployProps = {
-  timeoutMs?: number;
-  env?: Record<string, string>;
+  timeoutMs: number;
 };
 
 /**
@@ -88,15 +107,11 @@ export const cdkDeploy = async (cwd: string, option: string, props?: CdkDeployPr
   // The CodegenAssets BucketDeployment resource takes a while. Set the timeout to 10m account for that. (Note that this is the "no output
   // timeout"--the overall deployment is still allowed to take longer than 10m)
   const noOutputTimeout = props?.timeoutMs ?? 10 * 60 * 1000;
-  let env = { npm_config_registry: 'https://registry.npmjs.org/' };
-  if (props?.env) {
-    env = { ...env, ...props.env };
-  }
   const commandOptions = {
     cwd,
     stripColors: true,
     // npx cdk does not work on verdaccio
-    env,
+    env: { npm_config_registry: 'https://registry.npmjs.org/' },
     noOutputTimeout,
   };
   // This prevents us from maintaining a separate CDK account bootstrap process as we add support for new accounts, regions.

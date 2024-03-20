@@ -45,7 +45,10 @@ const stack = new Stack(app, packageJson.name.replace(/_/g, '-'), {
 
 const auth = new AmplifyAuth(stack, 'Auth');
 
-const enableIamAuthorizationMode = process.env.ENABLE_IAM_AUTHORIZATION_MODE === 'true';
+if (stack.node.tryGetContext('enable-iam-authorization-mode') === undefined) {
+  throw new Error('enable-iam-authorization-mode must be set in CDK context');
+}
+const enableIamAuthorizationMode = stack.node.tryGetContext('enable-iam-authorization-mode') === 'true';
 const api = new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
   apiName: 'MySqlBoundApi',
   definition: AmplifyGraphqlDefinition.fromString(

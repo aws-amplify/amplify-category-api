@@ -84,20 +84,21 @@ describe('CDK GraphQL Transformer', () => {
       region,
     });
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'sql-models'));
-    const name = await initCDKProject(projRoot, templatePath, { additionalDependencies: ['@aws-amplify/auth-construct-alpha@^0.5.6'] });
+    const name = await initCDKProject(projRoot, templatePath, {
+      additionalDependencies: ['@aws-amplify/auth-construct-alpha@^0.5.6'],
+      cdkContext: {
+        'enable-iam-authorization-mode': 'false',
+      },
+    });
     const nameWithIam = await initCDKProject(projRootWithIam, templatePath, {
       additionalDependencies: ['@aws-amplify/auth-construct-alpha@^0.5.6'],
+      cdkContext: {
+        'enable-iam-authorization-mode': 'true',
+      },
     });
     writeDbDetails(dbDetails, projRoot);
     writeDbDetails(dbDetails, projRootWithIam);
-    [outputs, outputsWithIam] = await Promise.all([
-      cdkDeploy(projRoot, '--all'),
-      cdkDeploy(projRootWithIam, '--all', {
-        env: {
-          ENABLE_IAM_AUTHORIZATION_MODE: 'true',
-        },
-      }),
-    ]);
+    [outputs, outputsWithIam] = await Promise.all([cdkDeploy(projRoot, '--all'), cdkDeploy(projRootWithIam, '--all')]);
     outputs = outputs[name];
     outputsWithIam = outputsWithIam[nameWithIam];
 
