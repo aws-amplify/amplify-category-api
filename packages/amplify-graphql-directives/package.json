@@ -26,9 +26,6 @@
     "test": "jest",
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
-  "peerDependencies": {
-    "graphql": "^15.5.0"
-  },
   "jest": {
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
