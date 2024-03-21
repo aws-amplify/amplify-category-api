@@ -1,12 +1,11 @@
 import * as path from 'path';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
-import { CognitoIdentityProviderClient, AdminCreateUserCommand } from '@aws-sdk/client-cognito-identity-provider';
-import Amplify, { Auth } from 'aws-amplify';
-import { ICredentials } from '@aws-amplify/core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { AssumeRoleCommand, Credentials, STSClient } from '@aws-sdk/client-sts';
 import { gql } from 'graphql-transformer-core';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
+import { AuthConstructStackOutputs } from '../types';
+import { CognitoIdentityPoolCredentialsFactory } from '../cognito-identity-pool-credentials';
+import { assumeIamRole } from '../assume-role';
 
 jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
 
@@ -17,8 +16,8 @@ describe('CDK DDB Iam Access', () => {
 
   const region = process.env.CLI_REGION ?? 'us-west-2';
 
-  let outputs: any;
-  let outputsWithIam: any;
+  let outputs: AuthConstructStackOutputs & any;
+  let outputsWithIam: AuthConstructStackOutputs & any;
 
   let graphqlClientAuthRole: AWSAppSyncClient<any>;
   let graphqlClientWithIAMAccessAuthRole: AWSAppSyncClient<any>;
@@ -47,10 +46,18 @@ describe('CDK DDB Iam Access', () => {
     outputs = outputs[name];
     outputsWithIam = outputsWithIam[nameWithIam];
 
-    const cognitoRolesCredentials = await getCognitoIamCredentials(outputs);
-    const cognitoRolesWithIamCredentials = await getCognitoIamCredentials(outputsWithIam);
-    const basicRoleCredentials = await getBasicRoleCredentials(outputs);
-    const basicRoleWithIamCredentials = await getBasicRoleCredentials(outputsWithIam);
+    const cognitoCredentialsFactory = new CognitoIdentityPoolCredentialsFactory(outputs);
+    const cognitoRolesCredentials = {
+      authRoleCredentials: await cognitoCredentialsFactory.getAuthRoleCredentials(),
+      unAuthRoleCredentials: await cognitoCredentialsFactory.getUnAuthRoleCredentials(),
+    };
+    const cognitoCredentialsWithIamFactory = new CognitoIdentityPoolCredentialsFactory(outputsWithIam);
+    const cognitoRolesWithIamCredentials = {
+      authRoleCredentials: await cognitoCredentialsWithIamFactory.getAuthRoleCredentials(),
+      unAuthRoleCredentials: await cognitoCredentialsWithIamFactory.getUnAuthRoleCredentials(),
+    };
+    const basicRoleCredentials = await assumeIamRole(outputs.BasicRoleArn);
+    const basicRoleWithIamCredentials = await assumeIamRole(outputsWithIam.BasicRoleArn);
 
     graphqlClientBasicRole = new AWSAppSyncClient({
       url: outputs.awsAppsyncApiEndpoint,
@@ -100,9 +107,9 @@ describe('CDK DDB Iam Access', () => {
       auth: {
         type: AUTH_TYPE.AWS_IAM,
         credentials: {
-          accessKeyId: cognitoRolesCredentials.unauthRoleCredentials.accessKeyId,
-          secretAccessKey: cognitoRolesCredentials.unauthRoleCredentials.secretAccessKey,
-          sessionToken: cognitoRolesCredentials.unauthRoleCredentials.sessionToken,
+          accessKeyId: cognitoRolesCredentials.unAuthRoleCredentials.accessKeyId,
+          secretAccessKey: cognitoRolesCredentials.unAuthRoleCredentials.secretAccessKey,
+          sessionToken: cognitoRolesCredentials.unAuthRoleCredentials.sessionToken,
         },
       },
       disableOffline: true,
@@ -128,9 +135,9 @@ describe('CDK DDB Iam Access', () => {
       auth: {
         type: AUTH_TYPE.AWS_IAM,
         credentials: {
-          accessKeyId: cognitoRolesWithIamCredentials.unauthRoleCredentials.accessKeyId,
-          secretAccessKey: cognitoRolesWithIamCredentials.unauthRoleCredentials.secretAccessKey,
-          sessionToken: cognitoRolesWithIamCredentials.unauthRoleCredentials.sessionToken,
+          accessKeyId: cognitoRolesWithIamCredentials.unAuthRoleCredentials.accessKeyId,
+          secretAccessKey: cognitoRolesWithIamCredentials.unAuthRoleCredentials.secretAccessKey,
+          sessionToken: cognitoRolesWithIamCredentials.unAuthRoleCredentials.sessionToken,
         },
       },
       disableOffline: true,
@@ -358,75 +365,4 @@ const testDoesNotHaveCRUDLAccess = async (
   ).rejects.toThrowError(
     /GraphQL error: Not Authorized to access .* on type Mutation|Network error: Response not successful: Received status code 401/,
   );
-};
-
-/**
- * Obtains credentials for auth and unauth roles associated with Cognito Identity Pool
- */
-const getCognitoIamCredentials = async (
-  outputs: any,
-): Promise<{
-  authRoleCredentials: ICredentials;
-  unauthRoleCredentials: ICredentials;
-}> => {
-  const username = 'user@test.com';
-  const tmpPassword = 'Password123!';
-  const realPassword = 'Password1234!';
-
-  const { authRegion, userPoolId, webClientId, identityPoolId } = outputs;
-
-  const cognitoClient = new CognitoIdentityProviderClient({ region: authRegion });
-
-  await cognitoClient.send(
-    new AdminCreateUserCommand({
-      UserPoolId: userPoolId,
-      UserAttributes: [{ Name: 'email', Value: username }],
-      Username: username,
-      TemporaryPassword: tmpPassword,
-      DesiredDeliveryMediums: [],
-      MessageAction: 'SUPPRESS',
-    }),
-  );
-
-  Amplify.configure({
-    Auth: {
-      region: authRegion,
-      userPoolId: userPoolId,
-      userPoolWebClientId: webClientId,
-      identityPoolId: identityPoolId,
-    },
-  });
-
-  const signInResult = await Auth.signIn(username, tmpPassword);
-
-  if (signInResult.challengeName === 'NEW_PASSWORD_REQUIRED') {
-    const { requiredAttributes } = signInResult.challengeParam;
-
-    await Auth.completeNewPassword(signInResult, realPassword, requiredAttributes);
-  }
-
-  await Auth.signIn(username, realPassword);
-
-  const userCredentials = await Auth.currentCredentials();
-  await Auth.signOut();
-  const unauthCredentials = await Auth.currentCredentials();
-  return { authRoleCredentials: userCredentials, unauthRoleCredentials: unauthCredentials };
-};
-
-/**
- * Gets credentials of basic IAM role (i.e. non-cognito IAM principal).
- */
-const getBasicRoleCredentials = async (outputs: any): Promise<Credentials> => {
-  const { BasicRoleArn } = outputs;
-  const sts = new STSClient({});
-  const basicRoleCredentials = (
-    await sts.send(
-      new AssumeRoleCommand({
-        RoleArn: BasicRoleArn,
-        RoleSessionName: Date.now().toString(),
-        DurationSeconds: 3600,
-      }),
-    )
-  ).Credentials;
-  return basicRoleCredentials;
 };
