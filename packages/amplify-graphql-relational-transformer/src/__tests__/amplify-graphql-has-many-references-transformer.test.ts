@@ -94,5 +94,5 @@ test('many to many query', () => {
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
-  expect(schema).toMatchSnapshot();
+  expect(out.schema).toMatchSnapshot();
 });
