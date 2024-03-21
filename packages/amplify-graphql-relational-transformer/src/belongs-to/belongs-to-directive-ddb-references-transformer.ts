@@ -8,8 +8,9 @@ import { setFieldMappingResolverReference } from '../resolvers';
 import { BelongsToDirectiveConfiguration } from '../types';
 import {
   ensureReferencesArray,
-  getBelongsToReferencesNodes, registerHasOneForeignKeyMappings,
-  validateChildReferencesFields
+  getBelongsToReferencesNodes,
+  registerHasOneForeignKeyMappings,
+  validateChildReferencesFields,
 } from '../utils';
 import { DDBRelationalReferencesResolverGenerator } from '../resolver/ddb-references-generator';
 

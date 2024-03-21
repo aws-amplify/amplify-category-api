@@ -8,6 +8,7 @@ import { BelongsToDirectiveDDBReferencesTransformer } from './belongs-to-directi
 export const getBelongsToDirectiveTransformer = (
   dbType: ModelDataSourceStrategyDbType,
   config: BelongsToDirectiveConfiguration,
+// eslint-disable-next-line consistent-return
 ): DataSourceBasedDirectiveTransformer<BelongsToDirectiveConfiguration> => {
   switch (dbType) {
     case 'MYSQL':
@@ -27,6 +28,5 @@ export const getBelongsToDirectiveTransformer = (
       // `fields` based relational modeling is the default because it supports implicit
       // field creation / doesn't require explicitly defining the `fields` in the directive.
       return new BelongsToDirectiveDDBFieldsTransformer(dbType);
-  }
   }
 };

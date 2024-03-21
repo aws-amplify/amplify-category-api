@@ -8,6 +8,7 @@ import { HasManyDirectiveDDBReferencesTransformer } from './has-many-directive-d
 export const getHasManyDirectiveTransformer = (
   dbType: ModelDataSourceStrategyDbType,
   config: HasManyDirectiveConfiguration,
+  // eslint-disable-next-line consistent-return
 ): DataSourceBasedDirectiveTransformer<HasManyDirectiveConfiguration> => {
   switch (dbType) {
     case 'MYSQL':

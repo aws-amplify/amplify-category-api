@@ -38,7 +38,6 @@ export class BelongsToDirectiveDDBFieldsTransformer implements DataSourceBasedDi
     config.relatedTypeIndex = getRelatedTypeIndex(config, context as TransformerContextProvider);
   };
 
-
   generateResolvers = (context: TransformerContextProvider, config: BelongsToDirectiveConfiguration): void => {
     const generator = getGenerator(this.dbType);
     generator.makeBelongsToGetItemConnectionWithKeyResolver(config, context);

@@ -6,12 +6,9 @@ import {
   getTable,
 } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ObjectTypeDefinitionNode } from 'graphql';
 import {
   DynamoDBMappingTemplate,
-  Expression,
-  ObjectNode,
-  and,
+  Expression, and,
   bool,
   compoundExpression,
   equals,
@@ -31,17 +28,11 @@ import {
   ref,
   set,
   str,
-  toJson,
+  toJson
 } from 'graphql-mapping-template';
 import {
-  ModelResourceIDs,
   NONE_VALUE,
-  ResolverResourceIDs,
-  applyCompositeKeyConditionExpression,
-  applyKeyConditionExpression,
-  attributeTypeFromScalar,
-  setArgs,
-  toCamelCase,
+  ResolverResourceIDs, setArgs
 } from 'graphql-transformer-common';
 import { condenseRangeKey } from '../resolvers';
 import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from '../types';
