@@ -43,12 +43,12 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
   #else
     #if( !$isAuthorized )
-      #if( $ctx.identity.userArn == $ctx.stash.testClaim )
+      #if( $ctx.identity.userArn == $ctx.stash.testUnAuthRoleClaim )
         #set( $isAuthorized = true )
       #end
     #end
     #if( !$isAuthorized )
-      #if( $ctx.identity.userArn == $ctx.stash.testClaim )
+      #if( $ctx.identity.userArn == $ctx.stash.testAuthRoleClaim )
         #set( $isAuthorized = true )
       #end
     #end
@@ -67,12 +67,12 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #if( $util.authType() == \\"IAM Authorization\\" )
   #if( !$isAuthorized )
-    #if( $ctx.identity.userArn == $ctx.stash.testClaim )
+    #if( $ctx.identity.userArn == $ctx.stash.testUnAuthRoleClaim )
       #set( $isAuthorized = true )
     #end
   #end
   #if( !$isAuthorized )
-    #if( $ctx.identity.userArn == $ctx.stash.testClaim )
+    #if( $ctx.identity.userArn == $ctx.stash.testAuthRoleClaim )
       #set( $isAuthorized = true )
     #end
   #end
@@ -90,12 +90,12 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #if( $util.authType() == \\"IAM Authorization\\" )
   #if( !$isAuthorized )
-    #if( $ctx.identity.userArn == $ctx.stash.testClaim )
+    #if( $ctx.identity.userArn == $ctx.stash.testUnAuthRoleClaim )
       #set( $isAuthorized = true )
     #end
   #end
   #if( !$isAuthorized )
-    #if( $ctx.identity.userArn == $ctx.stash.testClaim )
+    #if( $ctx.identity.userArn == $ctx.stash.testAuthRoleClaim )
       #set( $isAuthorized = true )
     #end
   #end
@@ -278,12 +278,12 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
   #if( !$isAuthorized )
-    #if( $ctx.identity.userArn == $ctx.stash.testClaim )
+    #if( $ctx.identity.userArn == $ctx.stash.testUnAuthRoleClaim )
       #set( $isAuthorized = true )
     #end
   #end
   #if( !$isAuthorized )
-    #if( $ctx.identity.userArn == $ctx.stash.testClaim )
+    #if( $ctx.identity.userArn == $ctx.stash.testAuthRoleClaim )
       #set( $isAuthorized = true )
     #end
   #end
@@ -367,12 +367,12 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
   #if( !$isAuthorized )
-    #if( $ctx.identity.userArn == $ctx.stash.testClaim )
+    #if( $ctx.identity.userArn == $ctx.stash.testUnAuthRoleClaim )
       #set( $isAuthorized = true )
     #end
   #end
   #if( !$isAuthorized )
-    #if( $ctx.identity.userArn == $ctx.stash.testClaim )
+    #if( $ctx.identity.userArn == $ctx.stash.testAuthRoleClaim )
       #set( $isAuthorized = true )
     #end
   #end
@@ -390,12 +390,12 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #if( $util.authType() == \\"IAM Authorization\\" )
   #if( !$isAuthorized )
-    #if( $ctx.identity.userArn == $ctx.stash.testClaim )
+    #if( $ctx.identity.userArn == $ctx.stash.testUnAuthRoleClaim )
       #set( $isAuthorized = true )
     #end
   #end
   #if( !$isAuthorized )
-    #if( $ctx.identity.userArn == $ctx.stash.testClaim )
+    #if( $ctx.identity.userArn == $ctx.stash.testAuthRoleClaim )
       #set( $isAuthorized = true )
     #end
   #end
