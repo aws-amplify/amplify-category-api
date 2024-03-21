@@ -29,4 +29,5 @@ export const getBelongsToDirectiveTransformer = (
       // field creation / doesn't require explicitly defining the `fields` in the directive.
       return new BelongsToDirectiveDDBFieldsTransformer(dbType);
   }
+  }
 };
