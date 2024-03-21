@@ -1,9 +1,11 @@
+import { DDB_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
+import { DDBRelationalReferencesResolverGenerator } from '../resolver/ddb-references-generator';
 import { setFieldMappingResolverReference } from '../resolvers';
 import { BelongsToDirectiveConfiguration } from '../types';
 import {
@@ -12,7 +14,6 @@ import {
   registerHasOneForeignKeyMappings,
   validateChildReferencesFields,
 } from '../utils';
-import { DDBRelationalReferencesResolverGenerator } from '../resolver/ddb-references-generator';
 
 /**
  * BelongsToDirectiveDDBReferencesTransformer executes transformations based on `@belongsTo(references: [String!])` configurations
@@ -21,10 +22,7 @@ import { DDBRelationalReferencesResolverGenerator } from '../resolver/ddb-refere
  * This should not be used for `@belongsTo(fields: [String!])` definitions.
  */
 export class BelongsToDirectiveDDBReferencesTransformer implements DataSourceBasedDirectiveTransformer<BelongsToDirectiveConfiguration> {
-  dbType: 'DYNAMODB';
-  constructor(dbType: 'DYNAMODB') {
-    this.dbType = dbType;
-  }
+  dbType = DDB_DB_TYPE;
 
   prepare = (context: TransformerPrepareStepContextProvider, config: BelongsToDirectiveConfiguration): void => {
     const modelName = config.object.name.value;

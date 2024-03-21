@@ -5,15 +5,19 @@ import { BelongsToDirectiveSQLTransformer } from './belongs-to-directive-sql-tra
 import { BelongsToDirectiveDDBFieldsTransformer } from './belongs-to-directive-ddb-fields-transformer';
 import { BelongsToDirectiveDDBReferencesTransformer } from './belongs-to-directive-ddb-references-transformer';
 
+const belongsToDirectiveMySqlTransformer = new BelongsToDirectiveSQLTransformer()
+const belongsToDirectivePostgresTransformer = new BelongsToDirectiveSQLTransformer()
+const belongsToDirectiveDdbFieldsTransformer = new BelongsToDirectiveDDBFieldsTransformer()
+const belongsToDirectiveDdbReferencesTransformer = new BelongsToDirectiveDDBReferencesTransformer()
+
 export const getBelongsToDirectiveTransformer = (
   dbType: ModelDataSourceStrategyDbType,
   config: BelongsToDirectiveConfiguration,
   // eslint-disable-next-line consistent-return
 ): DataSourceBasedDirectiveTransformer<BelongsToDirectiveConfiguration> => {
   switch (dbType) {
-    case 'MYSQL':
-    case 'POSTGRES':
-      return new BelongsToDirectiveSQLTransformer(dbType);
+    case 'MYSQL': return belongsToDirectiveMySqlTransformer;
+    case 'POSTGRES': return belongsToDirectivePostgresTransformer;
     case 'DYNAMODB':
       // If `references` are passed to the directive, we'll use the references relational
       // modeling approach.
@@ -23,10 +27,10 @@ export const getBelongsToDirectiveTransformer = (
           // TODO: Better error message
           throw new Error('Something went wrong >> cannot have both references and fields.');
         }
-        return new BelongsToDirectiveDDBReferencesTransformer(dbType);
+        return belongsToDirectiveDdbReferencesTransformer;
       }
       // `fields` based relational modeling is the default because it supports implicit
       // field creation / doesn't require explicitly defining the `fields` in the directive.
-      return new BelongsToDirectiveDDBFieldsTransformer(dbType);
+      return belongsToDirectiveDdbFieldsTransformer;
   }
 };

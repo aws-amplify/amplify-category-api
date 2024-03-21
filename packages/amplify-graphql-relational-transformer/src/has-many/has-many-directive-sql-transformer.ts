@@ -1,24 +1,21 @@
+import { MYSQL_DB_TYPE, POSTGRES_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 import {
-  ModelDataSourceStrategySqlDbType,
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
-  TransformerTransformSchemaStepContextProvider,
+  TransformerTransformSchemaStepContextProvider
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { setFieldMappingResolverReference } from '../resolvers';
-import { HasManyDirectiveConfiguration } from '../types';
-import { validateParentReferencesFields, ensureReferencesArray, getReferencesNodes } from '../utils';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
 import { getGenerator } from '../resolver/generator-factory';
+import { setFieldMappingResolverReference } from '../resolvers';
+import { HasManyDirectiveConfiguration } from '../types';
+import { ensureReferencesArray, getReferencesNodes, validateParentReferencesFields } from '../utils';
 
 /**
  * HasManyDirectiveSQLTransformer executes transformations based on `@hasMany(references: [String!])` configurations
  * and surrounding TransformerContextProviders for SQL data sources.
  */
 export class HasManyDirectiveSQLTransformer implements DataSourceBasedDirectiveTransformer<HasManyDirectiveConfiguration> {
-  dbType: ModelDataSourceStrategySqlDbType;
-  constructor(dbType: ModelDataSourceStrategySqlDbType) {
-    this.dbType = dbType;
-  }
+  dbType = POSTGRES_DB_TYPE || MYSQL_DB_TYPE;
 
   prepare = (context: TransformerPrepareStepContextProvider, config: HasManyDirectiveConfiguration): void => {
     const modelName = config.object.name.value;

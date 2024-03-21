@@ -1,13 +1,14 @@
+import { DDB_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
+import { DDBRelationalReferencesResolverGenerator } from '../resolver/ddb-references-generator';
 import { setFieldMappingResolverReference, updateTableForReferencesConnection } from '../resolvers';
 import { HasManyDirectiveConfiguration } from '../types';
 import { ensureReferencesArray, getReferencesNodes, registerHasManyForeignKeyMappings, validateParentReferencesFields } from '../utils';
-import { DDBRelationalReferencesResolverGenerator } from '../resolver/ddb-references-generator';
 
 /**
  * HasManyDirectiveDDBReferencesTransformer executes transformations based on `@hasMany(references: [String!])` configurations
@@ -16,10 +17,7 @@ import { DDBRelationalReferencesResolverGenerator } from '../resolver/ddb-refere
  * This should not be used for `@hasMany(fields: [String!])` definitions.
  */
 export class HasManyDirectiveDDBReferencesTransformer implements DataSourceBasedDirectiveTransformer<HasManyDirectiveConfiguration> {
-  dbType: 'DYNAMODB';
-  constructor(dbType: 'DYNAMODB') {
-    this.dbType = dbType;
-  }
+  dbType = DDB_DB_TYPE;
 
   prepare = (context: TransformerPrepareStepContextProvider, config: HasManyDirectiveConfiguration): void => {
     const modelName = config.object.name.value;
