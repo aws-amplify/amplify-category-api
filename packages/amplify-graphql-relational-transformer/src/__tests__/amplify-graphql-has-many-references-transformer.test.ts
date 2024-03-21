@@ -1,6 +1,12 @@
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+<<<<<<< HEAD
 import { ConflictHandlerType, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+=======
+import {
+  ConflictHandlerType, validateModelSchema
+} from '@aws-amplify/graphql-transformer-core';
+>>>>>>> c11345256 (prettier)
 import { Kind, parse } from 'graphql';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
