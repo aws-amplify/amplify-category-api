@@ -29,7 +29,7 @@ import {
   ref,
   set,
   str,
-  toJson
+  toJson,
 } from 'graphql-mapping-template';
 import { NONE_VALUE, ResolverResourceIDs, setArgs } from 'graphql-transformer-common';
 import { condenseRangeKey } from '../resolvers';
