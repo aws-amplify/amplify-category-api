@@ -3,6 +3,7 @@ import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-t
 import { AuthTransformer } from '../graphql-auth-transformer';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
+import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 
 const IAM_ACCESS_CHECK_DDB = '#if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )';
 const IAM_ACCESS_CHECK_RDS =
@@ -186,6 +187,7 @@ describe('ddb', () => {
 
   test('simple model with no auth directive and both sandbox and iam access enabled', () => {
     const validSchema = `
+
       type Post @model {
         id: ID!
         title: String!
@@ -205,6 +207,38 @@ describe('ddb', () => {
     expect(out).toBeDefined();
     expectOperationsWithDirectives(out.schema, ['@aws_api_key', '@aws_iam'], ['@aws_api_key', '@aws_iam']);
     expectNoAuthResolvers(out.resolvers);
+    expectSandboxResolvers(out.resolvers, true, true);
+  });
+
+  test('generates related type sandbox resolvers when both sandbox and iam access enabled', () => {
+    const validSchema = `
+      type PostCollection @model @auth(rules: [{allow: public, provider: iam}]) {
+        id: ID!
+        posts: [Post] @hasMany
+      }
+      type Post @model {
+        id: ID!
+        title: String!
+        createdAt: String
+        updatedAt: String
+      }`;
+    const out = testTransform({
+      schema: validSchema,
+      authConfig: {
+        defaultAuthentication: {
+          authenticationType: 'AWS_IAM',
+        },
+        additionalAuthenticationProviders: [],
+      },
+      synthParameters: {
+        enableIamAccess: true,
+      },
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
+      transformers: [new ModelTransformer(), new HasManyTransformer(), new AuthTransformer()],
+    });
+    expect(out).toBeDefined();
     expectSandboxResolvers(out.resolvers, true, true);
   });
 });
@@ -411,6 +445,40 @@ describe('rds', () => {
     expect(out).toBeDefined();
     expectOperationsWithDirectives(out.schema, ['@aws_api_key', '@aws_iam'], ['@aws_api_key', '@aws_iam']);
     expectNoAuthResolvers(out.resolvers);
+    expectSandboxResolvers(out.resolvers, true, true);
+  });
+
+  test('generates related type sandbox resolvers when both sandbox and iam access enabled', () => {
+    const validSchema = `
+      type Blog @model @auth(rules: [{allow: public, provider: iam}]) {
+        id: ID! @primaryKey
+        posts: [Post] @hasMany(references: "blogId")
+      }
+      type Post @model {
+        id: ID! @primaryKey
+        blogId: ID!
+        title: String!
+        createdAt: String
+        updatedAt: String
+      }`;
+    const out = testTransform({
+      schema: validSchema,
+      authConfig: {
+        defaultAuthentication: {
+          authenticationType: 'AWS_IAM',
+        },
+        additionalAuthenticationProviders: [],
+      },
+      synthParameters: {
+        enableIamAccess: true,
+      },
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
+      transformers: [new ModelTransformer(), new HasManyTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlStrategy),
+    });
+    expect(out).toBeDefined();
     expectSandboxResolvers(out.resolvers, true, true);
   });
 });
