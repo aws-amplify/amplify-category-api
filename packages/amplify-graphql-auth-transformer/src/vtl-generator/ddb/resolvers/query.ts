@@ -36,6 +36,7 @@ import {
   getPartitionKey,
   getRelationalPrimaryMap,
 } from '../../../utils';
+import { setHasAuthExpression } from '../../common';
 import {
   getIdentityClaimExp,
   getOwnerClaim,
@@ -43,7 +44,6 @@ import {
   iamExpression,
   lambdaExpression,
   emptyPayload,
-  setHasAuthExpression,
   generateOwnerClaimExpression,
   generateOwnerClaimListExpression,
   generateOwnerMultiClaimExpression,

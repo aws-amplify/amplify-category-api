@@ -33,9 +33,7 @@ import {
   IDENTITY_CLAIM_DELIMITER,
   ALLOWED_FIELDS,
 } from '../../../utils';
-
-// note in the resolver that operation is protected by auth
-export const setHasAuthExpression: Expression = qref(methodCall(ref('ctx.stash.put'), str('hasAuth'), bool(true)));
+import { setHasAuthExpression } from '../../common';
 
 // since the keySet returns a set we can convert it to a list by converting to json and parsing back as a list
 /**
@@ -178,7 +176,9 @@ export const iamExpression = (options: IamExpressionOptions): Expression => {
 };
 
 /**
- * Creates an expression that allows generic IAM access for principals not associated to CognitoIdentityPool
+ * Creates an expression that allows generic IAM access for principals not associated to CognitoIdentityPool.
+ *
+ * Note: This function assumes that caller already checked that auth type is IAM. Should not be used outside of IAM helpers.
  */
 export const generateIAMAccessCheck = (enableIamAccess: boolean, expression: Expression): Expression => {
   if (!enableIamAccess) {

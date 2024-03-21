@@ -32,10 +32,10 @@ import {
   API_KEY_AUTH_TYPE,
   IAM_AUTH_TYPE,
 } from '../../../utils';
+import { setHasAuthExpression } from '../../common';
 import {
   getIdentityClaimExp,
   emptyPayload,
-  setHasAuthExpression,
   iamCheck,
   iamAdminRoleCheckExpression,
   generateOwnerClaimExpression,

@@ -35,11 +35,11 @@ import {
   ALLOWED_FIELDS,
   DENIED_FIELDS,
 } from '../../../utils';
+import { setHasAuthExpression } from '../../common';
 import {
   getIdentityClaimExp,
   getInputFields,
   emptyPayload,
-  setHasAuthExpression,
   iamCheck,
   iamAdminRoleCheckExpression,
   generateOwnerClaimExpression,

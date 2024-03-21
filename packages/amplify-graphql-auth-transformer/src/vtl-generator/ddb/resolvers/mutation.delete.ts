@@ -30,12 +30,12 @@ import {
   RoleDefinition,
   splitRoles,
 } from '../../../utils';
+import { setHasAuthExpression } from '../../common';
 import {
   emptyPayload,
   getIdentityClaimExp,
   iamAdminRoleCheckExpression,
   iamCheck,
-  setHasAuthExpression,
   generateOwnerClaimExpression,
   generateOwnerClaimListExpression,
   generateOwnerMultiClaimExpression,

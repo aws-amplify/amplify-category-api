@@ -25,8 +25,8 @@ import {
 } from 'graphql-mapping-template';
 import { FieldDefinitionNode } from 'graphql';
 import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
-import { API_KEY_AUTH_TYPE, DEFAULT_UNIQUE_IDENTITY_CLAIM, IAM_AUTH_TYPE, IDENTITY_CLAIM_DELIMITER, RoleDefinition } from '../../../utils';
-import { setHasAuthExpression } from '../../ddb/resolvers/helpers';
+import { API_KEY_AUTH_TYPE, DEFAULT_UNIQUE_IDENTITY_CLAIM, IDENTITY_CLAIM_DELIMITER, RoleDefinition } from '../../../utils';
+import { isNonCognitoIAMPrincipal, setHasAuthExpression } from '../../common';
 
 /**
  * Generates default RDS expression
@@ -218,11 +218,6 @@ export const generateSandboxExpressionForField = (sandboxEnabled: boolean, gener
     exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY_AUTH_TYPE)), exp);
   }
   if (genericIamAccessEnabled) {
-    const isNonCognitoIAMPrincipal = and([
-      equals(ref('util.authType()'), str(IAM_AUTH_TYPE)),
-      methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityPoolId')),
-      methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityId')),
-    ]);
     exp = iff(not(parens(isNonCognitoIAMPrincipal)), exp);
   }
   return printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(compoundExpression([exp, toJson(obj({}))]));
@@ -288,10 +283,5 @@ export const generateIAMAccessCheck = (enableIamAccess: boolean, expression: Exp
     // No-op if generic IAM access is not enabled.
     return expression;
   }
-  const isNonCognitoIAMPrincipal = and([
-    equals(ref('util.authType()'), str(IAM_AUTH_TYPE)),
-    methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityPoolId')),
-    methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityId')),
-  ]);
   return ifElse(isNonCognitoIAMPrincipal, compoundExpression([setHasAuthExpression, emptyPayload]), expression);
 };

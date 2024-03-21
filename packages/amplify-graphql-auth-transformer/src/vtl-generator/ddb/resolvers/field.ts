@@ -48,6 +48,7 @@ import {
   generateOwnerMultiClaimExpression,
   generateInvalidClaimsCondition,
 } from './helpers';
+import { isNonCognitoIAMPrincipal } from '../../common';
 
 // Field Read VTL Functions
 const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArray<FieldDefinitionNode>): Expression[] => {
@@ -221,11 +222,6 @@ export const generateSandboxExpressionForField = (sandboxEnabled: boolean, gener
     exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY_AUTH_TYPE)), exp);
   }
   if (genericIamAccessEnabled) {
-    const isNonCognitoIAMPrincipal = and([
-      equals(ref('util.authType()'), str(IAM_AUTH_TYPE)),
-      methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityPoolId')),
-      methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityId')),
-    ]);
     exp = iff(not(parens(isNonCognitoIAMPrincipal)), exp);
   }
   return printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(compoundExpression([exp, toJson(obj({}))]));
