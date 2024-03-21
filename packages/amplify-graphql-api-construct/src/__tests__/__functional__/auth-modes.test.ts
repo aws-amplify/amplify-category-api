@@ -228,8 +228,8 @@ describe('auth modes', () => {
         });
       });
     }).toThrow(
-      "Cannot use deprecated 'authorizationModes.iamConfig' options with 'authorizationModes.identityPoolConfig' " +
-        "or 'authorizationModes.iamConfig.enableIamAuthorizationMode'",
+      'Invalid authorization modes configuration provided. ' +
+        "Deprecated IAM configuration cannot be used with identity pool configuration or when 'enableIamAuthorizationMode' is specified.",
     );
     expect(() => {
       verifySynth((stack) => {
@@ -259,8 +259,8 @@ describe('auth modes', () => {
         });
       });
     }).toThrow(
-      "Cannot use deprecated 'authorizationModes.iamConfig' options with 'authorizationModes.identityPoolConfig' " +
-        "or 'authorizationModes.iamConfig.enableIamAuthorizationMode'",
+      'Invalid authorization modes configuration provided. ' +
+        "Deprecated IAM configuration cannot be used with identity pool configuration or when 'enableIamAuthorizationMode' is specified.",
     );
   });
 

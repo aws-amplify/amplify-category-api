@@ -28,7 +28,7 @@ type AuthorizationConfigMode =
  *    and 'iamConfig.identityPoolId') validate that all are provided.
  */
 export const validateAuthorizationModes = (authorizationModes: AuthorizationModes): void => {
-  const hasDeprecatedIdentityPoolSettings =
+  const hasAnyDeprecatedIdentityPoolSetting =
     authorizationModes.iamConfig?.authenticatedUserRole ||
     authorizationModes.iamConfig?.unauthenticatedUserRole ||
     authorizationModes.iamConfig?.identityPoolId;
@@ -36,23 +36,23 @@ export const validateAuthorizationModes = (authorizationModes: AuthorizationMode
     authorizationModes.iamConfig?.authenticatedUserRole &&
     authorizationModes.iamConfig?.unauthenticatedUserRole &&
     authorizationModes.iamConfig?.identityPoolId;
-  const hasDeprecatedSettings =
+  const hasDeprecatedIamSettings =
     authorizationModes.iamConfig?.authenticatedUserRole ||
     authorizationModes.iamConfig?.unauthenticatedUserRole ||
     authorizationModes.iamConfig?.identityPoolId ||
     authorizationModes.iamConfig?.allowListedRoles ||
     authorizationModes.adminRoles;
-  const hasUnDeprecatedSettings =
+  const hasUnDeprecatedIamSettings =
     typeof authorizationModes.iamConfig?.enableIamAuthorizationMode !== 'undefined' || authorizationModes.identityPoolConfig;
 
-  if (hasDeprecatedSettings && hasUnDeprecatedSettings) {
+  if (hasDeprecatedIamSettings && hasUnDeprecatedIamSettings) {
     throw new Error(
-      "Cannot use deprecated 'authorizationModes.iamConfig' options with 'authorizationModes.identityPoolConfig'" +
-        " or 'authorizationModes.iamConfig.enableIamAuthorizationMode'",
+      'Invalid authorization modes configuration provided. ' +
+        "Deprecated IAM configuration cannot be used with identity pool configuration or when 'enableIamAuthorizationMode' is specified.",
     );
   }
 
-  if (hasDeprecatedIdentityPoolSettings && !hasAllDeprecatedIdentityPoolSettings) {
+  if (hasAnyDeprecatedIdentityPoolSetting && !hasAllDeprecatedIdentityPoolSettings) {
     throw new Error(
       "'authorizationModes.iamConfig.authenticatedUserRole', 'authorizationModes.iamConfig.unauthenticatedUserRole' and" +
         " 'authorizationModes.iamConfig.identityPoolId' must be provided.",
