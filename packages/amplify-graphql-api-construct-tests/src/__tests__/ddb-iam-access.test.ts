@@ -13,7 +13,7 @@ jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
 describe('CDK DDB Iam Access', () => {
   let projRoot: string;
   let projRootWithIam: string;
-  const projFolderName = 'sqlmodels';
+  const projFolderName = 'ddbmodels';
 
   const region = process.env.CLI_REGION ?? 'us-west-2';
 

@@ -20,7 +20,7 @@ if (stack.node.tryGetContext('enable-iam-authorization-mode') === undefined) {
   throw new Error('enable-iam-authorization-mode must be set in CDK context');
 }
 const enableIamAuthorizationMode = stack.node.tryGetContext('enable-iam-authorization-mode') === 'true';
-const api = new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
+const api = new AmplifyGraphqlApi(stack, 'DDBBoundApi', {
   apiName: 'MyDDBBoundApi',
   definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
     type TodoWithPrivateIam @model @auth(rules: [{ allow: private, provider: iam }]) {
