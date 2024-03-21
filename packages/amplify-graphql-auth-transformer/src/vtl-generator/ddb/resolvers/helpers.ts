@@ -145,25 +145,27 @@ export const lambdaExpression = (roles: Array<RoleDefinition>): Expression =>
     compoundExpression([...(roles.length > 0 ? [set(ref(IS_AUTHORIZED_FLAG), bool(true))] : [])]),
   );
 
+export type IamExpressionOptions = {
+  roles: Array<RoleDefinition>;
+  adminRolesEnabled: boolean;
+  hasIdentityPoolId: boolean;
+  genericIamAccessEnabled: boolean;
+  fieldName?: string;
+};
+
 /**
  * Creates iam expression helper
  */
-export const iamExpression = (
-  roles: Array<RoleDefinition>,
-  adminRolesEnabled: boolean,
-  hasIdentityPoolId: boolean,
-  genericIamAccessEnabled: boolean,
-  fieldName: string = undefined,
-): Expression => {
+export const iamExpression = (options: IamExpressionOptions): Expression => {
   const expression = new Array<Expression>();
   // allow if using an admin role
-  if (adminRolesEnabled) {
-    expression.push(iamAdminRoleCheckExpression(fieldName));
+  if (options.adminRolesEnabled) {
+    expression.push(iamAdminRoleCheckExpression(options.fieldName));
   }
-  if (roles.length > 0) {
-    roles.forEach((role) => {
+  if (options.roles.length > 0) {
+    options.roles.forEach((role) => {
       expression.push(
-        iff(not(ref(IS_AUTHORIZED_FLAG)), iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)), hasIdentityPoolId)),
+        iff(not(ref(IS_AUTHORIZED_FLAG)), iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)), options.hasIdentityPoolId)),
       );
     });
   } else {
@@ -171,7 +173,7 @@ export const iamExpression = (
   }
   return iff(
     equals(ref('util.authType()'), str(IAM_AUTH_TYPE)),
-    generateIAMAccessCheck(genericIamAccessEnabled, compoundExpression(expression)),
+    generateIAMAccessCheck(options.genericIamAccessEnabled, compoundExpression(expression)),
   );
 };
 

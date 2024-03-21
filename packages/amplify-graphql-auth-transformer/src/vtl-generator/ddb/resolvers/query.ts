@@ -556,7 +556,12 @@ export const generateAuthExpressionForQueries = (
   }
   if (providers.hasIAM) {
     totalAuthExpressions.push(
-      iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.hasIdentityPoolId, providers.genericIamAccessEnabled),
+      iamExpression({
+        roles: iamRoles,
+        adminRolesEnabled: providers.hasAdminRolesEnabled,
+        hasIdentityPoolId: providers.hasIdentityPoolId,
+        genericIamAccessEnabled: providers.genericIamAccessEnabled,
+      }),
     );
   }
   if (providers.hasUserPools) {
@@ -646,7 +651,12 @@ export const generateAuthExpressionForRelationQuery = (
   }
   if (providers.hasIAM) {
     totalAuthExpressions.push(
-      iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.hasIdentityPoolId, providers.genericIamAccessEnabled),
+      iamExpression({
+        roles: iamRoles,
+        adminRolesEnabled: providers.hasAdminRolesEnabled,
+        hasIdentityPoolId: providers.hasIdentityPoolId,
+        genericIamAccessEnabled: providers.genericIamAccessEnabled,
+      }),
     );
   }
   if (providers.hasUserPools) {

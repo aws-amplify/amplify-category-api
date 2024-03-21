@@ -171,7 +171,12 @@ export const generateAuthExpressionForSubscriptions = (providers: ConfiguredAuth
   }
   if (providers.hasIAM) {
     totalAuthExpressions.push(
-      iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.hasIdentityPoolId, providers.genericIamAccessEnabled),
+      iamExpression({
+        roles: iamRoles,
+        adminRolesEnabled: providers.hasAdminRolesEnabled,
+        hasIdentityPoolId: providers.hasIdentityPoolId,
+        genericIamAccessEnabled: providers.genericIamAccessEnabled,
+      }),
     );
   }
   if (providers.hasUserPools) {
