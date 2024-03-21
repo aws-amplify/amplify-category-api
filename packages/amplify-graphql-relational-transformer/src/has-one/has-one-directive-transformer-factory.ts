@@ -4,14 +4,17 @@ import { DataSourceBasedDirectiveTransformer } from '../data-source-based-direct
 import { HasOneDirectiveDDBFieldsTransformer } from './has-one-directive-ddb-fields-transformer';
 import { HasOneDirectiveSQLTransformer } from './has-one-directive-sql-transformer';
 
+const hasOneDirectiveMySqlTransformer = new HasOneDirectiveSQLTransformer()
+const hasOneDirectivePostgresTransformer = new HasOneDirectiveSQLTransformer()
+const hasOneDirectiveDdbFieldsTransformer = new HasOneDirectiveDDBFieldsTransformer()
+
 export const getHasOneDirectiveTransformer = (
   dbType: ModelDataSourceStrategyDbType,
+  // eslint-disable-next-line consistent-return
 ): DataSourceBasedDirectiveTransformer<HasOneDirectiveConfiguration> => {
   switch (dbType) {
-    case 'MYSQL':
-    case 'POSTGRES':
-      return new HasOneDirectiveSQLTransformer(dbType);
-    case 'DYNAMODB':
-      return new HasOneDirectiveDDBFieldsTransformer(dbType);
+    case 'MYSQL': return hasOneDirectiveMySqlTransformer;
+    case 'POSTGRES': return hasOneDirectivePostgresTransformer;
+    case 'DYNAMODB': return hasOneDirectiveDdbFieldsTransformer;
   }
 };

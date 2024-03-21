@@ -1,12 +1,13 @@
+import { DDB_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { BelongsToDirectiveConfiguration } from '../types';
-import { getRelatedTypeIndex, ensureFieldsArray, getFieldsNodes, registerHasOneForeignKeyMappings } from '../utils';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
 import { getGenerator } from '../resolver/generator-factory';
+import { BelongsToDirectiveConfiguration } from '../types';
+import { ensureFieldsArray, getFieldsNodes, getRelatedTypeIndex, registerHasOneForeignKeyMappings } from '../utils';
 
 /**
  * BelongsToDirectiveDDBFieldsTransformer executes transformations based on `@belongsTo(fields: [String!])` configurations
@@ -15,10 +16,7 @@ import { getGenerator } from '../resolver/generator-factory';
  * This should not be used for `@belongsTo(references: [String!])` definitions.
  */
 export class BelongsToDirectiveDDBFieldsTransformer implements DataSourceBasedDirectiveTransformer<BelongsToDirectiveConfiguration> {
-  dbType: 'DYNAMODB';
-  constructor(dbType: 'DYNAMODB') {
-    this.dbType = dbType;
-  }
+  dbType = DDB_DB_TYPE;
 
   prepare = (context: TransformerPrepareStepContextProvider, config: BelongsToDirectiveConfiguration): void => {
     if (config.relationType !== 'hasOne') {
