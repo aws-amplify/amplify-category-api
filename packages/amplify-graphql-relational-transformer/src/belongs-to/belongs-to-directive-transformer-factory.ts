@@ -8,7 +8,7 @@ import { BelongsToDirectiveDDBReferencesTransformer } from './belongs-to-directi
 export const getBelongsToDirectiveTransformer = (
   dbType: ModelDataSourceStrategyDbType,
   config: BelongsToDirectiveConfiguration,
-// eslint-disable-next-line consistent-return
+  // eslint-disable-next-line consistent-return
 ): DataSourceBasedDirectiveTransformer<BelongsToDirectiveConfiguration> => {
   switch (dbType) {
     case 'MYSQL':

@@ -8,7 +8,8 @@ import {
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   DynamoDBMappingTemplate,
-  Expression, and,
+  Expression,
+  and,
   bool,
   compoundExpression,
   equals,
@@ -28,12 +29,9 @@ import {
   ref,
   set,
   str,
-  toJson
+  toJson,
 } from 'graphql-mapping-template';
-import {
-  NONE_VALUE,
-  ResolverResourceIDs, setArgs
-} from 'graphql-transformer-common';
+import { NONE_VALUE, ResolverResourceIDs, setArgs } from 'graphql-transformer-common';
 import { condenseRangeKey } from '../resolvers';
 import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from '../types';
 import { DDBRelationalResolverGenerator } from './ddb-generator';
