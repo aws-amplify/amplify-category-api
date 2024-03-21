@@ -44,6 +44,6 @@ export class HasManyDirectiveDDBReferencesTransformer implements DataSourceBased
 
   validate = (context: TransformerContextProvider, config: HasManyDirectiveConfiguration): void => {
     ensureReferencesArray(config);
-    config.fieldNodes = getReferencesNodes(config, context);
+    config.referenceNodes = getReferencesNodes(config, context);
   };
 }
