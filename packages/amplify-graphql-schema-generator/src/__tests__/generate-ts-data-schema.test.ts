@@ -82,15 +82,15 @@ describe('Type name conversions', () => {
         subnetAvailabilityZoneConfig: [
           {
             subnetId: 'sb1',
-            availabilityZone: 'az1'
+            availabilityZone: 'az1',
           },
           {
             subnetId: 'sb2',
-            availabilityZone: 'az2'
+            availabilityZone: 'az2',
           },
           {
             subnetId: 'sb3',
-            availabilityZone: 'az3'
+            availabilityZone: 'az3',
           },
         ],
       },
@@ -116,7 +116,7 @@ describe('Type name conversions', () => {
         subnetAvailabilityZoneConfig: [
           {
             subnetId: 'sb1',
-            availabilityZone: 'az1'
+            availabilityZone: 'az1',
           },
         ],
       },

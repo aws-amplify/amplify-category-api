@@ -190,7 +190,7 @@ export const createImportExpression = (): ts.NodeArray<ts.ImportDeclaration> => 
         ts.factory.createImportSpecifier(
           false,
           undefined,
-          ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.INTERNALS_CONFIGURE_METHOD)
+          ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.INTERNALS_CONFIGURE_METHOD),
         ),
       ]),
     ),
@@ -205,7 +205,7 @@ export const createImportExpression = (): ts.NodeArray<ts.ImportDeclaration> => 
         ts.factory.createImportSpecifier(
           false,
           undefined,
-          ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.BACKEND_SECRET_METHOD)
+          ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.BACKEND_SECRET_METHOD),
         ),
       ]),
     ),
@@ -218,11 +218,7 @@ export const createImportExpression = (): ts.NodeArray<ts.ImportDeclaration> => 
     ' eslint-disable ',
     true,
   );
-  return ts.factory.createNodeArray([
-    importStatementWithEslintDisabled,
-    internalsConfigureImportStatement,
-    secretImportStatement,
-  ]);
+  return ts.factory.createNodeArray([importStatementWithEslintDisabled, internalsConfigureImportStatement, secretImportStatement]);
 };
 
 export const createConfigureExpression = (schema: Schema, config: DatasourceConfig): ts.Expression => {
@@ -236,11 +232,9 @@ export const createConfigureExpression = (schema: Schema, config: DatasourceConf
     ),
     ts.factory.createPropertyAssignment(
       ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.PROPERTY_CONNECTION_URI),
-      ts.factory.createCallExpression(
-        ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.BACKEND_SECRET_METHOD),
-        undefined,
-        [ts.factory.createStringLiteral(config.secretName)],
-      ),
+      ts.factory.createCallExpression(ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.BACKEND_SECRET_METHOD), undefined, [
+        ts.factory.createStringLiteral(config.secretName),
+      ]),
     ),
   ];
 
@@ -253,13 +247,15 @@ export const createConfigureExpression = (schema: Schema, config: DatasourceConf
     );
   }
 
-  
-  const dbConfig = ts.factory.createObjectLiteralExpression([
-    ts.factory.createPropertyAssignment(
-      ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.PROPERTY_DATABASE),
-      ts.factory.createObjectLiteralExpression(databaseConfig, true),
-    ),
-  ], true);
+  const dbConfig = ts.factory.createObjectLiteralExpression(
+    [
+      ts.factory.createPropertyAssignment(
+        ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.PROPERTY_DATABASE),
+        ts.factory.createObjectLiteralExpression(databaseConfig, true),
+      ),
+    ],
+    true,
+  );
   const configureExpr = ts.factory.createCallExpression(
     ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.INTERNALS_CONFIGURE_METHOD}`),
     undefined,
@@ -289,32 +285,34 @@ const createVpcConfigExpression = (vpc: VpcConfig): ts.Expression => {
     ts.factory.createArrayLiteralExpression(
       vpc.securityGroupIds.map((sg) => ts.factory.createStringLiteral(sg)),
       true,
-    )
+    ),
   );
   const subnetAvailabilityZoneExpression = ts.factory.createPropertyAssignment(
     ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.PROPERTY_AZ_CONFIG),
     ts.factory.createArrayLiteralExpression(
       vpc.subnetAvailabilityZoneConfig.map((az) => {
-        return ts.factory.createObjectLiteralExpression([
-          ts.factory.createPropertyAssignment(
-            ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.PROPERTY_SUBNET_ID),
-            ts.factory.createStringLiteral(az.subnetId),
-          ),
-          ts.factory.createPropertyAssignment(
-            ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.PROPERTY_AZ),
-            ts.factory.createStringLiteral(az.availabilityZone),
-          ),
-        ], true);
+        return ts.factory.createObjectLiteralExpression(
+          [
+            ts.factory.createPropertyAssignment(
+              ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.PROPERTY_SUBNET_ID),
+              ts.factory.createStringLiteral(az.subnetId),
+            ),
+            ts.factory.createPropertyAssignment(
+              ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.PROPERTY_AZ),
+              ts.factory.createStringLiteral(az.availabilityZone),
+            ),
+          ],
+          true,
+        );
       }),
       true,
     ),
   );
 
-  const vpcConfig = ts.factory.createObjectLiteralExpression([
-    vpcIdExpression,
-    securityGroupIdsExpression,
-    subnetAvailabilityZoneExpression,
-  ], true);
+  const vpcConfig = ts.factory.createObjectLiteralExpression(
+    [vpcIdExpression, securityGroupIdsExpression, subnetAvailabilityZoneExpression],
+    true,
+  );
 
   return vpcConfig;
 };
