@@ -49,6 +49,143 @@ test('has many query', () => {
   expect(out.resolvers['Member.team.req.vtl']).toMatchSnapshot();
 });
 
+test('fails if indexName is provided with references', () => {
+  const inputSchema = `
+    type Team @model {
+      id: ID!
+      name: String!
+      members: [Member] @hasMany(indexName: "foo", references: ["teamID"])
+    }
+    type Member @model {
+      id: ID!
+      teamID: ID! @index(name: "foo")
+      team: Team @belongsTo(references: ["teamID"])
+    }`;
+
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError('Invalid @hasMany directive on Team.members - indexName is not supported with DDB references.');
+});
+
+test('fails if property does not exist on related type with references', () => {
+  const inputSchema = `
+    type Team @model {
+      id: ID!
+      name: String!
+      members: [Member] @hasMany(references: ["teamID"])
+    }
+    type Member @model {
+      id: ID!
+      team: Team @belongsTo(references: ["teamID"])
+    }`;
+
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError('teamID is not a field in Member');
+});
+
+test('fails if an empty list of references is passed in', () => {
+  const inputSchema = `
+    type Team @model {
+      id: ID!
+      name: String!
+      members: [Member] @hasMany(references: [])
+    }
+    type Member @model {
+      id: ID!
+      team: Team @belongsTo(references: [])
+    }`;
+
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError('Invalid @hasMany directive on members - empty references list');
+});
+
+test('fails if related type does not exist', () => {
+  const inputSchema = `
+    type Team @model {
+      id: ID!
+      name: String!
+      members: [Foo] @hasMany(references: ["teamID"])
+    }
+    type Member @model {
+      id: ID!
+      teamID: String
+      team: Team @belongsTo(references: ["teamID"])
+    }`;
+
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError(); // TODO: 'Unknown type "Foo". Did you mean "Member"?'
+});
+
+test('fails if hasMany related type is not an array', () => {
+  const inputSchema = `
+    type Team @model {
+      id: ID!
+      name: String!
+      members: Member @hasMany(references: ["teamID"])
+    }
+    type Member @model {
+      id: ID!
+      teamID: String
+      team: Team @belongsTo(references: ["teamID"])
+    }`;
+
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError(); // TODO: Error message
+});
+
+/*
+    type Team @model {
+      id: ID!
+      name: String!
+      members: Member @hasMany(references: ["teamID"])
+    }
+    type Member @model {
+      id: ID!
+      teamID: String
+      team: Team @belongsTo(fields: ["teamID"])
+    }`
+ */
+
+test('fails if uni-directional hasMany', () => {
+  const inputSchema = `
+    type Team @model {
+      id: ID!
+      name: String!
+      members: [Member] @hasMany(references: ["teamID"])
+    }
+    type Member @model {
+      id: ID!
+      teamID: String
+      team: Team
+    }`;
+
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError('foo'); // TODO: This should fail -- find appropriate place to validate.
+});
+
 test('many to many query', () => {
   const inputSchema = `
       type Post @model {
