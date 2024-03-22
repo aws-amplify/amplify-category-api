@@ -5,10 +5,10 @@ import { HasManyDirectiveDDBFieldsTransformer } from './has-many-directive-ddb-f
 import { HasManyDirectiveSQLTransformer } from './has-many-directive-sql-transformer';
 import { HasManyDirectiveDDBReferencesTransformer } from './has-many-directive-ddb-references-transformer';
 
-const hasManyDirectiveMySqlTransformer = new HasManyDirectiveSQLTransformer()
-const hasManyDirectivePostgresTransformer = new HasManyDirectiveSQLTransformer()
-const hasManyDirectiveDdbFieldsTransformer = new HasManyDirectiveDDBFieldsTransformer()
-const hasManyDirectiveDdbReferencesTransformer = new HasManyDirectiveDDBReferencesTransformer()
+const hasManyDirectiveMySqlTransformer = new HasManyDirectiveSQLTransformer();
+const hasManyDirectivePostgresTransformer = new HasManyDirectiveSQLTransformer();
+const hasManyDirectiveDdbFieldsTransformer = new HasManyDirectiveDDBFieldsTransformer();
+const hasManyDirectiveDdbReferencesTransformer = new HasManyDirectiveDDBReferencesTransformer();
 
 export const getHasManyDirectiveTransformer = (
   dbType: ModelDataSourceStrategyDbType,
@@ -16,8 +16,10 @@ export const getHasManyDirectiveTransformer = (
   // eslint-disable-next-line consistent-return
 ): DataSourceBasedDirectiveTransformer<HasManyDirectiveConfiguration> => {
   switch (dbType) {
-    case 'MYSQL': return hasManyDirectiveMySqlTransformer;
-    case 'POSTGRES': return hasManyDirectivePostgresTransformer;
+    case 'MYSQL':
+      return hasManyDirectiveMySqlTransformer;
+    case 'POSTGRES':
+      return hasManyDirectivePostgresTransformer;
     case 'DYNAMODB':
       // If references are passed to the directive, we'll use the references relational
       // modeling approach.
