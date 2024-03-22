@@ -60,11 +60,9 @@ export const updateTableForReferencesConnection = (
   // TODO: Validate types of related field and primary's pk match
   // -- ideally further up the chain
   const partitionKeyType = attributeTypeFromType(referenceNode.type, ctx);
-  const respectPrimaryKeyAttributesOnConnectionField: boolean = ctx.transformParameters.respectPrimaryKeyAttributesOnConnectionField;
 
-  const sortKey = respectPrimaryKeyAttributesOnConnectionField
-    ? getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject(ctx, object, field, referenceNodes.slice(1))
-    : undefined;
+  // TODO: Add support for sortKey in GSI
+  const sortKey = undefined;
 
   addGlobalSecondaryIndex(relatedTable, {
     indexName: indexName,
@@ -110,8 +108,9 @@ export const updateTableForConnection = (config: HasManyDirectiveConfiguration, 
     ? attributeTypeFromType(getObjectPrimaryKey(object).type, ctx)
     : 'S';
 
-  // TODO: Add support for sortKey in GSI
-  const sortKey = undefined;
+  const sortKey = respectPrimaryKeyAttributesOnConnectionField
+    ? getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject(ctx, object, field, getSortKeyFields(ctx, object))
+    : undefined;
 
   addGlobalSecondaryIndex(table, {
     indexName: indexName,

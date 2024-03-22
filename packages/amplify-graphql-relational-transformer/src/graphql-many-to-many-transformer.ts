@@ -65,7 +65,7 @@ import {
   getSortKeyFieldsNoContext,
 } from './schema';
 import { HasOneTransformer } from './graphql-has-one-transformer';
-import { DDBFieldsRelationalResolverGenerator } from './resolver/ddb-fields-generator';
+import { DDBRelationalResolverGenerator } from './resolver/ddb-generator';
 
 const directiveName = 'manyToMany';
 const defaultLimit = 100;
@@ -518,7 +518,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       updateTableForConnection(config, context);
-      new DDBFieldsRelationalResolverGenerator().makeHasManyGetItemsConnectionWithKeyResolver(config, context);
+      new DDBRelationalResolverGenerator().makeHasManyGetItemsConnectionWithKeyResolver(config, context);
     }
   };
 }
@@ -543,6 +543,7 @@ const addJoinTableToDatasourceStrategies = (ctx: DataSourceStrategiesProvider, m
   ctx.dataSourceStrategies[relationName] = parentStrategy;
 };
 
+// eslint-disable-next-line func-style, prefer-arrow/prefer-arrow-functions
 function addDirectiveToRelationMap(map: Map<string, ManyToManyRelation>, directive: ManyToManyDirectiveConfiguration): void {
   const { relationName } = directive;
   const gqlName = getGraphqlRelationName(relationName);
@@ -563,10 +564,12 @@ function addDirectiveToRelationMap(map: Map<string, ManyToManyRelation>, directi
   relation.directive2 = directive;
 }
 
+// eslint-disable-next-line func-style, prefer-arrow/prefer-arrow-functions
 function getGraphqlRelationName(name: string): string {
   return graphqlName(toUpper(name));
 }
 
+// eslint-disable-next-line func-style, prefer-arrow/prefer-arrow-functions, @typescript-eslint/explicit-function-return-type
 function createJoinTableAuthDirective(
   table1: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
   table2: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
@@ -581,5 +584,6 @@ function createJoinTableAuthDirective(
     return;
   }
 
+  // eslint-disable-next-line consistent-return
   return makeDirective('auth', [makeArgument('rules', { kind: Kind.LIST, values: rules })]);
 }
