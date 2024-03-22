@@ -1,24 +1,21 @@
+import { MYSQL_DB_TYPE, POSTGRES_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 import {
-  ModelDataSourceStrategySqlDbType,
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { setFieldMappingResolverReference } from '../resolvers';
-import { BelongsToDirectiveConfiguration } from '../types';
-import { ensureReferencesArray, validateChildReferencesFields, getBelongsToReferencesNodes } from '../utils';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
 import { getGenerator } from '../resolver/generator-factory';
+import { setFieldMappingResolverReference } from '../resolvers';
+import { BelongsToDirectiveConfiguration } from '../types';
+import { ensureReferencesArray, getBelongsToReferencesNodes, validateChildReferencesFields } from '../utils';
 
 /**
  * BelongsToDirectiveSQLTransformer executes transformations based on `@belongsTo(references: [String!])` configurations
  * and surrounding TransformerContextProviders for SQL data sources.
  */
 export class BelongsToDirectiveSQLTransformer implements DataSourceBasedDirectiveTransformer<BelongsToDirectiveConfiguration> {
-  dbType: ModelDataSourceStrategySqlDbType;
-  constructor(dbType: ModelDataSourceStrategySqlDbType) {
-    this.dbType = dbType;
-  }
+  dbType = POSTGRES_DB_TYPE || MYSQL_DB_TYPE;
 
   prepare = (context: TransformerPrepareStepContextProvider, config: BelongsToDirectiveConfiguration): void => {
     const modelName = config.object.name.value;
