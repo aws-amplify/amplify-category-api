@@ -28,7 +28,9 @@ export const updateTableForReferencesConnection = (
   const mappedObjectName = ctx.resourceHelper.getModelNameMapping(object.name.value);
 
   if (incomingIndexName) {
-    throw new Error(`Invalid @hasMany directive on ${mappedObjectName}.${field.name.value} - indexName is not supported with DDB references.`);
+    throw new Error(
+      `Invalid @hasMany directive on ${mappedObjectName}.${field.name.value} - indexName is not supported with DDB references.`,
+    );
   }
 
   if (references.length < 1 || referenceNodes.length < 1) {
