@@ -5,10 +5,10 @@ import { BelongsToDirectiveSQLTransformer } from './belongs-to-directive-sql-tra
 import { BelongsToDirectiveDDBFieldsTransformer } from './belongs-to-directive-ddb-fields-transformer';
 import { BelongsToDirectiveDDBReferencesTransformer } from './belongs-to-directive-ddb-references-transformer';
 
-const belongsToDirectiveMySqlTransformer = new BelongsToDirectiveSQLTransformer()
-const belongsToDirectivePostgresTransformer = new BelongsToDirectiveSQLTransformer()
-const belongsToDirectiveDdbFieldsTransformer = new BelongsToDirectiveDDBFieldsTransformer()
-const belongsToDirectiveDdbReferencesTransformer = new BelongsToDirectiveDDBReferencesTransformer()
+const belongsToDirectiveMySqlTransformer = new BelongsToDirectiveSQLTransformer();
+const belongsToDirectivePostgresTransformer = new BelongsToDirectiveSQLTransformer();
+const belongsToDirectiveDdbFieldsTransformer = new BelongsToDirectiveDDBFieldsTransformer();
+const belongsToDirectiveDdbReferencesTransformer = new BelongsToDirectiveDDBReferencesTransformer();
 
 export const getBelongsToDirectiveTransformer = (
   dbType: ModelDataSourceStrategyDbType,
@@ -16,8 +16,10 @@ export const getBelongsToDirectiveTransformer = (
   // eslint-disable-next-line consistent-return
 ): DataSourceBasedDirectiveTransformer<BelongsToDirectiveConfiguration> => {
   switch (dbType) {
-    case 'MYSQL': return belongsToDirectiveMySqlTransformer;
-    case 'POSTGRES': return belongsToDirectivePostgresTransformer;
+    case 'MYSQL':
+      return belongsToDirectiveMySqlTransformer;
+    case 'POSTGRES':
+      return belongsToDirectivePostgresTransformer;
     case 'DYNAMODB':
       // If `references` are passed to the directive, we'll use the references relational
       // modeling approach.
