@@ -75,6 +75,40 @@ export const schema = a.schema({
 "
 `;
 
+exports[`Type name conversions postgres schema with database config secret and vpc should generate typescript data schema with configure 1`] = `
+"/* eslint-disable */
+import { a } from \\"@aws-amplify/data-schema\\";
+import { configure } from \\"@aws-amplify/data-schema/internals\\";
+import { secret } from \\"@aws-amplify/backend\\";
+
+export const schema = configure({
+    database: {
+        engine: \\"postgresql\\",
+        connectionUri: secret(\\"CONN_STR\\"),
+        vpc: {
+            vpcId: \\"123\\",
+            securityGroupIds: [
+                \\"sb1\\"
+            ],
+            subnetAvailabilityZoneConfig: [
+                {
+                    subnetId: \\"sb1\\",
+                    availabilityZone: \\"az1\\"
+                }
+            ]
+        }
+    }
+}).schema({
+    \\"User\\": a.model({
+        id: a.string().required(),
+        name: a.string()
+    }).identifier([
+        \\"id\\"
+    ])
+});
+"
+`;
+
 exports[`Type name conversions schema with database config secret and vpc should generate typescript data schema with configure 1`] = `
 "/* eslint-disable */
 import { a } from \\"@aws-amplify/data-schema\\";

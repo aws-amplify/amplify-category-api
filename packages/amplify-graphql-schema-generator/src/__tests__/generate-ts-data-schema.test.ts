@@ -100,6 +100,32 @@ describe('Type name conversions', () => {
     expect(graphqlSchema).toMatchSnapshot();
   });
 
+  it('postgres schema with database config secret and vpc should generate typescript data schema with configure', () => {
+    const dbschema = new Schema(new Engine('Postgres'));
+    const model = new Model('User');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
+    model.setPrimaryKey(['id']);
+    dbschema.addModel(model);
+
+    const config: DatasourceConfig = {
+      secretName: 'CONN_STR',
+      vpcConfig: {
+        vpcId: '123',
+        securityGroupIds: ['sb1'],
+        subnetAvailabilityZoneConfig: [
+          {
+            subnetId: 'sb1',
+            availabilityZone: 'az1'
+          },
+        ],
+      },
+    };
+
+    const graphqlSchema = generateTypescriptDataSchema(dbschema, config);
+    expect(graphqlSchema).toMatchSnapshot();
+  });
+
   it('schema with database config without vpc should generate typescript data schema with configure', () => {
     const dbschema = new Schema(new Engine('MySQL'));
     let model = new Model('User');

@@ -12,7 +12,6 @@ export type TypescriptDataSchemaGeneratorConfig = {
   username: string;
   password: string;
   connectionUriSecretName: string;
-  region?: string;
   outputFile?: string;
 };
 
@@ -22,7 +21,7 @@ export class TypescriptDataSchemaGenerator {
     const schema = await TypescriptDataSchemaGenerator.buildSchema(config);
     return generateTypescriptDataSchema(schema, {
       secretName: config.connectionUriSecretName,
-      vpcConfig: config.region ? await getHostVpc(config.host, config.region) : undefined,
+      vpcConfig: await getHostVpc(config.host),
     });
   };
 
