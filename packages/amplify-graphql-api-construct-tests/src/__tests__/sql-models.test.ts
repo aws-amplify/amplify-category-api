@@ -3,14 +3,13 @@ import * as fs from 'fs-extra';
 import {
   createNewProjectDir,
   deleteDBInstance,
-  deleteDbConnectionConfig,
+  deleteSSMParameters,
   deleteProjectDir,
   extractVpcConfigFromDbInstance,
   setupRDSInstanceAndData,
-  storeDbConnectionConfig,
+  storeSSMParameters,
   storeDbConnectionConfigWithSecretsManager,
   deleteDbConnectionConfigWithSecretsManager,
-  deleteDbConnectionStringConfig,
 } from 'amplify-category-api-e2e-core';
 import { LambdaClient, GetProvisionedConcurrencyConfigCommand } from '@aws-sdk/client-lambda';
 import generator from 'generate-password';
@@ -45,7 +44,7 @@ interface DBDetails {
   };
 }
 
-describe('CDK GraphQL Transformer', () => {
+describe('CDK GraphQL Transformer deployments with SQL datasources', () => {
   let projRoot: string;
   const projFolderName = 'sqlmodelsssm';
 
@@ -103,6 +102,10 @@ describe('CDK GraphQL Transformer', () => {
 
   test('creates a GraphQL API from SQL-based models with SSM Credential Store', async () => {
     await testGraphQLAPI('ssm');
+  });
+
+  test('creates a GraphQL API from SQL-based models using Connection String SSM parameter', async () => {
+    await testGraphQLAPI('connectionUri');
   });
 
   const testGraphQLAPI = async (connectionConfigName: string): Promise<void> => {
@@ -242,19 +245,26 @@ const setupDatabase = async (options: {
   };
   console.log(`Stored db connection config in Secrets manager: ${JSON.stringify(dbConnectionConfigSecretsManagerCustomKey)}`);
 
-  const dbConnectionConfigSSM = await storeDbConnectionConfig({
+  const dbConnectionConfigSSM = {
+    hostnameSsmPath: dbConfig.endpoint,
+    portSsmPath: dbConfig.port.toString(),
+    usernameSsmPath: username,
+    passwordSsmPath: dbConfig.password,
+    databaseNameSsmPath: dbname,
+  };
+  const dbConnectionStringConfigSSM = {
+    connectionUriSsmPath: `mysql://${username}:${dbConfig.password}@${dbConfig.endpoint}:${dbConfig.port}/${dbname}`,
+  };
+  const parameters = {
+    ...dbConnectionConfigSSM,
+    ...dbConnectionStringConfigSSM,
+  };
+  await storeSSMParameters({
     region,
     pathPrefix: `/${identifier}/test`,
-    hostname: dbConfig.endpoint,
-    port: dbConfig.port,
-    databaseName: dbname,
-    username,
-    password: dbConfig.password,
+    parameters,
   });
-  if (!dbConnectionConfigSSM) {
-    throw new Error('Failed to store db connection config for SSM');
-  }
-  console.log(`Stored db connection config in SSM: ${JSON.stringify(dbConnectionConfigSSM)}`);
+  console.log(`Stored db connection config in SSM: ${JSON.stringify(Object.keys(parameters))}`);
 
   return {
     dbConfig: {
@@ -266,6 +276,9 @@ const setupDatabase = async (options: {
     connectionConfigs: {
       ssm: dbConnectionConfigSSM,
       secretsManager: dbConnectionConfigSecretsManager,
+      connectionUri: {
+        connectionUriSsmPath: dbConnectionStringConfigSSM.connectionUriSsmPath,
+      },
       secretsManagerCustomKey: dbConnectionConfigSecretsManagerCustomKey,
       secretsManagerManagedSecret: {
         databaseName: dbname,
@@ -291,18 +304,20 @@ const cleanupDatabase = async (options: { identifier: string; region: string; db
           secretArn: dbConnectionConfig.secretArn,
         });
       } else if (isSqlModelDataSourceSsmDbConnectionConfig(dbConnectionConfig)) {
-        return deleteDbConnectionConfig({
+        return deleteSSMParameters({
           region,
-          hostnameSsmPath: dbConnectionConfig.hostnameSsmPath,
-          portSsmPath: dbConnectionConfig.portSsmPath,
-          usernameSsmPath: dbConnectionConfig.usernameSsmPath,
-          passwordSsmPath: dbConnectionConfig.passwordSsmPath,
-          databaseNameSsmPath: dbConnectionConfig.databaseNameSsmPath,
+          parameterNames: [
+            dbConnectionConfig.hostnameSsmPath,
+            dbConnectionConfig.portSsmPath,
+            dbConnectionConfig.usernameSsmPath,
+            dbConnectionConfig.passwordSsmPath,
+            dbConnectionConfig.databaseNameSsmPath,
+          ],
         });
       } else if (isSqlModelDataSourceSsmDbConnectionStringConfig(dbConnectionConfig)) {
-        return deleteDbConnectionStringConfig({
+        return deleteSSMParameters({
           region,
-          connectionUriSsmPath: dbConnectionConfig.connectionUriSsmPath,
+          parameterNames: [dbConnectionConfig.connectionUriSsmPath],
         });
       }
     }),
