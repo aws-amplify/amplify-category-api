@@ -68,6 +68,22 @@ describe('ecs stack', () => {
 
     const cfn = ecsStack.toCloudFormation();
     expect(cfn).toBeDefined();
+    const ecsDeployRolePolicy = findResourceWithPrefix(cfn, 'EcsDeployActionRoleDefaultPolicy');
+    expect(ecsDeployRolePolicy).toBeDefined();
+    expect(ecsDeployRolePolicy.Properties.PolicyDocument.Statement).toHaveLength(4);
+    expect(ecsDeployRolePolicy.Properties.PolicyDocument.Statement[0]).toMatchObject({
+      Action: 'ecs:TagResource',
+      Effect: 'Allow',
+      Resource: '*',
+    });
     expect(cfn).toMatchSnapshot();
   });
+
+  const findResourceWithPrefix = (cfn: any, prefix: string) => {
+    for (const key in cfn.Resources) {
+      if (key.startsWith(prefix)) {
+        return cfn.Resources[key];
+      }
+    }
+  };
 });
