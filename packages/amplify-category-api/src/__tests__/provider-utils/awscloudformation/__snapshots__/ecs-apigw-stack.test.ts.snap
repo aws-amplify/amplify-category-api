@@ -670,7 +670,7 @@ Object {
                 "Name": "Deploy",
                 "RoleArn": Object {
                   "Fn::GetAtt": Array [
-                    "ApiPipelinePipelineDeployCodePipelineActionRoleEA4B81BD",
+                    "EcsDeployActionRole15B757E5",
                     "Arn",
                   ],
                 },
@@ -750,126 +750,6 @@ Object {
         ],
       },
       "Type": "AWS::IAM::Policy",
-    },
-    "ApiPipelinePipelineDeployCodePipelineActionRoleDefaultPolicyB03FE2A4": Object {
-      "DependsOn": Array [
-        "Service",
-      ],
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
-                "ecs:DescribeServices",
-                "ecs:DescribeTaskDefinition",
-                "ecs:DescribeTasks",
-                "ecs:ListTasks",
-                "ecs:RegisterTaskDefinition",
-                "ecs:UpdateService",
-              ],
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-            Object {
-              "Action": "iam:PassRole",
-              "Condition": Object {
-                "StringEqualsIfExists": Object {
-                  "iam:PassedToService": Array [
-                    "ec2.amazonaws.com",
-                    "ecs-tasks.amazonaws.com",
-                  ],
-                },
-              },
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-            Object {
-              "Action": Array [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
-              ],
-              "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":s3:::",
-                      Object {
-                        "Ref": "deploymentBucketName",
-                      },
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":s3:::",
-                      Object {
-                        "Ref": "deploymentBucketName",
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "ApiPipelinePipelineDeployCodePipelineActionRoleDefaultPolicyB03FE2A4",
-        "Roles": Array [
-          Object {
-            "Ref": "ApiPipelinePipelineDeployCodePipelineActionRoleEA4B81BD",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "ApiPipelinePipelineDeployCodePipelineActionRoleEA4B81BD": Object {
-      "DependsOn": Array [
-        "Service",
-      ],
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": Object {
-                "AWS": Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":iam::",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":root",
-                    ],
-                  ],
-                },
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-      },
-      "Type": "AWS::IAM::Role",
     },
     "ApiPipelinePipelinePredeployCodePipelineActionRole387C06F4": Object {
       "DependsOn": Array [
@@ -1066,7 +946,7 @@ Object {
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::GetAtt": Array [
-                  "ApiPipelinePipelineDeployCodePipelineActionRoleEA4B81BD",
+                  "EcsDeployActionRole15B757E5",
                   "Arn",
                 ],
               },
@@ -2177,6 +2057,125 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
       },
       "Type": "AWS::CloudFormation::CustomResource",
       "UpdateReplacePolicy": "Delete",
+    },
+    "EcsDeployActionRole15B757E5": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":root",
+                    ],
+                  ],
+                },
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "EcsDeployActionRoleDefaultPolicy0BE60A75": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "ecs:TagResource",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "ecs:DescribeServices",
+                "ecs:DescribeTaskDefinition",
+                "ecs:DescribeTasks",
+                "ecs:ListTasks",
+                "ecs:RegisterTaskDefinition",
+                "ecs:UpdateService",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": "iam:PassRole",
+              "Condition": Object {
+                "StringEqualsIfExists": Object {
+                  "iam:PassedToService": Array [
+                    "ec2.amazonaws.com",
+                    "ecs-tasks.amazonaws.com",
+                  ],
+                },
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":s3:::",
+                      Object {
+                        "Ref": "deploymentBucketName",
+                      },
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":s3:::",
+                      Object {
+                        "Ref": "deploymentBucketName",
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "EcsDeployActionRoleDefaultPolicy0BE60A75",
+        "Roles": Array [
+          Object {
+            "Ref": "EcsDeployActionRole15B757E5",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "OptionsRoute": Object {
       "Properties": Object {
