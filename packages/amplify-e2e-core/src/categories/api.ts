@@ -919,7 +919,7 @@ export function addApiWithCognitoUserPoolAuthTypeWhenAuthExists(
 export function addRestContainerApi(projectDir: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
   const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api', '--debug'], { cwd: projectDir, stripColors: true })
+    spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })
       .wait('Select from one of the below mentioned services:')
       .sendKeyDown()
       .sendCarriageReturn()
