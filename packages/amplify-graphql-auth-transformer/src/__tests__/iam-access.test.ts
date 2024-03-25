@@ -9,8 +9,8 @@ const IAM_ACCESS_CHECK_DDB = '#if( $util.isNull($ctx.identity.cognitoIdentityPoo
 const IAM_ACCESS_CHECK_RDS =
   '#if( $util.authType() == "IAM Authorization" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )';
 const IAM_ACCESS_CHECK_POST_AUTH =
-  '#if( !($util.authType() == "IAM Authorization" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId)) )';
-const API_KEY_ACCESS_CHECK_POST_AUTH = '#if( $util.authType() != "API Key Authorization" )';
+  '#if( $util.authType() == "IAM Authorization" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )';
+const API_KEY_ACCESS_CHECK_POST_AUTH = '#if( $util.authType() == "API Key Authorization" )';
 
 describe('ddb', () => {
   test('simple model with apiKey and iam access', () => {

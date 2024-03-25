@@ -18,12 +18,10 @@ import {
   raw,
   forEach,
   qref,
-  notEquals,
   obj,
   list,
   or,
-  and,
-  parens,
+  ret,
 } from 'graphql-mapping-template';
 import {
   RoleDefinition,
@@ -217,12 +215,13 @@ export const setDeniedFieldFlag = (operation: string, subscriptionsEnabled: bool
  * Generates sandbox expression for field
  */
 export const generateSandboxExpressionForField = (sandboxEnabled: boolean, genericIamAccessEnabled: boolean): string => {
-  let exp: Expression = methodCall(ref('util.unauthorized'));
+  const expressions: Array<Expression> = [];
   if (sandboxEnabled) {
-    exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY_AUTH_TYPE)), exp);
+    expressions.push(iff(equals(methodCall(ref('util.authType')), str(API_KEY_AUTH_TYPE)), ret(toJson(obj({})))));
   }
   if (genericIamAccessEnabled) {
-    exp = iff(not(parens(isNonCognitoIAMPrincipal)), exp);
+    expressions.push(iff(isNonCognitoIAMPrincipal, ret(toJson(obj({})))));
   }
-  return printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(compoundExpression([exp, toJson(obj({}))]));
+  expressions.push(methodCall(ref('util.unauthorized')));
+  return printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(compoundExpression(expressions));
 };

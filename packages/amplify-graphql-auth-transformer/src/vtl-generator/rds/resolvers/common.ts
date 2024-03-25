@@ -10,7 +10,6 @@ import {
   list,
   methodCall,
   not,
-  notEquals,
   nul,
   obj,
   or,
@@ -22,6 +21,7 @@ import {
   set,
   str,
   toJson,
+  ret,
 } from 'graphql-mapping-template';
 import { FieldDefinitionNode } from 'graphql';
 import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
@@ -213,14 +213,15 @@ export const constructAuthorizedInputStatement = (keyName: string): Expression =
  * Generates sandbox expression for field
  */
 export const generateSandboxExpressionForField = (sandboxEnabled: boolean, genericIamAccessEnabled: boolean): string => {
-  let exp: Expression = methodCall(ref('util.unauthorized'));
+  const expressions: Array<Expression> = [];
   if (sandboxEnabled) {
-    exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY_AUTH_TYPE)), exp);
+    expressions.push(iff(equals(methodCall(ref('util.authType')), str(API_KEY_AUTH_TYPE)), ret(toJson(obj({})))));
   }
   if (genericIamAccessEnabled) {
-    exp = iff(not(parens(isNonCognitoIAMPrincipal)), exp);
+    expressions.push(iff(isNonCognitoIAMPrincipal, ret(toJson(obj({})))));
   }
-  return printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(compoundExpression([exp, toJson(obj({}))]));
+  expressions.push(methodCall(ref('util.unauthorized')));
+  return printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(compoundExpression(expressions));
 };
 
 export const emptyPayload = toJson(raw(JSON.stringify({ version: '2018-05-29', payload: {} })));

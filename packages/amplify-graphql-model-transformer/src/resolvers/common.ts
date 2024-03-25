@@ -1,7 +1,6 @@
 import {
   iff,
   ref,
-  notEquals,
   methodCall,
   compoundExpression,
   obj,
@@ -11,11 +10,8 @@ import {
   not,
   Expression,
   and,
-  ifElse,
-  set,
-  bool,
   equals,
-  parens,
+  ret,
 } from 'graphql-mapping-template';
 
 const API_KEY = 'API Key Authorization';
@@ -27,23 +23,22 @@ export const generateAuthExpressionForSandboxMode = (
   isSandboxModeEnabled: boolean,
   genericIamAccessEnabled: boolean | undefined,
 ): string => {
-  let exp: Expression = methodCall(ref('util.unauthorized'));
-
+  const expressions: Array<Expression> = [];
   if (isSandboxModeEnabled) {
-    exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY)), exp);
+    expressions.push(iff(equals(methodCall(ref('util.authType')), str(API_KEY)), ret(toJson(obj({})))));
   }
-
   if (genericIamAccessEnabled) {
     const isNonCognitoIAMPrincipal = and([
       equals(ref('util.authType()'), str(IAM_AUTH_TYPE)),
       methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityPoolId')),
       methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityId')),
     ]);
-    exp = iff(not(parens(isNonCognitoIAMPrincipal)), exp);
+    expressions.push(iff(isNonCognitoIAMPrincipal, ret(toJson(obj({})))));
   }
+  expressions.push(methodCall(ref('util.unauthorized')));
 
   return printBlock(`Sandbox Mode ${isSandboxModeEnabled ? 'Enabled' : 'Disabled'}`)(
-    compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), exp), toJson(obj({}))]),
+    compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), compoundExpression(expressions)), toJson(obj({}))]),
   );
 };
 
