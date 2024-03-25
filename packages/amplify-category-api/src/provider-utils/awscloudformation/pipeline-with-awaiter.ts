@@ -192,6 +192,43 @@ export class PipelineWithAwaiter extends Construct {
       } as Record<string, codebuild.BuildEnvironmentVariable>,
     );
 
+    const ecsDeployActionRole = new iam.Role(scope, 'EcsDeployActionRole', {
+      assumedBy: new iam.AccountRootPrincipal(),
+    });
+    ecsDeployActionRole.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ['ecs:TagResource'],
+        effect: iam.Effect.ALLOW,
+        resources: ['*'],
+      }),
+    );
+
+    const ecsDeployAction = new codepipelineactions.EcsDeployAction({
+      actionName: 'Deploy',
+      service: new (class extends Construct implements ecs.IBaseService {
+        cluster = {
+          clusterName: service.cluster,
+          env: {},
+        } as ecs.ICluster;
+
+        serviceArn = cdk.Fn.ref(service.attrServiceArn);
+
+        serviceName = service.serviceName;
+
+        stack = cdk.Stack.of(this);
+
+        env = {} as any;
+
+        node = service.node;
+
+        public applyRemovalPolicy(policy: cdk.RemovalPolicy): void {
+          // TODO: This is added for CDK upgrade. Modify the behavior if required.
+        }
+      })(this, 'tmpService'),
+      input: buildOutput,
+      role: ecsDeployActionRole,
+    });
+
     const stagesWithDeploy = ([] as codepipeline.StageOptions[]).concat(prebuildStages, [
       {
         stageName: 'Build',
@@ -244,32 +281,7 @@ export class PipelineWithAwaiter extends Construct {
       },
       {
         stageName: 'Deploy',
-        actions: [
-          new codepipelineactions.EcsDeployAction({
-            actionName: 'Deploy',
-            service: new (class extends Construct implements ecs.IBaseService {
-              cluster = {
-                clusterName: service.cluster,
-                env: {},
-              } as ecs.ICluster;
-
-              serviceArn = cdk.Fn.ref(service.attrServiceArn);
-
-              serviceName = service.serviceName;
-
-              stack = cdk.Stack.of(this);
-
-              env = {} as any;
-
-              node = service.node;
-
-              public applyRemovalPolicy(policy: cdk.RemovalPolicy): void {
-                // TODO: This is added for CDK upgrade. Modify the behavior if required.
-              }
-            })(this, 'tmpService'),
-            input: buildOutput,
-          }),
-        ],
+        actions: [ecsDeployAction],
       },
     ]);
 
