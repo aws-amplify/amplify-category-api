@@ -37,6 +37,12 @@ const api = new AmplifyGraphqlApi(stack, 'DDBBoundApi', {
       id: ID!
       description: String!
     }
+
+    type TodoWithPrivateField @model @auth(rules: [{ allow: public, provider: iam }, { allow: private, provider: iam }]) {
+      id: ID!
+      description: String!
+      secret: String @auth(rules: [{ allow: private, provider: iam }])
+    }
   `),
   authorizationModes: {
     iamConfig: { enableIamAuthorizationMode },

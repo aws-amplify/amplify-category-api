@@ -13,7 +13,10 @@ export class CRUDLTester {
     private readonly fields: Array<string>,
   ) {}
 
-  testCanExecuteCRUDLOperations = async (): Promise<void> => {
+  /**
+   * Returns id of created item.
+   */
+  testCanExecuteCreate = async (): Promise<string> => {
     const createResponse = (await this.appsyncClient.mutate({
       mutation: gql`
           mutation {
@@ -24,7 +27,13 @@ export class CRUDLTester {
         `,
       fetchPolicy: 'no-cache',
     })) as any;
+    const id = createResponse.data[`create${this.modelName}`].id;
     expect(createResponse.data[`create${this.modelName}`].id).toBeTruthy();
+    return id;
+  };
+
+  testCanExecuteCRUDLOperations = async (options?: { skipDelete: boolean }): Promise<void> => {
+    const sampleItemId = await this.testCanExecuteCreate();
 
     const listResponse = (await this.appsyncClient.query({
       query: gql`
@@ -41,7 +50,6 @@ export class CRUDLTester {
     })) as any;
     expect(listResponse.data[`list${this.modelListName}`].items.length).toBeGreaterThan(0);
 
-    const sampleItemId = createResponse.data[`create${this.modelName}`].id;
     const getResponse = (await this.appsyncClient.query({
       query: gql`
           query {
@@ -70,21 +78,41 @@ export class CRUDLTester {
     })) as any;
     expect(updateResponse.data[`update${this.modelName}`].id).toBeTruthy();
 
-    const deleteResponse = (await this.appsyncClient.mutate({
-      mutation: gql`
+    if (!options?.skipDelete) {
+      const deleteResponse = (await this.appsyncClient.mutate({
+        mutation: gql`
           mutation {
             delete${this.modelName}(input: { id: "${sampleItemId}" }) {
               id
             }
           }
         `,
-      fetchPolicy: 'no-cache',
-    })) as any;
+        fetchPolicy: 'no-cache',
+      })) as any;
 
-    expect(deleteResponse.data[`delete${this.modelName}`].id).toBeTruthy();
+      expect(deleteResponse.data[`delete${this.modelName}`].id).toBeTruthy();
+    }
   };
 
-  testDoesNotHaveCRUDLAccess = async (): Promise<void> => {
+  testDoesNotHaveReadAccess = async (itemId: string): Promise<void> => {
+    await expect(
+      this.appsyncClient.query({
+        query: gql`
+          query {
+            get${this.modelName}(id: "${itemId}") {
+              id
+              ${this.getOutputFields()}
+            }
+          }
+        `,
+        fetchPolicy: 'no-cache',
+      }),
+    ).rejects.toThrowError(
+      /GraphQL error: Not Authorized to access .* on type|Network error: Response not successful: Received status code 401/,
+    );
+  };
+
+  testDoesNotHaveCRUDLAccess = async (options?: { skipGet: boolean }): Promise<void> => {
     await expect(
       this.appsyncClient.mutate({
         mutation: gql`
@@ -97,7 +125,7 @@ export class CRUDLTester {
         fetchPolicy: 'no-cache',
       }),
     ).rejects.toThrowError(
-      /GraphQL error: Not Authorized to access .* on type Mutation|Network error: Response not successful: Received status code 401/,
+      /GraphQL error: Not Authorized to access .* on type Mutation|Network error: Response not successful: Received status code 401|GraphQL error: Unauthorized on/,
     );
 
     await expect(
@@ -115,24 +143,12 @@ export class CRUDLTester {
         fetchPolicy: 'no-cache',
       }),
     ).rejects.toThrowError(
-      /GraphQL error: Not Authorized to access .* on type Query|Network error: Response not successful: Received status code 401/,
+      /GraphQL error: Not Authorized to access .* on type Query|Network error: Response not successful: Received status code 401|GraphQL error: Not Authorized to access/,
     );
 
-    await expect(
-      this.appsyncClient.query({
-        query: gql`
-          query {
-            get${this.modelName}(id: "some-id") {
-              id
-              ${this.getOutputFields()}
-            }
-          }
-        `,
-        fetchPolicy: 'no-cache',
-      }),
-    ).rejects.toThrowError(
-      /GraphQL error: Not Authorized to access .* on type Query|Network error: Response not successful: Received status code 401/,
-    );
+    if (!options?.skipGet) {
+      await this.testDoesNotHaveReadAccess('some-id');
+    }
 
     await expect(
       this.appsyncClient.mutate({
@@ -146,7 +162,7 @@ export class CRUDLTester {
         fetchPolicy: 'no-cache',
       }),
     ).rejects.toThrowError(
-      /GraphQL error: Not Authorized to access .* on type Mutation|Network error: Response not successful: Received status code 401/,
+      /GraphQL error: Not Authorized to access .* on type Mutation|Network error: Response not successful: Received status code 401|GraphQL error: Unauthorized on/,
     );
 
     await expect(

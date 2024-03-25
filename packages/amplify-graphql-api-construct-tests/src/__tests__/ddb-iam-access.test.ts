@@ -200,4 +200,59 @@ describe('CDK DDB Iam Access', () => {
       ]).testDoesNotHaveCRUDLAccess();
     }
   });
+
+  it('can access TodoWithPrivateField', async () => {
+    for (const graphqlClient of [graphqlClientAuthRole, graphqlClientWithIAMAccessAuthRole, graphqlClientWithIAMAccessBasicRole]) {
+      await new CRUDLTester(graphqlClient, 'TodoWithPrivateField', 'TodoWithPrivateFields', [
+        'description',
+      ]).testCanExecuteCRUDLOperations();
+    }
+    for (const graphqlClient of [graphqlClientAuthRole, graphqlClientWithIAMAccessAuthRole, graphqlClientWithIAMAccessBasicRole]) {
+      await new CRUDLTester(graphqlClient, 'TodoWithPrivateField', 'TodoWithPrivateFields', [
+        'description',
+        'secret',
+      ]).testCanExecuteCRUDLOperations();
+    }
+    for (const graphqlClient of [graphqlClientUnauthRole, graphqlClientWithIAMAccessUnauthRole]) {
+      // unauth role has access to non-secret fields, but can't delete.
+      await new CRUDLTester(graphqlClient, 'TodoWithPrivateField', 'TodoWithPrivateFields', ['description']).testCanExecuteCRUDLOperations({
+        skipDelete: true,
+      });
+    }
+  });
+
+  it('cannot access TodoWithPrivateField', async () => {
+    await new CRUDLTester(graphqlClientBasicRole, 'TodoWithPrivateField', 'TodoWithPrivateFields', [
+      'description',
+    ]).testDoesNotHaveCRUDLAccess();
+    await new CRUDLTester(graphqlClientBasicRole, 'TodoWithPrivateField', 'TodoWithPrivateFields', [
+      'description',
+      'secret',
+    ]).testDoesNotHaveCRUDLAccess();
+
+    for (const graphqlClient of [graphqlClientUnauthRole, graphqlClientWithIAMAccessUnauthRole]) {
+      // unauth role doesn't have access to secret field
+      await new CRUDLTester(graphqlClient, 'TodoWithPrivateField', 'TodoWithPrivateFields', [
+        'description',
+        'secret',
+      ]).testDoesNotHaveCRUDLAccess({
+        // field auth rules need real item to be created otherwise they return null instead of failing. this is tested below.
+        skipGet: true,
+      });
+    }
+
+    for (const [authorizedClient, unauthorizedClient] of [
+      [graphqlClientAuthRole, graphqlClientUnauthRole],
+      [graphqlClientWithIAMAccessAuthRole, graphqlClientWithIAMAccessUnauthRole],
+    ]) {
+      const itemId = await new CRUDLTester(authorizedClient, 'TodoWithPrivateField', 'TodoWithPrivateFields', [
+        'description',
+        'secret',
+      ]).testCanExecuteCreate();
+      await new CRUDLTester(unauthorizedClient, 'TodoWithPrivateField', 'TodoWithPrivateFields', [
+        'description',
+        'secret',
+      ]).testDoesNotHaveReadAccess(itemId);
+    }
+  });
 });
