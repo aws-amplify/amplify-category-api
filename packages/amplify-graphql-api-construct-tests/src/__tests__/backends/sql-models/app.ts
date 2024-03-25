@@ -73,7 +73,10 @@ const api = new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
         description: String!
       }
 
-      type TodoWithPrivateField @model @refersTo(name: "todosWithPrivateField") @auth(rules: [{ allow: public, provider: iam }, { allow: private, provider: iam }]) {
+      type TodoWithPrivateField
+        @model
+        @refersTo(name: "todosWithPrivateField")
+        @auth(rules: [{ allow: public, provider: iam }, { allow: private, provider: iam }]) {
         id: ID! @primaryKey
         description: String!
         secret: String @auth(rules: [{ allow: private, provider: iam }])
