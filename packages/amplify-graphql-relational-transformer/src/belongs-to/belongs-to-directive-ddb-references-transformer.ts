@@ -46,6 +46,6 @@ export class BelongsToDirectiveDDBReferencesTransformer implements DataSourceBas
 
   validate = (context: TransformerContextProvider, config: BelongsToDirectiveConfiguration): void => {
     ensureReferencesArray(config);
-    config.fieldNodes = getBelongsToReferencesNodes(config, context);
+    config.referenceNodes = getBelongsToReferencesNodes(config, context);
   };
 }
