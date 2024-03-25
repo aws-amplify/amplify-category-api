@@ -26,13 +26,13 @@ const defaultRoleDefinitions: Record<AuthProvider, Array<RoleDefinition>> = {
       provider: 'iam',
       strategy: 'public',
       static: true,
-      claim: 'testUnAuthRoleClaim',
+      claim: 'unauthRole',
     },
     {
       provider: 'iam',
       strategy: 'private',
       static: true,
-      claim: 'testAuthRoleClaim',
+      claim: 'authRole',
     },
   ],
   userPools: [
