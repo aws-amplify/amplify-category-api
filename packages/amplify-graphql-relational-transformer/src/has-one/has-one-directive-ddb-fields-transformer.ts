@@ -7,6 +7,7 @@ import {
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
 import { HasOneDirectiveConfiguration } from '../types';
 import { ensureFieldsArray, getFieldsNodes, getRelatedTypeIndex, registerHasOneForeignKeyMappings } from '../utils';
+import { getGenerator } from '../resolver/generator-factory';
 
 /**
  * HasOneDirectiveDDBFieldsTransformer executes transformations based on `@hasOne(fields: [String!])` configurations
@@ -32,9 +33,9 @@ export class HasOneDirectiveDDBFieldsTransformer implements DataSourceBasedDirec
     config.relatedTypeIndex = getRelatedTypeIndex(config, context as TransformerContextProvider);
   };
 
-  // TODO: Move resolver generation logic here from `HasOneTransformer`.
-  generateResolvers = (_context: TransformerContextProvider, _config: HasOneDirectiveConfiguration): void => {
-    return;
+  generateResolvers = (context: TransformerContextProvider, config: HasOneDirectiveConfiguration): void => {
+    const generator = getGenerator(this.dbType);
+    generator.makeHasOneGetItemConnectionWithKeyResolver(config, context);
   };
 
   validate = (context: TransformerContextProvider, config: HasOneDirectiveConfiguration): void => {
