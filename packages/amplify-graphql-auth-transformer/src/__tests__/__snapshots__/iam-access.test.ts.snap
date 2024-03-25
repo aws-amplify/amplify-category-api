@@ -130,7 +130,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #set( $isAuthorized = true )
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
-  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
   #else
@@ -177,7 +177,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #set( $isAuthorized = true )
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
-  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
   #else
@@ -224,7 +224,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #set( $isAuthorized = true )
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
-  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
   #else
@@ -259,7 +259,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #set( $isAuthorized = true )
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
-  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
   #else
@@ -294,7 +294,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #set( $isAuthorized = true )
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
-  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
   #else
@@ -328,7 +328,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #set( $isAuthorized = true )
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
-  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
   #else
@@ -362,7 +362,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #set( $isAuthorized = true )
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
-  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
   #else
@@ -396,7 +396,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #set( $isAuthorized = true )
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
-  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
   #else
@@ -667,7 +667,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #set( $allowedFields = [] )
 #if( $util.authType() == \\"IAM Authorization\\" )
-  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
   #else
@@ -713,7 +713,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $nullAllowedFields = [] )
 #set( $deniedFields = {} )
 #if( $util.authType() == \\"IAM Authorization\\" )
-  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
   #else
@@ -759,7 +759,7 @@ exports[`ddb simple model with iam provider and iam access 5`] = `
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #if( $util.authType() == \\"IAM Authorization\\" )
-  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
   #else
@@ -793,7 +793,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #set( $primaryFieldMap = {} )
 #if( $util.authType() == \\"IAM Authorization\\" )
-  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
   #else
@@ -829,7 +829,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #set( $primaryFieldMap = {} )
 #if( $util.authType() == \\"IAM Authorization\\" )
-  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
   #else
@@ -864,7 +864,7 @@ exports[`ddb simple model with iam provider and iam access 11`] = `
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #if( $util.authType() == \\"IAM Authorization\\" )
-  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
   #else
@@ -899,7 +899,7 @@ exports[`ddb simple model with iam provider and iam access 13`] = `
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #if( $util.authType() == \\"IAM Authorization\\" )
-  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
   #else
@@ -934,7 +934,7 @@ exports[`ddb simple model with iam provider and iam access 15`] = `
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #if( $util.authType() == \\"IAM Authorization\\" )
-  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
   #else
@@ -974,7 +974,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 $util.unauthorized()
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
-  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
   #else
@@ -1023,7 +1023,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 $util.unauthorized()
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
-  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
   #else
@@ -1072,7 +1072,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 $util.unauthorized()
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
-  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
   #else
@@ -1109,7 +1109,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
-  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
   #else
@@ -1148,7 +1148,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
-  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
   #else
@@ -1186,7 +1186,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
-  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
   #else
@@ -1224,7 +1224,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
-  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
   #else
@@ -1262,7 +1262,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
-  #if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
   #else

@@ -5,7 +5,8 @@ import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
 import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 
-const IAM_ACCESS_CHECK_DDB = '#if( $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )';
+const IAM_ACCESS_CHECK_DDB =
+  '#if( $util.authType() == "IAM Authorization" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )';
 const IAM_ACCESS_CHECK_RDS =
   '#if( $util.authType() == "IAM Authorization" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )';
 const IAM_ACCESS_CHECK_POST_AUTH =
