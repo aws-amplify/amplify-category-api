@@ -323,6 +323,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         const serviceDirectiveNames = new Set<string>();
 
         if (ctx.transformParameters.sandboxModeEnabled && ctx.synthParameters.enableIamAccess) {
+          // If both sandbox and iam access are enabled we add service directive regardless of default.
+          // This is because any explicit directive makes default not applicable to a model.
           serviceDirectiveNames.add(API_KEY_DIRECTIVE);
           serviceDirectiveNames.add(AWS_IAM_DIRECTIVE);
         } else if (ctx.transformParameters.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
