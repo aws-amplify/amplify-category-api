@@ -206,7 +206,7 @@ Object {
 }
 `;
 
-exports[`Directive Definitions ConnectionDirective 1`] = `
+exports[`Directive Definitions ConnectionDirectiveV1 1`] = `
 Object {
   "defaults": Object {},
   "definition": "
@@ -343,7 +343,7 @@ Object {
 }
 `;
 
-exports[`Directive Definitions KeyDirective 1`] = `
+exports[`Directive Definitions KeyDirectiveV1 1`] = `
 Object {
   "defaults": Object {},
   "definition": "
@@ -541,7 +541,7 @@ Object {
 }
 `;
 
-exports[`Directive Definitions VersionedDirective 1`] = `
+exports[`Directive Definitions VersionedDirectiveV1 1`] = `
 Object {
   "defaults": Object {
     "versionField": "version",

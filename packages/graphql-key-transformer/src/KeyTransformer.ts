@@ -1,5 +1,5 @@
 import { Transformer, TransformerContext, getDirectiveArguments, InvalidDirectiveError } from 'graphql-transformer-core';
-import { KeyDirective } from '@aws-amplify/graphql-directives';
+import { KeyDirectiveV1 } from '@aws-amplify/graphql-directives';
 import {
   obj,
   str,
@@ -81,7 +81,7 @@ export class KeyTransformer extends Transformer {
     // prettier-ignore
     super(
       'KeyTransformer',
-      parse(KeyDirective.definition),
+      parse(KeyDirectiveV1.definition),
     );
   }
 

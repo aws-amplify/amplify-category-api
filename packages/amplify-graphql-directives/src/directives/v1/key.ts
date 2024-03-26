@@ -6,7 +6,7 @@ const definition = /* GraphQL */ `
 `;
 const defaults = {};
 
-export const KeyDirective: Directive = {
+export const KeyDirectiveV1: Directive = {
   name,
   definition,
   defaults,

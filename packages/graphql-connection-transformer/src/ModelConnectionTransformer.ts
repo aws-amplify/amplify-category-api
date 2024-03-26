@@ -1,5 +1,5 @@
 import { Transformer, TransformerContext, InvalidDirectiveError, getDirectiveArguments } from 'graphql-transformer-core';
-import { ConnectionDirective } from '@aws-amplify/graphql-directives';
+import { ConnectionDirectiveV1 } from '@aws-amplify/graphql-directives';
 import {
   DirectiveNode,
   ObjectTypeDefinitionNode,
@@ -167,7 +167,7 @@ export class ModelConnectionTransformer extends Transformer {
   resources: ResourceFactory;
 
   constructor() {
-    super('ModelConnectionTransformer', parse(ConnectionDirective.definition));
+    super('ModelConnectionTransformer', parse(ConnectionDirectiveV1.definition));
     this.resources = new ResourceFactory();
   }
 

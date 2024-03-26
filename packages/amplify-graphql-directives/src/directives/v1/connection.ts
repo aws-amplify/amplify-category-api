@@ -13,7 +13,7 @@ const definition = /* GraphQL */ `
 `;
 const defaults = {};
 
-export const ConnectionDirective: Directive = {
+export const ConnectionDirectiveV1: Directive = {
   name,
   definition,
   defaults,

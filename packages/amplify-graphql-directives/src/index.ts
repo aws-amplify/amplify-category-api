@@ -11,7 +11,7 @@ import {
   AwsOidcDirective,
   AwsSubscribeDirective,
   BelongsToDirective,
-  ConnectionDirective,
+  ConnectionDirectiveV1,
   DefaultDirective,
   DeprecatedDirective,
   FunctionDirective,
@@ -21,7 +21,7 @@ import {
   HttpDirective,
   HttpDirectiveV1,
   IndexDirective,
-  KeyDirective,
+  KeyDirectiveV1,
   ManyToManyDirective,
   MapsToDirective,
   ModelDirective,
@@ -33,7 +33,7 @@ import {
   SearchableDirective,
   SearchableDirectiveV1,
   SqlDirective,
-  VersionedDirective,
+  VersionedDirectiveV1,
 } from './directives';
 
 export const AppSyncDirectives: readonly Directive[] = [
@@ -74,12 +74,12 @@ export const DefaultDirectives: readonly Directive[] = AppSyncDirectives.concat(
 
 export const V1Directives: readonly Directive[] = [
   AuthDirectiveV1,
-  ConnectionDirective,
+  ConnectionDirectiveV1,
   FunctionDirectiveV1,
   HttpDirectiveV1,
-  KeyDirective,
+  KeyDirectiveV1,
   ModelDirectiveV1,
   PredictionsDirectiveV1,
   SearchableDirectiveV1,
-  VersionedDirective,
+  VersionedDirectiveV1,
 ];

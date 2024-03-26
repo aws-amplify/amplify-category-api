@@ -1,5 +1,5 @@
 import { Transformer, TransformerContext, InvalidDirectiveError, TransformerContractError } from 'graphql-transformer-core';
-import { VersionedDirective } from '@aws-amplify/graphql-directives';
+import { VersionedDirectiveV1 } from '@aws-amplify/graphql-directives';
 import { valueFromASTUntyped, ArgumentNode, ObjectTypeDefinitionNode, DirectiveNode, Kind, parse } from 'graphql';
 import { printBlock, compoundExpression, set, ref, qref, obj, str, raw } from 'graphql-mapping-template';
 import {
@@ -15,7 +15,7 @@ import {
 
 export class VersionedModelTransformer extends Transformer {
   constructor() {
-    super('VersionedModelTransformer', parse(VersionedDirective.definition));
+    super('VersionedModelTransformer', parse(VersionedDirectiveV1.definition));
   }
 
   /**

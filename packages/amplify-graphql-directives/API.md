@@ -38,7 +38,7 @@ export const AwsSubscribeDirective: Directive;
 export const BelongsToDirective: Directive;
 
 // @public (undocumented)
-export const ConnectionDirective: Directive;
+export const ConnectionDirectiveV1: Directive;
 
 // @public (undocumented)
 export const DefaultDirective: Directive;
@@ -98,7 +98,7 @@ export const HttpDirectiveV1: Directive<HttpDirectiveV1Defaults>;
 export const IndexDirective: Directive;
 
 // @public (undocumented)
-export const KeyDirective: Directive;
+export const KeyDirectiveV1: Directive;
 
 // @public (undocumented)
 export const ManyToManyDirective: Directive<ManyToManyDirectiveDefaults>;
@@ -145,10 +145,10 @@ export const V1Directives: readonly Directive[];
 export const V2Directives: readonly Directive[];
 
 // @public (undocumented)
-export const VersionedDirective: Directive<VersionedDirectiveDefaults>;
+export const VersionedDirectiveV1: Directive<VersionedDirectiveV1Defaults>;
 
 // @public (undocumented)
-export type VersionedDirectiveDefaults = {
+export type VersionedDirectiveV1Defaults = {
     versionField: string;
     versionInput: string;
 };
