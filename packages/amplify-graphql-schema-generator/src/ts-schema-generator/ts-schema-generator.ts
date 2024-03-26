@@ -1,5 +1,6 @@
 import { DataSourceAdapter, MySQLDataSourceAdapter, PostgresDataSourceAdapter } from '../datasource-adapter';
 import { DBEngineType, Engine, Schema } from '../schema-representation';
+import { getHostVpc } from '../utils';
 import { generateTypescriptDataSchema } from './generate-ts-schema';
 
 // This is the contract for the customer facing API to provide the database configuration in a typescript file.
@@ -10,6 +11,7 @@ export type TypescriptDataSchemaGeneratorConfig = {
   database: string;
   username: string;
   password: string;
+  connectionUriSecretName: string;
   outputFile?: string;
 };
 
@@ -17,7 +19,10 @@ export type TypescriptDataSchemaGeneratorConfig = {
 export class TypescriptDataSchemaGenerator {
   public static generate = async (config: TypescriptDataSchemaGeneratorConfig): Promise<string> => {
     const schema = await TypescriptDataSchemaGenerator.buildSchema(config);
-    return generateTypescriptDataSchema(schema);
+    return generateTypescriptDataSchema(schema, {
+      secretName: config.connectionUriSecretName,
+      vpcConfig: await getHostVpc(config.host),
+    });
   };
 
   private static getAdapter = (config: TypescriptDataSchemaGeneratorConfig): DataSourceAdapter => {

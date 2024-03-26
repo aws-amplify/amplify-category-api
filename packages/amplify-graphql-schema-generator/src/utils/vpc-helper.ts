@@ -39,12 +39,12 @@ const spinner = ora('');
 /**
  * Searches for the host in DB Proxies, then DB Clusters, and finally DB Instances. Returns the VPC configuration if found. Note that some
  * inspections may require additional API calls to derive subnet and availability zone configurations.
- *
+ * When region is not provided, we will use the region configured in the AWS profile.
  * @param hostname Hostname of the database.
  * @param region AWS region.
  * @returns the VpcConfig for the database or undefined if not found.
  */
-export const getHostVpc = async (hostname: string, region: string): Promise<VpcConfig | undefined> => {
+export const getHostVpc = async (hostname: string, region?: string): Promise<VpcConfig | undefined> => {
   const proxyResult = await checkHostInDBProxies(hostname, region);
   if (proxyResult) {
     return proxyResult;
