@@ -197,6 +197,7 @@ export const ensureReferencesBidirectionality = (
   config: HasManyDirectiveConfiguration | BelongsToDirectiveConfiguration, // TODO: Add HasOnyDirectiveConfiguration
 ): void => {
   if (config.fields) {
+    // TODO: Better error message
     throw new InvalidDirectiveError('fields and references cannot be used together.');
   }
 
@@ -207,15 +208,10 @@ export const ensureReferencesBidirectionality = (
       - if belongsTo --> hasMany | hasOne
     2. find matching propertyName
       - directive.arguments[].references === config.references (order matters)
-    3. confirm matching type as sanity check
-      - field.type.name.value == config.type
-
+    3. validate matching type
+      - field.type.name.value === config.type
 
   */
-  // const related = config.relatedType;
-  // const otherSide = related.fields?.find((field) => {
-  //   const hasDirective = field?.directives?.length >= 1
-  // })
 };
 
 export const getModelDirective = (objectType: ObjectTypeDefinitionNode): DirectiveNode | undefined => {
