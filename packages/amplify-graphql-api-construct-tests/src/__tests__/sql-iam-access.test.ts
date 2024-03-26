@@ -68,8 +68,8 @@ describe('CDK SQL Iam Access', () => {
         'enable-iam-authorization-mode': 'true',
       },
     });
-    databaseController.writeDbDetails(projRoot);
-    databaseController.writeDbDetails(projRootWithIam);
+    databaseController.writeDbDetails(projRoot, 'ssm');
+    databaseController.writeDbDetails(projRootWithIam, 'ssm');
     [outputs, outputsWithIam] = await Promise.all([cdkDeploy(projRoot, '--all'), cdkDeploy(projRootWithIam, '--all')]);
     outputs = outputs[name];
     outputsWithIam = outputsWithIam[nameWithIam];
