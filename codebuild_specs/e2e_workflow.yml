@@ -1020,7 +1020,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-searchable.test.ts
-          CLI_REGION: eu-north-1
+          CLI_REGION: eu-west-2
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
@@ -1135,12 +1135,13 @@ batch:
           CLI_REGION: eu-south-1
       depend-on:
         - publish_to_local_registry
-    - identifier: relationships
+    - identifier: relationships_sql_iam_access
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          TEST_SUITE: src/__tests__/relationships.test.ts
+          TEST_SUITE: >-
+            src/__tests__/relationships.test.ts|src/__tests__/sql-iam-access.test.ts
           CLI_REGION: eu-west-1
       depend-on:
         - publish_to_local_registry
