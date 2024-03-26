@@ -169,7 +169,8 @@ const getDBConfig = async (): DBConfig => {
     if (!secretsManagerClient) {
       createSecretsManagerClient();
     }
-    
+
+    config.engine = getDBEngine();
     config.port = Number.parseInt(process.env.port || '3306');
     config.database = process.env.database;
     config.host = process.env.host;
