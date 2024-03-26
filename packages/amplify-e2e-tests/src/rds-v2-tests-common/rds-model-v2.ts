@@ -145,6 +145,10 @@ export const testRDSModel = (engine: ImportedRDSType, queries: string[]): void =
       expect(rdsPatchingSubscription.Properties.Protocol).toEqual('lambda');
       expect(rdsPatchingSubscription.Properties.Endpoint).toBeDefined();
       expect(rdsPatchingSubscription.Properties.TopicArn).toBeDefined();
+      const topicArnMappingRef = rdsPatchingSubscription.Properties.TopicArn['Fn::FindInMap'];
+      expect(topicArnMappingRef?.length).toEqual(3);
+      expect(topicArnMappingRef[1]).toEqual({ Ref: 'AWS::Region' });
+      expect(topicArnMappingRef[2]).toEqual('topicArn');
       expect(rdsPatchingSubscription.Properties.Region).toBeDefined();
       expect(rdsPatchingSubscription.Properties.FilterPolicy).toBeDefined();
       expect(rdsPatchingSubscription.Properties.FilterPolicy.Region).toBeDefined();
