@@ -228,6 +228,9 @@ export function addIAMRolesToCFNStack(out: DeploymentResources, e2eConfig: E2Eco
           },
           Action: 'sts:AssumeRoleWithWebIdentity',
           Condition: {
+            StringEquals: {
+              'cognito-identity.amazonaws.com:aud': { Ref: 'IdentityPool' },
+            },
             'ForAnyValue:StringLike': {
               'cognito-identity.amazonaws.com:amr': 'authenticated',
             },
@@ -250,6 +253,9 @@ export function addIAMRolesToCFNStack(out: DeploymentResources, e2eConfig: E2Eco
           },
           Action: 'sts:AssumeRoleWithWebIdentity',
           Condition: {
+            StringEquals: {
+              'cognito-identity.amazonaws.com:aud': { Ref: 'IdentityPool' },
+            },
             'ForAnyValue:StringLike': {
               'cognito-identity.amazonaws.com:amr': 'unauthenticated',
             },
