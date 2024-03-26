@@ -1,6 +1,6 @@
 import { Engine, Field, Model, Schema } from '../schema-representation';
 import { generateTypescriptDataSchema } from '../ts-schema-generator/generate-ts-schema';
-import { DatasourceConfig } from '../ts-schema-generator/helpers';
+import { DataSourceConfig } from '../ts-schema-generator/helpers';
 
 describe('Type name conversions', () => {
   it('basic models should generate correct typescript data schema', () => {
@@ -74,7 +74,7 @@ describe('Type name conversions', () => {
     model.setPrimaryKey(['id']);
     dbschema.addModel(model);
 
-    const config: DatasourceConfig = {
+    const config: DataSourceConfig = {
       secretName: 'CONN_STR',
       vpcConfig: {
         vpcId: '123',
@@ -108,7 +108,7 @@ describe('Type name conversions', () => {
     model.setPrimaryKey(['id']);
     dbschema.addModel(model);
 
-    const config: DatasourceConfig = {
+    const config: DataSourceConfig = {
       secretName: 'CONN_STR',
       vpcConfig: {
         vpcId: '123',
@@ -140,7 +140,7 @@ describe('Type name conversions', () => {
     model.setPrimaryKey(['id']);
     dbschema.addModel(model);
 
-    const config: DatasourceConfig = {
+    const config: DataSourceConfig = {
       secretName: 'CONN_STR',
     };
 

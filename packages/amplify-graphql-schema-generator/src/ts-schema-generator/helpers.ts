@@ -118,7 +118,7 @@ const createModel = (model: Model): ts.Node => {
 
 const exportModifier = ts.factory.createModifier(ts.SyntaxKind.ExportKeyword);
 
-export type DatasourceConfig = {
+export type DataSourceConfig = {
   secretName: string;
   vpcConfig?: VpcConfig;
 };
@@ -137,7 +137,7 @@ export type DatasourceConfig = {
  * @param schema
  * @returns Typescript data schema in TS Node format
  */
-export const createSchema = (schema: Schema, config?: DatasourceConfig): ts.Node => {
+export const createSchema = (schema: Schema, config?: DataSourceConfig): ts.Node => {
   const models = schema.getModels().map((model) => {
     return createModel(model);
   });
@@ -221,7 +221,7 @@ export const createImportExpression = (): ts.NodeArray<ts.ImportDeclaration> => 
   return ts.factory.createNodeArray([importStatementWithEslintDisabled, internalsConfigureImportStatement, secretImportStatement]);
 };
 
-export const createConfigureExpression = (schema: Schema, config: DatasourceConfig): ts.Expression => {
+export const createConfigureExpression = (schema: Schema, config: DataSourceConfig): ts.Expression => {
   if (!config) {
     return ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A);
   }

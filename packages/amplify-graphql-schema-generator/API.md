@@ -91,7 +91,7 @@ export abstract class DataSourceAdapter {
 }
 
 // @public (undocumented)
-export type DatasourceConfig = {
+export type DataSourceConfig = {
     secretName: string;
     vpcConfig?: VpcConfig;
 };
@@ -163,7 +163,7 @@ export const findMatchingField: (columnName: string, taleName: string, document:
 export const generateGraphQLSchema: (schema: Schema, existingSchemaDocument?: DocumentNode | undefined) => string;
 
 // @public (undocumented)
-export const generateTypescriptDataSchema: (schema: Schema, config?: DatasourceConfig) => string;
+export const generateTypescriptDataSchema: (schema: Schema, config?: DataSourceConfig) => string;
 
 // @public (undocumented)
 export const getHostVpc: (hostname: string, region?: string) => Promise<VpcConfig | undefined>;
