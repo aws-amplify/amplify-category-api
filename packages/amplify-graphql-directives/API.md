@@ -5,6 +5,9 @@
 ```ts
 
 // @public (undocumented)
+export const AppSyncDirectives: readonly Directive[];
+
+// @public (undocumented)
 export const AuthDirective: Directive;
 
 // @public (undocumented)
@@ -137,6 +140,9 @@ export const SqlDirective: Directive;
 
 // @public (undocumented)
 export const V1Directives: readonly Directive[];
+
+// @public (undocumented)
+export const V2Directives: readonly Directive[];
 
 // @public (undocumented)
 export const VersionedDirective: Directive<VersionedDirectiveDefaults>;

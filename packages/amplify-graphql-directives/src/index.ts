@@ -36,12 +36,7 @@ import {
   VersionedDirective,
 } from './directives';
 
-// This list should match constructTransformerChain in packages/amplify-graphql-transformer/src/graphql-transformer.ts
-/**
- * Default directives used by the GraphQL transform.
- */
-export const DefaultDirectives: readonly Directive[] = [
-  AuthDirective,
+export const AppSyncDirectives: readonly Directive[] = [
   AwsApiKeyDirective,
   AwsAuthDirective,
   AwsCognitoUserPoolsDirective,
@@ -49,6 +44,11 @@ export const DefaultDirectives: readonly Directive[] = [
   AwsLambdaDirective,
   AwsOidcDirective,
   AwsSubscribeDirective,
+];
+
+// This list should match constructTransformerChain in packages/amplify-graphql-transformer/src/graphql-transformer.ts
+export const V2Directives: readonly Directive[] = [
+  AuthDirective,
   BelongsToDirective,
   DefaultDirective,
   DeprecatedDirective,
@@ -66,6 +66,11 @@ export const DefaultDirectives: readonly Directive[] = [
   SearchableDirective,
   SqlDirective,
 ];
+
+/**
+ * Default directives used by the GraphQL transform.
+ */
+export const DefaultDirectives: readonly Directive[] = AppSyncDirectives.concat(V2Directives);
 
 export const V1Directives: readonly Directive[] = [
   AuthDirectiveV1,

@@ -554,6 +554,18 @@ Object {
 }
 `;
 
+exports[`Directive Definitions include correct directives in AppSync directives 1`] = `
+Array [
+  "aws_api_key",
+  "aws_auth",
+  "aws_cognito_user_pools",
+  "aws_iam",
+  "aws_lambda",
+  "aws_oidc",
+  "aws_subscribe",
+]
+`;
+
 exports[`Directive Definitions include correct directives in V1 directives 1`] = `
 Array [
   "auth",
@@ -568,9 +580,30 @@ Array [
 ]
 `;
 
-exports[`Directive Definitions include correct directives in default directives 1`] = `
+exports[`Directive Definitions include correct directives in V2 directives 1`] = `
 Array [
   "auth",
+  "belongsTo",
+  "default",
+  "deprecated",
+  "function",
+  "hasMany",
+  "hasOne",
+  "http",
+  "index",
+  "manyToMany",
+  "mapsTo",
+  "model",
+  "predictions",
+  "primaryKey",
+  "refersTo",
+  "searchable",
+  "sql",
+]
+`;
+
+exports[`Directive Definitions include correct directives in default directives 1`] = `
+Array [
   "aws_api_key",
   "aws_auth",
   "aws_cognito_user_pools",
@@ -578,6 +611,7 @@ Array [
   "aws_lambda",
   "aws_oidc",
   "aws_subscribe",
+  "auth",
   "belongsTo",
   "default",
   "deprecated",
