@@ -6,9 +6,14 @@ const file = ts.createSourceFile('schema.ts', '', ts.ScriptTarget.ESNext, false,
 const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 
 export const generateTypescriptDataSchema = (schema: Schema, config?: DataSourceConfig): string => {
+  const containsSecretName = !!config?.secretName;
   const result = printer.printList(
     ts.ListFormat.MultiLine,
-    ts.factory.createNodeArray([...createImportExpression(), ts.factory.createIdentifier('\n'), createSchema(schema, config)]),
+    ts.factory.createNodeArray([
+      ...createImportExpression(containsSecretName),
+      ts.factory.createIdentifier('\n'),
+      createSchema(schema, config),
+    ]),
     file,
   );
   return result;

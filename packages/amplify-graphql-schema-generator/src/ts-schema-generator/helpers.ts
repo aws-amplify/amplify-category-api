@@ -169,7 +169,7 @@ export const createSchema = (schema: Schema, config?: DataSourceConfig): ts.Node
  * Creates an import expression for typescript data schema
  * @returns Import statement in TS Node format
  */
-export const createImportExpression = (): ts.NodeArray<ts.ImportDeclaration> => {
+export const createImportExpression = (containsSecretName: boolean): ts.NodeArray<ts.ImportDeclaration> => {
   const importStatement = ts.factory.createImportDeclaration(
     undefined,
     ts.factory.createImportClause(
@@ -218,7 +218,12 @@ export const createImportExpression = (): ts.NodeArray<ts.ImportDeclaration> => 
     ' eslint-disable ',
     true,
   );
-  return ts.factory.createNodeArray([importStatementWithEslintDisabled, internalsConfigureImportStatement, secretImportStatement]);
+
+  const importExpressions = [importStatementWithEslintDisabled];
+  if (containsSecretName) {
+    importExpressions.push(internalsConfigureImportStatement, secretImportStatement);
+  }
+  return ts.factory.createNodeArray(importExpressions);
 };
 
 export const createConfigureExpression = (schema: Schema, config: DataSourceConfig): ts.Expression => {

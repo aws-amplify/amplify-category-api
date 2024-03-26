@@ -3,8 +3,6 @@
 exports[`Type name conversions basic models should generate correct typescript data schema 1`] = `
 "/* eslint-disable */
 import { a } from \\"@aws-amplify/data-schema\\";
-import { configure } from \\"@aws-amplify/data-schema/internals\\";
-import { secret } from \\"@aws-amplify/backend\\";
 
 export const schema = a.schema({
     \\"User\\": a.model({
@@ -26,8 +24,6 @@ export const schema = a.schema({
 exports[`Type name conversions check all valid datatypes 1`] = `
 "/* eslint-disable */
 import { a } from \\"@aws-amplify/data-schema\\";
-import { configure } from \\"@aws-amplify/data-schema/internals\\";
-import { secret } from \\"@aws-amplify/backend\\";
 
 export const schema = a.schema({
     \\"Table\\": a.model({
@@ -57,8 +53,6 @@ export const schema = a.schema({
 exports[`Type name conversions generates enum imports correctly 1`] = `
 "/* eslint-disable */
 import { a } from \\"@aws-amplify/data-schema\\";
-import { configure } from \\"@aws-amplify/data-schema/internals\\";
-import { secret } from \\"@aws-amplify/backend\\";
 
 export const schema = a.schema({
     \\"User\\": a.model({
