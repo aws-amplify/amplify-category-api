@@ -159,6 +159,9 @@ const RUN_IN_NON_OPT_IN_REGIONS: (string | RegExp)[] = [
   /src\/__tests__\/rds-.*\.test\.ts/,
   // Searchable tests
   /src\/__tests__\/.*searchable.*\.test\.ts/,
+  // Tests that use Auth Construct
+  'src/__tests__/ddb-iam-access.test.ts',
+  'src/__tests__/sql-models.test.ts',
 ];
 
 const RUN_IN_V1_TRANSFORMER_REGIONS = ['src/__tests__/schema-searchable.test.ts'];

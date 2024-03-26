@@ -4,6 +4,7 @@
  */
 export type {
   IAMAuthorizationConfig,
+  IdentityPoolAuthorizationConfig,
   UserPoolAuthorizationConfig,
   OIDCAuthorizationConfig,
   ApiKeyAuthorizationConfig,

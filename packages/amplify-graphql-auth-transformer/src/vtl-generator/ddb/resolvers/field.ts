@@ -18,10 +18,10 @@ import {
   raw,
   forEach,
   qref,
-  notEquals,
   obj,
   list,
   or,
+  ret,
 } from 'graphql-mapping-template';
 import {
   RoleDefinition,
@@ -32,6 +32,7 @@ import {
   fieldIsList,
   IS_AUTHORIZED_FLAG,
   API_KEY_AUTH_TYPE,
+  IAM_AUTH_TYPE,
 } from '../../../utils';
 import {
   generateStaticRoleExpression,
@@ -45,6 +46,7 @@ import {
   generateOwnerMultiClaimExpression,
   generateInvalidClaimsCondition,
 } from './helpers';
+import { isNonCognitoIAMPrincipal } from '../../common';
 
 // Field Read VTL Functions
 const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArray<FieldDefinitionNode>): Expression[] => {
@@ -141,7 +143,15 @@ export const generateAuthExpressionForField = (
     totalAuthExpressions.push(lambdaExpression(lambdaRoles));
   }
   if (providers.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.hasIdentityPoolId, fieldName));
+    totalAuthExpressions.push(
+      iamExpression({
+        roles: iamRoles,
+        adminRolesEnabled: providers.hasAdminRolesEnabled,
+        hasIdentityPoolId: providers.hasIdentityPoolId,
+        genericIamAccessEnabled: providers.genericIamAccessEnabled,
+        fieldName,
+      }),
+    );
   }
   if (providers.hasUserPools) {
     totalAuthExpressions.push(
@@ -204,9 +214,14 @@ export const setDeniedFieldFlag = (operation: string, subscriptionsEnabled: bool
 /**
  * Generates sandbox expression for field
  */
-export const generateSandboxExpressionForField = (sandboxEnabled: boolean): string => {
-  let exp: Expression;
-  if (sandboxEnabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY_AUTH_TYPE)), methodCall(ref('util.unauthorized')));
-  else exp = methodCall(ref('util.unauthorized'));
-  return printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(compoundExpression([exp, toJson(obj({}))]));
+export const generateSandboxExpressionForField = (sandboxEnabled: boolean, genericIamAccessEnabled: boolean): string => {
+  const expressions: Array<Expression> = [];
+  if (sandboxEnabled) {
+    expressions.push(iff(equals(methodCall(ref('util.authType')), str(API_KEY_AUTH_TYPE)), ret(toJson(obj({})))));
+  }
+  if (genericIamAccessEnabled) {
+    expressions.push(iff(isNonCognitoIAMPrincipal, ret(toJson(obj({})))));
+  }
+  expressions.push(methodCall(ref('util.unauthorized')));
+  return printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(compoundExpression(expressions));
 };

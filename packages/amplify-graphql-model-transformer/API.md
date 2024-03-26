@@ -81,7 +81,7 @@ export const extendTypeWithDirectives: (ctx: TransformerTransformSchemaStepConte
 export const generateApplyDefaultsToInputTemplate: (target: string) => Expression;
 
 // @public (undocumented)
-export const generateAuthExpressionForSandboxMode: (enabled: boolean) => string;
+export const generateAuthExpressionForSandboxMode: (isSandboxModeEnabled: boolean, genericIamAccessEnabled: boolean | undefined) => string;
 
 // @public (undocumented)
 export function generateModelScalarFilterInputName(typeName: string, includeFilter: boolean, isSubscriptionFilter?: boolean): string;
@@ -313,7 +313,7 @@ export interface ModelVTLGenerator {
 export const OPERATION_KEY = "__operation";
 
 // @public (undocumented)
-export const propagateApiKeyToNestedTypes: (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode, seenNonModelTypes: Set<string>) => void;
+export const propagateDirectivesToNestedTypes: (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode, seenNonModelTypes: Set<string>, serviceDirectives: DirectiveNode[]) => void;
 
 // Warning: (ae-forgotten-export) The symbol "ModelResourceGenerator" needs to be exported by the entry point index.d.ts
 //

@@ -1,44 +1,13 @@
 import * as path from 'path';
-import * as fs from 'fs-extra';
-import {
-  createNewProjectDir,
-  deleteDBInstance,
-  deleteDbConnectionConfig,
-  deleteProjectDir,
-  extractVpcConfigFromDbInstance,
-  setupRDSInstanceAndData,
-  storeDbConnectionConfig,
-  storeDbConnectionConfigWithSecretsManager,
-  deleteDbConnectionConfigWithSecretsManager,
-} from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import { LambdaClient, GetProvisionedConcurrencyConfigCommand } from '@aws-sdk/client-lambda';
 import generator from 'generate-password';
-import { getResourceNamesForStrategyName, SQLLambdaResourceNames } from '@aws-amplify/graphql-transformer-core';
-import { isSqlModelDataSourceSecretsManagerDbConnectionConfig } from '@aws-amplify/graphql-transformer-interfaces';
-import { SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
+import { getResourceNamesForStrategyName } from '@aws-amplify/graphql-transformer-core';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { graphql } from '../graphql-request';
+import { SqlDatatabaseController } from '../sql-datatabase-controller';
 
 jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
-
-interface DBDetails {
-  dbConfig: {
-    endpoint: string;
-    port: number;
-    dbName: string;
-    vpcConfig: {
-      vpcId: string;
-      securityGroupIds: string[];
-      subnetAvailabilityZones: {
-        subnetId: string;
-        availabilityZone: string;
-      }[];
-    };
-  };
-  connectionConfigs: {
-    [key: string]: SqlModelDataSourceDbConnectionConfig;
-  };
-}
 
 describe('CDK GraphQL Transformer', () => {
   let projRoot: string;
@@ -50,24 +19,27 @@ describe('CDK GraphQL Transformer', () => {
 
   const dbname = 'default_db';
 
-  let dbDetails: DBDetails;
+  const databaseController: SqlDatatabaseController = new SqlDatatabaseController(
+    ['CREATE TABLE todos (id VARCHAR(40) PRIMARY KEY, description VARCHAR(256))'],
+    {
+      identifier,
+      engine: 'mysql',
+      dbname,
+      username,
+      region,
+    },
+  );
 
   // DO NOT CHANGE THIS VALUE: The test uses it to find resources by name. It is hardcoded in the sql-models backend app
   const strategyName = 'MySqlDBStrategy';
   const resourceNames = getResourceNamesForStrategyName(strategyName);
 
   beforeAll(async () => {
-    dbDetails = await setupDatabase({
-      identifier,
-      engine: 'mysql',
-      dbname,
-      username,
-      region,
-    });
+    await databaseController.setupDatabase();
   });
 
   afterAll(async () => {
-    await cleanupDatabase({ identifier: identifier, region, dbDetails });
+    await databaseController.cleanupDatabase();
   });
 
   beforeEach(async () => {
@@ -103,7 +75,7 @@ describe('CDK GraphQL Transformer', () => {
   const testGraphQLAPI = async (connectionConfigName: string): Promise<void> => {
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'sql-models'));
     const name = await initCDKProject(projRoot, templatePath);
-    writeDbDetails({ dbConfig: dbDetails.dbConfig, dbConnectionConfig: dbDetails.connectionConfigs[connectionConfigName] }, projRoot);
+    databaseController.writeDbDetails(projRoot, connectionConfigName);
     const outputs = await cdkDeploy(projRoot, '--all');
     const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
 
@@ -182,138 +154,3 @@ describe('CDK GraphQL Transformer', () => {
     expect(emptyListResult.body.data.listTodos.items.length).toEqual(0);
   };
 });
-
-const setupDatabase = async (options: {
-  identifier: string;
-  engine: 'mysql' | 'postgres';
-  dbname: string;
-  username: string;
-  region: string;
-}): Promise<DBDetails> => {
-  const { identifier, dbname, username, region } = options;
-
-  console.log(`Setting up database '${identifier}'`);
-
-  const queries = ['CREATE TABLE todos (id VARCHAR(40) PRIMARY KEY, description VARCHAR(256))'];
-
-  const dbConfig = await setupRDSInstanceAndData(options, queries);
-  if (!dbConfig) {
-    throw new Error('Failed to setup RDS instance');
-  }
-
-  const { secretArn } = await storeDbConnectionConfigWithSecretsManager({
-    region,
-    username,
-    password: dbConfig.password,
-    secretName: `${identifier}-secret`,
-  });
-  if (!secretArn) {
-    throw new Error('Failed to store db connection config for secrets manager');
-  }
-  const dbConnectionConfigSecretsManager = {
-    databaseName: dbname,
-    hostname: dbConfig.endpoint,
-    port: dbConfig.port,
-    secretArn,
-  };
-  console.log(`Stored db connection config in Secrets manager: ${JSON.stringify(dbConnectionConfigSecretsManager)}`);
-
-  const { secretArn: secretArnWithCustomKey, keyArn } = await storeDbConnectionConfigWithSecretsManager({
-    region,
-    username,
-    password: dbConfig.password,
-    secretName: `${identifier}-secret-custom-key`,
-    useCustomEncryptionKey: true,
-  });
-  if (!secretArnWithCustomKey) {
-    throw new Error('Failed to store db connection config for secrets manager');
-  }
-  const dbConnectionConfigSecretsManagerCustomKey = {
-    databaseName: dbname,
-    hostname: dbConfig.endpoint,
-    port: dbConfig.port,
-    secretArn: secretArnWithCustomKey,
-    keyArn,
-  };
-  console.log(`Stored db connection config in Secrets manager: ${JSON.stringify(dbConnectionConfigSecretsManagerCustomKey)}`);
-
-  const dbConnectionConfigSSM = await storeDbConnectionConfig({
-    region,
-    pathPrefix: `/${identifier}/test`,
-    hostname: dbConfig.endpoint,
-    port: dbConfig.port,
-    databaseName: dbname,
-    username,
-    password: dbConfig.password,
-  });
-  if (!dbConnectionConfigSSM) {
-    throw new Error('Failed to store db connection config for SSM');
-  }
-  console.log(`Stored db connection config in SSM: ${JSON.stringify(dbConnectionConfigSSM)}`);
-
-  return {
-    dbConfig: {
-      endpoint: dbConfig.endpoint,
-      port: dbConfig.port,
-      dbName: dbname,
-      vpcConfig: extractVpcConfigFromDbInstance(dbConfig.dbInstance),
-    },
-    connectionConfigs: {
-      ssm: dbConnectionConfigSSM,
-      secretsManager: dbConnectionConfigSecretsManager,
-      secretsManagerCustomKey: dbConnectionConfigSecretsManagerCustomKey,
-      secretsManagerManagedSecret: {
-        databaseName: dbname,
-        hostname: dbConfig.endpoint,
-        port: dbConfig.port,
-        secretArn: dbConfig.managedSecretArn,
-      },
-    },
-  };
-};
-
-const cleanupDatabase = async (options: { identifier: string; region: string; dbDetails: DBDetails }): Promise<void> => {
-  const { identifier, region, dbDetails } = options;
-  await deleteDBInstance(identifier, region);
-
-  const { connectionConfigs } = dbDetails;
-
-  await Promise.all(
-    Object.values(connectionConfigs).map((dbConnectionConfig) => {
-      if (isSqlModelDataSourceSecretsManagerDbConnectionConfig(dbConnectionConfig)) {
-        return deleteDbConnectionConfigWithSecretsManager({
-          region,
-          secretArn: dbConnectionConfig.secretArn,
-        });
-      } else {
-        return deleteDbConnectionConfig({
-          region,
-          hostnameSsmPath: dbConnectionConfig.hostnameSsmPath,
-          portSsmPath: dbConnectionConfig.portSsmPath,
-          usernameSsmPath: dbConnectionConfig.usernameSsmPath,
-          passwordSsmPath: dbConnectionConfig.passwordSsmPath,
-          databaseNameSsmPath: dbConnectionConfig.databaseNameSsmPath,
-        });
-      }
-    }),
-  );
-};
-
-/**
- * Writes the specified DB details to a file named `db-details.json` in the specified directory. Used to pass db configs from setup code to
- * the CDK app under test.
- *
- * **NOTE** Do not call this until the CDK project is initialized: `cdk init` fails if the working directory is not empty.
- *
- * @param dbDetails the details object
- * @param projRoot the destination directory to write the `db-details.json` file to
- */
-const writeDbDetails = (
-  dbDetails: Omit<DBDetails, 'connectionConfigs'> & { dbConnectionConfig: SqlModelDataSourceDbConnectionConfig },
-  projRoot: string,
-): void => {
-  const detailsStr = JSON.stringify(dbDetails);
-  const filePath = path.join(projRoot, 'db-details.json');
-  fs.writeFileSync(filePath, detailsStr);
-  console.log(`Wrote ${filePath}`);
-};
