@@ -79,3 +79,28 @@ Object {
   "Version": "2012-10-17",
 }
 `;
+
+exports[`ModelTransformer with SQL data sources: should process connection uri as input 1`] = `
+Object {
+  "Statement": Array [
+    Object {
+      "Action": Array [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:aws:logs:*:*:*",
+    },
+    Object {
+      "Action": Array [
+        "ssm:GetParameter",
+        "ssm:GetParameters",
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:aws:ssm:*:*:parameter/test/connectionUri",
+    },
+  ],
+  "Version": "2012-10-17",
+}
+`;
