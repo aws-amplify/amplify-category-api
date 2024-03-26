@@ -2,31 +2,27 @@
 import 'source-map-support/register';
 import { App, Stack, Duration, CfnOutput, RemovalPolicy } from 'aws-cdk-lib';
 // @ts-ignore
-import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
+import { AmplifyGraphqlApi, AmplifyGraphqlDefinition, SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
 import { AmplifyAuth } from '@aws-amplify/auth-construct-alpha';
-import { AccountPrincipal, Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { AccountPrincipal, Effect, PolicyDocument, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
 
 interface DBDetails {
-  endpoint: string;
-  port: number;
-  dbName: string;
-  vpcConfig: {
-    vpcId: string;
-    securityGroupIds: string[];
-    subnetAvailabilityZones: [
-      {
-        subnetId: string;
-        availabilityZone: string;
-      },
-    ];
+  dbConfig: {
+    endpoint: string;
+    port: number;
+    dbName: string;
+    vpcConfig: {
+      vpcId: string;
+      securityGroupIds: string[];
+      subnetAvailabilityZones: [
+        {
+          subnetId: string;
+          availabilityZone: string;
+        },
+      ];
+    };
   };
-  ssmPaths: {
-    hostnameSsmPath: string;
-    portSsmPath: string;
-    usernameSsmPath: string;
-    passwordSsmPath: string;
-    databaseNameSsmPath: string;
-  };
+  dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
 }
 
 // DO NOT CHANGE THIS VALUE: The test uses it to find resources by name
@@ -86,12 +82,12 @@ const api = new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
       name: STRATEGY_NAME,
       dbType: 'MYSQL',
       vpcConfiguration: {
-        vpcId: dbDetails.vpcConfig.vpcId,
-        securityGroupIds: dbDetails.vpcConfig.securityGroupIds,
-        subnetAvailabilityZoneConfig: dbDetails.vpcConfig.subnetAvailabilityZones,
+        vpcId: dbDetails.dbConfig.vpcConfig.vpcId,
+        securityGroupIds: dbDetails.dbConfig.vpcConfig.securityGroupIds,
+        subnetAvailabilityZoneConfig: dbDetails.dbConfig.vpcConfig.subnetAvailabilityZones,
       },
       dbConnectionConfig: {
-        ...dbDetails.ssmPaths,
+        ...dbDetails.dbConnectionConfig,
       },
       sqlLambdaProvisionedConcurrencyConfig: {
         provisionedConcurrentExecutions: 2,

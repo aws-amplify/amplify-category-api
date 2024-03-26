@@ -26,6 +26,8 @@ import {
   VpcConfig,
   ProvisionedConcurrencyConfig,
   SqlModelDataSourceDbConnectionConfig,
+  isSqlModelDataSourceSsmDbConnectionConfig,
+  isSqlModelDataSourceSecretsManagerDbConnectionConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction, LayerVersion, Runtime, Alias, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
@@ -38,6 +40,15 @@ import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '
  * Define RDS Lambda operations
  */
 export type OPERATIONS = 'CREATE' | 'UPDATE' | 'DELETE' | 'GET' | 'LIST' | 'SYNC';
+
+/**
+ * Available credentials storage methods for the SQL lambda.
+ * This must match enum in rds-lambda/handler.ts
+ */
+export enum CredentialStorageMethod {
+  SSM = 'SSM',
+  SECRETS_MANAGER = 'SECRETS_MANAGER',
+}
 
 const OPERATION_KEY = '__operation';
 
@@ -65,17 +76,43 @@ export const createRdsLambda = (
   lambdaRole: IRole,
   layerVersionArn: string,
   resourceNames: SQLLambdaResourceNames,
+  credentialStorageMethod: CredentialStorageMethod | undefined,
   environment?: { [key: string]: string },
   sqlLambdaVpcConfig?: VpcConfig,
   sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig,
 ): IFunction => {
-  let ssmEndpoint = Fn.join('', ['ssm.', Fn.ref('AWS::Region'), '.amazonaws.com']); // Default SSM endpoint
-  if (sqlLambdaVpcConfig) {
-    const endpoints = addVpcEndpointForSecretsManager(scope, sqlLambdaVpcConfig, resourceNames);
-    const ssmEndpointEntries = endpoints.find((endpoint) => endpoint.service === 'ssm')?.endpoint.attrDnsEntries;
-    if (ssmEndpointEntries) {
-      ssmEndpoint = Fn.select(0, ssmEndpointEntries);
+  const lambdaEnvironment = {
+    ...environment,
+  };
+
+  if (credentialStorageMethod === CredentialStorageMethod.SSM) {
+    let ssmEndpoint = Fn.join('', ['ssm.', Fn.ref('AWS::Region'), '.amazonaws.com']); // Default SSM endpoint
+    if (sqlLambdaVpcConfig) {
+      const services = ['ssm', 'ssmmessages', 'ec2', 'ec2messages', 'kms'];
+      const endpoints = addVpcEndpoints(scope, sqlLambdaVpcConfig, resourceNames, services);
+      const endpointEntries = endpoints.find((endpoint) => endpoint.service === 'ssm')?.endpoint.attrDnsEntries;
+      if (endpointEntries) {
+        ssmEndpoint = Fn.select(0, endpointEntries);
+      }
     }
+
+    lambdaEnvironment.SSM_ENDPOINT = ssmEndpoint;
+    lambdaEnvironment.CREDENTIAL_STORAGE_METHOD = CredentialStorageMethod.SSM;
+  } else if (credentialStorageMethod === CredentialStorageMethod.SECRETS_MANAGER) {
+    let secretsManagerEndpoint = Fn.join('', ['secretsmanager.', Fn.ref('AWS::Region'), '.amazonaws.com']); // Default SSM endpoint
+    if (sqlLambdaVpcConfig) {
+      const services = ['secretsmanager'];
+      const endpoints = addVpcEndpoints(scope, sqlLambdaVpcConfig, resourceNames, services);
+      const endpointEntries = endpoints.find((endpoint) => endpoint.service === 'secretsmanager')?.endpoint.attrDnsEntries;
+      if (endpointEntries) {
+        secretsManagerEndpoint = Fn.select(0, endpointEntries);
+      }
+    }
+
+    lambdaEnvironment.SECRETS_MANAGER_ENDPOINT = secretsManagerEndpoint;
+    lambdaEnvironment.CREDENTIAL_STORAGE_METHOD = CredentialStorageMethod.SECRETS_MANAGER;
+  } else {
+    throw new Error('Unable to determine if SSM or Secrets Manager should be used for credentials.');
   }
 
   const fn = apiGraphql.host.addLambdaFunction(
@@ -86,10 +123,7 @@ export const createRdsLambda = (
     Runtime.NODEJS_18_X,
     [LayerVersion.fromLayerVersionArn(scope, resourceNames.sqlLambdaLayerVersion, layerVersionArn)],
     lambdaRole,
-    {
-      ...environment,
-      SSM_ENDPOINT: ssmEndpoint,
-    },
+    lambdaEnvironment,
     Duration.seconds(30),
     scope,
     sqlLambdaVpcConfig,
@@ -173,12 +207,12 @@ const addVpcEndpoint = (
   return endpoint;
 };
 
-const addVpcEndpointForSecretsManager = (
+const addVpcEndpoints = (
   scope: Construct,
   sqlLambdaVpcConfig: VpcConfig,
   resourceNames: SQLLambdaResourceNames,
+  services: string[],
 ): { service: string; endpoint: CfnVPCEndpoint }[] => {
-  const services = ['ssm', 'ssmmessages', 'ec2', 'ec2messages', 'kms'];
   return services.map((service) => {
     return {
       service,
@@ -260,19 +294,40 @@ export const createRdsLambdaRole = (
     }),
   ];
   if (secretEntry) {
-    policyStatements.push(
-      new PolicyStatement({
-        actions: ['ssm:GetParameter', 'ssm:GetParameters'],
-        effect: Effect.ALLOW,
-        resources: [
-          `arn:aws:ssm:*:*:parameter${secretEntry.usernameSsmPath}`,
-          `arn:aws:ssm:*:*:parameter${secretEntry.passwordSsmPath}`,
-          `arn:aws:ssm:*:*:parameter${secretEntry.hostnameSsmPath}`,
-          `arn:aws:ssm:*:*:parameter${secretEntry.databaseNameSsmPath}`,
-          `arn:aws:ssm:*:*:parameter${secretEntry.portSsmPath}`,
-        ],
-      }),
-    );
+    if (isSqlModelDataSourceSsmDbConnectionConfig(secretEntry)) {
+      policyStatements.push(
+        new PolicyStatement({
+          actions: ['ssm:GetParameter', 'ssm:GetParameters'],
+          effect: Effect.ALLOW,
+          resources: [
+            `arn:aws:ssm:*:*:parameter${secretEntry.usernameSsmPath}`,
+            `arn:aws:ssm:*:*:parameter${secretEntry.passwordSsmPath}`,
+            `arn:aws:ssm:*:*:parameter${secretEntry.hostnameSsmPath}`,
+            `arn:aws:ssm:*:*:parameter${secretEntry.databaseNameSsmPath}`,
+            `arn:aws:ssm:*:*:parameter${secretEntry.portSsmPath}`,
+          ],
+        }),
+      );
+    } else if (isSqlModelDataSourceSecretsManagerDbConnectionConfig(secretEntry)) {
+      policyStatements.push(
+        new PolicyStatement({
+          actions: ['secretsmanager:GetSecretValue'],
+          effect: Effect.ALLOW,
+          resources: [secretEntry.secretArn],
+        }),
+      );
+      if (secretEntry.keyArn) {
+        policyStatements.push(
+          new PolicyStatement({
+            actions: ['kms:Decrypt'],
+            effect: Effect.ALLOW,
+            resources: [secretEntry.keyArn],
+          }),
+        );
+      }
+    } else {
+      throw new Error('Unable to determine if SSM or Secrets Manager should be used for credentials.');
+    }
   }
 
   role.attachInlinePolicy(
