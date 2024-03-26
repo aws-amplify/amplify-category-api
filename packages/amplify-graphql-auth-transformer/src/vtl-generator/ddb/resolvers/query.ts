@@ -36,6 +36,7 @@ import {
   getPartitionKey,
   getRelationalPrimaryMap,
 } from '../../../utils';
+import { setHasAuthExpression } from '../../common';
 import {
   getIdentityClaimExp,
   getOwnerClaim,
@@ -43,7 +44,6 @@ import {
   iamExpression,
   lambdaExpression,
   emptyPayload,
-  setHasAuthExpression,
   generateOwnerClaimExpression,
   generateOwnerClaimListExpression,
   generateOwnerMultiClaimExpression,
@@ -555,7 +555,14 @@ export const generateAuthExpressionForQueries = (
     totalAuthExpressions.push(lambdaExpression(lambdaRoles));
   }
   if (providers.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.hasIdentityPoolId));
+    totalAuthExpressions.push(
+      iamExpression({
+        roles: iamRoles,
+        adminRolesEnabled: providers.hasAdminRolesEnabled,
+        hasIdentityPoolId: providers.hasIdentityPoolId,
+        genericIamAccessEnabled: providers.genericIamAccessEnabled,
+      }),
+    );
   }
   if (providers.hasUserPools) {
     totalAuthExpressions.push(
@@ -643,7 +650,14 @@ export const generateAuthExpressionForRelationQuery = (
     totalAuthExpressions.push(lambdaExpression(lambdaRoles));
   }
   if (providers.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.hasIdentityPoolId));
+    totalAuthExpressions.push(
+      iamExpression({
+        roles: iamRoles,
+        adminRolesEnabled: providers.hasAdminRolesEnabled,
+        hasIdentityPoolId: providers.hasIdentityPoolId,
+        genericIamAccessEnabled: providers.genericIamAccessEnabled,
+      }),
+    );
   }
   if (providers.hasUserPools) {
     totalAuthExpressions.push(

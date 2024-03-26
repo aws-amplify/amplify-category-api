@@ -1,17 +1,44 @@
-import { iff, ref, notEquals, methodCall, compoundExpression, obj, printBlock, toJson, str, not } from 'graphql-mapping-template';
+import {
+  iff,
+  ref,
+  methodCall,
+  compoundExpression,
+  obj,
+  printBlock,
+  toJson,
+  str,
+  not,
+  Expression,
+  and,
+  equals,
+  ret,
+} from 'graphql-mapping-template';
 
 const API_KEY = 'API Key Authorization';
+const IAM_AUTH_TYPE = 'IAM Authorization';
 /**
  * Util function to generate sandbox mode expression
  */
-export const generateAuthExpressionForSandboxMode = (enabled: boolean): string => {
-  let exp;
+export const generateAuthExpressionForSandboxMode = (
+  isSandboxModeEnabled: boolean,
+  genericIamAccessEnabled: boolean | undefined,
+): string => {
+  const expressions: Array<Expression> = [];
+  if (isSandboxModeEnabled) {
+    expressions.push(iff(equals(methodCall(ref('util.authType')), str(API_KEY)), ret(toJson(obj({})))));
+  }
+  if (genericIamAccessEnabled) {
+    const isNonCognitoIAMPrincipal = and([
+      equals(ref('util.authType()'), str(IAM_AUTH_TYPE)),
+      methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityPoolId')),
+      methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityId')),
+    ]);
+    expressions.push(iff(isNonCognitoIAMPrincipal, ret(toJson(obj({})))));
+  }
+  expressions.push(methodCall(ref('util.unauthorized')));
 
-  if (enabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY)), methodCall(ref('util.unauthorized')));
-  else exp = methodCall(ref('util.unauthorized'));
-
-  return printBlock(`Sandbox Mode ${enabled ? 'Enabled' : 'Disabled'}`)(
-    compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), exp), toJson(obj({}))]),
+  return printBlock(`Sandbox Mode ${isSandboxModeEnabled ? 'Enabled' : 'Disabled'}`)(
+    compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), compoundExpression(expressions)), toJson(obj({}))]),
   );
 };
 

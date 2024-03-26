@@ -10,7 +10,6 @@ import {
   list,
   methodCall,
   not,
-  notEquals,
   nul,
   obj,
   or,
@@ -22,17 +21,19 @@ import {
   set,
   str,
   toJson,
+  ret,
 } from 'graphql-mapping-template';
 import { FieldDefinitionNode } from 'graphql';
 import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
 import { API_KEY_AUTH_TYPE, DEFAULT_UNIQUE_IDENTITY_CLAIM, IDENTITY_CLAIM_DELIMITER, RoleDefinition } from '../../../utils';
+import { isNonCognitoIAMPrincipal, setHasAuthExpression } from '../../common';
 
 /**
  * Generates default RDS expression
  */
-export const generateDefaultRDSExpression = (): string => {
+export const generateDefaultRDSExpression = (iamAccessEnabled: boolean): string => {
   const exp = ref('util.unauthorized()');
-  return printBlock('Default RDS Auth Resolver')(compoundExpression([exp, toJson(obj({}))]));
+  return printBlock('Default RDS Auth Resolver')(generateIAMAccessCheck(iamAccessEnabled, compoundExpression([exp, toJson(obj({}))])));
 };
 
 export const generateAuthRulesFromRoles = (
@@ -211,11 +212,16 @@ export const constructAuthorizedInputStatement = (keyName: string): Expression =
 /**
  * Generates sandbox expression for field
  */
-export const generateSandboxExpressionForField = (sandboxEnabled: boolean): string => {
-  let exp: Expression;
-  if (sandboxEnabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY_AUTH_TYPE)), methodCall(ref('util.unauthorized')));
-  else exp = ref('util.unauthorized()');
-  return printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(compoundExpression([exp, toJson(obj({}))]));
+export const generateSandboxExpressionForField = (sandboxEnabled: boolean, genericIamAccessEnabled: boolean): string => {
+  const expressions: Array<Expression> = [];
+  if (sandboxEnabled) {
+    expressions.push(iff(equals(methodCall(ref('util.authType')), str(API_KEY_AUTH_TYPE)), ret(toJson(obj({})))));
+  }
+  if (genericIamAccessEnabled) {
+    expressions.push(iff(isNonCognitoIAMPrincipal, ret(toJson(obj({})))));
+  }
+  expressions.push(methodCall(ref('util.unauthorized')));
+  return printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(compoundExpression(expressions));
 };
 
 export const emptyPayload = toJson(raw(JSON.stringify({ version: '2018-05-29', payload: {} })));
@@ -267,4 +273,16 @@ export const generateFieldResolverForOwner = (entity: string): string => {
   ];
 
   return printBlock('Parse owner field auth for Get')(compoundExpression(expressions));
+};
+
+/**
+ * If generic IAM access is enabled add check that bypasses rules evaluation for any IAM principal
+ * that is not related to Cognito Identity Pool.
+ */
+export const generateIAMAccessCheck = (enableIamAccess: boolean, expression: Expression): Expression => {
+  if (!enableIamAccess) {
+    // No-op if generic IAM access is not enabled.
+    return expression;
+  }
+  return ifElse(isNonCognitoIAMPrincipal, compoundExpression([setHasAuthExpression, emptyPayload]), expression);
 };
