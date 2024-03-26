@@ -108,7 +108,7 @@ export const shouldBeAppliedToRDSModels = (
 ): void => {
   const modelName = definition.name.value;
   if (!isSqlModel(ctx, modelName)) {
-    throw new Error(`@${RefersToDirective.name} is only supported on RDS models. ${modelName} is not an RDS model.`);
+    throw new Error(`@${RefersToDirective.name} is only supported on SQL models. ${modelName} is not a SQL model.`);
   }
 };
 
