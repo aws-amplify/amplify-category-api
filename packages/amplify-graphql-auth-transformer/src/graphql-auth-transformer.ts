@@ -743,6 +743,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       // if the related @model does not have auth we need to add a sandbox mode expression
       relatedAuthExpression = this.getVtlGenerator(ctx, def.name.value).generateSandboxExpressionForField(
         ctx.transformParameters.sandboxModeEnabled,
+        ctx.synthParameters.enableIamAccess,
       );
     }
     // if there is field auth on the relational query then we need to add field auth read rules first
@@ -1183,10 +1184,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const providers: Set<AuthProvider> = new Set();
     // get the roles created for type
     roles.forEach((role) => providers.add(this.roleMap.get(role)!.provider));
-    if (this.configuredAuthProviders.hasAdminRolesEnabled) {
-      if (!providers.has('iam') && !providers.has('identityPool')) {
-        providers.add('identityPool');
-      }
+    if (this.configuredAuthProviders.hasAdminRolesEnabled || this.configuredAuthProviders.genericIamAccessEnabled) {
+      providers.add('identityPool');
     }
     return Array.from(providers);
   }

@@ -1,4 +1,8 @@
-import { constructCustomSqlDataSourceStrategies, getDataSourceStrategiesProvider } from '../../internal/data-source-config';
+import {
+  constructCustomSqlDataSourceStrategies,
+  getDataSourceStrategiesProvider,
+  validateDataSourceStrategy,
+} from '../../internal/data-source-config';
 import { SQLLambdaModelDataSourceStrategy, SqlModelDataSourceDbConnectionConfig } from '../../model-datasource-strategy-types';
 import { IAmplifyGraphqlDefinition } from '../../types';
 
@@ -120,5 +124,136 @@ describe('datasource config', () => {
         },
       ]),
     );
+  });
+
+  it('validateDataSourceStrategy passes when secretArn is valid', () => {
+    expect(() =>
+      validateDataSourceStrategy({
+        name: 'mysqlStrategy',
+        dbType: 'MYSQL',
+        dbConnectionConfig: {
+          secretArn: 'arn:aws:secretsmanager:us-west-2:12345678910:secret:fakearn-abdc',
+          port: 1234,
+          databaseName: '',
+          hostname: '',
+        },
+      }),
+    ).not.toThrow();
+  });
+
+  describe('validateDataSourceStrategy fails when secretArn is not a valid arn', () => {
+    it('not arn format', () => {
+      expect(() =>
+        validateDataSourceStrategy({
+          name: 'mysqlStrategy',
+          dbType: 'MYSQL',
+          dbConnectionConfig: {
+            secretArn: 'notaarn',
+            port: 1234,
+            databaseName: '',
+            hostname: '',
+          },
+        }),
+      ).toThrow('Invalid data source strategy "mysqlStrategy". The value of secretArn is not a valid Secrets Manager ARN.');
+    });
+
+    it('not secrets manager service', () => {
+      expect(() =>
+        validateDataSourceStrategy({
+          name: 'mysqlStrategy',
+          dbType: 'MYSQL',
+          dbConnectionConfig: {
+            secretArn: 'arn:aws:fakeservice:us-west-2:12345678910:secret:fakearn-abdc',
+            port: 1234,
+            databaseName: '',
+            hostname: '',
+          },
+        }),
+      ).toThrow('Invalid data source strategy "mysqlStrategy". The value of secretArn is not a valid Secrets Manager ARN.');
+    });
+
+    it('not secret resource', () => {
+      expect(() =>
+        validateDataSourceStrategy({
+          name: 'mysqlStrategy',
+          dbType: 'MYSQL',
+          dbConnectionConfig: {
+            secretArn: 'arn:aws:secretsmanager:us-west-2:12345678910:notasecret:fakearn-abdc',
+            port: 1234,
+            databaseName: '',
+            hostname: '',
+          },
+        }),
+      ).toThrow('Invalid data source strategy "mysqlStrategy". The value of secretArn is not a valid Secrets Manager ARN.');
+    });
+  });
+
+  it('validateDataSourceStrategy passes when keyArn is valid', () => {
+    expect(() =>
+      validateDataSourceStrategy({
+        name: 'mysqlStrategy',
+        dbType: 'MYSQL',
+        dbConnectionConfig: {
+          secretArn: 'arn:aws:secretsmanager:us-west-2:12345678910:secret:fakearn-abdc',
+          // random uuid, not a real arn
+          keyArn: 'arn:aws:kms:us-west-2:12345678910:key/fcb8b8b7-403b-4803-a1b6-a84c45501129',
+          port: 1234,
+          databaseName: '',
+          hostname: '',
+        },
+      }),
+    ).not.toThrow();
+  });
+
+  describe('validateDataSourceStrategy fails when keyArn is not a valid arn', () => {
+    it('not arn format', () => {
+      expect(() =>
+        validateDataSourceStrategy({
+          name: 'mysqlStrategy',
+          dbType: 'MYSQL',
+          dbConnectionConfig: {
+            secretArn: 'arn:aws:secretsmanager:us-west-2:12345678910:secret:fakearn-abdc',
+            keyArn: 'notaarn',
+            port: 1234,
+            databaseName: '',
+            hostname: '',
+          },
+        }),
+      ).toThrow('Invalid data source strategy "mysqlStrategy". The value of keyArn is not a valid KMS ARN.');
+    });
+
+    it('not kms service', () => {
+      expect(() =>
+        validateDataSourceStrategy({
+          name: 'mysqlStrategy',
+          dbType: 'MYSQL',
+          dbConnectionConfig: {
+            secretArn: 'arn:aws:secretsmanager:us-west-2:12345678910:secret:fakearn-abdc',
+            // random uuid, not a real arn
+            keyArn: 'arn:aws:otherservice:us-west-2:12345678910:key/fcb8b8b7-403b-4803-a1b6-a84c45501129',
+            port: 1234,
+            databaseName: '',
+            hostname: '',
+          },
+        }),
+      ).toThrow('Invalid data source strategy "mysqlStrategy". The value of keyArn is not a valid KMS ARN.');
+    });
+
+    it('not key resource', () => {
+      expect(() =>
+        validateDataSourceStrategy({
+          name: 'mysqlStrategy',
+          dbType: 'MYSQL',
+          dbConnectionConfig: {
+            secretArn: 'arn:aws:secretsmanager:us-west-2:12345678910:secret:fakearn-abdc',
+            // random uuid, not a real arn
+            keyArn: 'arn:aws:kms:us-west-2:12345678910:notkey/fcb8b8b7-403b-4803-a1b6-a84c45501129',
+            port: 1234,
+            databaseName: '',
+            hostname: '',
+          },
+        }),
+      ).toThrow('Invalid data source strategy "mysqlStrategy". The value of keyArn is not a valid KMS ARN.');
+    });
   });
 });

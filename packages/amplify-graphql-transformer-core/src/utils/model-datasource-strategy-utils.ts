@@ -151,6 +151,19 @@ export const isSqlStrategy = (strategy: ModelDataSourceStrategy): strategy is SQ
 };
 
 /**
+ * Provides the data source strategy for a given model
+ * @param ctx Transformer Context
+ * @param typename Model name
+ * @returns ModelDataSourceStrategyDbType
+ */
+export const getStrategyDbTypeFromModel = (ctx: DataSourceStrategiesProvider, typename: string): ModelDataSourceStrategyDbType => {
+  if (isBuiltInGraphqlType(typename)) {
+    return DDB_DB_TYPE;
+  }
+  return getModelDataSourceStrategy(ctx, typename).dbType;
+};
+
+/**
  * Normalize known variants of a database type to its canonical representation. E.g.:
  *
  * ```ts

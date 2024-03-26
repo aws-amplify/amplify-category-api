@@ -15,6 +15,8 @@ import {
   PutParameterCommandInput,
   PutParameterCommandOutput,
 } from '@aws-sdk/client-ssm';
+import { SecretsManagerClient, CreateSecretCommand, DeleteSecretCommand, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
+import { KMSClient, CreateKeyCommand, ScheduleKeyDeletionCommand } from '@aws-sdk/client-kms';
 import { knex } from 'knex';
 import axios from 'axios';
 import { sleep } from './sleep';
@@ -26,12 +28,12 @@ const DEFAULT_SECURITY_GROUP = 'default';
 const IPIFY_URL = 'https://api.ipify.org/';
 const AWSCHECKIP_URL = 'https://checkip.amazonaws.com/';
 
-type RDSConfig = {
+export type RDSConfig = {
   identifier: string;
   engine: 'mysql' | 'postgres';
   dbname: string;
   username: string;
-  password: string;
+  password?: string;
   region: string;
   instanceClass?: string;
   storage?: number;
@@ -40,7 +42,7 @@ type RDSConfig = {
 
 /**
  * Creates a new RDS instance using the given input configuration and returns the details of the created RDS instance.
- * @param config Configuration of the database instance
+ * @param config Configuration of the database instance. If password is not passed an RDS managed password will be created.
  * @returns EndPoint address, port and database name of the created RDS instance.
  */
 export const createRDSInstance = async (
@@ -50,8 +52,10 @@ export const createRDSInstance = async (
   port: number;
   dbName: string;
   dbInstance: DBInstance;
+  password: string;
+  managedSecretArn: string;
 }> => {
-  const client = new RDSClient({ region: config.region });
+  const rdsClient = new RDSClient({ region: config.region });
   const params: CreateDBInstanceCommandInput = {
     /** input parameters */
     DBInstanceClass: config.instanceClass ?? DEFAULT_DB_INSTANCE_TYPE,
@@ -63,17 +67,20 @@ export const createRDSInstance = async (
     MasterUserPassword: config.password,
     PubliclyAccessible: config.publiclyAccessible ?? true,
     CACertificateIdentifier: 'rds-ca-rsa2048-g1',
+    // use RDS managed password, then retrieve the password and store in all other credential store options
+    ManageMasterUserPassword: !config.password,
   };
   const command = new CreateDBInstanceCommand(params);
 
   try {
-    await client.send(command);
+    const rdsResponse = await rdsClient.send(command);
+
     const availableResponse = await waitUntilDBInstanceAvailable(
       {
         maxWaitTime: 3600,
         maxDelay: 120,
         minDelay: 60,
-        client,
+        client: rdsClient,
       },
       {
         DBInstanceIdentifier: config.identifier,
@@ -88,12 +95,29 @@ export const createRDSInstance = async (
     if (!dbInstance) {
       throw new Error('RDS Instance details are missing.');
     }
+    let password = config.password;
+    let masterUserSecret;
+    if (!config.password) {
+      masterUserSecret = rdsResponse.DBInstance?.MasterUserSecret;
+      const secretsManagerClient = new SecretsManagerClient({ region: config.region });
+      const secretManagerCommand = new GetSecretValueCommand({
+        SecretId: masterUserSecret.SecretArn,
+      });
+      const secretsManagerResponse = await secretsManagerClient.send(secretManagerCommand);
+      const { password: managedPassword } = JSON.parse(secretsManagerResponse.SecretString);
+      if (!managedPassword) {
+        throw new Error('Unable to get RDS instance master user password');
+      }
+      password = managedPassword;
+    }
 
     return {
       endpoint: dbInstance.Endpoint.Address as string,
       port: dbInstance.Endpoint.Port as number,
       dbName: dbInstance.DBName as string,
       dbInstance,
+      password,
+      managedSecretArn: masterUserSecret?.SecretArn,
     };
   } catch (error) {
     console.error(error);
@@ -111,7 +135,7 @@ export const createRDSInstance = async (
 export const setupRDSInstanceAndData = async (
   config: RDSConfig,
   queries?: string[],
-): Promise<{ endpoint: string; port: number; dbName: string; dbInstance: DBInstance }> => {
+): Promise<{ endpoint: string; port: number; dbName: string; dbInstance: DBInstance; password: string; managedSecretArn: string }> => {
   console.log(`Creating RDS ${config.engine} instance with identifier ${config.identifier}`);
   const dbConfig = await createRDSInstance(config);
 
@@ -135,7 +159,7 @@ export const setupRDSInstanceAndData = async (
       host: dbConfig.endpoint,
       port: dbConfig.port,
       username: config.username,
-      password: config.password,
+      password: dbConfig.password,
       database: config.dbname,
     });
 
@@ -434,6 +458,46 @@ export const storeDbConnectionConfig = async (options: {
   await Promise.all(promises);
 
   return paths;
+};
+
+export const deleteDbConnectionConfigWithSecretsManager = async (options: {
+  region: string;
+  secretArn: string;
+  keyArn?: string;
+}): Promise<void> => {
+  console.log('Deleting secret from Secrets Manager');
+  const secretsManagerClient = new SecretsManagerClient({ region: options.region });
+
+  await secretsManagerClient.send(new DeleteSecretCommand({ SecretId: options.secretArn }));
+  if (options.keyArn) {
+    const kmsClient = new KMSClient({ region: options.region });
+    // 7 days is the lowest possible value for the pending window
+    await kmsClient.send(new ScheduleKeyDeletionCommand({ KeyId: options.keyArn, PendingWindowInDays: 7 }));
+  }
+};
+
+export const storeDbConnectionConfigWithSecretsManager = async (options: {
+  region: string;
+  secretName: string;
+  username: string;
+  password: string;
+  useCustomEncryptionKey?: boolean;
+}): Promise<{ secretArn: string; keyArn?: string }> => {
+  let encryptionKey = undefined;
+  if (options.useCustomEncryptionKey) {
+    const kmsClient = new KMSClient({ region: options.region });
+    const response = await kmsClient.send(new CreateKeyCommand({}));
+    encryptionKey = response.KeyMetadata;
+  }
+  const secretsManagerClient = new SecretsManagerClient({ region: options.region });
+  const response = await secretsManagerClient.send(
+    new CreateSecretCommand({
+      Name: options.secretName,
+      SecretString: JSON.stringify({ username: options.username, password: options.password }),
+      KmsKeyId: encryptionKey?.KeyId,
+    }),
+  );
+  return { secretArn: response.ARN, keyArn: encryptionKey?.Arn };
 };
 
 export const extractVpcConfigFromDbInstance = (

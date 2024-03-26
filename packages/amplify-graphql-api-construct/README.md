@@ -2623,7 +2623,7 @@ const sQLLambdaModelDataSourceStrategy: SQLLambdaModelDataSourceStrategy = { ...
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.dbConnectionConfig">dbConnectionConfig</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig">SqlModelDataSourceDbConnectionConfig</a></code> | The parameters the Lambda data source will use to connect to the database. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.dbConnectionConfig">dbConnectionConfig</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceSecretsManagerDbConnectionConfig">SqlModelDataSourceSecretsManagerDbConnectionConfig</a> \| <a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceSsmDbConnectionConfig">SqlModelDataSourceSsmDbConnectionConfig</a></code> | The parameters the Lambda data source will use to connect to the database. |
 | <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.dbType">dbType</a></code> | <code>string</code> | The type of the SQL database used to process model operations for this definition. |
 | <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.name">name</a></code> | <code>string</code> | The name of the strategy. |
 | <code><a href="#@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.customSqlStatements">customSqlStatements</a></code> | <code>{[ key: string ]: string}</code> | Custom SQL statements. |
@@ -2635,10 +2635,10 @@ const sQLLambdaModelDataSourceStrategy: SQLLambdaModelDataSourceStrategy = { ...
 ##### `dbConnectionConfig`<sup>Required</sup> <a name="dbConnectionConfig" id="@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy.property.dbConnectionConfig"></a>
 
 ```typescript
-public readonly dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
+public readonly dbConnectionConfig: SqlModelDataSourceSecretsManagerDbConnectionConfig | SqlModelDataSourceSsmDbConnectionConfig;
 ```
 
-- *Type:* <a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig">SqlModelDataSourceDbConnectionConfig</a>
+- *Type:* <a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceSecretsManagerDbConnectionConfig">SqlModelDataSourceSecretsManagerDbConnectionConfig</a> | <a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceSsmDbConnectionConfig">SqlModelDataSourceSsmDbConnectionConfig</a>
 
 The parameters the Lambda data source will use to connect to the database.
 
@@ -2710,33 +2710,91 @@ The configuration of the VPC into which to install the Lambda.
 
 ---
 
-### SqlModelDataSourceDbConnectionConfig <a name="SqlModelDataSourceDbConnectionConfig" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig"></a>
+### SqlModelDataSourceSecretsManagerDbConnectionConfig <a name="SqlModelDataSourceSecretsManagerDbConnectionConfig" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceSecretsManagerDbConnectionConfig"></a>
 
-The Secure Systems Manager parameter paths the Lambda data source will use to connect to the database.
-
-These parameters are retrieved from Secure Systems Manager in the same region as the Lambda.
-
-#### Initializer <a name="Initializer" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig.Initializer"></a>
+#### Initializer <a name="Initializer" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceSecretsManagerDbConnectionConfig.Initializer"></a>
 
 ```typescript
-import { SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-api-construct'
+import { SqlModelDataSourceSecretsManagerDbConnectionConfig } from '@aws-amplify/graphql-api-construct'
 
-const sqlModelDataSourceDbConnectionConfig: SqlModelDataSourceDbConnectionConfig = { ... }
+const sqlModelDataSourceSecretsManagerDbConnectionConfig: SqlModelDataSourceSecretsManagerDbConnectionConfig = { ... }
 ```
 
 #### Properties <a name="Properties" id="Properties"></a>
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig.property.databaseNameSsmPath">databaseNameSsmPath</a></code> | <code>string</code> | The Secure Systems Manager parameter containing the database name. |
-| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig.property.hostnameSsmPath">hostnameSsmPath</a></code> | <code>string</code> | The Secure Systems Manager parameter containing the hostname of the database. |
-| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig.property.passwordSsmPath">passwordSsmPath</a></code> | <code>string</code> | The Secure Systems Manager parameter containing the password to use when connecting to the database. |
-| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig.property.portSsmPath">portSsmPath</a></code> | <code>string</code> | The Secure Systems Manager parameter containing the port number of the database proxy, cluster, or instance. |
-| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig.property.usernameSsmPath">usernameSsmPath</a></code> | <code>string</code> | The Secure Systems Manager parameter containing the username to use when connecting to the database. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceSecretsManagerDbConnectionConfig.property.databaseName">databaseName</a></code> | <code>string</code> | database name. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceSecretsManagerDbConnectionConfig.property.port">port</a></code> | <code>number</code> | port number of the database proxy, cluster, or instance. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceSecretsManagerDbConnectionConfig.property.secretArn">secretArn</a></code> | <code>string</code> | The arn of the managed secret with username, password, and hostname to use when connecting to the database. |
 
 ---
 
-##### `databaseNameSsmPath`<sup>Required</sup> <a name="databaseNameSsmPath" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig.property.databaseNameSsmPath"></a>
+##### `databaseName`<sup>Required</sup> <a name="databaseName" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceSecretsManagerDbConnectionConfig.property.databaseName"></a>
+
+```typescript
+public readonly databaseName: string;
+```
+
+- *Type:* string
+
+database name.
+
+---
+
+##### `port`<sup>Required</sup> <a name="port" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceSecretsManagerDbConnectionConfig.property.port"></a>
+
+```typescript
+public readonly port: number;
+```
+
+- *Type:* number
+
+port number of the database proxy, cluster, or instance.
+
+---
+
+##### `secretArn`<sup>Required</sup> <a name="secretArn" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceSecretsManagerDbConnectionConfig.property.secretArn"></a>
+
+```typescript
+public readonly secretArn: string;
+```
+
+- *Type:* string
+
+The arn of the managed secret with username, password, and hostname to use when connecting to the database.
+
+*
+
+---
+
+### SqlModelDataSourceSsmDbConnectionConfig <a name="SqlModelDataSourceSsmDbConnectionConfig" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceSsmDbConnectionConfig"></a>
+
+The Secure Systems Manager parameter paths the Lambda data source will use to connect to the database.
+
+These parameters are retrieved from Secure Systems Manager in the same region as the Lambda.
+
+#### Initializer <a name="Initializer" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceSsmDbConnectionConfig.Initializer"></a>
+
+```typescript
+import { SqlModelDataSourceSsmDbConnectionConfig } from '@aws-amplify/graphql-api-construct'
+
+const sqlModelDataSourceSsmDbConnectionConfig: SqlModelDataSourceSsmDbConnectionConfig = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceSsmDbConnectionConfig.property.databaseNameSsmPath">databaseNameSsmPath</a></code> | <code>string</code> | The Secure Systems Manager parameter containing the database name. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceSsmDbConnectionConfig.property.hostnameSsmPath">hostnameSsmPath</a></code> | <code>string</code> | The Secure Systems Manager parameter containing the hostname of the database. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceSsmDbConnectionConfig.property.passwordSsmPath">passwordSsmPath</a></code> | <code>string</code> | The Secure Systems Manager parameter containing the password to use when connecting to the database. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceSsmDbConnectionConfig.property.portSsmPath">portSsmPath</a></code> | <code>string</code> | The Secure Systems Manager parameter containing the port number of the database proxy, cluster, or instance. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceSsmDbConnectionConfig.property.usernameSsmPath">usernameSsmPath</a></code> | <code>string</code> | The Secure Systems Manager parameter containing the username to use when connecting to the database. |
+
+---
+
+##### `databaseNameSsmPath`<sup>Required</sup> <a name="databaseNameSsmPath" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceSsmDbConnectionConfig.property.databaseNameSsmPath"></a>
 
 ```typescript
 public readonly databaseNameSsmPath: string;
@@ -2748,7 +2806,7 @@ The Secure Systems Manager parameter containing the database name.
 
 ---
 
-##### `hostnameSsmPath`<sup>Required</sup> <a name="hostnameSsmPath" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig.property.hostnameSsmPath"></a>
+##### `hostnameSsmPath`<sup>Required</sup> <a name="hostnameSsmPath" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceSsmDbConnectionConfig.property.hostnameSsmPath"></a>
 
 ```typescript
 public readonly hostnameSsmPath: string;
@@ -2763,7 +2821,7 @@ of a database proxy, cluster, or instance.
 
 ---
 
-##### `passwordSsmPath`<sup>Required</sup> <a name="passwordSsmPath" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig.property.passwordSsmPath"></a>
+##### `passwordSsmPath`<sup>Required</sup> <a name="passwordSsmPath" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceSsmDbConnectionConfig.property.passwordSsmPath"></a>
 
 ```typescript
 public readonly passwordSsmPath: string;
@@ -2775,7 +2833,7 @@ The Secure Systems Manager parameter containing the password to use when connect
 
 ---
 
-##### `portSsmPath`<sup>Required</sup> <a name="portSsmPath" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig.property.portSsmPath"></a>
+##### `portSsmPath`<sup>Required</sup> <a name="portSsmPath" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceSsmDbConnectionConfig.property.portSsmPath"></a>
 
 ```typescript
 public readonly portSsmPath: string;
@@ -2787,7 +2845,7 @@ The Secure Systems Manager parameter containing the port number of the database 
 
 ---
 
-##### `usernameSsmPath`<sup>Required</sup> <a name="usernameSsmPath" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceDbConnectionConfig.property.usernameSsmPath"></a>
+##### `usernameSsmPath`<sup>Required</sup> <a name="usernameSsmPath" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceSsmDbConnectionConfig.property.usernameSsmPath"></a>
 
 ```typescript
 public readonly usernameSsmPath: string;

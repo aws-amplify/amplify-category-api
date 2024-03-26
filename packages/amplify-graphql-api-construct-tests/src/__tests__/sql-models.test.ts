@@ -1,72 +1,45 @@
 import * as path from 'path';
-import * as fs from 'fs-extra';
-import {
-  createNewProjectDir,
-  deleteDBInstance,
-  deleteDbConnectionConfig,
-  deleteProjectDir,
-  extractVpcConfigFromDbInstance,
-  setupRDSInstanceAndData,
-  storeDbConnectionConfig,
-} from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import { LambdaClient, GetProvisionedConcurrencyConfigCommand } from '@aws-sdk/client-lambda';
 import generator from 'generate-password';
 import { getResourceNamesForStrategyName } from '@aws-amplify/graphql-transformer-core';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { graphql } from '../graphql-request';
+import { SqlDatatabaseController } from '../sql-datatabase-controller';
 
 jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
 
-interface DBDetails {
-  endpoint: string;
-  port: number;
-  dbName: string;
-  vpcConfig: {
-    vpcId: string;
-    securityGroupIds: string[];
-    subnetAvailabilityZones: {
-      subnetId: string;
-      availabilityZone: string;
-    }[];
-  };
-  ssmPaths: {
-    hostnameSsmPath: string;
-    portSsmPath: string;
-    usernameSsmPath: string;
-    passwordSsmPath: string;
-    databaseNameSsmPath: string;
-  };
-}
-
 describe('CDK GraphQL Transformer', () => {
   let projRoot: string;
-  const projFolderName = 'sqlmodels';
+  const projFolderName = 'sqlmodelsssm';
 
-  const [username, password, identifier] = generator.generateMultiple(3);
+  const [username, identifier] = generator.generateMultiple(2);
 
   const region = process.env.CLI_REGION ?? 'us-west-2';
 
   const dbname = 'default_db';
 
-  let dbDetails: DBDetails;
+  const databaseController: SqlDatatabaseController = new SqlDatatabaseController(
+    ['CREATE TABLE todos (id VARCHAR(40) PRIMARY KEY, description VARCHAR(256))'],
+    {
+      identifier,
+      engine: 'mysql',
+      dbname,
+      username,
+      region,
+    },
+  );
 
   // DO NOT CHANGE THIS VALUE: The test uses it to find resources by name. It is hardcoded in the sql-models backend app
   const strategyName = 'MySqlDBStrategy';
   const resourceNames = getResourceNamesForStrategyName(strategyName);
 
   beforeAll(async () => {
-    dbDetails = await setupDatabase({
-      identifier,
-      engine: 'mysql',
-      dbname,
-      username,
-      password,
-      region,
-    });
+    await databaseController.setupDatabase();
   });
 
   afterAll(async () => {
-    await cleanupDatabase({ identifier: identifier, region, dbDetails });
+    await databaseController.cleanupDatabase();
   });
 
   beforeEach(async () => {
@@ -83,10 +56,26 @@ describe('CDK GraphQL Transformer', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('creates a GraphQL API from SQL-based models', async () => {
+  test('creates a GraphQL API from SQL-based models with Secrets Manager Credential Store default encryption key', async () => {
+    await testGraphQLAPI('secretsManager');
+  });
+
+  test('creates a GraphQL API from SQL-based models with Secrets Manager Credential Store custom encryption key', async () => {
+    await testGraphQLAPI('secretsManagerCustomKey');
+  });
+
+  test('creates a GraphQL API from SQL-based models with Secrets Manager Credential Store default encryption key', async () => {
+    await testGraphQLAPI('secretsManagerManagedSecret');
+  });
+
+  test('creates a GraphQL API from SQL-based models with SSM Credential Store', async () => {
+    await testGraphQLAPI('ssm');
+  });
+
+  const testGraphQLAPI = async (connectionConfigName: string): Promise<void> => {
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'sql-models'));
     const name = await initCDKProject(projRoot, templatePath);
-    writeDbDetails(dbDetails, projRoot);
+    databaseController.writeDbDetails(projRoot, connectionConfigName);
     const outputs = await cdkDeploy(projRoot, '--all');
     const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
 
@@ -96,13 +85,13 @@ describe('CDK GraphQL Transformer', () => {
       apiEndpoint,
       apiKey,
       /* GraphQL */ `
-        mutation CREATE_TODO {
-          createTodo(input: { description: "${description}" }) {
-            id
-            description
-          }
+      mutation CREATE_TODO {
+        createTodo(input: { description: "${description}" }) {
+          id
+          description
         }
-      `,
+      }
+    `,
     );
 
     const todo = result.body.data.createTodo;
@@ -135,73 +124,33 @@ describe('CDK GraphQL Transformer', () => {
     });
     const response = await client.send(command);
     expect(response.RequestedProvisionedConcurrentExecutions).toEqual(2);
-  });
-});
 
-const setupDatabase = async (options: {
-  identifier: string;
-  engine: 'mysql' | 'postgres';
-  dbname: string;
-  username: string;
-  password: string;
-  region: string;
-}): Promise<DBDetails> => {
-  const { identifier, dbname, username, password, region } = options;
+    await graphql(
+      apiEndpoint,
+      apiKey,
+      /* GraphQL */ `
+        mutation DELETE_TODO {
+          deleteTodo(input: { id: "${todo.id}" }) {
+            id
+          }
+        }
+      `,
+    );
+    const emptyListResult = await graphql(
+      apiEndpoint,
+      apiKey,
+      /* GraphQL */ `
+        query LIST_TODOS {
+          listTodos {
+            items {
+              id
+              description
+            }
+          }
+        }
+      `,
+    );
 
-  console.log(`Setting up database '${identifier}'`);
-
-  const queries = ['CREATE TABLE todos (id VARCHAR(40) PRIMARY KEY, description VARCHAR(256))'];
-
-  const dbConfig = await setupRDSInstanceAndData(options, queries);
-  if (!dbConfig) {
-    throw new Error('Failed to setup RDS instance');
-  }
-
-  const ssmPaths = await storeDbConnectionConfig({
-    region,
-    pathPrefix: `/${identifier}/test`,
-    hostname: dbConfig.endpoint,
-    port: dbConfig.port,
-    databaseName: dbname,
-    username,
-    password,
-  });
-  if (!ssmPaths) {
-    throw new Error('Failed to store db connection config');
-  }
-  console.log(`Stored db connection config in SSM: ${JSON.stringify(ssmPaths)}`);
-
-  return {
-    endpoint: dbConfig.endpoint,
-    port: dbConfig.port,
-    dbName: dbname,
-    vpcConfig: extractVpcConfigFromDbInstance(dbConfig.dbInstance),
-    ssmPaths,
+    expect(emptyListResult.body.data.listTodos.items.length).toEqual(0);
   };
-};
-
-const cleanupDatabase = async (options: { identifier: string; region: string; dbDetails: DBDetails }): Promise<void> => {
-  const { identifier, region, dbDetails } = options;
-  await deleteDBInstance(identifier, region);
-
-  await deleteDbConnectionConfig({
-    region,
-    ...dbDetails.ssmPaths,
-  });
-};
-
-/**
- * Writes the specified DB details to a file named `db-details.json` in the specified directory. Used to pass db configs from setup code to
- * the CDK app under test.
- *
- * **NOTE** Do not call this until the CDK project is initialized: `cdk init` fails if the working directory is not empty.
- *
- * @param dbDetails the details object
- * @param projRoot the destination directory to write the `db-details.json` file to
- */
-const writeDbDetails = (dbDetails: DBDetails, projRoot: string): void => {
-  const detailsStr = JSON.stringify(dbDetails);
-  const filePath = path.join(projRoot, 'db-details.json');
-  fs.writeFileSync(filePath, detailsStr);
-  console.log(`Wrote ${filePath}`);
-};
+});
