@@ -85,12 +85,12 @@ export const schema = configure({
     database: {
         engine: \\"postgresql\\",
         connectionUri: secret(\\"CONN_STR\\"),
-        vpc: {
+        vpcConfig: {
             vpcId: \\"123\\",
             securityGroupIds: [
                 \\"sb1\\"
             ],
-            subnetAvailabilityZoneConfig: [
+            subnetAvailabilityZones: [
                 {
                     subnetId: \\"sb1\\",
                     availabilityZone: \\"az1\\"
@@ -119,14 +119,14 @@ export const schema = configure({
     database: {
         engine: \\"mysql\\",
         connectionUri: secret(\\"CONN_STR\\"),
-        vpc: {
+        vpcConfig: {
             vpcId: \\"123\\",
             securityGroupIds: [
                 \\"sb1\\",
                 \\"sb2\\",
                 \\"sb3\\"
             ],
-            subnetAvailabilityZoneConfig: [
+            subnetAvailabilityZones: [
                 {
                     subnetId: \\"sb1\\",
                     availabilityZone: \\"az1\\"
