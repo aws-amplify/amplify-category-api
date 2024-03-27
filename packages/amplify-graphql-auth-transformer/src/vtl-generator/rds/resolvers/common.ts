@@ -25,7 +25,13 @@ import {
 } from 'graphql-mapping-template';
 import { FieldDefinitionNode } from 'graphql';
 import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
-import { API_KEY_AUTH_TYPE, DEFAULT_UNIQUE_IDENTITY_CLAIM, IDENTITY_CLAIM_DELIMITER, RoleDefinition } from '../../../utils';
+import {
+  API_KEY_AUTH_TYPE,
+  DEFAULT_UNIQUE_IDENTITY_CLAIM,
+  IDENTITY_CLAIM_DELIMITER,
+  isAuthProviderEqual,
+  RoleDefinition,
+} from '../../../utils';
 import { isNonCognitoIAMPrincipal, setHasAuthExpression } from '../../common';
 
 /**
@@ -77,7 +83,7 @@ const convertAuthRoleToVtl = (
   const allowedFields = getAllowedFields(role, fields).map((field) => str(field));
   const showAllowedFields = allowedFields && !hideAllowedFields && allowedFields.length > 0;
   // Api Key
-  if (role.provider === 'apiKey') {
+  if (isAuthProviderEqual(role.provider, 'apiKey')) {
     return qref(
       methodCall(
         ref('authRules.add'),
@@ -91,7 +97,7 @@ const convertAuthRoleToVtl = (
   }
 
   // Lambda Authorizer
-  else if (role.provider === 'function') {
+  else if (isAuthProviderEqual(role.provider, 'function')) {
     return qref(
       methodCall(
         ref('authRules.add'),
@@ -104,8 +110,8 @@ const convertAuthRoleToVtl = (
     );
   }
 
-  // IAM
-  else if (role.provider === 'iam') {
+  // Identity Pool (formerly known as IAM)
+  else if (isAuthProviderEqual(role.provider, 'identityPool')) {
     return qref(
       methodCall(
         ref('authRules.add'),
@@ -121,7 +127,7 @@ const convertAuthRoleToVtl = (
   }
 
   // User Pools or OIDC
-  else if (role.provider === 'userPools' || role.provider === 'oidc') {
+  else if (isAuthProviderEqual(role.provider, 'userPools') || isAuthProviderEqual(role.provider, 'oidc')) {
     if (role.strategy === 'private') {
       return qref(
         methodCall(
@@ -147,7 +153,7 @@ const convertAuthRoleToVtl = (
         ),
       );
     } else if (role.strategy === 'owner') {
-      const usingCognitoDefaultClaim = role.claim === DEFAULT_UNIQUE_IDENTITY_CLAIM && role.provider === 'userPools';
+      const usingCognitoDefaultClaim = role.claim === DEFAULT_UNIQUE_IDENTITY_CLAIM && isAuthProviderEqual(role.provider, 'userPools');
       return qref(
         methodCall(
           ref('authRules.add'),

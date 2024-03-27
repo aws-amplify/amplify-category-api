@@ -1,6 +1,6 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerLog, TransformerLogLevel, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthTransformer } from '../../graphql-auth-transformer';
 import { defaultIdentityClaimWarning } from '../../utils/warnings';
 
@@ -334,5 +334,63 @@ type Invoice
 }
 `;
     expect(executeTransformAndReturnLogs(twoCaseMismatchSchema)).toMatchSnapshot();
+  });
+});
+
+describe('deprecatedIAMProviderWarning', () => {
+  const executeTransformAndReturnLogs = (schema: string): Array<TransformerLog> =>
+    testTransform({
+      schema,
+      authConfig: {
+        defaultAuthentication: { authenticationType: 'AWS_IAM' },
+        additionalAuthenticationProviders: [],
+      },
+      transformers: [new ModelTransformer(), new AuthTransformer()],
+      transformParameters: {
+        useSubUsernameForDefaultIdentityClaim: false,
+      },
+    }).logs;
+
+  test('does not show message when identityPool provider is used', () => {
+    const schema = `
+type Invoice
+  @model
+  @auth(
+    rules: [
+      { allow: private, provider: identityPool }
+    ]
+  ) {
+  id: ID!
+  items: [String]
+  storeId: ID!
+  customerId: ID!
+}
+`;
+    const logs = executeTransformAndReturnLogs(schema);
+    expect(logs.length).toBe(0);
+  });
+
+  test('shows message when iam provider is used', () => {
+    const schema = `
+type Invoice
+  @model
+  @auth(
+    rules: [
+      { allow: private, provider: iam }
+    ]
+  ) {
+  id: ID!
+  items: [String]
+  storeId: ID!
+  customerId: ID!
+}
+`;
+    const logs = executeTransformAndReturnLogs(schema);
+    expect(logs.length).toBe(1);
+    const log = logs[0];
+    expect(log.level).toBe(TransformerLogLevel.WARN);
+    expect(log.message).toBe(
+      "WARNING: Schema is using an @auth directive with deprecated provider 'iam'. Replace 'iam' provider with 'identityPool' provider.",
+    );
   });
 });

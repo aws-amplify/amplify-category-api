@@ -107,6 +107,52 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **"
 `;
 
+exports[`subscriptions generateAuthExpressionForSubscriptions identityPool renders for identityPool auth with no admin roles 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( !$isAuthorized )
+    #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+      #set( $isAuthorized = true )
+    #end
+  #end
+  #if( !$isAuthorized )
+    #if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == $ctx.stash.identityPoolId && $ctx.identity.cognitoIdentityAuthType == \\"authenticated\\") )
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`subscriptions generateAuthExpressionForSubscriptions identityPool renders for simple identityPool auth 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( !$isAuthorized )
+    #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+      #set( $isAuthorized = true )
+    #end
+  #end
+  #if( !$isAuthorized )
+    #if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == $ctx.stash.identityPoolId && $ctx.identity.cognitoIdentityAuthType == \\"authenticated\\") )
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
 exports[`subscriptions generateAuthExpressionForSubscriptions lambda renders for simple lambda auth 1`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
@@ -384,7 +430,208 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **"
 `;
 
+exports[`subscriptions multi-auth renders for apiKey + identityPool + userPools 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"API Key Authorization\\" )
+  #set( $isAuthorized = true )
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( !$isAuthorized )
+    #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+      #set( $isAuthorized = true )
+    #end
+  #end
+  #if( !$isAuthorized )
+    #if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == $ctx.stash.identityPoolId && $ctx.identity.cognitoIdentityAuthType == \\"authenticated\\") )
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $staticGroupRoles = [{\\"claim\\":\\"cognito:groups\\",\\"entity\\":\\"Admin\\"}] )
+    #foreach( $groupRole in $staticGroupRoles )
+      #set( $groupsInToken = $util.defaultIfNull($ctx.identity.claims.get($groupRole.claim), []) )
+      #if( $groupsInToken.contains($groupRole.entity) )
+        #set( $isAuthorized = true )
+        #break
+      #end
+    #end
+  #end
+  #set( $hasValidOwnerArgument = false )
+  #set( $authRuntimeFilter = [] )
+  #set( $authOwnerRuntimeFilter = [] )
+  #set( $authGroupRuntimeFilter = [] )
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim0) )
+
+    #set( $ownerClaimsList0 = [] )
+    $util.qr($authOwnerRuntimeFilter.add({ \\"owner\\": { \\"eq\\": $ownerClaim0 } }))
+    #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.owner, null) )
+    #if( !$isAuthorized && !$util.isNullOrEmpty($ownerEntity0) )
+      #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #set( $isAuthorized = true )
+        #set( $hasValidOwnerArgument = true )
+      #else
+        $util.unauthorized()
+      #end
+    #end
+  #end
+  #set( $groupClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #if( $util.isString($groupClaim1) )
+    #if( $util.isList($util.parseJson($groupClaim1)) )
+      #set( $groupClaim1 = $util.parseJson($groupClaim1) )
+    #else
+      #set( $groupClaim1 = [$groupClaim1] )
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($groupClaim1) )
+    $util.qr($authGroupRuntimeFilter.add({ \\"group\\": { \\"in\\": $groupClaim1 } }))
+  #end
+  ## Apply dynamic roles auth if not previously authorized by static groups and owner argument **
+  #if( $authOwnerRuntimeFilter.size() > 0 )
+    $util.qr($authRuntimeFilter.addAll($authOwnerRuntimeFilter))
+  #end
+  #if( $authGroupRuntimeFilter.size() > 0 )
+    $util.qr($authRuntimeFilter.addAll($authGroupRuntimeFilter))
+  #end
+  #set( $filterArgsSize = 0 )
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filterArgsSize = $ctx.args.filter.size() )
+  #end
+  #set( $isOwnerAuthAuthorizedAndNoOtherFilters = $hasValidOwnerArgument && $authRuntimeFilter.size() == 1 && $filterArgsSize == 0 )
+  #set( $isOwnerOrDynamicAuthAuthorizedWithFilters = (!$isAuthorized || $hasValidOwnerArgument) && $authRuntimeFilter.size() > 0 )
+  #if( !$isOwnerAuthAuthorizedAndNoOtherFilters && $isOwnerOrDynamicAuthAuthorizedWithFilters )
+    #if( $util.isNullOrEmpty($ctx.args.filter) )
+      #set( $ctx.args.filter = { \\"or\\": $authRuntimeFilter } )
+    #else
+      #set( $ctx.args.filter = { \\"and\\": [ { \\"or\\": $authRuntimeFilter }, $ctx.args.filter ]} )
+    #end
+    #set( $isAuthorized = true )
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`subscriptions multi-auth renders for apiKey + identityPool 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"API Key Authorization\\" )
+  #set( $isAuthorized = true )
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( !$isAuthorized )
+    #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+      #set( $isAuthorized = true )
+    #end
+  #end
+  #if( !$isAuthorized )
+    #if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == $ctx.stash.identityPoolId && $ctx.identity.cognitoIdentityAuthType == \\"authenticated\\") )
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
 exports[`subscriptions multi-auth renders for iam + userPools 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( !$isAuthorized )
+    #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+      #set( $isAuthorized = true )
+    #end
+  #end
+  #if( !$isAuthorized )
+    #if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == $ctx.stash.identityPoolId && $ctx.identity.cognitoIdentityAuthType == \\"authenticated\\") )
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $staticGroupRoles = [{\\"claim\\":\\"cognito:groups\\",\\"entity\\":\\"Admin\\"}] )
+    #foreach( $groupRole in $staticGroupRoles )
+      #set( $groupsInToken = $util.defaultIfNull($ctx.identity.claims.get($groupRole.claim), []) )
+      #if( $groupsInToken.contains($groupRole.entity) )
+        #set( $isAuthorized = true )
+        #break
+      #end
+    #end
+  #end
+  #set( $hasValidOwnerArgument = false )
+  #set( $authRuntimeFilter = [] )
+  #set( $authOwnerRuntimeFilter = [] )
+  #set( $authGroupRuntimeFilter = [] )
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim0) )
+
+    #set( $ownerClaimsList0 = [] )
+    $util.qr($authOwnerRuntimeFilter.add({ \\"owner\\": { \\"eq\\": $ownerClaim0 } }))
+    #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.owner, null) )
+    #if( !$isAuthorized && !$util.isNullOrEmpty($ownerEntity0) )
+      #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #set( $isAuthorized = true )
+        #set( $hasValidOwnerArgument = true )
+      #else
+        $util.unauthorized()
+      #end
+    #end
+  #end
+  #set( $groupClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #if( $util.isString($groupClaim1) )
+    #if( $util.isList($util.parseJson($groupClaim1)) )
+      #set( $groupClaim1 = $util.parseJson($groupClaim1) )
+    #else
+      #set( $groupClaim1 = [$groupClaim1] )
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($groupClaim1) )
+    $util.qr($authGroupRuntimeFilter.add({ \\"group\\": { \\"in\\": $groupClaim1 } }))
+  #end
+  ## Apply dynamic roles auth if not previously authorized by static groups and owner argument **
+  #if( $authOwnerRuntimeFilter.size() > 0 )
+    $util.qr($authRuntimeFilter.addAll($authOwnerRuntimeFilter))
+  #end
+  #if( $authGroupRuntimeFilter.size() > 0 )
+    $util.qr($authRuntimeFilter.addAll($authGroupRuntimeFilter))
+  #end
+  #set( $filterArgsSize = 0 )
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filterArgsSize = $ctx.args.filter.size() )
+  #end
+  #set( $isOwnerAuthAuthorizedAndNoOtherFilters = $hasValidOwnerArgument && $authRuntimeFilter.size() == 1 && $filterArgsSize == 0 )
+  #set( $isOwnerOrDynamicAuthAuthorizedWithFilters = (!$isAuthorized || $hasValidOwnerArgument) && $authRuntimeFilter.size() > 0 )
+  #if( !$isOwnerAuthAuthorizedAndNoOtherFilters && $isOwnerOrDynamicAuthAuthorizedWithFilters )
+    #if( $util.isNullOrEmpty($ctx.args.filter) )
+      #set( $ctx.args.filter = { \\"or\\": $authRuntimeFilter } )
+    #else
+      #set( $ctx.args.filter = { \\"and\\": [ { \\"or\\": $authRuntimeFilter }, $ctx.args.filter ]} )
+    #end
+    #set( $isAuthorized = true )
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`subscriptions multi-auth renders for identityPool + userPools 1`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )

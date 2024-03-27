@@ -1,5 +1,155 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Verify RDS Model level Auth rules on queries: should successfully transform IdentityPool auth rules 1`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"private\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.authRole,
+  \\"cognitoIdentityPoolId\\": $ctx.stash.identityPoolId
+}))
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+  #set( $ctx.stash.authFilter = $authResult.authFilter )
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on queries: should successfully transform IdentityPool auth rules 2`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on queries: should successfully transform IdentityPool auth rules 3`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"private\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.authRole,
+  \\"cognitoIdentityPoolId\\": $ctx.stash.identityPoolId
+}))
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+  #set( $ctx.stash.authFilter = $authResult.authFilter )
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on queries: should successfully transform IdentityPool auth rules 4`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on queries: should successfully transform IdentityPool auth rules 5`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole
+}))
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+  #set( $ctx.stash.authFilter = $authResult.authFilter )
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on queries: should successfully transform IdentityPool auth rules 6`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on queries: should successfully transform IdentityPool auth rules 7`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole
+}))
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+  #set( $ctx.stash.authFilter = $authResult.authFilter )
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on queries: should successfully transform IdentityPool auth rules 8`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform apiKey auth rule 1`] = `
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))

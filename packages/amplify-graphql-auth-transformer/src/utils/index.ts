@@ -27,13 +27,13 @@ export * from './iam';
  * Splits roles into key value pairs by auth type
  */
 export const splitRoles = (roles: Array<RoleDefinition>): RolesByProvider => ({
-  cognitoStaticRoles: roles.filter((r) => r.static && r.provider === 'userPools'),
-  cognitoDynamicRoles: roles.filter((r) => !r.static && r.provider === 'userPools'),
-  oidcStaticRoles: roles.filter((r) => r.static && r.provider === 'oidc'),
-  oidcDynamicRoles: roles.filter((r) => !r.static && r.provider === 'oidc'),
-  iamRoles: roles.filter((r) => r.provider === 'iam'),
-  apiKeyRoles: roles.filter((r) => r.provider === 'apiKey'),
-  lambdaRoles: roles.filter((r) => r.provider === 'function'),
+  cognitoStaticRoles: roles.filter((r) => r.static && isAuthProviderEqual(r.provider, 'userPools')),
+  cognitoDynamicRoles: roles.filter((r) => !r.static && isAuthProviderEqual(r.provider, 'userPools')),
+  oidcStaticRoles: roles.filter((r) => r.static && isAuthProviderEqual(r.provider, 'oidc')),
+  oidcDynamicRoles: roles.filter((r) => !r.static && isAuthProviderEqual(r.provider, 'oidc')),
+  iamRoles: roles.filter((r) => isAuthProviderEqual(r.provider, 'identityPool')),
+  apiKeyRoles: roles.filter((r) => isAuthProviderEqual(r.provider, 'apiKey')),
+  lambdaRoles: roles.filter((r) => isAuthProviderEqual(r.provider, 'function')),
 });
 
 /**
@@ -107,7 +107,7 @@ export const getAuthDirectiveRules = (authDir: DirectiveWrapper, options?: GetAu
       }
     }
 
-    if (rule.provider === 'iam') {
+    if (isAuthProviderEqual(rule.provider, 'identityPool')) {
       // eslint-disable-next-line no-param-reassign
       rule.generateIAMPolicy = true;
     }
@@ -161,7 +161,7 @@ export const getConfiguredAuthProviders = (context: TransformerBeforeStepContext
       case 'API_KEY':
         return 'apiKey';
       case 'AWS_IAM':
-        return 'iam';
+        return 'identityPool';
       case 'OPENID_CONNECT':
         return 'oidc';
       case 'AWS_LAMBDA':
@@ -194,4 +194,16 @@ export const getConfiguredAuthProviders = (context: TransformerBeforeStepContext
     genericIamAccessEnabled: synthParameters.enableIamAccess,
   };
   return configuredProviders;
+};
+
+export const isAuthProviderEqual = (provider: AuthProvider, otherProvider: AuthProvider): boolean => {
+  if (provider === otherProvider) {
+    return true;
+  }
+
+  if ((provider === 'iam' || provider === 'identityPool') && (otherProvider === 'iam' || otherProvider === 'identityPool')) {
+    return true;
+  }
+
+  return false;
 };

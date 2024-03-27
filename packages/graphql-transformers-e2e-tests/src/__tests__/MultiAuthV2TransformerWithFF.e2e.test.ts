@@ -88,8 +88,16 @@ beforeAll(async () => {
       id: ID!
       title: String
     }
+    
+    # Allow anyone to access. This is translated to Identity Pool with unauth role.
+    type PostPublicIdentityPool @model @auth(rules: [{ allow: public, provider: identityPool }]) {
+      id: ID!
+      title: String
+    }
 
     # Allow anyone to access. This is translated to IAM with unauth role.
+    # Note: IAM is deprecated and renamed to Cognito Identity Pool. 
+    # This is kept to test backwards compatibility.
     type PostPublicIAM @model @auth(rules: [{ allow: public, provider: iam }]) {
       id: ID!
       title: String
@@ -100,15 +108,64 @@ beforeAll(async () => {
       id: ID!
       title: String
     }
-
+    
     # Allow anyone with a sigv4 signed request with relevant policy to access.
-    type PostPrivateIAM @model @auth(rules: [{ allow: private, provider: iam }]) {
+    type PostPrivateIdentityPool @model @auth(rules: [{ allow: private, provider: identityPool }]) {
       id: ID!
       title: String
     }
 
+    # Allow anyone with a sigv4 signed request with relevant policy to access.
+    # Note: IAM is deprecated and renamed to Cognito Identity Pool. 
+    # This is kept to test backwards compatibility.
+    type PostPrivateIAM @model @auth(rules: [{ allow: private, provider: iam }]) {
+      id: ID!
+      title: String
+    }
+    
     # I have a model that is protected by userPools by default.
     # I want to call createPost from my lambda.
+    type PostOwnerIdentityPool
+      @model
+      @auth(
+        rules: [
+          # The cognito user pool owner can CRUD.
+          { allow: owner }
+          # A lambda function using IdentityPool can call Mutation.createPost.
+          { allow: private, provider: identityPool, operations: [create] }
+        ]
+      ) {
+      id: ID!
+      title: String
+      owner: String
+    }
+
+    type PostSecretFieldIdentityPool
+      @model
+      @auth(
+        rules: [
+          # The cognito user pool and can CRUD.
+          { allow: private }
+          # IdentityPool user can also have CRUD
+          { allow: private, provider: identityPool }
+        ]
+      ) {
+      id: ID
+      title: String
+      owner: String
+      secret: String
+        @auth(
+          rules: [
+            # Only a lambda function using IdentityPool can create/read/update this field
+            { allow: private, provider: identityPool, operations: [create,read,update] }
+          ]
+        )
+    }
+
+    # I have a model that is protected by userPools by default.
+    # I want to call createPost from my lambda.
+    # Note: IAM is deprecated and renamed to Cognito Identity Pool. 
+    # This is kept to test backwards compatibility.
     type PostOwnerIAM
       @model
       @auth(
@@ -158,7 +215,30 @@ beforeAll(async () => {
       content: String!
       post: PostConnection @hasOne
     }
+    
+    type PostIdentityPoolWithKeys
+      @model
+      @auth(
+        rules: [
+          # API Key can CRUD
+          { allow: public }
+          # IAM can read
+          { allow: public, provider: identityPool, operations: [read] }
+        ]
+      ) {
+      id: ID!
+      title: String
+      type: String
+        @index(
+          name: "byDate"
+          sortKeyFields: ["date"]
+          queryField: "getPostIdentityPoolWithKeysByDate"
+        )
+      date: AWSDateTime
+    }
 
+    # Note: IAM is deprecated and renamed to Cognito Identity Pool. 
+    # This is kept to test backwards compatibility.
     type PostIAMWithKeys
       @model
       @auth(
@@ -179,8 +259,77 @@ beforeAll(async () => {
         )
       date: AWSDateTime
     }
+    
+    # This type is for the managed policy slicing, only deployment test in this e2e
+    type TodoWithExtraLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongNameIdentityPool
+      @model(subscriptions: null)
+      @auth(rules: [{ allow: private, provider: identityPool }]) {
+      id: ID!
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename001: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename002: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename003: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename004: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename005: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename006: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename007: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename008: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename009: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename010: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename011: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename012: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename013: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename014: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename015: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename016: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename017: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename018: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename019: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename020: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename021: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename022: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename023: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename024: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename025: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename026: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename027: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename028: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename029: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename030: String!
+      description: String
+    }
 
     # This type is for the managed policy slicing, only deployment test in this e2e
+    # Note: IAM is deprecated and renamed to Cognito Identity Pool. 
+    # This is kept to test backwards compatibility.
     type TodoWithExtraLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongName
       @model(subscriptions: null)
       @auth(rules: [{ allow: private, provider: iam }]) {
