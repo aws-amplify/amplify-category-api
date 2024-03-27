@@ -74,11 +74,11 @@ exports[`has one references with multiple sort keys 1`] = `
   \\"expression\\": \\"#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName\\",
   \\"expressionNames\\": {
       \\"#partitionKey\\": \\"teamId\\",
-      \\"#sortKeyName\\": \\"teamMantra\\"
+      \\"#sortKeyName\\": \\"teamMantra#teamOrganization\\"
   },
   \\"expressionValues\\": {
       \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\"))),
-      \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.teamMantra}#\${ctx.source.teamOrganization}\\", \\"___xamznone____\\")))
+      \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.mantra}#\${ctx.source.organization}\\", \\"___xamznone____\\")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
@@ -139,7 +139,7 @@ exports[`has one references with partition key + sort key 1`] = `
   },
   \\"expressionValues\\": {
       \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\"))),
-      \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.teamMantra, \\"___xamznone____\\")))
+      \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.mantra, \\"___xamznone____\\")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
