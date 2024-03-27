@@ -2095,6 +2095,954 @@ $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **"
 `;
 
+exports[`auth iam and sandbox auth disable should not add service directives 1`] = `
+"type Test {
+  id: ID!
+  description: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelTestConnection {
+  items: [Test]!
+  nextToken: String
+}
+
+input ModelTestFilterInput {
+  id: ModelIDInput
+  description: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelTestFilterInput]
+  or: [ModelTestFilterInput]
+  not: ModelTestFilterInput
+}
+
+type Query {
+  getTest(id: ID!): Test
+  listTests(filter: ModelTestFilterInput, limit: Int, nextToken: String): ModelTestConnection
+  testsByDescription(description: String!, sortDirection: ModelSortDirection, filter: ModelTestFilterInput, limit: Int, nextToken: String): ModelTestConnection
+}
+
+input ModelTestConditionInput {
+  description: ModelStringInput
+  and: [ModelTestConditionInput]
+  or: [ModelTestConditionInput]
+  not: ModelTestConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+}
+
+input CreateTestInput {
+  id: ID
+  description: String
+}
+
+input UpdateTestInput {
+  id: ID!
+  description: String
+}
+
+input DeleteTestInput {
+  id: ID!
+}
+
+type Mutation {
+  createTest(input: CreateTestInput!, condition: ModelTestConditionInput): Test
+  updateTest(input: UpdateTestInput!, condition: ModelTestConditionInput): Test
+  deleteTest(input: DeleteTestInput!, condition: ModelTestConditionInput): Test
+}
+
+input ModelSubscriptionTestFilterInput {
+  id: ModelSubscriptionIDInput
+  description: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionTestFilterInput]
+  or: [ModelSubscriptionTestFilterInput]
+}
+
+type Subscription {
+  onCreateTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"createTest\\"])
+  onUpdateTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"updateTest\\"])
+  onDeleteTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"deleteTest\\"])
+}
+"
+`;
+
+exports[`auth iam and sandbox auth disable should not add service directives 2`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`auth iam and sandbox auth enabled should add aws_iam and aws_api_key if not default mode of auth 1`] = `
+"type Test @aws_api_key @aws_iam {
+  id: ID!
+  description: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelTestConnection @aws_api_key @aws_iam {
+  items: [Test]!
+  nextToken: String
+}
+
+input ModelTestFilterInput {
+  id: ModelIDInput
+  description: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelTestFilterInput]
+  or: [ModelTestFilterInput]
+  not: ModelTestFilterInput
+}
+
+type Query {
+  getTest(id: ID!): Test @aws_api_key @aws_iam
+  listTests(filter: ModelTestFilterInput, limit: Int, nextToken: String): ModelTestConnection @aws_api_key @aws_iam
+  testsByDescription(description: String!, sortDirection: ModelSortDirection, filter: ModelTestFilterInput, limit: Int, nextToken: String): ModelTestConnection @aws_api_key @aws_iam
+}
+
+input ModelTestConditionInput {
+  description: ModelStringInput
+  and: [ModelTestConditionInput]
+  or: [ModelTestConditionInput]
+  not: ModelTestConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+}
+
+input CreateTestInput {
+  id: ID
+  description: String
+}
+
+input UpdateTestInput {
+  id: ID!
+  description: String
+}
+
+input DeleteTestInput {
+  id: ID!
+}
+
+type Mutation {
+  createTest(input: CreateTestInput!, condition: ModelTestConditionInput): Test @aws_api_key @aws_iam
+  updateTest(input: UpdateTestInput!, condition: ModelTestConditionInput): Test @aws_api_key @aws_iam
+  deleteTest(input: DeleteTestInput!, condition: ModelTestConditionInput): Test @aws_api_key @aws_iam
+}
+
+input ModelSubscriptionTestFilterInput {
+  id: ModelSubscriptionIDInput
+  description: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionTestFilterInput]
+  or: [ModelSubscriptionTestFilterInput]
+}
+
+type Subscription {
+  onCreateTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"createTest\\"]) @aws_api_key @aws_iam
+  onUpdateTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"updateTest\\"]) @aws_api_key @aws_iam
+  onDeleteTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"deleteTest\\"]) @aws_api_key @aws_iam
+}
+"
+`;
+
+exports[`auth iam and sandbox auth enabled should add aws_iam and aws_api_key if not default mode of auth 2`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`auth iam auth enabled should add aws_iam if not default mode of auth 1`] = `
+"type Test @aws_iam {
+  id: ID!
+  description: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelTestConnection @aws_iam {
+  items: [Test]!
+  nextToken: String
+}
+
+input ModelTestFilterInput {
+  id: ModelIDInput
+  description: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelTestFilterInput]
+  or: [ModelTestFilterInput]
+  not: ModelTestFilterInput
+}
+
+type Query {
+  getTest(id: ID!): Test @aws_iam
+  listTests(filter: ModelTestFilterInput, limit: Int, nextToken: String): ModelTestConnection @aws_iam
+  testsByDescription(description: String!, sortDirection: ModelSortDirection, filter: ModelTestFilterInput, limit: Int, nextToken: String): ModelTestConnection @aws_iam
+}
+
+input ModelTestConditionInput {
+  description: ModelStringInput
+  and: [ModelTestConditionInput]
+  or: [ModelTestConditionInput]
+  not: ModelTestConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+}
+
+input CreateTestInput {
+  id: ID
+  description: String
+}
+
+input UpdateTestInput {
+  id: ID!
+  description: String
+}
+
+input DeleteTestInput {
+  id: ID!
+}
+
+type Mutation {
+  createTest(input: CreateTestInput!, condition: ModelTestConditionInput): Test @aws_iam
+  updateTest(input: UpdateTestInput!, condition: ModelTestConditionInput): Test @aws_iam
+  deleteTest(input: DeleteTestInput!, condition: ModelTestConditionInput): Test @aws_iam
+}
+
+input ModelSubscriptionTestFilterInput {
+  id: ModelSubscriptionIDInput
+  description: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionTestFilterInput]
+  or: [ModelSubscriptionTestFilterInput]
+}
+
+type Subscription {
+  onCreateTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"createTest\\"]) @aws_iam
+  onUpdateTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"updateTest\\"]) @aws_iam
+  onDeleteTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"deleteTest\\"]) @aws_iam
+}
+"
+`;
+
+exports[`auth iam auth enabled should add aws_iam if not default mode of auth 2`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`auth sandbox auth enabled should add apiKey if not default mode of auth 1`] = `
+"type Test @aws_api_key {
+  id: ID!
+  description: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelTestConnection @aws_api_key {
+  items: [Test]!
+  nextToken: String
+}
+
+input ModelTestFilterInput {
+  id: ModelIDInput
+  description: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelTestFilterInput]
+  or: [ModelTestFilterInput]
+  not: ModelTestFilterInput
+}
+
+type Query {
+  getTest(id: ID!): Test @aws_api_key
+  listTests(filter: ModelTestFilterInput, limit: Int, nextToken: String): ModelTestConnection @aws_api_key
+  testsByDescription(description: String!, sortDirection: ModelSortDirection, filter: ModelTestFilterInput, limit: Int, nextToken: String): ModelTestConnection @aws_api_key
+}
+
+input ModelTestConditionInput {
+  description: ModelStringInput
+  and: [ModelTestConditionInput]
+  or: [ModelTestConditionInput]
+  not: ModelTestConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+}
+
+input CreateTestInput {
+  id: ID
+  description: String
+}
+
+input UpdateTestInput {
+  id: ID!
+  description: String
+}
+
+input DeleteTestInput {
+  id: ID!
+}
+
+type Mutation {
+  createTest(input: CreateTestInput!, condition: ModelTestConditionInput): Test @aws_api_key
+  updateTest(input: UpdateTestInput!, condition: ModelTestConditionInput): Test @aws_api_key
+  deleteTest(input: DeleteTestInput!, condition: ModelTestConditionInput): Test @aws_api_key
+}
+
+input ModelSubscriptionTestFilterInput {
+  id: ModelSubscriptionIDInput
+  description: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionTestFilterInput]
+  or: [ModelSubscriptionTestFilterInput]
+}
+
+type Subscription {
+  onCreateTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"createTest\\"]) @aws_api_key
+  onUpdateTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"updateTest\\"]) @aws_api_key
+  onDeleteTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"deleteTest\\"]) @aws_api_key
+}
+"
+`;
+
+exports[`auth sandbox auth enabled should add apiKey if not default mode of auth 2`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
 exports[`creates a primary key and a secondary index 1`] = `
 Object {
   "Mutation.createTest.init.1.req.vtl": "## [Start] Initialization default values. **

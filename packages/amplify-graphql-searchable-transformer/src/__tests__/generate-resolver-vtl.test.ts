@@ -2,12 +2,20 @@ import { print } from 'graphql-mapping-template';
 import { sandboxMappingTemplate, generateAddAggregateValues, requestTemplate, responseTemplate } from '../generate-resolver-vtl';
 
 describe('sandboxMappingTemplate', () => {
-  it('renders when sandbox is enabled', () => {
-    expect(sandboxMappingTemplate(true, ['id', 'content'])).toMatchSnapshot();
+  it('renders when sandbox is enabled and iam access disabled', () => {
+    expect(sandboxMappingTemplate(true, false, ['id', 'content'])).toMatchSnapshot();
   });
 
-  it('renders when sandbox is disabled', () => {
-    expect(sandboxMappingTemplate(false, ['id', 'content'])).toMatchSnapshot();
+  it('renders when sandbox is disabled and iam access disabled', () => {
+    expect(sandboxMappingTemplate(false, false, ['id', 'content'])).toMatchSnapshot();
+  });
+
+  it('renders when sandbox is enabled and iam access enabled', () => {
+    expect(sandboxMappingTemplate(true, true, ['id', 'content'])).toMatchSnapshot();
+  });
+
+  it('renders when sandbox is disabled and iam access enabled', () => {
+    expect(sandboxMappingTemplate(false, true, ['id', 'content'])).toMatchSnapshot();
   });
 });
 
