@@ -12,6 +12,7 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { PredictionsDirective } from '@aws-amplify/graphql-directives';
 import { DataSourceOptions, HttpDataSource, LambdaDataSource, CfnResolver, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -47,7 +48,6 @@ import { actionToDataSourceMap, actionToRoleAction, allowedActions } from './uti
 import {
   amzJsonContentType,
   convertTextToSpeech,
-  directiveDefinition,
   identifyEntities,
   identifyLabels,
   identifyLabelsAmzTarget,
@@ -74,7 +74,7 @@ export class PredictionsTransformer extends TransformerPluginBase {
   private bucketName: string;
 
   constructor(predictionsConfig?: PredictionsConfig) {
-    super('amplify-predictions-transformer', directiveDefinition);
+    super('amplify-predictions-transformer', PredictionsDirective.definition);
     this.bucketName = predictionsConfig?.bucketName ?? '';
   }
 

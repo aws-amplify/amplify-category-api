@@ -6,6 +6,7 @@
   },
   "include": ["src/**/*"],
   "references": [
+    { "path": "../amplify-graphql-directives" },
     { "path": "../amplify-graphql-transformer-interfaces" },
     { "path": "../graphql-mapping-template" },
     { "path": "../amplify-graphql-transformer-core" },

@@ -119,7 +119,7 @@ export type UserPoolConfig = {
 
 // Warnings were encountered during analysis:
 //
-// src/ModelAuthTransformer.ts:149:3 - (ae-forgotten-export) The symbol "AuthProvider" needs to be exported by the entry point index.d.ts
+// src/ModelAuthTransformer.ts:144:3 - (ae-forgotten-export) The symbol "AuthProvider" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

@@ -1,5 +1,6 @@
-import { Transformer, TransformerContext, InvalidDirectiveError, TransformerContractError, gql } from 'graphql-transformer-core';
-import { valueFromASTUntyped, ArgumentNode, ObjectTypeDefinitionNode, DirectiveNode, Kind } from 'graphql';
+import { Transformer, TransformerContext, InvalidDirectiveError, TransformerContractError } from 'graphql-transformer-core';
+import { VersionedDirectiveV1 } from '@aws-amplify/graphql-directives';
+import { valueFromASTUntyped, ArgumentNode, ObjectTypeDefinitionNode, DirectiveNode, Kind, parse } from 'graphql';
 import { printBlock, compoundExpression, set, ref, qref, obj, str, raw } from 'graphql-mapping-template';
 import {
   ResourceConstants,
@@ -14,13 +15,7 @@ import {
 
 export class VersionedModelTransformer extends Transformer {
   constructor() {
-    super(
-      'VersionedModelTransformer',
-      // TODO: Allow version attribute selection. Could be `@version on FIELD_DEFINITION`
-      gql`
-        directive @versioned(versionField: String = "version", versionInput: String = "expectedVersion") on OBJECT
-      `,
-    );
+    super('VersionedModelTransformer', parse(VersionedDirectiveV1.definition));
   }
 
   /**

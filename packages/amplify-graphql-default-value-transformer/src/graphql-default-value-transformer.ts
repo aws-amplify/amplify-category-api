@@ -13,6 +13,7 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { DefaultDirective } from '@aws-amplify/graphql-directives';
 import {
   DirectiveNode,
   EnumTypeDefinitionNode,
@@ -27,11 +28,6 @@ import { methodCall, printBlock, qref, raw, ref, str } from 'graphql-mapping-tem
 import { getBaseType, isEnum, isListType, isScalarOrEnum, ModelResourceIDs, toCamelCase } from 'graphql-transformer-common';
 import { DefaultValueDirectiveConfiguration } from './types';
 import { TypeValidators } from './validators';
-
-const directiveName = 'default';
-const directiveDefinition = `
-  directive @${directiveName}(value: String!) on FIELD_DEFINITION
-`;
 
 const nonStringTypes = ['Int', 'Float', 'Boolean', 'AWSTimestamp', 'AWSJSON'];
 
@@ -93,7 +89,7 @@ export class DefaultValueTransformer extends TransformerPluginBase {
   private directiveMap = new Map<string, DefaultValueDirectiveConfiguration[]>();
 
   constructor() {
-    super('amplify-default-value-transformer', directiveDefinition);
+    super('amplify-default-value-transformer', DefaultDirective.definition);
   }
 
   field = (

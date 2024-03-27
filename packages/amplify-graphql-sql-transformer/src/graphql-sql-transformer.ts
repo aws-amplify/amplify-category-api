@@ -7,6 +7,7 @@ import {
   MappingTemplate,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
+import { SqlDirective } from '@aws-amplify/graphql-directives';
 import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from 'aws-cdk-lib';
 import {
@@ -35,15 +36,12 @@ type SqlDirectiveConfiguration = {
 };
 
 const SQL_DIRECTIVE_STACK = 'CustomSQLStack';
-const directiveDefinition = /* GraphQL */ `
-  directive @sql(statement: String, reference: String) on FIELD_DEFINITION
-`;
 
 export class SqlTransformer extends TransformerPluginBase {
   private sqlDirectiveFields: Map<FieldDefinitionNode, SqlDirectiveConfiguration[]> = new Map();
 
   constructor() {
-    super('amplify-sql-transformer', directiveDefinition);
+    super('amplify-sql-transformer', SqlDirective.definition);
   }
 
   field = (
