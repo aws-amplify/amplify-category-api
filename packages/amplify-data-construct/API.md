@@ -30,6 +30,7 @@ import { IAMAuthorizationConfig } from '@aws-amplify/graphql-api-construct';
 import { IAmplifyGraphqlDefinition as IAmplifyDataDefinition } from '@aws-amplify/graphql-api-construct';
 import { IBackendOutputEntry } from '@aws-amplify/graphql-api-construct';
 import { IBackendOutputStorageStrategy } from '@aws-amplify/graphql-api-construct';
+import { IdentityPoolAuthorizationConfig } from '@aws-amplify/graphql-api-construct';
 import { LambdaAuthorizationConfig } from '@aws-amplify/graphql-api-construct';
 import { ModelDataSourceStrategy } from '@aws-amplify/graphql-api-construct';
 import { ModelDataSourceStrategyDbType } from '@aws-amplify/graphql-api-construct';
@@ -44,6 +45,8 @@ import { QueryFunctionSlot } from '@aws-amplify/graphql-api-construct';
 import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-api-construct';
 import { SQLLambdaModelDataSourceStrategyFactory } from '@aws-amplify/graphql-api-construct';
 import { SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
+import { SqlModelDataSourceSecretsManagerDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
+import { SqlModelDataSourceSsmDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
 import { SSESpecification } from '@aws-amplify/graphql-api-construct';
 import { SSEType } from '@aws-amplify/graphql-api-construct';
 import { StreamSpecification } from '@aws-amplify/graphql-api-construct';
@@ -106,6 +109,8 @@ export { IBackendOutputEntry }
 
 export { IBackendOutputStorageStrategy }
 
+export { IdentityPoolAuthorizationConfig }
+
 export { LambdaAuthorizationConfig }
 
 export { ModelDataSourceStrategy }
@@ -133,6 +138,10 @@ export { SQLLambdaModelDataSourceStrategy }
 export { SQLLambdaModelDataSourceStrategyFactory }
 
 export { SqlModelDataSourceDbConnectionConfig }
+
+export { SqlModelDataSourceSecretsManagerDbConnectionConfig }
+
+export { SqlModelDataSourceSsmDbConnectionConfig }
 
 export { SSESpecification }
 

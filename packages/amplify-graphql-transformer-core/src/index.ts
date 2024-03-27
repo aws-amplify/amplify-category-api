@@ -61,6 +61,7 @@ export {
   getConditionInputName,
   getSubscriptionFilterInputName,
   getConnectionName,
+  getStrategyDbTypeFromModel,
 } from './utils';
 export type { SetResourceNameProps } from './utils';
 export * from './utils/operation-names';

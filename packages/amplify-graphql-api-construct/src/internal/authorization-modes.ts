@@ -5,18 +5,60 @@ import { IRole, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import {
   AuthorizationModes,
   ApiKeyAuthorizationConfig,
-  IAMAuthorizationConfig,
   LambdaAuthorizationConfig,
   OIDCAuthorizationConfig,
   UserPoolAuthorizationConfig,
 } from '../types';
 
 type AuthorizationConfigMode =
-  | (IAMAuthorizationConfig & { type: 'AWS_IAM' })
+  | { type: 'AWS_IAM' }
   | (UserPoolAuthorizationConfig & { type: 'AMAZON_COGNITO_USER_POOLS' })
   | (OIDCAuthorizationConfig & { type: 'OPENID_CONNECT' })
   | (ApiKeyAuthorizationConfig & { type: 'API_KEY' })
   | (LambdaAuthorizationConfig & { type: 'AWS_LAMBDA' });
+
+/**
+ * Validates authorization modes.
+ *
+ * Rules:
+ * 1. Validates that deprecated settings ('iamConfig.authenticatedUserRole', 'iamConfig.unauthenticatedUserRole',
+ *    'iamConfig.identityPoolId', 'iamConfig.allowListedRoles' and 'adminRoles') are mutually exclusive with new settings that
+ *    replaced them ('iamConfig.enableIamAuthorizationMode' and any of 'authorizationModes.identityPoolConfig')
+ * 2. If deprecated identity pool settings are used ('iamConfig.authenticatedUserRole', 'iamConfig.unauthenticatedUserRole',
+ *    and 'iamConfig.identityPoolId') validate that all are provided.
+ */
+export const validateAuthorizationModes = (authorizationModes: AuthorizationModes): void => {
+  const hasAnyDeprecatedIdentityPoolSetting =
+    authorizationModes.iamConfig?.authenticatedUserRole ||
+    authorizationModes.iamConfig?.unauthenticatedUserRole ||
+    authorizationModes.iamConfig?.identityPoolId;
+  const hasAllDeprecatedIdentityPoolSettings =
+    authorizationModes.iamConfig?.authenticatedUserRole &&
+    authorizationModes.iamConfig?.unauthenticatedUserRole &&
+    authorizationModes.iamConfig?.identityPoolId;
+  const hasDeprecatedIamSettings =
+    authorizationModes.iamConfig?.authenticatedUserRole ||
+    authorizationModes.iamConfig?.unauthenticatedUserRole ||
+    authorizationModes.iamConfig?.identityPoolId ||
+    authorizationModes.iamConfig?.allowListedRoles ||
+    authorizationModes.adminRoles;
+  const hasUnDeprecatedIamSettings =
+    typeof authorizationModes.iamConfig?.enableIamAuthorizationMode !== 'undefined' || authorizationModes.identityPoolConfig;
+
+  if (hasDeprecatedIamSettings && hasUnDeprecatedIamSettings) {
+    throw new Error(
+      'Invalid authorization modes configuration provided. ' +
+        "Deprecated IAM configuration cannot be used with identity pool configuration or when 'enableIamAuthorizationMode' is specified.",
+    );
+  }
+
+  if (hasAnyDeprecatedIdentityPoolSetting && !hasAllDeprecatedIdentityPoolSettings) {
+    throw new Error(
+      "'authorizationModes.iamConfig.authenticatedUserRole', 'authorizationModes.iamConfig.unauthenticatedUserRole' and" +
+        " 'authorizationModes.iamConfig.identityPoolId' must be provided.",
+    );
+  }
+};
 
 /**
  * Converts a single auth mode config into the amplify-internal representation.
@@ -79,7 +121,7 @@ const convertAuthConfigToAppSyncAuth = (authModes: AuthorizationModes): AppSyncA
     authModes.lambdaConfig ? { type: 'AWS_LAMBDA', ...authModes.lambdaConfig } : null,
     authModes.oidcConfig ? { type: 'OPENID_CONNECT', ...authModes.oidcConfig } : null,
     authModes.userPoolConfig ? { type: 'AMAZON_COGNITO_USER_POOLS', ...authModes.userPoolConfig } : null,
-    authModes.iamConfig ? { type: 'AWS_IAM', ...authModes.iamConfig } : null,
+    authModes.iamConfig || authModes.identityPoolConfig ? { type: 'AWS_IAM' } : null,
   ].filter((mode) => mode) as AuthorizationConfigMode[];
   const authProviders = authConfig.map(convertAuthModeToAuthProvider);
 
@@ -116,7 +158,7 @@ const convertAuthConfigToAppSyncAuth = (authModes: AuthorizationModes): AppSyncA
 
 type AuthSynthParameters = Pick<
   SynthParameters,
-  'userPoolId' | 'authenticatedUserRoleName' | 'unauthenticatedUserRoleName' | 'identityPoolId' | 'adminRoles'
+  'userPoolId' | 'authenticatedUserRoleName' | 'unauthenticatedUserRoleName' | 'identityPoolId' | 'adminRoles' | 'enableIamAccess'
 >;
 
 interface AuthConfig {
@@ -177,12 +219,19 @@ const getAllowListedRoles = (authModes: AuthorizationModes): string[] =>
  */
 const getSynthParameters = (authModes: AuthorizationModes): AuthSynthParameters => ({
   adminRoles: getAllowListedRoles(authModes),
-  identityPoolId: authModes.iamConfig?.identityPoolId,
+  identityPoolId: authModes.identityPoolConfig?.identityPoolId ?? authModes.iamConfig?.identityPoolId,
+  enableIamAccess: authModes.iamConfig?.enableIamAuthorizationMode,
   ...(authModes.userPoolConfig ? { userPoolId: authModes.userPoolConfig.userPool.userPoolId } : {}),
-  ...(authModes?.iamConfig
+  ...(authModes?.identityPoolConfig
     ? {
-        authenticatedUserRoleName: authModes.iamConfig.authenticatedUserRole.roleName,
-        unauthenticatedUserRoleName: authModes.iamConfig.unauthenticatedUserRole.roleName,
+        authenticatedUserRoleName: authModes.identityPoolConfig.authenticatedUserRole.roleName,
+        unauthenticatedUserRoleName: authModes.identityPoolConfig.unauthenticatedUserRole.roleName,
+      }
+    : {}),
+  ...(authModes?.iamConfig && authModes?.iamConfig.authenticatedUserRole && authModes?.iamConfig.unauthenticatedUserRole
+    ? {
+        authenticatedUserRoleName: authModes.iamConfig.authenticatedUserRole?.roleName,
+        unauthenticatedUserRoleName: authModes.iamConfig.unauthenticatedUserRole?.roleName,
       }
     : {}),
 });

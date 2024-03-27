@@ -128,7 +128,7 @@ export abstract class ModelResourceGenerator {
         resolver.addToSlot(
           'postAuth',
           MappingTemplate.s3MappingTemplateFromString(
-            generateAuthExpressionForSandboxMode(context.transformParameters.sandboxModeEnabled),
+            generateAuthExpressionForSandboxMode(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess),
             `${query.typeName}.${query.fieldName}.{slotName}.{slotIndex}.req.vtl`,
           ),
         );
@@ -162,7 +162,7 @@ export abstract class ModelResourceGenerator {
         resolver.addToSlot(
           'postAuth',
           MappingTemplate.s3MappingTemplateFromString(
-            generateAuthExpressionForSandboxMode(context.transformParameters.sandboxModeEnabled),
+            generateAuthExpressionForSandboxMode(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess),
             `${mutation.typeName}.${mutation.fieldName}.{slotName}.{slotIndex}.req.vtl`,
           ),
         );
@@ -208,7 +208,10 @@ export abstract class ModelResourceGenerator {
             resolver.addToSlot(
               'postAuth',
               MappingTemplate.s3MappingTemplateFromString(
-                generateAuthExpressionForSandboxMode(context.transformParameters.sandboxModeEnabled),
+                generateAuthExpressionForSandboxMode(
+                  context.transformParameters.sandboxModeEnabled,
+                  context.synthParameters.enableIamAccess,
+                ),
                 `${subscription.typeName}.${subscription.fieldName}.{slotName}.{slotIndex}.req.vtl`,
               ),
             );

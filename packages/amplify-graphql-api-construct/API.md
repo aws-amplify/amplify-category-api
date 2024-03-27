@@ -167,6 +167,7 @@ export interface AuthorizationModes {
     readonly apiKeyConfig?: ApiKeyAuthorizationConfig;
     readonly defaultAuthorizationMode?: 'AWS_IAM' | 'AMAZON_COGNITO_USER_POOLS' | 'OPENID_CONNECT' | 'API_KEY' | 'AWS_LAMBDA';
     readonly iamConfig?: IAMAuthorizationConfig;
+    readonly identityPoolConfig?: IdentityPoolAuthorizationConfig;
     readonly lambdaConfig?: LambdaAuthorizationConfig;
     readonly oidcConfig?: OIDCAuthorizationConfig;
     readonly userPoolConfig?: UserPoolAuthorizationConfig;
@@ -237,10 +238,15 @@ export interface FunctionSlotOverride {
 
 // @public
 export interface IAMAuthorizationConfig {
+    // @deprecated
     readonly allowListedRoles?: (IRole | string)[];
-    readonly authenticatedUserRole: IRole;
-    readonly identityPoolId: string;
-    readonly unauthenticatedUserRole: IRole;
+    // @deprecated
+    readonly authenticatedUserRole?: IRole;
+    readonly enableIamAuthorizationMode?: boolean;
+    // @deprecated
+    readonly identityPoolId?: string;
+    // @deprecated
+    readonly unauthenticatedUserRole?: IRole;
 }
 
 // @public
@@ -261,6 +267,13 @@ export interface IBackendOutputEntry {
 // @public
 export interface IBackendOutputStorageStrategy {
     addBackendOutputEntry(keyName: string, backendOutputEntry: IBackendOutputEntry): void;
+}
+
+// @public
+export interface IdentityPoolAuthorizationConfig {
+    readonly authenticatedUserRole: IRole;
+    readonly identityPoolId: string;
+    readonly unauthenticatedUserRole: IRole;
 }
 
 // @public
@@ -348,7 +361,19 @@ export class SQLLambdaModelDataSourceStrategyFactory {
 }
 
 // @public
-export interface SqlModelDataSourceDbConnectionConfig {
+export type SqlModelDataSourceDbConnectionConfig = SqlModelDataSourceSecretsManagerDbConnectionConfig | SqlModelDataSourceSsmDbConnectionConfig;
+
+// @public
+export interface SqlModelDataSourceSecretsManagerDbConnectionConfig {
+    readonly databaseName: string;
+    readonly hostname: string;
+    readonly keyArn?: string;
+    readonly port: number;
+    readonly secretArn: string;
+}
+
+// @public
+export interface SqlModelDataSourceSsmDbConnectionConfig {
     readonly databaseNameSsmPath: string;
     readonly hostnameSsmPath: string;
     readonly passwordSsmPath: string;

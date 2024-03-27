@@ -6,7 +6,7 @@ import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { CognitoIdentity, S3 } from 'aws-sdk';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncAuthConfiguration, SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import gql from 'graphql-tag';
 import { plurality, ResourceConstants } from 'graphql-transformer-common';
 import { v4 } from 'uuid';
@@ -454,6 +454,7 @@ export const deploySchema = async (
   unauthRoleName: string,
   buildDir: string,
   buildTimestamp: string,
+  synthParameters?: Partial<SynthParameters>,
 ) => {
   jest.setTimeout(1000 * 60 * 30);
 
@@ -490,6 +491,7 @@ export const deploySchema = async (
     schema,
     authConfig,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer()],
+    synthParameters,
   });
 
   const customS3Client = new S3Client(REGION);

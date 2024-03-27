@@ -85,5 +85,6 @@ export class DDBAuthVTLGenerator implements AuthVTLGenerator {
 
   generateFieldResolverForOwner = (entity: string): string => generateFieldResolverForOwner(entity);
 
-  generateSandboxExpressionForField = (sandboxEnabled: boolean): string => generateSandboxExpressionForField(sandboxEnabled);
+  generateSandboxExpressionForField = (sandboxEnabled: boolean, genericIamAccessEnabled: boolean): string =>
+    generateSandboxExpressionForField(sandboxEnabled, genericIamAccessEnabled);
 }

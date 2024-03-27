@@ -165,6 +165,8 @@ export interface ConfiguredAuthProviders {
     // (undocumented)
     default: AuthProvider;
     // (undocumented)
+    genericIamAccessEnabled: boolean;
+    // (undocumented)
     hasAdminRolesEnabled: boolean;
     // (undocumented)
     hasApiKey: boolean;

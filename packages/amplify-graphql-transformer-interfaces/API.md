@@ -223,6 +223,15 @@ export interface InlineMappingTemplateProvider {
 }
 
 // @public (undocumented)
+export const isSqlModelDataSourceDbConnectionConfig: (obj: any) => obj is SqlModelDataSourceDbConnectionConfig;
+
+// @public (undocumented)
+export const isSqlModelDataSourceSecretsManagerDbConnectionConfig: (obj: any) => obj is SqlModelDataSourceSecretsManagerDbConnectionConfig;
+
+// @public (undocumented)
+export const isSqlModelDataSourceSsmDbConnectionConfig: (obj: any) => obj is SqlModelDataSourceSsmDbConnectionConfig;
+
+// @public (undocumented)
 export type MappingTemplateProvider = InlineMappingTemplateProvider | S3MappingTemplateProvider;
 
 // @public (undocumented)
@@ -372,7 +381,24 @@ export interface SQLLambdaModelDataSourceStrategy extends ModelDataSourceStrateg
 }
 
 // @public (undocumented)
-export interface SqlModelDataSourceDbConnectionConfig {
+export type SqlModelDataSourceDbConnectionConfig = SqlModelDataSourceSecretsManagerDbConnectionConfig | SqlModelDataSourceSsmDbConnectionConfig;
+
+// @public (undocumented)
+export interface SqlModelDataSourceSecretsManagerDbConnectionConfig {
+    // (undocumented)
+    readonly databaseName: string;
+    // (undocumented)
+    readonly hostname: string;
+    // (undocumented)
+    readonly keyArn?: string;
+    // (undocumented)
+    readonly port: number;
+    // (undocumented)
+    readonly secretArn: string;
+}
+
+// @public (undocumented)
+export interface SqlModelDataSourceSsmDbConnectionConfig {
     // (undocumented)
     readonly databaseNameSsmPath: string;
     // (undocumented)
@@ -430,6 +456,7 @@ export type SynthParameters = {
     userPoolId?: string;
     identityPoolId?: string;
     adminRoles?: string[];
+    enableIamAccess?: boolean;
 };
 
 // @public (undocumented)
