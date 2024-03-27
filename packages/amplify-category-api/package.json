@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-api",
-  "version": "5.9.8",
+  "version": "5.9.9-ecs-tagging-permissions.0",
   "description": "Amplify CLI API Category Plugin",
   "repository": {
     "type": "git",
