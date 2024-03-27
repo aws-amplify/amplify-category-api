@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.5.0-gen2-release.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.4.0...@aws-amplify/graphql-transformer-interfaces@3.5.0-gen2-release.0) (2024-03-27)
+
+### Features
+
+- add secrets manager as credential store for sql lambda ([#2289](https://github.com/aws-amplify/amplify-category-api/issues/2289)) ([affdb98](https://github.com/aws-amplify/amplify-category-api/commit/affdb988b499591c3a96608f772b637ddd8c3a0c))
+- generic iam authorization ([#2385](https://github.com/aws-amplify/amplify-category-api/issues/2385)) ([550ee80](https://github.com/aws-amplify/amplify-category-api/commit/550ee803275817d25447ff1400d55eb1ad4cd0c2))
+
 # [3.4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.3.3...@aws-amplify/graphql-transformer-interfaces@3.4.0) (2024-02-28)
 
 ### Features
