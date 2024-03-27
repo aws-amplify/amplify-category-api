@@ -78,6 +78,7 @@ export class HasManyTransformer extends TransformerPluginBase {
    * so that it represents any schema modifications the plugin needs
    */
   mutateSchema = (context: TransformerPreProcessContextProvider): DocumentNode => {
+    // TODO: Split out fields and references based logic
     const resultDoc: DocumentNode = produce(context.inputDocument, (draftDoc) => {
       const connectingFieldsMap = new Map<string, Array<WritableDraft<FieldDefinitionNode>>>(); // key: type name | value: connecting field
       const filteredDefs = draftDoc?.definitions?.filter(
@@ -126,7 +127,7 @@ export class HasManyTransformer extends TransformerPluginBase {
     this.directiveList.forEach((config) => {
       const modelName = config.object.name.value;
       const dbType = getStrategyDbTypeFromModel(context as TransformerContextProvider, modelName);
-      const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType);
+      const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType, config);
       dataSourceBasedTransformer.prepare(context, config);
     });
   };
@@ -136,7 +137,7 @@ export class HasManyTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
-      const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType);
+      const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType, config);
       dataSourceBasedTransformer.transformSchema(ctx, config);
       ensureHasManyConnectionField(config, context);
       extendTypeWithConnection(config, context);
@@ -148,10 +149,8 @@ export class HasManyTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
-      const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType);
+      const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType, config);
       dataSourceBasedTransformer.generateResolvers(ctx, config);
-      const generator = getGenerator(dbType);
-      generator.makeHasManyGetItemsConnectionWithKeyResolver(config, context);
     }
   };
 }
@@ -162,7 +161,7 @@ const validate = (config: HasManyDirectiveConfiguration, ctx: TransformerContext
   const dbType = getStrategyDbTypeFromTypeNode(field.type, ctx);
   config.relatedType = getRelatedType(config, ctx);
 
-  const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType);
+  const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType, config);
   dataSourceBasedTransformer.validate(ctx, config);
   validateModelDirective(config);
 

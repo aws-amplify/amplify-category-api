@@ -1,11 +1,12 @@
+import { DDB_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { HasOneDirectiveConfiguration } from '../types';
-import { getRelatedTypeIndex, ensureFieldsArray, getFieldsNodes, registerHasOneForeignKeyMappings } from '../utils';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
+import { HasOneDirectiveConfiguration } from '../types';
+import { ensureFieldsArray, getFieldsNodes, getRelatedTypeIndex, registerHasOneForeignKeyMappings } from '../utils';
 
 /**
  * HasOneDirectiveDDBFieldsTransformer executes transformations based on `@hasOne(fields: [String!])` configurations
@@ -14,10 +15,7 @@ import { DataSourceBasedDirectiveTransformer } from '../data-source-based-direct
  * This should not be used for `@hasOne(references: [String!])` definitions.
  */
 export class HasOneDirectiveDDBFieldsTransformer implements DataSourceBasedDirectiveTransformer<HasOneDirectiveConfiguration> {
-  dbType: 'DYNAMODB';
-  constructor(dbType: 'DYNAMODB') {
-    this.dbType = dbType;
-  }
+  dbType = DDB_DB_TYPE;
 
   prepare = (context: TransformerPrepareStepContextProvider, config: HasOneDirectiveConfiguration): void => {
     const modelName = config.object.name.value;
@@ -34,7 +32,7 @@ export class HasOneDirectiveDDBFieldsTransformer implements DataSourceBasedDirec
     config.relatedTypeIndex = getRelatedTypeIndex(config, context as TransformerContextProvider);
   };
 
-  /** no-op */
+  // TODO: Move resolver generation logic here from `HasOneTransformer`.
   generateResolvers = (_context: TransformerContextProvider, _config: HasOneDirectiveConfiguration): void => {
     return;
   };
