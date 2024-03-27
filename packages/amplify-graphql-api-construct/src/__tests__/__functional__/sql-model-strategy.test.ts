@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { SQLLambdaModelDataSourceStrategyFactory } from '../../sql-model-datasource-strategy';
+import { SQLLambdaModelDataSourceStrategyFactory, isSqlModelDataSourceDbConnectionConfig } from '../../sql-model-datasource-strategy';
 import { SQLLambdaModelDataSourceStrategy } from '../../model-datasource-strategy-types';
 
 describe('SQL bound API definitions', () => {
@@ -52,5 +52,28 @@ describe('SQL bound API definitions', () => {
     expect(strategy.dbType).toEqual(otherOptions.dbType);
     expect(strategy.vpcConfiguration).toEqual(otherOptions.vpcConfiguration);
     expect(strategy.dbConnectionConfig).toEqual(otherOptions.dbConnectionConfig);
+  });
+
+  describe('checks for SQL Datasource DB connection config', () => {
+    it('accepts a connection uri string in DB configuration', () => {
+      const dbConfig = {
+        connectionUriSsmPath: '/ssm/path/connectionUri',
+      };
+      expect(isSqlModelDataSourceDbConnectionConfig(dbConfig)).toBe(true);
+    });
+
+    it('does not accept a connection uri object in DB configuration', () => {
+      const dbConfig = {
+        connectionUriSsmPath: {},
+      };
+      expect(isSqlModelDataSourceDbConnectionConfig(dbConfig)).toBe(false);
+    });
+
+    it('does not accept undefined connection uri in DB configuration', () => {
+      const dbConfig = {
+        connectionUriSsmPath: undefined,
+      };
+      expect(isSqlModelDataSourceDbConnectionConfig(dbConfig)).toBe(false);
+    });
   });
 });

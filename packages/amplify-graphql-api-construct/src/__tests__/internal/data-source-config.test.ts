@@ -255,5 +255,31 @@ describe('datasource config', () => {
         }),
       ).toThrow('Invalid data source strategy "mysqlStrategy". The value of keyArn is not a valid KMS ARN.');
     });
+
+    it('validateDataSourceStrategy passes when connection string SSM Path is valid', () => {
+      expect(() =>
+        validateDataSourceStrategy({
+          name: 'mysqlStrategy',
+          dbType: 'MYSQL',
+          dbConnectionConfig: {
+            connectionUriSsmPath: '/test/connectionUri',
+          },
+        }),
+      ).not.toThrow();
+    });
+
+    it('validateDataSourceStrategy fails when connection string SSM Path is not valid', () => {
+      expect(() =>
+        validateDataSourceStrategy({
+          name: 'mysqlStrategy',
+          dbType: 'MYSQL',
+          dbConnectionConfig: {
+            connectionUriSsmPath: 'connectionUriPath',
+          },
+        }),
+      ).toThrow(
+        'Invalid data source strategy "mysqlStrategy". Following SSM paths must start with \'/\' in dbConnectionConfig: connectionUriPath.',
+      );
+    });
   });
 });

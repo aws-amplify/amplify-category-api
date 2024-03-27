@@ -232,6 +232,9 @@ export const isSqlModelDataSourceSecretsManagerDbConnectionConfig: (obj: any) =>
 export const isSqlModelDataSourceSsmDbConnectionConfig: (obj: any) => obj is SqlModelDataSourceSsmDbConnectionConfig;
 
 // @public (undocumented)
+export const isSqlModelDataSourceSsmDbConnectionStringConfig: (obj: any) => obj is SqlModelDataSourceSsmDbConnectionStringConfig;
+
+// @public (undocumented)
 export type MappingTemplateProvider = InlineMappingTemplateProvider | S3MappingTemplateProvider;
 
 // @public (undocumented)
@@ -381,7 +384,7 @@ export interface SQLLambdaModelDataSourceStrategy extends ModelDataSourceStrateg
 }
 
 // @public (undocumented)
-export type SqlModelDataSourceDbConnectionConfig = SqlModelDataSourceSecretsManagerDbConnectionConfig | SqlModelDataSourceSsmDbConnectionConfig;
+export type SqlModelDataSourceDbConnectionConfig = SqlModelDataSourceSecretsManagerDbConnectionConfig | SqlModelDataSourceSsmDbConnectionConfig | SqlModelDataSourceSsmDbConnectionStringConfig;
 
 // @public (undocumented)
 export interface SqlModelDataSourceSecretsManagerDbConnectionConfig {
@@ -409,6 +412,12 @@ export interface SqlModelDataSourceSsmDbConnectionConfig {
     readonly portSsmPath: string;
     // (undocumented)
     readonly usernameSsmPath: string;
+}
+
+// @public (undocumented)
+export interface SqlModelDataSourceSsmDbConnectionStringConfig {
+    // (undocumented)
+    readonly connectionUriSsmPath: string;
 }
 
 // @public (undocumented)
