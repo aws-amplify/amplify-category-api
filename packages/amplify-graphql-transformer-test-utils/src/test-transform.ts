@@ -2,6 +2,7 @@ import { AppSyncAuthConfiguration, TransformerPluginProvider, TransformerLogLeve
 import type {
   ModelDataSourceStrategy,
   RDSLayerMappingProvider,
+  RDSSNSTopicMappingProvider,
   SqlDirectiveDataSourceStrategy,
   SynthParameters,
   TransformParameters,
@@ -16,20 +17,21 @@ import {
 import { OverrideConfig, TransformManager } from './cdk-compat/transform-manager';
 import { DeploymentResources } from './deployment-resources';
 
-export type TestTransformParameters = RDSLayerMappingProvider & {
-  authConfig?: AppSyncAuthConfiguration;
-  // Making this optional so test code can simply use a default DDB strategy for each model in the schema.
-  dataSourceStrategies?: Record<string, ModelDataSourceStrategy>;
-  overrideConfig?: OverrideConfig;
-  resolverConfig?: ResolverConfig;
-  schema: string;
-  sqlDirectiveDataSourceStrategies?: SqlDirectiveDataSourceStrategy[];
-  stackMapping?: Record<string, string>;
-  synthParameters?: Partial<SynthParameters>;
-  transformers: TransformerPluginProvider[];
-  transformParameters?: Partial<TransformParameters>;
-  userDefinedSlots?: Record<string, UserDefinedSlot[]>;
-};
+export type TestTransformParameters = RDSLayerMappingProvider &
+  RDSSNSTopicMappingProvider & {
+    authConfig?: AppSyncAuthConfiguration;
+    // Making this optional so test code can simply use a default DDB strategy for each model in the schema.
+    dataSourceStrategies?: Record<string, ModelDataSourceStrategy>;
+    overrideConfig?: OverrideConfig;
+    resolverConfig?: ResolverConfig;
+    schema: string;
+    sqlDirectiveDataSourceStrategies?: SqlDirectiveDataSourceStrategy[];
+    stackMapping?: Record<string, string>;
+    synthParameters?: Partial<SynthParameters>;
+    transformers: TransformerPluginProvider[];
+    transformParameters?: Partial<TransformParameters>;
+    userDefinedSlots?: Record<string, UserDefinedSlot[]>;
+  };
 
 /**
  * This mirrors the old behavior of the graphql transformer, where we fully synthesize internally, for the purposes of
@@ -41,6 +43,7 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     dataSourceStrategies,
     overrideConfig,
     rdsLayerMapping,
+    rdsSnsTopicMapping,
     resolverConfig,
     schema,
     sqlDirectiveDataSourceStrategies,
@@ -79,6 +82,7 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     },
     schema,
     rdsLayerMapping,
+    rdsSnsTopicMapping,
     dataSourceStrategies: dataSourceStrategies ?? constructDataSourceStrategies(schema, DDB_DEFAULT_DATASOURCE_STRATEGY),
     sqlDirectiveDataSourceStrategies,
   });
