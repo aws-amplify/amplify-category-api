@@ -91,6 +91,12 @@ export abstract class DataSourceAdapter {
 }
 
 // @public (undocumented)
+export type DataSourceConfig = {
+    secretName: string;
+    vpcConfig?: VpcConfig;
+};
+
+// @public (undocumented)
 export type DBEngineType = 'MySQL' | 'Postgres' | 'DynamoDB';
 
 // @public (undocumented)
@@ -157,10 +163,10 @@ export const findMatchingField: (columnName: string, taleName: string, document:
 export const generateGraphQLSchema: (schema: Schema, existingSchemaDocument?: DocumentNode | undefined) => string;
 
 // @public (undocumented)
-export const generateTypescriptDataSchema: (schema: Schema) => string;
+export const generateTypescriptDataSchema: (schema: Schema, config?: DataSourceConfig) => string;
 
 // @public (undocumented)
-export const getHostVpc: (hostname: string, region: string) => Promise<VpcConfig | undefined>;
+export const getHostVpc: (hostname: string, region?: string) => Promise<VpcConfig | undefined>;
 
 // @public (undocumented)
 export const getParentNode: (ancestors: any[]) => ObjectTypeDefinitionNode | undefined;
@@ -431,6 +437,7 @@ export type TypescriptDataSchemaGeneratorConfig = {
     database: string;
     username: string;
     password: string;
+    connectionUriSecretName: string;
     outputFile?: string;
 };
 

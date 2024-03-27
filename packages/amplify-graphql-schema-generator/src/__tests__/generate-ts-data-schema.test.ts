@@ -1,5 +1,6 @@
 import { Engine, Field, Model, Schema } from '../schema-representation';
 import { generateTypescriptDataSchema } from '../ts-schema-generator/generate-ts-schema';
+import { DataSourceConfig } from '../ts-schema-generator/helpers';
 
 describe('Type name conversions', () => {
   it('basic models should generate correct typescript data schema', () => {
@@ -56,6 +57,94 @@ describe('Type name conversions', () => {
     dbschema.addModel(model);
 
     const graphqlSchema = generateTypescriptDataSchema(dbschema);
+    expect(graphqlSchema).toMatchSnapshot();
+  });
+
+  it('schema with database config secret and vpc should generate typescript data schema with configure', () => {
+    const dbschema = new Schema(new Engine('MySQL'));
+    let model = new Model('User');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
+    model.setPrimaryKey(['id']);
+    dbschema.addModel(model);
+
+    model = new Model('Profile');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('details', { kind: 'Scalar', name: 'String' }));
+    model.setPrimaryKey(['id']);
+    dbschema.addModel(model);
+
+    const config: DataSourceConfig = {
+      secretName: 'CONN_STR',
+      vpcConfig: {
+        vpcId: '123',
+        securityGroupIds: ['sb1', 'sb2', 'sb3'],
+        subnetAvailabilityZoneConfig: [
+          {
+            subnetId: 'sb1',
+            availabilityZone: 'az1',
+          },
+          {
+            subnetId: 'sb2',
+            availabilityZone: 'az2',
+          },
+          {
+            subnetId: 'sb3',
+            availabilityZone: 'az3',
+          },
+        ],
+      },
+    };
+
+    const graphqlSchema = generateTypescriptDataSchema(dbschema, config);
+    expect(graphqlSchema).toMatchSnapshot();
+  });
+
+  it('postgres schema with database config secret and vpc should generate typescript data schema with configure', () => {
+    const dbschema = new Schema(new Engine('Postgres'));
+    const model = new Model('User');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
+    model.setPrimaryKey(['id']);
+    dbschema.addModel(model);
+
+    const config: DataSourceConfig = {
+      secretName: 'CONN_STR',
+      vpcConfig: {
+        vpcId: '123',
+        securityGroupIds: ['sb1'],
+        subnetAvailabilityZoneConfig: [
+          {
+            subnetId: 'sb1',
+            availabilityZone: 'az1',
+          },
+        ],
+      },
+    };
+
+    const graphqlSchema = generateTypescriptDataSchema(dbschema, config);
+    expect(graphqlSchema).toMatchSnapshot();
+  });
+
+  it('schema with database config without vpc should generate typescript data schema with configure', () => {
+    const dbschema = new Schema(new Engine('MySQL'));
+    let model = new Model('User');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
+    model.setPrimaryKey(['id']);
+    dbschema.addModel(model);
+
+    model = new Model('Profile');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('details', { kind: 'Scalar', name: 'String' }));
+    model.setPrimaryKey(['id']);
+    dbschema.addModel(model);
+
+    const config: DataSourceConfig = {
+      secretName: 'CONN_STR',
+    };
+
+    const graphqlSchema = generateTypescriptDataSchema(dbschema, config);
     expect(graphqlSchema).toMatchSnapshot();
   });
 });
