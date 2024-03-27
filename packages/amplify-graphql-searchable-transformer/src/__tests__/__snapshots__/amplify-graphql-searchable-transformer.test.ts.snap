@@ -1385,151 +1385,6 @@ $util.toJson(null)
 }
 `;
 
-exports[`SearchableModelTransformer with datastore enabled and sort field defined vtl it should populate auto-generated timestamp fields in non keywords and omit datastore reserved fields when in implicit schema 1`] = `
-"#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
-#set( $indexPath = \\"/post/_search\\" )
-#set( $allowedAggFields = $util.defaultIfNull($ctx.stash.allowedAggFields, []) )
-#set( $aggFieldsFilterMap = $util.defaultIfNull($ctx.stash.aggFieldsFilterMap, {}) )
-#set( $nonKeywordFields = [\\"createdAt\\", \\"updatedAt\\"] )
-#set( $keyFields = [\\"id\\"] )
-#set( $sortValues = [] )
-#set( $sortFields = [] )
-#set( $aggregateValues = {} )
-#set( $primaryKey = \\"id\\" )
-#if( !$util.isNullOrEmpty($args.sort) )
-  #foreach( $sortItem in $args.sort )
-    #if( $util.isNullOrEmpty($sortItem.field) )
-      $util.qr($sortFields.add($primaryKey))
-    #else
-      $util.qr($sortFields.add($sortItem.field))
-    #end
-    #if( $util.isNullOrEmpty($sortItem.field) )
-      #if( $nonKeywordFields.contains($primaryKey) )
-        #set( $sortField = $util.toJson($primaryKey) )
-      #else
-        #set( $sortField = $util.toJson(\\"\${primaryKey}.keyword\\") )
-      #end
-    #else
-      #if( $nonKeywordFields.contains($sortItem.field) )
-        #set( $sortField = $util.toJson($sortItem.field) )
-      #else
-        #set( $sortField = $util.toJson(\\"\${sortItem.field}.keyword\\") )
-      #end
-    #end
-    #if( $util.isNullOrEmpty($sortItem.direction) )
-      #set( $sortDirection = $util.toJson({\\"order\\": \\"desc\\"}) )
-    #else
-      #set( $sortDirection = $util.toJson({\\"order\\": $sortItem.direction}) )
-    #end
-    $util.qr($sortValues.add(\\"{$sortField: $sortDirection}\\"))
-  #end
-#end
-#foreach( $keyItem in $keyFields )
-  #if( !$sortFields.contains($keyItem) )
-    #if( $nonKeywordFields.contains($keyItem) )
-      #set( $sortField = $util.toJson($keyItem) )
-    #else
-      #set( $sortField = $util.toJson(\\"\${keyItem}.keyword\\") )
-    #end
-    #set( $sortDirection = $util.toJson({\\"order\\": \\"desc\\"}) )
-    $util.qr($sortValues.add(\\"{$sortField: $sortDirection}\\"))
-  #end
-#end
-#foreach( $aggItem in $args.aggregates )
-  #if( $allowedAggFields.contains($aggItem.field) )
-    #set( $aggFilter = { \\"match_all\\": {} } )
-  #elseif( $aggFieldsFilterMap.containsKey($aggItem.field) )
-    #set( $aggFilter = { \\"bool\\": { \\"should\\": $aggFieldsFilterMap.get($aggItem.field) } } )
-  #else
-    $util.error(\\"Unauthorized to run aggregation on field: \${aggItem.field}\\", \\"Unauthorized\\")
-  #end
-  #set( $aggregateValue = {} )
-  $util.qr($aggregateValue.put(\\"filter\\", $aggFilter))
-  #set( $aggsValue = {} )
-  #set( $aggItemType = {} )
-  #if( $nonKeywordFields.contains($aggItem.field) )
-    $util.qr($aggItemType.put(\\"$aggItem.type\\", { \\"field\\": \\"$aggItem.field\\" }))
-  #else
-    $util.qr($aggItemType.put(\\"$aggItem.type\\", { \\"field\\": \\"\${aggItem.field}.keyword\\" }))
-  #end
-  $util.qr($aggsValue.put(\\"$aggItem.name\\", $aggItemType))
-  $util.qr($aggregateValue.put(\\"aggs\\", $aggsValue))
-  $util.qr($aggregateValues.put(\\"$aggItem.name\\", $aggregateValue))
-#end
-#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-  #set( $filter = $ctx.stash.authFilter )
-  #if( !$util.isNullOrEmpty($args.filter) )
-    #set( $filter = {
-  \\"bool\\": {
-      \\"must\\":     [$ctx.stash.authFilter, $util.parseJson($util.transform.toElasticsearchQueryDSL($args.filter))]
-  }
-} )
-  #end
-#else
-  #if( !$util.isNullOrEmpty($args.filter) )
-    #set( $filter = $util.parseJson($util.transform.toElasticsearchQueryDSL($args.filter)) )
-  #end
-#end
-#if( $util.isNullOrEmpty($filter) )
-  #set( $filter = {
-  \\"match_all\\": {}
-} )
-#end
-{
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"GET\\",
-  \\"path\\": \\"$indexPath\\",
-  \\"params\\": {
-      \\"body\\":     {
-                #if( $context.args.nextToken )\\"search_after\\": $util.base64Decode($args.nextToken), #end
-                #if( $context.args.from )\\"from\\": $args.from, #end
-                \\"size\\": #if( $args.limit ) $args.limit #else 100 #end,
-                \\"sort\\": $sortValues,
-                \\"version\\": true,
-                \\"query\\": $util.toJson($filter),
-                \\"aggs\\": $util.toJson($aggregateValues)
-                }
-  }
-}"
-`;
-
-exports[`SearchableModelTransformer with datastore enabled and sort field defined vtl it should populate auto-generated timestamp fields in non keywords and omit datastore reserved fields when in implicit schema 2`] = `
-"#set( $es_items = [] )
-#set( $aggregateValues = [] )
-#foreach( $entry in $context.result.hits.hits )
-  #if( !$foreach.hasNext )
-    #set( $nextToken = $util.base64Encode($util.toJson($entry.sort)) )
-  #end
-  #set( $row = $entry.get(\\"_source\\") )
-  $util.qr($row.put(\\"_version\\", $entry.get(\\"_version\\")))
-  $util.qr($es_items.add($row))
-#end
-#foreach( $aggItem in $context.result.aggregations.keySet() )
-  #set( $aggResult = {} )
-  #set( $aggResultValue = {} )
-  #set( $currentAggItem = $ctx.result.aggregations.get($aggItem) )
-  $util.qr($aggResult.put(\\"name\\", $aggItem))
-  #if( !$util.isNullOrEmpty($currentAggItem) )
-    #if( !$util.isNullOrEmpty($currentAggItem.get($aggItem).buckets) )
-      $util.qr($aggResultValue.put(\\"__typename\\", \\"SearchableAggregateBucketResult\\"))
-      $util.qr($aggResultValue.put(\\"buckets\\", $currentAggItem.get($aggItem).buckets))
-    #end
-    #if( !$util.isNullOrEmpty($currentAggItem.get($aggItem).value) )
-      $util.qr($aggResultValue.put(\\"__typename\\", \\"SearchableAggregateScalarResult\\"))
-      $util.qr($aggResultValue.put(\\"value\\", $currentAggItem.get($aggItem).value))
-    #end
-  #end
-  $util.qr($aggResult.put(\\"result\\", $aggResultValue))
-  $util.qr($aggregateValues.add($aggResult))
-#end
-$util.toJson({
-  \\"items\\": $es_items,
-  \\"total\\": $ctx.result.hits.total.value,
-  \\"nextToken\\": $nextToken,
-  \\"aggregateItems\\": $aggregateValues
-})"
-`;
-
 exports[`SearchableModelTransformer with datastore enabled vtl 1`] = `
 "#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $indexPath = \\"/post/_search\\" )
@@ -3217,6 +3072,1591 @@ input SearchablePostAggregationInput {
   name: String!
   type: SearchableAggregateType!
   field: SearchablePostAggregateField!
+}
+"
+`;
+
+exports[`iam and sandbox auth disable should not add service directives 1`] = `
+"type Todo {
+  content: String!
+  id: ID!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type SearchableTodoConnection {
+  items: [Todo]!
+  nextToken: String
+  total: Int
+  aggregateItems: [SearchableAggregateResult]!
+}
+
+type SearchableAggregateResult {
+  name: String!
+  result: SearchableAggregateGenericResult
+}
+
+type SearchableAggregateScalarResult {
+  value: Float!
+}
+
+type SearchableAggregateBucketResult {
+  buckets: [SearchableAggregateBucketResultItem]
+}
+
+type SearchableAggregateBucketResultItem {
+  key: String!
+  doc_count: Int!
+}
+
+union SearchableAggregateGenericResult = SearchableAggregateScalarResult | SearchableAggregateBucketResult
+
+type Query {
+  searchTodos(filter: SearchableTodoFilterInput, sort: [SearchableTodoSortInput], limit: Int, nextToken: String, from: Int, aggregates: [SearchableTodoAggregationInput]): SearchableTodoConnection
+  getTodo(id: ID!): Todo
+  listTodos(filter: ModelTodoFilterInput, limit: Int, nextToken: String): ModelTodoConnection
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelTodoConnection {
+  items: [Todo]!
+  nextToken: String
+}
+
+input ModelTodoFilterInput {
+  content: ModelStringInput
+  id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelTodoFilterInput]
+  or: [ModelTodoFilterInput]
+  not: ModelTodoFilterInput
+}
+
+input ModelTodoConditionInput {
+  content: ModelStringInput
+  and: [ModelTodoConditionInput]
+  or: [ModelTodoConditionInput]
+  not: ModelTodoConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+}
+
+input CreateTodoInput {
+  content: String!
+  id: ID
+}
+
+input UpdateTodoInput {
+  content: String
+  id: ID!
+}
+
+input DeleteTodoInput {
+  id: ID!
+}
+
+type Mutation {
+  createTodo(input: CreateTodoInput!, condition: ModelTodoConditionInput): Todo
+  updateTodo(input: UpdateTodoInput!, condition: ModelTodoConditionInput): Todo
+  deleteTodo(input: DeleteTodoInput!, condition: ModelTodoConditionInput): Todo
+}
+
+input ModelSubscriptionTodoFilterInput {
+  content: ModelSubscriptionStringInput
+  id: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionTodoFilterInput]
+  or: [ModelSubscriptionTodoFilterInput]
+}
+
+type Subscription {
+  onCreateTodo(filter: ModelSubscriptionTodoFilterInput): Todo @aws_subscribe(mutations: [\\"createTodo\\"])
+  onUpdateTodo(filter: ModelSubscriptionTodoFilterInput): Todo @aws_subscribe(mutations: [\\"updateTodo\\"])
+  onDeleteTodo(filter: ModelSubscriptionTodoFilterInput): Todo @aws_subscribe(mutations: [\\"deleteTodo\\"])
+}
+
+input SearchableStringFilterInput {
+  ne: String
+  gt: String
+  lt: String
+  gte: String
+  lte: String
+  eq: String
+  match: String
+  matchPhrase: String
+  matchPhrasePrefix: String
+  multiMatch: String
+  exists: Boolean
+  wildcard: String
+  regexp: String
+  range: [String]
+}
+
+input SearchableIntFilterInput {
+  ne: Int
+  gt: Int
+  lt: Int
+  gte: Int
+  lte: Int
+  eq: Int
+  range: [Int]
+}
+
+input SearchableFloatFilterInput {
+  ne: Float
+  gt: Float
+  lt: Float
+  gte: Float
+  lte: Float
+  eq: Float
+  range: [Float]
+}
+
+input SearchableBooleanFilterInput {
+  eq: Boolean
+  ne: Boolean
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+  range: [ID]
+}
+
+input SearchableTodoFilterInput {
+  content: SearchableStringFilterInput
+  id: SearchableIDFilterInput
+  createdAt: SearchableStringFilterInput
+  updatedAt: SearchableStringFilterInput
+  and: [SearchableTodoFilterInput]
+  or: [SearchableTodoFilterInput]
+  not: SearchableTodoFilterInput
+}
+
+enum SearchableSortDirection {
+  asc
+  desc
+}
+
+enum SearchableTodoSortableFields {
+  content
+  id
+  createdAt
+  updatedAt
+}
+
+input SearchableTodoSortInput {
+  field: SearchableTodoSortableFields
+  direction: SearchableSortDirection
+}
+
+enum SearchableAggregateType {
+  terms
+  avg
+  min
+  max
+  sum
+  cardinality
+}
+
+enum SearchableTodoAggregateField {
+  content
+  id
+  createdAt
+  updatedAt
+}
+
+input SearchableTodoAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: SearchableTodoAggregateField!
+}
+"
+`;
+
+exports[`iam and sandbox auth enabled should add aws_iam and aws_api_key if not default mode of auth 1`] = `
+"type Todo @aws_api_key @aws_iam {
+  content: String!
+  id: ID!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type SearchableTodoConnection {
+  items: [Todo]!
+  nextToken: String
+  total: Int
+  aggregateItems: [SearchableAggregateResult]!
+}
+
+type SearchableAggregateResult {
+  name: String!
+  result: SearchableAggregateGenericResult
+}
+
+type SearchableAggregateScalarResult {
+  value: Float!
+}
+
+type SearchableAggregateBucketResult {
+  buckets: [SearchableAggregateBucketResultItem]
+}
+
+type SearchableAggregateBucketResultItem {
+  key: String!
+  doc_count: Int!
+}
+
+union SearchableAggregateGenericResult = SearchableAggregateScalarResult | SearchableAggregateBucketResult
+
+type Query {
+  searchTodos(filter: SearchableTodoFilterInput, sort: [SearchableTodoSortInput], limit: Int, nextToken: String, from: Int, aggregates: [SearchableTodoAggregationInput]): SearchableTodoConnection @aws_api_key @aws_iam
+  getTodo(id: ID!): Todo @aws_api_key @aws_iam
+  listTodos(filter: ModelTodoFilterInput, limit: Int, nextToken: String): ModelTodoConnection @aws_api_key @aws_iam
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelTodoConnection @aws_api_key @aws_iam {
+  items: [Todo]!
+  nextToken: String
+}
+
+input ModelTodoFilterInput {
+  content: ModelStringInput
+  id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelTodoFilterInput]
+  or: [ModelTodoFilterInput]
+  not: ModelTodoFilterInput
+}
+
+input ModelTodoConditionInput {
+  content: ModelStringInput
+  and: [ModelTodoConditionInput]
+  or: [ModelTodoConditionInput]
+  not: ModelTodoConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+}
+
+input CreateTodoInput {
+  content: String!
+  id: ID
+}
+
+input UpdateTodoInput {
+  content: String
+  id: ID!
+}
+
+input DeleteTodoInput {
+  id: ID!
+}
+
+type Mutation {
+  createTodo(input: CreateTodoInput!, condition: ModelTodoConditionInput): Todo @aws_api_key @aws_iam
+  updateTodo(input: UpdateTodoInput!, condition: ModelTodoConditionInput): Todo @aws_api_key @aws_iam
+  deleteTodo(input: DeleteTodoInput!, condition: ModelTodoConditionInput): Todo @aws_api_key @aws_iam
+}
+
+input ModelSubscriptionTodoFilterInput {
+  content: ModelSubscriptionStringInput
+  id: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionTodoFilterInput]
+  or: [ModelSubscriptionTodoFilterInput]
+}
+
+type Subscription {
+  onCreateTodo(filter: ModelSubscriptionTodoFilterInput): Todo @aws_subscribe(mutations: [\\"createTodo\\"]) @aws_api_key @aws_iam
+  onUpdateTodo(filter: ModelSubscriptionTodoFilterInput): Todo @aws_subscribe(mutations: [\\"updateTodo\\"]) @aws_api_key @aws_iam
+  onDeleteTodo(filter: ModelSubscriptionTodoFilterInput): Todo @aws_subscribe(mutations: [\\"deleteTodo\\"]) @aws_api_key @aws_iam
+}
+
+input SearchableStringFilterInput {
+  ne: String
+  gt: String
+  lt: String
+  gte: String
+  lte: String
+  eq: String
+  match: String
+  matchPhrase: String
+  matchPhrasePrefix: String
+  multiMatch: String
+  exists: Boolean
+  wildcard: String
+  regexp: String
+  range: [String]
+}
+
+input SearchableIntFilterInput {
+  ne: Int
+  gt: Int
+  lt: Int
+  gte: Int
+  lte: Int
+  eq: Int
+  range: [Int]
+}
+
+input SearchableFloatFilterInput {
+  ne: Float
+  gt: Float
+  lt: Float
+  gte: Float
+  lte: Float
+  eq: Float
+  range: [Float]
+}
+
+input SearchableBooleanFilterInput {
+  eq: Boolean
+  ne: Boolean
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+  range: [ID]
+}
+
+input SearchableTodoFilterInput {
+  content: SearchableStringFilterInput
+  id: SearchableIDFilterInput
+  createdAt: SearchableStringFilterInput
+  updatedAt: SearchableStringFilterInput
+  and: [SearchableTodoFilterInput]
+  or: [SearchableTodoFilterInput]
+  not: SearchableTodoFilterInput
+}
+
+enum SearchableSortDirection {
+  asc
+  desc
+}
+
+enum SearchableTodoSortableFields {
+  content
+  id
+  createdAt
+  updatedAt
+}
+
+input SearchableTodoSortInput {
+  field: SearchableTodoSortableFields
+  direction: SearchableSortDirection
+}
+
+enum SearchableAggregateType {
+  terms
+  avg
+  min
+  max
+  sum
+  cardinality
+}
+
+enum SearchableTodoAggregateField {
+  content
+  id
+  createdAt
+  updatedAt
+}
+
+input SearchableTodoAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: SearchableTodoAggregateField!
+}
+"
+`;
+
+exports[`iam auth enabled should add aws_iam if not default mode of auth 1`] = `
+"type Todo @aws_iam {
+  content: String!
+  id: ID!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type SearchableTodoConnection {
+  items: [Todo]!
+  nextToken: String
+  total: Int
+  aggregateItems: [SearchableAggregateResult]!
+}
+
+type SearchableAggregateResult {
+  name: String!
+  result: SearchableAggregateGenericResult
+}
+
+type SearchableAggregateScalarResult {
+  value: Float!
+}
+
+type SearchableAggregateBucketResult {
+  buckets: [SearchableAggregateBucketResultItem]
+}
+
+type SearchableAggregateBucketResultItem {
+  key: String!
+  doc_count: Int!
+}
+
+union SearchableAggregateGenericResult = SearchableAggregateScalarResult | SearchableAggregateBucketResult
+
+type Query {
+  searchTodos(filter: SearchableTodoFilterInput, sort: [SearchableTodoSortInput], limit: Int, nextToken: String, from: Int, aggregates: [SearchableTodoAggregationInput]): SearchableTodoConnection @aws_iam
+  getTodo(id: ID!): Todo @aws_iam
+  listTodos(filter: ModelTodoFilterInput, limit: Int, nextToken: String): ModelTodoConnection @aws_iam
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelTodoConnection @aws_iam {
+  items: [Todo]!
+  nextToken: String
+}
+
+input ModelTodoFilterInput {
+  content: ModelStringInput
+  id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelTodoFilterInput]
+  or: [ModelTodoFilterInput]
+  not: ModelTodoFilterInput
+}
+
+input ModelTodoConditionInput {
+  content: ModelStringInput
+  and: [ModelTodoConditionInput]
+  or: [ModelTodoConditionInput]
+  not: ModelTodoConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+}
+
+input CreateTodoInput {
+  content: String!
+  id: ID
+}
+
+input UpdateTodoInput {
+  content: String
+  id: ID!
+}
+
+input DeleteTodoInput {
+  id: ID!
+}
+
+type Mutation {
+  createTodo(input: CreateTodoInput!, condition: ModelTodoConditionInput): Todo @aws_iam
+  updateTodo(input: UpdateTodoInput!, condition: ModelTodoConditionInput): Todo @aws_iam
+  deleteTodo(input: DeleteTodoInput!, condition: ModelTodoConditionInput): Todo @aws_iam
+}
+
+input ModelSubscriptionTodoFilterInput {
+  content: ModelSubscriptionStringInput
+  id: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionTodoFilterInput]
+  or: [ModelSubscriptionTodoFilterInput]
+}
+
+type Subscription {
+  onCreateTodo(filter: ModelSubscriptionTodoFilterInput): Todo @aws_subscribe(mutations: [\\"createTodo\\"]) @aws_iam
+  onUpdateTodo(filter: ModelSubscriptionTodoFilterInput): Todo @aws_subscribe(mutations: [\\"updateTodo\\"]) @aws_iam
+  onDeleteTodo(filter: ModelSubscriptionTodoFilterInput): Todo @aws_subscribe(mutations: [\\"deleteTodo\\"]) @aws_iam
+}
+
+input SearchableStringFilterInput {
+  ne: String
+  gt: String
+  lt: String
+  gte: String
+  lte: String
+  eq: String
+  match: String
+  matchPhrase: String
+  matchPhrasePrefix: String
+  multiMatch: String
+  exists: Boolean
+  wildcard: String
+  regexp: String
+  range: [String]
+}
+
+input SearchableIntFilterInput {
+  ne: Int
+  gt: Int
+  lt: Int
+  gte: Int
+  lte: Int
+  eq: Int
+  range: [Int]
+}
+
+input SearchableFloatFilterInput {
+  ne: Float
+  gt: Float
+  lt: Float
+  gte: Float
+  lte: Float
+  eq: Float
+  range: [Float]
+}
+
+input SearchableBooleanFilterInput {
+  eq: Boolean
+  ne: Boolean
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+  range: [ID]
+}
+
+input SearchableTodoFilterInput {
+  content: SearchableStringFilterInput
+  id: SearchableIDFilterInput
+  createdAt: SearchableStringFilterInput
+  updatedAt: SearchableStringFilterInput
+  and: [SearchableTodoFilterInput]
+  or: [SearchableTodoFilterInput]
+  not: SearchableTodoFilterInput
+}
+
+enum SearchableSortDirection {
+  asc
+  desc
+}
+
+enum SearchableTodoSortableFields {
+  content
+  id
+  createdAt
+  updatedAt
+}
+
+input SearchableTodoSortInput {
+  field: SearchableTodoSortableFields
+  direction: SearchableSortDirection
+}
+
+enum SearchableAggregateType {
+  terms
+  avg
+  min
+  max
+  sum
+  cardinality
+}
+
+enum SearchableTodoAggregateField {
+  content
+  id
+  createdAt
+  updatedAt
+}
+
+input SearchableTodoAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: SearchableTodoAggregateField!
+}
+"
+`;
+
+exports[`it should populate auto-generated timestamp fields in non keywords and omit datastore reserved fields when in implicit schema 1`] = `
+"#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+#set( $indexPath = \\"/post/_search\\" )
+#set( $allowedAggFields = $util.defaultIfNull($ctx.stash.allowedAggFields, []) )
+#set( $aggFieldsFilterMap = $util.defaultIfNull($ctx.stash.aggFieldsFilterMap, {}) )
+#set( $nonKeywordFields = [\\"createdAt\\", \\"updatedAt\\"] )
+#set( $keyFields = [\\"id\\"] )
+#set( $sortValues = [] )
+#set( $sortFields = [] )
+#set( $aggregateValues = {} )
+#set( $primaryKey = \\"id\\" )
+#if( !$util.isNullOrEmpty($args.sort) )
+  #foreach( $sortItem in $args.sort )
+    #if( $util.isNullOrEmpty($sortItem.field) )
+      $util.qr($sortFields.add($primaryKey))
+    #else
+      $util.qr($sortFields.add($sortItem.field))
+    #end
+    #if( $util.isNullOrEmpty($sortItem.field) )
+      #if( $nonKeywordFields.contains($primaryKey) )
+        #set( $sortField = $util.toJson($primaryKey) )
+      #else
+        #set( $sortField = $util.toJson(\\"\${primaryKey}.keyword\\") )
+      #end
+    #else
+      #if( $nonKeywordFields.contains($sortItem.field) )
+        #set( $sortField = $util.toJson($sortItem.field) )
+      #else
+        #set( $sortField = $util.toJson(\\"\${sortItem.field}.keyword\\") )
+      #end
+    #end
+    #if( $util.isNullOrEmpty($sortItem.direction) )
+      #set( $sortDirection = $util.toJson({\\"order\\": \\"desc\\"}) )
+    #else
+      #set( $sortDirection = $util.toJson({\\"order\\": $sortItem.direction}) )
+    #end
+    $util.qr($sortValues.add(\\"{$sortField: $sortDirection}\\"))
+  #end
+#end
+#foreach( $keyItem in $keyFields )
+  #if( !$sortFields.contains($keyItem) )
+    #if( $nonKeywordFields.contains($keyItem) )
+      #set( $sortField = $util.toJson($keyItem) )
+    #else
+      #set( $sortField = $util.toJson(\\"\${keyItem}.keyword\\") )
+    #end
+    #set( $sortDirection = $util.toJson({\\"order\\": \\"desc\\"}) )
+    $util.qr($sortValues.add(\\"{$sortField: $sortDirection}\\"))
+  #end
+#end
+#foreach( $aggItem in $args.aggregates )
+  #if( $allowedAggFields.contains($aggItem.field) )
+    #set( $aggFilter = { \\"match_all\\": {} } )
+  #elseif( $aggFieldsFilterMap.containsKey($aggItem.field) )
+    #set( $aggFilter = { \\"bool\\": { \\"should\\": $aggFieldsFilterMap.get($aggItem.field) } } )
+  #else
+    $util.error(\\"Unauthorized to run aggregation on field: \${aggItem.field}\\", \\"Unauthorized\\")
+  #end
+  #set( $aggregateValue = {} )
+  $util.qr($aggregateValue.put(\\"filter\\", $aggFilter))
+  #set( $aggsValue = {} )
+  #set( $aggItemType = {} )
+  #if( $nonKeywordFields.contains($aggItem.field) )
+    $util.qr($aggItemType.put(\\"$aggItem.type\\", { \\"field\\": \\"$aggItem.field\\" }))
+  #else
+    $util.qr($aggItemType.put(\\"$aggItem.type\\", { \\"field\\": \\"\${aggItem.field}.keyword\\" }))
+  #end
+  $util.qr($aggsValue.put(\\"$aggItem.name\\", $aggItemType))
+  $util.qr($aggregateValue.put(\\"aggs\\", $aggsValue))
+  $util.qr($aggregateValues.put(\\"$aggItem.name\\", $aggregateValue))
+#end
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
+  #if( !$util.isNullOrEmpty($args.filter) )
+    #set( $filter = {
+  \\"bool\\": {
+      \\"must\\":     [$ctx.stash.authFilter, $util.parseJson($util.transform.toElasticsearchQueryDSL($args.filter))]
+  }
+} )
+  #end
+#else
+  #if( !$util.isNullOrEmpty($args.filter) )
+    #set( $filter = $util.parseJson($util.transform.toElasticsearchQueryDSL($args.filter)) )
+  #end
+#end
+#if( $util.isNullOrEmpty($filter) )
+  #set( $filter = {
+  \\"match_all\\": {}
+} )
+#end
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"GET\\",
+  \\"path\\": \\"$indexPath\\",
+  \\"params\\": {
+      \\"body\\":     {
+                #if( $context.args.nextToken )\\"search_after\\": $util.base64Decode($args.nextToken), #end
+                #if( $context.args.from )\\"from\\": $args.from, #end
+                \\"size\\": #if( $args.limit ) $args.limit #else 100 #end,
+                \\"sort\\": $sortValues,
+                \\"version\\": true,
+                \\"query\\": $util.toJson($filter),
+                \\"aggs\\": $util.toJson($aggregateValues)
+                }
+  }
+}"
+`;
+
+exports[`it should populate auto-generated timestamp fields in non keywords and omit datastore reserved fields when in implicit schema 2`] = `
+"#set( $es_items = [] )
+#set( $aggregateValues = [] )
+#foreach( $entry in $context.result.hits.hits )
+  #if( !$foreach.hasNext )
+    #set( $nextToken = $util.base64Encode($util.toJson($entry.sort)) )
+  #end
+  #set( $row = $entry.get(\\"_source\\") )
+  $util.qr($row.put(\\"_version\\", $entry.get(\\"_version\\")))
+  $util.qr($es_items.add($row))
+#end
+#foreach( $aggItem in $context.result.aggregations.keySet() )
+  #set( $aggResult = {} )
+  #set( $aggResultValue = {} )
+  #set( $currentAggItem = $ctx.result.aggregations.get($aggItem) )
+  $util.qr($aggResult.put(\\"name\\", $aggItem))
+  #if( !$util.isNullOrEmpty($currentAggItem) )
+    #if( !$util.isNullOrEmpty($currentAggItem.get($aggItem).buckets) )
+      $util.qr($aggResultValue.put(\\"__typename\\", \\"SearchableAggregateBucketResult\\"))
+      $util.qr($aggResultValue.put(\\"buckets\\", $currentAggItem.get($aggItem).buckets))
+    #end
+    #if( !$util.isNullOrEmpty($currentAggItem.get($aggItem).value) )
+      $util.qr($aggResultValue.put(\\"__typename\\", \\"SearchableAggregateScalarResult\\"))
+      $util.qr($aggResultValue.put(\\"value\\", $currentAggItem.get($aggItem).value))
+    #end
+  #end
+  $util.qr($aggResult.put(\\"result\\", $aggResultValue))
+  $util.qr($aggregateValues.add($aggResult))
+#end
+$util.toJson({
+  \\"items\\": $es_items,
+  \\"total\\": $ctx.result.hits.total.value,
+  \\"nextToken\\": $nextToken,
+  \\"aggregateItems\\": $aggregateValues
+})"
+`;
+
+exports[`sandbox auth enabled should add apiKey if not default mode of auth 1`] = `
+"type Todo @aws_api_key {
+  content: String!
+  id: ID!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type SearchableTodoConnection {
+  items: [Todo]!
+  nextToken: String
+  total: Int
+  aggregateItems: [SearchableAggregateResult]!
+}
+
+type SearchableAggregateResult @aws_api_key {
+  name: String!
+  result: SearchableAggregateGenericResult
+}
+
+type SearchableAggregateScalarResult @aws_api_key {
+  value: Float!
+}
+
+type SearchableAggregateBucketResult @aws_api_key {
+  buckets: [SearchableAggregateBucketResultItem]
+}
+
+type SearchableAggregateBucketResultItem @aws_api_key {
+  key: String!
+  doc_count: Int!
+}
+
+union SearchableAggregateGenericResult = SearchableAggregateScalarResult | SearchableAggregateBucketResult
+
+type Query {
+  searchTodos(filter: SearchableTodoFilterInput, sort: [SearchableTodoSortInput], limit: Int, nextToken: String, from: Int, aggregates: [SearchableTodoAggregationInput]): SearchableTodoConnection @aws_api_key
+  getTodo(id: ID!): Todo @aws_api_key
+  listTodos(filter: ModelTodoFilterInput, limit: Int, nextToken: String): ModelTodoConnection @aws_api_key
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelTodoConnection @aws_api_key {
+  items: [Todo]!
+  nextToken: String
+}
+
+input ModelTodoFilterInput {
+  content: ModelStringInput
+  id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelTodoFilterInput]
+  or: [ModelTodoFilterInput]
+  not: ModelTodoFilterInput
+}
+
+input ModelTodoConditionInput {
+  content: ModelStringInput
+  and: [ModelTodoConditionInput]
+  or: [ModelTodoConditionInput]
+  not: ModelTodoConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+}
+
+input CreateTodoInput {
+  content: String!
+  id: ID
+}
+
+input UpdateTodoInput {
+  content: String
+  id: ID!
+}
+
+input DeleteTodoInput {
+  id: ID!
+}
+
+type Mutation {
+  createTodo(input: CreateTodoInput!, condition: ModelTodoConditionInput): Todo @aws_api_key
+  updateTodo(input: UpdateTodoInput!, condition: ModelTodoConditionInput): Todo @aws_api_key
+  deleteTodo(input: DeleteTodoInput!, condition: ModelTodoConditionInput): Todo @aws_api_key
+}
+
+input ModelSubscriptionTodoFilterInput {
+  content: ModelSubscriptionStringInput
+  id: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionTodoFilterInput]
+  or: [ModelSubscriptionTodoFilterInput]
+}
+
+type Subscription {
+  onCreateTodo(filter: ModelSubscriptionTodoFilterInput): Todo @aws_subscribe(mutations: [\\"createTodo\\"]) @aws_api_key
+  onUpdateTodo(filter: ModelSubscriptionTodoFilterInput): Todo @aws_subscribe(mutations: [\\"updateTodo\\"]) @aws_api_key
+  onDeleteTodo(filter: ModelSubscriptionTodoFilterInput): Todo @aws_subscribe(mutations: [\\"deleteTodo\\"]) @aws_api_key
+}
+
+input SearchableStringFilterInput {
+  ne: String
+  gt: String
+  lt: String
+  gte: String
+  lte: String
+  eq: String
+  match: String
+  matchPhrase: String
+  matchPhrasePrefix: String
+  multiMatch: String
+  exists: Boolean
+  wildcard: String
+  regexp: String
+  range: [String]
+}
+
+input SearchableIntFilterInput {
+  ne: Int
+  gt: Int
+  lt: Int
+  gte: Int
+  lte: Int
+  eq: Int
+  range: [Int]
+}
+
+input SearchableFloatFilterInput {
+  ne: Float
+  gt: Float
+  lt: Float
+  gte: Float
+  lte: Float
+  eq: Float
+  range: [Float]
+}
+
+input SearchableBooleanFilterInput {
+  eq: Boolean
+  ne: Boolean
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+  range: [ID]
+}
+
+input SearchableTodoFilterInput {
+  content: SearchableStringFilterInput
+  id: SearchableIDFilterInput
+  createdAt: SearchableStringFilterInput
+  updatedAt: SearchableStringFilterInput
+  and: [SearchableTodoFilterInput]
+  or: [SearchableTodoFilterInput]
+  not: SearchableTodoFilterInput
+}
+
+enum SearchableSortDirection {
+  asc
+  desc
+}
+
+enum SearchableTodoSortableFields {
+  content
+  id
+  createdAt
+  updatedAt
+}
+
+input SearchableTodoSortInput {
+  field: SearchableTodoSortableFields
+  direction: SearchableSortDirection
+}
+
+enum SearchableAggregateType {
+  terms
+  avg
+  min
+  max
+  sum
+  cardinality
+}
+
+enum SearchableTodoAggregateField {
+  content
+  id
+  createdAt
+  updatedAt
+}
+
+input SearchableTodoAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: SearchableTodoAggregateField!
 }
 "
 `;

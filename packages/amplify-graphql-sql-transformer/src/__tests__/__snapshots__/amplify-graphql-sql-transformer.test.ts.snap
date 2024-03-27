@@ -1,5 +1,53 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`sql directive tests Post auth resolver Renders post auth resolver if sandbox is disabled and iam access disabled 1`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`sql directive tests Post auth resolver Renders post auth resolver if sandbox is disabled and iam access enabled 1`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`sql directive tests Post auth resolver Renders post auth resolver if sandbox is enabled and iam access disabled 1`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`sql directive tests Post auth resolver Renders post auth resolver if sandbox is enabled and iam access enabled 1`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
 exports[`sql directive tests should compile happy case with reference argument 1`] = `
 "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )

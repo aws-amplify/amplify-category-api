@@ -252,4 +252,130 @@ describe('sql directive tests', () => {
     expect(out.resolvers['Query.calculateTaxRate.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Query.calculateTaxRate.res.vtl']).toMatchSnapshot();
   });
+
+  describe('Post auth resolver', () => {
+    it('Renders post auth resolver if sandbox is enabled and iam access disabled', () => {
+      const doc = /* GraphQL */ `
+        type Query {
+          calculateTaxRate(zip: String): Int @sql(statement: "SELECT * FROM TAXRATE WHERE ZIP = :zip")
+        }
+      `;
+
+      const out = testTransform({
+        schema: doc,
+        transformers: [new ModelTransformer(), new SqlTransformer()],
+        dataSourceStrategies: constructDataSourceStrategies(doc, mySqlStrategy),
+        transformParameters: {
+          sandboxModeEnabled: true,
+        },
+        synthParameters: {
+          enableIamAccess: false,
+        },
+        sqlDirectiveDataSourceStrategies: [
+          {
+            typeName: 'Query',
+            fieldName: 'calculateTaxRate',
+            strategy: mySqlStrategy,
+          },
+        ],
+      });
+      expect(out).toBeDefined();
+      expect(out.resolvers).toBeDefined();
+      expect(out.resolvers['Query.calculateTaxRate.postAuth.1.req.vtl']).toBeDefined();
+      expect(out.resolvers['Query.calculateTaxRate.postAuth.1.req.vtl']).toMatchSnapshot();
+    });
+
+    it('Renders post auth resolver if sandbox is enabled and iam access enabled', () => {
+      const doc = /* GraphQL */ `
+        type Query {
+          calculateTaxRate(zip: String): Int @sql(statement: "SELECT * FROM TAXRATE WHERE ZIP = :zip")
+        }
+      `;
+
+      const out = testTransform({
+        schema: doc,
+        transformers: [new ModelTransformer(), new SqlTransformer()],
+        dataSourceStrategies: constructDataSourceStrategies(doc, mySqlStrategy),
+        transformParameters: {
+          sandboxModeEnabled: true,
+        },
+        synthParameters: {
+          enableIamAccess: true,
+        },
+        sqlDirectiveDataSourceStrategies: [
+          {
+            typeName: 'Query',
+            fieldName: 'calculateTaxRate',
+            strategy: mySqlStrategy,
+          },
+        ],
+      });
+      expect(out).toBeDefined();
+      expect(out.resolvers).toBeDefined();
+      expect(out.resolvers['Query.calculateTaxRate.postAuth.1.req.vtl']).toBeDefined();
+      expect(out.resolvers['Query.calculateTaxRate.postAuth.1.req.vtl']).toMatchSnapshot();
+    });
+
+    it('Renders post auth resolver if sandbox is disabled and iam access enabled', () => {
+      const doc = /* GraphQL */ `
+        type Query {
+          calculateTaxRate(zip: String): Int @sql(statement: "SELECT * FROM TAXRATE WHERE ZIP = :zip")
+        }
+      `;
+
+      const out = testTransform({
+        schema: doc,
+        transformers: [new ModelTransformer(), new SqlTransformer()],
+        dataSourceStrategies: constructDataSourceStrategies(doc, mySqlStrategy),
+        transformParameters: {
+          sandboxModeEnabled: false,
+        },
+        synthParameters: {
+          enableIamAccess: true,
+        },
+        sqlDirectiveDataSourceStrategies: [
+          {
+            typeName: 'Query',
+            fieldName: 'calculateTaxRate',
+            strategy: mySqlStrategy,
+          },
+        ],
+      });
+      expect(out).toBeDefined();
+      expect(out.resolvers).toBeDefined();
+      expect(out.resolvers['Query.calculateTaxRate.postAuth.1.req.vtl']).toBeDefined();
+      expect(out.resolvers['Query.calculateTaxRate.postAuth.1.req.vtl']).toMatchSnapshot();
+    });
+
+    it('Renders post auth resolver if sandbox is disabled and iam access disabled', () => {
+      const doc = /* GraphQL */ `
+        type Query {
+          calculateTaxRate(zip: String): Int @sql(statement: "SELECT * FROM TAXRATE WHERE ZIP = :zip")
+        }
+      `;
+
+      const out = testTransform({
+        schema: doc,
+        transformers: [new ModelTransformer(), new SqlTransformer()],
+        dataSourceStrategies: constructDataSourceStrategies(doc, mySqlStrategy),
+        transformParameters: {
+          sandboxModeEnabled: false,
+        },
+        synthParameters: {
+          enableIamAccess: false,
+        },
+        sqlDirectiveDataSourceStrategies: [
+          {
+            typeName: 'Query',
+            fieldName: 'calculateTaxRate',
+            strategy: mySqlStrategy,
+          },
+        ],
+      });
+      expect(out).toBeDefined();
+      expect(out.resolvers).toBeDefined();
+      expect(out.resolvers['Query.calculateTaxRate.postAuth.1.req.vtl']).toBeDefined();
+      expect(out.resolvers['Query.calculateTaxRate.postAuth.1.req.vtl']).toMatchSnapshot();
+    });
+  });
 });
