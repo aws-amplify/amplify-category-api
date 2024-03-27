@@ -388,6 +388,161 @@ exports[`has many query 3`] = `
 #end"
 `;
 
+exports[`hasMany / hasOne - belongsTo across data source type boundary 1`] = `
+"#if( $ctx.stash.deniedField )
+  #return($util.toJson(null))
+#end
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"id\\"), $ctx.source.id) )
+#if( $util.isNull($partitionKeyValue) )
+  #return
+#else
+  #set( $GetRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Query\\",
+  \\"index\\": \\"gsi-Team.project\\"
+} )
+  $util.qr($GetRequest.put(\\"query\\", {
+  \\"expression\\": \\"#partitionKey = :partitionValue\\",
+  \\"expressionNames\\": {
+      \\"#partitionKey\\": \\"teamId\\"
+  },
+  \\"expressionValues\\": {
+      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
+  }
+}))
+  #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+  #end
+  $util.toJson($GetRequest)
+#end"
+`;
+
+exports[`hasMany / hasOne - belongsTo across data source type boundary 2`] = `
+"#if( $ctx.stash.deniedField )
+  #return($util.toJson(null))
+#end
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
+#if( $util.isNull($partitionKeyValue) )
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
+#else
+  #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $query = {
+  \\"expression\\": \\"#partitionKey = :partitionKey\\",
+  \\"expressionNames\\": {
+      \\"#partitionKey\\": \\"teamId\\"
+  },
+  \\"expressionValues\\": {
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue)
+  }
+} )
+  #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+  #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+    #set( $filter = $ctx.stash.authFilter )
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = {
+  \\"and\\":   [$filter, $args.filter]
+} )
+    #end
+  #else
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = $args.filter )
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filter) )
+    #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
+    #if( !$util.isNullOrBlank($filterExpression.expression) )
+      #if( $filterExpression.expressionValues.size() == 0 )
+        $util.qr($filterExpression.remove(\\"expressionValues\\"))
+      #end
+      #set( $filter = $filterExpression )
+    #end
+  #end
+{
+      \\"version\\": \\"2018-05-29\\",
+      \\"operation\\": \\"Query\\",
+      \\"query\\":     $util.toJson($query),
+      \\"scanIndexForward\\":     #if( $context.args.sortDirection )
+      #if( $context.args.sortDirection == \\"ASC\\" )
+true
+      #else
+false
+      #end
+    #else
+true
+    #end,
+      \\"filter\\":     #if( $filter )
+$util.toJson($filter)
+    #else
+null
+    #end,
+      \\"limit\\": $limit,
+      \\"nextToken\\":     #if( $context.args.nextToken )
+$util.toJson($context.args.nextToken)
+    #else
+null
+    #end,
+      \\"index\\": \\"gsi-Team.members\\"
+  }
+#end"
+`;
+
+exports[`hasMany / hasOne - belongsTo across data source type boundary 3`] = `
+"## [Start] Invoke RDS Lambda data source. **
+#if( $ctx.stash.deniedField )
+  #return($util.toJson(null))
+#end
+#set( $lambdaInput = {} )
+#set( $lambdaInput.args = {} )
+#set( $lambdaInput.table = \\"Team\\" )
+#set( $lambdaInput.operation = \\"GET\\" )
+#set( $lambdaInput.operationName = \\"BelongsToConnectionQuery\\" )
+#set( $lambdaInput.args.metadata = {} )
+#set( $lambdaInput.args.metadata.keys = [\\"id\\"] )
+#set( $lambdaInput.args.metadata.fieldMap = {} )
+$util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
+$util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
+#if( !$lambdaInput.args.input )
+  #set( $lambdaInput.args.input = {} )
+#end
+$util.qr($lambdaInput.args.input.put(\\"id\\", $util.defaultIfNull($ctx.source.teamId, \\"\\")))
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\":   $util.toJson($lambdaInput)
+}
+## [End] Invoke RDS Lambda data source. **"
+`;
+
+exports[`hasMany / hasOne - belongsTo across data source type boundary 4`] = `
+"## [Start] Invoke RDS Lambda data source. **
+#if( $ctx.stash.deniedField )
+  #return($util.toJson(null))
+#end
+#set( $lambdaInput = {} )
+#set( $lambdaInput.args = {} )
+#set( $lambdaInput.table = \\"Team\\" )
+#set( $lambdaInput.operation = \\"GET\\" )
+#set( $lambdaInput.operationName = \\"BelongsToConnectionQuery\\" )
+#set( $lambdaInput.args.metadata = {} )
+#set( $lambdaInput.args.metadata.keys = [\\"id\\"] )
+#set( $lambdaInput.args.metadata.fieldMap = {} )
+$util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
+$util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
+#if( !$lambdaInput.args.input )
+  #set( $lambdaInput.args.input = {} )
+#end
+$util.qr($lambdaInput.args.input.put(\\"id\\", $util.defaultIfNull($ctx.source.teamId, \\"\\")))
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\":   $util.toJson($lambdaInput)
+}
+## [End] Invoke RDS Lambda data source. **"
+`;
+
 exports[`many to many query 1`] = `
 "type Post {
   id: ID!
