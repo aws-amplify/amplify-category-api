@@ -11,7 +11,10 @@ import {
   storeDbConnectionConfig,
   storeDbConnectionConfigWithSecretsManager,
 } from 'amplify-category-api-e2e-core';
-import { isSqlModelDataSourceSecretsManagerDbConnectionConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  isSqlModelDataSourceSecretsManagerDbConnectionConfig,
+  isSqlModelDataSourceSsmDbConnectionConfig,
+} from '@aws-amplify/graphql-transformer-interfaces';
 
 export interface SqlDatabaseDetails {
   dbConfig: {
@@ -138,7 +141,7 @@ export class SqlDatatabaseController {
             region: this.options.region,
             secretArn: dbConnectionConfig.secretArn,
           });
-        } else {
+        } else if (isSqlModelDataSourceSsmDbConnectionConfig(dbConnectionConfig)) {
           return deleteDbConnectionConfig({
             region: this.options.region,
             hostnameSsmPath: dbConnectionConfig.hostnameSsmPath,
