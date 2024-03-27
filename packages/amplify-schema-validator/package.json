@@ -3,7 +3,7 @@
   "main": "./dist/index.js",
   "private": true,
   "types": "./dist/index.d.ts",
-  "version": "0.2.9",
+  "version": "0.2.10-ecs-tagging-permissions.0",
   "files": [
     "dist",
     "!**/__tests__/**/*"

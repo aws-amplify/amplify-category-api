@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.17-ecs-tagging-permissions.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-migration-tests@2.4.16...amplify-category-api-graphql-migration-tests@2.4.17-ecs-tagging-permissions.0) (2024-03-27)
+
+**Note:** Version bump only for package amplify-category-api-graphql-migration-tests
+
 ## [2.4.16](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-migration-tests@2.4.15...amplify-category-api-graphql-migration-tests@2.4.16) (2023-12-14)
 
 **Note:** Version bump only for package amplify-category-api-graphql-migration-tests

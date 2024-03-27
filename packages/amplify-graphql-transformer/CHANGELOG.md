@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.6-ecs-tagging-permissions.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.3.5...@aws-amplify/graphql-transformer@1.3.6-ecs-tagging-permissions.0) (2024-03-27)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer
+
 ## [1.3.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.3.4...@aws-amplify/graphql-transformer@1.3.5) (2023-12-14)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.2-ecs-tagging-permissions.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.6.1...@aws-amplify/graphql-schema-generator@0.6.2-ecs-tagging-permissions.0) (2024-03-27)
+
+### Bug Fixes
+
+- **api:** validate imported enum values ([860f045](https://github.com/aws-amplify/amplify-category-api/commit/860f0456975d729c41d21a154a07b8b9bc6d9a34))
+
 ## [0.6.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.6.0...@aws-amplify/graphql-schema-generator@0.6.1) (2023-12-14)
 
 **Note:** Version bump only for package @aws-amplify/graphql-schema-generator

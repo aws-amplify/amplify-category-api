@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.17-ecs-tagging-permissions.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@2.2.16...@aws-amplify/graphql-schema-test-library@2.2.17-ecs-tagging-permissions.0) (2024-03-27)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-test-library
+
 ## [2.2.16](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@2.2.15...@aws-amplify/graphql-schema-test-library@2.2.16) (2023-12-14)
 
 **Note:** Version bump only for package @aws-amplify/graphql-schema-test-library

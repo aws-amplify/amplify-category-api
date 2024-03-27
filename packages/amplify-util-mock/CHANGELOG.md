@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.4.6-ecs-tagging-permissions.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.4.5...amplify-category-api-util-mock@6.4.6-ecs-tagging-permissions.0) (2024-03-27)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
 ## [6.4.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.4.4...amplify-category-api-util-mock@6.4.5) (2023-12-14)
 
 **Note:** Version bump only for package amplify-category-api-util-mock

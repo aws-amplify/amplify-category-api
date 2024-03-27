@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.3-ecs-tagging-permissions.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.3.2...@aws-amplify/graphql-transformer-interfaces@3.3.3-ecs-tagging-permissions.0) (2024-03-27)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces
+
 ## [3.3.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.3.1...@aws-amplify/graphql-transformer-interfaces@3.3.2) (2023-12-06)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces
