@@ -1,0 +1,3654 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ddb generates related type sandbox resolvers when both sandbox and iam access enabled 1`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`ddb generates related type sandbox resolvers when both sandbox and iam access enabled 2`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`ddb generates related type sandbox resolvers when both sandbox and iam access enabled 3`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`ddb generates related type sandbox resolvers when both sandbox and iam access enabled 4`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`ddb generates related type sandbox resolvers when both sandbox and iam access enabled 5`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`ddb generates related type sandbox resolvers when both sandbox and iam access enabled 6`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`ddb generates related type sandbox resolvers when both sandbox and iam access enabled 7`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`ddb generates related type sandbox resolvers when both sandbox and iam access enabled 8`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`ddb simple model with apiKey and iam access 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#if( $util.authType() == \\"API Key Authorization\\" )
+  #set( $isAuthorized = true )
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+$util.unauthorized()
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #set( $deniedFields = $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+  #if( $deniedFields.size() > 0 )
+    $util.error(\\"Unauthorized on \${deniedFields}\\", \\"Unauthorized\\")
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with apiKey and iam access 2`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with apiKey and iam access 3`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#set( $nullAllowedFields = [] )
+#set( $deniedFields = {} )
+#if( $util.authType() == \\"API Key Authorization\\" )
+  #set( $isAuthorized = true )
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+$util.unauthorized()
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() && $nullAllowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #foreach( $entry in $util.map.copyAndRetainAllKeys($ctx.args.input, $inputFields).entrySet() )
+    #if( $util.isNull($entry.value) && !$nullAllowedFields.contains($entry.key) )
+      $util.qr($deniedFields.put($entry.key, \\"\\"))
+    #end
+  #end
+  #foreach( $deniedField in $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+    $util.qr($deniedFields.put($deniedField, \\"\\"))
+  #end
+#end
+#if( $deniedFields.keySet().size() > 0 )
+  $util.error(\\"Unauthorized on \${deniedFields.keySet()}\\", \\"Unauthorized\\")
+#end
+$util.toJson({})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with apiKey and iam access 4`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with apiKey and iam access 5`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"API Key Authorization\\" )
+  #set( $isAuthorized = true )
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+$util.unauthorized()
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with apiKey and iam access 6`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with apiKey and iam access 7`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"API Key Authorization\\" )
+  #set( $isAuthorized = true )
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+$util.unauthorized()
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with apiKey and iam access 8`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with apiKey and iam access 9`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"API Key Authorization\\" )
+  #set( $isAuthorized = true )
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+$util.unauthorized()
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with apiKey and iam access 10`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with apiKey and iam access 11`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"API Key Authorization\\" )
+  #set( $isAuthorized = true )
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+$util.unauthorized()
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with apiKey and iam access 12`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with apiKey and iam access 13`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"API Key Authorization\\" )
+  #set( $isAuthorized = true )
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+$util.unauthorized()
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with apiKey and iam access 14`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with apiKey and iam access 15`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"API Key Authorization\\" )
+  #set( $isAuthorized = true )
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+$util.unauthorized()
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with apiKey and iam access 16`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with apiKey and no iam access 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#if( $util.authType() == \\"API Key Authorization\\" )
+  #set( $isAuthorized = true )
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+$util.unauthorized()
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #set( $deniedFields = $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+  #if( $deniedFields.size() > 0 )
+    $util.error(\\"Unauthorized on \${deniedFields}\\", \\"Unauthorized\\")
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with apiKey and no iam access 2`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with apiKey and no iam access 3`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#set( $nullAllowedFields = [] )
+#set( $deniedFields = {} )
+#if( $util.authType() == \\"API Key Authorization\\" )
+  #set( $isAuthorized = true )
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+$util.unauthorized()
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() && $nullAllowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #foreach( $entry in $util.map.copyAndRetainAllKeys($ctx.args.input, $inputFields).entrySet() )
+    #if( $util.isNull($entry.value) && !$nullAllowedFields.contains($entry.key) )
+      $util.qr($deniedFields.put($entry.key, \\"\\"))
+    #end
+  #end
+  #foreach( $deniedField in $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+    $util.qr($deniedFields.put($deniedField, \\"\\"))
+  #end
+#end
+#if( $deniedFields.keySet().size() > 0 )
+  $util.error(\\"Unauthorized on \${deniedFields.keySet()}\\", \\"Unauthorized\\")
+#end
+$util.toJson({})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with apiKey and no iam access 4`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with apiKey and no iam access 5`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"API Key Authorization\\" )
+  #set( $isAuthorized = true )
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with apiKey and no iam access 6`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with apiKey and no iam access 7`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"API Key Authorization\\" )
+  #set( $isAuthorized = true )
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+$util.unauthorized()
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with apiKey and no iam access 8`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with apiKey and no iam access 9`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"API Key Authorization\\" )
+  #set( $isAuthorized = true )
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+$util.unauthorized()
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with apiKey and no iam access 10`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with apiKey and no iam access 11`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"API Key Authorization\\" )
+  #set( $isAuthorized = true )
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with apiKey and no iam access 12`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with apiKey and no iam access 13`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"API Key Authorization\\" )
+  #set( $isAuthorized = true )
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with apiKey and no iam access 14`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with apiKey and no iam access 15`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"API Key Authorization\\" )
+  #set( $isAuthorized = true )
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with apiKey and no iam access 16`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+    #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #set( $deniedFields = $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+  #if( $deniedFields.size() > 0 )
+    $util.error(\\"Unauthorized on \${deniedFields}\\", \\"Unauthorized\\")
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access 2`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access 3`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#set( $nullAllowedFields = [] )
+#set( $deniedFields = {} )
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+    #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() && $nullAllowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #foreach( $entry in $util.map.copyAndRetainAllKeys($ctx.args.input, $inputFields).entrySet() )
+    #if( $util.isNull($entry.value) && !$nullAllowedFields.contains($entry.key) )
+      $util.qr($deniedFields.put($entry.key, \\"\\"))
+    #end
+  #end
+  #foreach( $deniedField in $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+    $util.qr($deniedFields.put($deniedField, \\"\\"))
+  #end
+#end
+#if( $deniedFields.keySet().size() > 0 )
+  $util.error(\\"Unauthorized on \${deniedFields.keySet()}\\", \\"Unauthorized\\")
+#end
+$util.toJson({})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access 4`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access 5`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+    #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access 6`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access 7`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+    #if( !$isAuthorized )
+      #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+        #set( $isAuthorized = true )
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access 8`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access 9`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+    #if( !$isAuthorized )
+      #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+        #set( $isAuthorized = true )
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access 10`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access 11`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+    #if( !$isAuthorized )
+      #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+        #set( $isAuthorized = true )
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access 12`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access 13`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+    #if( !$isAuthorized )
+      #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+        #set( $isAuthorized = true )
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access 14`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access 15`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+    #if( !$isAuthorized )
+      #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+        #set( $isAuthorized = true )
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access 16`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access and non default AWS_IAM mode 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#if( $util.authType() == \\"API Key Authorization\\" )
+$util.unauthorized()
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+    #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #set( $deniedFields = $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+  #if( $deniedFields.size() > 0 )
+    $util.error(\\"Unauthorized on \${deniedFields}\\", \\"Unauthorized\\")
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access and non default AWS_IAM mode 2`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access and non default AWS_IAM mode 3`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#set( $nullAllowedFields = [] )
+#set( $deniedFields = {} )
+#if( $util.authType() == \\"API Key Authorization\\" )
+$util.unauthorized()
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+    #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() && $nullAllowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #foreach( $entry in $util.map.copyAndRetainAllKeys($ctx.args.input, $inputFields).entrySet() )
+    #if( $util.isNull($entry.value) && !$nullAllowedFields.contains($entry.key) )
+      $util.qr($deniedFields.put($entry.key, \\"\\"))
+    #end
+  #end
+  #foreach( $deniedField in $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+    $util.qr($deniedFields.put($deniedField, \\"\\"))
+  #end
+#end
+#if( $deniedFields.keySet().size() > 0 )
+  $util.error(\\"Unauthorized on \${deniedFields.keySet()}\\", \\"Unauthorized\\")
+#end
+$util.toJson({})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access and non default AWS_IAM mode 4`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access and non default AWS_IAM mode 5`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"API Key Authorization\\" )
+$util.unauthorized()
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+    #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access and non default AWS_IAM mode 6`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access and non default AWS_IAM mode 7`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"API Key Authorization\\" )
+
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+    #if( !$isAuthorized )
+      #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+        #set( $isAuthorized = true )
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access and non default AWS_IAM mode 8`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access and non default AWS_IAM mode 9`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"API Key Authorization\\" )
+
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+    #if( !$isAuthorized )
+      #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+        #set( $isAuthorized = true )
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access and non default AWS_IAM mode 10`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access and non default AWS_IAM mode 11`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"API Key Authorization\\" )
+
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+    #if( !$isAuthorized )
+      #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+        #set( $isAuthorized = true )
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access and non default AWS_IAM mode 12`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access and non default AWS_IAM mode 13`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"API Key Authorization\\" )
+
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+    #if( !$isAuthorized )
+      #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+        #set( $isAuthorized = true )
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access and non default AWS_IAM mode 14`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access and non default AWS_IAM mode 15`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"API Key Authorization\\" )
+
+#end
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    #set( $isAuthorized = true )
+  #else
+    #if( !$isAuthorized )
+      #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+        #set( $isAuthorized = true )
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with iam provider and iam access and non default AWS_IAM mode 16`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with iam provider and no iam access 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+    #set( $isAuthorized = true )
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #set( $deniedFields = $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+  #if( $deniedFields.size() > 0 )
+    $util.error(\\"Unauthorized on \${deniedFields}\\", \\"Unauthorized\\")
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with iam provider and no iam access 2`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with iam provider and no iam access 3`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#set( $nullAllowedFields = [] )
+#set( $deniedFields = {} )
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+    #set( $isAuthorized = true )
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() && $nullAllowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #foreach( $entry in $util.map.copyAndRetainAllKeys($ctx.args.input, $inputFields).entrySet() )
+    #if( $util.isNull($entry.value) && !$nullAllowedFields.contains($entry.key) )
+      $util.qr($deniedFields.put($entry.key, \\"\\"))
+    #end
+  #end
+  #foreach( $deniedField in $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+    $util.qr($deniedFields.put($deniedField, \\"\\"))
+  #end
+#end
+#if( $deniedFields.keySet().size() > 0 )
+  $util.error(\\"Unauthorized on \${deniedFields.keySet()}\\", \\"Unauthorized\\")
+#end
+$util.toJson({})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with iam provider and no iam access 4`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with iam provider and no iam access 5`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+    #set( $isAuthorized = true )
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with iam provider and no iam access 6`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with iam provider and no iam access 7`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( !$isAuthorized )
+    #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with iam provider and no iam access 8`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with iam provider and no iam access 9`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( !$isAuthorized )
+    #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with iam provider and no iam access 10`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with iam provider and no iam access 11`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( !$isAuthorized )
+    #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with iam provider and no iam access 12`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with iam provider and no iam access 13`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( !$isAuthorized )
+    #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with iam provider and no iam access 14`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with iam provider and no iam access 15`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"IAM Authorization\\" )
+  #if( !$isAuthorized )
+    #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+      #set( $isAuthorized = true )
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`ddb simple model with iam provider and no iam access 16`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`ddb simple model with no auth directive and both sandbox and iam access enabled 1`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`ddb simple model with no auth directive and both sandbox and iam access enabled 2`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`ddb simple model with no auth directive and both sandbox and iam access enabled 3`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`ddb simple model with no auth directive and both sandbox and iam access enabled 4`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`ddb simple model with no auth directive and both sandbox and iam access enabled 5`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`ddb simple model with no auth directive and both sandbox and iam access enabled 6`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`ddb simple model with no auth directive and both sandbox and iam access enabled 7`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`ddb simple model with no auth directive and both sandbox and iam access enabled 8`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`rds generates related type sandbox resolvers when both sandbox and iam access enabled 1`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`rds generates related type sandbox resolvers when both sandbox and iam access enabled 2`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`rds generates related type sandbox resolvers when both sandbox and iam access enabled 3`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`rds generates related type sandbox resolvers when both sandbox and iam access enabled 4`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`rds generates related type sandbox resolvers when both sandbox and iam access enabled 5`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`rds generates related type sandbox resolvers when both sandbox and iam access enabled 6`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`rds generates related type sandbox resolvers when both sandbox and iam access enabled 7`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`rds generates related type sandbox resolvers when both sandbox and iam access enabled 8`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`rds simple model with apiKey and iam access 1`] = `
+"## [Start] Authorization rules. **
+#if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#else
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  #set( $authRules = [] )
+  #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+    $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+  #end
+  $util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"apiKey\\",
+  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"createdAt\\", \\"updatedAt\\"]
+}))
+  #set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+  #if( !$authResult || ($authResult && !$authResult.authorized) )
+    $util.unauthorized()
+  #end
+  #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+    #set( $ctx.args.input = $authResult.authorizedInput )
+  #end
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#end
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with apiKey and iam access 2`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with apiKey and iam access 3`] = `
+"## [Start] Authorization rules. **
+#if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#else
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  #set( $authRules = [] )
+  #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+    $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+  #end
+  $util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"apiKey\\",
+  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"createdAt\\", \\"updatedAt\\"]
+}))
+  #set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+  #if( !$authResult || ($authResult && !$authResult.authorized) )
+    $util.unauthorized()
+  #end
+  #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+    #set( $ctx.args.input = $authResult.authorizedInput )
+  #end
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#end
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with apiKey and iam access 4`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with apiKey and iam access 5`] = `
+"## [Start] Authorization rules. **
+#if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#else
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  #set( $authRules = [] )
+  #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+    $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+  #end
+  $util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"apiKey\\",
+  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"createdAt\\", \\"updatedAt\\"]
+}))
+  #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+  #if( !$authResult || ($authResult && !$authResult.authorized) )
+    $util.unauthorized()
+  #end
+  #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+    #set( $ctx.args.input = $authResult.authorizedInput )
+  #end
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#end
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with apiKey and iam access 6`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with apiKey and iam access 7`] = `
+"## [Start] Authorization rules. **
+#if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#else
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  #set( $authRules = [] )
+  #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+    $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+  #end
+  $util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"apiKey\\"
+}))
+  #set( $authResult = $util.authRules.queryAuth($authRules) )
+  #if( !$authResult || ($authResult && !$authResult.authorized) )
+    $util.unauthorized()
+  #end
+  #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+    #set( $ctx.stash.authFilter = $authResult.authFilter )
+  #end
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#end
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with apiKey and iam access 8`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with apiKey and iam access 9`] = `
+"## [Start] Authorization rules. **
+#if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#else
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  #set( $authRules = [] )
+  #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+    $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+  #end
+  $util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"apiKey\\"
+}))
+  #set( $authResult = $util.authRules.queryAuth($authRules) )
+  #if( !$authResult || ($authResult && !$authResult.authorized) )
+    $util.unauthorized()
+  #end
+  #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+    #set( $ctx.stash.authFilter = $authResult.authFilter )
+  #end
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#end
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with apiKey and iam access 10`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with apiKey and iam access 11`] = `
+"## [Start] Authorization rules. **
+#if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#else
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  #set( $authRules = [] )
+  #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+    $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+  #end
+  $util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"apiKey\\"
+}))
+  #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
+  #if( !$authResult || ($authResult && !$authResult.authorized) )
+    $util.unauthorized()
+  #end
+  #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+    #if( $util.isNullOrEmpty($ctx.args.filter) )
+      #set( $ctx.args.filter = $authResult.authFilter )
+    #else
+      #set( $ctx.args.filter = {
+  \\"and\\":   [$authResult.authFilter, $ctx.args.filter]
+} )
+    #end
+  #end
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#end
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with apiKey and iam access 12`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with apiKey and iam access 13`] = `
+"## [Start] Authorization rules. **
+#if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#else
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  #set( $authRules = [] )
+  #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+    $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+  #end
+  $util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"apiKey\\"
+}))
+  #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
+  #if( !$authResult || ($authResult && !$authResult.authorized) )
+    $util.unauthorized()
+  #end
+  #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+    #if( $util.isNullOrEmpty($ctx.args.filter) )
+      #set( $ctx.args.filter = $authResult.authFilter )
+    #else
+      #set( $ctx.args.filter = {
+  \\"and\\":   [$authResult.authFilter, $ctx.args.filter]
+} )
+    #end
+  #end
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#end
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with apiKey and iam access 14`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with apiKey and iam access 15`] = `
+"## [Start] Authorization rules. **
+#if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#else
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  #set( $authRules = [] )
+  #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+    $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+  #end
+  $util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"apiKey\\"
+}))
+  #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
+  #if( !$authResult || ($authResult && !$authResult.authorized) )
+    $util.unauthorized()
+  #end
+  #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+    #if( $util.isNullOrEmpty($ctx.args.filter) )
+      #set( $ctx.args.filter = $authResult.authFilter )
+    #else
+      #set( $ctx.args.filter = {
+  \\"and\\":   [$authResult.authFilter, $ctx.args.filter]
+} )
+    #end
+  #end
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#end
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with apiKey and iam access 16`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with apiKey and no iam access 1`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"apiKey\\",
+  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"createdAt\\", \\"updatedAt\\"]
+}))
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with apiKey and no iam access 2`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with apiKey and no iam access 3`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"apiKey\\",
+  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"createdAt\\", \\"updatedAt\\"]
+}))
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with apiKey and no iam access 4`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with apiKey and no iam access 5`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"apiKey\\",
+  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"createdAt\\", \\"updatedAt\\"]
+}))
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with apiKey and no iam access 6`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with apiKey and no iam access 7`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"apiKey\\"
+}))
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+  #set( $ctx.stash.authFilter = $authResult.authFilter )
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with apiKey and no iam access 8`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with apiKey and no iam access 9`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"apiKey\\"
+}))
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+  #set( $ctx.stash.authFilter = $authResult.authFilter )
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with apiKey and no iam access 10`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with apiKey and no iam access 11`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"apiKey\\"
+}))
+#set( $authResult = $util.authRules.subscriptionAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+  #if( $util.isNullOrEmpty($ctx.args.filter) )
+    #set( $ctx.args.filter = $authResult.authFilter )
+  #else
+    #set( $ctx.args.filter = {
+  \\"and\\":   [$authResult.authFilter, $ctx.args.filter]
+} )
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with apiKey and no iam access 12`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with apiKey and no iam access 13`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"apiKey\\"
+}))
+#set( $authResult = $util.authRules.subscriptionAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+  #if( $util.isNullOrEmpty($ctx.args.filter) )
+    #set( $ctx.args.filter = $authResult.authFilter )
+  #else
+    #set( $ctx.args.filter = {
+  \\"and\\":   [$authResult.authFilter, $ctx.args.filter]
+} )
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with apiKey and no iam access 14`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with apiKey and no iam access 15`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"apiKey\\"
+}))
+#set( $authResult = $util.authRules.subscriptionAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+  #if( $util.isNullOrEmpty($ctx.args.filter) )
+    #set( $ctx.args.filter = $authResult.authFilter )
+  #else
+    #set( $ctx.args.filter = {
+  \\"and\\":   [$authResult.authFilter, $ctx.args.filter]
+} )
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with apiKey and no iam access 16`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with iam provider and iam access 1`] = `
+"## [Start] Authorization rules. **
+#if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#else
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  #set( $authRules = [] )
+  #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+    $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+  #end
+  $util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole,
+  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"createdAt\\", \\"updatedAt\\"]
+}))
+  #set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+  #if( !$authResult || ($authResult && !$authResult.authorized) )
+    $util.unauthorized()
+  #end
+  #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+    #set( $ctx.args.input = $authResult.authorizedInput )
+  #end
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#end
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with iam provider and iam access 2`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with iam provider and iam access 3`] = `
+"## [Start] Authorization rules. **
+#if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#else
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  #set( $authRules = [] )
+  #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+    $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+  #end
+  $util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole,
+  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"createdAt\\", \\"updatedAt\\"]
+}))
+  #set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+  #if( !$authResult || ($authResult && !$authResult.authorized) )
+    $util.unauthorized()
+  #end
+  #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+    #set( $ctx.args.input = $authResult.authorizedInput )
+  #end
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#end
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with iam provider and iam access 4`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with iam provider and iam access 5`] = `
+"## [Start] Authorization rules. **
+#if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#else
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  #set( $authRules = [] )
+  #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+    $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+  #end
+  $util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole,
+  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"createdAt\\", \\"updatedAt\\"]
+}))
+  #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+  #if( !$authResult || ($authResult && !$authResult.authorized) )
+    $util.unauthorized()
+  #end
+  #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+    #set( $ctx.args.input = $authResult.authorizedInput )
+  #end
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#end
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with iam provider and iam access 6`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with iam provider and iam access 7`] = `
+"## [Start] Authorization rules. **
+#if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#else
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  #set( $authRules = [] )
+  #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+    $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+  #end
+  $util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole
+}))
+  #set( $authResult = $util.authRules.queryAuth($authRules) )
+  #if( !$authResult || ($authResult && !$authResult.authorized) )
+    $util.unauthorized()
+  #end
+  #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+    #set( $ctx.stash.authFilter = $authResult.authFilter )
+  #end
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#end
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with iam provider and iam access 8`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with iam provider and iam access 9`] = `
+"## [Start] Authorization rules. **
+#if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#else
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  #set( $authRules = [] )
+  #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+    $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+  #end
+  $util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole
+}))
+  #set( $authResult = $util.authRules.queryAuth($authRules) )
+  #if( !$authResult || ($authResult && !$authResult.authorized) )
+    $util.unauthorized()
+  #end
+  #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+    #set( $ctx.stash.authFilter = $authResult.authFilter )
+  #end
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#end
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with iam provider and iam access 10`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with iam provider and iam access 11`] = `
+"## [Start] Authorization rules. **
+#if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#else
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  #set( $authRules = [] )
+  #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+    $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+  #end
+  $util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole
+}))
+  #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
+  #if( !$authResult || ($authResult && !$authResult.authorized) )
+    $util.unauthorized()
+  #end
+  #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+    #if( $util.isNullOrEmpty($ctx.args.filter) )
+      #set( $ctx.args.filter = $authResult.authFilter )
+    #else
+      #set( $ctx.args.filter = {
+  \\"and\\":   [$authResult.authFilter, $ctx.args.filter]
+} )
+    #end
+  #end
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#end
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with iam provider and iam access 12`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with iam provider and iam access 13`] = `
+"## [Start] Authorization rules. **
+#if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#else
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  #set( $authRules = [] )
+  #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+    $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+  #end
+  $util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole
+}))
+  #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
+  #if( !$authResult || ($authResult && !$authResult.authorized) )
+    $util.unauthorized()
+  #end
+  #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+    #if( $util.isNullOrEmpty($ctx.args.filter) )
+      #set( $ctx.args.filter = $authResult.authFilter )
+    #else
+      #set( $ctx.args.filter = {
+  \\"and\\":   [$authResult.authFilter, $ctx.args.filter]
+} )
+    #end
+  #end
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#end
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with iam provider and iam access 14`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with iam provider and iam access 15`] = `
+"## [Start] Authorization rules. **
+#if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#else
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  #set( $authRules = [] )
+  #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+    $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+  #end
+  $util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole
+}))
+  #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
+  #if( !$authResult || ($authResult && !$authResult.authorized) )
+    $util.unauthorized()
+  #end
+  #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+    #if( $util.isNullOrEmpty($ctx.args.filter) )
+      #set( $ctx.args.filter = $authResult.authFilter )
+    #else
+      #set( $ctx.args.filter = {
+  \\"and\\":   [$authResult.authFilter, $ctx.args.filter]
+} )
+    #end
+  #end
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#end
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with iam provider and iam access 16`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with iam provider and iam access and non default AWS_IAM mode 1`] = `
+"## [Start] Authorization rules. **
+#if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#else
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  #set( $authRules = [] )
+  #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+    $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+  #end
+  $util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole,
+  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"createdAt\\", \\"updatedAt\\"]
+}))
+  #set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+  #if( !$authResult || ($authResult && !$authResult.authorized) )
+    $util.unauthorized()
+  #end
+  #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+    #set( $ctx.args.input = $authResult.authorizedInput )
+  #end
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#end
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with iam provider and iam access and non default AWS_IAM mode 2`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with iam provider and iam access and non default AWS_IAM mode 3`] = `
+"## [Start] Authorization rules. **
+#if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#else
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  #set( $authRules = [] )
+  #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+    $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+  #end
+  $util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole,
+  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"createdAt\\", \\"updatedAt\\"]
+}))
+  #set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+  #if( !$authResult || ($authResult && !$authResult.authorized) )
+    $util.unauthorized()
+  #end
+  #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+    #set( $ctx.args.input = $authResult.authorizedInput )
+  #end
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#end
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with iam provider and iam access and non default AWS_IAM mode 4`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with iam provider and iam access and non default AWS_IAM mode 5`] = `
+"## [Start] Authorization rules. **
+#if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#else
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  #set( $authRules = [] )
+  #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+    $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+  #end
+  $util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole,
+  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"createdAt\\", \\"updatedAt\\"]
+}))
+  #set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+  #if( !$authResult || ($authResult && !$authResult.authorized) )
+    $util.unauthorized()
+  #end
+  #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+    #set( $ctx.args.input = $authResult.authorizedInput )
+  #end
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#end
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with iam provider and iam access and non default AWS_IAM mode 6`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with iam provider and iam access and non default AWS_IAM mode 7`] = `
+"## [Start] Authorization rules. **
+#if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#else
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  #set( $authRules = [] )
+  #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+    $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+  #end
+  $util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole
+}))
+  #set( $authResult = $util.authRules.queryAuth($authRules) )
+  #if( !$authResult || ($authResult && !$authResult.authorized) )
+    $util.unauthorized()
+  #end
+  #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+    #set( $ctx.stash.authFilter = $authResult.authFilter )
+  #end
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#end
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with iam provider and iam access and non default AWS_IAM mode 8`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with iam provider and iam access and non default AWS_IAM mode 9`] = `
+"## [Start] Authorization rules. **
+#if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#else
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  #set( $authRules = [] )
+  #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+    $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+  #end
+  $util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole
+}))
+  #set( $authResult = $util.authRules.queryAuth($authRules) )
+  #if( !$authResult || ($authResult && !$authResult.authorized) )
+    $util.unauthorized()
+  #end
+  #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+    #set( $ctx.stash.authFilter = $authResult.authFilter )
+  #end
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#end
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with iam provider and iam access and non default AWS_IAM mode 10`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with iam provider and iam access and non default AWS_IAM mode 11`] = `
+"## [Start] Authorization rules. **
+#if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#else
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  #set( $authRules = [] )
+  #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+    $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+  #end
+  $util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole
+}))
+  #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
+  #if( !$authResult || ($authResult && !$authResult.authorized) )
+    $util.unauthorized()
+  #end
+  #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+    #if( $util.isNullOrEmpty($ctx.args.filter) )
+      #set( $ctx.args.filter = $authResult.authFilter )
+    #else
+      #set( $ctx.args.filter = {
+  \\"and\\":   [$authResult.authFilter, $ctx.args.filter]
+} )
+    #end
+  #end
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#end
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with iam provider and iam access and non default AWS_IAM mode 12`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with iam provider and iam access and non default AWS_IAM mode 13`] = `
+"## [Start] Authorization rules. **
+#if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#else
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  #set( $authRules = [] )
+  #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+    $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+  #end
+  $util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole
+}))
+  #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
+  #if( !$authResult || ($authResult && !$authResult.authorized) )
+    $util.unauthorized()
+  #end
+  #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+    #if( $util.isNullOrEmpty($ctx.args.filter) )
+      #set( $ctx.args.filter = $authResult.authFilter )
+    #else
+      #set( $ctx.args.filter = {
+  \\"and\\":   [$authResult.authFilter, $ctx.args.filter]
+} )
+    #end
+  #end
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#end
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with iam provider and iam access and non default AWS_IAM mode 14`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with iam provider and iam access and non default AWS_IAM mode 15`] = `
+"## [Start] Authorization rules. **
+#if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#else
+  $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+  #set( $authRules = [] )
+  #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+    $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+  #end
+  $util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole
+}))
+  #set( $authResult = $util.authRules.subscriptionAuth($authRules) )
+  #if( !$authResult || ($authResult && !$authResult.authorized) )
+    $util.unauthorized()
+  #end
+  #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+    #if( $util.isNullOrEmpty($ctx.args.filter) )
+      #set( $ctx.args.filter = $authResult.authFilter )
+    #else
+      #set( $ctx.args.filter = {
+  \\"and\\":   [$authResult.authFilter, $ctx.args.filter]
+} )
+    #end
+  #end
+  $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+#end
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with iam provider and iam access and non default AWS_IAM mode 16`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with iam provider and no iam access 1`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole,
+  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"createdAt\\", \\"updatedAt\\"]
+}))
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with iam provider and no iam access 2`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with iam provider and no iam access 3`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole,
+  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"createdAt\\", \\"updatedAt\\"]
+}))
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with iam provider and no iam access 4`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with iam provider and no iam access 5`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole,
+  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"createdAt\\", \\"updatedAt\\"]
+}))
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with iam provider and no iam access 6`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with iam provider and no iam access 7`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole
+}))
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+  #set( $ctx.stash.authFilter = $authResult.authFilter )
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with iam provider and no iam access 8`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with iam provider and no iam access 9`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole
+}))
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+  #set( $ctx.stash.authFilter = $authResult.authFilter )
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with iam provider and no iam access 10`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with iam provider and no iam access 11`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole
+}))
+#set( $authResult = $util.authRules.subscriptionAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+  #if( $util.isNullOrEmpty($ctx.args.filter) )
+    #set( $ctx.args.filter = $authResult.authFilter )
+  #else
+    #set( $ctx.args.filter = {
+  \\"and\\":   [$authResult.authFilter, $ctx.args.filter]
+} )
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with iam provider and no iam access 12`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with iam provider and no iam access 13`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole
+}))
+#set( $authResult = $util.authRules.subscriptionAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+  #if( $util.isNullOrEmpty($ctx.args.filter) )
+    #set( $ctx.args.filter = $authResult.authFilter )
+  #else
+    #set( $ctx.args.filter = {
+  \\"and\\":   [$authResult.authFilter, $ctx.args.filter]
+} )
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with iam provider and no iam access 14`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with iam provider and no iam access 15`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole
+}))
+#set( $authResult = $util.authRules.subscriptionAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+  #if( $util.isNullOrEmpty($ctx.args.filter) )
+    #set( $ctx.args.filter = $authResult.authFilter )
+  #else
+    #set( $ctx.args.filter = {
+  \\"and\\":   [$authResult.authFilter, $ctx.args.filter]
+} )
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`rds simple model with iam provider and no iam access 16`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`rds simple model with no auth directive and sandbox and iam access enabled 1`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`rds simple model with no auth directive and sandbox and iam access enabled 2`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`rds simple model with no auth directive and sandbox and iam access enabled 3`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`rds simple model with no auth directive and sandbox and iam access enabled 4`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`rds simple model with no auth directive and sandbox and iam access enabled 5`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`rds simple model with no auth directive and sandbox and iam access enabled 6`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`rds simple model with no auth directive and sandbox and iam access enabled 7`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`rds simple model with no auth directive and sandbox and iam access enabled 8`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;

@@ -2,7 +2,13 @@ import { compoundExpression, list, methodCall, nul, obj, printBlock, qref, ref, 
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { ConfiguredAuthProviders, RoleDefinition } from '../../../utils';
-import { constructAuthorizedInputStatement, emptyPayload, generateAuthRulesFromRoles, validateAuthResult } from './common';
+import {
+  constructAuthorizedInputStatement,
+  emptyPayload,
+  generateAuthRulesFromRoles,
+  generateIAMAccessCheck,
+  validateAuthResult,
+} from './common';
 
 export const generateAuthExpressionForCreate = (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -11,7 +17,7 @@ export const generateAuthExpressionForCreate = (
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
 ): string => {
-  return generateMutationExpression(roles, fields, 'create', providers.hasIdentityPoolId, false);
+  return generateMutationExpression(roles, fields, 'create', providers.hasIdentityPoolId, providers.genericIamAccessEnabled, false);
 };
 
 export const generateAuthExpressionForUpdate = (
@@ -19,7 +25,7 @@ export const generateAuthExpressionForUpdate = (
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
 ): string => {
-  return generateMutationExpression(roles, fields, 'update', providers.hasIdentityPoolId, true);
+  return generateMutationExpression(roles, fields, 'update', providers.hasIdentityPoolId, providers.genericIamAccessEnabled, true);
 };
 
 export const generateAuthExpressionForDelete = (
@@ -27,7 +33,7 @@ export const generateAuthExpressionForDelete = (
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
 ): string => {
-  return generateMutationExpression(roles, fields, 'delete', providers.hasIdentityPoolId, true);
+  return generateMutationExpression(roles, fields, 'delete', providers.hasIdentityPoolId, providers.genericIamAccessEnabled, true);
 };
 
 const generateMutationExpression = (
@@ -35,6 +41,7 @@ const generateMutationExpression = (
   fields: ReadonlyArray<FieldDefinitionNode>,
   operation: 'create' | 'update' | 'delete',
   hasIdentityPoolId: boolean,
+  enableIamAccess: boolean,
   includeExistingRecord = false,
 ): string => {
   const expressions = [];
@@ -48,7 +55,7 @@ const generateMutationExpression = (
     ),
   );
   expressions.push(validateAuthResult(), constructAuthorizedInputStatement('ctx.args.input'), emptyPayload);
-  return printBlock('Authorization rules')(compoundExpression(expressions));
+  return printBlock('Authorization rules')(generateIAMAccessCheck(enableIamAccess, compoundExpression(expressions)));
 };
 
 export const generateAuthRequestExpression = (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode): string => {

@@ -3,7 +3,7 @@ import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-int
 import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
 import { ConfiguredAuthProviders, RoleDefinition } from '../../../utils';
-import { constructAuthFilter, emptyPayload, generateAuthRulesFromRoles, validateAuthResult } from './common';
+import { constructAuthFilter, emptyPayload, generateAuthRulesFromRoles, generateIAMAccessCheck, validateAuthResult } from './common';
 
 export const generateAuthExpressionForQueries = (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -20,7 +20,7 @@ export const generateAuthExpressionForQueries = (
   expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, fields, providers.hasIdentityPoolId, true)));
   expressions.push(set(ref('authResult'), methodCall(ref('util.authRules.queryAuth'), ref('authRules'))));
   expressions.push(validateAuthResult(), constructAuthFilter(), emptyPayload);
-  return printBlock('Authorization rules')(compoundExpression(expressions));
+  return printBlock('Authorization rules')(generateIAMAccessCheck(providers.genericIamAccessEnabled, compoundExpression(expressions)));
 };
 
 export const generateAuthExpressionForField = (
@@ -36,7 +36,7 @@ export const generateAuthExpressionForField = (
   expressions.push(set(ref('authResult'), methodCall(ref('util.authRules.validateUsingSource'), ref('authRules'), ref('ctx.source'))));
   expressions.push(compoundExpression([iff(not(ref('authResult')), methodCall(ref('util.unauthorized')))]));
   expressions.push(emptyPayload);
-  return printBlock('Authorization rules')(compoundExpression(expressions));
+  return printBlock('Authorization rules')(generateIAMAccessCheck(providers.genericIamAccessEnabled, compoundExpression(expressions)));
 };
 
 /**
@@ -74,5 +74,5 @@ export const generateAuthExpressionForRelationQuery = (
   expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, fields, providers.hasIdentityPoolId, true)));
   expressions.push(set(ref('authResult'), methodCall(ref('util.authRules.queryAuth'), ref('authRules'))));
   expressions.push(validateAuthResult(), constructAuthFilter(), emptyPayload);
-  return printBlock('Authorization rules')(compoundExpression(expressions));
+  return printBlock('Authorization rules')(generateIAMAccessCheck(providers.genericIamAccessEnabled, compoundExpression(expressions)));
 };

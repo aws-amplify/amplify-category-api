@@ -26,11 +26,13 @@ const defaultRoleDefinitions: Record<AuthProvider, Array<RoleDefinition>> = {
       provider: 'iam',
       strategy: 'public',
       static: true,
+      claim: 'unauthRole',
     },
     {
       provider: 'iam',
       strategy: 'private',
       static: true,
+      claim: 'authRole',
     },
   ],
   userPools: [
@@ -109,6 +111,32 @@ describe('subscriptions', () => {
             configFromPartial({
               hasIAM: true,
               hasAdminRolesEnabled: false,
+            }),
+            defaultRoleDefinitions.iam,
+          ),
+        ).toMatchSnapshot();
+      });
+
+      it('renders for iam access', () => {
+        expect(
+          generateAuthExpressionForSubscriptions(
+            configFromPartial({
+              hasIAM: true,
+              hasAdminRolesEnabled: false,
+              genericIamAccessEnabled: true,
+            }),
+            [],
+          ),
+        ).toMatchSnapshot();
+      });
+
+      it('renders for iam access with roles', () => {
+        expect(
+          generateAuthExpressionForSubscriptions(
+            configFromPartial({
+              hasIAM: true,
+              hasAdminRolesEnabled: false,
+              genericIamAccessEnabled: true,
             }),
             defaultRoleDefinitions.iam,
           ),

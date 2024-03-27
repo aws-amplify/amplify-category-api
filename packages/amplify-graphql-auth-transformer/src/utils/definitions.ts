@@ -102,6 +102,7 @@ export interface ConfiguredAuthProviders {
   hasAdminRolesEnabled: boolean;
   hasIdentityPoolId: boolean;
   shouldAddDefaultServiceDirective: boolean;
+  genericIamAccessEnabled: boolean;
 }
 
 export const authDirectiveDefinition = `

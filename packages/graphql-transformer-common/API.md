@@ -503,6 +503,8 @@ export const transformedArgsRef: ReferenceNode;
 // @public (undocumented)
 export const TYPESCRIPT_DATA_SCHEMA_CONSTANTS: {
     SCHEMA_PACKAGE: string;
+    SCHEMA_PACKAGE_INTERNALS: string;
+    BACKEND_PACKAGE: string;
     MODEL_METHOD: string;
     SCHEMA_METHOD: string;
     IDENTIFIER_METHOD: string;
@@ -512,6 +514,17 @@ export const TYPESCRIPT_DATA_SCHEMA_CONSTANTS: {
     ENUM_METHOD: string;
     REFERENCE_A: string;
     EXPORT_VARIABLE_NAME: string;
+    INTERNALS_CONFIGURE_METHOD: string;
+    BACKEND_SECRET_METHOD: string;
+    PROPERTY_VPC: string;
+    PROPERTY_VPC_ID: string;
+    PROPERTY_SECURITY_GROUP_IDS: string;
+    PROPERTY_AZ_CONFIG: string;
+    PROPERTY_SUBNET_ID: string;
+    PROPERTY_AZ: string;
+    PROPERTY_DATABASE: string;
+    PROPERTY_CONNECTION_URI: string;
+    PROPERTY_ENGINE: string;
 };
 
 // @public (undocumented)

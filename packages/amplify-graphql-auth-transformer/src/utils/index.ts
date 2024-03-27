@@ -173,12 +173,13 @@ export const getConfiguredAuthProviders = (context: TransformerBeforeStepContext
   const hasIAM = providers.some((p) => p === 'AWS_IAM');
   const hasAdminRolesEnabled = hasIAM && adminRoles?.length > 0;
   /**
-   * When AdminUI is enabled, all the types and operations get IAM auth. If the default auth mode is
+   * When AdminUI or generic IAM access is enabled, all the types and operations get IAM auth. If the default auth mode is
    * not IAM all the fields will need to have the default auth mode directive to ensure both IAM and default
    * auth modes are allowed to access
-   * default auth provider needs to be added if AdminUI is enabled and default auth type is not IAM
+   * default auth provider needs to be added if AdminUI or generic IAM access is enabled and default auth type is not IAM
    */
-  const shouldAddDefaultServiceDirective = hasAdminRolesEnabled && authConfig.defaultAuthentication.authenticationType !== 'AWS_IAM';
+  const shouldAddDefaultServiceDirective =
+    (hasAdminRolesEnabled || context.synthParameters.enableIamAccess) && authConfig.defaultAuthentication.authenticationType !== 'AWS_IAM';
   const configuredProviders: ConfiguredAuthProviders = {
     default: getAuthProvider(authConfig.defaultAuthentication.authenticationType),
     onlyDefaultAuthProviderConfigured: authConfig.additionalAuthenticationProviders.length === 0,
@@ -190,6 +191,7 @@ export const getConfiguredAuthProviders = (context: TransformerBeforeStepContext
     hasLambda: providers.some((p) => p === 'AWS_LAMBDA'),
     hasIAM,
     shouldAddDefaultServiceDirective,
+    genericIamAccessEnabled: synthParameters.enableIamAccess,
   };
   return configuredProviders;
 };

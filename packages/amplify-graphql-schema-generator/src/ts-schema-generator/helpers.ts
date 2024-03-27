@@ -1,6 +1,7 @@
 import ts from 'typescript';
 import { TYPESCRIPT_DATA_SCHEMA_CONSTANTS } from 'graphql-transformer-common';
-import { Field, FieldType, Model, Schema } from '../schema-representation';
+import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { DBEngineType, Field, FieldType, Model, Schema } from '../schema-representation';
 
 const GQL_TYPESCRIPT_DATA_SCHEMA_TYPE_MAP = {
   string: 'string',
@@ -117,6 +118,11 @@ const createModel = (model: Model): ts.Node => {
 
 const exportModifier = ts.factory.createModifier(ts.SyntaxKind.ExportKeyword);
 
+export type DataSourceConfig = {
+  secretName: string;
+  vpcConfig?: VpcConfig;
+};
+
 /**
  * Creates a typescript data schema from internal SQL schema representation
  * Example typescript data schema:
@@ -131,12 +137,15 @@ const exportModifier = ts.factory.createModifier(ts.SyntaxKind.ExportKeyword);
  * @param schema
  * @returns Typescript data schema in TS Node format
  */
-export const createSchema = (schema: Schema): ts.Node => {
+export const createSchema = (schema: Schema, config?: DataSourceConfig): ts.Node => {
   const models = schema.getModels().map((model) => {
     return createModel(model);
   });
   const tsSchema = ts.factory.createCallExpression(
-    ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A}.${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.SCHEMA_METHOD}`),
+    ts.factory.createPropertyAccessExpression(
+      createConfigureExpression(schema, config),
+      ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.SCHEMA_METHOD),
+    ),
     undefined,
     [ts.factory.createObjectLiteralExpression(models as ts.ObjectLiteralElementLike[], true)],
   );
@@ -160,7 +169,7 @@ export const createSchema = (schema: Schema): ts.Node => {
  * Creates an import expression for typescript data schema
  * @returns Import statement in TS Node format
  */
-export const createImportExpression = (): ts.Node => {
+export const createImportExpression = (containsSecretName: boolean): ts.NodeArray<ts.ImportDeclaration> => {
   const importStatement = ts.factory.createImportDeclaration(
     undefined,
     ts.factory.createImportClause(
@@ -172,11 +181,143 @@ export const createImportExpression = (): ts.Node => {
     ),
     ts.factory.createStringLiteral(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.SCHEMA_PACKAGE),
   );
+  const internalsConfigureImportStatement = ts.factory.createImportDeclaration(
+    undefined,
+    ts.factory.createImportClause(
+      false,
+      undefined,
+      ts.factory.createNamedImports([
+        ts.factory.createImportSpecifier(
+          false,
+          undefined,
+          ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.INTERNALS_CONFIGURE_METHOD),
+        ),
+      ]),
+    ),
+    ts.factory.createStringLiteral(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.SCHEMA_PACKAGE_INTERNALS),
+  );
+  const secretImportStatement = ts.factory.createImportDeclaration(
+    undefined,
+    ts.factory.createImportClause(
+      false,
+      undefined,
+      ts.factory.createNamedImports([
+        ts.factory.createImportSpecifier(
+          false,
+          undefined,
+          ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.BACKEND_SECRET_METHOD),
+        ),
+      ]),
+    ),
+    ts.factory.createStringLiteral(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.BACKEND_PACKAGE),
+  );
+
   const importStatementWithEslintDisabled = ts.addSyntheticLeadingComment(
     importStatement,
     ts.SyntaxKind.MultiLineCommentTrivia,
     ' eslint-disable ',
     true,
   );
-  return importStatementWithEslintDisabled;
+
+  const importExpressions = [importStatementWithEslintDisabled];
+  if (containsSecretName) {
+    importExpressions.push(internalsConfigureImportStatement, secretImportStatement);
+  }
+  return ts.factory.createNodeArray(importExpressions);
+};
+
+export const createConfigureExpression = (schema: Schema, config: DataSourceConfig): ts.Expression => {
+  if (!config) {
+    return ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A);
+  }
+  const databaseConfig = [
+    ts.factory.createPropertyAssignment(
+      ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.PROPERTY_ENGINE),
+      ts.factory.createStringLiteral(convertDBEngineToDBProtocol(schema.getEngine().type)),
+    ),
+    ts.factory.createPropertyAssignment(
+      ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.PROPERTY_CONNECTION_URI),
+      ts.factory.createCallExpression(ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.BACKEND_SECRET_METHOD), undefined, [
+        ts.factory.createStringLiteral(config.secretName),
+      ]),
+    ),
+  ];
+
+  if (config.vpcConfig) {
+    databaseConfig.push(
+      ts.factory.createPropertyAssignment(
+        ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.PROPERTY_VPC),
+        createVpcConfigExpression(config.vpcConfig),
+      ),
+    );
+  }
+
+  const dbConfig = ts.factory.createObjectLiteralExpression(
+    [
+      ts.factory.createPropertyAssignment(
+        ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.PROPERTY_DATABASE),
+        ts.factory.createObjectLiteralExpression(databaseConfig, true),
+      ),
+    ],
+    true,
+  );
+  const configureExpr = ts.factory.createCallExpression(
+    ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.INTERNALS_CONFIGURE_METHOD}`),
+    undefined,
+    [dbConfig],
+  );
+  return configureExpr;
+};
+
+const convertDBEngineToDBProtocol = (engine: DBEngineType): 'mysql' | 'postgresql' | 'dynamodb' => {
+  switch (engine) {
+    case 'MySQL':
+      return 'mysql';
+    case 'Postgres':
+      return 'postgresql';
+    default:
+      return 'dynamodb';
+  }
+};
+
+const createVpcConfigExpression = (vpc: VpcConfig): ts.Expression => {
+  const vpcIdExpression = ts.factory.createPropertyAssignment(
+    ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.PROPERTY_VPC_ID),
+    ts.factory.createStringLiteral(vpc.vpcId),
+  );
+  const securityGroupIdsExpression = ts.factory.createPropertyAssignment(
+    ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.PROPERTY_SECURITY_GROUP_IDS),
+    ts.factory.createArrayLiteralExpression(
+      vpc.securityGroupIds.map((sg) => ts.factory.createStringLiteral(sg)),
+      true,
+    ),
+  );
+  const subnetAvailabilityZoneExpression = ts.factory.createPropertyAssignment(
+    ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.PROPERTY_AZ_CONFIG),
+    ts.factory.createArrayLiteralExpression(
+      vpc.subnetAvailabilityZoneConfig.map((az) => {
+        return ts.factory.createObjectLiteralExpression(
+          [
+            ts.factory.createPropertyAssignment(
+              ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.PROPERTY_SUBNET_ID),
+              ts.factory.createStringLiteral(az.subnetId),
+            ),
+            ts.factory.createPropertyAssignment(
+              ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.PROPERTY_AZ),
+              ts.factory.createStringLiteral(az.availabilityZone),
+            ),
+          ],
+          true,
+        );
+      }),
+      true,
+    ),
+  );
+
+  const vpcConfig = ts.factory.createObjectLiteralExpression(
+    [vpcIdExpression, securityGroupIdsExpression, subnetAvailabilityZoneExpression],
+    true,
+  );
+
+  return vpcConfig;
 };

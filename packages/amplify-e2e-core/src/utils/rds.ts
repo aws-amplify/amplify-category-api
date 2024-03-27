@@ -28,7 +28,7 @@ const DEFAULT_SECURITY_GROUP = 'default';
 const IPIFY_URL = 'https://api.ipify.org/';
 const AWSCHECKIP_URL = 'https://checkip.amazonaws.com/';
 
-type RDSConfig = {
+export type RDSConfig = {
   identifier: string;
   engine: 'mysql' | 'postgres';
   dbname: string;
