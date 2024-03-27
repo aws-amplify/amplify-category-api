@@ -262,6 +262,8 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
             ifElse(
               and([not(ref('ctx.result.items.isEmpty()')), equals(ref('ctx.result.scannedCount'), int(1))]),
               toJson(ref('ctx.result.items[0]')),
+              // TODO: Should we be checking scannedCount > 0 instead of == 1 here?
+              // The current `fields` based implementation checks if scannedCount == 1
               compoundExpression([
                 iff(and([ref('ctx.result.items.isEmpty()'), equals(ref('ctx.result.scannedCount'), int(1))]), ref('util.unauthorized()')),
                 toJson(nul()),
