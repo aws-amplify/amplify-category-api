@@ -171,7 +171,6 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
       // TODO: Better error message
       throw new Error('references should be populated.');
     }
-
     const primaryKeyFields: string[] = getPrimaryKeyFields(object);
     const dataSourceName = getModelDataSourceNameForTypeName(ctx, relatedType.name.value);
     const dataSource = ctx.api.host.getDataSource(dataSourceName);
@@ -187,8 +186,8 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
 
     if (references.length > 2) {
       const rangeKeyFields = references.slice(1);
-      const sortKeyName = rangeKeyFields[0];
-      const condensedSortKeyValue = condenseRangeKey(rangeKeyFields.map((keyField) => `\${ctx.source.${keyField}}`));
+      const sortKeyName = condenseRangeKey(rangeKeyFields);
+      const condensedSortKeyValue = condenseRangeKey(primaryKeyFields.slice(1).map((keyField) => `\${ctx.source.${keyField}}`));
 
       totalExpressions.push('#sortKeyName = :sortKeyName');
       totalExpressionNames['#sortKeyName'] = str(sortKeyName);
@@ -199,7 +198,7 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
       const sortKeyName = references[1];
       totalExpressions.push('#sortKeyName = :sortKeyName');
       totalExpressionNames['#sortKeyName'] = str(sortKeyName);
-      totalExpressionValues[':sortKeyName'] = this.buildKeyValueExpression(references[1], ctx.output.getObject(object.name.value)!);
+      totalExpressionValues[':sortKeyName'] = this.buildKeyValueExpression(primaryKeyFields[1], ctx.output.getObject(object.name.value)!);
     }
 
     const resolverResourceId = ResolverResourceIDs.ResolverResourceID(object.name.value, field.name.value);
