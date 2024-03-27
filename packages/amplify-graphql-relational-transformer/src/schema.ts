@@ -126,7 +126,10 @@ const ensureModelSortDirectionEnum = (ctx: TransformerContextProvider): void => 
 /**
  * ensureHasOneConnectionField
  */
-export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void => {
+export const ensureHasOneConnectionField = (
+  config: HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+): void => {
   const { field, fieldNodes, references, object, relatedType } = config;
 
   // If fields were explicitly provided to the directive, there is nothing else to do here.

@@ -8,6 +8,7 @@ import { DataSourceBasedDirectiveTransformer } from '../data-source-based-direct
 import { setFieldMappingResolverReference } from '../resolvers';
 import { HasOneDirectiveConfiguration } from '../types';
 import { ensureReferencesArray, getReferencesNodes, validateParentReferencesFields } from '../utils';
+import { getGenerator } from '../resolver/generator-factory';
 
 /**
  * HasOneDirectiveSQLTransformer executes transformations based on `@hasOne(references: [String!])` configurations
@@ -25,9 +26,9 @@ export class HasOneDirectiveSQLTransformer implements DataSourceBasedDirectiveTr
     validateParentReferencesFields(config, context as TransformerContextProvider);
   };
 
-  // TODO: Move resolver generation logic here from `HasOneTransformer`.
-  generateResolvers = (_context: TransformerContextProvider, _config: HasOneDirectiveConfiguration): void => {
-    return;
+  generateResolvers = (context: TransformerContextProvider, config: HasOneDirectiveConfiguration): void => {
+    const generator = getGenerator(this.dbType);
+    generator.makeHasOneGetItemConnectionWithKeyResolver(config, context);
   };
 
   validate = (context: TransformerContextProvider, config: HasOneDirectiveConfiguration): void => {
