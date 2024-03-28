@@ -1,5 +1,12 @@
-import { MappingTemplate, getModelDataSourceNameForTypeName, getKeySchema, getTable } from '@aws-amplify/graphql-transformer-core';
+import {
+  MappingTemplate,
+  getKeySchema,
+  getModelDataSourceNameForTypeName,
+  getPrimaryKeyFields,
+  getTable,
+} from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { ObjectTypeDefinitionNode } from 'graphql';
 import {
   DynamoDBMappingTemplate,
   Expression,
@@ -36,9 +43,8 @@ import {
   setArgs,
   toCamelCase,
 } from 'graphql-transformer-common';
-import { ObjectTypeDefinitionNode } from 'graphql';
-import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from '../types';
 import { condenseRangeKey } from '../resolvers';
+import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from '../types';
 import { RelationalResolverGenerator } from './generator';
 
 const SORT_KEY_VALUE = 'sortKeyValue';
@@ -46,7 +52,7 @@ const CONNECTION_STACK = 'ConnectionStack';
 const authFilter = ref('ctx.stash.authFilter');
 const PARTITION_KEY_VALUE = 'partitionKeyValue';
 
-export class DDBRelationalResolverGenerator extends RelationalResolverGenerator {
+export class DDBRelationalReferencesResolverGenerator extends RelationalResolverGenerator {
   makeExpression = (keySchema: any[], connectionAttributes: string[]): ObjectNode => {
     if (keySchema[1] && connectionAttributes[1]) {
       let condensedSortKeyValue;
@@ -89,18 +95,21 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
    * @param ctx The transformer context provider.
    */
   makeHasManyGetItemsConnectionWithKeyResolver = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-    const { connectionFields, field, fields, indexName, limit, object, relatedType } = config;
-    const connectionAttributes: string[] = fields.length > 0 ? fields : connectionFields;
+    const { connectionFields, field, indexName, limit, object, references, relatedType } = config;
+    const connectionAttributes: string[] = references.length > 0 ? references : connectionFields;
     if (connectionAttributes.length === 0) {
-      throw new Error('Either connection fields or local fields should be populated.');
+      throw new Error('Either connection fields or references should be populated.');
     }
+
+    const primaryKeyFields: string[] = getPrimaryKeyFields(object);
     const table = getTable(ctx, relatedType);
     const dataSourceName = getModelDataSourceNameForTypeName(ctx, relatedType.name.value);
     const dataSource = ctx.api.host.getDataSource(dataSourceName);
     const keySchema = getKeySchema(table, indexName);
+
     const setup: Expression[] = [
       set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${limit})`)),
-      ...connectionAttributes
+      ...primaryKeyFields
         .slice(1)
         .map((ca, idx) =>
           set(
@@ -188,8 +197,8 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
               ref(PARTITION_KEY_VALUE),
               methodCall(
                 ref('util.defaultIfNull'),
-                ref(`ctx.stash.connectionAttributes.get("${connectionAttributes[0]}")`),
-                ref(`ctx.source.${connectionAttributes[0]}`),
+                ref(`ctx.stash.connectionAttributes.get("${primaryKeyFields[0]}")`),
+                ref(`ctx.source.${primaryKeyFields[0]}`),
               ),
             ),
             ifElse(
@@ -216,20 +225,18 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
     ctx.resolvers.addResolver(object.name.value, field.name.value, resolver);
   };
 
+  makeHasOneGetItemConnectionWithKeyResolver = (_config: HasOneDirectiveConfiguration, _ctx: TransformerContextProvider): void => {
+    // TODO: Implement hasOne resolver -- this should be nearly identical to hasMany
+  };
+
   /**
    * Create a get item resolver for singular connections.
    * @param config The connection directive configuration.
    * @param ctx The transformer context provider.
    */
-  makeHasOneGetItemConnectionWithKeyResolver = (
-    config: HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration,
-    ctx: TransformerContextProvider,
-  ): void => {
-    const { connectionFields, field, fields, object, relatedType, relatedTypeIndex } = config;
-    if (relatedTypeIndex.length === 0) {
-      throw new Error('Expected relatedType index fields to be set for connection.');
-    }
-    const localFields = fields.length > 0 ? fields : connectionFields;
+  makeBelongsToGetItemConnectionWithKeyResolver = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
+    const { connectionFields, field, references, object, relatedType } = config;
+    const localFields = references.length > 0 ? references : connectionFields;
     const table = getTable(ctx, relatedType);
     const { keySchema } = table as any;
     const dataSourceName = getModelDataSourceNameForTypeName(ctx, relatedType.name.value);
@@ -245,7 +252,7 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
     };
 
     // Add a composite sort key or simple sort key if there is one.
-    if (relatedTypeIndex.length > 2) {
+    if (localFields.length > 2) {
       const rangeKeyFields = localFields.slice(1);
       const sortKeyName = keySchema[1].attributeName;
       const condensedSortKeyValue = condenseRangeKey(rangeKeyFields.map((keyField) => `\${ctx.source.${keyField}}`));
@@ -255,7 +262,7 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
       totalExpressionValues[':sortKeyName'] = ref(
         `util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank("${condensedSortKeyValue}", "${NONE_VALUE}")))`,
       );
-    } else if (relatedTypeIndex.length === 2) {
+    } else if (localFields.length === 2) {
       const sortKeyName = keySchema[1].attributeName;
       totalExpressions.push('#sortKeyName = :sortKeyName');
       totalExpressionNames['#sortKeyName'] = str(sortKeyName);
@@ -349,9 +356,5 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
         isPartitionKey ? `$${PARTITION_KEY_VALUE}` : `$ctx.source.${fieldName}`
       }, "${NONE_VALUE}")))`,
     );
-  };
-
-  makeBelongsToGetItemConnectionWithKeyResolver = (config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-    this.makeHasOneGetItemConnectionWithKeyResolver(config, ctx);
   };
 }
