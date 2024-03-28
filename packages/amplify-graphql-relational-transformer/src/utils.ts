@@ -75,7 +75,7 @@ export const validateChildReferencesFields = (config: BelongsToDirectiveConfigur
 };
 
 export const getRelatedTypeIndex = (
-  config: HasOneDirectiveConfiguration,
+  config: HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration,
   ctx: TransformerContextProvider,
   indexName?: string,
 ): FieldDefinitionNode[] => {
@@ -193,6 +193,27 @@ export const ensureReferencesArray = (
   }
 };
 
+export const ensureReferencesBidirectionality = (
+  config: HasManyDirectiveConfiguration | BelongsToDirectiveConfiguration, // TODO: Add HasOnyDirectiveConfiguration
+): void => {
+  if (config.fields) {
+    // TODO: Better error message
+    throw new InvalidDirectiveError('fields and references cannot be used together.');
+  }
+
+  /*
+    1. find related directives:
+      - if hasMany --> belongsTo
+      - if hasOne --> belongsTo
+      - if belongsTo --> hasMany | hasOne
+    2. find matching propertyName
+      - directive.arguments[].references === config.references (order matters)
+    3. validate matching type
+      - field.type.name.value === config.type
+
+  */
+};
+
 export const getModelDirective = (objectType: ObjectTypeDefinitionNode): DirectiveNode | undefined => {
   return objectType.directives!.find((directive) => directive.name.value === 'model');
 };
@@ -254,6 +275,7 @@ export const getReferencesNodes = (
     const fieldNode = relatedType.fields!.find((field) => field.name.value === fieldName);
 
     if (!fieldNode) {
+      // TODO: include more directive / type information to help debugging.
       throw new InvalidDirectiveError(`${fieldName} is not a field in ${relatedType.name.value}`);
     }
 

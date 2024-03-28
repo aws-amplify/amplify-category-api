@@ -165,8 +165,118 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
     ctx.resolvers.addResolver(object.name.value, field.name.value, resolver);
   };
 
-  makeHasOneGetItemConnectionWithKeyResolver = (_config: HasOneDirectiveConfiguration, _ctx: TransformerContextProvider): void => {
-    // TODO: Implement hasOne resolver -- this should be nearly identical to hasMany
+  makeHasOneGetItemConnectionWithKeyResolver = (config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void => {
+    const { field, indexName, references, object, relatedType } = config;
+    if (references.length < 1) {
+      // TODO: Better error message
+      throw new Error('references should be populated.');
+    }
+    const primaryKeyFields: string[] = getPrimaryKeyFields(object);
+    const dataSourceName = getModelDataSourceNameForTypeName(ctx, relatedType.name.value);
+    const dataSource = ctx.api.host.getDataSource(dataSourceName);
+    const partitionKeyName = references[0];
+    const totalExpressions = ['#partitionKey = :partitionValue'];
+    const totalExpressionNames: Record<string, Expression> = {
+      '#partitionKey': str(partitionKeyName),
+    };
+
+    const totalExpressionValues: Record<string, Expression> = {
+      ':partitionValue': this.buildKeyValueExpression(references[0], relatedType, true),
+    };
+
+    if (references.length > 2) {
+      const rangeKeyFields = references.slice(1);
+      const sortKeyName = condenseRangeKey(rangeKeyFields);
+      const condensedSortKeyValue = condenseRangeKey(primaryKeyFields.slice(1).map((keyField) => `\${ctx.source.${keyField}}`));
+
+      totalExpressions.push('#sortKeyName = :sortKeyName');
+      totalExpressionNames['#sortKeyName'] = str(sortKeyName);
+      totalExpressionValues[':sortKeyName'] = ref(
+        `util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank("${condensedSortKeyValue}", "${NONE_VALUE}")))`,
+      );
+    } else if (references.length === 2) {
+      const sortKeyName = references[1];
+      totalExpressions.push('#sortKeyName = :sortKeyName');
+      totalExpressionNames['#sortKeyName'] = str(sortKeyName);
+      totalExpressionValues[':sortKeyName'] = this.buildKeyValueExpression(primaryKeyFields[1], ctx.output.getObject(object.name.value)!);
+    }
+
+    const resolverResourceId = ResolverResourceIDs.ResolverResourceID(object.name.value, field.name.value);
+    const resolver = ctx.resolvers.generateQueryResolver(
+      object.name.value,
+      field.name.value,
+      resolverResourceId,
+      dataSource as any,
+      MappingTemplate.s3MappingTemplateFromString(
+        print(
+          compoundExpression([
+            iff(ref('ctx.stash.deniedField'), raw('#return($util.toJson(null))')),
+            set(
+              ref(PARTITION_KEY_VALUE),
+              methodCall(
+                ref('util.defaultIfNull'),
+                ref(`ctx.stash.connectionAttibutes.get("${primaryKeyFields[0]}")`),
+                ref(`ctx.source.${primaryKeyFields[0]}`),
+              ),
+            ),
+            ifElse(
+              or([
+                methodCall(ref('util.isNull'), ref(PARTITION_KEY_VALUE)),
+                ...primaryKeyFields.slice(1).map((f) => raw(`$util.isNull($ctx.source.${f})`)),
+              ]),
+              raw('#return'),
+              compoundExpression([
+                set(ref('GetRequest'), obj({ version: str('2018-05-29'), operation: str('Query'), index: str(indexName) })),
+                qref(
+                  methodCall(
+                    ref('GetRequest.put'),
+                    str('query'),
+                    obj({
+                      expression: str(totalExpressions.join(' AND ')),
+                      expressionNames: obj(totalExpressionNames),
+                      expressionValues: obj(totalExpressionValues),
+                    }),
+                  ),
+                ),
+                iff(
+                  not(isNullOrEmpty(authFilter)),
+                  qref(
+                    methodCall(
+                      ref('GetRequest.put'),
+                      str('filter'),
+                      methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), authFilter)),
+                    ),
+                  ),
+                ),
+                toJson(ref('GetRequest')),
+              ]),
+            ),
+          ]),
+        ),
+        `${object.name.value}.${field.name.value}.req.vtl`,
+      ),
+      MappingTemplate.s3MappingTemplateFromString(
+        print(
+          DynamoDBMappingTemplate.dynamoDBResponse(
+            false,
+            ifElse(
+              and([not(ref('ctx.result.items.isEmpty()')), equals(ref('ctx.result.scannedCount'), int(1))]),
+              toJson(ref('ctx.result.items[0]')),
+              // TODO: Should we be checking scannedCount > 0 instead of == 1 here?
+              // The current `fields` based implementation checks if scannedCount == 1
+              compoundExpression([
+                iff(and([ref('ctx.result.items.isEmpty()'), equals(ref('ctx.result.scannedCount'), int(1))]), ref('util.unauthorized()')),
+                toJson(nul()),
+              ]),
+            ),
+          ),
+        ),
+        `${object.name.value}.${field.name.value}.res.vtl`,
+      ),
+    );
+
+    resolver.setScope(ctx.stackManager.getScopeFor(resolverResourceId, CONNECTION_STACK));
+    ctx.resolvers.addResolver(object.name.value, field.name.value, resolver);
   };
 
   /**
