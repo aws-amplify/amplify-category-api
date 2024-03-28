@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.6.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.5.2...amplify-category-api-e2e-core@4.6.0) (2024-03-28)
+
+### Features
+
+- add secrets manager as credential store for sql lambda ([#2289](https://github.com/aws-amplify/amplify-category-api/issues/2289)) ([affdb98](https://github.com/aws-amplify/amplify-category-api/commit/affdb988b499591c3a96608f772b637ddd8c3a0c))
+
 ## [4.5.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.5.1...amplify-category-api-e2e-core@4.5.2) (2024-03-13)
 
 **Note:** Version bump only for package amplify-category-api-e2e-core
