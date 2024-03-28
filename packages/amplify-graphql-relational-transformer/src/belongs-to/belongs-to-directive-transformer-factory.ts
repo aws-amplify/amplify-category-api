@@ -21,18 +21,22 @@ export const getBelongsToDirectiveTransformer = (
     case 'POSTGRES':
       return belongsToDirectivePostgresTransformer;
     case 'DYNAMODB':
-      // If `references` are passed to the directive, we'll use the references relational
+    // If references are passed to the directive, we'll use the references relational
       // modeling approach.
-      if (config.references?.length >= 1) {
-        // Passing both `references` and `fields` is not supported.
-        if (config.fields?.length > 0) {
+      if (config.references) {
+        // Passing both references and fields is not supported.
+        if (config.fields) {
           // TODO: Better error message
           throw new Error('Something went wrong >> cannot have both references and fields.');
         }
+        if (config.references.length < 1) {
+          throw new Error(`Invalid @belongsTo directive on ${config.field.name.value} - empty references list`);
+        }
         return belongsToDirectiveDdbReferencesTransformer;
       }
-      // `fields` based relational modeling is the default because it supports implicit
-      // field creation / doesn't require explicitly defining the `fields` in the directive.
+
+      // fields based relational modeling is the default because it supports implicit
+      // field creation / doesn't require explicitly defining the fields in the directive.
       return belongsToDirectiveDdbFieldsTransformer;
   }
 };
