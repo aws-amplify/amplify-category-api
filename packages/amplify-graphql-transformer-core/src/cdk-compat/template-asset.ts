@@ -8,6 +8,7 @@ import {
   S3MappingTemplateProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct } from 'constructs';
+// TODO: use assetManager from context
 import { assetManager } from '../transformer-context/asset-manager';
 
 export class S3MappingFunctionCode implements S3MappingFunctionCodeProvider {

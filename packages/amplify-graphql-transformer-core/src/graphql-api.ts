@@ -20,6 +20,7 @@ import { Construct } from 'constructs';
 import { TransformerSchema } from './cdk-compat/schema-asset';
 import { DefaultTransformHost } from './transform-host';
 import { setResourceName } from './utils';
+import { AssetManager } from './transformer-context';
 
 export interface GraphqlApiProps {
   /**
@@ -119,6 +120,7 @@ export type TransformerAPIProps = GraphqlApiProps & {
   readonly sandboxModeEnabled?: boolean;
   readonly environmentName?: string;
   readonly disableResolverDeduping?: boolean;
+  readonly assetManager: AssetManager;
 };
 export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   /**
@@ -182,6 +184,11 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
    */
   public readonly environmentName?: string;
 
+  /**
+   * TODO: add jsdoc
+   */
+  public readonly assetManager: AssetManager;
+
   private schemaResource: CfnGraphQLSchema;
 
   private api: CfnGraphQLApi;
@@ -221,6 +228,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     this.graphqlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
     this.schema = props.schema ?? new TransformerSchema();
+    this.assetManager = props.assetManager;
     this.schemaResource = this.schema.bind(this);
 
     const hasApiKey = modes.some((mode) => mode.authorizationType === AuthorizationType.API_KEY);

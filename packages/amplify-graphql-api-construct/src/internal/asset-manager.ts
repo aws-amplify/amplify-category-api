@@ -28,6 +28,7 @@ export class AssetManager {
       fs.mkdirSync(fileDirName, { recursive: true });
     }
     fs.writeFileSync(filePath, writableContents);
+    console.log(filePath);
     return filePath;
   }
 

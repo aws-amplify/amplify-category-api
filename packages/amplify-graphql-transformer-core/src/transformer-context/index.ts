@@ -29,10 +29,11 @@ import { TransformerContextProviderRegistry } from './provider-registry';
 import { ResolverManager } from './resolver';
 import { TransformerResourceHelper } from './resource-helper';
 import { StackManager } from './stack-manager';
-import { assetManager } from './asset-manager';
+import { assetManager, AssetManager } from './asset-manager';
 
 export { TransformerResolver, NONE_DATA_SOURCE_NAME } from './resolver';
 export { StackManager } from './stack-manager';
+export { AssetManager } from './asset-manager';
 export class TransformerContextMetadata implements TransformerContextMetadataProvider {
   /**
    * Used by transformers to pass information between one another.
@@ -79,6 +80,8 @@ export class TransformerContext implements TransformerContextProvider {
 
   public readonly stackManager: StackManagerProvider;
 
+  public readonly assetManager: AssetManager;
+
   public readonly resourceHelper: TransformerResourceHelper;
 
   public readonly transformParameters: TransformParameters;
@@ -120,7 +123,6 @@ export class TransformerContext implements TransformerContextProvider {
       synthParameters,
       transformParameters,
     } = options;
-    assetManager.setAssetProvider(assetProvider);
     this.authConfig = authConfig;
     this.sqlDirectiveDataSourceStrategies = sqlDirectiveDataSourceStrategies ?? [];
     this.dataSources = new TransformerDataSourceManager();
@@ -135,8 +137,11 @@ export class TransformerContext implements TransformerContextProvider {
     this.resolvers = new ResolverManager();
     this.resourceHelper = new TransformerResourceHelper(synthParameters);
     this.stackManager = new StackManager(scope, nestedStackProvider, parameterProvider, stackMapping);
+    this.assetManager = new AssetManager();
+    this.assetManager.setAssetProvider(assetProvider);
     this.synthParameters = synthParameters;
     this.transformParameters = transformParameters;
+    assetManager.setAssetProvider(assetProvider);
   }
 
   /**

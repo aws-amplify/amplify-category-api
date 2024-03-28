@@ -2,7 +2,6 @@ import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
 import { Lazy } from 'aws-cdk-lib';
 import { S3Asset } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLApi } from '../graphql-api';
-import { assetManager } from '../transformer-context/asset-manager';
 import { removeAmplifyInputDefinition } from '../transformation/utils';
 
 export class TransformerSchema {
@@ -36,7 +35,7 @@ export class TransformerSchema {
       throw new Error('Schema not bound');
     }
     if (!this.asset) {
-      this.asset = assetManager.createAsset(this.api, 'schema', {
+      this.asset = this.api.assetManager.createAsset(this.api, 'schema', {
         fileName: 'schema.graphql',
         fileContent: removeAmplifyInputDefinition(this.definition),
       });
