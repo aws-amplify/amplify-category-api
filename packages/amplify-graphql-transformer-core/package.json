@@ -28,6 +28,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
+    "@aws-amplify/graphql-directives": "1.0.0",
     "@aws-amplify/graphql-transformer-interfaces": "3.4.0",
     "fs-extra": "^8.1.0",
     "graphql": "^15.5.0",

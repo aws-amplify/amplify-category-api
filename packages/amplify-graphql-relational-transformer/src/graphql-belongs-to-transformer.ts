@@ -4,10 +4,9 @@ import {
   DirectiveWrapper,
   generateGetArgumentsInput,
   getStrategyDbTypeFromTypeNode,
+  getStrategyDbTypeFromModel,
   InvalidDirectiveError,
   TransformerPluginBase,
-  isSqlModel,
-  isSqlDbType,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
@@ -17,6 +16,7 @@ import {
   TransformerPreProcessContextProvider,
   ModelDataSourceStrategyDbType,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { BelongsToDirective } from '@aws-amplify/graphql-directives';
 import {
   DirectiveNode,
   DocumentNode,
@@ -31,26 +31,14 @@ import { WritableDraft } from 'immer/dist/types/types-external';
 import { ensureBelongsToConnectionField } from './schema';
 import { BelongsToDirectiveConfiguration, ObjectDefinition } from './types';
 import {
-  ensureFieldsArray,
-  ensureReferencesArray,
-  getBelongsToReferencesNodes,
   getConnectionAttributeName,
-  getFieldsNodes,
   getObjectPrimaryKey,
   getRelatedType,
-  getRelatedTypeIndex,
-  registerHasOneForeignKeyMappings,
-  validateChildReferencesFields,
   validateModelDirective,
   validateRelatedModelDirective,
 } from './utils';
 import { getGenerator } from './resolver/generator-factory';
-import { setFieldMappingResolverReference } from './resolvers';
-
-const directiveName = 'belongsTo';
-const directiveDefinition = `
-  directive @${directiveName}(fields: [String!], references: [String!]) on FIELD_DEFINITION
-`;
+import { getBelongsToDirectiveTransformer } from './belongs-to/belongs-to-directive-transformer-factory';
 
 /**
  * Transformer for @belongsTo directive
@@ -59,7 +47,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
   private directiveList: BelongsToDirectiveConfiguration[] = [];
 
   constructor() {
-    super('amplify-belongs-to-transformer', directiveDefinition);
+    super('amplify-belongs-to-transformer', BelongsToDirective.definition);
   }
 
   field = (
@@ -71,7 +59,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
     const directiveWrapped = new DirectiveWrapper(directive);
     const args = directiveWrapped.getArguments(
       {
-        directiveName,
+        directiveName: BelongsToDirective.name,
         object: parent as ObjectTypeDefinitionNode,
         field: definition,
         directive,
@@ -98,7 +86,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
 
       objectDefs?.forEach((def) => {
         const filteredFields = def?.fields?.filter((field) =>
-          field?.directives?.some((dir) => dir.name.value === directiveName && objectTypeMap.get(getBaseType(field.type))),
+          field?.directives?.some((dir) => dir.name.value === BelongsToDirective.name && objectTypeMap.get(getBaseType(field.type))),
         );
         filteredFields?.forEach((field) => {
           const relatedType = objectTypeMap.get(getBaseType(field.type));
@@ -139,23 +127,12 @@ export class BelongsToTransformer extends TransformerPluginBase {
    * During the prepare step, register any foreign keys that are renamed due to a model rename
    */
   prepare = (context: TransformerPrepareStepContextProvider): void => {
-    this.directiveList
-      .filter((config) => config.relationType === 'hasOne')
-      .forEach((config) => {
-        const modelName = config.object.name.value;
-        if (isSqlModel(context as TransformerContextProvider, modelName)) {
-          return;
-        }
-        // a belongsTo with hasOne behaves the same as hasOne
-        registerHasOneForeignKeyMappings({
-          transformParameters: context.transformParameters,
-          resourceHelper: context.resourceHelper,
-          thisTypeName: modelName,
-          thisFieldName: config.field.name.value,
-          relatedType: config.relatedType,
-        });
-      });
-    setFieldMappingReferences(context, this.directiveList);
+    this.directiveList.forEach((config) => {
+      const modelName = config.object.name.value;
+      const dbType = getStrategyDbTypeFromModel(context as TransformerContextProvider, modelName);
+      const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType);
+      dataSourceBasedTransformer.prepare(context, config);
+    });
   };
 
   transformSchema = (ctx: TransformerTransformSchemaStepContextProvider): void => {
@@ -163,11 +140,8 @@ export class BelongsToTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
-      if (dbType === DDB_DB_TYPE) {
-        config.relatedTypeIndex = getRelatedTypeIndex(config, context);
-      } else if (isSqlDbType(dbType)) {
-        validateChildReferencesFields(config, context);
-      }
+      const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType);
+      dataSourceBasedTransformer.transformSchema(ctx, config);
       ensureBelongsToConnectionField(config, context);
     }
   };
@@ -200,20 +174,12 @@ const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerConte
   }
 
   config.relatedType = getRelatedType(config, ctx);
-  if (dbType === DDB_DB_TYPE) {
-    ensureFieldsArray(config);
-    config.fieldNodes = getFieldsNodes(config, ctx);
-  }
-
-  if (isSqlDbType(dbType)) {
-    ensureReferencesArray(config);
-    getBelongsToReferencesNodes(config, ctx);
-  }
-
+  const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType);
+  dataSourceBasedTransformer.validate(ctx, config);
   validateModelDirective(config);
 
   if (isListType(field.type)) {
-    throw new InvalidDirectiveError(`@${directiveName} cannot be used with lists.`);
+    throw new InvalidDirectiveError(`@${BelongsToDirective.name} cannot be used with lists.`);
   }
 
   config.connectionFields = [];
@@ -236,18 +202,7 @@ const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerConte
 
   if (!isBiRelation && dbType === DDB_DB_TYPE) {
     throw new InvalidDirectiveError(
-      `${config.relatedType.name.value} must have a relationship with ${object.name.value} in order to use @${directiveName}.`,
+      `${config.relatedType.name.value} must have a relationship with ${object.name.value} in order to use @${BelongsToDirective.name}.`,
     );
   }
-};
-
-const setFieldMappingReferences = (context: TransformerPrepareStepContextProvider, directiveList: BelongsToDirectiveConfiguration[]) => {
-  directiveList.forEach((config) => {
-    const modelName = config.object.name.value;
-    const areFieldMappingsSupported = isSqlModel(context as TransformerContextProvider, modelName);
-    if (!areFieldMappingsSupported) {
-      return;
-    }
-    setFieldMappingResolverReference(context, config.relatedType?.name?.value, modelName, config.field.name.value);
-  });
 };
