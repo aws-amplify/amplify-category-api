@@ -103,7 +103,7 @@ const getReferencesBasedDDBSortKey = (
   }
 
   // If no sortKeysFields are defined, the returned sortKey is `undefined`.
-  return undefined
+  return undefined;
 };
 
 /**

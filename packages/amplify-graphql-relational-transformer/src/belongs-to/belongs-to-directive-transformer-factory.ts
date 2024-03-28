@@ -21,7 +21,7 @@ export const getBelongsToDirectiveTransformer = (
     case 'POSTGRES':
       return belongsToDirectivePostgresTransformer;
     case 'DYNAMODB':
-    // If references are passed to the directive, we'll use the references relational
+      // If references are passed to the directive, we'll use the references relational
       // modeling approach.
       if (config.references) {
         // Passing both references and fields is not supported.

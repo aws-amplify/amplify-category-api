@@ -282,7 +282,7 @@ test('many to many query', () => {
       new HasOneTransformer(),
       new HasManyTransformer(),
       new BelongsToTransformer(),
-    ]
+    ],
   });
 
   expect(out).toBeDefined();
