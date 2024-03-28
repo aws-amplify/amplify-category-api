@@ -446,7 +446,7 @@ $util.toJson({
 })"
 `;
 
-exports[`sandboxMappingTemplate renders when sandbox is disabled 1`] = `
+exports[`sandboxMappingTemplate renders when sandbox is disabled and iam access disabled 1`] = `
 "## [Start] Sandbox Mode Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
@@ -455,14 +455,44 @@ $util.toJson({})
 ## [End] Sandbox Mode Disabled. **"
 `;
 
-exports[`sandboxMappingTemplate renders when sandbox is enabled 1`] = `
+exports[`sandboxMappingTemplate renders when sandbox is disabled and iam access enabled 1`] = `
+"## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"allowedAggFields\\", [\\"id\\",\\"content\\"]))
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **"
+`;
+
+exports[`sandboxMappingTemplate renders when sandbox is enabled and iam access disabled 1`] = `
 "## [Start] Sandbox Mode Enabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
-  #if( $util.authType() != \\"API Key Authorization\\" )
-    $util.unauthorized()
-  #else
+  #if( $util.authType() == \\"API Key Authorization\\" )
     $util.qr($ctx.stash.put(\\"allowedAggFields\\", [\\"id\\",\\"content\\"]))
+    #return($util.toJson({}))
   #end
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Enabled. **"
+`;
+
+exports[`sandboxMappingTemplate renders when sandbox is enabled and iam access enabled 1`] = `
+"## [Start] Sandbox Mode Enabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  #if( $util.authType() == \\"API Key Authorization\\" )
+    $util.qr($ctx.stash.put(\\"allowedAggFields\\", [\\"id\\",\\"content\\"]))
+    #return($util.toJson({}))
+  #end
+  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put(\\"allowedAggFields\\", [\\"id\\",\\"content\\"]))
+    #return($util.toJson({}))
+  #end
+  $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Enabled. **"
