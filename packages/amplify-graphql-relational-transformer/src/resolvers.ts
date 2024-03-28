@@ -62,8 +62,9 @@ export const updateTableForReferencesConnection = (
   // -- ideally further up the chain
   const partitionKeyType = attributeTypeFromType(referenceNode.type, ctx);
 
-  // TODO: Add support for sortKey in GSI
-  const sortKey = undefined;
+  // The sortKeys are any referencesNodes following the first element.
+  const sortKeyReferenceNodes = referenceNodes.slice(1);
+  const sortKey = getReferencesBasedDDBSortKey(sortKeyReferenceNodes, ctx);
 
   addGlobalSecondaryIndex(relatedTable, {
     indexName: indexName,
@@ -72,6 +73,37 @@ export const updateTableForReferencesConnection = (
     ctx: ctx,
     relatedTypeName: relatedType.name.value,
   });
+};
+
+/**
+ * Given a list a `FieldDefinitionNode`s representing sortKeys for a references based relationship where the
+ * related model's data source is DDB, this provides the sortKey as a `KeyAttributeDefinition`.
+ * @param sortKeyNodes The `FieldDefinitionNode`s representing sortKeys of the references based relationship.
+ * @param ctx The `TransformerContextProvider` passed down the transformer chain.
+ * @returns A `KeyAttributeDefinition` representing the sort key to be added to a DDB table.
+ */
+const getReferencesBasedDDBSortKey = (
+  sortKeyNodes: FieldDefinitionNode[],
+  ctx: TransformerContextProvider,
+): KeyAttributeDefinition | undefined => {
+  if (sortKeyNodes.length === 1) {
+    // If there's only one sortKeysFields defined, we'll use its type.
+    return {
+      name: sortKeyNodes[0].name.value,
+      type: attributeTypeFromType(sortKeyNodes[0].type, ctx),
+    };
+  } else if (sortKeyNodes.length > 1) {
+    // If there's more than one sortKeysFields defined, we'll combine the names with
+    // a `#` delimiter with a type `S` (string).
+    const sortKeyFieldNames = sortKeyNodes.map((node) => node.name.value);
+    return {
+      name: condenseRangeKey(sortKeyFieldNames),
+      type: 'S',
+    };
+  }
+
+  // If no sortKeysFields are defined, the returned sortKey is `undefined`.
+  return undefined
 };
 
 /**
