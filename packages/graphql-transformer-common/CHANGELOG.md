@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.29.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.28.1...graphql-transformer-common@4.29.0) (2024-03-28)
+
+### Features
+
+- **api:** auto detect vpc configuration on generate typescript database schema ([#2376](https://github.com/aws-amplify/amplify-category-api/issues/2376)) ([ef6f53c](https://github.com/aws-amplify/amplify-category-api/commit/ef6f53c04bbcc50921bf20a937d1332d4597a3fa))
+
 ## [4.28.1](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.28.0...graphql-transformer-common@4.28.1) (2024-02-28)
 
 **Note:** Version bump only for package graphql-transformer-common

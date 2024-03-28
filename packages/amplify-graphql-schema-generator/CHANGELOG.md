@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.7.2...@aws-amplify/graphql-schema-generator@0.8.0) (2024-03-28)
+
+### Features
+
+- **api:** auto detect vpc configuration on generate typescript database schema ([#2376](https://github.com/aws-amplify/amplify-category-api/issues/2376)) ([ef6f53c](https://github.com/aws-amplify/amplify-category-api/commit/ef6f53c04bbcc50921bf20a937d1332d4597a3fa))
+
 ## [0.7.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.7.1...@aws-amplify/graphql-schema-generator@0.7.2) (2024-03-13)
 
 **Note:** Version bump only for package @aws-amplify/graphql-schema-generator

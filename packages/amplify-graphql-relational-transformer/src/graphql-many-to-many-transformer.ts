@@ -22,6 +22,7 @@ import {
   DataSourceStrategiesProvider,
   ModelDataSourceStrategy,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { ManyToManyDirective } from '@aws-amplify/graphql-directives';
 import {
   DirectiveNode,
   DocumentNode,
@@ -67,12 +68,6 @@ import {
 import { HasOneTransformer } from './graphql-has-one-transformer';
 import { DDBRelationalResolverGenerator } from './resolver/ddb-generator';
 
-const directiveName = 'manyToMany';
-const defaultLimit = 100;
-const directiveDefinition = `
-  directive @${directiveName}(relationName: String!, limit: Int = ${defaultLimit}) on FIELD_DEFINITION
-`;
-
 /**
  * ManyToManyTransformer
  * The many to many transformer is shorthand for an additional model in the a GraphQL schema,
@@ -99,7 +94,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
     hasOneTransformer: HasOneTransformer,
     authProvider: TransformerAuthProvider,
   ) {
-    super('amplify-many-to-many-transformer', directiveDefinition);
+    super('amplify-many-to-many-transformer', ManyToManyDirective.definition);
     this.modelTransformer = modelTransformer;
     this.indexTransformer = indexTransformer;
     this.hasOneTransformer = hasOneTransformer;
@@ -115,11 +110,11 @@ export class ManyToManyTransformer extends TransformerPluginBase {
     const directiveWrapped = new DirectiveWrapper(directive);
     const args = directiveWrapped.getArguments(
       {
-        directiveName,
+        directiveName: ManyToManyDirective.name,
         object: parent as ObjectTypeDefinitionNode,
         field: definition,
         directive,
-        limit: defaultLimit,
+        limit: ManyToManyDirective.defaults.limit,
       } as ManyToManyDirectiveConfiguration,
       generateGetArgumentsInput(context.transformParameters),
     );
@@ -128,7 +123,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
     args.connectionFields = [];
 
     if (!isListType(definition.type)) {
-      throw new InvalidDirectiveError(`@${directiveName} must be used with a list.`);
+      throw new InvalidDirectiveError(`@${ManyToManyDirective.name} must be used with a list.`);
     }
 
     addDirectiveToRelationMap(this.relationMap, args);
@@ -152,7 +147,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
       objectDefs?.forEach((def) => {
         def?.fields?.forEach((field) => {
           field?.directives
-            ?.filter((dir) => dir.name.value === directiveName)
+            ?.filter((dir) => dir.name.value === ManyToManyDirective.name)
             ?.forEach((dir) => {
               const relationArg = dir?.arguments?.find((arg) => arg.name.value === 'relationName');
               if (relationArg?.value?.kind === 'StringValue') {
@@ -294,14 +289,14 @@ export class ManyToManyTransformer extends TransformerPluginBase {
       const { directive1, directive2, name } = relation;
 
       if (!directive2) {
-        throw new InvalidDirectiveError(`@${directiveName} relation '${name}' must be used in exactly two locations.`);
+        throw new InvalidDirectiveError(`@${ManyToManyDirective.name} relation '${name}' must be used in exactly two locations.`);
       }
 
       const d1ExpectedType = getBaseType(directive1.field.type);
       const d2ExpectedType = getBaseType(directive2.field.type);
 
       if (isSqlModel(ctx, d1ExpectedType) || isSqlModel(ctx, d2ExpectedType)) {
-        throw new InvalidDirectiveError(`@${directiveName} directive cannot be used on a SQL model.`);
+        throw new InvalidDirectiveError(`@${ManyToManyDirective.name} directive cannot be used on a SQL model.`);
       }
 
       const d1Strategy = getModelDataSourceStrategy(ctx, d1ExpectedType);
@@ -311,25 +306,25 @@ export class ManyToManyTransformer extends TransformerPluginBase {
         (isAmplifyDynamoDbModelDataSourceStrategy(d1Strategy) && !isAmplifyDynamoDbModelDataSourceStrategy(d2Strategy))
       ) {
         throw new InvalidDirectiveError(
-          `@${directiveName} directive cannot be used to relate models with a different DynamoDB-based strategies.`,
+          `@${ManyToManyDirective.name} directive cannot be used to relate models with a different DynamoDB-based strategies.`,
         );
       }
 
       if (d1ExpectedType !== directive2.object.name.value) {
         throw new InvalidDirectiveError(
-          `@${directiveName} relation '${name}' expects '${d1ExpectedType}' but got '${directive2.object.name.value}'.`,
+          `@${ManyToManyDirective.name} relation '${name}' expects '${d1ExpectedType}' but got '${directive2.object.name.value}'.`,
         );
       }
 
       if (d2ExpectedType !== directive1.object.name.value) {
         throw new InvalidDirectiveError(
-          `@${directiveName} relation '${name}' expects '${d2ExpectedType}' but got '${directive1.object.name.value}'.`,
+          `@${ManyToManyDirective.name} relation '${name}' expects '${d2ExpectedType}' but got '${directive1.object.name.value}'.`,
         );
       }
 
       if (ctx.output.hasType(name)) {
         throw new InvalidDirectiveError(
-          `@${directiveName} relation name '${name}' (derived from '${directive1.relationName}') already exists as a type in the schema.`,
+          `@${ManyToManyDirective.name} relation name '${name}' (derived from '${directive1.relationName}') already exists as a type in the schema.`,
         );
       }
     });
@@ -558,7 +553,7 @@ function addDirectiveToRelationMap(map: Map<string, ManyToManyRelation>, directi
   }
 
   if (relation.directive2) {
-    throw new InvalidDirectiveError(`@${directiveName} relation '${relationName}' must be used in exactly two locations.`);
+    throw new InvalidDirectiveError(`@${ManyToManyDirective.name} relation '${relationName}' must be used in exactly two locations.`);
   }
 
   relation.directive2 = directive;

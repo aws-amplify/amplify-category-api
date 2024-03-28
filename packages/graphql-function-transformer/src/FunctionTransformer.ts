@@ -1,7 +1,8 @@
-import { Transformer, gql, TransformerContext, getDirectiveArguments, TransformerContractError } from 'graphql-transformer-core';
+import { Transformer, TransformerContext, getDirectiveArguments, TransformerContractError } from 'graphql-transformer-core';
+import { FunctionDirectiveV1 } from '@aws-amplify/graphql-directives';
 import { obj, str, ref, printBlock, compoundExpression, qref, raw, iff } from 'graphql-mapping-template';
 import { ResolverResourceIDs, FunctionResourceIDs, ResourceConstants } from 'graphql-transformer-common';
-import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode } from 'graphql';
+import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, parse } from 'graphql';
 import { AppSync, IAM, Fn } from 'cloudform-types';
 import { lambdaArnResource } from './lambdaArns';
 
@@ -12,9 +13,7 @@ export class FunctionTransformer extends Transformer {
     // prettier-ignore
     super(
       'FunctionTransformer',
-      gql`
-        directive @function(name: String!, region: String) repeatable on FIELD_DEFINITION
-      `
+      parse(FunctionDirectiveV1.definition),
     );
   }
 
@@ -24,7 +23,7 @@ export class FunctionTransformer extends Transformer {
   field = (parent: ObjectTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
     const { name, region } = getDirectiveArguments(directive);
     if (!name) {
-      throw new TransformerContractError(`Must supply a 'name' to @function.`);
+      throw new TransformerContractError(`Must supply a 'name' to @${FunctionDirectiveV1.name}.`);
     }
 
     // Add the iam role if it does not exist.

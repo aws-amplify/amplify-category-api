@@ -1,5 +1,5 @@
 import { DeletionPolicy, AppSync } from 'cloudform-types';
-import { DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
+import { DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode, FieldDefinitionNode, parse } from 'graphql';
 import {
   blankObject,
   makeConnectionField,
@@ -12,7 +12,8 @@ import {
   ResolverResourceIDs,
   getBaseType,
 } from 'graphql-transformer-common';
-import { getDirectiveArguments, gql, Transformer, TransformerContext, SyncConfig, InvalidDirectiveError } from 'graphql-transformer-core';
+import { getDirectiveArguments, Transformer, TransformerContext, SyncConfig, InvalidDirectiveError } from 'graphql-transformer-core';
+import { ModelDirectiveV1 } from '@aws-amplify/graphql-directives';
 import {
   getNonModelObjectArray,
   makeCreateInputObject,
@@ -62,38 +63,7 @@ export const CONDITIONS_MINIMUM_VERSION = 5;
  * }
  */
 
-export const directiveDefinition = gql`
-  directive @model(
-    queries: ModelQueryMap
-    mutations: ModelMutationMap
-    subscriptions: ModelSubscriptionMap
-    timestamps: TimestampConfiguration
-  ) on OBJECT
-  input ModelMutationMap {
-    create: String
-    update: String
-    delete: String
-  }
-  input ModelQueryMap {
-    get: String
-    list: String
-  }
-  input ModelSubscriptionMap {
-    onCreate: [String]
-    onUpdate: [String]
-    onDelete: [String]
-    level: ModelSubscriptionLevel
-  }
-  enum ModelSubscriptionLevel {
-    off
-    public
-    on
-  }
-  input TimestampConfiguration {
-    createdAt: String
-    updatedAt: String
-  }
-`;
+export const directiveDefinition = parse(ModelDirectiveV1.definition);
 
 export class DynamoDBModelTransformer extends Transformer {
   resources: ResourceFactory;

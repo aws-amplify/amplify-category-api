@@ -1,4 +1,5 @@
-import { Transformer, gql, TransformerContext, getDirectiveArguments, InvalidDirectiveError } from 'graphql-transformer-core';
+import { Transformer, TransformerContext, getDirectiveArguments, InvalidDirectiveError } from 'graphql-transformer-core';
+import { KeyDirectiveV1 } from '@aws-amplify/graphql-directives';
 import {
   obj,
   str,
@@ -63,6 +64,7 @@ import {
   Kind,
   InputValueDefinitionNode,
   EnumTypeDefinitionNode,
+  parse,
 } from 'graphql';
 import { AppSync, Fn, Refs } from 'cloudform-types';
 import { Projection, GlobalSecondaryIndex, LocalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
@@ -79,9 +81,7 @@ export class KeyTransformer extends Transformer {
     // prettier-ignore
     super(
       'KeyTransformer',
-      gql`
-        directive @key(name: String, fields: [String!]!, queryField: String) repeatable on OBJECT
-      `
+      parse(KeyDirectiveV1.definition),
     );
   }
 

@@ -14,6 +14,7 @@ import {
   TransformerTransformSchemaStepContextProvider,
   TransformerPreProcessContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { HasManyDirective } from '@aws-amplify/graphql-directives';
 import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 import {
   DirectiveNode,
@@ -44,17 +45,11 @@ import {
 import { getGenerator } from './resolver/generator-factory';
 import { getHasManyDirectiveTransformer } from './has-many/has-many-directive-transformer-factory';
 
-const directiveName = 'hasMany';
-const defaultLimit = 100;
-const directiveDefinition = `
-  directive @${directiveName}(indexName: String, fields: [String!], references: [String!], limit: Int = ${defaultLimit}) on FIELD_DEFINITION
-`;
-
 export class HasManyTransformer extends TransformerPluginBase {
   private directiveList: HasManyDirectiveConfiguration[] = [];
 
   constructor() {
-    super('amplify-has-many-transformer', directiveDefinition);
+    super('amplify-has-many-transformer', HasManyDirective.definition);
   }
 
   field = (
@@ -66,11 +61,11 @@ export class HasManyTransformer extends TransformerPluginBase {
     const directiveWrapped = new DirectiveWrapper(directive);
     const args = directiveWrapped.getArguments(
       {
-        directiveName,
+        directiveName: HasManyDirective.name,
         object: parent as ObjectTypeDefinitionNode,
         field: definition,
         directive,
-        limit: defaultLimit,
+        limit: HasManyDirective.defaults.limit,
       } as HasManyDirectiveConfiguration,
       generateGetArgumentsInput(context.transformParameters),
     );
@@ -92,7 +87,7 @@ export class HasManyTransformer extends TransformerPluginBase {
       const objectDefs = filteredDefs as Array<WritableDraft<ObjectTypeDefinitionNode | ObjectTypeExtensionNode>>;
       // First iteration builds a map of the hasMany connecting fields that need to exist, second iteration ensures they exist
       objectDefs?.forEach((def) => {
-        const filteredFields = def?.fields?.filter((field) => field?.directives?.some((dir) => dir.name.value === directiveName));
+        const filteredFields = def?.fields?.filter((field) => field?.directives?.some((dir) => dir.name.value === HasManyDirective.name));
         filteredFields?.forEach((field) => {
           const baseFieldType = getBaseType(field.type);
           const connectionAttributeName = getConnectionAttributeName(
@@ -171,7 +166,7 @@ const validate = (config: HasManyDirectiveConfiguration, ctx: TransformerContext
   validateModelDirective(config);
 
   if (!isListType(field.type)) {
-    throw new InvalidDirectiveError(`@${directiveName} must be used with a list. Use @hasOne for non-list types.`);
+    throw new InvalidDirectiveError(`@${HasManyDirective.name} must be used with a list. Use @hasOne for non-list types.`);
   }
 
   config.connectionFields = [];
