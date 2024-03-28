@@ -740,8 +740,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         relatedModelObject.fields ?? [],
       );
     } else {
-      // if the related @model does not have auth we need to add a sandbox mode expression
-      relatedAuthExpression = this.getVtlGenerator(ctx, def.name.value).generateSandboxExpressionForField(
+      // if the related @model does not have auth we need to add a post auth expression
+      relatedAuthExpression = this.getVtlGenerator(ctx, def.name.value).generatePostAuthExpressionForField(
         ctx.transformParameters.sandboxModeEnabled,
         ctx.synthParameters.enableIamAccess,
       );

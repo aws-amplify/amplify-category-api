@@ -9,7 +9,7 @@ import {
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { ResolverResourceIDs, toCamelCase } from 'graphql-transformer-common';
-import { generateAuthExpressionForSandboxMode, generateResolverKey, ModelVTLGenerator } from '../resolvers';
+import { generatePostAuthExpression, generateResolverKey, ModelVTLGenerator } from '../resolvers';
 import { ModelDirectiveConfiguration, SubscriptionLevel } from '../directive';
 import { ModelTransformerOptions } from '../types';
 
@@ -128,7 +128,7 @@ export abstract class ModelResourceGenerator {
         resolver.addToSlot(
           'postAuth',
           MappingTemplate.s3MappingTemplateFromString(
-            generateAuthExpressionForSandboxMode(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess),
+            generatePostAuthExpression(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess),
             `${query.typeName}.${query.fieldName}.{slotName}.{slotIndex}.req.vtl`,
           ),
         );
@@ -162,7 +162,7 @@ export abstract class ModelResourceGenerator {
         resolver.addToSlot(
           'postAuth',
           MappingTemplate.s3MappingTemplateFromString(
-            generateAuthExpressionForSandboxMode(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess),
+            generatePostAuthExpression(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess),
             `${mutation.typeName}.${mutation.fieldName}.{slotName}.{slotIndex}.req.vtl`,
           ),
         );
@@ -208,10 +208,7 @@ export abstract class ModelResourceGenerator {
             resolver.addToSlot(
               'postAuth',
               MappingTemplate.s3MappingTemplateFromString(
-                generateAuthExpressionForSandboxMode(
-                  context.transformParameters.sandboxModeEnabled,
-                  context.synthParameters.enableIamAccess,
-                ),
+                generatePostAuthExpression(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess),
                 `${subscription.typeName}.${subscription.fieldName}.{slotName}.{slotIndex}.req.vtl`,
               ),
             );

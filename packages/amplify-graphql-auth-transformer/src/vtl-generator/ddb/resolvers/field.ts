@@ -212,9 +212,18 @@ export const setDeniedFieldFlag = (operation: string, subscriptionsEnabled: bool
 };
 
 /**
- * Generates sandbox expression for field
+ * Generates a post auth expression for a field.
+ *
+ * 1. Pass through if 'ctx.stash.hasAuth' is true (auth directive is present)
+ * 2. Pass through for API key auth type if sandbox is enabled.
+ * 3. Pass through for IAM auth type if generic IAM access is enabled and principal is not coming from Cognito.
+ * 4. Otherwise, rejects as unauthorized.
+ *
+ * @param sandboxEnabled a flag indicating if sandbox is enabled.
+ * @param genericIamAccessEnabled a flag indicating if generic IAM access is enabled.
+ * @returns an expression.
  */
-export const generateSandboxExpressionForField = (sandboxEnabled: boolean, genericIamAccessEnabled: boolean): string => {
+export const generatePostAuthExpressionForField = (sandboxEnabled: boolean, genericIamAccessEnabled: boolean): string => {
   const expressions: Array<Expression> = [];
   if (sandboxEnabled) {
     expressions.push(iff(equals(methodCall(ref('util.authType')), str(API_KEY_AUTH_TYPE)), ret(toJson(obj({})))));
@@ -223,5 +232,7 @@ export const generateSandboxExpressionForField = (sandboxEnabled: boolean, gener
     expressions.push(iff(isNonCognitoIAMPrincipal, ret(toJson(obj({})))));
   }
   expressions.push(methodCall(ref('util.unauthorized')));
-  return printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(compoundExpression(expressions));
+  return printBlock(
+    `Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}, IAM Access ${genericIamAccessEnabled ? 'Enabled' : 'Disabled'}`,
+  )(compoundExpression(expressions));
 };
