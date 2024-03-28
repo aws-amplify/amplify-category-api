@@ -23,6 +23,7 @@ const definition = /* GraphQL */ `
   enum AuthProvider {
     apiKey
     iam
+    identityPool
     oidc
     userPools
     function
