@@ -6,9 +6,15 @@ export type HasOneDirectiveConfiguration = {
   object: ObjectTypeDefinitionNode;
   field: FieldDefinitionNode;
   directive: DirectiveNode;
+  indexName: string;
+  /** `fields` strings passed to `@hasOne(fields:)` */
   fields: string[];
+  /** `references` strings passed to `@hasOne(references:)` */
   references: string[];
+  /** `FieldDefinitionNode`s for each of the `fields` including type information from the `relatedType`. */
   fieldNodes: FieldDefinitionNode[];
+  /** `FieldDefinitionNode`s for each of the `references` including type information from the `relatedType`. */
+  referenceNodes: FieldDefinitionNode[];
   relatedType: ObjectTypeDefinitionNode;
   relatedTypeIndex: FieldDefinitionNode[];
   connectionFields: string[];
@@ -20,9 +26,14 @@ export type HasManyDirectiveConfiguration = {
   field: FieldDefinitionNode;
   directive: DirectiveNode;
   indexName: string;
+  /** `fields` strings passed to `@hasMany(fields:)` */
   fields: string[];
+  /** `references` strings passed to `@hasMany(references:)` */
   references: string[];
+  /** `FieldDefinitionNode`s for each of the `fields` including type information from the `relatedType`. */
   fieldNodes: FieldDefinitionNode[];
+  /** `FieldDefinitionNode`s for each of the `references` including type information from the `relatedType`. */
+  referenceNodes: FieldDefinitionNode[];
   relatedType: ObjectTypeDefinitionNode;
   relatedTypeIndex: FieldDefinitionNode[];
   connectionFields: string[];
@@ -34,9 +45,14 @@ export type BelongsToDirectiveConfiguration = {
   object: ObjectTypeDefinitionNode;
   field: FieldDefinitionNode;
   directive: DirectiveNode;
+  /** `fields` strings passed to `@belongsTo(fields:)` */
   fields: string[];
+  /** `references` strings passed to `@belongsTo(references:)` */
   references: string[];
+  /** `FieldDefinitionNode`s for each of the `fields` including type information from the `relatedType`. */
   fieldNodes: FieldDefinitionNode[];
+  /** `FieldDefinitionNode`s for each of the `references` including type information from the `relatedType`. */
+  referenceNodes: FieldDefinitionNode[];
   relatedType: ObjectTypeDefinitionNode;
   relatedField: FieldDefinitionNode;
   relationType: 'hasOne' | 'hasMany';
@@ -51,9 +67,14 @@ export type ManyToManyDirectiveConfiguration = {
   directive: DirectiveNode;
   relationName: string;
   indexName: string;
+  /** `fields` strings passed to `@hasMany(fields:)` */
   fields: string[];
+  /** `references` strings passed to `@hasMany(references:)` */
   references: string[];
+  /** `FieldDefinitionNode`s for each of the `fields` including type information from the `relatedType`. */
   fieldNodes: FieldDefinitionNode[];
+  /** `FieldDefinitionNode`s for each of the `references` including type information from the `relatedType`. */
+  referenceNodes: FieldDefinitionNode[];
   relatedType: ObjectTypeDefinitionNode;
   relatedTypeIndex: FieldDefinitionNode[];
   connectionFields: string[];

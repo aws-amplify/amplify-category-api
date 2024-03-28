@@ -159,7 +159,7 @@ export class HasOneTransformer extends TransformerPluginBase {
     this.directiveList.forEach((config) => {
       const modelName = config.object.name.value;
       const dbType = getStrategyDbTypeFromModel(context as TransformerContextProvider, modelName);
-      const dataSourceBasedTransformer = getHasOneDirectiveTransformer(dbType);
+      const dataSourceBasedTransformer = getHasOneDirectiveTransformer(dbType, config);
       dataSourceBasedTransformer.prepare(context, config);
     });
   };
@@ -169,7 +169,7 @@ export class HasOneTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
-      const dataSourceBasedTransformer = getHasOneDirectiveTransformer(dbType);
+      const dataSourceBasedTransformer = getHasOneDirectiveTransformer(dbType, config);
       dataSourceBasedTransformer.transformSchema(ctx, config);
       ensureHasOneConnectionField(config, context);
     }
@@ -180,8 +180,8 @@ export class HasOneTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
-      const generator = getGenerator(dbType);
-      generator.makeHasOneGetItemConnectionWithKeyResolver(config, context);
+      const dataSourceBasedTransformer = getHasOneDirectiveTransformer(dbType, config);
+      dataSourceBasedTransformer.generateResolvers(ctx, config);
     }
   };
 }
@@ -191,7 +191,7 @@ const validate = (config: HasOneDirectiveConfiguration, ctx: TransformerContextP
 
   const dbType = getStrategyDbTypeFromTypeNode(field.type, ctx);
   config.relatedType = getRelatedType(config, ctx);
-  const dataSourceBasedTransformer = getHasOneDirectiveTransformer(dbType);
+  const dataSourceBasedTransformer = getHasOneDirectiveTransformer(dbType, config);
   dataSourceBasedTransformer.validate(ctx, config);
   validateModelDirective(config);
 

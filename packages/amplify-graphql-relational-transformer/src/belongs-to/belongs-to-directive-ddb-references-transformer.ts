@@ -5,24 +5,28 @@ import {
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
-import { getGenerator } from '../resolver/generator-factory';
+import { DDBRelationalReferencesResolverGenerator } from '../resolver/ddb-references-generator';
+import { setFieldMappingResolverReference } from '../resolvers';
 import { BelongsToDirectiveConfiguration } from '../types';
-import { ensureFieldsArray, getFieldsNodes, getRelatedTypeIndex, registerHasOneForeignKeyMappings } from '../utils';
+import {
+  ensureReferencesArray,
+  getBelongsToReferencesNodes,
+  registerHasOneForeignKeyMappings,
+  validateChildReferencesFields,
+} from '../utils';
 
 /**
- * BelongsToDirectiveDDBFieldsTransformer executes transformations based on `@belongsTo(fields: [String!])` configurations
+ * BelongsToDirectiveDDBReferencesTransformer executes transformations based on `@belongsTo(references: [String!])` configurations
  * and surrounding TransformerContextProviders for DynamoDB data sources.
  *
- * This should not be used for `@belongsTo(references: [String!])` definitions.
+ * This should not be used for `@belongsTo(fields: [String!])` definitions.
  */
-export class BelongsToDirectiveDDBFieldsTransformer implements DataSourceBasedDirectiveTransformer<BelongsToDirectiveConfiguration> {
+export class BelongsToDirectiveDDBReferencesTransformer implements DataSourceBasedDirectiveTransformer<BelongsToDirectiveConfiguration> {
   dbType = DDB_DB_TYPE;
 
   prepare = (context: TransformerPrepareStepContextProvider, config: BelongsToDirectiveConfiguration): void => {
-    if (config.relationType !== 'hasOne') {
-      return;
-    }
     const modelName = config.object.name.value;
+    setFieldMappingResolverReference(context, config.relatedType?.name?.value, modelName, config.field.name.value);
     registerHasOneForeignKeyMappings({
       transformParameters: context.transformParameters,
       resourceHelper: context.resourceHelper,
@@ -33,16 +37,15 @@ export class BelongsToDirectiveDDBFieldsTransformer implements DataSourceBasedDi
   };
 
   transformSchema = (context: TransformerTransformSchemaStepContextProvider, config: BelongsToDirectiveConfiguration): void => {
-    config.relatedTypeIndex = getRelatedTypeIndex(config, context as TransformerContextProvider);
+    validateChildReferencesFields(config, context as TransformerContextProvider);
   };
 
   generateResolvers = (context: TransformerContextProvider, config: BelongsToDirectiveConfiguration): void => {
-    const generator = getGenerator(this.dbType);
-    generator.makeBelongsToGetItemConnectionWithKeyResolver(config, context);
+    new DDBRelationalReferencesResolverGenerator().makeBelongsToGetItemConnectionWithKeyResolver(config, context);
   };
 
   validate = (context: TransformerContextProvider, config: BelongsToDirectiveConfiguration): void => {
-    ensureFieldsArray(config);
-    config.fieldNodes = getFieldsNodes(config, context);
+    ensureReferencesArray(config);
+    config.referenceNodes = getBelongsToReferencesNodes(config, context);
   };
 }

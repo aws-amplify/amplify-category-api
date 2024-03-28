@@ -5,22 +5,23 @@ import {
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
-import { getGenerator } from '../resolver/generator-factory';
-import { updateTableForConnection } from '../resolvers';
+import { DDBRelationalReferencesResolverGenerator } from '../resolver/ddb-references-generator';
+import { setFieldMappingResolverReference, updateTableForReferencesConnection } from '../resolvers';
 import { HasManyDirectiveConfiguration } from '../types';
-import { ensureFieldsArray, getFieldsNodes, getRelatedTypeIndex, registerHasManyForeignKeyMappings } from '../utils';
+import { ensureReferencesArray, getReferencesNodes, registerHasManyForeignKeyMappings, validateParentReferencesFields } from '../utils';
 
 /**
- * HasManyDirectiveDDBFieldsTransformer executes transformations based on `@hasMany(fields: [String!])` configurations
+ * HasManyDirectiveDDBReferencesTransformer executes transformations based on `@hasMany(references: [String!])` configurations
  * and surrounding TransformerContextProviders for DynamoDB data sources.
  *
- * This should not be used for `@hasMany(references: [String!])` definitions.
+ * This should not be used for `@hasMany(fields: [String!])` definitions.
  */
-export class HasManyDirectiveDDBFieldsTransformer implements DataSourceBasedDirectiveTransformer<HasManyDirectiveConfiguration> {
+export class HasManyDirectiveDDBReferencesTransformer implements DataSourceBasedDirectiveTransformer<HasManyDirectiveConfiguration> {
   dbType = DDB_DB_TYPE;
 
   prepare = (context: TransformerPrepareStepContextProvider, config: HasManyDirectiveConfiguration): void => {
     const modelName = config.object.name.value;
+    setFieldMappingResolverReference(context, config.relatedType?.name?.value, modelName, config.field.name.value, true);
     registerHasManyForeignKeyMappings({
       transformParameters: context.transformParameters,
       resourceHelper: context.resourceHelper,
@@ -31,17 +32,17 @@ export class HasManyDirectiveDDBFieldsTransformer implements DataSourceBasedDire
   };
 
   transformSchema = (context: TransformerTransformSchemaStepContextProvider, config: HasManyDirectiveConfiguration): void => {
-    config.relatedTypeIndex = getRelatedTypeIndex(config, context as TransformerContextProvider, config.indexName);
+    validateParentReferencesFields(config, context as TransformerContextProvider);
   };
 
   generateResolvers = (context: TransformerContextProvider, config: HasManyDirectiveConfiguration): void => {
-    updateTableForConnection(config, context);
-    const generator = getGenerator(this.dbType);
-    generator.makeHasManyGetItemsConnectionWithKeyResolver(config, context);
+    updateTableForReferencesConnection(config, context);
+    new DDBRelationalReferencesResolverGenerator().makeHasManyGetItemsConnectionWithKeyResolver(config, context);
   };
 
   validate = (context: TransformerContextProvider, config: HasManyDirectiveConfiguration): void => {
-    ensureFieldsArray(config);
-    config.fieldNodes = getFieldsNodes(config, context);
+    ensureReferencesArray(config);
+    config.referenceNodes = getReferencesNodes(config, context);
+    // TODO: validate bidirectionality
   };
 }
