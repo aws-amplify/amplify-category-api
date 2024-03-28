@@ -63,6 +63,7 @@ export type TransformerSchemaVisitStepContextProvider = Pick<
   | 'metadata'
   | 'authConfig'
   | 'resourceHelper'
+  | 'synthParameters'
 >;
 
 export type TransformerValidationStepContextProvider = Pick<

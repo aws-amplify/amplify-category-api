@@ -22,26 +22,42 @@ import {
   not,
   notEquals,
   printBlock,
+  equals,
+  ret,
+  and,
 } from 'graphql-mapping-template';
 import { ResourceConstants, setArgs } from 'graphql-transformer-common';
 
 const authFilter = ref('ctx.stash.authFilter');
 const API_KEY = 'API Key Authorization';
+const IAM_AUTH_TYPE = 'IAM Authorization';
 const allowedAggFieldsList = 'allowedAggFields';
 
-export const sandboxMappingTemplate = (enabled: boolean, fields: Array<string>): string => {
-  let sandboxExp: Expression;
-  if (enabled) {
-    sandboxExp = ifElse(
-      notEquals(methodCall(ref('util.authType')), str(API_KEY)),
-      methodCall(ref('util.unauthorized')),
-      qref(methodCall(ref('ctx.stash.put'), str(allowedAggFieldsList), raw(JSON.stringify(fields)))),
-    );
-  } else {
-    sandboxExp = methodCall(ref('util.unauthorized'));
+export const sandboxMappingTemplate = (
+  isSandboxModeEnabled: boolean,
+  genericIamAccessEnabled: boolean | undefined,
+  fields: Array<string>,
+): string => {
+  const expressions: Array<Expression> = [];
+  const ifAuthorizedExpression: Expression = compoundExpression([
+    qref(methodCall(ref('ctx.stash.put'), str(allowedAggFieldsList), raw(JSON.stringify(fields)))),
+    ret(toJson(obj({}))),
+  ]);
+  if (isSandboxModeEnabled) {
+    expressions.push(iff(equals(methodCall(ref('util.authType')), str(API_KEY)), ifAuthorizedExpression));
   }
-  return printBlock(`Sandbox Mode ${enabled ? 'Enabled' : 'Disabled'}`)(
-    compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), sandboxExp), toJson(obj({}))]),
+  if (genericIamAccessEnabled) {
+    const isNonCognitoIAMPrincipal = and([
+      equals(ref('util.authType()'), str(IAM_AUTH_TYPE)),
+      methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityPoolId')),
+      methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityId')),
+    ]);
+    expressions.push(iff(isNonCognitoIAMPrincipal, ifAuthorizedExpression));
+  }
+  expressions.push(methodCall(ref('util.unauthorized')));
+
+  return printBlock(`Sandbox Mode ${isSandboxModeEnabled ? 'Enabled' : 'Disabled'}`)(
+    compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), compoundExpression(expressions)), toJson(obj({}))]),
   );
 };
 
