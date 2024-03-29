@@ -49,6 +49,7 @@ import {
   CodegenAssets,
   getAdditionalAuthenticationTypes,
 } from './internal';
+import { getStackForScope, walkAndProcessNodes } from './internal/construct-tree';
 import { getDataSourceStrategiesProvider } from './internal/data-source-config';
 
 /**
@@ -152,6 +153,12 @@ export class AmplifyGraphqlApi extends Construct {
       disableOutputStorage,
       dataStoreConfiguration,
     } = props;
+
+    console.log('disableOutputStorage:', disableOutputStorage);
+
+    if (!disableOutputStorage) {
+      validateNoOtherAmplifyGraphqlApiInStack(this);
+    }
 
     if (conflictResolution && dataStoreConfiguration) {
       throw new Error(
@@ -395,6 +402,28 @@ export class AmplifyGraphqlApi extends Construct {
     });
   }
 }
+
+/**
+ * Given the provided scope, walk the node tree, and throw an exception if any other AmplifyGraphqlApi constructs
+ * are found in the stack.
+ * @param scope the scope this construct is created in.
+ */
+const validateNoOtherAmplifyGraphqlApiInStack = (scope: Construct): void => {
+  const rootStack = getStackForScope(scope, true);
+
+  let wasOtherAmplifyGraphlApiFound = false;
+  walkAndProcessNodes(rootStack, (node: Construct) => {
+    if (node instanceof AmplifyGraphqlApi && scope !== node) {
+      wasOtherAmplifyGraphlApiFound = true;
+    }
+  });
+
+  if (wasOtherAmplifyGraphlApiFound) {
+    throw new Error(
+      'Only one AmplifyGraphqlApi is expected in a stack when using output storage. Set `disableOutputStorage` to true if using multiple AmplifyGraphqlApis.',
+    );
+  }
+};
 
 const getMetadataDataSources = (definition: IAmplifyGraphqlDefinition): string => {
   const dataSourceDbTypes = Object.values(definition.dataSourceStrategies).map((strategy) => strategy.dbType.toLocaleLowerCase());
