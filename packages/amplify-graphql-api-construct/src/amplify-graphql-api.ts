@@ -180,7 +180,7 @@ export class AmplifyGraphqlApi extends Construct {
       throw new Error(`or cdk --context env must have a length <= 8, found ${amplifyEnvironmentName}`);
     }
 
-    const assetManager = new AssetManager();
+    const assetManager = new AssetManager(this);
 
     const executeTransformConfig: ExecuteTransformConfig = {
       scope: this,

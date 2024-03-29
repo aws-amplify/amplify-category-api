@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { Construct } from 'constructs';
 import * as cdk from 'aws-cdk-lib';
 
 const TEMP_PREFIX = 'transformer-assets';
@@ -11,8 +12,12 @@ const RESOLVER_PREFIX = 'resolvers';
  * with the path method which is used in CDK.
  */
 export class AssetManager {
-  private readonly tempAssetDir: string = cdk.FileSystem.mkdtemp(TEMP_PREFIX);
+  private readonly tempAssetDir: string;
   public readonly resolverAssets: Record<string, string> = {};
+
+  constructor(scope: Construct) {
+    this.tempAssetDir = cdk.FileSystem.mkdtemp(`${TEMP_PREFIX}-${scope.node.addr}`);
+  }
 
   public addAsset(fileName: string, contents: string): string {
     this.trackResolverAsset(fileName, contents);
