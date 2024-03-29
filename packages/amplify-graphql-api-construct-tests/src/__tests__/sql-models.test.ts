@@ -9,7 +9,7 @@ import { SqlDatatabaseController } from '../sql-datatabase-controller';
 
 jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
 
-describe('CDK GraphQL Transformer', () => {
+describe('CDK GraphQL Transformer deployments with SQL datasources', () => {
   let projRoot: string;
   const projFolderName = 'sqlmodelsssm';
 
@@ -70,6 +70,10 @@ describe('CDK GraphQL Transformer', () => {
 
   test('creates a GraphQL API from SQL-based models with SSM Credential Store', async () => {
     await testGraphQLAPI('ssm');
+  });
+
+  test('creates a GraphQL API from SQL-based models using Connection String SSM parameter', async () => {
+    await testGraphQLAPI('connectionUri');
   });
 
   const testGraphQLAPI = async (connectionConfigName: string): Promise<void> => {
