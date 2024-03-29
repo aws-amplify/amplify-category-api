@@ -6,8 +6,6 @@ This package vends an L3 CDK Construct wrapping the behavior of the Amplify Grap
 
 The primary way to use this construct is to invoke it with a provided schema (either as an inline graphql string, or as one or more `appsync.SchemaFile`) objects, and with authorization config provided. There are 5 supported methods for authorization of an AppSync API, all of which are supported by this construct. For more information on authorization rule definitions in Amplify, refer to the [authorization docs](https://docs.amplify.aws/cli/graphql/authorization-rules/). Note: currently at least one authorization rule is required, and if multiple are specified, a `defaultAuthorizationMode` must be specified on the api as well. Specified authorization modes must be a superset of those configured in the graphql schema.
 
-Note: only a single instance of the `AmplifyGraphqlApi` construct can be invoked within a CDK synthesis at this point in time.
-
 ## Examples
 
 ### Simple Todo List With Cognito Userpool-based Owner Authorization
@@ -872,6 +870,7 @@ const amplifyGraphqlApiCfnResources: AmplifyGraphqlApiCfnResources = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiCfnResources.property.additionalCfnResources">additionalCfnResources</a></code> | <code>{[ key: string ]: aws-cdk-lib.CfnResource}</code> | Remaining L1 resources generated, keyed by logicalId. |
+| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiCfnResources.property.amplifyDynamoDbTables">amplifyDynamoDbTables</a></code> | <code>{[ key: string ]: <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper">AmplifyDynamoDbTableWrapper</a>}</code> | The Generated Amplify DynamoDb Table L1 resource wrapper, keyed by model type name. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiCfnResources.property.cfnDataSources">cfnDataSources</a></code> | <code>{[ key: string ]: aws-cdk-lib.aws_appsync.CfnDataSource}</code> | The Generated AppSync DataSource L1 Resources, keyed by logicalId. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiCfnResources.property.cfnFunctionConfigurations">cfnFunctionConfigurations</a></code> | <code>{[ key: string ]: aws-cdk-lib.aws_appsync.CfnFunctionConfiguration}</code> | The Generated AppSync Function L1 Resources, keyed by logicalId. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiCfnResources.property.cfnFunctions">cfnFunctions</a></code> | <code>{[ key: string ]: aws-cdk-lib.aws_lambda.CfnFunction}</code> | The Generated Lambda Function L1 Resources, keyed by function name. |
@@ -893,6 +892,18 @@ public readonly additionalCfnResources: {[ key: string ]: CfnResource};
 - *Type:* {[ key: string ]: aws-cdk-lib.CfnResource}
 
 Remaining L1 resources generated, keyed by logicalId.
+
+---
+
+##### `amplifyDynamoDbTables`<sup>Required</sup> <a name="amplifyDynamoDbTables" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlApiCfnResources.property.amplifyDynamoDbTables"></a>
+
+```typescript
+public readonly amplifyDynamoDbTables: {[ key: string ]: AmplifyDynamoDbTableWrapper};
+```
+
+- *Type:* {[ key: string ]: <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper">AmplifyDynamoDbTableWrapper</a>}
+
+The Generated Amplify DynamoDb Table L1 resource wrapper, keyed by model type name.
 
 ---
 
@@ -1027,6 +1038,8 @@ const amplifyGraphqlApiProps: AmplifyGraphqlApiProps = { ... }
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.definition">definition</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.IAmplifyGraphqlDefinition">IAmplifyGraphqlDefinition</a></code> | The definition to transform in a full Api. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.apiName">apiName</a></code> | <code>string</code> | Name to be used for the AppSync Api. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.conflictResolution">conflictResolution</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.ConflictResolution">ConflictResolution</a></code> | Configure conflict resolution on the Api, which is required to enable DataStore Api functionality. |
+| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.dataStoreConfiguration">dataStoreConfiguration</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.DataStoreConfiguration">DataStoreConfiguration</a></code> | Configure DataStore conflict resolution on the Api. |
+| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.disableOutputStorage">disableOutputStorage</a></code> | <code>boolean</code> | Disables storing construct output. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.functionNameMap">functionNameMap</a></code> | <code>{[ key: string ]: aws-cdk-lib.aws_lambda.IFunction}</code> | Lambda functions referenced in the definitions's. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.functionSlots">functionSlots</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.MutationFunctionSlot">MutationFunctionSlot</a> \| <a href="#@aws-amplify/graphql-api-construct.QueryFunctionSlot">QueryFunctionSlot</a> \| <a href="#@aws-amplify/graphql-api-construct.SubscriptionFunctionSlot">SubscriptionFunctionSlot</a>[]</code> | Overrides for a given slot in the generated resolver pipelines. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.outputStorageStrategy">outputStorageStrategy</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.IBackendOutputStorageStrategy">IBackendOutputStorageStrategy</a></code> | Strategy to store construct outputs. |
@@ -1080,7 +1093,9 @@ Default: construct id.
 
 ---
 
-##### `conflictResolution`<sup>Optional</sup> <a name="conflictResolution" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.conflictResolution"></a>
+##### ~~`conflictResolution`~~<sup>Optional</sup> <a name="conflictResolution" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.conflictResolution"></a>
+
+- *Deprecated:* use dataStoreConfiguration instead.
 
 ```typescript
 public readonly conflictResolution: ConflictResolution;
@@ -1091,6 +1106,36 @@ public readonly conflictResolution: ConflictResolution;
 Configure conflict resolution on the Api, which is required to enable DataStore Api functionality.
 
 For more information, refer to https://docs.amplify.aws/lib/datastore/getting-started/q/platform/js/
+
+---
+
+##### `dataStoreConfiguration`<sup>Optional</sup> <a name="dataStoreConfiguration" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.dataStoreConfiguration"></a>
+
+```typescript
+public readonly dataStoreConfiguration: DataStoreConfiguration;
+```
+
+- *Type:* <a href="#@aws-amplify/graphql-api-construct.DataStoreConfiguration">DataStoreConfiguration</a>
+
+Configure DataStore conflict resolution on the Api.
+
+Conflict resolution is required to enable DataStore Api functionality.
+For more information, refer to https://docs.amplify.aws/lib/datastore/getting-started/q/platform/js/
+
+---
+
+##### `disableOutputStorage`<sup>Optional</sup> <a name="disableOutputStorage" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlApiProps.property.disableOutputStorage"></a>
+
+```typescript
+public readonly disableOutputStorage: boolean;
+```
+
+- *Type:* boolean
+
+Disables storing construct output.
+
+Output storage should be disabled when creating multiple GraphQL APIs in a single CDK synthesis.
+outputStorageStrategy will be ignored if this is set to true.
 
 ---
 
@@ -1209,25 +1254,12 @@ const amplifyGraphqlApiResources: AmplifyGraphqlApiResources = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiResources.property.amplifyDynamoDbTables">amplifyDynamoDbTables</a></code> | <code>{[ key: string ]: <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper">AmplifyDynamoDbTableWrapper</a>}</code> | The Generated Amplify DynamoDb Table wrapped if produced, keyed by name. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiResources.property.cfnResources">cfnResources</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiCfnResources">AmplifyGraphqlApiCfnResources</a></code> | L1 Cfn Resources, for when dipping down a level of abstraction is desirable. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiResources.property.functions">functions</a></code> | <code>{[ key: string ]: aws-cdk-lib.aws_lambda.IFunction}</code> | The Generated Lambda Function L1 Resources, keyed by function name. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiResources.property.graphqlApi">graphqlApi</a></code> | <code>aws-cdk-lib.aws_appsync.IGraphqlApi</code> | The Generated AppSync Api L2 Resource, includes the Schema. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiResources.property.nestedStacks">nestedStacks</a></code> | <code>{[ key: string ]: aws-cdk-lib.NestedStack}</code> | Nested Stacks generated by the Api Construct. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiResources.property.roles">roles</a></code> | <code>{[ key: string ]: aws-cdk-lib.aws_iam.IRole}</code> | The Generated IAM Role L2 Resources, keyed by logicalId. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyGraphqlApiResources.property.tables">tables</a></code> | <code>{[ key: string ]: aws-cdk-lib.aws_dynamodb.ITable}</code> | The Generated DynamoDB Table L2 Resources, keyed by logicalId. |
-
----
-
-##### `amplifyDynamoDbTables`<sup>Required</sup> <a name="amplifyDynamoDbTables" id="@aws-amplify/graphql-api-construct.AmplifyGraphqlApiResources.property.amplifyDynamoDbTables"></a>
-
-```typescript
-public readonly amplifyDynamoDbTables: {[ key: string ]: AmplifyDynamoDbTableWrapper};
-```
-
-- *Type:* {[ key: string ]: <a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper">AmplifyDynamoDbTableWrapper</a>}
-
-The Generated Amplify DynamoDb Table wrapped if produced, keyed by name.
 
 ---
 
@@ -1541,7 +1573,9 @@ const conflictResolution: ConflictResolution = { ... }
 
 ---
 
-##### `models`<sup>Optional</sup> <a name="models" id="@aws-amplify/graphql-api-construct.ConflictResolution.property.models"></a>
+##### ~~`models`~~<sup>Optional</sup> <a name="models" id="@aws-amplify/graphql-api-construct.ConflictResolution.property.models"></a>
+
+- *Deprecated:* use DataStoreConfiguration instead.
 
 ```typescript
 public readonly models: {[ key: string ]: AutomergeConflictResolutionStrategy | OptimisticConflictResolutionStrategy | CustomConflictResolutionStrategy};
@@ -1553,7 +1587,9 @@ Model-specific conflict resolution overrides.
 
 ---
 
-##### `project`<sup>Optional</sup> <a name="project" id="@aws-amplify/graphql-api-construct.ConflictResolution.property.project"></a>
+##### ~~`project`~~<sup>Optional</sup> <a name="project" id="@aws-amplify/graphql-api-construct.ConflictResolution.property.project"></a>
+
+- *Deprecated:* use DataStoreConfiguration instead.
 
 ```typescript
 public readonly project: AutomergeConflictResolutionStrategy | OptimisticConflictResolutionStrategy | CustomConflictResolutionStrategy;
@@ -1718,6 +1754,53 @@ public readonly typeName: string;
 - *Type:* string
 
 The built-in type (either "Query" or "Mutation") with which the custom SQL is associated.
+
+---
+
+### DataStoreConfiguration <a name="DataStoreConfiguration" id="@aws-amplify/graphql-api-construct.DataStoreConfiguration"></a>
+
+Project level configuration for DataStore.
+
+#### Initializer <a name="Initializer" id="@aws-amplify/graphql-api-construct.DataStoreConfiguration.Initializer"></a>
+
+```typescript
+import { DataStoreConfiguration } from '@aws-amplify/graphql-api-construct'
+
+const dataStoreConfiguration: DataStoreConfiguration = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@aws-amplify/graphql-api-construct.DataStoreConfiguration.property.models">models</a></code> | <code>{[ key: string ]: <a href="#@aws-amplify/graphql-api-construct.AutomergeConflictResolutionStrategy">AutomergeConflictResolutionStrategy</a> \| <a href="#@aws-amplify/graphql-api-construct.OptimisticConflictResolutionStrategy">OptimisticConflictResolutionStrategy</a> \| <a href="#@aws-amplify/graphql-api-construct.CustomConflictResolutionStrategy">CustomConflictResolutionStrategy</a>}</code> | Model-specific conflict resolution overrides. |
+| <code><a href="#@aws-amplify/graphql-api-construct.DataStoreConfiguration.property.project">project</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.AutomergeConflictResolutionStrategy">AutomergeConflictResolutionStrategy</a> \| <a href="#@aws-amplify/graphql-api-construct.OptimisticConflictResolutionStrategy">OptimisticConflictResolutionStrategy</a> \| <a href="#@aws-amplify/graphql-api-construct.CustomConflictResolutionStrategy">CustomConflictResolutionStrategy</a></code> | Project-wide config for conflict resolution. |
+
+---
+
+##### `models`<sup>Optional</sup> <a name="models" id="@aws-amplify/graphql-api-construct.DataStoreConfiguration.property.models"></a>
+
+```typescript
+public readonly models: {[ key: string ]: AutomergeConflictResolutionStrategy | OptimisticConflictResolutionStrategy | CustomConflictResolutionStrategy};
+```
+
+- *Type:* {[ key: string ]: <a href="#@aws-amplify/graphql-api-construct.AutomergeConflictResolutionStrategy">AutomergeConflictResolutionStrategy</a> | <a href="#@aws-amplify/graphql-api-construct.OptimisticConflictResolutionStrategy">OptimisticConflictResolutionStrategy</a> | <a href="#@aws-amplify/graphql-api-construct.CustomConflictResolutionStrategy">CustomConflictResolutionStrategy</a>}
+
+Model-specific conflict resolution overrides.
+
+---
+
+##### `project`<sup>Optional</sup> <a name="project" id="@aws-amplify/graphql-api-construct.DataStoreConfiguration.property.project"></a>
+
+```typescript
+public readonly project: AutomergeConflictResolutionStrategy | OptimisticConflictResolutionStrategy | CustomConflictResolutionStrategy;
+```
+
+- *Type:* <a href="#@aws-amplify/graphql-api-construct.AutomergeConflictResolutionStrategy">AutomergeConflictResolutionStrategy</a> | <a href="#@aws-amplify/graphql-api-construct.OptimisticConflictResolutionStrategy">OptimisticConflictResolutionStrategy</a> | <a href="#@aws-amplify/graphql-api-construct.CustomConflictResolutionStrategy">CustomConflictResolutionStrategy</a>
+
+Project-wide config for conflict resolution.
+
+Applies to all non-overridden models.
 
 ---
 
@@ -2712,6 +2795,10 @@ The configuration of the VPC into which to install the Lambda.
 
 ### SqlModelDataSourceSecretsManagerDbConnectionConfig <a name="SqlModelDataSourceSecretsManagerDbConnectionConfig" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceSecretsManagerDbConnectionConfig"></a>
 
+The credentials stored in Secrets Manager that the lambda data source will use to connect to the database.
+
+The managed secret should be in the same region as the lambda.
+
 #### Initializer <a name="Initializer" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceSecretsManagerDbConnectionConfig.Initializer"></a>
 
 ```typescript
@@ -2724,9 +2811,11 @@ const sqlModelDataSourceSecretsManagerDbConnectionConfig: SqlModelDataSourceSecr
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceSecretsManagerDbConnectionConfig.property.databaseName">databaseName</a></code> | <code>string</code> | database name. |
-| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceSecretsManagerDbConnectionConfig.property.port">port</a></code> | <code>number</code> | port number of the database proxy, cluster, or instance. |
-| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceSecretsManagerDbConnectionConfig.property.secretArn">secretArn</a></code> | <code>string</code> | The arn of the managed secret with username, password, and hostname to use when connecting to the database. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceSecretsManagerDbConnectionConfig.property.databaseName">databaseName</a></code> | <code>string</code> | The database name. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceSecretsManagerDbConnectionConfig.property.hostname">hostname</a></code> | <code>string</code> | The hostame of the database. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceSecretsManagerDbConnectionConfig.property.port">port</a></code> | <code>number</code> | The port number of the database proxy, cluster, or instance. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceSecretsManagerDbConnectionConfig.property.secretArn">secretArn</a></code> | <code>string</code> | The ARN of the managed secret with username, password, and hostname to use when connecting to the database. |
+| <code><a href="#@aws-amplify/graphql-api-construct.SqlModelDataSourceSecretsManagerDbConnectionConfig.property.keyArn">keyArn</a></code> | <code>string</code> | The ARN of the customer managed encryption key for the secret. |
 
 ---
 
@@ -2738,7 +2827,19 @@ public readonly databaseName: string;
 
 - *Type:* string
 
-database name.
+The database name.
+
+---
+
+##### `hostname`<sup>Required</sup> <a name="hostname" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceSecretsManagerDbConnectionConfig.property.hostname"></a>
+
+```typescript
+public readonly hostname: string;
+```
+
+- *Type:* string
+
+The hostame of the database.
 
 ---
 
@@ -2750,7 +2851,7 @@ public readonly port: number;
 
 - *Type:* number
 
-port number of the database proxy, cluster, or instance.
+The port number of the database proxy, cluster, or instance.
 
 ---
 
@@ -2762,9 +2863,23 @@ public readonly secretArn: string;
 
 - *Type:* string
 
-The arn of the managed secret with username, password, and hostname to use when connecting to the database.
+The ARN of the managed secret with username, password, and hostname to use when connecting to the database.
 
 *
+
+---
+
+##### `keyArn`<sup>Optional</sup> <a name="keyArn" id="@aws-amplify/graphql-api-construct.SqlModelDataSourceSecretsManagerDbConnectionConfig.property.keyArn"></a>
+
+```typescript
+public readonly keyArn: string;
+```
+
+- *Type:* string
+
+The ARN of the customer managed encryption key for the secret.
+
+If not supplied, the secret is expected to be encrypted with the default AWS-managed key. *
 
 ---
 
@@ -3495,7 +3610,24 @@ the Cfn resource.
 
 | **Name** | **Description** |
 | --- | --- |
+| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.applyRemovalPolicy">applyRemovalPolicy</a></code> | Set the deletion policy of the resource based on the removal policy specified. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.setGlobalSecondaryIndexProvisionedThroughput">setGlobalSecondaryIndexProvisionedThroughput</a></code> | Set the provisionedThroughtput for a specified GSI by name. |
+
+---
+
+##### `applyRemovalPolicy` <a name="applyRemovalPolicy" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.applyRemovalPolicy"></a>
+
+```typescript
+public applyRemovalPolicy(policy: RemovalPolicy): void
+```
+
+Set the deletion policy of the resource based on the removal policy specified.
+
+###### `policy`<sup>Required</sup> <a name="policy" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.applyRemovalPolicy.parameter.policy"></a>
+
+- *Type:* aws-cdk-lib.RemovalPolicy
+
+removal policy to set.
 
 ---
 

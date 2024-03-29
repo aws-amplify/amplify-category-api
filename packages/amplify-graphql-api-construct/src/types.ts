@@ -685,8 +685,9 @@ export interface AmplifyGraphqlApiProps {
   readonly outputStorageStrategy?: IBackendOutputStorageStrategy;
 
   /**
-   * Disables storing construct output. outputStorageStrategy will be ignored if this is set to true.
-   * Output storage should be disabled when creating multiple GraphQL APIs.
+   * Disables storing construct output.
+   * Output storage should be disabled when creating multiple GraphQL APIs in a single CDK synthesis.
+   * outputStorageStrategy will be ignored if this is set to true.
    */
   readonly disableOutputStorage?: boolean;
 
