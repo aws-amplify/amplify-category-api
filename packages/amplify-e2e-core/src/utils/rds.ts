@@ -404,6 +404,60 @@ export const deleteSSMParameters = async (options: { region: string; parameterNa
   await ssmClient.send(new DeleteParametersCommand(input));
 };
 
+export const storeDbConnectionConfig = async (options: {
+  region: string;
+  pathPrefix: string;
+  hostname: string;
+  port: number;
+  username: string;
+  password: string;
+  databaseName: string;
+}): Promise<{
+  hostnameSsmPath: string;
+  portSsmPath: string;
+  usernameSsmPath: string;
+  passwordSsmPath: string;
+  databaseNameSsmPath: string;
+}> => {
+  await storeSSMParameters({
+    region: options.region,
+    pathPrefix: options.pathPrefix,
+    parameters: {
+      hostname: options.hostname,
+      port: options.port.toString(),
+      username: options.username,
+      password: options.password,
+      databaseName: options.databaseName,
+    },
+  });
+  return {
+    hostnameSsmPath: `${options.pathPrefix}/hostname`,
+    portSsmPath: `${options.pathPrefix}/port`,
+    usernameSsmPath: `${options.pathPrefix}/username`,
+    passwordSsmPath: `${options.pathPrefix}/password`,
+    databaseNameSsmPath: `${options.pathPrefix}/databaseName`,
+  };
+};
+
+export const storeDbConnectionStringConfig = async (options: {
+  region: string;
+  pathPrefix: string;
+  connectionUri: string;
+}): Promise<{
+  connectionUriSsmPath: string;
+}> => {
+  await storeSSMParameters({
+    region: options.region,
+    pathPrefix: options.pathPrefix,
+    parameters: {
+      connectionUri: options.connectionUri,
+    },
+  });
+  return {
+    connectionUriSsmPath: `${options.pathPrefix}/connectionUri`,
+  };
+};
+
 export const storeSSMParameters = async (options: { region: string; pathPrefix: string; parameters: Record<string, string> }) => {
   const ssmClient = new SSMClient({ region: options.region });
   const pathPrefix = options.pathPrefix;
