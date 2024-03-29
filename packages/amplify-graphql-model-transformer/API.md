@@ -81,10 +81,10 @@ export const extendTypeWithDirectives: (ctx: TransformerTransformSchemaStepConte
 export const generateApplyDefaultsToInputTemplate: (target: string) => Expression;
 
 // @public (undocumented)
-export const generateAuthExpressionForSandboxMode: (isSandboxModeEnabled: boolean, genericIamAccessEnabled: boolean | undefined) => string;
+export function generateModelScalarFilterInputName(typeName: string, includeFilter: boolean, isSubscriptionFilter?: boolean): string;
 
 // @public (undocumented)
-export function generateModelScalarFilterInputName(typeName: string, includeFilter: boolean, isSubscriptionFilter?: boolean): string;
+export const generatePostAuthExpression: (isSandboxModeEnabled: boolean, genericIamAccessEnabled: boolean | undefined) => string;
 
 // @public (undocumented)
 export const generateResolverKey: (typeName: string, fieldName: string) => string;

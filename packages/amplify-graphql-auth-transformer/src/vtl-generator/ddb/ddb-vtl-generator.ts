@@ -17,7 +17,7 @@ import {
   generateAuthExpressionForRelationQuery,
   generateFieldResolverForOwner,
 } from './resolvers';
-import { generateSandboxExpressionForField } from './resolvers/field';
+import { generatePostAuthExpressionForField } from './resolvers/field';
 
 export class DDBAuthVTLGenerator implements AuthVTLGenerator {
   generateAuthExpressionForCreate = (
@@ -85,6 +85,6 @@ export class DDBAuthVTLGenerator implements AuthVTLGenerator {
 
   generateFieldResolverForOwner = (entity: string): string => generateFieldResolverForOwner(entity);
 
-  generateSandboxExpressionForField = (sandboxEnabled: boolean, genericIamAccessEnabled: boolean): string =>
-    generateSandboxExpressionForField(sandboxEnabled, genericIamAccessEnabled);
+  generatePostAuthExpressionForField = (sandboxEnabled: boolean, genericIamAccessEnabled: boolean): string =>
+    generatePostAuthExpressionForField(sandboxEnabled, genericIamAccessEnabled);
 }
