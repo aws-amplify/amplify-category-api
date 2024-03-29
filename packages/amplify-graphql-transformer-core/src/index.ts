@@ -72,7 +72,7 @@ export {
   TransformerPluginBase,
   TransformerAuthBase,
 } from './transformation/transformer-plugin-base';
-export { TransformerResolver, StackManager } from './transformer-context';
+export { TransformerResolver, StackManager, AssetManager } from './transformer-context';
 export {
   DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
   DDB_DB_TYPE,

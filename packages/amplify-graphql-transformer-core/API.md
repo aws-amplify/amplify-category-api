@@ -102,6 +102,14 @@ import { UnionTypeExtensionNode } from 'graphql';
 export const APICategory = "api";
 
 // @public (undocumented)
+export class AssetManager {
+    // (undocumented)
+    createAsset(scope: Construct, name: string, props: AssetProps): S3Asset;
+    // (undocumented)
+    setAssetProvider(provider: AssetProvider): void;
+}
+
+// @public (undocumented)
 export function collectDirectives(sdl: string): DirectiveNode[];
 
 // @public (undocumented)
@@ -271,7 +279,6 @@ export const getTable: (ctx: TransformerContextProvider, object: ObjectTypeDefin
 // @public (undocumented)
 export class GraphQLTransform {
     constructor(options: GraphQLTransformOptions);
-    // Warning: (ae-forgotten-export) The symbol "AssetManager" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "TransformerOutput" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "GraphQLApi" needs to be exported by the entry point index.d.ts
     //
