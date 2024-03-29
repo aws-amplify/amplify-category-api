@@ -114,13 +114,13 @@ export interface InlineMappingTemplateProvider {
 
 export interface S3MappingTemplateProvider {
   type: TemplateType.S3_LOCATION;
-  bind: (scope: Construct, api: GraphQLAPIProvider) => string;
+  bind: (scope: Construct, assetManager: AssetManagerProvider) => string;
   getTemplateHash: () => string;
 }
 
 export interface S3MappingFunctionCodeProvider {
   type: TemplateType.S3_LOCATION;
-  bind: (scope: Construct, api: GraphQLAPIProvider) => IAsset;
+  bind: (scope: Construct, assetManager: AssetManagerProvider) => IAsset;
 }
 
 export type MappingTemplateProvider = InlineMappingTemplateProvider | S3MappingTemplateProvider;

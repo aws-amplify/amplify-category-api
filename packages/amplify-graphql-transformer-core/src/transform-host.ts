@@ -158,8 +158,8 @@ export class DefaultTransformHost implements TransformHostProvider {
     if (!this.api.disableResolverDeduping && this.appsyncFunctions.has(slotHash)) {
       const appsyncFunction = this.appsyncFunctions.get(slotHash)!;
       // generating duplicate appsync functions vtl files to help in custom overrides
-      requestMappingTemplate.bind(appsyncFunction, this.api);
-      responseMappingTemplate.bind(appsyncFunction, this.api);
+      requestMappingTemplate.bind(appsyncFunction, this.api.assetManager);
+      responseMappingTemplate.bind(appsyncFunction, this.api.assetManager);
       return appsyncFunction;
     }
 
@@ -187,8 +187,8 @@ export class DefaultTransformHost implements TransformHostProvider {
       throw new Error(`DataSource ${dataSourceName} is missing in the API`);
     }
 
-    const requestTemplateLocation = requestMappingTemplate.bind(this.api, this.api);
-    const responseTemplateLocation = responseMappingTemplate.bind(this.api, this.api);
+    const requestTemplateLocation = requestMappingTemplate.bind(this.api, this.api.assetManager);
+    const responseTemplateLocation = responseMappingTemplate.bind(this.api, this.api.assetManager);
     const resolverName = toCamelCase([resourceName(typeName), resourceName(fieldName), 'Resolver']);
     const resourceId = resolverLogicalId ?? ResolverResourceIDs.ResolverResourceID(typeName, fieldName);
 
@@ -263,7 +263,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     fn.addLayers();
     const cfnFn = fn.node.defaultChild as CfnFunction;
     setResourceName(fn, { name: functionName, setOnDefaultChild: true });
-    const functionCode = new S3MappingFunctionCode(functionKey, filePath).bind(fn, this.api);
+    const functionCode = new S3MappingFunctionCode(functionKey, filePath).bind(fn, this.api.assetManager);
     cfnFn.code = {
       s3Key: functionCode.s3ObjectKey,
       s3Bucket: functionCode.s3BucketName,

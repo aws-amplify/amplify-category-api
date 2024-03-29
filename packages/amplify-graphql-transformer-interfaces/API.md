@@ -360,7 +360,7 @@ export type S3Asset = {
 // @public (undocumented)
 export interface S3MappingFunctionCodeProvider {
     // (undocumented)
-    bind: (scope: Construct, api: GraphQLAPIProvider) => IAsset;
+    bind: (scope: Construct, assetManager: AssetManagerProvider) => IAsset;
     // (undocumented)
     type: MappingTemplateType.S3_LOCATION;
 }
@@ -368,7 +368,7 @@ export interface S3MappingFunctionCodeProvider {
 // @public (undocumented)
 export interface S3MappingTemplateProvider {
     // (undocumented)
-    bind: (scope: Construct, api: GraphQLAPIProvider) => string;
+    bind: (scope: Construct, assetManager: AssetManagerProvider) => string;
     // (undocumented)
     getTemplateHash: () => string;
     // (undocumented)
