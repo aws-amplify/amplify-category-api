@@ -185,7 +185,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   public readonly environmentName?: string;
 
   /**
-   * TODO: add jsdoc
+   * The asset manager to store file assets in a temporary directory.
    */
   public readonly assetManager: AssetManager;
 
