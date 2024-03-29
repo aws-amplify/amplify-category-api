@@ -38,7 +38,7 @@ import { Construct } from 'constructs';
 import { ResolverConfig } from '../config/transformer-config';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
-import { TransformerContext } from '../transformer-context';
+import { TransformerContext, NONE_DATA_SOURCE_NAME } from '../transformer-context';
 import { TransformerOutput } from '../transformer-context/output';
 import { adoptAuthModes } from '../utils/authType';
 import { MappingTemplate } from '../cdk-compat';
@@ -327,6 +327,7 @@ export class GraphQLTransform {
       }
     }
     this.collectResolvers(context, context.api);
+    this.ensureNoneDataSource(context.api);
   }
 
   protected generateGraphQlApi(
@@ -720,5 +721,14 @@ export class GraphQLTransform {
 
   public getLogs(): TransformerLog[] {
     return this.logs;
+  }
+
+  private ensureNoneDataSource(api: GraphQLAPIProvider): void {
+    if (!api.host.hasDataSource(NONE_DATA_SOURCE_NAME)) {
+      api.host.addNoneDataSource(NONE_DATA_SOURCE_NAME, {
+        name: NONE_DATA_SOURCE_NAME,
+        description: 'None Data Source for Pipeline functions',
+      });
+    }
   }
 }

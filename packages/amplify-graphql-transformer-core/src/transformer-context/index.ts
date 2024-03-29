@@ -29,7 +29,7 @@ import { TransformerResourceHelper } from './resource-helper';
 import { StackManager } from './stack-manager';
 import { assetManager } from './asset-manager';
 
-export { TransformerResolver } from './resolver';
+export { TransformerResolver, NONE_DATA_SOURCE_NAME } from './resolver';
 export { StackManager } from './stack-manager';
 export class TransformerContextMetadata implements TransformerContextMetadataProvider {
   /**
