@@ -53,3 +53,7 @@ batch:
         - test
         - mock_e2e_tests
         - build_windows
+        - verify_api_extract
+        - verify_cdk_version
+        - verify_dependency_licenses_extract
+        - verify_yarn_lock
