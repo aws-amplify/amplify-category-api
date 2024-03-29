@@ -9,7 +9,8 @@ import {
   RDSConfig,
   SqlEngine,
   setupRDSInstanceAndData,
-  storeSSMParameters,
+  storeDbConnectionConfig,
+  storeDbConnectionStringConfig,
   storeDbConnectionConfigWithSecretsManager,
 } from 'amplify-category-api-e2e-core';
 import {
@@ -89,15 +90,20 @@ export class SqlDatatabaseController {
     };
     console.log(`Stored db connection config in Secrets manager: ${JSON.stringify(dbConnectionConfigSecretsManagerCustomKey)}`);
 
-    const dbConnectionConfigSSM = {
-      hostnameSsmPath: dbConfig.endpoint,
-      portSsmPath: dbConfig.port.toString(),
-      usernameSsmPath: this.options.username,
-      passwordSsmPath: dbConfig.password,
-      databaseNameSsmPath: this.options.dbname,
-    };
-    const dbConnectionStringConfigSSM = {
-      connectionUriSsmPath: this.getConnectionUri(
+    const pathPrefix = `/${this.options.identifier}/test`;
+    const dbConnectionConfigSSM = await storeDbConnectionConfig({
+      region: this.options.region,
+      pathPrefix,
+      hostname: dbConfig.endpoint,
+      port: dbConfig.port,
+      databaseName: this.options.dbname,
+      username: this.options.username,
+      password: dbConfig.password,
+    });
+    const dbConnectionStringConfigSSM = await storeDbConnectionStringConfig({
+      region: this.options.region,
+      pathPrefix,
+      connectionUri: this.getConnectionUri(
         this.options.engine,
         this.options.username,
         dbConfig.password,
@@ -105,16 +111,11 @@ export class SqlDatatabaseController {
         dbConfig.port,
         this.options.dbname,
       ),
-    };
+    });
     const parameters = {
       ...dbConnectionConfigSSM,
       ...dbConnectionStringConfigSSM,
     };
-    await storeSSMParameters({
-      region: this.options.region,
-      pathPrefix: `/${this.options.identifier}/test`,
-      parameters,
-    });
     if (!dbConnectionConfigSSM) {
       throw new Error('Failed to store db connection config for SSM');
     }
@@ -137,9 +138,7 @@ export class SqlDatatabaseController {
           port: dbConfig.port,
           secretArn: dbConfig.managedSecretArn,
         },
-        connectionUri: {
-          connectionUriSsmPath: dbConnectionStringConfigSSM.connectionUriSsmPath,
-        },
+        connectionUri: dbConnectionStringConfigSSM,
       },
     };
 
