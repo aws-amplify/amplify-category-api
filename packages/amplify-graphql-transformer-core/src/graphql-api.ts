@@ -1,4 +1,9 @@
-import { APIIAMResourceProvider, GraphQLAPIProvider, TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  AssetManagerProvider,
+  APIIAMResourceProvider,
+  GraphQLAPIProvider,
+  TransformHostProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import {
   ApiKeyConfig,
   AuthorizationConfig,
@@ -20,7 +25,6 @@ import { Construct } from 'constructs';
 import { TransformerSchema } from './cdk-compat/schema-asset';
 import { DefaultTransformHost } from './transform-host';
 import { setResourceName } from './utils';
-import { AssetManager } from './transformer-context';
 
 export interface GraphqlApiProps {
   /**
@@ -120,7 +124,7 @@ export type TransformerAPIProps = GraphqlApiProps & {
   readonly sandboxModeEnabled?: boolean;
   readonly environmentName?: string;
   readonly disableResolverDeduping?: boolean;
-  readonly assetManager: AssetManager;
+  readonly assetManager: AssetManagerProvider;
 };
 export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   /**
@@ -187,7 +191,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   /**
    * The asset manager to store file assets in a temporary directory.
    */
-  public readonly assetManager: AssetManager;
+  public readonly assetManager: AssetManagerProvider;
 
   private schemaResource: CfnGraphQLSchema;
 

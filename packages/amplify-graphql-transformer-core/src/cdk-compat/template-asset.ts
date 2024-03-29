@@ -6,10 +6,9 @@ import {
   S3Asset,
   S3MappingFunctionCodeProvider,
   S3MappingTemplateProvider,
+  GraphQLAPIProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct } from 'constructs';
-// TODO: use assetManager from context
-import { assetManager } from '../transformer-context/asset-manager';
 
 export class S3MappingFunctionCode implements S3MappingFunctionCodeProvider {
   public readonly type = MappingTemplateType.S3_LOCATION;
@@ -25,9 +24,9 @@ export class S3MappingFunctionCode implements S3MappingFunctionCodeProvider {
     this.filePath = filePath;
   }
 
-  bind(scope: Construct): S3Asset {
+  bind(scope: Construct, api: GraphQLAPIProvider): S3Asset {
     if (!this.asset) {
-      this.asset = assetManager.createAsset(scope, `Code${this.fileName}`, {
+      this.asset = api.assetManager.createAsset(scope, `Code${this.fileName}`, {
         fileContent: this.filePath,
         fileName: this.fileName,
       });
@@ -55,10 +54,10 @@ export class S3MappingTemplate implements S3MappingTemplateProvider {
     this.name = name || `mapping-template-${assetHash}.vtl`;
   }
 
-  bind(scope: Construct): string {
+  bind(scope: Construct, api: GraphQLAPIProvider): string {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
-      this.asset = assetManager.createAsset(scope, `Template${this.name}`, {
+      this.asset = api.assetManager.createAsset(scope, `Template${this.name}`, {
         fileContent: this.content,
         fileName: this.name,
       });

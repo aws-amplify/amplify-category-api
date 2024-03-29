@@ -135,6 +135,14 @@ export interface AppSyncFunctionConfigurationProvider extends IConstruct {
 }
 
 // @public (undocumented)
+export interface AssetManagerProvider {
+    // (undocumented)
+    createAsset: (scope: Construct, name: string, props: AssetProps) => S3Asset;
+    // (undocumented)
+    setAssetProvider: (provider: AssetProvider) => void;
+}
+
+// @public (undocumented)
 export type AssetProps = {
     readonly fileContent: string;
     readonly fileName: string;
@@ -198,6 +206,8 @@ export interface GraphQLAPIProvider extends IConstruct {
     addToSchema: (addition: string) => void;
     // (undocumented)
     readonly apiId: string;
+    // (undocumented)
+    readonly assetManager: AssetManagerProvider;
     // (undocumented)
     grant: (grantee: IGrantable, resources: APIIAMResourceProvider, ...actions: string[]) => Grant;
     // (undocumented)
@@ -350,7 +360,7 @@ export type S3Asset = {
 // @public (undocumented)
 export interface S3MappingFunctionCodeProvider {
     // (undocumented)
-    bind: (scope: Construct) => IAsset;
+    bind: (scope: Construct, api: GraphQLAPIProvider) => IAsset;
     // (undocumented)
     type: MappingTemplateType.S3_LOCATION;
 }
@@ -358,7 +368,7 @@ export interface S3MappingFunctionCodeProvider {
 // @public (undocumented)
 export interface S3MappingTemplateProvider {
     // (undocumented)
-    bind: (scope: Construct) => string;
+    bind: (scope: Construct, api: GraphQLAPIProvider) => string;
     // (undocumented)
     getTemplateHash: () => string;
     // (undocumented)
@@ -918,7 +928,7 @@ export interface VpcConfig {
 
 // Warnings were encountered during analysis:
 //
-// src/graphql-api-provider.ts:35:3 - (ae-forgotten-export) The symbol "OpenIDConnectConfig" needs to be exported by the entry point index.d.ts
+// src/graphql-api-provider.ts:36:3 - (ae-forgotten-export) The symbol "OpenIDConnectConfig" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

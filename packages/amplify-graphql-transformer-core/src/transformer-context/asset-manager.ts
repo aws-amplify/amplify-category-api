@@ -1,7 +1,7 @@
-import { AssetProvider, S3Asset, AssetProps } from '@aws-amplify/graphql-transformer-interfaces';
+import { AssetManagerProvider, AssetProvider, S3Asset, AssetProps } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct } from 'constructs';
 
-export class AssetManager {
+export class AssetManager implements AssetManagerProvider {
   private assetProvider: AssetProvider | undefined;
 
   public createAsset(scope: Construct, name: string, props: AssetProps): S3Asset {
@@ -19,5 +19,3 @@ export class AssetManager {
     this.assetProvider = provider;
   }
 }
-
-export const assetManager = new AssetManager();

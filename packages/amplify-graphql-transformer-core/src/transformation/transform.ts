@@ -8,6 +8,7 @@ import {
   SynthParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type {
+  AssetManagerProvider,
   AssetProvider,
   StackManagerProvider,
   TransformParameterProvider,
@@ -39,7 +40,7 @@ import { Construct } from 'constructs';
 import { ResolverConfig } from '../config/transformer-config';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
-import { TransformerContext, NONE_DATA_SOURCE_NAME, AssetManager } from '../transformer-context';
+import { TransformerContext, NONE_DATA_SOURCE_NAME } from '../transformer-context';
 import { TransformerOutput } from '../transformer-context/output';
 import { adoptAuthModes } from '../utils/authType';
 import { MappingTemplate } from '../cdk-compat';
@@ -341,7 +342,7 @@ export class GraphQLTransform {
 
   protected generateGraphQlApi(
     stackManager: StackManagerProvider,
-    assetManager: AssetManager,
+    assetManager: AssetManagerProvider,
     synthParameters: SynthParameters,
     output: TransformerOutput,
     transformParameters: TransformParameters,

@@ -10,6 +10,7 @@ import { ApiKeyConfig } from 'aws-cdk-lib/aws-appsync';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AppSyncDataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
 import { AppSyncFunctionConfigurationProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { AssetManagerProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { AssetProps } from '@aws-amplify/graphql-transformer-interfaces';
 import { AssetProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationConfig } from 'aws-cdk-lib/aws-appsync';
@@ -102,7 +103,7 @@ import { UnionTypeExtensionNode } from 'graphql';
 export const APICategory = "api";
 
 // @public (undocumented)
-export class AssetManager {
+export class AssetManager implements AssetManagerProvider {
     // (undocumented)
     createAsset(scope: Construct, name: string, props: AssetProps): S3Asset;
     // (undocumented)
@@ -283,7 +284,7 @@ export class GraphQLTransform {
     // Warning: (ae-forgotten-export) The symbol "GraphQLApi" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    protected generateGraphQlApi(stackManager: StackManagerProvider, assetManager: AssetManager, synthParameters: SynthParameters, output: TransformerOutput, transformParameters: TransformParameters): GraphQLApi;
+    protected generateGraphQlApi(stackManager: StackManagerProvider, assetManager: AssetManagerProvider, synthParameters: SynthParameters, output: TransformerOutput, transformParameters: TransformParameters): GraphQLApi;
     // (undocumented)
     getLogs(): TransformerLog[];
     // (undocumented)
