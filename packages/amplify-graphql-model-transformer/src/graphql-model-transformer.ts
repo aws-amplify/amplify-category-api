@@ -35,6 +35,7 @@ import {
   TransformerValidationStepContextProvider,
   DataSourceStrategiesProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { ModelDirective } from '@aws-amplify/graphql-directives';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
@@ -85,39 +86,6 @@ import { AmplifyDynamoModelResourceGenerator } from './resources/amplify-dynamod
  */
 export type Nullable<T> = T | null;
 
-export const directiveDefinition = /* GraphQl */ `
-  directive @model(
-    queries: ModelQueryMap
-    mutations: ModelMutationMap
-    subscriptions: ModelSubscriptionMap
-    timestamps: TimestampConfiguration
-  ) on OBJECT
-  input ModelMutationMap {
-    create: String
-    update: String
-    delete: String
-  }
-  input ModelQueryMap {
-    get: String
-    list: String
-  }
-  input ModelSubscriptionMap {
-    onCreate: [String]
-    onUpdate: [String]
-    onDelete: [String]
-    level: ModelSubscriptionLevel
-  }
-  enum ModelSubscriptionLevel {
-    off
-    public
-    on
-  }
-  input TimestampConfiguration {
-    createdAt: String
-    updatedAt: String
-  }
-`;
-
 // Keys for the resource generator map to reference the generator for various ModelDataSourceStrategies
 const ITERATIVE_TABLE_GENERATOR = 'AmplifyDDB';
 const SQL_LAMBDA_GENERATOR = 'SQL';
@@ -142,7 +110,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   private modelDirectiveConfig: Map<string, ModelDirectiveConfiguration> = new Map();
 
   constructor(options: ModelTransformerOptions = {}) {
-    super('amplify-model-transformer', directiveDefinition);
+    super('amplify-model-transformer', ModelDirective.definition);
     this.options = this.getOptions(options);
     this.resourceGeneratorMap.set(DDB_DB_TYPE, new DynamoModelResourceGenerator());
     this.resourceGeneratorMap.set(SQL_LAMBDA_GENERATOR, new RdsModelResourceGenerator());

@@ -1,5 +1,6 @@
 import { DirectiveWrapper, generateGetArgumentsInput, MappingTemplate, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { FunctionDirective } from '@aws-amplify/graphql-directives';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import * as cdk from 'aws-cdk-lib';
@@ -16,15 +17,12 @@ type FunctionDirectiveConfiguration = {
 };
 
 const FUNCTION_DIRECTIVE_STACK = 'FunctionDirectiveStack';
-const directiveDefinition = /* GraphQL */ `
-  directive @function(name: String!, region: String, accountId: String) repeatable on FIELD_DEFINITION
-`;
 
 export class FunctionTransformer extends TransformerPluginBase {
   private resolverGroups: Map<FieldDefinitionNode, FunctionDirectiveConfiguration[]> = new Map();
 
   constructor(private readonly functionNameMap?: Record<string, lambda.IFunction>) {
-    super('amplify-function-transformer', directiveDefinition);
+    super('amplify-function-transformer', FunctionDirective.definition);
   }
 
   field = (

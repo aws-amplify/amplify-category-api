@@ -1,23 +1,21 @@
+import { MYSQL_DB_TYPE, POSTGRES_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 import {
-  ModelDataSourceStrategySqlDbType,
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
 import { setFieldMappingResolverReference } from '../resolvers';
 import { HasOneDirectiveConfiguration } from '../types';
-import { validateParentReferencesFields, ensureReferencesArray, getReferencesNodes } from '../utils';
-import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
+import { ensureReferencesArray, getReferencesNodes, validateParentReferencesFields } from '../utils';
+import { getGenerator } from '../resolver/generator-factory';
 
 /**
  * HasOneDirectiveSQLTransformer executes transformations based on `@hasOne(references: [String!])` configurations
  * and surrounding TransformerContextProviders for SQL data sources.
  */
 export class HasOneDirectiveSQLTransformer implements DataSourceBasedDirectiveTransformer<HasOneDirectiveConfiguration> {
-  dbType: ModelDataSourceStrategySqlDbType;
-  constructor(dbType: ModelDataSourceStrategySqlDbType) {
-    this.dbType = dbType;
-  }
+  dbType = POSTGRES_DB_TYPE || MYSQL_DB_TYPE;
 
   prepare = (context: TransformerPrepareStepContextProvider, config: HasOneDirectiveConfiguration): void => {
     const modelName = config.object.name.value;
@@ -28,9 +26,9 @@ export class HasOneDirectiveSQLTransformer implements DataSourceBasedDirectiveTr
     validateParentReferencesFields(config, context as TransformerContextProvider);
   };
 
-  /** no-op */
-  generateResolvers = (_context: TransformerContextProvider, _config: HasOneDirectiveConfiguration): void => {
-    return;
+  generateResolvers = (context: TransformerContextProvider, config: HasOneDirectiveConfiguration): void => {
+    const generator = getGenerator(this.dbType);
+    generator.makeHasOneGetItemConnectionWithKeyResolver(config, context);
   };
 
   validate = (context: TransformerContextProvider, config: HasOneDirectiveConfiguration): void => {

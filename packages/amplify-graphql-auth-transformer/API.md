@@ -64,7 +64,7 @@ export interface AuthDirective {
 }
 
 // @public (undocumented)
-export const authDirectiveDefinition = "\n  directive @auth(rules: [AuthRule!]!) on OBJECT | FIELD_DEFINITION\n  input AuthRule {\n    allow: AuthStrategy!\n    provider: AuthProvider\n    identityClaim: String\n    groupClaim: String\n    ownerField: String\n    groupsField: String\n    groups: [String]\n    operations: [ModelOperation]\n  }\n  enum AuthStrategy {\n    owner\n    groups\n    private\n    public\n    custom\n  }\n  enum AuthProvider {\n    apiKey\n    iam\n    identityPool\n    oidc\n    userPools\n    function\n  }\n  enum ModelOperation {\n    create\n    update\n    delete\n    read\n    list\n    get\n    sync\n    listen\n    search\n  }\n";
+export const authDirectiveDefinition: string;
 
 // @public (undocumented)
 export type AuthProvider = 'apiKey' | 'iam' | 'identityPool' | 'oidc' | 'userPools' | 'function';

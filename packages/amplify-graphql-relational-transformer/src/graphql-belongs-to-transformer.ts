@@ -16,6 +16,7 @@ import {
   TransformerPreProcessContextProvider,
   ModelDataSourceStrategyDbType,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { BelongsToDirective } from '@aws-amplify/graphql-directives';
 import {
   DirectiveNode,
   DocumentNode,
@@ -39,11 +40,6 @@ import {
 import { getGenerator } from './resolver/generator-factory';
 import { getBelongsToDirectiveTransformer } from './belongs-to/belongs-to-directive-transformer-factory';
 
-const directiveName = 'belongsTo';
-const directiveDefinition = `
-  directive @${directiveName}(fields: [String!], references: [String!]) on FIELD_DEFINITION
-`;
-
 /**
  * Transformer for @belongsTo directive
  */
@@ -51,7 +47,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
   private directiveList: BelongsToDirectiveConfiguration[] = [];
 
   constructor() {
-    super('amplify-belongs-to-transformer', directiveDefinition);
+    super('amplify-belongs-to-transformer', BelongsToDirective.definition);
   }
 
   field = (
@@ -63,7 +59,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
     const directiveWrapped = new DirectiveWrapper(directive);
     const args = directiveWrapped.getArguments(
       {
-        directiveName,
+        directiveName: BelongsToDirective.name,
         object: parent as ObjectTypeDefinitionNode,
         field: definition,
         directive,
@@ -90,7 +86,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
 
       objectDefs?.forEach((def) => {
         const filteredFields = def?.fields?.filter((field) =>
-          field?.directives?.some((dir) => dir.name.value === directiveName && objectTypeMap.get(getBaseType(field.type))),
+          field?.directives?.some((dir) => dir.name.value === BelongsToDirective.name && objectTypeMap.get(getBaseType(field.type))),
         );
         filteredFields?.forEach((field) => {
           const relatedType = objectTypeMap.get(getBaseType(field.type));
@@ -134,7 +130,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
     this.directiveList.forEach((config) => {
       const modelName = config.object.name.value;
       const dbType = getStrategyDbTypeFromModel(context as TransformerContextProvider, modelName);
-      const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType);
+      const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType, config);
       dataSourceBasedTransformer.prepare(context, config);
     });
   };
@@ -144,7 +140,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
-      const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType);
+      const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType, config);
       dataSourceBasedTransformer.transformSchema(ctx, config);
       ensureBelongsToConnectionField(config, context);
     }
@@ -155,8 +151,8 @@ export class BelongsToTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
-      const generator = getGenerator(dbType);
-      generator.makeBelongsToGetItemConnectionWithKeyResolver(config, context);
+      const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType, config);
+      dataSourceBasedTransformer.generateResolvers(ctx, config);
     }
   };
 }
@@ -166,10 +162,11 @@ const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerConte
 
   let dbType: ModelDataSourceStrategyDbType;
   try {
-    // getStrategyDbTypeFromTypeNode throws if a datasource is not found for the model. We want to catch that condition here to provide a friendlier
-    // error message, since the most likely error scenario is that the customer neglected to annotate one of the types with `@model`. Since
-    // this transformer gets invoked on both sides of the `belongsTo` relationship, a failure at this point is about the field itself, not
-    // the related type.
+    // getStrategyDbTypeFromTypeNode throws if a datasource is not found for the model. We want to catch that condition
+    // here to provide a friendlier error message, since the most likely error scenario is that the customer neglected to annotate one
+    // of the types with `@model`.
+    // Since this transformer gets invoked on both sides of the `belongsTo` relationship, a failure at this point is about the
+    // field itself, not the related type.
     dbType = getStrategyDbTypeFromTypeNode(field.type, ctx);
   } catch {
     throw new InvalidDirectiveError(
@@ -178,12 +175,12 @@ const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerConte
   }
 
   config.relatedType = getRelatedType(config, ctx);
-  const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType);
+  const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType, config);
   dataSourceBasedTransformer.validate(ctx, config);
   validateModelDirective(config);
 
   if (isListType(field.type)) {
-    throw new InvalidDirectiveError(`@${directiveName} cannot be used with lists.`);
+    throw new InvalidDirectiveError(`@${BelongsToDirective.name} cannot be used with lists.`);
   }
 
   config.connectionFields = [];
@@ -206,7 +203,7 @@ const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerConte
 
   if (!isBiRelation && dbType === DDB_DB_TYPE) {
     throw new InvalidDirectiveError(
-      `${config.relatedType.name.value} must have a relationship with ${object.name.value} in order to use @${directiveName}.`,
+      `${config.relatedType.name.value} must have a relationship with ${object.name.value} in order to use @${BelongsToDirective.name}.`,
     );
   }
 };

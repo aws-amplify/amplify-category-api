@@ -5,8 +5,106 @@ import * as cdk from 'aws-cdk-lib';
 import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { ModelResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { getSortKeyFields } from './schema';
-import { HasManyDirectiveConfiguration } from './types';
+import { HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from './types';
 import { getConnectionAttributeName, getObjectPrimaryKey } from './utils';
+
+/**
+ * Creates a GSI on the table of the `relatedType` based on the config's `references` / `referenceNodes`
+ *
+ * @remarks
+ * This method sets the `indexName` property of the `config` to the GSI name created on the
+ * table of the `relatedType`
+ *
+ * Preconditions: `config.references >= 1` and `config.referenceNodes >= 1`
+ *
+ * @param config The `HasManyDirectiveConfiguration` for DDB references.
+ * @param ctx The `TransformerContextProvider` for DDB references.
+ */
+export const updateTableForReferencesConnection = (
+  config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+): void => {
+  const { field, referenceNodes, indexName: incomingIndexName, object, references, relatedType } = config;
+  const mappedObjectName = ctx.resourceHelper.getModelNameMapping(object.name.value);
+
+  if (incomingIndexName) {
+    throw new Error(
+      `Invalid @hasMany directive on ${mappedObjectName}.${field.name.value} - indexName is not supported with DDB references.`,
+    );
+  }
+
+  if (references.length < 1 || referenceNodes.length < 1) {
+    throw new Error('references should not be empty here'); // TODO: better error message
+  }
+
+  const indexName = `gsi-${mappedObjectName}.${field.name.value}`;
+  config.indexName = indexName;
+
+  const relatedTable = getTable(ctx, relatedType);
+  const gsis = relatedTable.globalSecondaryIndexes;
+  if (gsis.some((gsi: any) => gsi.indexName === indexName)) {
+    // TODO: In the existing `fields` based implementation, this returns.
+    // However, this is likely a schema misconfiguration in the `references`
+    // world because we don't support specifying indexName.
+    return;
+  }
+
+  // `referenceNodes` are ordered based on the `references` argument in the `@<relational-directive>(references:)`
+  // argument. If we've gotten this far, the array is not empty and the passed `references` args represent valid
+  // fields on the related type.
+  //
+  // The first element (required) is the parition key of the GSI we're about to create.
+  // Any remaining elements (optional) represent the sort key of the GSI we're about to create.
+  const referenceNode = referenceNodes[0];
+  const partitionKeyName = referenceNode.name.value;
+  // Grabbing the type of the related field.
+  // TODO: Validate types of related field and primary's pk match
+  // -- ideally further up the chain
+  const partitionKeyType = attributeTypeFromType(referenceNode.type, ctx);
+
+  // The sortKeys are any referencesNodes following the first element.
+  const sortKeyReferenceNodes = referenceNodes.slice(1);
+  const sortKey = getReferencesBasedDDBSortKey(sortKeyReferenceNodes, ctx);
+
+  addGlobalSecondaryIndex(relatedTable, {
+    indexName: indexName,
+    partitionKey: { name: partitionKeyName, type: partitionKeyType },
+    sortKey: sortKey,
+    ctx: ctx,
+    relatedTypeName: relatedType.name.value,
+  });
+};
+
+/**
+ * Given a list a `FieldDefinitionNode`s representing sortKeys for a references based relationship where the
+ * related model's data source is DDB, this provides the sortKey as a `KeyAttributeDefinition`.
+ * @param sortKeyNodes The `FieldDefinitionNode`s representing sortKeys of the references based relationship.
+ * @param ctx The `TransformerContextProvider` passed down the transformer chain.
+ * @returns A `KeyAttributeDefinition` representing the sort key to be added to a DDB table.
+ */
+const getReferencesBasedDDBSortKey = (
+  sortKeyNodes: FieldDefinitionNode[],
+  ctx: TransformerContextProvider,
+): KeyAttributeDefinition | undefined => {
+  if (sortKeyNodes.length === 1) {
+    // If there's only one sortKeysFields defined, we'll use its type.
+    return {
+      name: sortKeyNodes[0].name.value,
+      type: attributeTypeFromType(sortKeyNodes[0].type, ctx),
+    };
+  } else if (sortKeyNodes.length > 1) {
+    // If there's more than one sortKeysFields defined, we'll combine the names with
+    // a `#` delimiter with a type `S` (string).
+    const sortKeyFieldNames = sortKeyNodes.map((node) => node.name.value);
+    return {
+      name: condenseRangeKey(sortKeyFieldNames),
+      type: 'S',
+    };
+  }
+
+  // If no sortKeysFields are defined, the returned sortKey is `undefined`.
+  return undefined;
+};
 
 /**
  * adds GSI to the table if it doesn't already exists for connection
@@ -42,20 +140,43 @@ export const updateTableForConnection = (config: HasManyDirectiveConfiguration, 
   const partitionKeyType = respectPrimaryKeyAttributesOnConnectionField
     ? attributeTypeFromType(getObjectPrimaryKey(object).type, ctx)
     : 'S';
-  const sortKeyAttributeDefinitions = respectPrimaryKeyAttributesOnConnectionField
-    ? getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject(ctx, object, field)
+
+  const sortKey = respectPrimaryKeyAttributesOnConnectionField
+    ? getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject(ctx, object, field, getSortKeyFields(ctx, object))
     : undefined;
+
+  addGlobalSecondaryIndex(table, {
+    indexName: indexName,
+    partitionKey: { name: partitionKeyName, type: partitionKeyType },
+    sortKey: sortKey,
+    ctx: ctx,
+    relatedTypeName: relatedType.name.value,
+  });
+};
+
+const addGlobalSecondaryIndex = (
+  table: any,
+  props: {
+    indexName: string;
+    partitionKey: KeyAttributeDefinition;
+    sortKey: KeyAttributeDefinition | undefined;
+    ctx: TransformerContextProvider;
+    relatedTypeName: string;
+  },
+): void => {
+  const { indexName, partitionKey, sortKey, ctx, relatedTypeName } = props;
+
   table.addGlobalSecondaryIndex({
     indexName,
     projectionType: 'ALL',
     partitionKey: {
-      name: partitionKeyName,
-      type: partitionKeyType,
+      name: partitionKey.name,
+      type: partitionKey.type,
     },
-    sortKey: sortKeyAttributeDefinitions
+    sortKey: sortKey
       ? {
-          name: sortKeyAttributeDefinitions.sortKeyName,
-          type: sortKeyAttributeDefinitions.sortKeyType,
+          name: sortKey.name,
+          type: sortKey.type,
         }
       : undefined,
     readCapacity: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
@@ -65,7 +186,7 @@ export const updateTableForConnection = (config: HasManyDirectiveConfiguration, 
   // At the L2 level, the CDK does not handle the way Amplify sets GSI read and write capacity
   // very well. At the L1 level, the CDK does not create the correct IAM policy for accessing the
   // GSI. To get around these issues, keep the L1 and L2 GSI list in sync.
-  const gsi = gsis.find((g: any) => g.indexName === indexName);
+  const gsi = table.globalSecondaryIndexes.find((g: any) => g.indexName === indexName);
 
   const newIndex = {
     indexName,
@@ -77,20 +198,20 @@ export const updateTableForConnection = (config: HasManyDirectiveConfiguration, 
     }),
   };
 
-  overrideIndexAtCfnLevel(ctx, relatedType.name.value, table, newIndex);
+  overrideIndexAtCfnLevel(ctx, relatedTypeName, table, newIndex);
 };
 
-type SortKeyAttributeDefinitions = {
-  sortKeyName: string;
-  sortKeyType: 'S' | 'N';
+type KeyAttributeDefinition = {
+  name: string;
+  type: 'S' | 'N';
 };
 
 const getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject = (
   ctx: TransformerContextProvider,
   object: ObjectTypeDefinitionNode,
   hasManyField: FieldDefinitionNode,
-): SortKeyAttributeDefinitions | undefined => {
-  const sortKeyFields = getSortKeyFields(ctx, object);
+  sortKeyFields: FieldDefinitionNode[],
+): KeyAttributeDefinition | undefined => {
   if (!sortKeyFields.length) {
     return undefined;
   }
@@ -100,13 +221,13 @@ const getConnectedSortKeyAttributeDefinitionsForImplicitHasManyObject = (
   );
   if (connectedSortKeyFieldNames.length === 1) {
     return {
-      sortKeyName: connectedSortKeyFieldNames[0],
-      sortKeyType: attributeTypeFromType(sortKeyFields[0].type, ctx),
+      name: connectedSortKeyFieldNames[0],
+      type: attributeTypeFromType(sortKeyFields[0].type, ctx),
     };
   } else if (sortKeyFields.length > 1) {
     return {
-      sortKeyName: condenseRangeKey(connectedSortKeyFieldNames),
-      sortKeyType: 'S',
+      name: condenseRangeKey(connectedSortKeyFieldNames),
+      type: 'S',
     };
   }
   return undefined;
