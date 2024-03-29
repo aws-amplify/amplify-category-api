@@ -5,3 +5,5 @@ phases:
   build:
     commands:
       - source ./shared-scripts.sh && _verifyYarnLock
+artifacts:
+  type: NO_ARTIFACTS

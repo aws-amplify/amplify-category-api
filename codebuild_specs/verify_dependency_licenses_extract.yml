@@ -5,3 +5,5 @@ phases:
   build:
     commands:
       - source ./shared-scripts.sh && _verifyDependencyLicensesExtract
+artifacts:
+  type: NO_ARTIFACTS
