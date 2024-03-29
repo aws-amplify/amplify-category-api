@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.5.0-gen2-release.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.4.2-gen2-release.1...@aws-amplify/graphql-relational-transformer@2.5.0-gen2-release.0) (2024-03-29)
+
+### Features
+
+- **graphql-relational-transformer:** DDB references relational directives support (tagged-release.0) ([#2370](https://github.com/aws-amplify/amplify-category-api/issues/2370)) ([bdaaabf](https://github.com/aws-amplify/amplify-category-api/commit/bdaaabfb76d23b2331613c413b9760a01f9e1d8a))
+
 ## [2.4.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.4.1...@aws-amplify/graphql-relational-transformer@2.4.2) (2024-03-28)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
