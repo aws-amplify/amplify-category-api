@@ -66,5 +66,5 @@ export interface AuthVTLGenerator {
 
   generateFieldResolverForOwner: (entity: string) => string;
 
-  generateSandboxExpressionForField: (sandboxEnabled: boolean, genericIamAccessEnabled: boolean) => string;
+  generatePostAuthExpressionForField: (sandboxEnabled: boolean, genericIamAccessEnabled: boolean) => string;
 }

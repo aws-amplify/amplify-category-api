@@ -1075,12 +1075,12 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.createPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.createPost.req.vtl": "## [Start] Create Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -1155,12 +1155,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Mutation.deletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.deletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.deletePost.req.vtl": "## [Start] Delete Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
@@ -1237,12 +1237,12 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.updatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.updatePost.req.vtl": "## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -1382,12 +1382,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Query.getPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.getPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.getPost.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -1435,12 +1435,12 @@ $util.unauthorized()
   $util.toJson(null)
 #end
 ## [End] Get Response template. **",
-  "Query.listPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.listPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.listPosts.req.vtl": "## [Start] List Request. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $limit = $util.defaultIfNull($args.limit, 100) )
@@ -1498,12 +1498,12 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Query.syncPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.syncPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.syncPosts.req.vtl": "## [Start] Sync Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $queryFilterContainsAuthField = false )
@@ -1592,12 +1592,12 @@ null
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Subscription.onCreatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onCreatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onCreatePost.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -1610,12 +1610,12 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Subscription.onDeletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onDeletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onDeletePost.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -1628,12 +1628,12 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Subscription.onUpdatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onUpdatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onUpdatePost.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -1662,12 +1662,12 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.createPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.createPost.req.vtl": "## [Start] Create Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -1742,12 +1742,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Mutation.deletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.deletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.deletePost.req.vtl": "## [Start] Delete Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
@@ -1824,12 +1824,12 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.updatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.updatePost.req.vtl": "## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -1969,12 +1969,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Query.getPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.getPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.getPost.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -2022,12 +2022,12 @@ $util.unauthorized()
   $util.toJson(null)
 #end
 ## [End] Get Response template. **",
-  "Query.listPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.listPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.listPosts.req.vtl": "## [Start] List Request. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $limit = $util.defaultIfNull($args.limit, 100) )
@@ -2085,12 +2085,12 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Query.syncPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.syncPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.syncPosts.req.vtl": "## [Start] Sync Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $queryFilterContainsAuthField = false )
@@ -2179,12 +2179,12 @@ null
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Subscription.onCreatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onCreatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onCreatePost.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -2197,12 +2197,12 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Subscription.onDeletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onDeletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onDeletePost.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -2215,12 +2215,12 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Subscription.onUpdatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onUpdatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onUpdatePost.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -2249,12 +2249,12 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.createPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.createPost.req.vtl": "## [Start] Create Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -2329,12 +2329,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Mutation.deletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.deletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.deletePost.req.vtl": "## [Start] Delete Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
@@ -2411,12 +2411,12 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.updatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.updatePost.req.vtl": "## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -2556,12 +2556,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Query.getPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.getPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.getPost.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -2609,12 +2609,12 @@ $util.unauthorized()
   $util.toJson(null)
 #end
 ## [End] Get Response template. **",
-  "Query.listPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.listPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.listPosts.req.vtl": "## [Start] List Request. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $limit = $util.defaultIfNull($args.limit, 100) )
@@ -2672,12 +2672,12 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Query.syncPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.syncPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.syncPosts.req.vtl": "## [Start] Sync Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $queryFilterContainsAuthField = false )
@@ -2766,12 +2766,12 @@ null
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Subscription.onCreatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onCreatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onCreatePost.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -2784,12 +2784,12 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Subscription.onDeletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onDeletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onDeletePost.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -2802,12 +2802,12 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Subscription.onUpdatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onUpdatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onUpdatePost.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -4618,12 +4618,12 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.createNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.createNote.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
@@ -4661,12 +4661,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Mutation.deleteNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.deleteNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.deleteNote.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
@@ -4708,12 +4708,12 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.updateNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.updateNote.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
@@ -4752,12 +4752,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Query.getNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.getNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.getNote.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
@@ -4795,12 +4795,12 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, 
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Query.listNotes.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.listNotes.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.listNotes.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
@@ -4843,12 +4843,12 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Subscription.onCreateNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onCreateNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onCreateNote.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -4861,12 +4861,12 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Subscription.onDeleteNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onDeleteNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onDeleteNote.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -4879,12 +4879,12 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Subscription.onUpdateNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onUpdateNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onUpdateNote.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -5146,12 +5146,12 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.createNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.createNote.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
@@ -5189,12 +5189,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Mutation.deleteNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.deleteNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.deleteNote.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
@@ -5236,12 +5236,12 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.updateNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.updateNote.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
@@ -5280,12 +5280,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Query.getNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.getNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.getNote.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
@@ -5323,12 +5323,12 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, 
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Query.listNotes.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.listNotes.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.listNotes.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
@@ -5371,12 +5371,12 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Subscription.onCreateNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onCreateNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onCreateNote.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -5389,12 +5389,12 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Subscription.onDeleteNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onDeleteNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onDeleteNote.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -5407,12 +5407,12 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Subscription.onUpdateNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onUpdateNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onUpdateNote.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",

@@ -334,10 +334,10 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`renamed subscriptions should generate auth resolver 2`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;

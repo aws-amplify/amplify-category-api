@@ -30,12 +30,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform IdentityPool auth rules 2`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform IdentityPool auth rules 3`] = `
@@ -68,12 +68,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform IdentityPool auth rules 4`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform IdentityPool auth rules 5`] = `
@@ -105,12 +105,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform IdentityPool auth rules 6`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform IdentityPool auth rules 7`] = `
@@ -142,12 +142,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform IdentityPool auth rules 8`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform apiKey auth rule 1`] = `
@@ -178,12 +178,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform apiKey auth rule 2`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform apiKey auth rule 3`] = `
@@ -214,12 +214,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform apiKey auth rule 4`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform cognito auth rules 1`] = `
@@ -250,12 +250,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform cognito auth rules 2`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform cognito auth rules 3`] = `
@@ -286,12 +286,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform cognito auth rules 4`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform cognito auth rules 5`] = `
@@ -324,12 +324,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform cognito auth rules 6`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform cognito auth rules 7`] = `
@@ -362,12 +362,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform cognito auth rules 8`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform cognito auth rules 9`] = `
@@ -400,12 +400,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform cognito auth rules 10`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform cognito auth rules 11`] = `
@@ -438,12 +438,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform cognito auth rules 12`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform cognito auth rules 13`] = `
@@ -482,12 +482,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform cognito auth rules 14`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform cognito auth rules 15`] = `
@@ -526,12 +526,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform cognito auth rules 16`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform cognito auth rules 17`] = `
@@ -565,12 +565,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform cognito auth rules 18`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform cognito auth rules 19`] = `
@@ -604,12 +604,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform cognito auth rules 20`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform cognito auth rules 21`] = `
@@ -643,12 +643,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform cognito auth rules 22`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform cognito auth rules 23`] = `
@@ -682,12 +682,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform cognito auth rules 24`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform function auth rule 1`] = `
@@ -718,12 +718,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform function auth rule 2`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform function auth rule 3`] = `
@@ -754,12 +754,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform function auth rule 4`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform iam auth rules 1`] = `
@@ -792,12 +792,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform iam auth rules 2`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform iam auth rules 3`] = `
@@ -830,12 +830,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform iam auth rules 4`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform iam auth rules 5`] = `
@@ -867,12 +867,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform iam auth rules 6`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform iam auth rules 7`] = `
@@ -904,12 +904,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform iam auth rules 8`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform oidc auth rules 1`] = `
@@ -940,12 +940,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform oidc auth rules 2`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform oidc auth rules 3`] = `
@@ -976,12 +976,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform oidc auth rules 4`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform oidc auth rules 5`] = `
@@ -1015,12 +1015,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform oidc auth rules 6`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform oidc auth rules 7`] = `
@@ -1054,12 +1054,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform oidc auth rules 8`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform oidc auth rules 9`] = `
@@ -1093,12 +1093,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform oidc auth rules 10`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform oidc auth rules 11`] = `
@@ -1132,12 +1132,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform oidc auth rules 12`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform oidc auth rules 13`] = `
@@ -1176,12 +1176,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform oidc auth rules 14`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform oidc auth rules 15`] = `
@@ -1220,12 +1220,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform oidc auth rules 16`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform oidc auth rules 17`] = `
@@ -1259,12 +1259,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform oidc auth rules 18`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform oidc auth rules 19`] = `
@@ -1298,12 +1298,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform oidc auth rules 20`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform oidc auth rules 21`] = `
@@ -1337,12 +1337,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform oidc auth rules 22`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform oidc auth rules 23`] = `
@@ -1376,10 +1376,10 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform oidc auth rules 24`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
