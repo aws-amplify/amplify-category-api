@@ -152,6 +152,7 @@ export class AmplifyGraphqlApi extends Construct {
       translationBehavior,
       functionNameMap,
       outputStorageStrategy,
+      disableOutputStorage,
       dataStoreConfiguration,
     } = props;
 
@@ -228,7 +229,10 @@ export class AmplifyGraphqlApi extends Construct {
 
     this.resources = getGeneratedResources(this);
     this.generatedFunctionSlots = getGeneratedFunctionSlots(assetManager.resolverAssets);
-    this.storeOutput(outputStorageStrategy);
+
+    if (!disableOutputStorage) {
+      this.storeOutput(outputStorageStrategy);
+    }
 
     this.apiId = this.resources.cfnResources.cfnGraphqlApi.attrApiId;
     this.graphqlUrl = this.resources.cfnResources.cfnGraphqlApi.attrGraphQlUrl;
