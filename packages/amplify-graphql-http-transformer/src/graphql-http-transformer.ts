@@ -6,6 +6,7 @@ import {
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { HttpDirective } from '@aws-amplify/graphql-directives';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import * as cdk from 'aws-cdk-lib';
 import {
@@ -69,26 +70,12 @@ const URL_REGEX = /(http(s)?:\/\/)|(\/.*)/g;
 const VALID_PROTOCOLS_REGEX = /^http(s)?:\/\//;
 const HTTP_DIRECTIVE_STACK = 'HttpStack';
 const RESOLVER_VERSION = '2018-05-29';
-const directiveDefinition = /* GraphQL */ `
-  directive @http(method: HttpMethod = GET, url: String!, headers: [HttpHeader] = []) on FIELD_DEFINITION
-  enum HttpMethod {
-    GET
-    POST
-    PUT
-    DELETE
-    PATCH
-  }
-  input HttpHeader {
-    key: String
-    value: String
-  }
-`;
 
 export class HttpTransformer extends TransformerPluginBase {
   private directiveList: HttpDirectiveConfiguration[] = [];
 
   constructor() {
-    super('amplify-http-transformer', directiveDefinition);
+    super('amplify-http-transformer', HttpDirective.definition);
   }
 
   field = (

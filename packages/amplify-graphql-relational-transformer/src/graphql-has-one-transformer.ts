@@ -14,6 +14,7 @@ import {
   TransformerTransformSchemaStepContextProvider,
   TransformerPreProcessContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { HasOneDirective } from '@aws-amplify/graphql-directives';
 import {
   ArgumentNode,
   DirectiveNode,
@@ -52,11 +53,6 @@ import {
 import { getGenerator } from './resolver/generator-factory';
 import { getHasOneDirectiveTransformer } from './has-one/has-one-directive-transformer-factory';
 
-const directiveName = 'hasOne';
-const directiveDefinition = `
-  directive @${directiveName}(fields: [String!], references: [String!]) on FIELD_DEFINITION
-`;
-
 /**
  * Transformer for @hasOne directive
  */
@@ -64,7 +60,7 @@ export class HasOneTransformer extends TransformerPluginBase {
   private directiveList: HasOneDirectiveConfiguration[] = [];
 
   constructor() {
-    super('amplify-has-one-transformer', directiveDefinition);
+    super('amplify-has-one-transformer', HasOneDirective.definition);
   }
 
   field = (
@@ -76,7 +72,7 @@ export class HasOneTransformer extends TransformerPluginBase {
     const directiveWrapped = new DirectiveWrapper(directive);
     const args = directiveWrapped.getArguments(
       {
-        directiveName,
+        directiveName: HasOneDirective.name,
         object: parent as ObjectTypeDefinitionNode,
         field: definition,
         directive,
@@ -101,7 +97,7 @@ export class HasOneTransformer extends TransformerPluginBase {
       );
 
       objectDefs?.forEach((def) => {
-        const filteredFields = def?.fields?.filter((field) => field?.directives?.some((dir) => dir.name.value === directiveName));
+        const filteredFields = def?.fields?.filter((field) => field?.directives?.some((dir) => dir.name.value === HasOneDirective.name));
         filteredFields?.forEach((field) => {
           field?.directives?.forEach((dir) => {
             const connectionAttributeName = getConnectionAttributeName(
@@ -196,7 +192,7 @@ const validate = (config: HasOneDirectiveConfiguration, ctx: TransformerContextP
   validateModelDirective(config);
 
   if (isListType(field.type)) {
-    throw new InvalidDirectiveError(`@${directiveName} cannot be used with lists. Use @hasMany instead.`);
+    throw new InvalidDirectiveError(`@${HasOneDirective.name} cannot be used with lists. Use @hasMany instead.`);
   }
 
   config.connectionFields = [];
