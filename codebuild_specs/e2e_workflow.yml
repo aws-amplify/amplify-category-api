@@ -1388,13 +1388,22 @@ batch:
           CLI_REGION: me-south-1
       depend-on:
         - publish_to_local_registry
-    - identifier: sql_models
+    - identifier: sql_models_1
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
-          TEST_SUITE: src/__tests__/sql-models.test.ts
+          TEST_SUITE: src/__tests__/sql-models-1.test.ts
           CLI_REGION: us-east-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: sql_models_2
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/sql-models-2.test.ts
+          CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
     - identifier: >-
