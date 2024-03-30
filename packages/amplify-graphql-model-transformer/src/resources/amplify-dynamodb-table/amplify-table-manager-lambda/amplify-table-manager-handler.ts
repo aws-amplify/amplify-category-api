@@ -13,6 +13,7 @@ import {
   UpdateTableCommandInput,
   UpdateTimeToLiveCommandInput,
   ResourceNotFoundException,
+  DescribeTimeToLiveCommandOutput,
 } from '@aws-sdk/client-dynamodb';
 
 const ddbClient = new DynamoDB();
@@ -67,6 +68,7 @@ export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
       if (!event.PhysicalResourceId) {
         throw new Error(`Could not find the physical ID for the updated resource`);
       }
+      const oldTableDef = extractOldTableInputFromEvent(event);
       console.log('Fetching current table state');
       const describeTableResult = await ddbClient.describeTable({ TableName: event.PhysicalResourceId });
       if (!describeTableResult.Table) {
@@ -150,24 +152,26 @@ export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
       }
 
       // determine if ttl is changed -> describeTimeToLive & updateTimeToLive
-      const describeTimeToLiveResult = await ddbClient.describeTimeToLive({ TableName: event.PhysicalResourceId });
-      console.log('Current TTL: ', describeTimeToLiveResult);
-      const ttlUpdate = getTtlUpdate(describeTimeToLiveResult.TimeToLiveDescription, tableDef);
-      if (ttlUpdate) {
-        log('Computed time to live update', ttlUpdate);
-        console.log('Initiating TTL update');
-        await ddbClient.updateTimeToLive(ttlUpdate);
-        // TTL update could take more than 15 mins which exceeds lambda timeout
-        // Return the result instead of waiting here
-        result = {
-          PhysicalResourceId: event.PhysicalResourceId,
-          Data: {
-            TableArn: describeTableResult.Table.TableArn,
-            TableStreamArn: describeTableResult.Table.LatestStreamArn,
-            TableName: describeTableResult.Table.TableName,
-          },
-        };
-        return result;
+      if (isTtlModified(oldTableDef.timeToLiveSpecification, tableDef.timeToLiveSpecification)) {
+        const describeTimeToLiveResult = await getTtlStatus(event.PhysicalResourceId);
+        console.log('Current TTL: ', describeTimeToLiveResult);
+        const ttlUpdate = getTtlUpdate(describeTimeToLiveResult.TimeToLiveDescription, tableDef);
+        if (ttlUpdate) {
+          log('Computed time to live update', ttlUpdate);
+          console.log('Initiating TTL update');
+          await ddbClient.updateTimeToLive(ttlUpdate);
+          // TTL update could take more than 15 mins which exceeds lambda timeout
+          // Return the result instead of waiting here
+          result = {
+            PhysicalResourceId: event.PhysicalResourceId,
+            Data: {
+              TableArn: describeTableResult.Table.TableArn,
+              TableStreamArn: describeTableResult.Table.LatestStreamArn,
+              TableName: describeTableResult.Table.TableName,
+            },
+          };
+          return result;
+        }
       }
 
       // determine GSI updates
@@ -261,12 +265,15 @@ export const isComplete = async (
       return notFinished;
     }
     // Need additional call if ttl is defined
-    const describeTimeToLiveResult = await ddbClient.describeTimeToLive({ TableName: event.PhysicalResourceId });
-    const ttlUpdate = getTtlUpdate(describeTimeToLiveResult.TimeToLiveDescription, endState);
-    if (ttlUpdate) {
-      console.log('Updating table with TTL enabled');
-      await ddbClient.updateTimeToLive(ttlUpdate);
-      return notFinished;
+    // Since this is a create/re-create event, the original table always has TTL disabled. Only update TTL if it is enabled in endstate.
+    if (endState.timeToLiveSpecification && endState.timeToLiveSpecification.enabled) {
+      const describeTimeToLiveResult = await getTtlStatus(event.PhysicalResourceId);
+      const ttlUpdate = getTtlUpdate(describeTimeToLiveResult.TimeToLiveDescription, endState);
+      if (ttlUpdate) {
+        console.log('Updating table with TTL enabled');
+        await ddbClient.updateTimeToLive(ttlUpdate);
+        return notFinished;
+      }
     }
     // no additional updates required on create
     console.log('Create is finished');
@@ -727,6 +734,24 @@ export const extractTableInputFromEvent = (
 };
 
 /**
+ * Extract the old custom DynamoDB table properties from event, during which the service token will be removed
+ * and the string values will be correctly parsed to boolean or number
+ * @param event Event for onEvent or isComplete
+ * @returns The old table input for Custom dynamoDB Table
+ */
+export const extractOldTableInputFromEvent = (
+  event: AWSCDKAsyncCustomResource.OnEventRequest | AWSCDKAsyncCustomResource.IsCompleteRequest,
+): CustomDDB.Input => {
+  // isolate the resource properties from the event and remove the service token
+  const resourceProperties = { ...event.OldResourceProperties } as Record<string, any> & { ServiceToken?: string };
+  delete resourceProperties.ServiceToken;
+
+  // cast the remaining resource properties to the DynamoDB API call input type
+  const tableDef = convertStringToBooleanOrNumber(resourceProperties) as CustomDDB.Input;
+  return tableDef;
+};
+
+/**
  * Parse the properties to the form supported by DynamoDB SDK call, in which the undefined properties will be removed first
  * and then the object keys will be converted to PascalCase
  * @param obj input object
@@ -940,6 +965,76 @@ const isKeySchemaModified = (currentSchema: Array<KeySchemaElement>, endSchema: 
 
   // if we got here then the hash and range key are not modified
   return false;
+};
+
+/**
+ * Util function to check if the time to live is modified between old and new table definitions
+ * @param oldTtl TTL config from old table properties
+ * @param endTtl TTL config from input table properties
+ * @returns boolean indicaes the change of TTL
+ */
+export const isTtlModified = (
+  oldTtl: CustomDDB.TimeToLiveSpecificationProperty | undefined,
+  endTtl: CustomDDB.TimeToLiveSpecificationProperty | undefined,
+): boolean => {
+  if (oldTtl === undefined && endTtl === undefined) {
+    return false;
+  }
+  if (oldTtl === undefined || endTtl === undefined) {
+    return true;
+  }
+  return oldTtl.enabled !== endTtl.enabled || oldTtl.attributeName !== endTtl.attributeName;
+};
+
+/**
+ * Get time to live specification for the given table
+ * This API call has a limit rate. The call is staggered randomly within 10s and called with exponential retries
+ * @param tableName table name
+ * @returns time to live specification object
+ */
+const getTtlStatus = async (tableName: string): Promise<DescribeTimeToLiveCommandOutput> => {
+  const initialDelay = Math.floor(Math.random() * 10 * 1000); // between 0 to 10s
+  console.log(`Waiting for ${initialDelay} ms`);
+  await sleep(initialDelay);
+  // Max retry is 3
+  // Retry delay is 1000ms
+  const describeTimeToLiveResult = makeApiCallWithExponentialRetries(
+    async () => await ddbClient.describeTimeToLive({ TableName: tableName }),
+    3,
+    1000,
+  );
+  return describeTimeToLiveResult;
+};
+
+/**
+ * Makes an API call with error retries and exponential backoff.
+ * @param requestData The data or parameters needed for the API call.
+ * @param maxRetries Maximum number of retries before giving up.
+ * @param retryDelayMs Initial delay between retries, in milliseconds.
+ * @returns A promise that resolves with the API call result or rejects after exceeding max retries.
+ */
+const makeApiCallWithExponentialRetries = async <T>(
+  func: () => Promise<T>,
+  maxRetries: number = 3,
+  retryDelayMs: number = 1000,
+): Promise<T> => {
+  let attempts = 0;
+
+  while (attempts <= maxRetries) {
+    try {
+      const result: T = await func();
+      return result;
+    } catch (error) {
+      attempts++;
+      if (attempts > maxRetries) {
+        break;
+      }
+      const exponentialDelay = retryDelayMs * Math.pow(2, attempts - 1);
+      console.log(`API call failed, retrying in ${exponentialDelay}ms...`);
+      await sleep(exponentialDelay);
+    }
+  }
+  throw new Error(`API call failed after ${maxRetries} retries.`);
 };
 
 /**
