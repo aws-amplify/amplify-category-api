@@ -23,9 +23,19 @@ describe('CDK amplify table 4', () => {
     deleteProjectDir(projRoot);
   });
 
-  test('should not throw limit exceed error when a large number of tables are being deployed', async () => {
+  test('should not throw limit exceed error when creating a large number of tables with datastore enabled', async () => {
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', 'rate-limit', 'createTableTtl'));
     await initCDKProject(projRoot, templatePath);
+    await expect(cdkDeploy(projRoot, '--all')).resolves.not.toThrow();
+  });
+  test('should not throw limit exceed error when creating a large number of tables with datastore disabled at first and enabled in second deployment', async () => {
+    const templatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', 'rate-limit', 'updateTableTtl', 'disabled'));
+    await initCDKProject(projRoot, templatePath);
+    await expect(cdkDeploy(projRoot, '--all')).resolves.not.toThrow();
+    // deploy with datastore enabled
+    let updateTemplatePath;
+    updateTemplatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', 'rate-limit', 'updateTableTtl', 'enabled'));
+    updateCDKAppWithTemplate(projRoot, updateTemplatePath);
     await expect(cdkDeploy(projRoot, '--all')).resolves.not.toThrow();
   });
 });
