@@ -209,7 +209,7 @@ export class SqlDatatabaseController {
     });
     const filePath = path.join(projRoot, 'db-details.json');
     fs.writeFileSync(filePath, detailsStr);
-    console.log(`Wrote ${filePath}`);
+    console.log(`Wrote ${detailsStr} into ${filePath}`);
   };
 
   /**
