@@ -11,7 +11,7 @@ describe('CDK GraphQL Transformer deployments with SQL datasources', () => {
   let projRoot: string;
   const projFolderName = 'sqlmodels2';
 
-  const [username, identifier] = generator.generateMultiple(2);
+  const [username, password, identifier] = generator.generateMultiple(3);
 
   const region = process.env.CLI_REGION ?? 'us-west-2';
 
@@ -24,6 +24,7 @@ describe('CDK GraphQL Transformer deployments with SQL datasources', () => {
       engine: 'mysql',
       dbname,
       username,
+      password,
       region,
     },
   );
