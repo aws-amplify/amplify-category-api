@@ -7,24 +7,25 @@ import { testGraphQLAPI } from './sql-models-common';
 
 jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
 
-describe('CDK GraphQL Transformer deployments with SQL datasources', () => {
+describe('CDK GraphQL Transformer deployments with Postgres SQL datasources', () => {
   let projRoot: string;
-  const projFolderName = 'sqlmodels1';
+  const projFolderName = 'pgmodels';
 
-  const [username, identifier] = generator.generateMultiple(2);
+  const [username, password, identifier] = generator.generateMultiple(3);
 
   const region = process.env.CLI_REGION ?? 'us-west-2';
 
   const dbname = 'default_db';
-  const engine = 'mysql';
+  const engine = 'postgres';
 
   const databaseController: SqlDatatabaseController = new SqlDatatabaseController(
-    ['CREATE TABLE todos (id VARCHAR(40) PRIMARY KEY, description VARCHAR(256))'],
+    ['CREATE TABLE "todos" ("id" VARCHAR(40) PRIMARY KEY, "description" VARCHAR(256))'],
     {
       identifier,
       engine,
       dbname,
       username,
+      password,
       region,
     },
   );
@@ -54,16 +55,12 @@ describe('CDK GraphQL Transformer deployments with SQL datasources', () => {
     deleteProjectDir(projRoot);
   });
 
-  test('creates a GraphQL API from SQL-based models with Secrets Manager Credential Store default encryption key', async () => {
-    await testGraphQLAPI(constructTestOptions('secretsManager'));
+  test('creates a GraphQL API from SQL-based models with SSM Credential Store', async () => {
+    await testGraphQLAPI(constructTestOptions('ssm'));
   });
 
-  test('creates a GraphQL API from SQL-based models with Secrets Manager Credential Store custom encryption key', async () => {
-    await testGraphQLAPI(constructTestOptions('secretsManagerCustomKey'));
-  });
-
-  test('creates a GraphQL API from SQL-based models with Secrets Manager Credential Store default encryption key', async () => {
-    await testGraphQLAPI(constructTestOptions('secretsManagerManagedSecret'));
+  test('creates a GraphQL API from SQL-based models using Connection String SSM parameter', async () => {
+    await testGraphQLAPI(constructTestOptions('connectionUri'));
   });
 
   const constructTestOptions = (connectionConfigName: string) => ({
