@@ -1135,6 +1135,15 @@ batch:
           CLI_REGION: eu-south-1
       depend-on:
         - publish_to_local_registry
+    - identifier: sql_pg_models
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: src/__tests__/sql-pg-models.test.ts
+          CLI_REGION: sa-east-1
+      depend-on:
+        - publish_to_local_registry
     - identifier: admin_role
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:

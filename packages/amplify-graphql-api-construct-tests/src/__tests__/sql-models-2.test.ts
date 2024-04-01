@@ -11,25 +11,26 @@ describe('CDK GraphQL Transformer deployments with SQL datasources', () => {
   let projRoot: string;
   const projFolderName = 'sqlmodels2';
 
-  const [username, identifier] = generator.generateMultiple(2);
+  const [username, password, identifier] = generator.generateMultiple(3);
 
   const region = process.env.CLI_REGION ?? 'us-west-2';
 
   const dbname = 'default_db';
+  const engine = 'mysql';
 
   const databaseController: SqlDatatabaseController = new SqlDatatabaseController(
     ['CREATE TABLE todos (id VARCHAR(40) PRIMARY KEY, description VARCHAR(256))'],
     {
       identifier,
-      engine: 'mysql',
+      engine,
       dbname,
       username,
+      password,
       region,
     },
   );
 
-  // DO NOT CHANGE THIS VALUE: The test uses it to find resources by name. It is hardcoded in the sql-models backend app
-  const strategyName = 'MySqlDBStrategy2';
+  const strategyName = `${engine}DBStrategy`;
   const resourceNames = getResourceNamesForStrategyName(strategyName);
 
   beforeAll(async () => {
