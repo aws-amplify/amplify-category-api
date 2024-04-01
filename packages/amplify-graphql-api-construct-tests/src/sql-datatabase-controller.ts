@@ -1,6 +1,6 @@
 import path from 'path';
 import * as fs from 'fs-extra';
-import { SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
+import { SqlModelDataSourceDbConnectionConfig, ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-api-construct';
 import {
   deleteSSMParameters,
   deleteDbConnectionConfigWithSecretsManager,
@@ -24,6 +24,8 @@ export interface SqlDatabaseDetails {
     endpoint: string;
     port: number;
     dbName: string;
+    strategyName: string;
+    dbType: ModelDataSourceStrategySqlDbType;
     vpcConfig: {
       vpcId: string;
       securityGroupIds: string[];
@@ -91,6 +93,7 @@ export class SqlDatatabaseController {
     console.log(`Stored db connection config in Secrets manager: ${JSON.stringify(dbConnectionConfigSecretsManagerCustomKey)}`);
 
     const pathPrefix = `/${this.options.identifier}/test`;
+    const engine = this.options.engine;
     const dbConnectionConfigSSM = await storeDbConnectionConfig({
       region: this.options.region,
       pathPrefix,
@@ -104,7 +107,7 @@ export class SqlDatatabaseController {
       region: this.options.region,
       pathPrefix,
       connectionUri: this.getConnectionUri(
-        this.options.engine,
+        engine,
         this.options.username,
         dbConfig.password,
         dbConfig.endpoint,
@@ -126,6 +129,8 @@ export class SqlDatatabaseController {
         endpoint: dbConfig.endpoint,
         port: dbConfig.port,
         dbName: this.options.dbname,
+        strategyName: `${engine}DBStrategy`,
+        dbType: engine === 'postgres' ? 'POSTGRES' : 'MYSQL',
         vpcConfig: extractVpcConfigFromDbInstance(dbConfig.dbInstance),
       },
       connectionConfigs: {
@@ -209,7 +214,7 @@ export class SqlDatatabaseController {
     });
     const filePath = path.join(projRoot, 'db-details.json');
     fs.writeFileSync(filePath, detailsStr);
-    console.log(`Wrote ${detailsStr} into ${filePath}`);
+    console.log(`Wrote DB details ${detailsStr} at ${filePath}`);
   };
 
   /**

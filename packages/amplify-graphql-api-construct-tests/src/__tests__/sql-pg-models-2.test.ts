@@ -7,19 +7,19 @@ import { testGraphQLAPI } from './sql-models-common';
 
 jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
 
-describe('CDK GraphQL Transformer deployments with SQL datasources', () => {
+describe('CDK GraphQL Transformer deployments with Postgres SQL datasources', () => {
   let projRoot: string;
-  const projFolderName = 'sqlmodels2';
+  const projFolderName = 'pgmodels2';
 
   const [username, password, identifier] = generator.generateMultiple(3);
 
   const region = process.env.CLI_REGION ?? 'us-west-2';
 
   const dbname = 'default_db';
-  const engine = 'mysql';
+  const engine = 'postgres';
 
   const databaseController: SqlDatatabaseController = new SqlDatatabaseController(
-    ['CREATE TABLE todos (id VARCHAR(40) PRIMARY KEY, description VARCHAR(256))'],
+    ['CREATE TABLE "todos" ("id" VARCHAR(40) PRIMARY KEY, "description" VARCHAR(256))'],
     {
       identifier,
       engine,
