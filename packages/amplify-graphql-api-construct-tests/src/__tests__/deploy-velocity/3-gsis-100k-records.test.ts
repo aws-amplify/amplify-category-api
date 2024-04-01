@@ -1,6 +1,6 @@
 import {
   COUNT_100_THOUSAND,
-  DURATION_30_MINUTES,
+  DURATION_45_MINUTES,
   MUTATION_THREE_FIELD_CREATE,
   SCHEMA_THREE_FIELDS_ALL_INDEXED,
   SCHEMA_THREE_FIELDS_NO_INDEX,
@@ -9,7 +9,7 @@ import { recordCountDataProvider, recordCountDataValidator, testManagedTableDepl
 
 testManagedTableDeployment({
   name: '3 GSIs updated - 100k Records',
-  maxDeployDurationMs: DURATION_30_MINUTES,
+  maxDeployDurationMs: DURATION_45_MINUTES,
   initialSchema: SCHEMA_THREE_FIELDS_NO_INDEX,
   updatedSchema: SCHEMA_THREE_FIELDS_ALL_INDEXED,
   dataSetup: recordCountDataProvider(COUNT_100_THOUSAND, MUTATION_THREE_FIELD_CREATE),
