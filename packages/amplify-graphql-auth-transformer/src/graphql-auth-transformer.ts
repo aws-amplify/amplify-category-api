@@ -1065,7 +1065,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       if (rule.groups && !rule.groupsField) {
         rule.groups.forEach((group) => {
           const groupClaim = rule.groupClaim || DEFAULT_GROUP_CLAIM;
-          const roleName = `${rule.provider}:staticGroup:${group}:${groupClaim}`;
+          const roleName = `${acm.getName()}:${rule.provider}:staticGroup:${group}:${groupClaim}`;
           if (!(roleName in this.roleMap)) {
             this.roleMap.set(roleName, {
               provider: rule.provider!,
@@ -1087,15 +1087,15 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         let roleDefinition: RoleDefinition;
         switch (rule.provider) {
           case 'apiKey':
-            roleName = 'apiKey:public';
+            roleName = `${acm.getName()}:apiKey:public`;
             roleDefinition = { provider: rule.provider, strategy: rule.allow, static: true };
             break;
           case 'function':
-            roleName = 'function:custom';
+            roleName = `${acm.getName()}:function:custom`;
             roleDefinition = { provider: rule.provider, strategy: rule.allow, static: true };
             break;
           case 'iam':
-            roleName = `iam:${rule.allow}`;
+            roleName = `${acm.getName()}:iam:${rule.allow}`;
             roleDefinition = {
               provider: rule.provider,
               strategy: rule.allow,
@@ -1110,7 +1110,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
               const groupsField = rule.groupsField || DEFAULT_GROUPS_FIELD;
               const fieldType = (context.output.getType(acm.getName()) as any).fields.find((f) => f.name.value === groupsField);
               const isGroupFieldList = fieldType ? isListType(fieldType.type) : false;
-              roleName = `${rule.provider}:dynamicGroup:${groupsField}:${groupClaim}`;
+              roleName = `${acm.getName()}:${rule.provider}:dynamicGroup:${groupsField}:${groupClaim}`;
               roleDefinition = {
                 provider: rule.provider,
                 strategy: rule.allow,
@@ -1125,7 +1125,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
               const isOwnerFieldList = fieldType ? isListType(fieldType.type) : false;
               const useSub = context.transformParameters.useSubUsernameForDefaultIdentityClaim;
               const ownerClaim = rule.identityClaim || (useSub ? DEFAULT_UNIQUE_IDENTITY_CLAIM : DEFAULT_IDENTITY_CLAIM);
-              roleName = `${rule.provider}:owner:${ownerField}:${ownerClaim}`;
+              roleName = `${acm.getName()}:${rule.provider}:owner:${ownerField}:${ownerClaim}`;
               roleDefinition = {
                 provider: rule.provider,
                 strategy: rule.allow,
@@ -1135,7 +1135,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
                 isEntityList: isOwnerFieldList,
               };
             } else if (rule.allow === 'private') {
-              roleName = `${rule.provider}:${rule.allow}`;
+              roleName = `${acm.getName()}:${rule.provider}:${rule.allow}`;
               roleDefinition = {
                 provider: rule.provider,
                 strategy: rule.allow,
@@ -1148,7 +1148,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
           default:
             throw new TransformerContractError(`Could not create a role from ${JSON.stringify(rule)}`);
         }
-        if (!(roleName in this.roleMap)) {
+        if (!this.roleMap.has(roleName))
+        {
           this.roleMap.set(roleName, roleDefinition);
         }
         acm.setRole({
