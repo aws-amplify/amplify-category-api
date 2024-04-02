@@ -129,10 +129,10 @@ const getReadRolesForField = (acm: AccessControlMatrix, readRoles: Array<string>
   let allowedRoles = [...readRoles];
 
   if (hasCognitoPrivateRole) {
-    allowedRoles = allowedRoles.filter((r) => !(r.startsWith(`${acm.getName()}:userPools:`) && r !== 'userPools:private'));
+    allowedRoles = allowedRoles.filter((r) => !(r.startsWith(`${acm.getName()}:userPools:`) && r !== `${acm.getName()}:userPools:private`));
   }
   if (hasOIDCPrivateRole) {
-    allowedRoles = allowedRoles.filter((r) => !(r.startsWith(`${acm.getName()}:oidc:`) && r !== 'oidc:private'));
+    allowedRoles = allowedRoles.filter((r) => !(r.startsWith(`${acm.getName()}:oidc:`) && r !== `${acm.getName()}:oidc:private`));
   }
   return allowedRoles;
 };
