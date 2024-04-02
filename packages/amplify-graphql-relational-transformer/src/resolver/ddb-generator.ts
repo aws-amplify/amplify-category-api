@@ -40,6 +40,7 @@ import { ObjectTypeDefinitionNode } from 'graphql';
 import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from '../types';
 import { condenseRangeKey } from '../resolvers';
 import { RelationalResolverGenerator } from './generator';
+import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
 
 const SORT_KEY_VALUE = 'sortKeyValue';
 const CONNECTION_STACK = 'ConnectionStack';
@@ -322,7 +323,14 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
             false,
             ifElse(
               and([not(ref('ctx.result.items.isEmpty()')), equals(ref('ctx.result.scannedCount'), int(1))]),
-              toJson(ref('ctx.result.items[0]')),
+              compoundExpression([
+                set(ref('resultValue'), ref('ctx.result.items[0]')),
+                iff(
+                  equals(methodCall(ref('ctx.source.get'), str(OPERATION_KEY)), str('Mutation')),
+                  qref(methodCall(ref('resultValue.put'), str(OPERATION_KEY), str('Mutation'))),
+                ),
+                toJson(ref('resultValue')),
+              ]),
               compoundExpression([
                 iff(and([ref('ctx.result.items.isEmpty()'), equals(ref('ctx.result.scannedCount'), int(1))]), ref('util.unauthorized()')),
                 toJson(nul()),
