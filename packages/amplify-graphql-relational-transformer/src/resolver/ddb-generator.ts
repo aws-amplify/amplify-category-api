@@ -8,6 +8,7 @@ import {
   bool,
   compoundExpression,
   equals,
+  forEach,
   ifElse,
   iff,
   int,
@@ -206,7 +207,21 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
         print(
           DynamoDBMappingTemplate.dynamoDBResponse(
             false,
-            compoundExpression([iff(raw('!$result'), set(ref('result'), ref('ctx.result'))), raw('$util.toJson($result)')]),
+            compoundExpression([
+              iff(raw('!$result'), set(ref('result'), ref('ctx.result'))),
+
+              // Make sure each retrieved item has the __operation field, so the individual type resolver can appropriately redact fields
+              compoundExpression([
+                iff(
+                  equals(
+                    methodCall(ref('util.defaultIfNull'), methodCall(ref('ctx.source.get'), str(OPERATION_KEY)), nul()),
+                    str('Mutation'),
+                  ),
+                  forEach(ref('item'), ref('result.items'), [qref(methodCall(ref('item.put'), str(OPERATION_KEY), str('Mutation')))]),
+                ),
+                raw('$util.toJson($result)'),
+              ]),
+            ]),
           ),
         ),
         `${object.name.value}.${field.name.value}.res.vtl`,
