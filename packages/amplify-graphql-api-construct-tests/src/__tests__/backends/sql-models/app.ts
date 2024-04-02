@@ -2,13 +2,20 @@
 import 'source-map-support/register';
 import { App, Stack, Duration, CfnOutput } from 'aws-cdk-lib';
 // @ts-ignore
-import { AmplifyGraphqlApi, AmplifyGraphqlDefinition, SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
+import {
+  AmplifyGraphqlApi,
+  AmplifyGraphqlDefinition,
+  SqlModelDataSourceDbConnectionConfig,
+  ModelDataSourceStrategySqlDbType,
+} from '@aws-amplify/graphql-api-construct';
 
 interface DBDetails {
   dbConfig: {
     endpoint: string;
     port: number;
     dbName: string;
+    strategyName: string;
+    dbType: ModelDataSourceStrategySqlDbType;
     vpcConfig: {
       vpcId: string;
       securityGroupIds: string[];
@@ -23,11 +30,10 @@ interface DBDetails {
   dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
 }
 
-// DO NOT CHANGE THIS VALUE: The test uses it to find resources by name
-const STRATEGY_NAME = 'MySqlDBStrategy';
-
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const dbDetails: DBDetails = require('../db-details.json');
+const strategyName = dbDetails.dbConfig.strategyName;
+const dbType = dbDetails.dbConfig.dbType;
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
@@ -38,7 +44,7 @@ const stack = new Stack(app, packageJson.name.replace(/_/g, '-'), {
 });
 
 const api = new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
-  apiName: 'MySqlBoundApi',
+  apiName: `${dbType}${Date.now()}`,
   definition: AmplifyGraphqlDefinition.fromString(
     /* GraphQL */ `
       type Todo @model @refersTo(name: "todos") {
@@ -47,8 +53,8 @@ const api = new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
       }
     `,
     {
-      name: STRATEGY_NAME,
-      dbType: 'MYSQL',
+      name: strategyName,
+      dbType,
       vpcConfiguration: {
         vpcId: dbDetails.dbConfig.vpcConfig.vpcId,
         securityGroupIds: dbDetails.dbConfig.vpcConfig.securityGroupIds,
@@ -73,5 +79,5 @@ const {
   resources: { functions },
 } = api;
 
-const sqlLambda = functions[`SQLFunction${STRATEGY_NAME}`];
+const sqlLambda = functions[`SQLFunction${strategyName}`];
 new CfnOutput(stack, 'SQLFunctionName', { value: sqlLambda.functionName });
