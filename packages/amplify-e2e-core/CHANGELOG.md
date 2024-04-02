@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.7.0-sql-gen2-1.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.6.0...amplify-category-api-e2e-core@4.7.0-sql-gen2-1.0) (2024-04-02)
+
+### Features
+
+- add cdk sql connection string support ([#2409](https://github.com/aws-amplify/amplify-category-api/issues/2409)) ([274d117](https://github.com/aws-amplify/amplify-category-api/commit/274d1176d96e265d02817a975848c767d6d43c31))
+- **api:** enable cors on codegen asset bucket ([#2366](https://github.com/aws-amplify/amplify-category-api/issues/2366)) ([b69a492](https://github.com/aws-amplify/amplify-category-api/commit/b69a4924002ecb17780b9c3a0f33f44f59d9b642))
+- generic iam authorization ([#2385](https://github.com/aws-amplify/amplify-category-api/issues/2385)) ([550ee80](https://github.com/aws-amplify/amplify-category-api/commit/550ee803275817d25447ff1400d55eb1ad4cd0c2))
+
 # [4.6.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.5.2...amplify-category-api-e2e-core@4.6.0) (2024-03-28)
 
 ### Features

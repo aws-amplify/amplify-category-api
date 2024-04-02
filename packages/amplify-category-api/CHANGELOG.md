@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.10.1-sql-gen2-1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.10.0...@aws-amplify/amplify-category-api@5.10.1-sql-gen2-1.0) (2024-04-02)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
 # [5.10.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.9.8...@aws-amplify/amplify-category-api@5.10.0) (2024-03-28)
 
 ### Bug Fixes
