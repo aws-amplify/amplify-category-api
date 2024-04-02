@@ -1153,13 +1153,13 @@ batch:
           CLI_REGION: eu-south-1
       depend-on:
         - publish_to_local_registry
-    - identifier: relationships_sql_iam_access_sql_models_sql_pg_models
+    - identifier: relationships_sql_iam_access
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/relationships.test.ts|src/__tests__/sql-iam-access.test.ts|src/__tests__/sql-models.test.ts|src/__tests__/sql-pg-models.test.ts
+            src/__tests__/relationships.test.ts|src/__tests__/sql-iam-access.test.ts
           CLI_REGION: eu-west-1
       depend-on:
         - publish_to_local_registry
@@ -1432,6 +1432,15 @@ batch:
         variables:
           TEST_SUITE: src/__tests__/sql-models-2.test.ts
           CLI_REGION: us-east-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: sql_pg_models
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/sql-pg-models.test.ts
+          CLI_REGION: us-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
