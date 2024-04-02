@@ -338,6 +338,7 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
             false,
             ifElse(
               and([not(ref('ctx.result.items.isEmpty()')), equals(ref('ctx.result.scannedCount'), int(1))]),
+              // Make sure the retrieved item has the __operation field, so the individual type resolver can appropriately redact fields
               compoundExpression([
                 set(ref('resultValue'), ref('ctx.result.items[0]')),
                 set(ref('operation'), methodCall(ref('util.defaultIfNull'), methodCall(ref('ctx.source.get'), str(OPERATION_KEY)), nul())),
