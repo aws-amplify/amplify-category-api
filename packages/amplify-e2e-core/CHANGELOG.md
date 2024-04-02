@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.1-sql-gen2.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.6.0...amplify-category-api-e2e-core@4.6.1-sql-gen2.0) (2024-04-02)
+
+### Bug Fixes
+
+- construct e2e tests ([f2a52c2](https://github.com/aws-amplify/amplify-category-api/commit/f2a52c23fb1bb8903489e077ea2185709aa6a18e))
+
 # [4.6.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.5.2...amplify-category-api-e2e-core@4.6.0) (2024-03-28)
 
 ### Features

@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.8.0-sql-gen2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.7.0...@aws-amplify/graphql-model-transformer@2.8.0-sql-gen2.0) (2024-04-02)
+
+### Bug Fixes
+
+- set engine for secrets manager config ([cff2827](https://github.com/aws-amplify/amplify-category-api/commit/cff282707072d1d8e88b47ca7a55247d8c77ddfc))
+
+### Features
+
+- add option to specify connection string ssm path ([7f1d850](https://github.com/aws-amplify/amplify-category-api/commit/7f1d850de86be977fe5c859433433d77ccd077db))
+
 # [2.7.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.6.0...@aws-amplify/graphql-model-transformer@2.7.0) (2024-03-28)
 
 ### Features

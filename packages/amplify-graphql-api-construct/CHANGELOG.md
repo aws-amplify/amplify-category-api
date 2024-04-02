@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.8.0-sql-gen2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.7.0...@aws-amplify/graphql-api-construct@1.8.0-sql-gen2.0) (2024-04-02)
+
+### Features
+
+- add option to specify connection string ssm path ([7f1d850](https://github.com/aws-amplify/amplify-category-api/commit/7f1d850de86be977fe5c859433433d77ccd077db))
+
 # [1.7.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.6.0...@aws-amplify/graphql-api-construct@1.7.0) (2024-03-28)
 
 ### Features
