@@ -113,26 +113,26 @@ import { AuthVTLGenerator } from './vtl-generator/vtl-generator';
  */
 const getReadRolesForField = (acm: AccessControlMatrix, readRoles: Array<string>, fieldName: string): Array<string> => {
   const hasCognitoPrivateRole =
-    readRoles.some((r) => r === 'userPools:private') &&
-    acm.isAllowed('userPools:private', fieldName, 'get') &&
-    acm.isAllowed('userPools:private', fieldName, 'list') &&
-    acm.isAllowed('userPools:private', fieldName, 'sync') &&
-    acm.isAllowed('userPools:private', fieldName, 'search') &&
-    acm.isAllowed('userPools:private', fieldName, 'listen');
+    readRoles.some((r) => r === `${acm.getName()}:userPools:private`) &&
+    acm.isAllowed(`${acm.getName()}:userPools:private`, fieldName, 'get') &&
+    acm.isAllowed(`${acm.getName()}:userPools:private`, fieldName, 'list') &&
+    acm.isAllowed(`${acm.getName()}:userPools:private`, fieldName, 'sync') &&
+    acm.isAllowed(`${acm.getName()}:userPools:private`, fieldName, 'search') &&
+    acm.isAllowed(`${acm.getName()}:userPools:private`, fieldName, 'listen');
   const hasOIDCPrivateRole =
-    readRoles.some((r) => r === 'oidc:private') &&
-    acm.isAllowed('oidc:private', fieldName, 'get') &&
-    acm.isAllowed('oidc:private', fieldName, 'list') &&
-    acm.isAllowed('oidc:private', fieldName, 'sync') &&
-    acm.isAllowed('oidc:private', fieldName, 'search') &&
-    acm.isAllowed('oidc:private', fieldName, 'listen');
+    readRoles.some((r) => r === `${acm.getName()}:oidc:private`) &&
+    acm.isAllowed(`${acm.getName()}:oidc:private`, fieldName, 'get') &&
+    acm.isAllowed(`${acm.getName()}:oidc:private`, fieldName, 'list') &&
+    acm.isAllowed(`${acm.getName()}:oidc:private`, fieldName, 'sync') &&
+    acm.isAllowed(`${acm.getName()}:oidc:private`, fieldName, 'search') &&
+    acm.isAllowed(`${acm.getName()}:oidc:private`, fieldName, 'listen');
   let allowedRoles = [...readRoles];
 
   if (hasCognitoPrivateRole) {
-    allowedRoles = allowedRoles.filter((r) => !(r.startsWith('userPools:') && r !== 'userPools:private'));
+    allowedRoles = allowedRoles.filter((r) => !(r.startsWith(`${acm.getName()}:userPools:`) && r !== 'userPools:private'));
   }
   if (hasOIDCPrivateRole) {
-    allowedRoles = allowedRoles.filter((r) => !(r.startsWith('oidc:') && r !== 'oidc:private'));
+    allowedRoles = allowedRoles.filter((r) => !(r.startsWith(`${acm.getName()}:oidc:`) && r !== 'oidc:private'));
   }
   return allowedRoles;
 };
