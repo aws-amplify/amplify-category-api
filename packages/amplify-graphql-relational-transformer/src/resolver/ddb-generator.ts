@@ -325,8 +325,9 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
               and([not(ref('ctx.result.items.isEmpty()')), equals(ref('ctx.result.scannedCount'), int(1))]),
               compoundExpression([
                 set(ref('resultValue'), ref('ctx.result.items[0]')),
+                set(ref('operation'), methodCall(ref('util.defaultIfNull'), methodCall(ref('ctx.source.get'), str(OPERATION_KEY)), nul())),
                 iff(
-                  equals(methodCall(ref('ctx.source.get'), str(OPERATION_KEY)), str('Mutation')),
+                  equals(ref('operation'), str('Mutation')),
                   qref(methodCall(ref('resultValue.put'), str(OPERATION_KEY), str('Mutation'))),
                 ),
                 toJson(ref('resultValue')),
