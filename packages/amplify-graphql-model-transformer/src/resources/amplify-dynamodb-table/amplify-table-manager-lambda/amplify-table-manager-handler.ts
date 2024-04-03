@@ -998,7 +998,7 @@ const getTtlStatus = async (tableName: string): Promise<DescribeTimeToLiveComman
   await sleep(initialDelay);
   // Max retry is 3
   // Retry delay is 1000ms
-  const describeTimeToLiveResult = makeApiCallWithExponentialRetries(
+  const describeTimeToLiveResult = makeApiCallWithExponentialRetriesOnThrottlingException(
     async () => await ddbClient.describeTimeToLive({ TableName: tableName }),
     3,
     1000,
@@ -1013,7 +1013,7 @@ const getTtlStatus = async (tableName: string): Promise<DescribeTimeToLiveComman
  * @param retryDelayMs Initial delay between retries, in milliseconds.
  * @returns A promise that resolves with the API call result or rejects after exceeding max retries.
  */
-const makeApiCallWithExponentialRetries = async <T>(
+const makeApiCallWithExponentialRetriesOnThrottlingException = async <T>(
   func: () => Promise<T>,
   maxRetries: number = 3,
   retryDelayMs: number = 1000,
@@ -1025,13 +1025,17 @@ const makeApiCallWithExponentialRetries = async <T>(
       const result: T = await func();
       return result;
     } catch (error) {
-      attempts++;
-      if (attempts > maxRetries) {
-        break;
+      if (error.name === 'ThrottlingException') {
+        attempts++;
+        if (attempts > maxRetries) {
+          break;
+        }
+        const exponentialDelay = retryDelayMs * Math.pow(2, attempts - 1);
+        console.log(`API call failed, retrying in ${exponentialDelay}ms...`);
+        await sleep(exponentialDelay);
+      } else {
+        throw error;
       }
-      const exponentialDelay = retryDelayMs * Math.pow(2, attempts - 1);
-      console.log(`API call failed, retrying in ${exponentialDelay}ms...`);
-      await sleep(exponentialDelay);
     }
   }
   throw new Error(`API call failed after ${maxRetries} retries.`);
