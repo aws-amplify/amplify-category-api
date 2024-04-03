@@ -14,6 +14,7 @@ import type {
   TransformParameters,
   DataSourceStrategiesProvider,
   RDSLayerMappingProvider,
+  RDSSNSTopicMappingProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { Aws, CfnOutput, Fn, Stack } from 'aws-cdk-lib';
@@ -87,7 +88,7 @@ export interface GraphQLTransformOptions {
   readonly resolverConfig?: ResolverConfig;
 }
 
-export interface TransformOption extends DataSourceStrategiesProvider, RDSLayerMappingProvider {
+export interface TransformOption extends DataSourceStrategiesProvider, RDSLayerMappingProvider, RDSSNSTopicMappingProvider {
   scope: Construct;
   nestedStackProvider: NestedStackProvider;
   parameterProvider?: TransformParameterProvider;
@@ -189,6 +190,7 @@ export class GraphQLTransform {
     nestedStackProvider,
     parameterProvider,
     rdsLayerMapping,
+    rdsSnsTopicMapping,
     schema,
     scope,
     sqlDirectiveDataSourceStrategies,
@@ -204,6 +206,7 @@ export class GraphQLTransform {
       nestedStackProvider,
       parameterProvider,
       rdsLayerMapping,
+      rdsSnsTopicMapping,
       resolverConfig: this.resolverConfig,
       scope,
       sqlDirectiveDataSourceStrategies: sqlDirectiveDataSourceStrategies ?? [],
