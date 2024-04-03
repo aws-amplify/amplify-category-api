@@ -14,6 +14,7 @@ import {
   TransformerContextProvider,
   isSqlModelDataSourceSsmDbConnectionConfig,
   isSqlModelDataSourceSecretsManagerDbConnectionConfig,
+  isSqlModelDataSourceSsmDbConnectionStringConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { LambdaDataSource } from 'aws-cdk-lib/aws-appsync';
@@ -134,6 +135,10 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       environment.database = secretEntry.databaseName;
       environment.host = secretEntry.hostname;
       credentialStorageMethod = CredentialStorageMethod.SECRETS_MANAGER;
+    } else if (isSqlModelDataSourceSsmDbConnectionStringConfig(secretEntry)) {
+      environment.CREDENTIAL_STORAGE_METHOD = 'SSM';
+      environment.connectionString = secretEntry.connectionUriSsmPath;
+      credentialStorageMethod = CredentialStorageMethod.SSM;
     }
 
     const lambda = createRdsLambda(
