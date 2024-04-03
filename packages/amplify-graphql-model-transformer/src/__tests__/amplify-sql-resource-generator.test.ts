@@ -23,18 +23,18 @@ describe('ModelTransformer with SQL data sources:', () => {
     },
   };
 
-  it('should successfully transform simple valid schema', async () => {
-    const validSchema = `
-      type Post @model {
-          id: ID! @primaryKey
-          title: String!
-      }
-      type Comment @model {
+  const validSchema = `
+    type Post @model {
         id: ID! @primaryKey
-        content: String
-      }
-    `;
+        title: String!
+    }
+    type Comment @model {
+      id: ID! @primaryKey
+      content: String
+    }
+  `;
 
+  it('should successfully transform simple valid schema', async () => {
     const out = testTransform({
       schema: validSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
@@ -50,17 +50,6 @@ describe('ModelTransformer with SQL data sources:', () => {
   });
 
   it('should assign SSM permissions', () => {
-    const validSchema = `
-      type Post @model {
-          id: ID! @primaryKey
-          title: String!
-      }
-      type Comment @model {
-        id: ID! @primaryKey
-        content: String
-      }
-    `;
-
     const out = testTransform({
       schema: validSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
@@ -107,17 +96,6 @@ describe('ModelTransformer with SQL data sources:', () => {
   });
 
   it('should assign secrets manager permissions', () => {
-    const validSchema = `
-      type Post @model {
-          id: ID! @primaryKey
-          title: String!
-      }
-      type Comment @model {
-        id: ID! @primaryKey
-        content: String
-      }
-    `;
-
     const secretArn = 'myfakesecretarn';
     const secretsManagerConfig = {
       ...mysqlStrategy,
@@ -174,17 +152,6 @@ describe('ModelTransformer with SQL data sources:', () => {
   });
 
   it('should assign secrets manager permissions with custom encryption key', () => {
-    const validSchema = `
-      type Post @model {
-          id: ID! @primaryKey
-          title: String!
-      }
-      type Comment @model {
-        id: ID! @primaryKey
-        content: String
-      }
-    `;
-
     const secretArn = 'myfakesecretarn';
     const keyArn = 'myfakekeyarn';
     const secretsManagerConfig = {
@@ -240,5 +207,72 @@ describe('ModelTransformer with SQL data sources:', () => {
     expect(cloudWatchStatements[0].Resource).toEqual('arn:aws:logs:*:*:*');
 
     expect(PolicyDocument).toMatchSnapshot();
+  });
+
+  it('should process connection uri as input', () => {
+    const connectionStringMySql = {
+      ...mysqlStrategy,
+      dbConnectionConfig: {
+        connectionUriSsmPath: '/test/connectionUri',
+      },
+    };
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(validSchema, connectionStringMySql),
+    });
+    expect(out).toBeDefined();
+    const resourceNames = getResourceNamesForStrategy(connectionStringMySql);
+    const sqlApiStack = out.stacks[resourceNames.sqlStack];
+    expect(sqlApiStack).toBeDefined();
+
+    // Check that SSM permissions are assigned
+    const [, policy] =
+      Object.entries(sqlApiStack.Resources!).find(([resourceName]) => {
+        return resourceName.startsWith(resourceNames.sqlLambdaExecutionRolePolicy);
+      }) || [];
+
+    expect(policy).toBeDefined();
+    const {
+      Properties: { PolicyDocument },
+    } = policy;
+    expect(PolicyDocument.Statement.length).toEqual(2);
+
+    const ssmStatements = PolicyDocument.Statement.filter(
+      (statement: any) => JSON.stringify(statement.Action) === JSON.stringify(['ssm:GetParameter', 'ssm:GetParameters']),
+    );
+    expect(ssmStatements.length).toEqual(1);
+    expect(ssmStatements[0].Resource).toEqual(`arn:aws:ssm:*:*:parameter${connectionStringMySql.dbConnectionConfig.connectionUriSsmPath}`);
+
+    // Check that secrets manager permissions are not assigned
+    const secretsManagerStatements = PolicyDocument.Statement.filter(
+      (statement: any) => statement.Action === 'secretsmanager:GetSecretValue',
+    );
+    expect(secretsManagerStatements.length).toEqual(0);
+
+    const kmsStatements = PolicyDocument.Statement.filter((statement: any) => statement.Action === 'kms:Decrypt');
+    expect(kmsStatements.length).toEqual(0);
+
+    // Check that cloudwatch permissions are assigned
+    const cloudWatchStatements = PolicyDocument.Statement.filter(
+      (statement: any) =>
+        JSON.stringify(statement.Action) === JSON.stringify(['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents']),
+    );
+    expect(cloudWatchStatements.length).toEqual(1);
+    expect(cloudWatchStatements[0].Resource).toEqual('arn:aws:logs:*:*:*');
+
+    expect(PolicyDocument).toMatchSnapshot();
+
+    // Check that the connection uri is passed to the lambda as an environment variable
+    const [, sqlLambda] =
+      Object.entries(sqlApiStack.Resources!).find(([resourceName]) => {
+        return resourceName.startsWith(resourceNames.sqlLambdaFunction);
+      }) || [];
+    expect(sqlLambda).toBeDefined();
+    const envVars = sqlLambda.Properties.Environment.Variables;
+    expect(envVars).toBeDefined();
+    expect(envVars.connectionString).toBeDefined();
+    expect(envVars.CREDENTIAL_STORAGE_METHOD).toEqual('SSM');
+    expect(envVars.SSM_ENDPOINT).toBeDefined();
   });
 });

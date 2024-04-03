@@ -5793,7 +5793,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
-        "line": 180
+        "line": 190
       },
       "name": "CustomSqlDataSourceStrategy",
       "properties": [
@@ -5806,7 +5806,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 185
+            "line": 195
           },
           "name": "fieldName",
           "type": {
@@ -5822,7 +5822,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 188
+            "line": 198
           },
           "name": "strategy",
           "type": {
@@ -5838,7 +5838,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 182
+            "line": 192
           },
           "name": "typeName",
           "type": {
@@ -7231,6 +7231,9 @@
                 },
                 {
                   "fqn": "@aws-amplify/graphql-api-construct.SqlModelDataSourceSsmDbConnectionConfig"
+                },
+                {
+                  "fqn": "@aws-amplify/graphql-api-construct.SqlModelDataSourceSsmDbConnectionStringConfig"
                 }
               ]
             }
@@ -7344,7 +7347,7 @@
       "kind": "class",
       "locationInModule": {
         "filename": "src/sql-model-datasource-strategy.ts",
-        "line": 71
+        "line": 85
       },
       "methods": [
         {
@@ -7355,7 +7358,7 @@
           },
           "locationInModule": {
             "filename": "src/sql-model-datasource-strategy.ts",
-            "line": 78
+            "line": 92
           },
           "name": "fromCustomSqlFiles",
           "parameters": [
@@ -7501,7 +7504,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
-        "line": 134
+        "line": 144
       },
       "name": "SqlModelDataSourceSecretsManagerDbConnectionConfig",
       "properties": [
@@ -7514,7 +7517,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 145
+            "line": 155
           },
           "name": "databaseName",
           "type": {
@@ -7530,7 +7533,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 148
+            "line": 158
           },
           "name": "hostname",
           "type": {
@@ -7546,7 +7549,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 142
+            "line": 152
           },
           "name": "port",
           "type": {
@@ -7563,7 +7566,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 136
+            "line": 146
           },
           "name": "secretArn",
           "type": {
@@ -7580,7 +7583,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 139
+            "line": 149
           },
           "name": "keyArn",
           "optional": true,
@@ -7603,7 +7606,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
-        "line": 156
+        "line": 166
       },
       "name": "SqlModelDataSourceSsmDbConnectionConfig",
       "properties": [
@@ -7616,7 +7619,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 172
+            "line": 182
           },
           "name": "databaseNameSsmPath",
           "type": {
@@ -7633,7 +7636,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 160
+            "line": 170
           },
           "name": "hostnameSsmPath",
           "type": {
@@ -7649,7 +7652,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 169
+            "line": 179
           },
           "name": "passwordSsmPath",
           "type": {
@@ -7665,7 +7668,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 163
+            "line": 173
           },
           "name": "portSsmPath",
           "type": {
@@ -7681,7 +7684,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 166
+            "line": 176
           },
           "name": "usernameSsmPath",
           "type": {
@@ -7690,6 +7693,41 @@
         }
       ],
       "symbolId": "src/model-datasource-strategy-types:SqlModelDataSourceSsmDbConnectionConfig"
+    },
+    "@aws-amplify/graphql-api-construct.SqlModelDataSourceSsmDbConnectionStringConfig": {
+      "assembly": "@aws-amplify/graphql-api-construct",
+      "datatype": true,
+      "docs": {
+        "stability": "experimental",
+        "summary": "The configuration option to use a Secure Systems Manager parameter to store the connection string to the database."
+      },
+      "fqn": "@aws-amplify/graphql-api-construct.SqlModelDataSourceSsmDbConnectionStringConfig",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "src/model-datasource-strategy-types.ts",
+        "line": 133
+      },
+      "name": "SqlModelDataSourceSsmDbConnectionStringConfig",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "*",
+            "stability": "experimental",
+            "summary": "The SSM Path to the secure connection string used for connecting to the database."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/model-datasource-strategy-types.ts",
+            "line": 135
+          },
+          "name": "connectionUriSsmPath",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "src/model-datasource-strategy-types:SqlModelDataSourceSsmDbConnectionStringConfig"
     },
     "@aws-amplify/graphql-api-construct.StreamSpecification": {
       "assembly": "@aws-amplify/graphql-api-construct",
@@ -8245,6 +8283,6 @@
       "symbolId": "src/model-datasource-strategy-types:VpcConfig"
     }
   },
-  "version": "1.7.1-gen2-release.0",
-  "fingerprint": "YbPOWRUvL8IS16JRx71Y/3nTQJlmmL0hnaUVlfDTsUQ="
+  "version": "1.7.1-gen2-release.1",
+  "fingerprint": "k5kwZ7VyWFPxExZgzbhCPKRwjw7n0HCUaG0KxjdWcvM="
 }

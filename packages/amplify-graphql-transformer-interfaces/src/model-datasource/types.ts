@@ -121,7 +121,17 @@ export interface SubnetAvailabilityZone {
  */
 export type SqlModelDataSourceDbConnectionConfig =
   | SqlModelDataSourceSecretsManagerDbConnectionConfig
-  | SqlModelDataSourceSsmDbConnectionConfig;
+  | SqlModelDataSourceSsmDbConnectionConfig
+  | SqlModelDataSourceSsmDbConnectionStringConfig;
+
+/**
+ * The configuration option to use a Secure Systems Manager parameter to store the connection string to the database.
+ * @experimental
+ */
+export interface SqlModelDataSourceSsmDbConnectionStringConfig {
+  /** The SSM Path to the secure connection string used for connecting to the database. **/
+  readonly connectionUriSsmPath: string;
+}
 
 /*
  * The credentials stored in Secrets Manager that the lambda data source will use to connect to the database.
@@ -267,4 +277,13 @@ export const isSqlModelDataSourceSecretsManagerDbConnectionConfig = (
     typeof obj.databaseName === 'string' &&
     typeof obj.hostname === 'string'
   );
+};
+
+/**
+ * Type predicate that returns true if the object is a SqlModelDataSourceSsmDbConnectionStringConfig.
+ * @param obj the object to inspect
+ * @returns true if the object is shaped like a SqlModelDataSourceSsmDbConnectionStringConfig
+ */
+export const isSqlModelDataSourceSsmDbConnectionStringConfig = (obj: any): obj is SqlModelDataSourceSsmDbConnectionStringConfig => {
+  return (typeof obj === 'object' || typeof obj === 'function') && typeof obj.connectionUriSsmPath === 'string';
 };
