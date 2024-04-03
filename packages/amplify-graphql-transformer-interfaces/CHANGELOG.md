@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.6.0-gen2-release.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.5.1-gen2-release.0...@aws-amplify/graphql-transformer-interfaces@3.6.0-gen2-release.0) (2024-04-03)
+
+### Features
+
+- add cdk sql connection string support ([#2409](https://github.com/aws-amplify/amplify-category-api/issues/2409)) ([274d117](https://github.com/aws-amplify/amplify-category-api/commit/274d1176d96e265d02817a975848c767d6d43c31))
+
 ## [3.5.1-gen2-release.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.5.0-gen2-release.1...@aws-amplify/graphql-transformer-interfaces@3.5.1-gen2-release.0) (2024-03-29)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces
