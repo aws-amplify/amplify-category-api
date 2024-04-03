@@ -26,7 +26,7 @@ type Slot = {
 };
 
 // Name of the None Data source used for pipeline resolver
-const NONE_DATA_SOURCE_NAME = 'NONE_DS';
+export const NONE_DATA_SOURCE_NAME = 'NONE_DS';
 
 /**
  * ResolverManager
