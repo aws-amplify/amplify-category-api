@@ -1141,7 +1141,7 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: src/__tests__/sql-pg-models.test.ts
-          CLI_REGION: sa-east-1
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: admin_role
@@ -1411,13 +1411,8 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
-<<<<<<< HEAD
-          TEST_SUITE: src/__tests__/sql-models.test.ts
-          CLI_REGION: us-east-2
-=======
           TEST_SUITE: src/__tests__/sql-models-1.test.ts
-          CLI_REGION: us-east-1
->>>>>>> main
+          CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
     - identifier: sql_models_2
@@ -1426,7 +1421,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/sql-models-2.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: us-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
