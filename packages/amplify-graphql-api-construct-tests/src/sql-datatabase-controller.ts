@@ -1,23 +1,31 @@
 import path from 'path';
 import * as fs from 'fs-extra';
-import { SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
+import { SqlModelDataSourceDbConnectionConfig, ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-api-construct';
 import {
-  deleteDbConnectionConfig,
+  deleteSSMParameters,
   deleteDbConnectionConfigWithSecretsManager,
   deleteDBInstance,
   extractVpcConfigFromDbInstance,
   RDSConfig,
+  SqlEngine,
   setupRDSInstanceAndData,
   storeDbConnectionConfig,
+  storeDbConnectionStringConfig,
   storeDbConnectionConfigWithSecretsManager,
 } from 'amplify-category-api-e2e-core';
-import { isSqlModelDataSourceSecretsManagerDbConnectionConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  isSqlModelDataSourceSecretsManagerDbConnectionConfig,
+  isSqlModelDataSourceSsmDbConnectionConfig,
+  isSqlModelDataSourceSsmDbConnectionStringConfig,
+} from '@aws-amplify/graphql-transformer-interfaces';
 
 export interface SqlDatabaseDetails {
   dbConfig: {
     endpoint: string;
     port: number;
     dbName: string;
+    strategyName: string;
+    dbType: ModelDataSourceStrategySqlDbType;
     vpcConfig: {
       vpcId: string;
       securityGroupIds: string[];
@@ -84,25 +92,45 @@ export class SqlDatatabaseController {
     };
     console.log(`Stored db connection config in Secrets manager: ${JSON.stringify(dbConnectionConfigSecretsManagerCustomKey)}`);
 
+    const pathPrefix = `/${this.options.identifier}/test`;
+    const engine = this.options.engine;
     const dbConnectionConfigSSM = await storeDbConnectionConfig({
       region: this.options.region,
-      pathPrefix: `/${this.options.identifier}/test`,
+      pathPrefix,
       hostname: dbConfig.endpoint,
       port: dbConfig.port,
       databaseName: this.options.dbname,
       username: this.options.username,
       password: dbConfig.password,
     });
+    const dbConnectionStringConfigSSM = await storeDbConnectionStringConfig({
+      region: this.options.region,
+      pathPrefix,
+      connectionUri: this.getConnectionUri(
+        engine,
+        this.options.username,
+        dbConfig.password,
+        dbConfig.endpoint,
+        dbConfig.port,
+        this.options.dbname,
+      ),
+    });
+    const parameters = {
+      ...dbConnectionConfigSSM,
+      ...dbConnectionStringConfigSSM,
+    };
     if (!dbConnectionConfigSSM) {
       throw new Error('Failed to store db connection config for SSM');
     }
-    console.log(`Stored db connection config in SSM: ${JSON.stringify(dbConnectionConfigSSM)}`);
+    console.log(`Stored db connection config in SSM: ${JSON.stringify(Object.keys(parameters))}`);
 
     this.databaseDetails = {
       dbConfig: {
         endpoint: dbConfig.endpoint,
         port: dbConfig.port,
         dbName: this.options.dbname,
+        strategyName: `${engine}DBStrategy`,
+        dbType: engine === 'postgres' ? 'POSTGRES' : 'MYSQL',
         vpcConfig: extractVpcConfigFromDbInstance(dbConfig.dbInstance),
       },
       connectionConfigs: {
@@ -115,6 +143,7 @@ export class SqlDatatabaseController {
           port: dbConfig.port,
           secretArn: dbConfig.managedSecretArn,
         },
+        connectionUri: dbConnectionStringConfigSSM,
       },
     };
 
@@ -138,14 +167,21 @@ export class SqlDatatabaseController {
             region: this.options.region,
             secretArn: dbConnectionConfig.secretArn,
           });
-        } else {
-          return deleteDbConnectionConfig({
+        } else if (isSqlModelDataSourceSsmDbConnectionConfig(dbConnectionConfig)) {
+          return deleteSSMParameters({
             region: this.options.region,
-            hostnameSsmPath: dbConnectionConfig.hostnameSsmPath,
-            portSsmPath: dbConnectionConfig.portSsmPath,
-            usernameSsmPath: dbConnectionConfig.usernameSsmPath,
-            passwordSsmPath: dbConnectionConfig.passwordSsmPath,
-            databaseNameSsmPath: dbConnectionConfig.databaseNameSsmPath,
+            parameterNames: [
+              dbConnectionConfig.hostnameSsmPath,
+              dbConnectionConfig.portSsmPath,
+              dbConnectionConfig.usernameSsmPath,
+              dbConnectionConfig.passwordSsmPath,
+              dbConnectionConfig.databaseNameSsmPath,
+            ],
+          });
+        } else if (isSqlModelDataSourceSsmDbConnectionStringConfig(dbConnectionConfig)) {
+          return deleteSSMParameters({
+            region: this.options.region,
+            parameterNames: [dbConnectionConfig.connectionUriSsmPath],
           });
         }
       }),
@@ -178,6 +214,14 @@ export class SqlDatatabaseController {
     });
     const filePath = path.join(projRoot, 'db-details.json');
     fs.writeFileSync(filePath, detailsStr);
-    console.log(`Wrote ${filePath}`);
+    console.log(`Wrote DB details at ${filePath}`);
+  };
+
+  /**
+   * Constructs the database connection URI based on the given database connection components
+   */
+  getConnectionUri = (engine: SqlEngine, username: string, password: string, hostname: string, port: number, dbName: string): string => {
+    const protocol = engine === 'postgres' ? 'postgresql' : 'mysql';
+    return `${protocol}://${username}:${password}@${hostname}:${port}/${dbName}`;
   };
 }

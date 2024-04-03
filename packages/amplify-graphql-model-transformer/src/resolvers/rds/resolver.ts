@@ -28,6 +28,7 @@ import {
   SqlModelDataSourceDbConnectionConfig,
   isSqlModelDataSourceSsmDbConnectionConfig,
   isSqlModelDataSourceSecretsManagerDbConnectionConfig,
+  isSqlModelDataSourceSsmDbConnectionStringConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction, LayerVersion, Runtime, Alias, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
@@ -325,6 +326,14 @@ export const createRdsLambdaRole = (
           }),
         );
       }
+    } else if (isSqlModelDataSourceSsmDbConnectionStringConfig(secretEntry)) {
+      policyStatements.push(
+        new PolicyStatement({
+          actions: ['ssm:GetParameter', 'ssm:GetParameters'],
+          effect: Effect.ALLOW,
+          resources: [`arn:aws:ssm:*:*:parameter${secretEntry.connectionUriSsmPath}`],
+        }),
+      );
     } else {
       throw new Error('Unable to determine if SSM or Secrets Manager should be used for credentials.');
     }

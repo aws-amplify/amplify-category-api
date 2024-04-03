@@ -141,7 +141,9 @@ const RUN_SOLO: (string | RegExp)[] = [
   'src/__tests__/amplify-table-1.test.ts',
   'src/__tests__/amplify-table-3.test.ts',
   'src/__tests__/api_canary.test.ts',
-  'src/__tests__/sql-models.test.ts',
+  'src/__tests__/sql-models-1.test.ts',
+  'src/__tests__/sql-models-2.test.ts',
+  'src/__tests__/sql-pg-models.test.ts',
   'src/__tests__/amplify-table-2.test.ts',
   'src/__tests__/admin-role.test.ts',
   'src/__tests__/all-auth-modes.test.ts',
@@ -157,11 +159,11 @@ const RUN_IN_ALL_REGIONS = [
 const RUN_IN_NON_OPT_IN_REGIONS: (string | RegExp)[] = [
   // SQL tests
   /src\/__tests__\/rds-.*\.test\.ts/,
+  /src\/__tests__\/sql-.*\.test\.ts/,
   // Searchable tests
   /src\/__tests__\/.*searchable.*\.test\.ts/,
   // Tests that use Auth Construct
   'src/__tests__/ddb-iam-access.test.ts',
-  'src/__tests__/sql-models.test.ts',
 ];
 
 const RUN_IN_V1_TRANSFORMER_REGIONS = ['src/__tests__/schema-searchable.test.ts'];

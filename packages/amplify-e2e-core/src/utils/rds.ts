@@ -28,9 +28,10 @@ const DEFAULT_SECURITY_GROUP = 'default';
 const IPIFY_URL = 'https://api.ipify.org/';
 const AWSCHECKIP_URL = 'https://checkip.amazonaws.com/';
 
+export type SqlEngine = 'mysql' | 'postgres';
 export type RDSConfig = {
   identifier: string;
-  engine: 'mysql' | 'postgres';
+  engine: SqlEngine;
   dbname: string;
   username: string;
   password?: string;
@@ -392,18 +393,11 @@ export const getIpRanges = async (): Promise<string[]> => {
   );
 };
 
-export const deleteDbConnectionConfig = async (options: {
-  region: string;
-  hostnameSsmPath: string;
-  portSsmPath: string;
-  usernameSsmPath: string;
-  passwordSsmPath: string;
-  databaseNameSsmPath: string;
-}): Promise<void> => {
+export const deleteSSMParameters = async (options: { region: string; parameterNames: string[] }): Promise<void> => {
   const ssmClient = new SSMClient({ region: options.region });
 
   const input: DeleteParametersCommandInput = {
-    Names: [options.hostnameSsmPath, options.portSsmPath, options.usernameSsmPath, options.passwordSsmPath, options.databaseNameSsmPath],
+    Names: options.parameterNames,
   };
 
   console.log('Deleting SSM parameters');
@@ -425,26 +419,54 @@ export const storeDbConnectionConfig = async (options: {
   passwordSsmPath: string;
   databaseNameSsmPath: string;
 }> => {
+  await storeSSMParameters({
+    region: options.region,
+    pathPrefix: options.pathPrefix,
+    parameters: {
+      hostname: options.hostname,
+      port: options.port.toString(),
+      username: options.username,
+      password: options.password,
+      databaseName: options.databaseName,
+    },
+  });
+  return {
+    hostnameSsmPath: `${options.pathPrefix}/hostname`,
+    portSsmPath: `${options.pathPrefix}/port`,
+    usernameSsmPath: `${options.pathPrefix}/username`,
+    passwordSsmPath: `${options.pathPrefix}/password`,
+    databaseNameSsmPath: `${options.pathPrefix}/databaseName`,
+  };
+};
+
+export const storeDbConnectionStringConfig = async (options: {
+  region: string;
+  pathPrefix: string;
+  connectionUri: string;
+}): Promise<{
+  connectionUriSsmPath: string;
+}> => {
+  await storeSSMParameters({
+    region: options.region,
+    pathPrefix: options.pathPrefix,
+    parameters: {
+      connectionUri: options.connectionUri,
+    },
+  });
+  return {
+    connectionUriSsmPath: `${options.pathPrefix}/connectionUri`,
+  };
+};
+
+export const storeSSMParameters = async (options: { region: string; pathPrefix: string; parameters: Record<string, string> }) => {
   const ssmClient = new SSMClient({ region: options.region });
   const pathPrefix = options.pathPrefix;
-  const paths = {
-    hostnameSsmPath: '',
-    portSsmPath: '',
-    usernameSsmPath: '',
-    passwordSsmPath: '',
-    databaseNameSsmPath: '',
-  };
-
-  const keys = ['hostname', 'port', 'username', 'password', 'databaseName'];
-
   const promises: Promise<PutParameterCommandOutput>[] = [];
 
-  for (const key of keys) {
-    const ssmPath = `${pathPrefix}/${key}`;
-    paths[`${key}SsmPath`] = ssmPath;
+  for (const parameterName in options.parameters) {
+    const ssmPath = `${pathPrefix}/${parameterName}`;
+    const value = options.parameters[parameterName];
 
-    // Handle non-string values like `port`
-    const value = typeof options[key] === 'string' ? options[key] : JSON.stringify(options[key]);
     const input: PutParameterCommandInput = {
       Name: ssmPath,
       Value: value,
@@ -456,8 +478,6 @@ export const storeDbConnectionConfig = async (options: {
   }
 
   await Promise.all(promises);
-
-  return paths;
 };
 
 export const deleteDbConnectionConfigWithSecretsManager = async (options: {
