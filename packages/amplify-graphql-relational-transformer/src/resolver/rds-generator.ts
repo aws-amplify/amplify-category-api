@@ -73,7 +73,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
         `${object.name.value}.${field.name.value}.req.vtl`,
       ),
       MappingTemplate.s3MappingTemplateFromString(
-        this.generateListConnectionLambdaResposneMappingTemplate(),
+        this.generateListConnectionLambdaResponseMappingTemplate(),
         `${object.name.value}.${field.name.value}.res.vtl`,
       ),
     );
@@ -172,7 +172,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     return printBlock('ResponseTemplate')(compoundExpression(statements));
   };
 
-  generateListConnectionLambdaResposneMappingTemplate = (): string => {
+  generateListConnectionLambdaResponseMappingTemplate = (): string => {
     const statements: Expression[] = [];
     statements.push(
       ifElse(
