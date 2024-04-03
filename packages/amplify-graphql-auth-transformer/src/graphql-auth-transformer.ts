@@ -1148,8 +1148,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
           default:
             throw new TransformerContractError(`Could not create a role from ${JSON.stringify(rule)}`);
         }
-        if (!this.roleMap.has(roleName))
-        {
+        if (!this.roleMap.has(roleName)) {
           this.roleMap.set(roleName, roleDefinition);
         }
         acm.setRole({
