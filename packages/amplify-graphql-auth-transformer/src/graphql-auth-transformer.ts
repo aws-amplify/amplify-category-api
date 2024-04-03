@@ -112,20 +112,22 @@ import { AuthVTLGenerator } from './vtl-generator/vtl-generator';
  * access by the provider.
  */
 const getReadRolesForField = (acm: AccessControlMatrix, readRoles: Array<string>, fieldName: string): Array<string> => {
+  const userPoolsPrivateRole = `${acm.getName()}:userPools:private`;
+  const oidcPrivateRole = `${acm.getName()}:oidc:private`;
   const hasCognitoPrivateRole =
-    readRoles.some((r) => r === `${acm.getName()}:userPools:private`) &&
-    acm.isAllowed(`${acm.getName()}:userPools:private`, fieldName, 'get') &&
-    acm.isAllowed(`${acm.getName()}:userPools:private`, fieldName, 'list') &&
-    acm.isAllowed(`${acm.getName()}:userPools:private`, fieldName, 'sync') &&
-    acm.isAllowed(`${acm.getName()}:userPools:private`, fieldName, 'search') &&
-    acm.isAllowed(`${acm.getName()}:userPools:private`, fieldName, 'listen');
+    readRoles.some((r) => r === userPoolsPrivateRole) &&
+    acm.isAllowed(userPoolsPrivateRole, fieldName, 'get') &&
+    acm.isAllowed(userPoolsPrivateRole, fieldName, 'list') &&
+    acm.isAllowed(userPoolsPrivateRole, fieldName, 'sync') &&
+    acm.isAllowed(userPoolsPrivateRole, fieldName, 'search') &&
+    acm.isAllowed(userPoolsPrivateRole, fieldName, 'listen');
   const hasOIDCPrivateRole =
-    readRoles.some((r) => r === `${acm.getName()}:oidc:private`) &&
-    acm.isAllowed(`${acm.getName()}:oidc:private`, fieldName, 'get') &&
-    acm.isAllowed(`${acm.getName()}:oidc:private`, fieldName, 'list') &&
-    acm.isAllowed(`${acm.getName()}:oidc:private`, fieldName, 'sync') &&
-    acm.isAllowed(`${acm.getName()}:oidc:private`, fieldName, 'search') &&
-    acm.isAllowed(`${acm.getName()}:oidc:private`, fieldName, 'listen');
+    readRoles.some((r) => r === oidcPrivateRole) &&
+    acm.isAllowed(oidcPrivateRole, fieldName, 'get') &&
+    acm.isAllowed(oidcPrivateRole, fieldName, 'list') &&
+    acm.isAllowed(oidcPrivateRole, fieldName, 'sync') &&
+    acm.isAllowed(oidcPrivateRole, fieldName, 'search') &&
+    acm.isAllowed(oidcPrivateRole, fieldName, 'listen');
   let allowedRoles = [...readRoles];
 
   if (hasCognitoPrivateRole) {
