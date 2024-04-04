@@ -70,12 +70,12 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createProject.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.createProject.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.createProject.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
@@ -186,12 +186,12 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createTeam.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.createTeam.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.createTeam.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
@@ -283,12 +283,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Mutation.deleteProject.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.deleteProject.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.deleteProject.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
@@ -366,12 +366,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Mutation.deleteTeam.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.deleteTeam.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.deleteTeam.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
@@ -458,12 +458,12 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateProject.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.updateProject.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.updateProject.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
@@ -636,12 +636,12 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateTeam.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.updateTeam.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.updateTeam.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
@@ -836,12 +836,12 @@ $util.unauthorized()
     $util.toJson(null)
   #end
 #end",
-  "Query.getProject.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.getProject.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.getProject.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -889,12 +889,12 @@ $util.unauthorized()
   $util.toJson(null)
 #end
 ## [End] Get Response template. **",
-  "Query.getTeam.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.getTeam.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.getTeam.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"id\\": $util.dynamodb.toDynamoDB($ctx.args.id),
@@ -949,12 +949,12 @@ $util.unauthorized()
   $util.toJson(null)
 #end
 ## [End] Get Response template. **",
-  "Query.listProjects.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.listProjects.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.listProjects.req.vtl": "## [Start] List Request. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $limit = $util.defaultIfNull($args.limit, 100) )
@@ -1012,12 +1012,12 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Query.listTeams.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.listTeams.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.listTeams.preAuth.1.req.vtl": "## [Start] Set query expression for key **
 #if( $util.isNull($ctx.args.id) && !$util.isNull($ctx.args.sortDirection) )
   $util.error(\\"When providing argument 'sortDirection' you must also provide argument 'id'.\\", \\"InvalidArgumentsError\\")
@@ -1183,12 +1183,12 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Subscription.onCreateProject.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onCreateProject.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onCreateProject.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -1201,12 +1201,12 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Subscription.onCreateTeam.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onCreateTeam.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onCreateTeam.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -1219,12 +1219,12 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Subscription.onDeleteProject.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onDeleteProject.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onDeleteProject.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -1237,12 +1237,12 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Subscription.onDeleteTeam.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onDeleteTeam.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onDeleteTeam.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -1255,12 +1255,12 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Subscription.onUpdateProject.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onUpdateProject.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onUpdateProject.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -1273,12 +1273,12 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Subscription.onUpdateTeam.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onUpdateTeam.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onUpdateTeam.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
