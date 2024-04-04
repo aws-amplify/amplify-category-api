@@ -291,8 +291,7 @@ export const updateRelatedModelMutationResolversForCompositeSortKeys = (
   if (!objectName) {
     throw new Error(`
       Mutation type name is undefined when updated mutation resolvers for composite sortKeys used in DDB references based relationships.
-      This should not happen, please file a bug at https://github.com/aws-amplify/amplify-category-api/issues/new/choose`
-    );
+      This should not happen, please file a bug at https://github.com/aws-amplify/amplify-category-api/issues/new/choose`);
   }
 
   const capitalizedName = toUpper(relatedType.name.value);
@@ -308,7 +307,7 @@ export const updateRelatedModelMutationResolversForCompositeSortKeys = (
       validateCompositeSortKeyMutationArgumentSnippet(config, 'create'),
       // The create mutation resolver adds the concatenated sort key fields to
       // `ctx.args.input` in the pipeline before the call to DDB occurs.
-      ensureCompositeKeySnippet(config, true)
+      ensureCompositeKeySnippet(config, true),
     ];
 
     if (checks[0] || checks[1]) {
@@ -322,8 +321,8 @@ export const updateRelatedModelMutationResolversForCompositeSortKeys = (
       validateCompositeSortKeyMutationArgumentSnippet(config, 'update'),
       // The update mutation resolver adds the concatenated sort key fields to
       // `ctx.args.input` in the pipeline before the call to DDB occurs.
-      ensureCompositeKeySnippet(config, true)
-      ];
+      ensureCompositeKeySnippet(config, true),
+    ];
 
     if (checks[0] || checks[1]) {
       addIndexToResolverSlot(updateResolver, [mergeInputsAndDefaultsSnippet(), ...checks]);
