@@ -262,10 +262,19 @@ export const setFieldMappingResolverReference = (
   modelFieldMap.addResolverReference({ typeName: typeName, fieldName: fieldName, isList: isList });
 };
 
-const getSortKeyName = (sortKeyFields: string[]): string => {
-  return sortKeyFields.join(ModelResourceIDs.ModelCompositeKeySeparator());
-};
-
+/**
+ * In a DDB references based relationship, when the Primary model has a primary key with composite
+ * sort key (>= 2 sort key fields), we need to add function slots in the Mutation resolvers (create, update, delete)
+ * of the Related model in order to write the composite sort key attribute to the Related model's table.
+ *
+ * For example, if a sort key is comprised of `foo` and `bar`, we are going to create a function in the Mutation
+ * resolver to write a `foo#bar` attribute to the table. This is necessary to support querying Primary.related
+ * with composite sort keys.
+ *
+ * @param config A `HasMany-`/`HasOneDirectiveConfiguration` where the related type's data source is a DynamoDB table.
+ * @param ctx The TransformerContextProvider for from the `HasMany-`/`HasOneTransformer`
+ * @returns void
+ */
 export const updateRelatedModelMutationResolversForCompositeSortKeys = (
   config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration,
   ctx: TransformerContextProvider,
@@ -278,12 +287,15 @@ export const updateRelatedModelMutationResolversForCompositeSortKeys = (
     return;
   }
 
-  const capitalizedName = toUpper(relatedType.name.value);
   const objectName = ctx.output.getMutationTypeName();
   if (!objectName) {
-    return; // TODO: Throw Error
+    throw new Error(`
+      Mutation type name is undefined when updated mutation resolvers for composite sortKeys used in DDB references based relationships.
+      This should not happen, please file a bug at https://github.com/aws-amplify/amplify-category-api/issues/new/choose`
+    );
   }
 
+  const capitalizedName = toUpper(relatedType.name.value);
   const createResolver = ctx.resolvers.getResolver(objectName, `create${capitalizedName}`);
   const updateResolver = ctx.resolvers.getResolver(objectName, `update${capitalizedName}`);
   const deleteResolver = ctx.resolvers.getResolver(objectName, `delete${capitalizedName}`);
@@ -291,7 +303,13 @@ export const updateRelatedModelMutationResolversForCompositeSortKeys = (
   // Ensure any composite sort key values and validate update operations to
   // protect the integrity of composite sort keys.
   if (createResolver) {
-    const checks = [validateIndexArgumentSnippet(config, 'create'), ensureCompositeKeySnippet(config, true)];
+    const checks = [
+      // The create mutation resolver should confirm that all sort keys are provided.
+      validateCompositeSortKeyMutationArgumentSnippet(config, 'create'),
+      // The create mutation resolver adds the concatenated sort key fields to
+      // `ctx.args.input` in the pipeline before the call to DDB occurs.
+      ensureCompositeKeySnippet(config, true)
+    ];
 
     if (checks[0] || checks[1]) {
       addIndexToResolverSlot(createResolver, [mergeInputsAndDefaultsSnippet(), ...checks]);
@@ -299,7 +317,13 @@ export const updateRelatedModelMutationResolversForCompositeSortKeys = (
   }
 
   if (updateResolver) {
-    const checks = [validateIndexArgumentSnippet(config, 'update'), ensureCompositeKeySnippet(config, true)];
+    const checks = [
+      // The update mutation resolver should confirm that all sort keys are provided.
+      validateCompositeSortKeyMutationArgumentSnippet(config, 'update'),
+      // The update mutation resolver adds the concatenated sort key fields to
+      // `ctx.args.input` in the pipeline before the call to DDB occurs.
+      ensureCompositeKeySnippet(config, true)
+      ];
 
     if (checks[0] || checks[1]) {
       addIndexToResolverSlot(updateResolver, [mergeInputsAndDefaultsSnippet(), ...checks]);
@@ -307,6 +331,8 @@ export const updateRelatedModelMutationResolversForCompositeSortKeys = (
   }
 
   if (deleteResolver) {
+    // The delete mutation resolver adds the concatenated sort key fields to
+    // `ctx.args.input` in the pipeline before the call to DDB occurs.
     const checks = [ensureCompositeKeySnippet(config, false)];
 
     if (checks[0]) {
@@ -335,14 +361,14 @@ const mergeInputsAndDefaultsSnippet = (): string => {
 // underlying composite key can be resaved in a create/update operation. We only need to update for composite sort keys on secondary
 // indexes. There is some tight coupling between setting 'hasSeenSomeKeyArg' in this method and calling ensureCompositeKeySnippet with
 // conditionallySetSortKey = true That function expects this function to set 'hasSeenSomeKeyArg'.
-const validateIndexArgumentSnippet = (
+const validateCompositeSortKeyMutationArgumentSnippet = (
   config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration,
   keyOperation: 'create' | 'update',
 ): string => {
   const { indexName, references } = config;
   const sortKeyFields = references.slice(1);
 
-  if (sortKeyFields.length < 2) {
+  if (sortKeyFields?.length < 2) {
     return '';
   }
 
@@ -366,6 +392,8 @@ const validateIndexArgumentSnippet = (
   );
 };
 
+// VTL that concatenates multiple sort key fields into an additional argument
+// used further down the pipeline to write it to the DDB table.
 const ensureCompositeKeySnippet = (
   config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration,
   conditionallySetSortKey: boolean,
@@ -378,7 +406,7 @@ const ensureCompositeKeySnippet = (
   }
 
   const argsPrefix = 'mergedValues';
-  const condensedSortKey = getSortKeyName(sortKeyFields);
+  const condensedSortKey = condenseRangeKey(sortKeyFields);
   const dynamoDBFriendlySortKeyName = toCamelCase(sortKeyFields.map((f) => graphqlName(f)));
   const condensedSortKeyValue = sortKeyFields
     .map((keyField) => `\${${argsPrefix}.${keyField}}`)
