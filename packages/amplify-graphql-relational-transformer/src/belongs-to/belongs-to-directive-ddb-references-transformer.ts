@@ -36,9 +36,7 @@ export class BelongsToDirectiveDDBReferencesTransformer implements DataSourceBas
     });
   };
 
-  transformSchema = (context: TransformerTransformSchemaStepContextProvider, config: BelongsToDirectiveConfiguration): void => {
-    validateChildReferencesFields(config, context as TransformerContextProvider);
-  };
+  transformSchema = (context: TransformerTransformSchemaStepContextProvider, config: BelongsToDirectiveConfiguration): void => {};
 
   generateResolvers = (context: TransformerContextProvider, config: BelongsToDirectiveConfiguration): void => {
     new DDBRelationalReferencesResolverGenerator().makeBelongsToGetItemConnectionWithKeyResolver(config, context);
@@ -46,6 +44,7 @@ export class BelongsToDirectiveDDBReferencesTransformer implements DataSourceBas
 
   validate = (context: TransformerContextProvider, config: BelongsToDirectiveConfiguration): void => {
     ensureReferencesArray(config);
+    validateChildReferencesFields(config, context as TransformerContextProvider);
     config.referenceNodes = getBelongsToReferencesNodes(config, context);
   };
 }

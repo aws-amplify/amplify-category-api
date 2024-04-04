@@ -2,19 +2,19 @@
 import {
   DDB_DB_TYPE,
   DirectiveWrapper,
-  generateGetArgumentsInput,
-  getStrategyDbTypeFromTypeNode,
-  getStrategyDbTypeFromModel,
   InvalidDirectiveError,
   TransformerPluginBase,
+  generateGetArgumentsInput,
+  getStrategyDbTypeFromModel,
+  getStrategyDbTypeFromTypeNode,
 } from '@aws-amplify/graphql-transformer-core';
 import {
+  ModelDataSourceStrategyDbType,
   TransformerContextProvider,
+  TransformerPreProcessContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
-  TransformerPreProcessContextProvider,
-  ModelDataSourceStrategyDbType,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { BelongsToDirective } from '@aws-amplify/graphql-directives';
 import {
@@ -28,6 +28,7 @@ import {
 import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 import produce from 'immer';
 import { WritableDraft } from 'immer/dist/types/types-external';
+import { getBelongsToDirectiveTransformer } from './belongs-to/belongs-to-directive-transformer-factory';
 import { ensureBelongsToConnectionField } from './schema';
 import { BelongsToDirectiveConfiguration, ObjectDefinition } from './types';
 import {
@@ -37,8 +38,6 @@ import {
   validateModelDirective,
   validateRelatedModelDirective,
 } from './utils';
-import { getGenerator } from './resolver/generator-factory';
-import { getBelongsToDirectiveTransformer } from './belongs-to/belongs-to-directive-transformer-factory';
 
 /**
  * Transformer for @belongsTo directive
@@ -153,6 +152,10 @@ export class BelongsToTransformer extends TransformerPluginBase {
       const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
       const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType, config);
       dataSourceBasedTransformer.generateResolvers(ctx, config);
+
+      // if (getStrategyDbTypeFromModel(context, config.object.name.value) === DDB_DB_TYPE) {
+      //   updateResolversForIndex(config, ctx);
+      // }
     }
   };
 }

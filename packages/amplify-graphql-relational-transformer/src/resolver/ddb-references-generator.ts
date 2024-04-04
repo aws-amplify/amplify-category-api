@@ -9,6 +9,7 @@ import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-int
 import {
   DynamoDBMappingTemplate,
   Expression,
+  ObjectNode,
   and,
   bool,
   compoundExpression,
@@ -42,6 +43,39 @@ const authFilter = ref('ctx.stash.authFilter');
 const PARTITION_KEY_VALUE = 'partitionKeyValue';
 
 export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResolverGenerator {
+  makeExpression = (references: string[]): ObjectNode => {
+    if (references.length > 1) {
+      let condensedSortKeyValue;
+
+      if (references.length > 2) {
+        const rangeKeyFields = references.slice(1);
+        condensedSortKeyValue = condenseRangeKey(rangeKeyFields);
+
+        return obj({
+          expression: str('#partitionKey = :partitionKey AND #sortKey = :sortKey'),
+          expressionNames: obj({
+            '#partitionKey': str(references[0]),
+            '#sortKey': str(condensedSortKeyValue),
+          }),
+          expressionValues: obj({
+            ':partitionKey': ref(`util.dynamodb.toDynamoDB($${PARTITION_KEY_VALUE})`),
+            ':sortKey': ref(`util.dynamodb.toDynamoDB(${condensedSortKeyValue ? `"${condensedSortKeyValue}"` : `$${SORT_KEY_VALUE}0`})`),
+          }),
+        });
+      }
+    }
+
+    return obj({
+      expression: str('#partitionKey = :partitionKey'),
+      expressionNames: obj({
+        '#partitionKey': str(references[0]),
+      }),
+      expressionValues: obj({
+        ':partitionKey': ref(`util.dynamodb.toDynamoDB($${PARTITION_KEY_VALUE})`),
+      }),
+    });
+  };
+
   /**
    * Create a resolver that queries an item in DynamoDB.
    * @param config The connection directive configuration.
@@ -60,7 +94,6 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
     const dataSourceName = getModelDataSourceNameForTypeName(ctx, relatedType.name.value);
     const dataSource = ctx.api.host.getDataSource(dataSourceName);
     const keySchema = getKeySchema(table, indexName);
-
     const setup: Expression[] = [
       set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${limit})`)),
       ...primaryKeyFields
@@ -71,7 +104,7 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
             methodCall(ref('util.defaultIfNull'), ref(`ctx.stash.connectionAttibutes.get("${ca}")`), ref(`ctx.source.${ca}`)),
           ),
         ),
-      set(ref('query'), this.makeExpression(keySchema, references)),
+      set(ref('query'), this.makeExpression(references)),
     ];
 
     // add setup filter to query

@@ -5,6 +5,7 @@ import {
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from './types';
+import { FieldDefinitionNode } from 'graphql';
 
 export type RelationalDirectiveConfiguration =
   | HasOneDirectiveConfiguration

@@ -1,9 +1,9 @@
 import { ModelDataSourceStrategyDbType } from '@aws-amplify/graphql-transformer-interfaces';
-import { BelongsToDirectiveConfiguration } from '../types';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
-import { BelongsToDirectiveSQLTransformer } from './belongs-to-directive-sql-transformer';
+import { BelongsToDirectiveConfiguration } from '../types';
 import { BelongsToDirectiveDDBFieldsTransformer } from './belongs-to-directive-ddb-fields-transformer';
 import { BelongsToDirectiveDDBReferencesTransformer } from './belongs-to-directive-ddb-references-transformer';
+import { BelongsToDirectiveSQLTransformer } from './belongs-to-directive-sql-transformer';
 
 const belongsToDirectiveMySqlTransformer = new BelongsToDirectiveSQLTransformer();
 const belongsToDirectivePostgresTransformer = new BelongsToDirectiveSQLTransformer();
@@ -32,6 +32,7 @@ export const getBelongsToDirectiveTransformer = (
         if (config.references.length < 1) {
           throw new Error(`Invalid @belongsTo directive on ${config.field.name.value} - empty references list`);
         }
+
         return belongsToDirectiveDdbReferencesTransformer;
       }
 

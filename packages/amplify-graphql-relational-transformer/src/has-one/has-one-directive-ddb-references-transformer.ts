@@ -6,7 +6,11 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
 import { DDBRelationalReferencesResolverGenerator } from '../resolver/ddb-references-generator';
-import { setFieldMappingResolverReference, updateTableForReferencesConnection } from '../resolvers';
+import {
+  setFieldMappingResolverReference,
+  updateRelatedModelMutationResolversForCompositeSortKeys,
+  updateTableForReferencesConnection,
+} from '../resolvers';
 import { HasOneDirectiveConfiguration } from '../types';
 import { ensureReferencesArray, getReferencesNodes, registerHasOneForeignKeyMappings, validateParentReferencesFields } from '../utils';
 
@@ -31,17 +35,26 @@ export class HasOneDirectiveDDBReferencesTransformer implements DataSourceBasedD
     });
   };
 
-  transformSchema = (context: TransformerTransformSchemaStepContextProvider, config: HasOneDirectiveConfiguration): void => {
-    validateParentReferencesFields(config, context as TransformerContextProvider);
-  };
+  transformSchema = (context: TransformerTransformSchemaStepContextProvider, config: HasOneDirectiveConfiguration): void => {};
 
   generateResolvers = (context: TransformerContextProvider, config: HasOneDirectiveConfiguration): void => {
     updateTableForReferencesConnection(config, context);
+    updateRelatedModelMutationResolversForCompositeSortKeys(config, context);
     new DDBRelationalReferencesResolverGenerator().makeHasOneGetItemConnectionWithKeyResolver(config, context);
   };
 
   validate = (context: TransformerContextProvider, config: HasOneDirectiveConfiguration): void => {
+    if (config.indexName) {
+      const mappedObjectName = context.resourceHelper.getModelNameMapping(config.object.name.value);
+      throw new Error(
+        `Invalid @${config.directiveName} directive on ${mappedObjectName}.${config.field.name.value} - indexName is not supported with DDB references.`,
+      );
+    }
     ensureReferencesArray(config);
+    validateParentReferencesFields(config, context);
+    const objectName = config.object.name.value;
+    const fieldName = config.field.name.value;
+    config.indexName = `gsi-${objectName}.${fieldName}`;
     config.referenceNodes = getReferencesNodes(config, context);
   };
 }

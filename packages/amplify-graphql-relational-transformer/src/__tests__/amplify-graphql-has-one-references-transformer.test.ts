@@ -271,7 +271,7 @@ test('fails if object type fields are provided', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('All references provided to @hasOne must be scalar or enum fields.');
+  ).toThrowError('All reference fields provided to @hasOne must be scalar or enum fields.');
 });
 
 test('has one references single partition key', () => {
@@ -371,6 +371,8 @@ test('has one references with multiple sort keys', () => {
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
+  expect(out.resolvers).toBeDefined();
+  expect(out.resolvers).toMatchSnapshot();
   expect(out.resolvers['Team.project.req.vtl']).toBeDefined();
   expect(out.resolvers['Team.project.req.vtl']).toMatchSnapshot();
   expect(out.resolvers['Project.team.req.vtl']).toBeDefined();
