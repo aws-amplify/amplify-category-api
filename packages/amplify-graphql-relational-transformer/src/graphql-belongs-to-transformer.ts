@@ -152,10 +152,6 @@ export class BelongsToTransformer extends TransformerPluginBase {
       const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
       const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType, config);
       dataSourceBasedTransformer.generateResolvers(ctx, config);
-
-      // if (getStrategyDbTypeFromModel(context, config.object.name.value) === DDB_DB_TYPE) {
-      //   updateResolversForIndex(config, ctx);
-      // }
     }
   };
 }
