@@ -368,7 +368,7 @@ const validateCompositeSortKeyMutationArgumentSnippet = (
   const { indexName, references } = config;
   const sortKeyFields = references.slice(1);
 
-  if (sortKeyFields?.length < 2) {
+  if (sortKeyFields.length < 2) {
     return '';
   }
 
