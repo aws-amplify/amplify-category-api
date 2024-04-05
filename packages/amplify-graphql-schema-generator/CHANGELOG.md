@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-data-schema-generator.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.8.0...@aws-amplify/graphql-schema-generator@1.0.0-data-schema-generator.0) (2024-04-05)
+
+### Bug Fixes
+
+- move data schema generator to separate package ([67965f6](https://github.com/aws-amplify/amplify-category-api/commit/67965f69434a915a695187e1ee084c973b8918de))
+
+### Features
+
+- create data schema generator package ([9403889](https://github.com/aws-amplify/amplify-category-api/commit/940388988d70df29f0b20fed87d380ad63c2718f))
+
+### BREAKING CHANGES
+
+- Data schema functionality removed.
+
 # [0.8.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.7.2...@aws-amplify/graphql-schema-generator@0.8.0) (2024-03-28)
 
 ### Features
