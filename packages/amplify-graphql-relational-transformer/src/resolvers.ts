@@ -295,49 +295,29 @@ export const updateRelatedModelMutationResolversForCompositeSortKeys = (
   }
 
   const capitalizedName = toUpper(relatedType.name.value);
-  const createResolver = ctx.resolvers.getResolver(objectName, `create${capitalizedName}`);
-  const updateResolver = ctx.resolvers.getResolver(objectName, `update${capitalizedName}`);
-  const deleteResolver = ctx.resolvers.getResolver(objectName, `delete${capitalizedName}`);
+  const operationTypes = ['update', 'create'] as const;
 
-  // Ensure any composite sort key values and validate update operations to
-  // protect the integrity of composite sort keys.
-  if (createResolver) {
-    const checks = [
-      // The create mutation resolver should confirm that all sort keys are provided.
-      validateCompositeSortKeyMutationArgumentSnippet(config, 'create'),
-      // The create mutation resolver adds the concatenated sort key fields to
-      // `ctx.args.input` in the pipeline before the call to DDB occurs.
-      ensureCompositeKeySnippet(config, true),
-    ];
+  operationTypes
+    .map((operationType) => ({
+      operationType: operationType,
+      resolver: ctx.resolvers.getResolver(objectName, `${operationType}${capitalizedName}`),
+    }))
+    .forEach((mutation) => {
+      if (!mutation.resolver) {
+        return;
+      }
+      const checks = [
+        // The mutation resolver should confirm that all sort keys are provided.
+        validateCompositeSortKeyMutationArgumentSnippet(config, mutation.operationType),
+        // The mutation resolver adds the concatenated sort key fields to
+        // `ctx.args.input` in the pipeline before the call to DDB occurs.
+        ensureCompositeKeySnippet(config),
+      ];
 
-    if (checks[0] || checks[1]) {
-      addIndexToResolverSlot(createResolver, [mergeInputsAndDefaultsSnippet(), ...checks]);
-    }
-  }
-
-  if (updateResolver) {
-    const checks = [
-      // The update mutation resolver should confirm that all sort keys are provided.
-      validateCompositeSortKeyMutationArgumentSnippet(config, 'update'),
-      // The update mutation resolver adds the concatenated sort key fields to
-      // `ctx.args.input` in the pipeline before the call to DDB occurs.
-      ensureCompositeKeySnippet(config, true),
-    ];
-
-    if (checks[0] || checks[1]) {
-      addIndexToResolverSlot(updateResolver, [mergeInputsAndDefaultsSnippet(), ...checks]);
-    }
-  }
-
-  if (deleteResolver) {
-    // The delete mutation resolver adds the concatenated sort key fields to
-    // `ctx.args.input` in the pipeline before the call to DDB occurs.
-    const checks = [ensureCompositeKeySnippet(config, false)];
-
-    if (checks[0]) {
-      addIndexToResolverSlot(deleteResolver, [mergeInputsAndDefaultsSnippet(), ...checks]);
-    }
-  }
+      if (checks[0] || checks[1]) {
+        addIndexToResolverSlot(mutation.resolver, [mergeInputsAndDefaultsSnippet(), ...checks]);
+      }
+    });
 };
 
 const addIndexToResolverSlot = (resolver: TransformerResolverProvider, lines: string[], isSync = false): void => {
@@ -393,10 +373,7 @@ const validateCompositeSortKeyMutationArgumentSnippet = (
 
 // VTL that concatenates multiple sort key fields into an additional argument
 // used further down the pipeline to write it to the DDB table.
-const ensureCompositeKeySnippet = (
-  config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration,
-  conditionallySetSortKey: boolean,
-): string => {
+const ensureCompositeKeySnippet = (config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration): string => {
   const { references } = config;
   const sortKeyFields = references.slice(1);
 
@@ -430,12 +407,7 @@ const ensureCompositeKeySnippet = (
           ),
         ),
       ),
-      conditionallySetSortKey
-        ? iff(
-            ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg),
-            qref(`$ctx.args.input.put('${condensedSortKey}',"${condensedSortKeyValue}")`),
-          )
-        : qref(`$ctx.args.input.put('${condensedSortKey}',"${condensedSortKeyValue}")`),
+      iff(ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg), qref(`$ctx.args.input.put('${condensedSortKey}',"${condensedSortKeyValue}")`)),
     ]),
   );
 };
