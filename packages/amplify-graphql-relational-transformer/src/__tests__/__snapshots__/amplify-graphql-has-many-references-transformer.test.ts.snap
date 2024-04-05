@@ -388,6 +388,140 @@ exports[`has many query 3`] = `
 #end"
 `;
 
+exports[`has many references with multiple sort keys 1`] = `
+"## [Start] Merge default values and inputs. **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## [End] Merge default values and inputs. **
+## [Start] Validate create mutation for global secondary index 'gsi-Team.members'. **
+#set( $hasSeenSomeKeyArg = false )
+#set( $keyFieldNames = [\\"teamMantra\\", \\"teamOrganization\\"] )
+#foreach( $keyFieldName in $keyFieldNames )
+#if( $mergedValues.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
+#end
+#foreach( $keyFieldName in $keyFieldNames )
+  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey(\\"$keyFieldName\\") )
+    $util.error(\\"When creating any part of the composite sort key for global secondary index 'gsi-Team.members', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
+  #end
+#end
+## [End] Validate create mutation for global secondary index 'gsi-Team.members'. **
+#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
+  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", { 'teamMantra#teamOrganization': \\"teamMantraTeamOrganization\\" }))
+#else
+  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('teamMantra#teamOrganization', \\"teamMantraTeamOrganization\\"))
+#end
+#if( $hasSeenSomeKeyArg )
+  $util.qr($ctx.args.input.put('teamMantra#teamOrganization',\\"\${mergedValues.teamMantra}#\${mergedValues.teamOrganization}\\"))
+#end
+{}"
+`;
+
+exports[`has many references with multiple sort keys 2`] = `
+"#if( $ctx.stash.deniedField )
+  #return($util.toJson(null))
+#end
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
+#if( $util.isNull($partitionKeyValue) )
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
+#else
+  #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $sortKeyValue0 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"mantra\\"), $ctx.source.mantra) )
+  #set( $sortKeyValue1 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"organization\\"), $ctx.source.organization) )
+  #set( $query = {
+  \\"expression\\": \\"#partitionKey = :partitionKey AND #sortKey = :sortKey\\",
+  \\"expressionNames\\": {
+      \\"#partitionKey\\": \\"teamId\\",
+      \\"#sortKey\\": \\"teamMantra#teamOrganization\\"
+  },
+  \\"expressionValues\\": {
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue),
+      \\":sortKey\\": $util.dynamodb.toDynamoDB($teamMantra#teamOrganization)
+  }
+} )
+  #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+  #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+    #set( $filter = $ctx.stash.authFilter )
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = {
+  \\"and\\":   [$filter, $args.filter]
+} )
+    #end
+  #else
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = $args.filter )
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filter) )
+    #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
+    #if( !$util.isNullOrBlank($filterExpression.expression) )
+      #if( $filterExpression.expressionValues.size() == 0 )
+        $util.qr($filterExpression.remove(\\"expressionValues\\"))
+      #end
+      #set( $filter = $filterExpression )
+    #end
+  #end
+{
+      \\"version\\": \\"2018-05-29\\",
+      \\"operation\\": \\"Query\\",
+      \\"query\\":     $util.toJson($query),
+      \\"scanIndexForward\\":     #if( $context.args.sortDirection )
+      #if( $context.args.sortDirection == \\"ASC\\" )
+true
+      #else
+false
+      #end
+    #else
+true
+    #end,
+      \\"filter\\":     #if( $filter )
+$util.toJson($filter)
+    #else
+null
+    #end,
+      \\"limit\\": $limit,
+      \\"nextToken\\":     #if( $context.args.nextToken )
+$util.toJson($context.args.nextToken)
+    #else
+null
+    #end,
+      \\"index\\": \\"gsi-Team.members\\"
+  }
+#end"
+`;
+
+exports[`has many references with multiple sort keys 3`] = `
+"#if( $ctx.stash.deniedField )
+  #return($util.toJson(null))
+#end
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"teamId\\"), $ctx.source.teamId) )
+#if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.teamMantra) || $util.isNull($ctx.source.teamOrganization) )
+  #return
+#else
+  #set( $GetRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Query\\"
+} )
+  $util.qr($GetRequest.put(\\"query\\", {
+  \\"expression\\": \\"#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName\\",
+  \\"expressionNames\\": {
+      \\"#partitionKey\\": \\"id\\",
+      \\"#sortKeyName\\": \\"mantra#organization\\"
+  },
+  \\"expressionValues\\": {
+      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\"))),
+      \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.teamMantra}#\${ctx.source.teamOrganization}\\", \\"___xamznone____\\")))
+  }
+}))
+  #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+  #end
+  $util.toJson($GetRequest)
+#end"
+`;
+
 exports[`has many references with partition key + sort key 1`] = `
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
@@ -484,140 +618,6 @@ exports[`has many references with partition key + sort key 2`] = `
   \\"expressionValues\\": {
       \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\"))),
       \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.teamMantra, \\"___xamznone____\\")))
-  }
-}))
-  #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
-  #end
-  $util.toJson($GetRequest)
-#end"
-`;
-
-exports[`has one references with multiple sort keys 1`] = `
-"## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Validate create mutation for global secondary index 'gsi-Team.members'. **
-#set( $hasSeenSomeKeyArg = false )
-#set( $keyFieldNames = [\\"teamMantra\\", \\"teamOrganization\\"] )
-#foreach( $keyFieldName in $keyFieldNames )
-#if( $mergedValues.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
-#end
-#foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey(\\"$keyFieldName\\") )
-    $util.error(\\"When creating any part of the composite sort key for global secondary index 'gsi-Team.members', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
-  #end
-#end
-## [End] Validate create mutation for global secondary index 'gsi-Team.members'. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", { 'teamMantra#teamOrganization': \\"teamMantraTeamOrganization\\" }))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('teamMantra#teamOrganization', \\"teamMantraTeamOrganization\\"))
-#end
-#if( $hasSeenSomeKeyArg )
-  $util.qr($ctx.args.input.put('teamMantra#teamOrganization',\\"\${mergedValues.teamMantra}#\${mergedValues.teamOrganization}\\"))
-#end
-{}"
-`;
-
-exports[`has one references with multiple sort keys 2`] = `
-"#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
-#end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
-#if( $util.isNull($partitionKeyValue) )
-  #set( $result = {
-  \\"items\\":   []
-} )
-  #return($result)
-#else
-  #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
-  #set( $sortKeyValue0 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"mantra\\"), $ctx.source.mantra) )
-  #set( $sortKeyValue1 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"organization\\"), $ctx.source.organization) )
-  #set( $query = {
-  \\"expression\\": \\"#partitionKey = :partitionKey AND #sortKey = :sortKey\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"teamId\\",
-      \\"#sortKey\\": \\"teamMantra#teamOrganization\\"
-  },
-  \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue),
-      \\":sortKey\\": $util.dynamodb.toDynamoDB($teamMantra#teamOrganization)
-  }
-} )
-  #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
-  #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    #set( $filter = $ctx.stash.authFilter )
-    #if( !$util.isNullOrEmpty($args.filter) )
-      #set( $filter = {
-  \\"and\\":   [$filter, $args.filter]
-} )
-    #end
-  #else
-    #if( !$util.isNullOrEmpty($args.filter) )
-      #set( $filter = $args.filter )
-    #end
-  #end
-  #if( !$util.isNullOrEmpty($filter) )
-    #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
-    #if( !$util.isNullOrBlank($filterExpression.expression) )
-      #if( $filterExpression.expressionValues.size() == 0 )
-        $util.qr($filterExpression.remove(\\"expressionValues\\"))
-      #end
-      #set( $filter = $filterExpression )
-    #end
-  #end
-{
-      \\"version\\": \\"2018-05-29\\",
-      \\"operation\\": \\"Query\\",
-      \\"query\\":     $util.toJson($query),
-      \\"scanIndexForward\\":     #if( $context.args.sortDirection )
-      #if( $context.args.sortDirection == \\"ASC\\" )
-true
-      #else
-false
-      #end
-    #else
-true
-    #end,
-      \\"filter\\":     #if( $filter )
-$util.toJson($filter)
-    #else
-null
-    #end,
-      \\"limit\\": $limit,
-      \\"nextToken\\":     #if( $context.args.nextToken )
-$util.toJson($context.args.nextToken)
-    #else
-null
-    #end,
-      \\"index\\": \\"gsi-Team.members\\"
-  }
-#end"
-`;
-
-exports[`has one references with multiple sort keys 3`] = `
-"#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
-#end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"teamId\\"), $ctx.source.teamId) )
-#if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.teamMantra) || $util.isNull($ctx.source.teamOrganization) )
-  #return
-#else
-  #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\"
-} )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"id\\",
-      \\"#sortKeyName\\": \\"mantra#organization\\"
-  },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\"))),
-      \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.teamMantra}#\${ctx.source.teamOrganization}\\", \\"___xamznone____\\")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
