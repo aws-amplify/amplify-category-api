@@ -8,7 +8,8 @@ import { DataSourceBasedDirectiveTransformer } from '../data-source-based-direct
 import { DDBRelationalReferencesResolverGenerator } from '../resolver/ddb-references-generator';
 import {
   setFieldMappingResolverReference,
-  updateRelatedModelMutationResolversForCompositeSortKeys, updateTableForReferencesConnection
+  updateRelatedModelMutationResolversForCompositeSortKeys,
+  updateTableForReferencesConnection,
 } from '../resolvers';
 import { HasManyDirectiveConfiguration } from '../types';
 import { ensureReferencesArray, getReferencesNodes, registerHasManyForeignKeyMappings, validateParentReferencesFields } from '../utils';
@@ -42,6 +43,14 @@ export class HasManyDirectiveDDBReferencesTransformer implements DataSourceBased
     new DDBRelationalReferencesResolverGenerator().makeHasManyGetItemsConnectionWithKeyResolver(config, context);
   };
 
+  /**
+   * Validate that the {@link HasManyDirectiveConfiguration} has the necessary values to to run through
+   * the remainder of the {@link HasManyTransformer} workflow.
+   *
+   * This function mutates `indexName`, `references`, and `referenceNodes` properties on {@link config}
+   * @param context The {@link TransformerContextProvider} passed to the {@link HasManyTransformer}'s `validate` function.
+   * @param config The {@link HasManyDirectiveConfiguration} passed to the {@link HasManyTransformer}'s `validate` function.
+   */
   validate = (context: TransformerContextProvider, config: HasManyDirectiveConfiguration): void => {
     if (config.indexName) {
       const mappedObjectName = context.resourceHelper.getModelNameMapping(config.object.name.value);

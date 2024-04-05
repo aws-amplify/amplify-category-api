@@ -43,6 +43,14 @@ export class HasOneDirectiveDDBReferencesTransformer implements DataSourceBasedD
     new DDBRelationalReferencesResolverGenerator().makeHasOneGetItemConnectionWithKeyResolver(config, context);
   };
 
+  /**
+   * Validate that the {@link HasOneDirectiveConfiguration} has the necessary values to to run through
+   * the remainder of the {@link HasOneTransformer} workflow.
+   *
+   * This function mutates `indexName`, `references`, and `referenceNodes` properties on {@link config}
+   * @param context The {@link TransformerContextProvider} passed to the {@link HasOneTransformer}'s `validate` function.
+   * @param config The {@link HasOneDirectiveConfiguration} passed to the {@link HasOneTransformer}'s `validate` function.
+   */
   validate = (context: TransformerContextProvider, config: HasOneDirectiveConfiguration): void => {
     if (config.indexName) {
       const mappedObjectName = context.resourceHelper.getModelNameMapping(config.object.name.value);
