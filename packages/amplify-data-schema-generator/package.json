@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/data-schema-generator",
-  "version": "0.1.0",
+  "version": "0.2.0-z-data-schema-generator.0",
   "description": "Amplify data schema generator",
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-schema-generator": "0.8.0",
+    "@aws-amplify/graphql-schema-generator": "1.0.0-z-data-schema-generator.0",
     "typescript": "^4.8.4"
   },
   "devDependencies": {
