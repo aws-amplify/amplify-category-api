@@ -290,3 +290,78 @@ test('many to many query', () => {
   validateModelSchema(schema);
   expect(out.schema).toMatchSnapshot();
 });
+
+test('has many references with partition key + sort key', () => {
+  const inputSchema = `
+    type Member @model {
+      name: String
+      teamId: String
+      teamMantra: String
+      team: Team @belongsTo(references: ["teamId", "teamMantra"])
+    }
+    type Team @model {
+      id: String! @primaryKey(sortKeyFields: ["mantra"])
+      mantra: String!
+      members: [Member] @hasMany(references: ["teamId", "teamMantra"])
+    }
+  `;
+
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [
+      new ModelTransformer(),
+      new PrimaryKeyTransformer(),
+      new HasOneTransformer(),
+      new HasManyTransformer(),
+      new BelongsToTransformer(),
+    ],
+  });
+
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+  expect(out.resolvers['Mutation.createMember.preAuth.1.req.vtl']).toBeUndefined();
+  expect(out.resolvers['Team.members.req.vtl']).toBeDefined();
+  expect(out.resolvers['Team.members.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Member.team.req.vtl']).toBeDefined();
+  expect(out.resolvers['Member.team.req.vtl']).toMatchSnapshot();
+});
+
+test('has one references with multiple sort keys', () => {
+  const inputSchema = `
+    type Member @model {
+      name: String
+      teamId: String
+      teamMantra: String
+      teamOrganization: String
+      team: Team @belongsTo(references: ["teamId", "teamMantra", "teamOrganization"])
+    }
+    type Team @model {
+      id: String! @primaryKey(sortKeyFields: ["mantra", "organization"])
+      mantra: String!
+      organization: String!
+      members: [Member] @hasMany(references: ["teamId", "teamMantra", "teamOrganization"])
+    }
+  `;
+
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [
+      new ModelTransformer(),
+      new PrimaryKeyTransformer(),
+      new HasOneTransformer(),
+      new HasManyTransformer(),
+      new BelongsToTransformer(),
+    ],
+  });
+
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+  expect(out.resolvers['Mutation.createMember.preAuth.1.req.vtl']).toBeDefined();
+  expect(out.resolvers['Mutation.createMember.preAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Team.members.req.vtl']).toBeDefined();
+  expect(out.resolvers['Team.members.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Member.team.req.vtl']).toBeDefined();
+  expect(out.resolvers['Member.team.req.vtl']).toMatchSnapshot();
+});
