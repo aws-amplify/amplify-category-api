@@ -80,7 +80,7 @@ $util.toJson({})
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
-## [Start] Validate create mutation for @index 'gsi-Team.project'. **
+## [Start] Validate create mutation for global secondary index 'gsi-Team.project'. **
 #set( $hasSeenSomeKeyArg = false )
 #set( $keyFieldNames = [\\"teamMantra\\", \\"teamOrganization\\"] )
 #foreach( $keyFieldName in $keyFieldNames )
@@ -88,10 +88,10 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #end
 #foreach( $keyFieldName in $keyFieldNames )
   #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey(\\"$keyFieldName\\") )
-    $util.error(\\"When creating any part of the composite sort key for @index 'gsi-Team.project', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
+    $util.error(\\"When creating any part of the composite sort key for global secondary index 'gsi-Team.project', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
   #end
 #end
-## [End] Validate create mutation for @index 'gsi-Team.project'. **
+## [End] Validate create mutation for global secondary index 'gsi-Team.project'. **
 #if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
   $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", { 'teamMantra#teamOrganization': \\"teamMantraTeamOrganization\\" }))
 #else
@@ -457,7 +457,7 @@ $util.toJson({})
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
-## [Start] Validate update mutation for @index 'gsi-Team.project'. **
+## [Start] Validate update mutation for global secondary index 'gsi-Team.project'. **
 #set( $hasSeenSomeKeyArg = false )
 #set( $keyFieldNames = [\\"teamMantra\\", \\"teamOrganization\\"] )
 #foreach( $keyFieldName in $keyFieldNames )
@@ -465,10 +465,10 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #end
 #foreach( $keyFieldName in $keyFieldNames )
   #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey(\\"$keyFieldName\\") )
-    $util.error(\\"When updating any part of the composite sort key for @index 'gsi-Team.project', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
+    $util.error(\\"When updating any part of the composite sort key for global secondary index 'gsi-Team.project', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
   #end
 #end
-## [End] Validate update mutation for @index 'gsi-Team.project'. **
+## [End] Validate update mutation for global secondary index 'gsi-Team.project'. **
 #if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
   $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", { 'teamMantra#teamOrganization': \\"teamMantraTeamOrganization\\" }))
 #else

@@ -351,7 +351,7 @@ const validateCompositeSortKeyMutationArgumentSnippet = (
     return '';
   }
 
-  return printBlock(`Validate ${keyOperation} mutation for @index '${indexName}'`)(
+  return printBlock(`Validate ${keyOperation} mutation for global secondary index '${indexName}'`)(
     compoundExpression([
       set(ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg), bool(false)),
       set(ref('keyFieldNames'), list(sortKeyFields.map((f) => str(f)))),
@@ -362,7 +362,7 @@ const validateCompositeSortKeyMutationArgumentSnippet = (
         iff(
           raw(`$${ResourceConstants.SNIPPETS.HasSeenSomeKeyArg} && !$mergedValues.containsKey("$keyFieldName")`),
           raw(
-            `$util.error("When ${keyOperation.replace(/.$/, 'ing')} any part of the composite sort key for @index '${indexName}',` +
+            `$util.error("When ${keyOperation.replace(/.$/, 'ing')} any part of the composite sort key for global secondary index '${indexName}',` +
               " you must provide all fields for the key. Missing key: '$keyFieldName'.\")",
           ),
         ),
