@@ -327,7 +327,7 @@ test('has many references with partition key + sort key', () => {
   expect(out.resolvers['Member.team.req.vtl']).toMatchSnapshot();
 });
 
-test('has one references with multiple sort keys', () => {
+test('has many references with multiple sort keys', () => {
   const inputSchema = `
     type Member @model {
       name: String
