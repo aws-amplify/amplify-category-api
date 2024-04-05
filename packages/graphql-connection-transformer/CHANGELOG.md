@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.76-test-binary-size.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-connection-transformer@5.2.75...graphql-connection-transformer@5.2.76-test-binary-size.0) (2024-04-05)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
 ## [5.2.75](https://github.com/aws-amplify/amplify-category-api/compare/graphql-connection-transformer@5.2.74...graphql-connection-transformer@5.2.75) (2024-03-28)
 
 **Note:** Version bump only for package graphql-connection-transformer
