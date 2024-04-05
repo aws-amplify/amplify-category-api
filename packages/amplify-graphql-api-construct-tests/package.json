@@ -27,13 +27,10 @@
     "@aws-sdk/client-lambda": "3.338.0",
     "@aws-sdk/client-rds": "3.338.0",
     "@faker-js/faker": "^8.2.0",
-    "add": "^2.0.6",
     "amplify-category-api-e2e-core": "4.6.0",
-    "aws-amplify": "^6.0.27",
     "fs-extra": "^8.1.0",
     "generate-password": "~1.7.0",
-    "node-fetch": "^2.6.7",
-    "yarn": "^1.22.22"
+    "node-fetch": "^2.6.7"
   },
   "peerDependencies": {
     "@aws-amplify/amplify-cli-core": "^4.2.10"
