@@ -43,26 +43,22 @@ const authFilter = ref('ctx.stash.authFilter');
 const PARTITION_KEY_VALUE = 'partitionKeyValue';
 
 export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResolverGenerator {
-  makeExpression = (references: string[]): ObjectNode => {
+  makeQueryExpression = (references: string[]): ObjectNode => {
     if (references.length > 1) {
-      let condensedSortKeyValue;
+      const rangeKeyFields = references.slice(1);
+      const condensedSortKeyValue = condenseRangeKey(rangeKeyFields);
 
-      if (references.length > 2) {
-        const rangeKeyFields = references.slice(1);
-        condensedSortKeyValue = condenseRangeKey(rangeKeyFields);
-
-        return obj({
-          expression: str('#partitionKey = :partitionKey AND #sortKey = :sortKey'),
-          expressionNames: obj({
-            '#partitionKey': str(references[0]),
-            '#sortKey': str(condensedSortKeyValue),
-          }),
-          expressionValues: obj({
-            ':partitionKey': ref(`util.dynamodb.toDynamoDB($${PARTITION_KEY_VALUE})`),
-            ':sortKey': ref(`util.dynamodb.toDynamoDB(${condensedSortKeyValue ? `"${condensedSortKeyValue}"` : `$${SORT_KEY_VALUE}0`})`),
-          }),
-        });
-      }
+      return obj({
+        expression: str('#partitionKey = :partitionKey AND #sortKey = :sortKey'),
+        expressionNames: obj({
+          '#partitionKey': str(references[0]),
+          '#sortKey': str(condensedSortKeyValue),
+        }),
+        expressionValues: obj({
+          ':partitionKey': ref(`util.dynamodb.toDynamoDB($${PARTITION_KEY_VALUE})`),
+          ':sortKey': ref(`util.dynamodb.toDynamoDB($${condensedSortKeyValue})`),
+        }),
+      });
     }
 
     return obj({
@@ -90,10 +86,8 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
     }
 
     const primaryKeyFields: string[] = getPrimaryKeyFields(object);
-    const table = getTable(ctx, relatedType);
     const dataSourceName = getModelDataSourceNameForTypeName(ctx, relatedType.name.value);
     const dataSource = ctx.api.host.getDataSource(dataSourceName);
-    const keySchema = getKeySchema(table, indexName);
     const setup: Expression[] = [
       set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${limit})`)),
       ...primaryKeyFields
@@ -104,7 +98,7 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
             methodCall(ref('util.defaultIfNull'), ref(`ctx.stash.connectionAttibutes.get("${ca}")`), ref(`ctx.source.${ca}`)),
           ),
         ),
-      set(ref('query'), this.makeExpression(references)),
+      set(ref('query'), this.makeQueryExpression(references)),
     ];
 
     // add setup filter to query
