@@ -2,7 +2,7 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-import * as APITypes from "../API";
+import * as APITypes from '../API';
 type GeneratedQuery<InputType, OutputType> = string & {
   __generatedQueryInput: InputType;
   __generatedQueryOutput: OutputType;
@@ -72,10 +72,7 @@ export const getPrimary = /* GraphQL */ `query GetPrimary($id: ID!) {
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.GetPrimaryQueryVariables,
-  APITypes.GetPrimaryQuery
->;
+` as GeneratedQuery<APITypes.GetPrimaryQueryVariables, APITypes.GetPrimaryQuery>;
 export const listPrimaries = /* GraphQL */ `query ListPrimaries(
   $id: ID
   $filter: ModelPrimaryFilterInput
@@ -134,10 +131,7 @@ export const listPrimaries = /* GraphQL */ `query ListPrimaries(
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.ListPrimariesQueryVariables,
-  APITypes.ListPrimariesQuery
->;
+` as GeneratedQuery<APITypes.ListPrimariesQueryVariables, APITypes.ListPrimariesQuery>;
 export const getRelatedMany = /* GraphQL */ `query GetRelatedMany($id: ID!) {
   getRelatedMany(id: $id) {
     id
@@ -189,10 +183,7 @@ export const getRelatedMany = /* GraphQL */ `query GetRelatedMany($id: ID!) {
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.GetRelatedManyQueryVariables,
-  APITypes.GetRelatedManyQuery
->;
+` as GeneratedQuery<APITypes.GetRelatedManyQueryVariables, APITypes.GetRelatedManyQuery>;
 export const listRelatedManies = /* GraphQL */ `query ListRelatedManies(
   $id: ID
   $filter: ModelRelatedManyFilterInput
@@ -242,10 +233,7 @@ export const listRelatedManies = /* GraphQL */ `query ListRelatedManies(
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.ListRelatedManiesQueryVariables,
-  APITypes.ListRelatedManiesQuery
->;
+` as GeneratedQuery<APITypes.ListRelatedManiesQueryVariables, APITypes.ListRelatedManiesQuery>;
 export const getRelatedOne = /* GraphQL */ `query GetRelatedOne($id: ID!) {
   getRelatedOne(id: $id) {
     id
@@ -297,10 +285,7 @@ export const getRelatedOne = /* GraphQL */ `query GetRelatedOne($id: ID!) {
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.GetRelatedOneQueryVariables,
-  APITypes.GetRelatedOneQuery
->;
+` as GeneratedQuery<APITypes.GetRelatedOneQueryVariables, APITypes.GetRelatedOneQuery>;
 export const listRelatedOnes = /* GraphQL */ `query ListRelatedOnes(
   $id: ID
   $filter: ModelRelatedOneFilterInput
@@ -350,10 +335,7 @@ export const listRelatedOnes = /* GraphQL */ `query ListRelatedOnes(
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.ListRelatedOnesQueryVariables,
-  APITypes.ListRelatedOnesQuery
->;
+` as GeneratedQuery<APITypes.ListRelatedOnesQueryVariables, APITypes.ListRelatedOnesQuery>;
 export const getManyLeft = /* GraphQL */ `query GetManyLeft($id: ID!) {
   getManyLeft(id: $id) {
     id
@@ -393,10 +375,7 @@ export const getManyLeft = /* GraphQL */ `query GetManyLeft($id: ID!) {
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.GetManyLeftQueryVariables,
-  APITypes.GetManyLeftQuery
->;
+` as GeneratedQuery<APITypes.GetManyLeftQueryVariables, APITypes.GetManyLeftQuery>;
 export const listManyLefts = /* GraphQL */ `query ListManyLefts(
   $id: ID
   $filter: ModelManyLeftFilterInput
@@ -436,10 +415,7 @@ export const listManyLefts = /* GraphQL */ `query ListManyLefts(
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.ListManyLeftsQueryVariables,
-  APITypes.ListManyLeftsQuery
->;
+` as GeneratedQuery<APITypes.ListManyLeftsQueryVariables, APITypes.ListManyLeftsQuery>;
 export const getManyRight = /* GraphQL */ `query GetManyRight($id: ID!) {
   getManyRight(id: $id) {
     id
@@ -479,10 +455,7 @@ export const getManyRight = /* GraphQL */ `query GetManyRight($id: ID!) {
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.GetManyRightQueryVariables,
-  APITypes.GetManyRightQuery
->;
+` as GeneratedQuery<APITypes.GetManyRightQueryVariables, APITypes.GetManyRightQuery>;
 export const listManyRights = /* GraphQL */ `query ListManyRights(
   $id: ID
   $filter: ModelManyRightFilterInput
@@ -522,10 +495,7 @@ export const listManyRights = /* GraphQL */ `query ListManyRights(
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.ListManyRightsQueryVariables,
-  APITypes.ListManyRightsQuery
->;
+` as GeneratedQuery<APITypes.ListManyRightsQueryVariables, APITypes.ListManyRightsQuery>;
 export const getLeftRightJoin = /* GraphQL */ `query GetLeftRightJoin($id: ID!) {
   getLeftRightJoin(id: $id) {
     id
@@ -579,10 +549,7 @@ export const getLeftRightJoin = /* GraphQL */ `query GetLeftRightJoin($id: ID!) 
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.GetLeftRightJoinQueryVariables,
-  APITypes.GetLeftRightJoinQuery
->;
+` as GeneratedQuery<APITypes.GetLeftRightJoinQueryVariables, APITypes.GetLeftRightJoinQuery>;
 export const listLeftRightJoins = /* GraphQL */ `query ListLeftRightJoins(
   $filter: ModelLeftRightJoinFilterInput
   $limit: Int
@@ -626,10 +593,7 @@ export const listLeftRightJoins = /* GraphQL */ `query ListLeftRightJoins(
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.ListLeftRightJoinsQueryVariables,
-  APITypes.ListLeftRightJoinsQuery
->;
+` as GeneratedQuery<APITypes.ListLeftRightJoinsQueryVariables, APITypes.ListLeftRightJoinsQuery>;
 export const leftRightJoinsByManyLeftId = /* GraphQL */ `query LeftRightJoinsByManyLeftId(
   $manyLeftId: ID!
   $sortDirection: ModelSortDirection
@@ -681,10 +645,7 @@ export const leftRightJoinsByManyLeftId = /* GraphQL */ `query LeftRightJoinsByM
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.LeftRightJoinsByManyLeftIdQueryVariables,
-  APITypes.LeftRightJoinsByManyLeftIdQuery
->;
+` as GeneratedQuery<APITypes.LeftRightJoinsByManyLeftIdQueryVariables, APITypes.LeftRightJoinsByManyLeftIdQuery>;
 export const leftRightJoinsByManyRightId = /* GraphQL */ `query LeftRightJoinsByManyRightId(
   $manyRightId: ID!
   $sortDirection: ModelSortDirection
@@ -736,7 +697,4 @@ export const leftRightJoinsByManyRightId = /* GraphQL */ `query LeftRightJoinsBy
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.LeftRightJoinsByManyRightIdQueryVariables,
-  APITypes.LeftRightJoinsByManyRightIdQuery
->;
+` as GeneratedQuery<APITypes.LeftRightJoinsByManyRightIdQueryVariables, APITypes.LeftRightJoinsByManyRightIdQuery>;

@@ -2,7 +2,7 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-import * as APITypes from "../API";
+import * as APITypes from '../API';
 type GeneratedQuery<InputType, OutputType> = string & {
   __generatedQueryInput: InputType;
   __generatedQueryOutput: OutputType;
@@ -57,10 +57,7 @@ export const getPrimary = /* GraphQL */ `query GetPrimary($id: String!) {
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.GetPrimaryQueryVariables,
-  APITypes.GetPrimaryQuery
->;
+` as GeneratedQuery<APITypes.GetPrimaryQueryVariables, APITypes.GetPrimaryQuery>;
 export const listPrimaries = /* GraphQL */ `query ListPrimaries(
   $id: String
   $filter: ModelPrimaryFilterInput
@@ -109,10 +106,7 @@ export const listPrimaries = /* GraphQL */ `query ListPrimaries(
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.ListPrimariesQueryVariables,
-  APITypes.ListPrimariesQuery
->;
+` as GeneratedQuery<APITypes.ListPrimariesQueryVariables, APITypes.ListPrimariesQuery>;
 export const primariesByOwner = /* GraphQL */ `query PrimariesByOwner(
   $owner: String!
   $sortDirection: ModelSortDirection
@@ -161,10 +155,7 @@ export const primariesByOwner = /* GraphQL */ `query PrimariesByOwner(
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.PrimariesByOwnerQueryVariables,
-  APITypes.PrimariesByOwnerQuery
->;
+` as GeneratedQuery<APITypes.PrimariesByOwnerQueryVariables, APITypes.PrimariesByOwnerQuery>;
 export const getRelatedMany = /* GraphQL */ `query GetRelatedMany($id: String!) {
   getRelatedMany(id: $id) {
     id
@@ -204,10 +195,7 @@ export const getRelatedMany = /* GraphQL */ `query GetRelatedMany($id: String!) 
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.GetRelatedManyQueryVariables,
-  APITypes.GetRelatedManyQuery
->;
+` as GeneratedQuery<APITypes.GetRelatedManyQueryVariables, APITypes.GetRelatedManyQuery>;
 export const listRelatedManies = /* GraphQL */ `query ListRelatedManies(
   $id: String
   $filter: ModelRelatedManyFilterInput
@@ -250,10 +238,7 @@ export const listRelatedManies = /* GraphQL */ `query ListRelatedManies(
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.ListRelatedManiesQueryVariables,
-  APITypes.ListRelatedManiesQuery
->;
+` as GeneratedQuery<APITypes.ListRelatedManiesQueryVariables, APITypes.ListRelatedManiesQuery>;
 export const relatedManiesByOwner = /* GraphQL */ `query RelatedManiesByOwner(
   $owner: String!
   $sortDirection: ModelSortDirection
@@ -296,10 +281,7 @@ export const relatedManiesByOwner = /* GraphQL */ `query RelatedManiesByOwner(
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.RelatedManiesByOwnerQueryVariables,
-  APITypes.RelatedManiesByOwnerQuery
->;
+` as GeneratedQuery<APITypes.RelatedManiesByOwnerQueryVariables, APITypes.RelatedManiesByOwnerQuery>;
 export const relatedManiesByPrimaryId = /* GraphQL */ `query RelatedManiesByPrimaryId(
   $primaryId: String!
   $sortDirection: ModelSortDirection
@@ -342,10 +324,7 @@ export const relatedManiesByPrimaryId = /* GraphQL */ `query RelatedManiesByPrim
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.RelatedManiesByPrimaryIdQueryVariables,
-  APITypes.RelatedManiesByPrimaryIdQuery
->;
+` as GeneratedQuery<APITypes.RelatedManiesByPrimaryIdQueryVariables, APITypes.RelatedManiesByPrimaryIdQuery>;
 export const getRelatedOne = /* GraphQL */ `query GetRelatedOne($id: String!) {
   getRelatedOne(id: $id) {
     id
@@ -385,10 +364,7 @@ export const getRelatedOne = /* GraphQL */ `query GetRelatedOne($id: String!) {
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.GetRelatedOneQueryVariables,
-  APITypes.GetRelatedOneQuery
->;
+` as GeneratedQuery<APITypes.GetRelatedOneQueryVariables, APITypes.GetRelatedOneQuery>;
 export const listRelatedOnes = /* GraphQL */ `query ListRelatedOnes(
   $id: String
   $filter: ModelRelatedOneFilterInput
@@ -431,10 +407,7 @@ export const listRelatedOnes = /* GraphQL */ `query ListRelatedOnes(
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.ListRelatedOnesQueryVariables,
-  APITypes.ListRelatedOnesQuery
->;
+` as GeneratedQuery<APITypes.ListRelatedOnesQueryVariables, APITypes.ListRelatedOnesQuery>;
 export const relatedOnesByOwner = /* GraphQL */ `query RelatedOnesByOwner(
   $owner: String!
   $sortDirection: ModelSortDirection
@@ -477,10 +450,7 @@ export const relatedOnesByOwner = /* GraphQL */ `query RelatedOnesByOwner(
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.RelatedOnesByOwnerQueryVariables,
-  APITypes.RelatedOnesByOwnerQuery
->;
+` as GeneratedQuery<APITypes.RelatedOnesByOwnerQueryVariables, APITypes.RelatedOnesByOwnerQuery>;
 export const relatedOnesByPrimaryId = /* GraphQL */ `query RelatedOnesByPrimaryId(
   $primaryId: String!
   $sortDirection: ModelSortDirection
@@ -523,7 +493,4 @@ export const relatedOnesByPrimaryId = /* GraphQL */ `query RelatedOnesByPrimaryI
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.RelatedOnesByPrimaryIdQueryVariables,
-  APITypes.RelatedOnesByPrimaryIdQuery
->;
+` as GeneratedQuery<APITypes.RelatedOnesByPrimaryIdQueryVariables, APITypes.RelatedOnesByPrimaryIdQuery>;

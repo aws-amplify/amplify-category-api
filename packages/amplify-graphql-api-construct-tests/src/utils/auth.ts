@@ -31,8 +31,6 @@ export const createCognitoUser = async (options: CreateCognitoUserInput): Promis
     uppercase: true,
   });
 
-
-
   const username = generator.generate({
     length: 5,
     lowercase: true,

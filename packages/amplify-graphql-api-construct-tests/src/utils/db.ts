@@ -40,7 +40,7 @@ export const cleanupDatabase = async (options: { identifier: string; region: str
   const { connectionConfigs } = dbDetails;
 
   await Promise.all(
-    Object.values(connectionConfigs).map(dbConnectionConfig => {
+    Object.values(connectionConfigs).map((dbConnectionConfig) => {
       if (isSqlModelDataSourceSecretsManagerDbConnectionConfig(dbConnectionConfig)) {
         return deleteDbConnectionConfigWithSecretsManager({
           region,

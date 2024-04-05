@@ -78,5 +78,3 @@ export const graphqlRequestWithLambda = async (apiEndpoint: string, authToken: s
     },
     body: JSON.stringify({ query }),
   });
-
-
