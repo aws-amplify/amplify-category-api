@@ -6,14 +6,13 @@ import * as generator from 'generate-password';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import {
   createCognitoUser,
-  ConsolidatedDBDetails,
   dbDetailsToModelDataSourceStrategy,
   doAppSyncGraphqlMutation,
   signInCognitoUser,
   TestDefinition,
   writeTestDefinitions,
 } from '../utils';
-import { SqlDatatabaseController } from '../sql-datatabase-controller';
+import { SqlDatabaseDetails, SqlDatatabaseController } from '../sql-datatabase-controller';
 import {
   createPrimary,
   createRelatedMany,
@@ -31,7 +30,7 @@ describe('Associated type fields with more restrictive auth rules than the model
 
   const [dbUsername, dbIdentifier] = generator.generateMultiple(2);
   const dbname = 'default_db';
-  let dbDetails: ConsolidatedDBDetails;
+  let dbDetails: SqlDatabaseDetails;
   const databaseController = new SqlDatatabaseController(
     [
       'drop table if exists `RelatedMany`;',
@@ -59,7 +58,7 @@ describe('Associated type fields with more restrictive auth rules than the model
   );
 
   beforeAll(async () => {
-    await databaseController.setupDatabase();
+    dbDetails = await databaseController.setupDatabase();
   });
 
   afterAll(async () => {
