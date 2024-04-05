@@ -8,9 +8,7 @@ import { DataSourceBasedDirectiveTransformer } from '../data-source-based-direct
 import { DDBRelationalReferencesResolverGenerator } from '../resolver/ddb-references-generator';
 import {
   setFieldMappingResolverReference,
-  updateRelatedModelMutationResolversForCompositeSortKeys,
-  updateTableForConnection,
-  updateTableForReferencesConnection,
+  updateRelatedModelMutationResolversForCompositeSortKeys, updateTableForReferencesConnection
 } from '../resolvers';
 import { HasManyDirectiveConfiguration } from '../types';
 import { ensureReferencesArray, getReferencesNodes, registerHasManyForeignKeyMappings, validateParentReferencesFields } from '../utils';
