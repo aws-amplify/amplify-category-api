@@ -5,16 +5,15 @@ import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-
 import * as generator from 'generate-password';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import {
-  cleanupDatabase,
   createCognitoUser,
   ConsolidatedDBDetails,
   dbDetailsToModelDataSourceStrategy,
   doAppSyncGraphqlMutation,
-  setupDatabase,
   signInCognitoUser,
   TestDefinition,
   writeTestDefinitions,
 } from '../utils';
+import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import {
   createPrimary,
   createRelatedMany,
@@ -33,35 +32,38 @@ describe('Associated type fields with more restrictive auth rules than the model
   const [dbUsername, dbIdentifier] = generator.generateMultiple(2);
   const dbname = 'default_db';
   let dbDetails: ConsolidatedDBDetails;
+  const databaseController = new SqlDatatabaseController(
+    [
+      'drop table if exists `RelatedMany`;',
+      'drop table if exists `RelatedOne`;',
+      'drop table if exists `Primary`;',
+
+      'create table `Primary` ( id varchar(64) primary key not null, secret varchar(64), owner varchar(64));',
+      'create index primary_owner on `Primary`(owner);',
+
+      'create table RelatedMany( id varchar(64) primary key not null, secret varchar(64), owner varchar(64), `primaryId` varchar(64));',
+      'create index RelatedMany_owner on `RelatedMany`(owner);',
+      'create index RelatedMany_primaryId on `RelatedMany`(`primaryId`);',
+
+      'create table `RelatedOne`( id varchar(64) primary key not null, secret varchar(64), owner varchar(64), `primaryId` varchar(64));',
+      'create index `RelatedOne_owner` on `RelatedOne`(owner);',
+      'create index `RelatedOne_primaryId` on `RelatedOne`(`primaryId`);',
+    ],
+    {
+      identifier: dbIdentifier,
+      engine: 'mysql',
+      dbname,
+      username: dbUsername,
+      region,
+    },
+  );
 
   beforeAll(async () => {
-    dbDetails = await setupDatabase({
-      engine: 'mysql',
-      identifier: dbIdentifier,
-      dbname,
-      queries: [
-        'drop table if exists `RelatedMany`;',
-        'drop table if exists `RelatedOne`;',
-        'drop table if exists `Primary`;',
-
-        'create table `Primary` ( id varchar(64) primary key not null, secret varchar(64), owner varchar(64));',
-        'create index primary_owner on `Primary`(owner);',
-
-        'create table RelatedMany( id varchar(64) primary key not null, secret varchar(64), owner varchar(64), `primaryId` varchar(64));',
-        'create index RelatedMany_owner on `RelatedMany`(owner);',
-        'create index RelatedMany_primaryId on `RelatedMany`(`primaryId`);',
-
-        'create table `RelatedOne`( id varchar(64) primary key not null, secret varchar(64), owner varchar(64), `primaryId` varchar(64));',
-        'create index `RelatedOne_owner` on `RelatedOne`(owner);',
-        'create index `RelatedOne_primaryId` on `RelatedOne`(`primaryId`);',
-      ],
-      region,
-      username: dbUsername,
-    });
+    await databaseController.setupDatabase();
   });
 
   afterAll(async () => {
-    await cleanupDatabase({ identifier: dbIdentifier, region, dbDetails });
+    await databaseController.cleanupDatabase();
   });
 
   describe('SQL primary, SQL related', () => {

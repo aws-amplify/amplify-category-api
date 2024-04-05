@@ -5,14 +5,6 @@ import {
   SQLLambdaModelDataSourceStrategy,
   ModelDataSourceStrategySqlDbType,
 } from '@aws-amplify/graphql-api-construct';
-import { isSqlModelDataSourceSecretsManagerDbConnectionConfig } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  deleteDBInstance,
-  deleteDbConnectionConfigWithSecretsManager,
-  deleteDbConnectionConfig,
-  extractVpcConfigFromDbInstance,
-  setupRDSInstanceAndData,
-} from 'amplify-category-api-e2e-core';
 
 export interface ConsolidatedDBDetails {
   dbConfig: {
@@ -32,33 +24,6 @@ export interface ConsolidatedDBDetails {
     [key: string]: SqlModelDataSourceDbConnectionConfig;
   };
 }
-
-export const cleanupDatabase = async (options: { identifier: string; region: string; dbDetails: ConsolidatedDBDetails }): Promise<void> => {
-  const { identifier, region, dbDetails } = options;
-  await deleteDBInstance(identifier, region);
-
-  const { connectionConfigs } = dbDetails;
-
-  await Promise.all(
-    Object.values(connectionConfigs).map((dbConnectionConfig) => {
-      if (isSqlModelDataSourceSecretsManagerDbConnectionConfig(dbConnectionConfig)) {
-        return deleteDbConnectionConfigWithSecretsManager({
-          region,
-          secretArn: dbConnectionConfig.secretArn,
-        });
-      } else {
-        return deleteDbConnectionConfig({
-          region,
-          hostnameSsmPath: dbConnectionConfig.hostnameSsmPath,
-          portSsmPath: dbConnectionConfig.portSsmPath,
-          usernameSsmPath: dbConnectionConfig.usernameSsmPath,
-          passwordSsmPath: dbConnectionConfig.passwordSsmPath,
-          databaseNameSsmPath: dbConnectionConfig.databaseNameSsmPath,
-        });
-      }
-    }),
-  );
-};
 
 export const dbDetailsToModelDataSourceStrategy = (
   dbDetails: ConsolidatedDBDetails,
@@ -88,41 +53,6 @@ export const dbDetailsToModelDataSourceStrategy = (
     };
   }
   return strategy;
-};
-
-export const setupDatabase = async (options: {
-  identifier: string;
-  engine: 'mysql' | 'postgres';
-  dbname: string;
-  queries: string[];
-  username: string;
-  region: string;
-}): Promise<ConsolidatedDBDetails> => {
-  const { dbname, identifier, queries } = options;
-
-  console.log(`Setting up database '${identifier}'`);
-
-  const dbConfig = await setupRDSInstanceAndData(options, queries);
-  if (!dbConfig) {
-    throw new Error('Failed to setup RDS instance');
-  }
-
-  return {
-    dbConfig: {
-      endpoint: dbConfig.endpoint,
-      port: dbConfig.port,
-      dbName: dbname,
-      vpcConfig: extractVpcConfigFromDbInstance(dbConfig.dbInstance),
-    },
-    connectionConfigs: {
-      secretsManagerManagedSecret: {
-        databaseName: dbname,
-        hostname: dbConfig.endpoint,
-        port: dbConfig.port,
-        secretArn: dbConfig.managedSecretArn,
-      },
-    },
-  };
 };
 
 /**
