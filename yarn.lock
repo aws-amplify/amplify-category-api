@@ -487,6 +487,49 @@
     "@graphql-tools/apollo-engine-loader" "^8.0.0"
     graphql "^15.5.0"
 
+"@aws-amplify/graphql-schema-generator@0.6.4":
+  version "0.6.4"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-schema-generator/-/graphql-schema-generator-0.6.4.tgz#95d32eedcc36af813a9b6cd0ff361e8f39b5e47a"
+  integrity sha512-XNA+8WpntIyQCxkJbMxVt/WHhRLdKQmNNVWHx5zCxFRjtT+NbbGItA7Y0LyxDbwRzmGU6UluZJsIY2TQUD25/g==
+  dependencies:
+    "@aws-amplify/graphql-transformer-core" "2.4.4"
+    "@aws-amplify/graphql-transformer-interfaces" "3.3.3"
+    "@aws-sdk/client-ec2" "3.338.0"
+    "@aws-sdk/client-iam" "3.338.0"
+    "@aws-sdk/client-lambda" "3.338.0"
+    "@aws-sdk/client-rds" "3.338.0"
+    csv-parse "^5.5.2"
+    fs-extra "11.1.1"
+    graphql "^15.5.0"
+    graphql-transformer-common "4.27.1"
+    knex "~2.4.0"
+    mysql2 "~2.3.3"
+    ora "^4.0.3"
+    pg "~8.11.3"
+    pluralize "^8.0.0"
+
+"@aws-amplify/graphql-transformer-core@2.4.4":
+  version "2.4.4"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-transformer-core/-/graphql-transformer-core-2.4.4.tgz#06855b65897aec01f186b0bf4581c9dfa750e9dd"
+  integrity sha512-1RJcMSEPFwWFGr2IcFlTm85rFkZlOY2zrWfkrqdunpaOO5Uy2JlW9n6WPy86+y3JEjCsW0PtVZ8cCbZKLhmYww==
+  dependencies:
+    "@aws-amplify/graphql-transformer-interfaces" "3.3.3"
+    fs-extra "^8.1.0"
+    graphql "^15.5.0"
+    graphql-transformer-common "4.27.1"
+    hjson "^3.2.2"
+    lodash "^4.17.21"
+    md5 "^2.3.0"
+    object-hash "^3.0.0"
+    ts-dedent "^2.0.0"
+
+"@aws-amplify/graphql-transformer-interfaces@3.3.3":
+  version "3.3.3"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-transformer-interfaces/-/graphql-transformer-interfaces-3.3.3.tgz#bd720fe1ba2dbdaa3346c843667e1c82dd25cd1c"
+  integrity sha512-m/Stnk3z8x/FJaNFXnXM4Kwd9L+qurON1ktJyMXB9cq20lCpi93413iG5856FTQx6/Re0tnS15GueiV/neP5ug==
+  dependencies:
+    graphql "^15.5.0"
+
 "@aws-amplify/graphql-types-generator@3.4.5":
   version "3.4.5"
   resolved "https://registry.npmjs.org/@aws-amplify/graphql-types-generator/-/graphql-types-generator-3.4.5.tgz#3174cc1d360d8021052bd99ede614895631f0130"
@@ -13431,6 +13474,11 @@ graphql-iso-date@^3.6.1:
   resolved "https://registry.yarnpkg.com/graphql-iso-date/-/graphql-iso-date-3.6.1.tgz#bd2d0dc886e0f954cbbbc496bbf1d480b57ffa96"
   integrity sha512-AwFGIuYMJQXOEAgRlJlFL4H1ncFM8n8XmoVDTNypNOZyQ8LFDG2ppMFlsS862BSTCDcSUfHp8PD3/uJhv7t59Q==
 
+graphql-mapping-template@4.20.14:
+  version "4.20.14"
+  resolved "https://registry.npmjs.org/graphql-mapping-template/-/graphql-mapping-template-4.20.14.tgz#e815a6fa1c4d45dc041202dc3e6a482b6bb48701"
+  integrity sha512-1+g3WR+2I8jRaKK+F9x2AuA8KKaV4OYFGh2OL9ctCyGHodUPmZzW+I4nPAROfry4C6rMbcSKGr1z1JEGDkQKIw==
+
 graphql-request@^1.5.0:
   version "1.8.2"
   resolved "https://registry.yarnpkg.com/graphql-request/-/graphql-request-1.8.2.tgz#398d10ae15c585676741bde3fc01d5ca948f8fbe"
@@ -13451,6 +13499,16 @@ graphql-tag@^2.10.1, graphql-tag@^2.11.0:
   integrity sha512-FdSNcu2QQcWnM2VNvSCCDCVS5PpPqpzgFT8+GXzqJuoDd0CBncxCY278u4mhRO7tMgo2JjgJA5aZ+nWSQ/Z+xg==
   dependencies:
     tslib "^2.1.0"
+
+graphql-transformer-common@4.27.1:
+  version "4.27.1"
+  resolved "https://registry.npmjs.org/graphql-transformer-common/-/graphql-transformer-common-4.27.1.tgz#589fd1e8716d6383943d993d9f616f5f53e1a0d7"
+  integrity sha512-1jiFbG4sIdpNnOqL2EigUX5EiuKMFFdsHXMRIMlWrnkD1jK6BJqPHloc5RZ79BTY4hXbDiuV2c/tLG+sZ0vULw==
+  dependencies:
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.14"
+    md5 "^2.2.1"
+    pluralize "8.0.0"
 
 graphql@15.8.0, graphql@^15.5.0:
   version "15.8.0"
