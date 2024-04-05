@@ -33,7 +33,9 @@ const combineTestDefinitionsInDirectory = (directory: string): IAmplifyGraphqlDe
   return AmplifyGraphqlDefinition.combine(definitions);
 };
 
-const PREFIX = 'RestrictedAuthTest';
+// Keeping this short so we don't bump up against resource length limits (e.g., 140 characters for lambda layers).
+// arn:aws:lambda:ap-northeast-2:012345678901:layer:${PREFIX}ApiAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentAwsCliLayerABCDEF12:1
+const PREFIX = 'RFAuthTest';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
