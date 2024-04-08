@@ -226,7 +226,7 @@ type Subscription {
 `;
 
 exports[`ModelTransformer: remove null timestamp fields from input createdAt null 1`] = `
-"type Bar {
+"type CreatedAtNull {
   id: ID!
   title: String!
   updatedAt: AWSDateTime!
@@ -382,71 +382,71 @@ enum ModelSortDirection {
   DESC
 }
 
-type ModelBarConnection {
-  items: [Bar]!
+type ModelCreatedAtNullConnection {
+  items: [CreatedAtNull]!
   nextToken: String
 }
 
-input ModelBarFilterInput {
+input ModelCreatedAtNullFilterInput {
   id: ModelIDInput
   title: ModelStringInput
   updatedAt: ModelStringInput
-  and: [ModelBarFilterInput]
-  or: [ModelBarFilterInput]
-  not: ModelBarFilterInput
+  and: [ModelCreatedAtNullFilterInput]
+  or: [ModelCreatedAtNullFilterInput]
+  not: ModelCreatedAtNullFilterInput
 }
 
 type Query {
-  getBar(id: ID!): Bar
-  listBars(filter: ModelBarFilterInput, limit: Int, nextToken: String): ModelBarConnection
+  getCreatedAtNull(id: ID!): CreatedAtNull
+  listCreatedAtNulls(filter: ModelCreatedAtNullFilterInput, limit: Int, nextToken: String): ModelCreatedAtNullConnection
 }
 
-input ModelBarConditionInput {
+input ModelCreatedAtNullConditionInput {
   title: ModelStringInput
-  and: [ModelBarConditionInput]
-  or: [ModelBarConditionInput]
-  not: ModelBarConditionInput
+  and: [ModelCreatedAtNullConditionInput]
+  or: [ModelCreatedAtNullConditionInput]
+  not: ModelCreatedAtNullConditionInput
   updatedAt: ModelStringInput
 }
 
-input CreateBarInput {
+input CreateCreatedAtNullInput {
   id: ID
   title: String!
 }
 
-input UpdateBarInput {
+input UpdateCreatedAtNullInput {
   id: ID!
   title: String
 }
 
-input DeleteBarInput {
+input DeleteCreatedAtNullInput {
   id: ID!
 }
 
 type Mutation {
-  createBar(input: CreateBarInput!, condition: ModelBarConditionInput): Bar
-  updateBar(input: UpdateBarInput!, condition: ModelBarConditionInput): Bar
-  deleteBar(input: DeleteBarInput!, condition: ModelBarConditionInput): Bar
+  createCreatedAtNull(input: CreateCreatedAtNullInput!, condition: ModelCreatedAtNullConditionInput): CreatedAtNull
+  updateCreatedAtNull(input: UpdateCreatedAtNullInput!, condition: ModelCreatedAtNullConditionInput): CreatedAtNull
+  deleteCreatedAtNull(input: DeleteCreatedAtNullInput!, condition: ModelCreatedAtNullConditionInput): CreatedAtNull
 }
 
-input ModelSubscriptionBarFilterInput {
+input ModelSubscriptionCreatedAtNullFilterInput {
   id: ModelSubscriptionIDInput
   title: ModelSubscriptionStringInput
   updatedAt: ModelSubscriptionStringInput
-  and: [ModelSubscriptionBarFilterInput]
-  or: [ModelSubscriptionBarFilterInput]
+  and: [ModelSubscriptionCreatedAtNullFilterInput]
+  or: [ModelSubscriptionCreatedAtNullFilterInput]
 }
 
 type Subscription {
-  onCreateBar(filter: ModelSubscriptionBarFilterInput): Bar @aws_subscribe(mutations: [\\"createBar\\"])
-  onUpdateBar(filter: ModelSubscriptionBarFilterInput): Bar @aws_subscribe(mutations: [\\"updateBar\\"])
-  onDeleteBar(filter: ModelSubscriptionBarFilterInput): Bar @aws_subscribe(mutations: [\\"deleteBar\\"])
+  onCreateCreatedAtNull(filter: ModelSubscriptionCreatedAtNullFilterInput): CreatedAtNull @aws_subscribe(mutations: [\\"createCreatedAtNull\\"])
+  onUpdateCreatedAtNull(filter: ModelSubscriptionCreatedAtNullFilterInput): CreatedAtNull @aws_subscribe(mutations: [\\"updateCreatedAtNull\\"])
+  onDeleteCreatedAtNull(filter: ModelSubscriptionCreatedAtNullFilterInput): CreatedAtNull @aws_subscribe(mutations: [\\"deleteCreatedAtNull\\"])
 }
 "
 `;
 
 exports[`ModelTransformer: remove null timestamp fields from input createdAt null and updatedAt null 1`] = `
-"type Boo {
+"type CreatedAtAndUpdatedAtNull {
   id: ID!
   title: String!
 }
@@ -601,68 +601,68 @@ enum ModelSortDirection {
   DESC
 }
 
-type ModelBooConnection {
-  items: [Boo]!
+type ModelCreatedAtAndUpdatedAtNullConnection {
+  items: [CreatedAtAndUpdatedAtNull]!
   nextToken: String
 }
 
-input ModelBooFilterInput {
+input ModelCreatedAtAndUpdatedAtNullFilterInput {
   id: ModelIDInput
   title: ModelStringInput
-  and: [ModelBooFilterInput]
-  or: [ModelBooFilterInput]
-  not: ModelBooFilterInput
+  and: [ModelCreatedAtAndUpdatedAtNullFilterInput]
+  or: [ModelCreatedAtAndUpdatedAtNullFilterInput]
+  not: ModelCreatedAtAndUpdatedAtNullFilterInput
 }
 
 type Query {
-  getBoo(id: ID!): Boo
-  listBoos(filter: ModelBooFilterInput, limit: Int, nextToken: String): ModelBooConnection
+  getCreatedAtAndUpdatedAtNull(id: ID!): CreatedAtAndUpdatedAtNull
+  listCreatedAtAndUpdatedAtNulls(filter: ModelCreatedAtAndUpdatedAtNullFilterInput, limit: Int, nextToken: String): ModelCreatedAtAndUpdatedAtNullConnection
 }
 
-input ModelBooConditionInput {
+input ModelCreatedAtAndUpdatedAtNullConditionInput {
   title: ModelStringInput
-  and: [ModelBooConditionInput]
-  or: [ModelBooConditionInput]
-  not: ModelBooConditionInput
+  and: [ModelCreatedAtAndUpdatedAtNullConditionInput]
+  or: [ModelCreatedAtAndUpdatedAtNullConditionInput]
+  not: ModelCreatedAtAndUpdatedAtNullConditionInput
 }
 
-input CreateBooInput {
+input CreateCreatedAtAndUpdatedAtNullInput {
   id: ID
   title: String!
 }
 
-input UpdateBooInput {
+input UpdateCreatedAtAndUpdatedAtNullInput {
   id: ID!
   title: String
 }
 
-input DeleteBooInput {
+input DeleteCreatedAtAndUpdatedAtNullInput {
   id: ID!
 }
 
 type Mutation {
-  createBoo(input: CreateBooInput!, condition: ModelBooConditionInput): Boo
-  updateBoo(input: UpdateBooInput!, condition: ModelBooConditionInput): Boo
-  deleteBoo(input: DeleteBooInput!, condition: ModelBooConditionInput): Boo
+  createCreatedAtAndUpdatedAtNull(input: CreateCreatedAtAndUpdatedAtNullInput!, condition: ModelCreatedAtAndUpdatedAtNullConditionInput): CreatedAtAndUpdatedAtNull
+  updateCreatedAtAndUpdatedAtNull(input: UpdateCreatedAtAndUpdatedAtNullInput!, condition: ModelCreatedAtAndUpdatedAtNullConditionInput): CreatedAtAndUpdatedAtNull
+  deleteCreatedAtAndUpdatedAtNull(input: DeleteCreatedAtAndUpdatedAtNullInput!, condition: ModelCreatedAtAndUpdatedAtNullConditionInput): CreatedAtAndUpdatedAtNull
 }
 
-input ModelSubscriptionBooFilterInput {
+input ModelSubscriptionCreatedAtAndUpdatedAtNullFilterInput {
   id: ModelSubscriptionIDInput
   title: ModelSubscriptionStringInput
-  and: [ModelSubscriptionBooFilterInput]
-  or: [ModelSubscriptionBooFilterInput]
+  and: [ModelSubscriptionCreatedAtAndUpdatedAtNullFilterInput]
+  or: [ModelSubscriptionCreatedAtAndUpdatedAtNullFilterInput]
 }
 
 type Subscription {
-  onCreateBoo(filter: ModelSubscriptionBooFilterInput): Boo @aws_subscribe(mutations: [\\"createBoo\\"])
-  onUpdateBoo(filter: ModelSubscriptionBooFilterInput): Boo @aws_subscribe(mutations: [\\"updateBoo\\"])
-  onDeleteBoo(filter: ModelSubscriptionBooFilterInput): Boo @aws_subscribe(mutations: [\\"deleteBoo\\"])
+  onCreateCreatedAtAndUpdatedAtNull(filter: ModelSubscriptionCreatedAtAndUpdatedAtNullFilterInput): CreatedAtAndUpdatedAtNull @aws_subscribe(mutations: [\\"createCreatedAtAndUpdatedAtNull\\"])
+  onUpdateCreatedAtAndUpdatedAtNull(filter: ModelSubscriptionCreatedAtAndUpdatedAtNullFilterInput): CreatedAtAndUpdatedAtNull @aws_subscribe(mutations: [\\"updateCreatedAtAndUpdatedAtNull\\"])
+  onDeleteCreatedAtAndUpdatedAtNull(filter: ModelSubscriptionCreatedAtAndUpdatedAtNullFilterInput): CreatedAtAndUpdatedAtNull @aws_subscribe(mutations: [\\"deleteCreatedAtAndUpdatedAtNull\\"])
 }
 "
 `;
 
 exports[`ModelTransformer: remove null timestamp fields from input custom createdAt and updatedAt null 1`] = `
-"type Bing {
+"type CustomCreatedAtAndUpdatedAtNull {
   id: ID!
   title: String!
   createdOn: AWSDateTime!
@@ -818,71 +818,71 @@ enum ModelSortDirection {
   DESC
 }
 
-type ModelBingConnection {
-  items: [Bing]!
+type ModelCustomCreatedAtAndUpdatedAtNullConnection {
+  items: [CustomCreatedAtAndUpdatedAtNull]!
   nextToken: String
 }
 
-input ModelBingFilterInput {
+input ModelCustomCreatedAtAndUpdatedAtNullFilterInput {
   id: ModelIDInput
   title: ModelStringInput
   createdOn: ModelStringInput
-  and: [ModelBingFilterInput]
-  or: [ModelBingFilterInput]
-  not: ModelBingFilterInput
+  and: [ModelCustomCreatedAtAndUpdatedAtNullFilterInput]
+  or: [ModelCustomCreatedAtAndUpdatedAtNullFilterInput]
+  not: ModelCustomCreatedAtAndUpdatedAtNullFilterInput
 }
 
 type Query {
-  getBing(id: ID!): Bing
-  listBings(filter: ModelBingFilterInput, limit: Int, nextToken: String): ModelBingConnection
+  getCustomCreatedAtAndUpdatedAtNull(id: ID!): CustomCreatedAtAndUpdatedAtNull
+  listCustomCreatedAtAndUpdatedAtNulls(filter: ModelCustomCreatedAtAndUpdatedAtNullFilterInput, limit: Int, nextToken: String): ModelCustomCreatedAtAndUpdatedAtNullConnection
 }
 
-input ModelBingConditionInput {
+input ModelCustomCreatedAtAndUpdatedAtNullConditionInput {
   title: ModelStringInput
-  and: [ModelBingConditionInput]
-  or: [ModelBingConditionInput]
-  not: ModelBingConditionInput
+  and: [ModelCustomCreatedAtAndUpdatedAtNullConditionInput]
+  or: [ModelCustomCreatedAtAndUpdatedAtNullConditionInput]
+  not: ModelCustomCreatedAtAndUpdatedAtNullConditionInput
   createdOn: ModelStringInput
 }
 
-input CreateBingInput {
+input CreateCustomCreatedAtAndUpdatedAtNullInput {
   id: ID
   title: String!
 }
 
-input UpdateBingInput {
+input UpdateCustomCreatedAtAndUpdatedAtNullInput {
   id: ID!
   title: String
 }
 
-input DeleteBingInput {
+input DeleteCustomCreatedAtAndUpdatedAtNullInput {
   id: ID!
 }
 
 type Mutation {
-  createBing(input: CreateBingInput!, condition: ModelBingConditionInput): Bing
-  updateBing(input: UpdateBingInput!, condition: ModelBingConditionInput): Bing
-  deleteBing(input: DeleteBingInput!, condition: ModelBingConditionInput): Bing
+  createCustomCreatedAtAndUpdatedAtNull(input: CreateCustomCreatedAtAndUpdatedAtNullInput!, condition: ModelCustomCreatedAtAndUpdatedAtNullConditionInput): CustomCreatedAtAndUpdatedAtNull
+  updateCustomCreatedAtAndUpdatedAtNull(input: UpdateCustomCreatedAtAndUpdatedAtNullInput!, condition: ModelCustomCreatedAtAndUpdatedAtNullConditionInput): CustomCreatedAtAndUpdatedAtNull
+  deleteCustomCreatedAtAndUpdatedAtNull(input: DeleteCustomCreatedAtAndUpdatedAtNullInput!, condition: ModelCustomCreatedAtAndUpdatedAtNullConditionInput): CustomCreatedAtAndUpdatedAtNull
 }
 
-input ModelSubscriptionBingFilterInput {
+input ModelSubscriptionCustomCreatedAtAndUpdatedAtNullFilterInput {
   id: ModelSubscriptionIDInput
   title: ModelSubscriptionStringInput
   createdOn: ModelSubscriptionStringInput
-  and: [ModelSubscriptionBingFilterInput]
-  or: [ModelSubscriptionBingFilterInput]
+  and: [ModelSubscriptionCustomCreatedAtAndUpdatedAtNullFilterInput]
+  or: [ModelSubscriptionCustomCreatedAtAndUpdatedAtNullFilterInput]
 }
 
 type Subscription {
-  onCreateBing(filter: ModelSubscriptionBingFilterInput): Bing @aws_subscribe(mutations: [\\"createBing\\"])
-  onUpdateBing(filter: ModelSubscriptionBingFilterInput): Bing @aws_subscribe(mutations: [\\"updateBing\\"])
-  onDeleteBing(filter: ModelSubscriptionBingFilterInput): Bing @aws_subscribe(mutations: [\\"deleteBing\\"])
+  onCreateCustomCreatedAtAndUpdatedAtNull(filter: ModelSubscriptionCustomCreatedAtAndUpdatedAtNullFilterInput): CustomCreatedAtAndUpdatedAtNull @aws_subscribe(mutations: [\\"createCustomCreatedAtAndUpdatedAtNull\\"])
+  onUpdateCustomCreatedAtAndUpdatedAtNull(filter: ModelSubscriptionCustomCreatedAtAndUpdatedAtNullFilterInput): CustomCreatedAtAndUpdatedAtNull @aws_subscribe(mutations: [\\"updateCustomCreatedAtAndUpdatedAtNull\\"])
+  onDeleteCustomCreatedAtAndUpdatedAtNull(filter: ModelSubscriptionCustomCreatedAtAndUpdatedAtNullFilterInput): CustomCreatedAtAndUpdatedAtNull @aws_subscribe(mutations: [\\"deleteCustomCreatedAtAndUpdatedAtNull\\"])
 }
 "
 `;
 
 exports[`ModelTransformer: remove null timestamp fields from input timestamps null 1`] = `
-"type Baz {
+"type TimeStampsNull {
   id: ID!
   title: String!
 }
@@ -1037,68 +1037,68 @@ enum ModelSortDirection {
   DESC
 }
 
-type ModelBazConnection {
-  items: [Baz]!
+type ModelTimeStampsNullConnection {
+  items: [TimeStampsNull]!
   nextToken: String
 }
 
-input ModelBazFilterInput {
+input ModelTimeStampsNullFilterInput {
   id: ModelIDInput
   title: ModelStringInput
-  and: [ModelBazFilterInput]
-  or: [ModelBazFilterInput]
-  not: ModelBazFilterInput
+  and: [ModelTimeStampsNullFilterInput]
+  or: [ModelTimeStampsNullFilterInput]
+  not: ModelTimeStampsNullFilterInput
 }
 
 type Query {
-  getBaz(id: ID!): Baz
-  listBazs(filter: ModelBazFilterInput, limit: Int, nextToken: String): ModelBazConnection
+  getTimeStampsNull(id: ID!): TimeStampsNull
+  listTimeStampsNulls(filter: ModelTimeStampsNullFilterInput, limit: Int, nextToken: String): ModelTimeStampsNullConnection
 }
 
-input ModelBazConditionInput {
+input ModelTimeStampsNullConditionInput {
   title: ModelStringInput
-  and: [ModelBazConditionInput]
-  or: [ModelBazConditionInput]
-  not: ModelBazConditionInput
+  and: [ModelTimeStampsNullConditionInput]
+  or: [ModelTimeStampsNullConditionInput]
+  not: ModelTimeStampsNullConditionInput
 }
 
-input CreateBazInput {
+input CreateTimeStampsNullInput {
   id: ID
   title: String!
 }
 
-input UpdateBazInput {
+input UpdateTimeStampsNullInput {
   id: ID!
   title: String
 }
 
-input DeleteBazInput {
+input DeleteTimeStampsNullInput {
   id: ID!
 }
 
 type Mutation {
-  createBaz(input: CreateBazInput!, condition: ModelBazConditionInput): Baz
-  updateBaz(input: UpdateBazInput!, condition: ModelBazConditionInput): Baz
-  deleteBaz(input: DeleteBazInput!, condition: ModelBazConditionInput): Baz
+  createTimeStampsNull(input: CreateTimeStampsNullInput!, condition: ModelTimeStampsNullConditionInput): TimeStampsNull
+  updateTimeStampsNull(input: UpdateTimeStampsNullInput!, condition: ModelTimeStampsNullConditionInput): TimeStampsNull
+  deleteTimeStampsNull(input: DeleteTimeStampsNullInput!, condition: ModelTimeStampsNullConditionInput): TimeStampsNull
 }
 
-input ModelSubscriptionBazFilterInput {
+input ModelSubscriptionTimeStampsNullFilterInput {
   id: ModelSubscriptionIDInput
   title: ModelSubscriptionStringInput
-  and: [ModelSubscriptionBazFilterInput]
-  or: [ModelSubscriptionBazFilterInput]
+  and: [ModelSubscriptionTimeStampsNullFilterInput]
+  or: [ModelSubscriptionTimeStampsNullFilterInput]
 }
 
 type Subscription {
-  onCreateBaz(filter: ModelSubscriptionBazFilterInput): Baz @aws_subscribe(mutations: [\\"createBaz\\"])
-  onUpdateBaz(filter: ModelSubscriptionBazFilterInput): Baz @aws_subscribe(mutations: [\\"updateBaz\\"])
-  onDeleteBaz(filter: ModelSubscriptionBazFilterInput): Baz @aws_subscribe(mutations: [\\"deleteBaz\\"])
+  onCreateTimeStampsNull(filter: ModelSubscriptionTimeStampsNullFilterInput): TimeStampsNull @aws_subscribe(mutations: [\\"createTimeStampsNull\\"])
+  onUpdateTimeStampsNull(filter: ModelSubscriptionTimeStampsNullFilterInput): TimeStampsNull @aws_subscribe(mutations: [\\"updateTimeStampsNull\\"])
+  onDeleteTimeStampsNull(filter: ModelSubscriptionTimeStampsNullFilterInput): TimeStampsNull @aws_subscribe(mutations: [\\"deleteTimeStampsNull\\"])
 }
 "
 `;
 
 exports[`ModelTransformer: remove null timestamp fields from input updatedAt null 1`] = `
-"type Foo {
+"type UpdatedAtNull {
   id: ID!
   title: String!
   createdAt: AWSDateTime!
@@ -1254,65 +1254,65 @@ enum ModelSortDirection {
   DESC
 }
 
-type ModelFooConnection {
-  items: [Foo]!
+type ModelUpdatedAtNullConnection {
+  items: [UpdatedAtNull]!
   nextToken: String
 }
 
-input ModelFooFilterInput {
+input ModelUpdatedAtNullFilterInput {
   id: ModelIDInput
   title: ModelStringInput
   createdAt: ModelStringInput
-  and: [ModelFooFilterInput]
-  or: [ModelFooFilterInput]
-  not: ModelFooFilterInput
+  and: [ModelUpdatedAtNullFilterInput]
+  or: [ModelUpdatedAtNullFilterInput]
+  not: ModelUpdatedAtNullFilterInput
 }
 
 type Query {
-  getFoo(id: ID!): Foo
-  listFoos(filter: ModelFooFilterInput, limit: Int, nextToken: String): ModelFooConnection
+  getUpdatedAtNull(id: ID!): UpdatedAtNull
+  listUpdatedAtNulls(filter: ModelUpdatedAtNullFilterInput, limit: Int, nextToken: String): ModelUpdatedAtNullConnection
 }
 
-input ModelFooConditionInput {
+input ModelUpdatedAtNullConditionInput {
   title: ModelStringInput
-  and: [ModelFooConditionInput]
-  or: [ModelFooConditionInput]
-  not: ModelFooConditionInput
+  and: [ModelUpdatedAtNullConditionInput]
+  or: [ModelUpdatedAtNullConditionInput]
+  not: ModelUpdatedAtNullConditionInput
   createdAt: ModelStringInput
 }
 
-input CreateFooInput {
+input CreateUpdatedAtNullInput {
   id: ID
   title: String!
 }
 
-input UpdateFooInput {
+input UpdateUpdatedAtNullInput {
   id: ID!
   title: String
 }
 
-input DeleteFooInput {
+input DeleteUpdatedAtNullInput {
   id: ID!
 }
 
 type Mutation {
-  createFoo(input: CreateFooInput!, condition: ModelFooConditionInput): Foo
-  updateFoo(input: UpdateFooInput!, condition: ModelFooConditionInput): Foo
-  deleteFoo(input: DeleteFooInput!, condition: ModelFooConditionInput): Foo
+  createUpdatedAtNull(input: CreateUpdatedAtNullInput!, condition: ModelUpdatedAtNullConditionInput): UpdatedAtNull
+  updateUpdatedAtNull(input: UpdateUpdatedAtNullInput!, condition: ModelUpdatedAtNullConditionInput): UpdatedAtNull
+  deleteUpdatedAtNull(input: DeleteUpdatedAtNullInput!, condition: ModelUpdatedAtNullConditionInput): UpdatedAtNull
 }
 
-input ModelSubscriptionFooFilterInput {
+input ModelSubscriptionUpdatedAtNullFilterInput {
   id: ModelSubscriptionIDInput
   title: ModelSubscriptionStringInput
   createdAt: ModelSubscriptionStringInput
-  and: [ModelSubscriptionFooFilterInput]
-  or: [ModelSubscriptionFooFilterInput]
+  and: [ModelSubscriptionUpdatedAtNullFilterInput]
+  or: [ModelSubscriptionUpdatedAtNullFilterInput]
 }
 
 type Subscription {
-  onCreateFoo(filter: ModelSubscriptionFooFilterInput): Foo @aws_subscribe(mutations: [\\"createFoo\\"])
-  onUpdateFoo(filter: ModelSubscriptionFooFilterInput): Foo @aws_subscribe(mutations: [\\"updateFoo\\"])
-  onDeleteFoo(filter: ModelSubscriptionFooFilterInput): Foo @aws_subscribe(mutations: [\\"deleteFoo\\"])
+  onCreateUpdatedAtNull(filter: ModelSubscriptionUpdatedAtNullFilterInput): UpdatedAtNull @aws_subscribe(mutations: [\\"createUpdatedAtNull\\"])
+  onUpdateUpdatedAtNull(filter: ModelSubscriptionUpdatedAtNullFilterInput): UpdatedAtNull @aws_subscribe(mutations: [\\"updateUpdatedAtNull\\"])
+  onDeleteUpdatedAtNull(filter: ModelSubscriptionUpdatedAtNullFilterInput): UpdatedAtNull @aws_subscribe(mutations: [\\"deleteUpdatedAtNull\\"])
 }
 "
 `;
