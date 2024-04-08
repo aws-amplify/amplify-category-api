@@ -1,0 +1,27 @@
+input AMPLIFY {
+  engine: String = "mysql"
+}
+
+type Primary @model @auth(rules: [{ allow: public, operations: [read] }, { allow: owner }]) {
+  id: String! @primaryKey
+  secret: String @auth(rules: [{ allow: owner }])
+  owner: String @index(name: "primary_owner")
+  relatedMany: [RelatedMany] @hasMany(references: ["primaryId"])
+  relatedOne: RelatedOne @hasOne(references: ["primaryId"])
+}
+
+type RelatedMany @model @auth(rules: [{ allow: public, operations: [read] }, { allow: owner }]) {
+  id: String! @primaryKey
+  secret: String @auth(rules: [{ allow: owner }])
+  owner: String @index(name: "related_many_owner")
+  primaryId: String
+  primary: Primary @belongsTo(references: ["primaryId"])
+}
+
+type RelatedOne @model @auth(rules: [{ allow: public, operations: [read] }, { allow: owner }]) {
+  id: String! @primaryKey
+  secret: String @auth(rules: [{ allow: owner }])
+  owner: String @index(name: "related_one_owner")
+  primaryId: String
+  primary: Primary @belongsTo(references: ["primaryId"])
+}

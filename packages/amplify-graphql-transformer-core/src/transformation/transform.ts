@@ -14,6 +14,7 @@ import type {
   TransformParameters,
   DataSourceStrategiesProvider,
   RDSLayerMappingProvider,
+  RDSSNSTopicMappingProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { Aws, CfnOutput, Fn, Stack } from 'aws-cdk-lib';
@@ -38,7 +39,7 @@ import { Construct } from 'constructs';
 import { ResolverConfig } from '../config/transformer-config';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
-import { TransformerContext } from '../transformer-context';
+import { TransformerContext, NONE_DATA_SOURCE_NAME } from '../transformer-context';
 import { TransformerOutput } from '../transformer-context/output';
 import { adoptAuthModes } from '../utils/authType';
 import { MappingTemplate } from '../cdk-compat';
@@ -87,7 +88,7 @@ export interface GraphQLTransformOptions {
   readonly resolverConfig?: ResolverConfig;
 }
 
-export interface TransformOption extends DataSourceStrategiesProvider, RDSLayerMappingProvider {
+export interface TransformOption extends DataSourceStrategiesProvider, RDSLayerMappingProvider, RDSSNSTopicMappingProvider {
   scope: Construct;
   nestedStackProvider: NestedStackProvider;
   parameterProvider?: TransformParameterProvider;
@@ -189,6 +190,7 @@ export class GraphQLTransform {
     nestedStackProvider,
     parameterProvider,
     rdsLayerMapping,
+    rdsSnsTopicMapping,
     schema,
     scope,
     sqlDirectiveDataSourceStrategies,
@@ -204,6 +206,7 @@ export class GraphQLTransform {
       nestedStackProvider,
       parameterProvider,
       rdsLayerMapping,
+      rdsSnsTopicMapping,
       resolverConfig: this.resolverConfig,
       scope,
       sqlDirectiveDataSourceStrategies: sqlDirectiveDataSourceStrategies ?? [],
@@ -327,6 +330,7 @@ export class GraphQLTransform {
       }
     }
     this.collectResolvers(context, context.api);
+    this.ensureNoneDataSource(context.api);
   }
 
   protected generateGraphQlApi(
@@ -720,5 +724,14 @@ export class GraphQLTransform {
 
   public getLogs(): TransformerLog[] {
     return this.logs;
+  }
+
+  private ensureNoneDataSource(api: GraphQLAPIProvider): void {
+    if (!api.host.hasDataSource(NONE_DATA_SOURCE_NAME)) {
+      api.host.addNoneDataSource(NONE_DATA_SOURCE_NAME, {
+        name: NONE_DATA_SOURCE_NAME,
+        description: 'None Data Source for Pipeline functions',
+      });
+    }
   }
 }

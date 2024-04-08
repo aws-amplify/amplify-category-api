@@ -668,7 +668,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/rds-mysql-oidc-auth-fields.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_oidc_auth
@@ -704,7 +704,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/rds-mysql-userpool-auth-fields.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_userpool_auth
@@ -839,7 +839,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/rds-pg-oidc-auth-fields.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_pg_oidc_auth
@@ -884,7 +884,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/rds-pg-userpool-auth-fields.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: eu-west-3
       depend-on:
         - publish_to_local_registry
     - identifier: rds_pg_userpool_auth
@@ -1135,12 +1135,14 @@ batch:
           CLI_REGION: eu-west-1
       depend-on:
         - publish_to_local_registry
-    - identifier: sql_pg_models
+    - identifier: >-
+        restricted_field_auth_ddb_only_restricted_field_auth_sql_only_sql_pg_models
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          TEST_SUITE: src/__tests__/sql-pg-models.test.ts
+          TEST_SUITE: >-
+            src/__tests__/restricted-field-auth-ddb-only.test.ts|src/__tests__/restricted-field-auth-sql-only.test.ts|src/__tests__/sql-pg-models.test.ts
           CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry

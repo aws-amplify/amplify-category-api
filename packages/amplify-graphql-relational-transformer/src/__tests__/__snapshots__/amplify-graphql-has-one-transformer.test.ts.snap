@@ -324,7 +324,12 @@ exports[`@hasOne directive with RDS datasource composite key should generate cor
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.toJson($ctx.result)
+  #set( $resultValue = $ctx.result )
+  #set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
+  #if( $operation == \\"Mutation\\" )
+    $util.qr($resultValue.put(\\"__operation\\", \\"Mutation\\"))
+  #end
+  $util.toJson($resultValue)
 #end
 ## [End] ResponseTemplate. **"
 `;
@@ -640,7 +645,12 @@ exports[`@hasOne directive with RDS datasource happy case should generate correc
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.toJson($ctx.result)
+  #set( $resultValue = $ctx.result )
+  #set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
+  #if( $operation == \\"Mutation\\" )
+    $util.qr($resultValue.put(\\"__operation\\", \\"Mutation\\"))
+  #end
+  $util.toJson($resultValue)
 #end
 ## [End] ResponseTemplate. **"
 `;
