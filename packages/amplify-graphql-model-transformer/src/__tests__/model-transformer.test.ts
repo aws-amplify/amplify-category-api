@@ -1682,4 +1682,33 @@ describe('ModelTransformer:', () => {
       });
     });
   });
+
+  it('should remove null timestamp fields from input', () => {
+    const validSchema = `
+      type Foo @model(timestamps: { updatedAt: null }) {
+          id: ID!
+          title: String!
+      }
+
+      type Bar @model(timestamps: { createdAt: null }) {
+          id: ID!
+          title: String!
+      }
+
+      type Baz @model(timestamps: null) {
+          id: ID!
+          title: String!
+      }
+    `;
+
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer()],
+    });
+    expect(out).toBeDefined();
+
+    validateModelSchema(parse(out.schema));
+    parse(out.schema);
+    expect(out.schema).toMatchSnapshot();
+  });
 });

@@ -4126,8 +4126,6 @@ input ModelPostConditionInput {
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
   _deleted: ModelBooleanInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
 }
 
 input CreatePostInput {
@@ -4370,6 +4368,338 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **"
+`;
+
+exports[`ModelTransformer: should remove null timestamp fields from input 1`] = `
+"type Foo {
+  id: ID!
+  title: String!
+  createdAt: AWSDateTime!
+}
+
+type Bar {
+  id: ID!
+  title: String!
+  updatedAt: AWSDateTime!
+}
+
+type Baz {
+  id: ID!
+  title: String!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelFooConnection {
+  items: [Foo]!
+  nextToken: String
+}
+
+input ModelFooFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  createdAt: ModelStringInput
+  and: [ModelFooFilterInput]
+  or: [ModelFooFilterInput]
+  not: ModelFooFilterInput
+}
+
+type Query {
+  getFoo(id: ID!): Foo
+  listFoos(filter: ModelFooFilterInput, limit: Int, nextToken: String): ModelFooConnection
+  getBar(id: ID!): Bar
+  listBars(filter: ModelBarFilterInput, limit: Int, nextToken: String): ModelBarConnection
+  getBaz(id: ID!): Baz
+  listBazs(filter: ModelBazFilterInput, limit: Int, nextToken: String): ModelBazConnection
+}
+
+input ModelFooConditionInput {
+  title: ModelStringInput
+  and: [ModelFooConditionInput]
+  or: [ModelFooConditionInput]
+  not: ModelFooConditionInput
+  createdAt: ModelStringInput
+}
+
+input CreateFooInput {
+  id: ID
+  title: String!
+}
+
+input UpdateFooInput {
+  id: ID!
+  title: String
+}
+
+input DeleteFooInput {
+  id: ID!
+}
+
+type Mutation {
+  createFoo(input: CreateFooInput!, condition: ModelFooConditionInput): Foo
+  updateFoo(input: UpdateFooInput!, condition: ModelFooConditionInput): Foo
+  deleteFoo(input: DeleteFooInput!, condition: ModelFooConditionInput): Foo
+  createBar(input: CreateBarInput!, condition: ModelBarConditionInput): Bar
+  updateBar(input: UpdateBarInput!, condition: ModelBarConditionInput): Bar
+  deleteBar(input: DeleteBarInput!, condition: ModelBarConditionInput): Bar
+  createBaz(input: CreateBazInput!, condition: ModelBazConditionInput): Baz
+  updateBaz(input: UpdateBazInput!, condition: ModelBazConditionInput): Baz
+  deleteBaz(input: DeleteBazInput!, condition: ModelBazConditionInput): Baz
+}
+
+input ModelSubscriptionFooFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionFooFilterInput]
+  or: [ModelSubscriptionFooFilterInput]
+}
+
+type Subscription {
+  onCreateFoo(filter: ModelSubscriptionFooFilterInput): Foo @aws_subscribe(mutations: [\\"createFoo\\"])
+  onUpdateFoo(filter: ModelSubscriptionFooFilterInput): Foo @aws_subscribe(mutations: [\\"updateFoo\\"])
+  onDeleteFoo(filter: ModelSubscriptionFooFilterInput): Foo @aws_subscribe(mutations: [\\"deleteFoo\\"])
+  onCreateBar(filter: ModelSubscriptionBarFilterInput): Bar @aws_subscribe(mutations: [\\"createBar\\"])
+  onUpdateBar(filter: ModelSubscriptionBarFilterInput): Bar @aws_subscribe(mutations: [\\"updateBar\\"])
+  onDeleteBar(filter: ModelSubscriptionBarFilterInput): Bar @aws_subscribe(mutations: [\\"deleteBar\\"])
+  onCreateBaz(filter: ModelSubscriptionBazFilterInput): Baz @aws_subscribe(mutations: [\\"createBaz\\"])
+  onUpdateBaz(filter: ModelSubscriptionBazFilterInput): Baz @aws_subscribe(mutations: [\\"updateBaz\\"])
+  onDeleteBaz(filter: ModelSubscriptionBazFilterInput): Baz @aws_subscribe(mutations: [\\"deleteBaz\\"])
+}
+
+type ModelBarConnection {
+  items: [Bar]!
+  nextToken: String
+}
+
+input ModelBarFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelBarFilterInput]
+  or: [ModelBarFilterInput]
+  not: ModelBarFilterInput
+}
+
+input ModelBarConditionInput {
+  title: ModelStringInput
+  and: [ModelBarConditionInput]
+  or: [ModelBarConditionInput]
+  not: ModelBarConditionInput
+  updatedAt: ModelStringInput
+}
+
+input CreateBarInput {
+  id: ID
+  title: String!
+}
+
+input UpdateBarInput {
+  id: ID!
+  title: String
+}
+
+input DeleteBarInput {
+  id: ID!
+}
+
+input ModelSubscriptionBarFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionBarFilterInput]
+  or: [ModelSubscriptionBarFilterInput]
+}
+
+type ModelBazConnection {
+  items: [Baz]!
+  nextToken: String
+}
+
+input ModelBazFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  and: [ModelBazFilterInput]
+  or: [ModelBazFilterInput]
+  not: ModelBazFilterInput
+}
+
+input ModelBazConditionInput {
+  title: ModelStringInput
+  and: [ModelBazConditionInput]
+  or: [ModelBazConditionInput]
+  not: ModelBazConditionInput
+}
+
+input CreateBazInput {
+  id: ID
+  title: String!
+}
+
+input UpdateBazInput {
+  id: ID!
+  title: String
+}
+
+input DeleteBazInput {
+  id: ID!
+}
+
+input ModelSubscriptionBazFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  and: [ModelSubscriptionBazFilterInput]
+  or: [ModelSubscriptionBazFilterInput]
+}
+"
 `;
 
 exports[`ModelTransformer: should successfully transform rds schema with array and object fields 1`] = `
