@@ -67,7 +67,7 @@
     "coverageThreshold": {
       "global": {
         "branches": 65,
-        "functions": 76,
+        "functions": 77,
         "lines": 73
       }
     },
@@ -83,7 +83,8 @@
       "src/**/*.ts"
     ],
     "coveragePathIgnorePatterns": [
-      "/__tests__/"
+      "/__tests__/",
+      ".d.ts"
     ]
   }
 }

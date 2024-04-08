@@ -993,52 +993,21 @@ export const isTtlModified = (
  * @returns time to live specification object
  */
 const getTtlStatus = async (tableName: string): Promise<DescribeTimeToLiveCommandOutput> => {
-  const initialDelay = Math.floor(Math.random() * 10 * 1000); // between 0 to 10s
+  const initialDelay = Math.floor(Math.random() * 5 * 1000); // between 0 to 5s
   console.log(`Waiting for ${initialDelay} ms`);
   await sleep(initialDelay);
   // Max retry is 3
   // Retry delay is 1000ms
-  const describeTimeToLiveResult = makeApiCallWithExponentialRetriesOnThrottlingException(
+  const describeTimeToLiveResult = retry(
     async () => await ddbClient.describeTimeToLive({ TableName: tableName }),
-    3,
-    1000,
+    () => true,
+    {
+      times: 5,
+      delayMS: 1000,
+      exponentialBackoff: true,
+    },
   );
   return describeTimeToLiveResult;
-};
-
-/**
- * Makes an API call with error retries and exponential backoff.
- * @param requestData The data or parameters needed for the API call.
- * @param maxRetries Maximum number of retries before giving up.
- * @param retryDelayMs Initial delay between retries, in milliseconds.
- * @returns A promise that resolves with the API call result or rejects after exceeding max retries.
- */
-const makeApiCallWithExponentialRetriesOnThrottlingException = async <T>(
-  func: () => Promise<T>,
-  maxRetries: number = 3,
-  retryDelayMs: number = 1000,
-): Promise<T> => {
-  let attempts = 0;
-
-  while (attempts <= maxRetries) {
-    try {
-      const result: T = await func();
-      return result;
-    } catch (error) {
-      if (error.name === 'ThrottlingException') {
-        attempts++;
-        if (attempts > maxRetries) {
-          break;
-        }
-        const exponentialDelay = retryDelayMs * Math.pow(2, attempts - 1);
-        console.log(`API call failed, retrying in ${exponentialDelay}ms...`);
-        await sleep(exponentialDelay);
-      } else {
-        throw error;
-      }
-    }
-  }
-  throw new Error(`API call failed after ${maxRetries} retries.`);
 };
 
 /**
@@ -1049,6 +1018,7 @@ type RetrySettings = {
   delayMS: number; // delay between each attempt to execute func (there is no initial delay)
   timeoutMS: number; // total amount of time to retry execution
   stopOnError: boolean; // if retries should stop if func throws an error
+  exponentialBackoff: boolean; // if retries should be executed based on exponential backoff
 };
 
 const defaultSettings: RetrySettings = {
@@ -1056,6 +1026,7 @@ const defaultSettings: RetrySettings = {
   delayMS: 1000 * 15, // 15 seconds
   timeoutMS: 1000 * 60 * 14, // 14 minutes
   stopOnError: false, // terminate the retries if a func calls throws an exception
+  exponentialBackoff: false, // retries are executed based on the same interval
 };
 
 /**
@@ -1071,7 +1042,7 @@ const retry = async <T>(
   settings?: Partial<RetrySettings>,
   failurePredicate?: (res?: T) => boolean,
 ): Promise<T> => {
-  const { times, delayMS, timeoutMS, stopOnError } = {
+  const { times, delayMS, timeoutMS, stopOnError, exponentialBackoff } = {
     ...defaultSettings,
     ...settings,
   };
@@ -1101,7 +1072,8 @@ const retry = async <T>(
       terminate = stopOnError;
     }
     count++;
-    await sleep(delayMS);
+    const sleepTime = exponentialBackoff ? delayMS * Math.pow(2, count - 1) : delayMS;
+    await sleep(sleepTime);
   } while (!terminate && count <= times && Date.now() - startTime < timeoutMS);
 
   throw new Error('Retry-able function did not match predicate within the given retry constraints');
