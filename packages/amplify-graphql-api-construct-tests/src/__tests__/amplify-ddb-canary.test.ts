@@ -25,7 +25,7 @@ describe('Canary using Amplify DynamoDB model datasource strategy', () => {
   });
 
   test('Able to deploy simple schema', async () => {
-    const templatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', 'simple-todo'));
+    const templatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', 'canary'));
     const outputs = await setupBackend(projRoot, templatePath);
     const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs;
     await testGraphQLOperations(apiEndpoint, apiKey);

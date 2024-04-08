@@ -7,7 +7,6 @@ export const setupBackend = async (projRoot: string, templatePath: string) => {
   if (!outputs || !outputs[name]) {
     throw new Error('CDK deploy did not yield any outputs');
   }
-  console.log(`outputs from deploy - ${JSON.stringify(outputs)}`);
   return outputs[name];
 };
 
