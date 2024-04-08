@@ -7,11 +7,14 @@ export const setupBackend = async (projRoot: string, templatePath: string) => {
   if (!outputs || !outputs[name]) {
     throw new Error('CDK deploy did not yield any outputs');
   }
+  console.log(`outputs from deploy - ${JSON.stringify(outputs)}`);
   return outputs[name];
 };
 
 export const testGraphQLOperations = async (apiEndpoint: string, apiKey: string) => {
-  const result = await graphql(
+  console.log(`received inputs - ${apiEndpoint}`);
+  // create a new todo
+  const createResult = await graphql(
     apiEndpoint,
     apiKey,
     /* GraphQL */ `
@@ -23,18 +26,46 @@ export const testGraphQLOperations = async (apiEndpoint: string, apiKey: string)
       }
     `,
   );
+  console.log(`create todo result - ${JSON.stringify(createResult)}`);
 
-  expect(result).toMatchSnapshot({
-    body: {
-      data: {
-        createTodo: {
-          id: expect.any(String),
-        },
-      },
-    },
-  });
+  const todo = createResult.body.data.createTodo;
+  expect(todo.id).toBeDefined();
 
-  const todo = result.body.data.createTodo;
+  // update the created todo
+  const updateResult = await graphql(
+    apiEndpoint,
+    apiKey,
+    /* GraphQL */ `
+      mutation UPDATE_TODO {
+        updateTodo(input: { id: "${todo.id}", description: "todo desc updated" }) {
+          id
+          description
+        }
+      }
+    `,
+  );
+
+  const todoUpdated = updateResult.body.data.updateTodo;
+  expect(todoUpdated.id).toEqual(todo.id);
+  expect(todoUpdated.description).toEqual('todo desc updated');
+
+  // Query the updated todo
+  const getTodoResult = await graphql(
+    apiEndpoint,
+    apiKey,
+    /* GraphQL */ `
+        query GET_TODO {
+            getTodo(id: "${todo.id}") { 
+                id
+                description
+            }
+          }
+    `,
+  );
+
+  const todoRead = getTodoResult.body.data.getTodo;
+  expect(todoRead.id).toEqual(todoUpdated.id);
+  expect(todoRead.description).toEqual(todoUpdated.description);
 
   const listResult = await graphql(
     apiEndpoint,
@@ -51,19 +82,39 @@ export const testGraphQLOperations = async (apiEndpoint: string, apiKey: string)
     `,
   );
 
-  expect(listResult).toMatchSnapshot({
-    body: {
-      data: {
-        listTodos: {
-          items: [
-            {
-              id: expect.any(String),
-            },
-          ],
-        },
-      },
-    },
-  });
+  const listItems = listResult.body.data.listTodos.items;
+  expect(listItems).toHaveLength(1);
+  expect(listItems[0].id).toEqual(todoUpdated.id);
+  expect(listItems[0].description).toEqual(todoUpdated.description);
 
-  expect(todo.id).toEqual(listResult.body.data.listTodos.items[0].id);
+  // Delete the todo
+  await graphql(
+    apiEndpoint,
+    apiKey,
+    /* GraphQL */ `
+        mutation DELETE_TODO {
+          deleteTodo(input: { id: "${todo.id}" }) {
+            id
+          }
+        }
+      `,
+  );
+
+  // Verify that the todo is deleted
+  const emptyListResult = await graphql(
+    apiEndpoint,
+    apiKey,
+    /* GraphQL */ `
+      query LIST_TODOS {
+        listTodos {
+          items {
+            id
+            description
+          }
+        }
+      }
+    `,
+  );
+
+  expect(emptyListResult.body.data.listTodos.items.length).toEqual(0);
 };

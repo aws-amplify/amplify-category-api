@@ -226,7 +226,11 @@ const splitTests = (baseJobLinux: any, testDirectory: string, pickTests?: (testS
 
       if (RUN_SOLO.find((solo) => test === solo || test.match(solo))) {
         if (RUN_IN_ALL_REGIONS.find((allRegions) => test === allRegions || test.match(allRegions))) {
-          testRegions.forEach((region) => {
+          const shouldRunInNonOptInRegion = RUN_IN_NON_OPT_IN_REGIONS.find(
+            (nonOptInTest) => test.toLowerCase() === nonOptInTest || test.toLowerCase().match(nonOptInTest),
+          );
+          const regionsToRunTest = shouldRunInNonOptInRegion ? nonOptInRegions : testRegions;
+          regionsToRunTest.forEach((region) => {
             const newSoloJob = createJob(os, jobIdx, true);
             jobIdx++;
             newSoloJob.tests.push(test);
