@@ -11,7 +11,6 @@ export const setupBackend = async (projRoot: string, templatePath: string) => {
 };
 
 export const testGraphQLOperations = async (apiEndpoint: string, apiKey: string) => {
-  console.log(`received inputs - ${apiEndpoint}`);
   // create a new todo
   const createResult = await graphql(
     apiEndpoint,
@@ -25,7 +24,6 @@ export const testGraphQLOperations = async (apiEndpoint: string, apiKey: string)
       }
     `,
   );
-  console.log(`create todo result - ${JSON.stringify(createResult)}`);
 
   const todo = createResult.body.data.createTodo;
   expect(todo.id).toBeDefined();
