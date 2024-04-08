@@ -1683,32 +1683,95 @@ describe('ModelTransformer:', () => {
     });
   });
 
-  it('should remove null timestamp fields from input', () => {
-    const validSchema = `
-      type Foo @model(timestamps: { updatedAt: null }) {
-          id: ID!
-          title: String!
-      }
+  describe('remove null timestamp fields from input', () => {
+    it('updatedAt null', () => {
+      const validSchema = `
+        type Foo @model(timestamps: { updatedAt: null }) {
+            id: ID!
+            title: String!
+        }
+      `;
 
-      type Bar @model(timestamps: { createdAt: null }) {
-          id: ID!
-          title: String!
-      }
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer()],
+      });
+      expect(out).toBeDefined();
 
-      type Baz @model(timestamps: null) {
-          id: ID!
-          title: String!
-      }
-    `;
-
-    const out = testTransform({
-      schema: validSchema,
-      transformers: [new ModelTransformer()],
+      validateModelSchema(parse(out.schema));
+      expect(out.schema).toMatchSnapshot();
     });
-    expect(out).toBeDefined();
 
-    validateModelSchema(parse(out.schema));
-    parse(out.schema);
-    expect(out.schema).toMatchSnapshot();
+    it('createdAt null', () => {
+      const validSchema = `
+        type Bar @model(timestamps: { createdAt: null }) {
+            id: ID!
+            title: String!
+        }
+      `;
+
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer()],
+      });
+      expect(out).toBeDefined();
+
+      validateModelSchema(parse(out.schema));
+      expect(out.schema).toMatchSnapshot();
+    });
+
+    it('createdAt null and updatedAt null', () => {
+      const validSchema = `
+        type Boo @model(timestamps: { createdAt: null, updatedAt: null }) {
+            id: ID!
+            title: String!
+        }
+      `;
+
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer()],
+      });
+      expect(out).toBeDefined();
+
+      validateModelSchema(parse(out.schema));
+      expect(out.schema).toMatchSnapshot();
+    });
+
+    it('timestamps null', () => {
+      const validSchema = `
+        type Baz @model(timestamps: null) {
+            id: ID!
+            title: String!
+        }
+      `;
+
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer()],
+      });
+      expect(out).toBeDefined();
+
+      validateModelSchema(parse(out.schema));
+      expect(out.schema).toMatchSnapshot();
+    });
+
+    it('custom createdAt and updatedAt null', () => {
+      const validSchema = `
+        type Bing @model(timestamps: { createdAt: "createdOn", updatedAt: null }) {
+            id: ID!
+            title: String!
+        }
+      `;
+
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer()],
+      });
+      expect(out).toBeDefined();
+
+      validateModelSchema(parse(out.schema));
+      expect(out.schema).toMatchSnapshot();
+    });
   });
 });
