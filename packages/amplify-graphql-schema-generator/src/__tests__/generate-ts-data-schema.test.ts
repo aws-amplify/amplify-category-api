@@ -3,6 +3,29 @@ import { generateTypescriptDataSchema } from '../ts-schema-generator/generate-ts
 import { DataSourceConfig } from '../ts-schema-generator/helpers';
 import { TypescriptDataSchemaGenerator } from '../ts-schema-generator/ts-schema-generator';
 
+jest.mock('../utils', () => ({
+  getHostVpc: jest.fn(() => {
+    return {
+      vpcId: 'abc',
+      securityGroupIds: ['sb0', 'sb1', 'sb2'],
+      subnetAvailabilityZoneConfig: [
+        {
+          subnetId: 'sb1',
+          availabilityZone: 'az1',
+        },
+        {
+          subnetId: 'sb2',
+          availabilityZone: 'az2',
+        },
+        {
+          subnetId: 'sb0',
+          availabilityZone: 'az3',
+        },
+      ],
+    };
+  }),
+}));
+
 describe('Type name conversions', () => {
   it('ts schema generator should invoke generate schema', async () => {
     const dbschema = new Schema(new Engine('MySQL'));

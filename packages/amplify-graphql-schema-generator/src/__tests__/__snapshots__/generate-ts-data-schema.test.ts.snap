@@ -194,7 +194,29 @@ export const schema = configure({
     database: {
         identifier: \\"IDNb9LVUQdGlNwNzYAgL6A\\",
         engine: \\"mysql\\",
-        connectionUri: secret(\\"secret\\")
+        connectionUri: secret(\\"secret\\"),
+        vpcConfig: {
+            vpcId: \\"abc\\",
+            securityGroupIds: [
+                \\"sb0\\",
+                \\"sb1\\",
+                \\"sb2\\"
+            ],
+            subnetAvailabilityZones: [
+                {
+                    subnetId: \\"sb1\\",
+                    availabilityZone: \\"az1\\"
+                },
+                {
+                    subnetId: \\"sb2\\",
+                    availabilityZone: \\"az2\\"
+                },
+                {
+                    subnetId: \\"sb0\\",
+                    availabilityZone: \\"az3\\"
+                }
+            ]
+        }
     }
 }).schema({
     \\"User\\": a.model({
