@@ -177,14 +177,16 @@ export const makeMutationConditionInput = (
 
   // add implicit timestamp fields to filter
   if (isDynamoDbModel(ctx, object.name.value)) {
-    Object.values({ createdAt: 'createdAt', updatedAt: 'updatedAt', ...(modelDirectiveConfig?.timestamps || {}) }).forEach(
-      (timeStampFieldName) => {
-        if (!input.hasField(timeStampFieldName!)) {
-          const field = InputFieldWrapper.create(timeStampFieldName, 'ModelStringInput', true);
-          input.addField(field);
-        }
-      },
-    );
+    if (!(modelDirectiveConfig?.timestamps === null)) {
+      Object.values({ createdAt: 'createdAt', updatedAt: 'updatedAt', ...(modelDirectiveConfig?.timestamps || {}) }).forEach(
+        (timeStampFieldName) => {
+          if (!!timeStampFieldName && !input.hasField(timeStampFieldName!)) {
+            const field = InputFieldWrapper.create(timeStampFieldName, 'ModelStringInput', true);
+            input.addField(field);
+          }
+        },
+      );
+    }
   }
 
   return input.serialize();
