@@ -170,4 +170,291 @@ describe('Associated type fields with more restrictive auth rules than the model
     });
   });
 
+  describe('DDB primary, DDB related', () => {
+    let accessToken: string;
+    let apiEndpoint: string;
+    let currentId: number;
+    let projRoot: string;
+
+    beforeEach(() => {
+      currentId = Date.now();
+    });
+
+    // Each of these tests asserts that restricted fields in associated types are properly redacted. To assert this, we create the
+    // relationship records in an order so that the type we're asserting on comes LAST. By "prepopulating" the associated records before
+    // creating the source record, we ensure that the selection set is fully populated with relationship data, and can therefore assert that
+    // restricted fields on the associated records are redacted.
+    beforeAll(async () => {
+      projRoot = await createNewProjectDir(projFolderName);
+      const templatePath = path.resolve(path.join(__dirname, 'backends', 'restricted-field-auth'));
+      const name = await initCDKProject(projRoot, templatePath);
+
+      const primarySchemaPath = path.resolve(
+        path.join(__dirname, 'graphql-schemas', 'restricted-field-auth', 'sql-only', 'schema-primary.graphql'),
+      );
+      const primarySchema = fs.readFileSync(primarySchemaPath).toString();
+
+      const relatedSchemaPath = path.resolve(
+        path.join(__dirname, 'graphql-schemas', 'restricted-field-auth', 'sql-only', 'schema-related.graphql'),
+      );
+      const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
+
+      const testDefinitions: Record<string, TestDefinition> = {
+        'ddb-only': {
+          schema: primarySchema + '\n' + relatedSchema,
+          strategy: DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
+        },
+      };
+
+      writeTestDefinitions(testDefinitions, projRoot);
+
+      const outputs = await cdkDeploy(projRoot, '--all');
+      const { awsAppsyncApiEndpoint, UserPoolClientId: userPoolClientId, UserPoolId: userPoolId } = outputs[name];
+
+      apiEndpoint = awsAppsyncApiEndpoint;
+
+      const { username, password } = await createCognitoUser({
+        region,
+        userPoolId,
+      });
+
+      const { accessToken: newAccessToken } = await signInCognitoUser({
+        username,
+        password,
+        region,
+        userPoolClientId,
+      });
+
+      accessToken = newAccessToken;
+    });
+
+    afterAll(async () => {
+      try {
+        await cdkDestroy(projRoot, '--all');
+      } catch (err) {
+        console.log(`Error invoking 'cdk destroy': ${err}`);
+      }
+
+      deleteProjectDir(projRoot);
+    });
+
+    test('createPrimary is redacted', async () => {
+      await testCreatePrimaryRedacted(currentId, apiEndpoint, accessToken);
+    });
+
+    test('updatePrimary is redacted', async () => {
+      await testUpdatePrimaryRedacted(currentId, apiEndpoint, accessToken);
+    });
+
+    test('createRelatedOne is redacted', async () => {
+      await testCreateRelatedOneRedacted(currentId, apiEndpoint, accessToken);
+    });
+
+    test('updateRelatedOne is redacted', async () => {
+      await testUpdateRelatedOneRedacted(currentId, apiEndpoint, accessToken);
+    });
+
+    test('createRelatedMany is redacted', async () => {
+      await testCreateRelatedManyRedacted(currentId, apiEndpoint, accessToken);
+    });
+
+    test('updateRelatedMany is redacted', async () => {
+      await testUpdateRelatedManyRedacted(currentId, apiEndpoint, accessToken);
+    });
+  });
+
+  describe('SQL primary, DDB related', () => {
+    let accessToken: string;
+    let apiEndpoint: string;
+    let currentId: number;
+    let projRoot: string;
+
+    beforeEach(() => {
+      currentId = Date.now();
+    });
+
+    // Each of these tests asserts that restricted fields in associated types are properly redacted. To assert this, we create the
+    // relationship records in an order so that the type we're asserting on comes LAST. By "prepopulating" the associated records before
+    // creating the source record, we ensure that the selection set is fully populated with relationship data, and can therefore assert that
+    // restricted fields on the associated records are redacted.
+    beforeAll(async () => {
+      projRoot = await createNewProjectDir(projFolderName);
+      const templatePath = path.resolve(path.join(__dirname, 'backends', 'restricted-field-auth'));
+      const name = await initCDKProject(projRoot, templatePath);
+
+      const primarySchemaPath = path.resolve(
+        path.join(__dirname, 'graphql-schemas', 'restricted-field-auth', 'sql-only', 'schema-primary.graphql'),
+      );
+      const primarySchema = fs.readFileSync(primarySchemaPath).toString();
+
+      const relatedSchemaPath = path.resolve(
+        path.join(__dirname, 'graphql-schemas', 'restricted-field-auth', 'sql-only', 'schema-related.graphql'),
+      );
+      const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
+
+      const testDefinitions: Record<string, TestDefinition> = {
+        'sql-primary': {
+          schema: primarySchema,
+          strategy: dbDetailsToModelDataSourceStrategy(dbDetails, 'sqlonly', 'MYSQL', 'secretsManagerManagedSecret'),
+        },
+        'ddb-related': {
+          schema: relatedSchema,
+          strategy: DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
+        },
+      };
+
+      writeTestDefinitions(testDefinitions, projRoot);
+
+      const outputs = await cdkDeploy(projRoot, '--all');
+      const { awsAppsyncApiEndpoint, UserPoolClientId: userPoolClientId, UserPoolId: userPoolId } = outputs[name];
+
+      apiEndpoint = awsAppsyncApiEndpoint;
+
+      const { username, password } = await createCognitoUser({
+        region,
+        userPoolId,
+      });
+
+      const { accessToken: newAccessToken } = await signInCognitoUser({
+        username,
+        password,
+        region,
+        userPoolClientId,
+      });
+
+      accessToken = newAccessToken;
+    });
+
+    afterAll(async () => {
+      try {
+        await cdkDestroy(projRoot, '--all');
+      } catch (err) {
+        console.log(`Error invoking 'cdk destroy': ${err}`);
+      }
+
+      deleteProjectDir(projRoot);
+    });
+
+    test('createPrimary is redacted', async () => {
+      await testCreatePrimaryRedacted(currentId, apiEndpoint, accessToken);
+    });
+
+    test('updatePrimary is redacted', async () => {
+      await testUpdatePrimaryRedacted(currentId, apiEndpoint, accessToken);
+    });
+
+    test('createRelatedOne is redacted', async () => {
+      await testCreateRelatedOneRedacted(currentId, apiEndpoint, accessToken);
+    });
+
+    test('updateRelatedOne is redacted', async () => {
+      await testUpdateRelatedOneRedacted(currentId, apiEndpoint, accessToken);
+    });
+
+    test('createRelatedMany is redacted', async () => {
+      await testCreateRelatedManyRedacted(currentId, apiEndpoint, accessToken);
+    });
+
+    test('updateRelatedMany is redacted', async () => {
+      await testUpdateRelatedManyRedacted(currentId, apiEndpoint, accessToken);
+    });
+  });
+
+  describe('DDB primary, SQL related', () => {
+    let accessToken: string;
+    let apiEndpoint: string;
+    let currentId: number;
+    let projRoot: string;
+
+    beforeEach(() => {
+      currentId = Date.now();
+    });
+
+    // Each of these tests asserts that restricted fields in associated types are properly redacted. To assert this, we create the
+    // relationship records in an order so that the type we're asserting on comes LAST. By "prepopulating" the associated records before
+    // creating the source record, we ensure that the selection set is fully populated with relationship data, and can therefore assert that
+    // restricted fields on the associated records are redacted.
+    beforeAll(async () => {
+      projRoot = await createNewProjectDir(projFolderName);
+      const templatePath = path.resolve(path.join(__dirname, 'backends', 'restricted-field-auth'));
+      const name = await initCDKProject(projRoot, templatePath);
+
+      const primarySchemaPath = path.resolve(
+        path.join(__dirname, 'graphql-schemas', 'restricted-field-auth', 'sql-only', 'schema-primary.graphql'),
+      );
+
+      const primarySchema = fs.readFileSync(primarySchemaPath).toString();
+
+      const relatedSchemaPath = path.resolve(
+        path.join(__dirname, 'graphql-schemas', 'restricted-field-auth', 'sql-only', 'schema-related.graphql'),
+      );
+      const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
+
+      const testDefinitions: Record<string, TestDefinition> = {
+        'ddb-primary': {
+          schema: primarySchema,
+          strategy: DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
+        },
+        'sql-related': {
+          schema: relatedSchema,
+          strategy: dbDetailsToModelDataSourceStrategy(dbDetails, 'sqlonly', 'MYSQL', 'secretsManagerManagedSecret'),
+        },
+      };
+
+      writeTestDefinitions(testDefinitions, projRoot);
+
+      const outputs = await cdkDeploy(projRoot, '--all');
+      const { awsAppsyncApiEndpoint, UserPoolClientId: userPoolClientId, UserPoolId: userPoolId } = outputs[name];
+
+      apiEndpoint = awsAppsyncApiEndpoint;
+
+      const { username, password } = await createCognitoUser({
+        region,
+        userPoolId,
+      });
+
+      const { accessToken: newAccessToken } = await signInCognitoUser({
+        username,
+        password,
+        region,
+        userPoolClientId,
+      });
+
+      accessToken = newAccessToken;
+    });
+
+    afterAll(async () => {
+      try {
+        await cdkDestroy(projRoot, '--all');
+      } catch (err) {
+        console.log(`Error invoking 'cdk destroy': ${err}`);
+      }
+
+      deleteProjectDir(projRoot);
+    });
+
+    test('createPrimary is redacted', async () => {
+      await testCreatePrimaryRedacted(currentId, apiEndpoint, accessToken);
+    });
+
+    test('updatePrimary is redacted', async () => {
+      await testUpdatePrimaryRedacted(currentId, apiEndpoint, accessToken);
+    });
+
+    test('createRelatedOne is redacted', async () => {
+      await testCreateRelatedOneRedacted(currentId, apiEndpoint, accessToken);
+    });
+
+    test('updateRelatedOne is redacted', async () => {
+      await testUpdateRelatedOneRedacted(currentId, apiEndpoint, accessToken);
+    });
+
+    test('createRelatedMany is redacted', async () => {
+      await testCreateRelatedManyRedacted(currentId, apiEndpoint, accessToken);
+    });
+
+    test('updateRelatedMany is redacted', async () => {
+      await testUpdateRelatedManyRedacted(currentId, apiEndpoint, accessToken);
+    });
+  });
 });
