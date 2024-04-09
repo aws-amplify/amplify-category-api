@@ -29,6 +29,7 @@ import {
   isSqlModelDataSourceSsmDbConnectionConfig,
   isSqlModelDataSourceSecretsManagerDbConnectionConfig,
   isSqlModelDataSourceSsmDbConnectionStringConfig,
+  RDSSNSTopicMapping,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction, LayerVersion, Runtime, Alias, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
@@ -62,6 +63,18 @@ const OPERATION_KEY = '__operation';
  */
 export const setRDSLayerMappings = (scope: Construct, mapping: RDSLayerMapping, resourceNames: SQLLambdaResourceNames): CfnMapping =>
   new CfnMapping(scope, resourceNames.sqlLayerVersionMapping, {
+    mapping,
+  });
+
+/**
+ * Define RDS Patching SNS Topic ARN region mappings. The optional `mapping` can be specified in place of the defaults that are hardcoded at the time
+ * this package is published. For the CLI flow, the `mapping` will be downloaded at runtime during the `amplify push` flow. For the CDK,
+ * the layer version will be resolved by a custom CDK resource.
+ * @param scope Construct
+ * @param mapping an RDSSNSTopicMapping to use in place of the defaults
+ */
+export const setRDSSNSTopicMappings = (scope: Construct, mapping: RDSSNSTopicMapping, resourceNames: SQLLambdaResourceNames): CfnMapping =>
+  new CfnMapping(scope, resourceNames.sqlSNSTopicArnMapping, {
     mapping,
   });
 
@@ -158,12 +171,11 @@ export const createRdsLambda = (
  * because it would have no effect.
  */
 export const createLayerVersionCustomResource = (scope: Construct, resourceNames: SQLLambdaResourceNames): AwsCustomResource => {
-  const { SQLLayerVersionManifestBucket, SQLLayerVersionManifestBucketRegion, SQLLayerVersionManifestKeyPrefix } =
-    ResourceConstants.RESOURCES;
+  const { SQLLayerManifestBucket, SQLLayerManifestBucketRegion, SQLLayerVersionManifestKeyPrefix } = ResourceConstants.RESOURCES;
 
   const key = Fn.join('', [SQLLayerVersionManifestKeyPrefix, Fn.ref('AWS::Region')]);
 
-  const manifestArn = `arn:aws:s3:::${SQLLayerVersionManifestBucket}/${key}`;
+  const manifestArn = `arn:aws:s3:::${SQLLayerManifestBucket}/${key}`;
 
   const resourceName = resourceNames.sqlLayerVersionResolverCustomResource;
   const customResource = new AwsCustomResource(scope, resourceName, {
@@ -171,9 +183,43 @@ export const createLayerVersionCustomResource = (scope: Construct, resourceNames
     onUpdate: {
       service: 'S3',
       action: 'getObject',
-      region: SQLLayerVersionManifestBucketRegion,
+      region: SQLLayerManifestBucketRegion,
       parameters: {
-        Bucket: SQLLayerVersionManifestBucket,
+        Bucket: SQLLayerManifestBucket,
+        Key: key,
+      },
+      // Make the physical ID change each time we do a deployment, so we always check for the latest version. This means we will never have
+      // a strictly no-op deployment, but the SQL Lambda configuration won't change unless the actual layer value changes
+      physicalResourceId: PhysicalResourceId.of(`${resourceName}-${Date.now().toString()}`),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({
+      resources: [manifestArn],
+    }),
+  });
+
+  return customResource;
+};
+
+/**
+ * Generates an AwsCustomResource to resolve the SNS Topic ARNs that the lambda used for updating the SQL Lambda Layer version installed into the customer
+ * account.
+ */
+export const createSNSTopicARNCustomResource = (scope: Construct, resourceNames: SQLLambdaResourceNames): AwsCustomResource => {
+  const { SQLLayerManifestBucket, SQLLayerManifestBucketRegion, SQLSNSTopicARNManifestKeyPrefix } = ResourceConstants.RESOURCES;
+
+  const key = Fn.join('', [SQLSNSTopicARNManifestKeyPrefix, Fn.ref('AWS::Region')]);
+
+  const manifestArn = `arn:aws:s3:::${SQLLayerManifestBucket}/${key}`;
+
+  const resourceName = resourceNames.sqlSNSTopicARNResolverCustomResource;
+  const customResource = new AwsCustomResource(scope, resourceName, {
+    resourceType: 'Custom::SQLSNSTopicARNCustomResource',
+    onUpdate: {
+      service: 'S3',
+      action: 'getObject',
+      region: SQLLayerManifestBucketRegion,
+      parameters: {
+        Bucket: SQLLayerManifestBucket,
         Key: key,
       },
       // Make the physical ID change each time we do a deployment, so we always check for the latest version. This means we will never have

@@ -5,7 +5,7 @@ export type GraphqlResponse = {
   body: any;
 };
 
-const graphqlRequest = async (apiEndpoint: string, payload: any): Promise<GraphqlResponse> => {
+export const graphqlRequest = async (apiEndpoint: string, payload: any): Promise<GraphqlResponse> => {
   let statusCode = 200;
   let body;
   let response;
@@ -58,6 +58,7 @@ export const validateGraphql = async ({
 
   return response;
 };
+
 export const graphql = async (apiEndpoint: string, apiKey: string, query: string): Promise<GraphqlResponse> =>
   graphqlRequest(apiEndpoint, {
     method: 'POST',

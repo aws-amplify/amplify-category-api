@@ -238,8 +238,49 @@ describe('generated resource access', () => {
           },
         });
 
-        expect(Object.values(cfnDataSources).length).toEqual(1);
+        expect(Object.values(cfnDataSources).length).toEqual(2);
         expect(cfnDataSources.EchoLambdaDataSource).toBeDefined();
+      });
+
+      it('re-uses a none datasource if one already exists', () => {
+        const apiResources = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+            type Todo @model @auth(rules: [{ allow: public }]) {
+              description: String!
+            }
+          `),
+          authorizationModes: {
+            apiKeyConfig: { expires: cdk.Duration.days(7) },
+          },
+        });
+        const {
+          resources: {
+            cfnResources: { cfnDataSources },
+          },
+        } = apiResources;
+
+        expect(cfnDataSources.NONE_DS).toBeDefined();
+        expect(Object.values(cfnDataSources).length).toEqual(2); // NONE_DS + model data source
+      });
+
+      it('adds a none datasource when there are no models in the schema', () => {
+        const {
+          resources: {
+            cfnResources: { cfnDataSources },
+          },
+        } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+            type Query {
+              echo(message: String!): String!
+            }
+          `),
+          authorizationModes: {
+            apiKeyConfig: { expires: cdk.Duration.days(7) },
+          },
+        });
+
+        expect(Object.values(cfnDataSources).length).toEqual(1);
+        expect(cfnDataSources.NONE_DS).toBeDefined();
       });
     });
 

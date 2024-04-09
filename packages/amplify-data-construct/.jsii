@@ -8,21 +8,21 @@
   "bundled": {
     "@aws-amplify/backend-output-schemas": "^0.4.0",
     "@aws-amplify/backend-output-storage": "^0.2.2",
-    "@aws-amplify/graphql-auth-transformer": "3.4.3-gen2-release.0",
-    "@aws-amplify/graphql-default-value-transformer": "2.3.3-gen2-release.0",
+    "@aws-amplify/graphql-auth-transformer": "3.4.3-gen2-release.1",
+    "@aws-amplify/graphql-default-value-transformer": "2.3.3-gen2-release.1",
     "@aws-amplify/graphql-directives": "1.1.0-gen2-release.0",
-    "@aws-amplify/graphql-function-transformer": "2.1.20-gen2-release.0",
-    "@aws-amplify/graphql-http-transformer": "2.1.20-gen2-release.0",
-    "@aws-amplify/graphql-index-transformer": "2.3.9-gen2-release.0",
-    "@aws-amplify/graphql-maps-to-transformer": "3.4.10-gen2-release.0",
-    "@aws-amplify/graphql-model-transformer": "2.7.1-gen2-release.0",
-    "@aws-amplify/graphql-predictions-transformer": "2.1.20-gen2-release.0",
-    "@aws-amplify/graphql-relational-transformer": "2.5.0-gen2-release.0",
-    "@aws-amplify/graphql-searchable-transformer": "2.6.3-gen2-release.0",
-    "@aws-amplify/graphql-sql-transformer": "0.2.9-gen2-release.0",
-    "@aws-amplify/graphql-transformer": "1.4.1-gen2-release.0",
-    "@aws-amplify/graphql-transformer-core": "2.5.2-gen2-release.0",
-    "@aws-amplify/graphql-transformer-interfaces": "3.5.1-gen2-release.0",
+    "@aws-amplify/graphql-function-transformer": "2.1.20-gen2-release.1",
+    "@aws-amplify/graphql-http-transformer": "2.1.20-gen2-release.1",
+    "@aws-amplify/graphql-index-transformer": "2.3.9-gen2-release.1",
+    "@aws-amplify/graphql-maps-to-transformer": "3.4.10-gen2-release.1",
+    "@aws-amplify/graphql-model-transformer": "2.8.0-gen2-release.0",
+    "@aws-amplify/graphql-predictions-transformer": "2.1.20-gen2-release.1",
+    "@aws-amplify/graphql-relational-transformer": "2.5.0-gen2-release.1",
+    "@aws-amplify/graphql-searchable-transformer": "2.6.3-gen2-release.1",
+    "@aws-amplify/graphql-sql-transformer": "0.2.9-gen2-release.1",
+    "@aws-amplify/graphql-transformer": "1.4.1-gen2-release.1",
+    "@aws-amplify/graphql-transformer-core": "2.5.2-gen2-release.1",
+    "@aws-amplify/graphql-transformer-interfaces": "3.6.0-gen2-release.0",
     "@aws-amplify/platform-core": "^0.2.0",
     "@aws-amplify/plugin-types": "^0.4.1",
     "charenc": "^0.0.2",
@@ -46,7 +46,7 @@
     "zod": "^3.22.3"
   },
   "dependencies": {
-    "@aws-amplify/graphql-api-construct": "1.7.1-gen2-release.1",
+    "@aws-amplify/graphql-api-construct": "1.8.0-gen2-release.0",
     "aws-cdk-lib": "^2.80.0",
     "constructs": "^10.0.5"
   },
@@ -3534,6 +3534,6 @@
     }
   },
   "types": {},
-  "version": "1.7.1-gen2-release.1",
-  "fingerprint": "7+fCwlG0IjCVwWlNclb5v4GUoK/ERpsuKgkzAUQo1QQ="
+  "version": "1.7.1-gen2-release.2",
+  "fingerprint": "EaB4LCpL6w+RA7ALgVhbtRINgdIpHPs2gL69tekjQzY="
 }
