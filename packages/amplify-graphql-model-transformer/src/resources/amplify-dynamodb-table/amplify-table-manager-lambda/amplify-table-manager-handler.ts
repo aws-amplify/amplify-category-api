@@ -988,16 +988,27 @@ export const isTtlModified = (
 
 /**
  * Get time to live specification for the given table
- * This API call has a limit rate. The call is staggered randomly within 10s and called with exponential retries
  * @param tableName table name
  * @returns time to live specification object
  */
 const getTtlStatus = async (tableName: string): Promise<DescribeTimeToLiveCommandOutput> => {
+  /**
+   * This DescribeTimeToLive API call has a limit rate of 10 RPS.
+   * The call is staggered randomly within 5s and called with exponential retries with max retry of 5.
+   *
+   * The CloudFormation has a hard limit of 2500 resources for nested stack within one operation (CUD).
+   * The average of a model type nested stack is ~40, which indicates a number of 60 models is a reasonable test case.
+   * If there are no staggering, the max retries needed is (60/10)-1=5
+   *
+   * However, in the worst case without staggering, the total wait time will come to pow(2, 5)-1=31s
+   * When there is staggering with 5s applied, in the ideal case, 10 APIs are called per second and no exponential backoff will occur,
+   * which only adds additional 5s
+   *
+   * The final approach is to combine both exponential backoff and initial random delay considering the tradeoffs mentioned
+   */
   const initialDelay = Math.floor(Math.random() * 5 * 1000); // between 0 to 5s
   console.log(`Waiting for ${initialDelay} ms`);
   await sleep(initialDelay);
-  // Max retry is 3
-  // Retry delay is 1000ms
   const describeTimeToLiveResult = retry(
     async () => await ddbClient.describeTimeToLive({ TableName: tableName }),
     () => true,
