@@ -3,8 +3,8 @@ import * as fs from 'fs-extra';
 
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
-import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
-import { createCognitoUser, doAppSyncGraphqlMutation, signInCognitoUser, TestDefinition, writeTestDefinitions } from '../utils';
+import { initCDKProject, cdkDeploy, cdkDestroy } from '../../commands';
+import { createCognitoUser, doAppSyncGraphqlMutation, signInCognitoUser, TestDefinition, writeTestDefinitions } from '../../utils';
 import {
   createLeftRightJoin,
   createManyLeft,
@@ -18,7 +18,7 @@ import {
   updatePrimary,
   updateRelatedMany,
   updateRelatedOne,
-} from './graphql-schemas/restricted-field-auth/ddb-only/graphql/mutations';
+} from './graphql-schemas/gen1-ddb-only/graphql/mutations';
 
 jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
 
