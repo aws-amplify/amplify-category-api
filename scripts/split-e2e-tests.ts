@@ -136,6 +136,7 @@ const RUN_SOLO: (string | RegExp)[] = [
   /src\/__tests__\/base-cdk.*\.test\.ts/,
   'src/__tests__/amplify-table-1.test.ts',
   'src/__tests__/amplify-table-3.test.ts',
+  'src/__tests__/amplify-table-4.test.ts',
   'src/__tests__/api_canary.test.ts',
   'src/__tests__/sql-models-1.test.ts',
   'src/__tests__/sql-models-2.test.ts',

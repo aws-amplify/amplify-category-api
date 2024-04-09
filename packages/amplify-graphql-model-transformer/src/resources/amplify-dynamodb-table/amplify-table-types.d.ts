@@ -6,6 +6,10 @@
 
 export as namespace CustomDDB;
 
+/**
+ * The CustomDDB.Input defines how data is stored in the CFN custom resource properties.
+ * Changes to this type should be backward compatible with all previous versions.
+ */
 export type Input = CfnTableProps & {
   /**
    * Determines if a table is allowed for destructive updates. When enabled, the table will be replaced when key schema is changed. This setting is disabled by default.

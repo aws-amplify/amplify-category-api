@@ -83,7 +83,8 @@
       "src/**/*.ts"
     ],
     "coveragePathIgnorePatterns": [
-      "/__tests__/"
+      "/__tests__/",
+      ".d.ts"
     ]
   }
 }
