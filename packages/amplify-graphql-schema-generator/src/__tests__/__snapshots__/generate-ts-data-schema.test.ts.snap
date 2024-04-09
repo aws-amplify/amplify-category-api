@@ -192,7 +192,7 @@ import { secret } from \\"@aws-amplify/backend\\";
 
 export const schema = configure({
     database: {
-        identifier: \\"IDUSfpAK13zArse10XtJJWbw\\",
+        identifier: \\"IDNb9LVUQdGlNwNzYAgL6A\\",
         engine: \\"mysql\\",
         connectionUri: secret(\\"secret\\")
     }

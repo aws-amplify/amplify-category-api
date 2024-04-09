@@ -58,8 +58,8 @@ export class TypescriptDataSchemaGenerator {
   };
 
   private static createIdentifier = (config: TypescriptDataSchemaGeneratorConfig): string => {
-    const { host, username, database, engine, port } = config;
-    const identifierString = host.concat(engine, database, username, port.toString());
+    const { host, database, engine, port } = config;
+    const identifierString = host.concat(engine, database, port.toString());
     const identifierHash = createHash('md5').update(identifierString).digest('base64');
     const identifier = `ID${TypescriptDataSchemaGenerator.removeNonAlphaNumericChars(identifierHash)}`;
     // Identifier must contain only AlphaNumeric characters.
