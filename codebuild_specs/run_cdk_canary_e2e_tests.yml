@@ -11,8 +11,8 @@ phases:
   build:
     commands:
       - codebuild-breakpoint
-      - source ./shared-scripts.sh && _setupE2ETestsLinux
-      - source ./shared-scripts.sh && _runE2ETestsLinux
+      - source ./shared-scripts.sh && _setupCDKTestsLinux
+      - source ./shared-scripts.sh && _runCDKTestsLinux
   post_build:
     commands:
       - source ./shared-scripts.sh && _unassumeTestAccountCredentials
@@ -22,4 +22,4 @@ phases:
 artifacts:
   files:
     - '**/*'
-  base-directory: $CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/amplify-e2e-reports
+  base-directory: $CODEBUILD_SRC_DIR/packages/amplify-graphql-api-construct-tests/amplify-e2e-reports
