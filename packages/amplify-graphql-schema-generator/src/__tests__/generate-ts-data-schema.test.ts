@@ -7,19 +7,19 @@ jest.mock('../utils', () => ({
   getHostVpc: jest.fn(() => {
     return {
       vpcId: 'abc',
-      securityGroupIds: ['sb0', 'sb1', 'sb2'],
+      securityGroupIds: ['sg0', 'sg1', 'sg2'],
       subnetAvailabilityZoneConfig: [
         {
-          subnetId: 'sb1',
+          subnetId: 'sg0',
+          availabilityZone: 'az0',
+        },
+        {
+          subnetId: 'sg1',
           availabilityZone: 'az1',
         },
         {
-          subnetId: 'sb2',
+          subnetId: 'sg2',
           availabilityZone: 'az2',
-        },
-        {
-          subnetId: 'sb0',
-          availabilityZone: 'az3',
         },
       ],
     };

@@ -59,6 +59,9 @@ export class TypescriptDataSchemaGenerator {
 
   private static createIdentifier = (config: TypescriptDataSchemaGeneratorConfig): string => {
     const { host, database, engine, port } = config;
+    // Do not include any secrets such as username or password to compute hash.
+    // The reason we compute the hash is to generate an unique ID for a SQL datasource that remains the same on subsequent deployments.
+    // Currently we use engine, host, database and port to generate an unique id.
     const identifierString = host.concat(engine, database, port.toString());
     const identifierHash = createHash('md5').update(identifierString).digest('base64');
     const identifier = `ID${TypescriptDataSchemaGenerator.removeNonAlphaNumericChars(identifierHash)}`;
