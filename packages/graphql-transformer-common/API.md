@@ -407,11 +407,10 @@ export class ResourceConstants {
         OpenSearchStreamingLambdaIAMRoleLogicalID: string;
         OpenSearchStreamingLambdaFunctionLogicalID: string;
         OpenSearchDataSourceLogicalID: string;
-        AmplifySQLLayerNotificationTopicName: string;
-        AmplifySQLLayerNotificationTopicAccount: string;
-        SQLLayerVersionManifestBucket: string;
-        SQLLayerVersionManifestBucketRegion: string;
+        SQLLayerManifestBucket: string;
+        SQLLayerManifestBucketRegion: string;
         SQLLayerVersionManifestKeyPrefix: string;
+        SQLSNSTopicARNManifestKeyPrefix: string;
         NoneDataSource: string;
         AuthCognitoUserPoolLogicalID: string;
         AuthCognitoUserPoolNativeClientLogicalID: string;

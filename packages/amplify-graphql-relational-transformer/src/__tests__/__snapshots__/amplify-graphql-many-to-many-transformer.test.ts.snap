@@ -460,6 +460,11 @@ $util.error($ctx.error.message, $ctx.error.type)
   #if( !$result )
     #set( $result = $ctx.result )
   #end
+  #if( $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) == \\"Mutation\\" )
+    #foreach( $item in $result.items )
+      $util.qr($item.put(\\"__operation\\", \\"Mutation\\"))
+    #end
+  #end
   $util.toJson($result)
 #end",
   "ModelAModelB.modelA.req.vtl": "#if( $ctx.stash.deniedField )
@@ -493,7 +498,12 @@ $util.error($ctx.error.message, $ctx.error.type)
 $util.error($ctx.error.message, $ctx.error.type)
 #else
   #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-    $util.toJson($ctx.result.items[0])
+    #set( $resultValue = $ctx.result.items[0] )
+    #set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
+    #if( $operation == \\"Mutation\\" )
+      $util.qr($resultValue.put(\\"__operation\\", \\"Mutation\\"))
+    #end
+    $util.toJson($resultValue)
   #else
     #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
 $util.unauthorized()
@@ -532,7 +542,12 @@ $util.unauthorized()
 $util.error($ctx.error.message, $ctx.error.type)
 #else
   #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-    $util.toJson($ctx.result.items[0])
+    #set( $resultValue = $ctx.result.items[0] )
+    #set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
+    #if( $operation == \\"Mutation\\" )
+      $util.qr($resultValue.put(\\"__operation\\", \\"Mutation\\"))
+    #end
+    $util.toJson($resultValue)
   #else
     #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
 $util.unauthorized()
@@ -617,6 +632,11 @@ $util.error($ctx.error.message, $ctx.error.type)
 #else
   #if( !$result )
     #set( $result = $ctx.result )
+  #end
+  #if( $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) == \\"Mutation\\" )
+    #foreach( $item in $result.items )
+      $util.qr($item.put(\\"__operation\\", \\"Mutation\\"))
+    #end
   #end
   $util.toJson($result)
 #end",
@@ -4512,6 +4532,11 @@ $util.error($ctx.error.message, $ctx.error.type)
   #if( !$result )
     #set( $result = $ctx.result )
   #end
+  #if( $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) == \\"Mutation\\" )
+    #foreach( $item in $result.items )
+      $util.qr($item.put(\\"__operation\\", \\"Mutation\\"))
+    #end
+  #end
   $util.toJson($result)
 #end",
   "Foo.bars.req.vtl": "#if( $ctx.stash.deniedField )
@@ -4589,6 +4614,11 @@ $util.error($ctx.error.message, $ctx.error.type)
   #if( !$result )
     #set( $result = $ctx.result )
   #end
+  #if( $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) == \\"Mutation\\" )
+    #foreach( $item in $result.items )
+      $util.qr($item.put(\\"__operation\\", \\"Mutation\\"))
+    #end
+  #end
   $util.toJson($result)
 #end",
   "FooBar.bar.req.vtl": "#if( $ctx.stash.deniedField )
@@ -4620,7 +4650,12 @@ $util.error($ctx.error.message, $ctx.error.type)
 $util.error($ctx.error.message, $ctx.error.type)
 #else
   #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-    $util.toJson($ctx.result.items[0])
+    #set( $resultValue = $ctx.result.items[0] )
+    #set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
+    #if( $operation == \\"Mutation\\" )
+      $util.qr($resultValue.put(\\"__operation\\", \\"Mutation\\"))
+    #end
+    $util.toJson($resultValue)
   #else
     #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
 $util.unauthorized()
@@ -4657,7 +4692,12 @@ $util.unauthorized()
 $util.error($ctx.error.message, $ctx.error.type)
 #else
   #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-    $util.toJson($ctx.result.items[0])
+    #set( $resultValue = $ctx.result.items[0] )
+    #set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
+    #if( $operation == \\"Mutation\\" )
+      $util.qr($resultValue.put(\\"__operation\\", \\"Mutation\\"))
+    #end
+    $util.toJson($resultValue)
   #else
     #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
 $util.unauthorized()

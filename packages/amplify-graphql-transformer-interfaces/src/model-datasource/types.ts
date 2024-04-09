@@ -230,11 +230,30 @@ export interface RDSLayerMapping {
 }
 
 /**
+ * Maps a given AWS region to the SQL SNS topic ARN for that region. TODO: Once we remove SQL imports from Gen1 CLI, remove this
+ * from the transformer interfaces package in favor of the model generator, which is the only place that needs it now that we always resolve
+ * the layer mapping at deploy time.
+ */
+export interface RDSSNSTopicMapping {
+  readonly [key: string]: {
+    topicArn: string;
+  };
+}
+
+/**
  * Defines types that vend an rdsLayerMapping field. This is used solely for the Gen1 CLI import API flow, since wiring the custom resource
  * provider used by the CDK isn't worth the cost. TODO: Remove this once we remove SQL imports from Gen1 CLI.
  */
 export interface RDSLayerMappingProvider {
   rdsLayerMapping?: RDSLayerMapping;
+}
+
+/**
+ * Defines types that vend an rdsSnsTopicMapping field. This is used solely for the Gen1 CLI import API flow, since wiring the custom resource
+ * provider used by the CDK isn't worth the cost. TODO: Remove this once we remove SQL imports from Gen1 CLI.
+ */
+export interface RDSSNSTopicMappingProvider {
+  rdsSnsTopicMapping?: RDSSNSTopicMapping;
 }
 
 /**

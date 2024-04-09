@@ -1,5 +1,208 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Verify RDS Model level Auth rules on queries: related models with same groups auth field name but different type should transform correctly 1`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"groups\\",
+  \\"provider\\": \\"userPools\\",
+  \\"allowedGroups\\":   [\\"Admin\\"],
+  \\"groupClaim\\": \\"cognito:groups\\",
+  \\"allowedFields\\":   [\\"id\\", \\"name\\", \\"groupsField\\", \\"profile\\"]
+}))
+$util.qr($authRules.add({
+  \\"type\\": \\"groups\\",
+  \\"provider\\": \\"userPools\\",
+  \\"groupsFieldName\\": \\"groupsField\\",
+  \\"groupsFieldType\\": \\"string\\",
+  \\"groupClaim\\": \\"cognito:groups\\",
+  \\"allowedFields\\":   [\\"id\\", \\"name\\", \\"groupsField\\", \\"profile\\"]
+}))
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on queries: related models with same groups auth field name but different type should transform correctly 2`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"groups\\",
+  \\"provider\\": \\"userPools\\",
+  \\"allowedGroups\\":   [\\"Admin\\"],
+  \\"groupClaim\\": \\"cognito:groups\\",
+  \\"allowedFields\\":   [\\"id\\", \\"name\\", \\"groupsField\\", \\"profile\\"]
+}))
+$util.qr($authRules.add({
+  \\"type\\": \\"groups\\",
+  \\"provider\\": \\"userPools\\",
+  \\"groupsFieldName\\": \\"groupsField\\",
+  \\"groupsFieldType\\": \\"string\\",
+  \\"groupClaim\\": \\"cognito:groups\\",
+  \\"allowedFields\\":   [\\"id\\", \\"name\\", \\"groupsField\\", \\"profile\\"]
+}))
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on queries: related models with same groups auth field name but different type should transform correctly 3`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"groups\\",
+  \\"provider\\": \\"userPools\\",
+  \\"allowedGroups\\":   [\\"Admin\\"],
+  \\"groupClaim\\": \\"cognito:groups\\",
+  \\"allowedFields\\":   [\\"id\\", \\"details\\", \\"groupsField\\", \\"userId\\", \\"user\\"]
+}))
+$util.qr($authRules.add({
+  \\"type\\": \\"groups\\",
+  \\"provider\\": \\"userPools\\",
+  \\"allowedGroups\\":   [\\"Dev\\"],
+  \\"groupClaim\\": \\"cognito:groups\\",
+  \\"allowedFields\\":   [\\"id\\", \\"details\\", \\"groupsField\\", \\"userId\\", \\"user\\"]
+}))
+$util.qr($authRules.add({
+  \\"type\\": \\"groups\\",
+  \\"provider\\": \\"userPools\\",
+  \\"groupsFieldName\\": \\"groupsField\\",
+  \\"groupsFieldType\\": \\"string[]\\",
+  \\"groupClaim\\": \\"cognito:groups\\",
+  \\"allowedFields\\":   [\\"id\\", \\"details\\", \\"groupsField\\", \\"userId\\", \\"user\\"]
+}))
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on queries: related models with same groups auth field name but different type should transform correctly 4`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"groups\\",
+  \\"provider\\": \\"userPools\\",
+  \\"allowedGroups\\":   [\\"Admin\\"],
+  \\"groupClaim\\": \\"cognito:groups\\"
+}))
+$util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"apiKey\\"
+}))
+$util.qr($authRules.add({
+  \\"type\\": \\"groups\\",
+  \\"provider\\": \\"userPools\\",
+  \\"groupsFieldName\\": \\"groupsField\\",
+  \\"groupsFieldType\\": \\"string[]\\",
+  \\"groupClaim\\": \\"cognito:groups\\"
+}))
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+  #set( $ctx.stash.authFilter = $authResult.authFilter )
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on queries: related models with same groups auth field name but different type should transform correctly 5`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"groups\\",
+  \\"provider\\": \\"userPools\\",
+  \\"allowedGroups\\":   [\\"Admin\\"],
+  \\"groupClaim\\": \\"cognito:groups\\"
+}))
+$util.qr($authRules.add({
+  \\"type\\": \\"groups\\",
+  \\"provider\\": \\"userPools\\",
+  \\"allowedGroups\\":   [\\"Dev\\"],
+  \\"groupClaim\\": \\"cognito:groups\\"
+}))
+$util.qr($authRules.add({
+  \\"type\\": \\"groups\\",
+  \\"provider\\": \\"userPools\\",
+  \\"groupsFieldName\\": \\"groupsField\\",
+  \\"groupsFieldType\\": \\"string[]\\",
+  \\"groupClaim\\": \\"cognito:groups\\"
+}))
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
+  #set( $ctx.stash.authFilter = $authResult.authFilter )
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform different field auth rules 1`] = `
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
