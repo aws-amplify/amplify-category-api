@@ -204,15 +204,15 @@ export const schema = configure({
             ],
             subnetAvailabilityZones: [
                 {
-                    subnetId: \\"sg0\\",
+                    subnetId: \\"sb0\\",
                     availabilityZone: \\"az0\\"
                 },
                 {
-                    subnetId: \\"sg1\\",
+                    subnetId: \\"sb1\\",
                     availabilityZone: \\"az1\\"
                 },
                 {
-                    subnetId: \\"sg2\\",
+                    subnetId: \\"sb2\\",
                     availabilityZone: \\"az2\\"
                 }
             ]

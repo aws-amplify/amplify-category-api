@@ -10,15 +10,15 @@ jest.mock('../utils', () => ({
       securityGroupIds: ['sg0', 'sg1', 'sg2'],
       subnetAvailabilityZoneConfig: [
         {
-          subnetId: 'sg0',
+          subnetId: 'sb0',
           availabilityZone: 'az0',
         },
         {
-          subnetId: 'sg1',
+          subnetId: 'sb1',
           availabilityZone: 'az1',
         },
         {
-          subnetId: 'sg2',
+          subnetId: 'sb2',
           availabilityZone: 'az2',
         },
       ],
