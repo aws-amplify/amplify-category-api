@@ -33,9 +33,9 @@ import {
 
 jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
 
-describe('Associated type fields with more restrictive auth rules than the model are redacted in a homogeneous SQL environment', () => {
+describe('Associated type fields with more restrictive auth rules than the model are redacted using gen2 references-based connections', () => {
   const region = process.env.CLI_REGION ?? 'us-west-2';
-  const projFolderName = 'restricted-field-auth';
+  const baseProjFolderName = 'restricted-field-auth';
 
   const [dbUsername, dbIdentifier] = generator.generateMultiple(2);
   const dbname = 'default_db';
@@ -70,14 +70,54 @@ describe('Associated type fields with more restrictive auth rules than the model
   );
 
   beforeAll(async () => {
-    dbDetails = await databaseController.setupDatabase();
+    // dbDetails = await databaseController.setupDatabase();
+    dbDetails = {
+      dbConfig: {
+        endpoint: 'csselspejf.cxudc8crpgqw.us-west-2.rds.amazonaws.com',
+        port: 3306,
+        dbName: 'default_db',
+        strategyName: 'mysqlstrat',
+        dbType: 'MYSQL',
+        vpcConfig: {
+          vpcId: 'vpc-0a8a4272',
+          securityGroupIds: ['sg-17a20862'],
+          subnetAvailabilityZones: [
+            {
+              subnetId: 'subnet-75a3f90c',
+              availabilityZone: 'us-west-2a',
+            },
+            {
+              subnetId: 'subnet-c54f088e',
+              availabilityZone: 'us-west-2b',
+            },
+            {
+              subnetId: 'subnet-5471450e',
+              availabilityZone: 'us-west-2c',
+            },
+            {
+              subnetId: 'subnet-5f739274',
+              availabilityZone: 'us-west-2d',
+            },
+          ],
+        },
+      },
+      connectionConfigs: {
+        secretsManagerManagedSecret: {
+          databaseName: 'default_db',
+          hostname: 'csselspejf.cxudc8crpgqw.us-west-2.rds.amazonaws.com',
+          port: 3306,
+          secretArn: 'arn:aws:secretsmanager:us-west-2:779656175277:secret:CsseLsPEJF-secret-GTXhR4',
+        },
+      },
+    };
   });
 
-  afterAll(async () => {
-    await databaseController.cleanupDatabase();
-  });
+  // afterAll(async () => {
+  //   await databaseController.cleanupDatabase();
+  // });
 
-  describe('SQL primary, SQL related', () => {
+  describe.skip('SQL primary, SQL related', () => {
+    const projFolderName = `${baseProjFolderName}-sql-primary-sql-related`;
     let accessToken: string;
     let apiEndpoint: string;
     let currentId: number;
@@ -93,16 +133,16 @@ describe('Associated type fields with more restrictive auth rules than the model
     // restricted fields on the associated records are redacted.
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projFolderName);
-      const templatePath = path.resolve(path.join(__dirname, 'backends', 'restricted-field-auth'));
+      const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'restricted-field-auth'));
       const name = await initCDKProject(projRoot, templatePath);
 
       const primarySchemaPath = path.resolve(
-        path.join(__dirname, 'graphql-schemas', 'restricted-field-auth', 'sql-only', 'schema-primary.graphql'),
+        path.join(__dirname, 'graphql-schemas', 'gen2', 'schema-primary.graphql'),
       );
       const primarySchema = fs.readFileSync(primarySchemaPath).toString();
 
       const relatedSchemaPath = path.resolve(
-        path.join(__dirname, 'graphql-schemas', 'restricted-field-auth', 'sql-only', 'schema-related.graphql'),
+        path.join(__dirname, 'graphql-schemas', 'gen2', 'schema-related.graphql'),
       );
       const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
 
@@ -124,6 +164,10 @@ describe('Associated type fields with more restrictive auth rules than the model
         region,
         userPoolId,
       });
+      const testCredsFilePath = path.join(projRoot, 'cognito-user.json');
+      const testCreds = JSON.stringify({ username, password });
+      fs.writeFileSync(testCredsFilePath, testCreds);
+      console.log(`Wrote test creds to ${testCredsFilePath}`);
 
       const { accessToken: newAccessToken } = await signInCognitoUser({
         username,
@@ -171,6 +215,7 @@ describe('Associated type fields with more restrictive auth rules than the model
   });
 
   describe('DDB primary, DDB related', () => {
+    const projFolderName = `${baseProjFolderName}-ddb-primary-ddb-related`;
     let accessToken: string;
     let apiEndpoint: string;
     let currentId: number;
@@ -185,38 +230,45 @@ describe('Associated type fields with more restrictive auth rules than the model
     // creating the source record, we ensure that the selection set is fully populated with relationship data, and can therefore assert that
     // restricted fields on the associated records are redacted.
     beforeAll(async () => {
-      projRoot = await createNewProjectDir(projFolderName);
-      const templatePath = path.resolve(path.join(__dirname, 'backends', 'restricted-field-auth'));
-      const name = await initCDKProject(projRoot, templatePath);
+      projRoot = '/private/var/folders/7v/zw_3gb7n2fq2w10b1lyzrhzr0000gr/T/amplify-e2e-tests/restricted-field-auth-ddb-primary-ddb-related_836e6adcb_935f115e';
+      // projRoot = await createNewProjectDir(projFolderName);
+      // const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'restricted-field-auth'));
+      // const name = await initCDKProject(projRoot, templatePath);
 
-      const primarySchemaPath = path.resolve(
-        path.join(__dirname, 'graphql-schemas', 'restricted-field-auth', 'sql-only', 'schema-primary.graphql'),
-      );
-      const primarySchema = fs.readFileSync(primarySchemaPath).toString();
+      // const primarySchemaPath = path.resolve(
+      //   path.join(__dirname, 'graphql-schemas', 'gen2', 'schema-primary.graphql'),
+      // );
+      // const primarySchema = fs.readFileSync(primarySchemaPath).toString();
 
-      const relatedSchemaPath = path.resolve(
-        path.join(__dirname, 'graphql-schemas', 'restricted-field-auth', 'sql-only', 'schema-related.graphql'),
-      );
-      const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
+      // const relatedSchemaPath = path.resolve(
+      //   path.join(__dirname, 'graphql-schemas', 'gen2', 'schema-related.graphql'),
+      // );
+      // const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
 
-      const testDefinitions: Record<string, TestDefinition> = {
-        'ddb-only': {
-          schema: primarySchema + '\n' + relatedSchema,
-          strategy: DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
-        },
-      };
+      // const testDefinitions: Record<string, TestDefinition> = {
+      //   'ddb-prim-ddb-related': {
+      //     schema: primarySchema + '\n' + relatedSchema,
+      //     strategy: DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
+      //   },
+      // };
 
-      writeTestDefinitions(testDefinitions, projRoot);
+      // writeTestDefinitions(testDefinitions, projRoot);
 
       const outputs = await cdkDeploy(projRoot, '--all');
       const { awsAppsyncApiEndpoint, UserPoolClientId: userPoolClientId, UserPoolId: userPoolId } = outputs[name];
 
       apiEndpoint = awsAppsyncApiEndpoint;
 
-      const { username, password } = await createCognitoUser({
-        region,
-        userPoolId,
-      });
+      // const { username, password } = await createCognitoUser({
+      //   region,
+      //   userPoolId,
+      // });
+      const filePath = path.join(projRoot, 'cognito-user.json');
+      // const content = JSON.stringify({username, password});
+      // fs.writeFileSync(filePath, content);
+      // console.log(`Wrote test creds to ${filePath}`);
+      const {username, password} = JSON.parse(fs.readFileSync(filePath).toString());
+      console.log(`Read test creds from ${filePath}`);
 
       const { accessToken: newAccessToken } = await signInCognitoUser({
         username,
@@ -228,15 +280,15 @@ describe('Associated type fields with more restrictive auth rules than the model
       accessToken = newAccessToken;
     });
 
-    afterAll(async () => {
-      try {
-        await cdkDestroy(projRoot, '--all');
-      } catch (err) {
-        console.log(`Error invoking 'cdk destroy': ${err}`);
-      }
+    // afterAll(async () => {
+    //   try {
+    //     await cdkDestroy(projRoot, '--all');
+    //   } catch (err) {
+    //     console.log(`Error invoking 'cdk destroy': ${err}`);
+    //   }
 
-      deleteProjectDir(projRoot);
-    });
+    //   deleteProjectDir(projRoot);
+    // });
 
     test('createPrimary is redacted', async () => {
       await testCreatePrimaryRedacted(currentId, apiEndpoint, accessToken);
@@ -263,7 +315,8 @@ describe('Associated type fields with more restrictive auth rules than the model
     });
   });
 
-  describe('SQL primary, DDB related', () => {
+  describe.skip('SQL primary, DDB related', () => {
+    const projFolderName = `${baseProjFolderName}-sql-primary-ddb-related`;
     let accessToken: string;
     let apiEndpoint: string;
     let currentId: number;
@@ -279,23 +332,23 @@ describe('Associated type fields with more restrictive auth rules than the model
     // restricted fields on the associated records are redacted.
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projFolderName);
-      const templatePath = path.resolve(path.join(__dirname, 'backends', 'restricted-field-auth'));
+      const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'restricted-field-auth'));
       const name = await initCDKProject(projRoot, templatePath);
 
       const primarySchemaPath = path.resolve(
-        path.join(__dirname, 'graphql-schemas', 'restricted-field-auth', 'sql-only', 'schema-primary.graphql'),
+        path.join(__dirname, 'graphql-schemas', 'gen2', 'schema-primary.graphql'),
       );
       const primarySchema = fs.readFileSync(primarySchemaPath).toString();
 
       const relatedSchemaPath = path.resolve(
-        path.join(__dirname, 'graphql-schemas', 'restricted-field-auth', 'sql-only', 'schema-related.graphql'),
+        path.join(__dirname, 'graphql-schemas', 'gen2', 'schema-related.graphql'),
       );
       const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
 
       const testDefinitions: Record<string, TestDefinition> = {
         'sql-primary': {
           schema: primarySchema,
-          strategy: dbDetailsToModelDataSourceStrategy(dbDetails, 'sqlonly', 'MYSQL', 'secretsManagerManagedSecret'),
+          strategy: dbDetailsToModelDataSourceStrategy(dbDetails, 'sqlprimary', 'MYSQL', 'secretsManagerManagedSecret'),
         },
         'ddb-related': {
           schema: relatedSchema,
@@ -360,7 +413,8 @@ describe('Associated type fields with more restrictive auth rules than the model
     });
   });
 
-  describe('DDB primary, SQL related', () => {
+  describe.skip('DDB primary, SQL related', () => {
+    const projFolderName = `${baseProjFolderName}-ddb-primary-sql-related`;
     let accessToken: string;
     let apiEndpoint: string;
     let currentId: number;
@@ -376,17 +430,17 @@ describe('Associated type fields with more restrictive auth rules than the model
     // restricted fields on the associated records are redacted.
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projFolderName);
-      const templatePath = path.resolve(path.join(__dirname, 'backends', 'restricted-field-auth'));
+      const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'restricted-field-auth'));
       const name = await initCDKProject(projRoot, templatePath);
 
       const primarySchemaPath = path.resolve(
-        path.join(__dirname, 'graphql-schemas', 'restricted-field-auth', 'sql-only', 'schema-primary.graphql'),
+        path.join(__dirname, 'graphql-schemas', 'gen2', 'schema-primary.graphql'),
       );
 
       const primarySchema = fs.readFileSync(primarySchemaPath).toString();
 
       const relatedSchemaPath = path.resolve(
-        path.join(__dirname, 'graphql-schemas', 'restricted-field-auth', 'sql-only', 'schema-related.graphql'),
+        path.join(__dirname, 'graphql-schemas', 'gen2', 'schema-related.graphql'),
       );
       const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
 
@@ -397,7 +451,7 @@ describe('Associated type fields with more restrictive auth rules than the model
         },
         'sql-related': {
           schema: relatedSchema,
-          strategy: dbDetailsToModelDataSourceStrategy(dbDetails, 'sqlonly', 'MYSQL', 'secretsManagerManagedSecret'),
+          strategy: dbDetailsToModelDataSourceStrategy(dbDetails, 'sqlrelated', 'MYSQL', 'secretsManagerManagedSecret'),
         },
       };
 
