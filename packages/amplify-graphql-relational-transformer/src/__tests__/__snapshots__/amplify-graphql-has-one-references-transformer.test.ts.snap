@@ -817,7 +817,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 $util.error($ctx.error.message, $ctx.error.type)
 #else
   #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-    $util.toJson($ctx.result.items[0])
+    #set( $resultValue = $ctx.result.items[0] )
+    #set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
+    #if( $operation == \\"Mutation\\" )
+      $util.qr($resultValue.put(\\"__operation\\", \\"Mutation\\"))
+    #end
+    $util.toJson($resultValue)
   #else
     #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
 $util.unauthorized()
@@ -1312,7 +1317,12 @@ $util.toJson(null)
 $util.error($ctx.error.message, $ctx.error.type)
 #else
   #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-    $util.toJson($ctx.result.items[0])
+    #set( $resultValue = $ctx.result.items[0] )
+    #set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
+    #if( $operation == \\"Mutation\\" )
+      $util.qr($resultValue.put(\\"__operation\\", \\"Mutation\\"))
+    #end
+    $util.toJson($resultValue)
   #else
     #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
 $util.unauthorized()
