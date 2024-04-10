@@ -468,5 +468,29 @@ export const schemas: { [key: string]: TransformerSchema } = {
       }
     `,
   },
+  'references-on-hasOne-and-hasMany': {
+    description: '@hasOne and @hasMany using references',
+    transformerVersion: TransformerVersion.v2,
+    supportedPlatforms: TransformerPlatform.all,
+    sdl: `
+      type Primary @model @auth(rules: [{ allow: public, operations: [read] }, { allow: owner }]) {
+        id: ID! @primaryKey
+        relatedMany: [RelatedMany] @hasMany(references: "primaryId")
+        relatedOne: RelatedOne @hasOne(references: "primaryId")
+      }
+      
+      type RelatedMany @model @auth(rules: [{ allow: public, operations: [read] }, { allow: owner }]) {
+        id: ID! @primaryKey
+        primaryId: ID!
+        primary: Primary @belongsTo(references: "primaryId")
+      }
+      
+      type RelatedOne @model @auth(rules: [{ allow: public, operations: [read] }, { allow: owner }]) {
+        id: ID! @primaryKey
+        primaryId: ID!
+        primary: Primary @belongsTo(references: "primaryId")
+      }
+    `,
+  },
 };
 // No-op change to trigger publish
