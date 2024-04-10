@@ -493,7 +493,7 @@ export const schemas: { [key: string]: TransformerSchema } = {
     `,
   },
   'references-with-sort-key': {
-    description: '@hasMany unsing references and @primaryKey using sortKeyFields',
+    description: '@hasMany using references and @primaryKey using sortKeyFields',
     transformerVersion: TransformerVersion.v2,
     supportedPlatforms: TransformerPlatform.all,
     sdl: `
