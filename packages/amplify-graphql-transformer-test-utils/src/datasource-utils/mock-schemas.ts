@@ -93,11 +93,17 @@ export const SCHEMAS = {
         posts: [Post] @hasMany
       }
     `,
+    ddbGen2: /* GraphQL */ `
+      type Blog @model {
+        name: String!
+        posts: [Post] @hasMany(references: "blogId")
+      }
+    `,
     sql: /* GraphQL */ `
       type Blog @model {
         id: ID! @primaryKey
         name: String!
-        posts: [Post] @hasMany(references: ["blogId"])
+        posts: [Post] @hasMany(references: "blogId")
       }
     `,
   },
@@ -113,6 +119,14 @@ export const SCHEMAS = {
         blogId: ID!
         blog: Blog @belongsTo
         comments: [Comment] @hasMany
+      }
+    `,
+    ddbGen2: /* GraphQL */ `
+      type Post @model {
+        title: String!
+        blogId: ID!
+        blog: Blog @belongsTo(references: ["blogId"])
+        comments: [Comment] @hasMany(references: ["postId"])
       }
     `,
     sql: /* GraphQL */ `
@@ -138,6 +152,13 @@ export const SCHEMAS = {
         content: String!
       }
     `,
+    ddbGen2: /* GraphQL */ `
+      type Comment @model {
+        postId: ID!
+        post: Post @belongsTo(references: ["postId"])
+        content: String!
+      }
+    `,
     sql: /* GraphQL */ `
       type Comment @model {
         id: ID! @primaryKey
@@ -149,7 +170,7 @@ export const SCHEMAS = {
   },
 
   /**
-   * A schema snippet for an Article with a `@hasMany` relationship to Tag, no authorization rules. However, to allow compatibility with
+   * A schema snippet for an Order with a `@hasMany` relationship to LineItem, no authorization rules. However, to allow compatibility with
    * both DDB and SQL types, this schema also adds a `@primaryKey` directive on ID. That means this schema is not suitable for primary key
    * testing.
    */
@@ -159,6 +180,13 @@ export const SCHEMAS = {
         id: ID!
         content: String
         lineItem: [LineItem] @hasMany
+      }
+    `,
+    ddbGen2: /* GraphQL */ `
+      type Order @model {
+        id: ID! @primaryKey
+        content: String
+        lineItem: [LineItem] @hasMany(references: ["orderId"])
       }
     `,
     sql: /* GraphQL */ `
@@ -182,6 +210,14 @@ export const SCHEMAS = {
         name: String!
         orderId: ID!
         order: Order @belongsTo
+      }
+    `,
+    ddbGen2: /* GraphQL */ `
+      type LineItem @model {
+        id: ID!
+        name: String!
+        orderId: ID!
+        order: Order @belongsTo(references: ["orderId"])
       }
     `,
     sql: /* GraphQL */ `
