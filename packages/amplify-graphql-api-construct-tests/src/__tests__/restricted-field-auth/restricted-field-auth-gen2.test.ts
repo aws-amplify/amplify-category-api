@@ -214,7 +214,7 @@ describe('Associated type fields with more restrictive auth rules than the model
     });
   });
 
-  describe('DDB primary, DDB related', () => {
+  describe.skip('DDB primary, DDB related', () => {
     const projFolderName = `${baseProjFolderName}-ddb-primary-ddb-related`;
     let accessToken: string;
     let apiEndpoint: string;
@@ -230,45 +230,38 @@ describe('Associated type fields with more restrictive auth rules than the model
     // creating the source record, we ensure that the selection set is fully populated with relationship data, and can therefore assert that
     // restricted fields on the associated records are redacted.
     beforeAll(async () => {
-      projRoot = '/private/var/folders/7v/zw_3gb7n2fq2w10b1lyzrhzr0000gr/T/amplify-e2e-tests/restricted-field-auth-ddb-primary-ddb-related_836e6adcb_935f115e';
-      // projRoot = await createNewProjectDir(projFolderName);
-      // const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'restricted-field-auth'));
-      // const name = await initCDKProject(projRoot, templatePath);
+      projRoot = await createNewProjectDir(projFolderName);
+      const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'restricted-field-auth'));
+      const name = await initCDKProject(projRoot, templatePath);
 
-      // const primarySchemaPath = path.resolve(
-      //   path.join(__dirname, 'graphql-schemas', 'gen2', 'schema-primary.graphql'),
-      // );
-      // const primarySchema = fs.readFileSync(primarySchemaPath).toString();
+      const primarySchemaPath = path.resolve(
+        path.join(__dirname, 'graphql-schemas', 'gen2', 'schema-primary.graphql'),
+      );
+      const primarySchema = fs.readFileSync(primarySchemaPath).toString();
 
-      // const relatedSchemaPath = path.resolve(
-      //   path.join(__dirname, 'graphql-schemas', 'gen2', 'schema-related.graphql'),
-      // );
-      // const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
+      const relatedSchemaPath = path.resolve(
+        path.join(__dirname, 'graphql-schemas', 'gen2', 'schema-related.graphql'),
+      );
+      const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
 
-      // const testDefinitions: Record<string, TestDefinition> = {
-      //   'ddb-prim-ddb-related': {
-      //     schema: primarySchema + '\n' + relatedSchema,
-      //     strategy: DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
-      //   },
-      // };
+      const testDefinitions: Record<string, TestDefinition> = {
+        'ddb-prim-ddb-related': {
+          schema: primarySchema + '\n' + relatedSchema,
+          strategy: DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
+        },
+      };
 
-      // writeTestDefinitions(testDefinitions, projRoot);
+      writeTestDefinitions(testDefinitions, projRoot);
 
       const outputs = await cdkDeploy(projRoot, '--all');
       const { awsAppsyncApiEndpoint, UserPoolClientId: userPoolClientId, UserPoolId: userPoolId } = outputs[name];
 
       apiEndpoint = awsAppsyncApiEndpoint;
 
-      // const { username, password } = await createCognitoUser({
-      //   region,
-      //   userPoolId,
-      // });
-      const filePath = path.join(projRoot, 'cognito-user.json');
-      // const content = JSON.stringify({username, password});
-      // fs.writeFileSync(filePath, content);
-      // console.log(`Wrote test creds to ${filePath}`);
-      const {username, password} = JSON.parse(fs.readFileSync(filePath).toString());
-      console.log(`Read test creds from ${filePath}`);
+      const { username, password } = await createCognitoUser({
+        region,
+        userPoolId,
+      });
 
       const { accessToken: newAccessToken } = await signInCognitoUser({
         username,
@@ -280,15 +273,15 @@ describe('Associated type fields with more restrictive auth rules than the model
       accessToken = newAccessToken;
     });
 
-    // afterAll(async () => {
-    //   try {
-    //     await cdkDestroy(projRoot, '--all');
-    //   } catch (err) {
-    //     console.log(`Error invoking 'cdk destroy': ${err}`);
-    //   }
+    afterAll(async () => {
+      try {
+        await cdkDestroy(projRoot, '--all');
+      } catch (err) {
+        console.log(`Error invoking 'cdk destroy': ${err}`);
+      }
 
-    //   deleteProjectDir(projRoot);
-    // });
+      deleteProjectDir(projRoot);
+    });
 
     test('createPrimary is redacted', async () => {
       await testCreatePrimaryRedacted(currentId, apiEndpoint, accessToken);
@@ -315,7 +308,7 @@ describe('Associated type fields with more restrictive auth rules than the model
     });
   });
 
-  describe.skip('SQL primary, DDB related', () => {
+  describe('SQL primary, DDB related', () => {
     const projFolderName = `${baseProjFolderName}-sql-primary-ddb-related`;
     let accessToken: string;
     let apiEndpoint: string;
@@ -378,15 +371,15 @@ describe('Associated type fields with more restrictive auth rules than the model
       accessToken = newAccessToken;
     });
 
-    afterAll(async () => {
-      try {
-        await cdkDestroy(projRoot, '--all');
-      } catch (err) {
-        console.log(`Error invoking 'cdk destroy': ${err}`);
-      }
+    // afterAll(async () => {
+    //   try {
+    //     await cdkDestroy(projRoot, '--all');
+    //   } catch (err) {
+    //     console.log(`Error invoking 'cdk destroy': ${err}`);
+    //   }
 
-      deleteProjectDir(projRoot);
-    });
+    //   deleteProjectDir(projRoot);
+    // });
 
     test('createPrimary is redacted', async () => {
       await testCreatePrimaryRedacted(currentId, apiEndpoint, accessToken);
