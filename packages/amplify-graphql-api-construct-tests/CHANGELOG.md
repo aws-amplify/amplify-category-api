@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0-gen2-release-0410.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.5.0-gen2-release.0...amplify-graphql-api-construct-tests@1.5.0-gen2-release-0410.0) (2024-04-10)
+
+### Bug Fixes
+
+- propagate mutation context to relational fields ([#2416](https://github.com/aws-amplify/amplify-category-api/issues/2416)) ([fd7f6fb](https://github.com/aws-amplify/amplify-category-api/commit/fd7f6fbc17c199331c4b04debaff69ea0424cd74))
+
 # [1.5.0-gen2-release.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.4.1-gen2-release.1...amplify-graphql-api-construct-tests@1.5.0-gen2-release.0) (2024-04-03)
 
 ### Features

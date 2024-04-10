@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.3-gen2-release-0410.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.4.3-gen2-release.1...@aws-amplify/graphql-auth-transformer@3.4.3-gen2-release-0410.0) (2024-04-10)
+
+### Bug Fixes
+
+- **api:** dynamic auth fields use correct data type on related models ([#2419](https://github.com/aws-amplify/amplify-category-api/issues/2419)) ([a3688c2](https://github.com/aws-amplify/amplify-category-api/commit/a3688c27f9287998f3db54efd6f2bae3d15ebbcc))
+
 ## [3.4.3-gen2-release.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.4.3-gen2-release.0...@aws-amplify/graphql-auth-transformer@3.4.3-gen2-release.1) (2024-04-03)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer

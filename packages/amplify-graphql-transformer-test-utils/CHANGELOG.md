@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0-gen2-release-0410.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-test-utils@0.4.8-gen2-release.1...@aws-amplify/graphql-transformer-test-utils@0.5.0-gen2-release-0410.0) (2024-04-10)
+
+### Features
+
+- Fetch SNS topic ARN from SQL manifest ([#2345](https://github.com/aws-amplify/amplify-category-api/issues/2345)) ([fca256e](https://github.com/aws-amplify/amplify-category-api/commit/fca256e7cabf5af838b28b26c4ae0c3c8b1583eb))
+
 ## [0.4.8-gen2-release.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-test-utils@0.4.8-gen2-release.0...@aws-amplify/graphql-transformer-test-utils@0.4.8-gen2-release.1) (2024-04-03)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-test-utils

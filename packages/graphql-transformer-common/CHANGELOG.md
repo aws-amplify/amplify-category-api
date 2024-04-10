@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.30.0-gen2-release-0410.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.29.1-gen2-release.0...graphql-transformer-common@4.30.0-gen2-release-0410.0) (2024-04-10)
+
+### Features
+
+- Fetch SNS topic ARN from SQL manifest ([#2345](https://github.com/aws-amplify/amplify-category-api/issues/2345)) ([fca256e](https://github.com/aws-amplify/amplify-category-api/commit/fca256e7cabf5af838b28b26c4ae0c3c8b1583eb))
+
 ## [4.29.1-gen2-release.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.29.0...graphql-transformer-common@4.29.1-gen2-release.0) (2024-03-29)
 
 **Note:** Version bump only for package graphql-transformer-common
