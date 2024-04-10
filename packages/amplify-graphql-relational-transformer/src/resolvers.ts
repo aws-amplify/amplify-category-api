@@ -1,9 +1,30 @@
 import { attributeTypeFromType, overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
-import { getTable } from '@aws-amplify/graphql-transformer-core';
-import { TransformerContextProvider, TransformerPrepareStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
+import { MappingTemplate, getTable } from '@aws-amplify/graphql-transformer-core';
+import {
+  TransformerContextProvider,
+  TransformerPrepareStepContextProvider,
+  TransformerResolverProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from 'aws-cdk-lib';
 import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import { ModelResourceIDs, ResourceConstants } from 'graphql-transformer-common';
+import {
+  bool,
+  compoundExpression,
+  forEach,
+  ifElse,
+  iff,
+  list,
+  methodCall,
+  print,
+  printBlock,
+  qref,
+  raw,
+  ref,
+  set,
+  str,
+} from 'graphql-mapping-template';
+import { ModelResourceIDs, ResourceConstants, graphqlName, toCamelCase, toUpper } from 'graphql-transformer-common';
 import { getSortKeyFields } from './schema';
 import { HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from './types';
 import { getConnectionAttributeName, getObjectPrimaryKey } from './utils';
@@ -24,21 +45,11 @@ export const updateTableForReferencesConnection = (
   config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration,
   ctx: TransformerContextProvider,
 ): void => {
-  const { field, referenceNodes, indexName: incomingIndexName, object, references, relatedType } = config;
-  const mappedObjectName = ctx.resourceHelper.getModelNameMapping(object.name.value);
-
-  if (incomingIndexName) {
-    throw new Error(
-      `Invalid @hasMany directive on ${mappedObjectName}.${field.name.value} - indexName is not supported with DDB references.`,
-    );
-  }
+  const { referenceNodes, indexName, references, relatedType } = config;
 
   if (references.length < 1 || referenceNodes.length < 1) {
     throw new Error('references should not be empty here'); // TODO: better error message
   }
-
-  const indexName = `gsi-${mappedObjectName}.${field.name.value}`;
-  config.indexName = indexName;
 
   const relatedTable = getTable(ctx, relatedType);
   const gsis = relatedTable.globalSecondaryIndexes;
@@ -249,4 +260,157 @@ export const setFieldMappingResolverReference = (
     return;
   }
   modelFieldMap.addResolverReference({ typeName: typeName, fieldName: fieldName, isList: isList });
+};
+
+/**
+ * In a DDB references based relationship, when the Primary model has a primary key with composite
+ * sort key (>= 2 sort key fields), we need to add function slots in the Mutation resolvers (create, update, delete)
+ * of the Related model in order to write the composite sort key attribute to the Related model's table.
+ *
+ * For example, if a sort key is comprised of `foo` and `bar`, we are going to create a function in the Mutation
+ * resolver to write a `foo#bar` attribute to the table. This is necessary to support querying Primary.related
+ * with composite sort keys.
+ *
+ * @param config A `HasMany-`/`HasOneDirectiveConfiguration` where the related type's data source is a DynamoDB table.
+ * @param ctx The TransformerContextProvider for from the `HasMany-`/`HasOneTransformer`
+ * @returns void
+ */
+export const updateRelatedModelMutationResolversForCompositeSortKeys = (
+  config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+): void => {
+  const { relatedType, referenceNodes } = config;
+  // We add additional mutation resolver functions to write the composite sortKey
+  // attribute to the table.
+  // If we have < 3 `referenceNodes` (< 2 sortKey), we can bail now.
+  if (referenceNodes.length < 3) {
+    return;
+  }
+
+  const objectName = ctx.output.getMutationTypeName();
+  if (!objectName) {
+    throw new Error(`
+      Mutation type name is undefined when updated mutation resolvers for composite sortKeys used in DDB references based relationships.
+      This should not happen, please file a bug at https://github.com/aws-amplify/amplify-category-api/issues/new/choose`);
+  }
+
+  const capitalizedName = toUpper(relatedType.name.value);
+  const operationTypes = ['update', 'create'] as const;
+
+  operationTypes
+    .map((operationType) => ({
+      operationType: operationType,
+      resolver: ctx.resolvers.getResolver(objectName, `${operationType}${capitalizedName}`),
+    }))
+    .forEach((mutation) => {
+      if (!mutation.resolver) {
+        return;
+      }
+      const checks = [
+        // The mutation resolver should confirm that all sort keys are provided.
+        validateCompositeSortKeyMutationArgumentSnippet(config, mutation.operationType),
+        // The mutation resolver adds the concatenated sort key fields to
+        // `ctx.args.input` in the pipeline before the call to DDB occurs.
+        ensureCompositeKeySnippet(config),
+      ];
+
+      if (checks[0] || checks[1]) {
+        addIndexToResolverSlot(mutation.resolver, [mergeInputsAndDefaultsSnippet(), ...checks]);
+      }
+    });
+};
+
+const addIndexToResolverSlot = (resolver: TransformerResolverProvider, lines: string[], isSync = false): void => {
+  const res = resolver as any;
+
+  res.addToSlot(
+    'preAuth',
+    MappingTemplate.s3MappingTemplateFromString(
+      `${lines.join('\n')}\n${!isSync ? '{}' : ''}`,
+      `${res.typeName}.${res.fieldName}.{slotName}.{slotIndex}.req.vtl`,
+    ),
+  );
+};
+
+const mergeInputsAndDefaultsSnippet = (): string => {
+  return printBlock('Merge default values and inputs')(generateApplyDefaultsToInputTemplate('mergedValues'));
+};
+
+// When issuing an create/update mutation that creates/changes one part of a composite sort key, you must supply the entire key so that the
+// underlying composite key can be resaved in a create/update operation. We only need to update for composite sort keys on secondary
+// indexes. There is some tight coupling between setting 'hasSeenSomeKeyArg' in this method and calling ensureCompositeKeySnippet with
+// conditionallySetSortKey = true That function expects this function to set 'hasSeenSomeKeyArg'.
+const validateCompositeSortKeyMutationArgumentSnippet = (
+  config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration,
+  keyOperation: 'create' | 'update',
+): string => {
+  const { indexName, references } = config;
+  const sortKeyFields = references.slice(1);
+
+  if (sortKeyFields.length < 2) {
+    return '';
+  }
+
+  return printBlock(`Validate ${keyOperation} mutation for global secondary index '${indexName}'`)(
+    compoundExpression([
+      set(ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg), bool(false)),
+      set(ref('keyFieldNames'), list(sortKeyFields.map((f) => str(f)))),
+      forEach(ref('keyFieldName'), ref('keyFieldNames'), [
+        iff(raw('$mergedValues.containsKey("$keyFieldName")'), set(ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg), bool(true)), true),
+      ]),
+      forEach(ref('keyFieldName'), ref('keyFieldNames'), [
+        iff(
+          raw(`$${ResourceConstants.SNIPPETS.HasSeenSomeKeyArg} && !$mergedValues.containsKey("$keyFieldName")`),
+          raw(
+            `$util.error("When ${keyOperation.replace(
+              /.$/,
+              'ing',
+            )} any part of the composite sort key for global secondary index '${indexName}',` +
+              " you must provide all fields for the key. Missing key: '$keyFieldName'.\")",
+          ),
+        ),
+      ]),
+    ]),
+  );
+};
+
+// VTL that concatenates multiple sort key fields into an additional argument
+// used further down the pipeline to write it to the DDB table.
+const ensureCompositeKeySnippet = (config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration): string => {
+  const { references } = config;
+  const sortKeyFields = references.slice(1);
+
+  if (sortKeyFields.length < 2) {
+    return '';
+  }
+
+  const argsPrefix = 'mergedValues';
+  const condensedSortKey = condenseRangeKey(sortKeyFields);
+  const dynamoDBFriendlySortKeyName = toCamelCase(sortKeyFields.map((f) => graphqlName(f)));
+  const condensedSortKeyValue = sortKeyFields
+    .map((keyField) => `\${${argsPrefix}.${keyField}}`)
+    .join(ModelResourceIDs.ModelCompositeKeySeparator());
+
+  return print(
+    compoundExpression([
+      ifElse(
+        raw(`$util.isNull($ctx.stash.metadata.${ResourceConstants.SNIPPETS.DynamoDBNameOverrideMap})`),
+        qref(
+          methodCall(
+            ref('ctx.stash.metadata.put'),
+            str(ResourceConstants.SNIPPETS.DynamoDBNameOverrideMap),
+            raw(`{ '${condensedSortKey}': "${dynamoDBFriendlySortKeyName}" }`),
+          ),
+        ),
+        qref(
+          methodCall(
+            ref(`ctx.stash.metadata.${ResourceConstants.SNIPPETS.DynamoDBNameOverrideMap}.put`),
+            raw(`'${condensedSortKey}'`),
+            str(dynamoDBFriendlySortKeyName),
+          ),
+        ),
+      ),
+      iff(ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg), qref(`$ctx.args.input.put('${condensedSortKey}',"${condensedSortKeyValue}")`)),
+    ]),
+  );
 };

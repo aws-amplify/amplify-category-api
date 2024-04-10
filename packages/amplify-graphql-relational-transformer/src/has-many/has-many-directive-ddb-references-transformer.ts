@@ -6,7 +6,11 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
 import { DDBRelationalReferencesResolverGenerator } from '../resolver/ddb-references-generator';
-import { setFieldMappingResolverReference, updateTableForReferencesConnection } from '../resolvers';
+import {
+  setFieldMappingResolverReference,
+  updateRelatedModelMutationResolversForCompositeSortKeys,
+  updateTableForReferencesConnection,
+} from '../resolvers';
 import { HasManyDirectiveConfiguration } from '../types';
 import { ensureReferencesArray, getReferencesNodes, registerHasManyForeignKeyMappings, validateParentReferencesFields } from '../utils';
 
@@ -31,18 +35,36 @@ export class HasManyDirectiveDDBReferencesTransformer implements DataSourceBased
     });
   };
 
-  transformSchema = (context: TransformerTransformSchemaStepContextProvider, config: HasManyDirectiveConfiguration): void => {
-    validateParentReferencesFields(config, context as TransformerContextProvider);
-  };
+  transformSchema = (context: TransformerTransformSchemaStepContextProvider, config: HasManyDirectiveConfiguration): void => {};
 
   generateResolvers = (context: TransformerContextProvider, config: HasManyDirectiveConfiguration): void => {
     updateTableForReferencesConnection(config, context);
+    updateRelatedModelMutationResolversForCompositeSortKeys(config, context);
     new DDBRelationalReferencesResolverGenerator().makeHasManyGetItemsConnectionWithKeyResolver(config, context);
   };
 
+  /**
+   * Validate that the {@link HasManyDirectiveConfiguration} has the necessary values to to run through
+   * the remainder of the {@link HasManyTransformer} workflow.
+   *
+   * This function mutates `indexName`, `references`, and `referenceNodes` properties on {@link config}
+   * @param context The {@link TransformerContextProvider} passed to the {@link HasManyTransformer}'s `validate` function.
+   * @param config The {@link HasManyDirectiveConfiguration} passed to the {@link HasManyTransformer}'s `validate` function.
+   */
   validate = (context: TransformerContextProvider, config: HasManyDirectiveConfiguration): void => {
+    if (config.indexName) {
+      const mappedObjectName = context.resourceHelper.getModelNameMapping(config.object.name.value);
+      throw new Error(
+        `Invalid @hasMany directive on ${mappedObjectName}.${config.field.name.value} - indexName is not supported with DDB references.`,
+      );
+    }
     ensureReferencesArray(config);
+    validateParentReferencesFields(config, context);
+    const objectName = config.object.name.value;
+    const fieldName = config.field.name.value;
+    config.indexName = `gsi-${objectName}.${fieldName}`;
     config.referenceNodes = getReferencesNodes(config, context);
+
     // TODO: validate bidirectionality
   };
 }
