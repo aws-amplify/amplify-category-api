@@ -145,22 +145,27 @@ export const SCHEMAS: {
     };
     blog: {
         ddb: string;
+        ddbGen2: string;
         sql: string;
     };
     post: {
         ddb: string;
+        ddbGen2: string;
         sql: string;
     };
     comment: {
         ddb: string;
+        ddbGen2: string;
         sql: string;
     };
     order: {
         ddb: string;
+        ddbGen2: string;
         sql: string;
     };
     lineItem: {
         ddb: string;
+        ddbGen2: string;
         sql: string;
     };
     customSqlQueryStatement: string;

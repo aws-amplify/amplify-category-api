@@ -122,7 +122,7 @@ describe('auth modes', () => {
     });
   });
 
-  it('renders with user pool auth across data sources', () => {
+  it('renders with user pool auth across data sources: sql primary, ddb related', () => {
     const ddbSchema = /* GraphQL */ `
       type RelatedMany @model @auth(rules: [{ allow: public, operations: [read] }, { allow: owner }]) {
         id: String! @primaryKey
@@ -148,6 +148,53 @@ describe('auth modes', () => {
         owner: String
         relatedMany: [RelatedMany] @hasMany(references: ["primaryId"])
         relatedOne: RelatedOne @hasOne(references: ["primaryId"])
+      }
+    `;
+
+    const sqlstrategy1 = mockSqlDataSourceStrategy({ name: 'sqlstrategy1' });
+
+    verifySynth((stack) => {
+      const ddbDefinition = AmplifyGraphqlDefinition.fromString(ddbSchema);
+      const sqlDefinition = AmplifyGraphqlDefinition.fromString(sqlSchema, sqlstrategy1);
+      const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
+
+      new AmplifyGraphqlApi(stack, 'TestApi', {
+        definition: AmplifyGraphqlDefinition.combine([ddbDefinition, sqlDefinition]),
+        authorizationModes: {
+          defaultAuthorizationMode: 'AMAZON_COGNITO_USER_POOLS',
+          apiKeyConfig: { expires: cdk.Duration.days(7) },
+          userPoolConfig: { userPool },
+        },
+      });
+    });
+  });
+
+  it('renders with user pool auth across data sources: ddb primary, sql related', () => {
+    const ddbSchema = /* GraphQL */ `
+      type Primary @model @auth(rules: [{ allow: public, operations: [read] }, { allow: owner }]) {
+        id: String! @primaryKey
+        secret: String @auth(rules: [{ allow: owner }])
+        owner: String
+        relatedMany: [RelatedMany] @hasMany(references: ["primaryId"])
+        relatedOne: RelatedOne @hasOne(references: ["primaryId"])
+      }
+    `;
+
+    const sqlSchema = /* GraphQL */ `
+      type RelatedMany @model @auth(rules: [{ allow: public, operations: [read] }, { allow: owner }]) {
+        id: String! @primaryKey
+        secret: String @auth(rules: [{ allow: owner }])
+        owner: String
+        primaryId: String
+        primary: Primary @belongsTo(references: ["primaryId"])
+      }
+
+      type RelatedOne @model @auth(rules: [{ allow: public, operations: [read] }, { allow: owner }]) {
+        id: String! @primaryKey
+        secret: String @auth(rules: [{ allow: owner }])
+        owner: String
+        primaryId: String
+        primary: Primary @belongsTo(references: ["primaryId"])
       }
     `;
 
