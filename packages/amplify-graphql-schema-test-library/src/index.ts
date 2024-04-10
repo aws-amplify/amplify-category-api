@@ -492,5 +492,27 @@ export const schemas: { [key: string]: TransformerSchema } = {
       }
     `,
   },
+  'references-with-sort-key': {
+    description: '@hasMany unsing references and @primaryKey using sortKeyFields',
+    transformerVersion: TransformerVersion.v2,
+    supportedPlatforms: TransformerPlatform.all,
+    sdl: `
+      type Primary @model {
+        tenantId: ID! @primaryKey(sortKeyFields: ["instanceId", "recordId"])
+        instanceId: ID!
+        recordId: ID!
+        content: String
+        related: [Related!] @hasMany(references: ["primaryTenantId", "primaryInstanceId", "primaryRecordId"])
+      }
+      
+      type Related @model {
+        content: String
+        primaryTenantId: ID!
+        primaryInstanceId: ID!
+        primaryRecordId: ID!
+        primary: Primary @belongsTo(references: ["primaryTenantId", "primaryInstanceId", "primaryRecordId"])
+      }
+    `,
+  },
 };
 // No-op change to trigger publish
