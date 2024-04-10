@@ -721,8 +721,9 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     let fieldAuthExpression: string;
     let relatedAuthExpression: string;
     const relatedModelObject = this.getRelatedModelObject(ctx, getBaseType(field.type));
-    if (this.authModelConfig.has(relatedModelObject.name.value)) {
-      const acm = this.authModelConfig.get(relatedModelObject.name.value);
+    const relatedModelName = relatedModelObject.name.value;
+    if (this.authModelConfig.has(relatedModelName)) {
+      const acm = this.authModelConfig.get(relatedModelName);
       const roleDefinitions = [
         ...new Set([
           ...acm.getRolesPerOperation('get'),
@@ -732,7 +733,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
           ...acm.getRolesPerOperation('listen'),
         ]),
       ].map((r) => this.roleMap.get(r)!);
-      relatedAuthExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForRelationQuery(
+      relatedAuthExpression = this.getVtlGenerator(ctx, relatedModelName).generateAuthExpressionForRelationQuery(
         ctx,
         def,
         field,
