@@ -38,10 +38,10 @@ import {
   toCamelCase,
 } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode } from 'graphql';
+import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from '../types';
 import { condenseRangeKey } from '../resolvers';
 import { RelationalResolverGenerator } from './generator';
-import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
 
 const SORT_KEY_VALUE = 'sortKeyValue';
 const CONNECTION_STACK = 'ConnectionStack';

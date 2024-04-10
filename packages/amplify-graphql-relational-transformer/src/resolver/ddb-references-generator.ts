@@ -14,6 +14,7 @@ import {
   bool,
   compoundExpression,
   equals,
+  forEach,
   ifElse,
   iff,
   int,
@@ -33,6 +34,7 @@ import {
   toJson,
 } from 'graphql-mapping-template';
 import { NONE_VALUE, ResolverResourceIDs, setArgs } from 'graphql-transformer-common';
+import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
 import { condenseRangeKey } from '../resolvers';
 import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from '../types';
 import { DDBRelationalResolverGenerator } from './ddb-generator';
@@ -181,7 +183,20 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
         print(
           DynamoDBMappingTemplate.dynamoDBResponse(
             false,
-            compoundExpression([iff(raw('!$result'), set(ref('result'), ref('ctx.result'))), raw('$util.toJson($result)')]),
+            compoundExpression([
+              iff(raw('!$result'), set(ref('result'), ref('ctx.result'))),
+              // Make sure each retrieved item has the __operation field, so the individual type resolver can appropriately redact fields
+              compoundExpression([
+                iff(
+                  equals(
+                    methodCall(ref('util.defaultIfNull'), methodCall(ref('ctx.source.get'), str(OPERATION_KEY)), nul()),
+                    str('Mutation'),
+                  ),
+                  forEach(ref('item'), ref('result.items'), [qref(methodCall(ref('item.put'), str(OPERATION_KEY), str('Mutation')))]),
+                ),
+                raw('$util.toJson($result)'),
+              ]),
+            ]),
           ),
         ),
         `${object.name.value}.${field.name.value}.res.vtl`,
@@ -288,7 +303,16 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
             false,
             ifElse(
               and([not(ref('ctx.result.items.isEmpty()')), equals(ref('ctx.result.scannedCount'), int(1))]),
-              toJson(ref('ctx.result.items[0]')),
+              // Make sure the retrieved item has the __operation field, so the individual type resolver can appropriately redact fields
+              compoundExpression([
+                set(ref('resultValue'), ref('ctx.result.items[0]')),
+                set(ref('operation'), methodCall(ref('util.defaultIfNull'), methodCall(ref('ctx.source.get'), str(OPERATION_KEY)), nul())),
+                iff(
+                  equals(ref('operation'), str('Mutation')),
+                  qref(methodCall(ref('resultValue.put'), str(OPERATION_KEY), str('Mutation'))),
+                ),
+                toJson(ref('resultValue')),
+              ]),
               // TODO: Should we be checking scannedCount > 0 instead of == 1 here?
               // The current `fields` based implementation checks if scannedCount == 1
               compoundExpression([
@@ -405,7 +429,16 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
             false,
             ifElse(
               and([not(ref('ctx.result.items.isEmpty()')), equals(ref('ctx.result.scannedCount'), int(1))]),
-              toJson(ref('ctx.result.items[0]')),
+              // Make sure the retrieved item has the __operation field, so the individual type resolver can appropriately redact fields
+              compoundExpression([
+                set(ref('resultValue'), ref('ctx.result.items[0]')),
+                set(ref('operation'), methodCall(ref('util.defaultIfNull'), methodCall(ref('ctx.source.get'), str(OPERATION_KEY)), nul())),
+                iff(
+                  equals(ref('operation'), str('Mutation')),
+                  qref(methodCall(ref('resultValue.put'), str(OPERATION_KEY), str('Mutation'))),
+                ),
+                toJson(ref('resultValue')),
+              ]),
               compoundExpression([
                 iff(and([ref('ctx.result.items.isEmpty()'), equals(ref('ctx.result.scannedCount'), int(1))]), ref('util.unauthorized()')),
                 toJson(nul()),

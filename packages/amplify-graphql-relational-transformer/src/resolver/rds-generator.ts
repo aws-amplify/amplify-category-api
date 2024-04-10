@@ -27,9 +27,9 @@ import {
   equals,
   forEach,
 } from 'graphql-mapping-template';
+import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from '../types';
 import { RelationalResolverGenerator } from './generator';
-import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
 
 const CONNECTION_STACK = 'ConnectionStack';
 
