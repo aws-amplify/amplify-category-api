@@ -1,4 +1,4 @@
-import { makeModelSortDirectionEnumObject } from '@aws-amplify/graphql-model-transformer';
+import { createEnumModelFilters, makeModelSortDirectionEnumObject } from '@aws-amplify/graphql-model-transformer';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   EnumTypeDefinitionNode,
@@ -373,12 +373,21 @@ export function ensureModelSortDirectionEnum(ctx: TransformerContextProvider): v
 }
 
 function generateFilterInputs(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void {
+  /**
+   * Create ModelFilterInput objects for enum fields within the filter input
+   * This function is also executed when generating the list query object in model transformer
+   * When the list query is disabled in model type, this code takes effect to ensure the enum filter types in the generated schema
+   */
+  const filterInputs = createEnumModelFilters(ctx, config.object);
   // Create the ModelXFilterInput
   const tableXQueryFilterInput = makeModelXFilterInputObject(config, ctx);
-
-  if (!ctx.output.hasType(tableXQueryFilterInput.name.value)) {
-    ctx.output.addInput(tableXQueryFilterInput);
-  }
+  filterInputs.push(tableXQueryFilterInput);
+  filterInputs.forEach((input) => {
+    const conditionInputName = input.name.value;
+    if (!ctx.output.hasType(conditionInputName)) {
+      ctx.output.addInput(input);
+    }
+  });
 }
 
 function makeModelXFilterInputObject(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): InputObjectTypeDefinitionNode {
