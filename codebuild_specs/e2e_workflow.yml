@@ -1100,24 +1100,24 @@ batch:
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
-    - identifier: >-
-        sql_iam_access_restricted_field_auth_sql_only_restricted_field_auth_ddb_only_relationships
+    - identifier: sql_iam_access_relationships_ddb_iam_access_data_construct
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/sql-iam-access.test.ts|src/__tests__/restricted-field-auth-sql-only.test.ts|src/__tests__/restricted-field-auth-ddb-only.test.ts|src/__tests__/relationships.test.ts
+            src/__tests__/sql-iam-access.test.ts|src/__tests__/relationships.test.ts|src/__tests__/ddb-iam-access.test.ts|src/__tests__/data-construct.test.ts
           CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
-    - identifier: ddb_iam_access_data_construct_custom_logic_add_resources
+    - identifier: >-
+        custom_logic_add_resources_restricted_field_auth_gen2_restricted_field_auth_gen1
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/ddb-iam-access.test.ts|src/__tests__/data-construct.test.ts|src/__tests__/custom-logic.test.ts|src/__tests__/add-resources.test.ts
+            src/__tests__/custom-logic.test.ts|src/__tests__/add-resources.test.ts|src/__tests__/restricted-field-auth/restricted-field-auth-gen2.test.ts|src/__tests__/restricted-field-auth/restricted-field-auth-gen1.test.ts
           CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry

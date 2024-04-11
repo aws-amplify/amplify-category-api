@@ -3,8 +3,8 @@ import * as fs from 'fs-extra';
 
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
-import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
-import { createCognitoUser, doAppSyncGraphqlMutation, signInCognitoUser, TestDefinition, writeTestDefinitions } from '../utils';
+import { initCDKProject, cdkDeploy, cdkDestroy } from '../../commands';
+import { createCognitoUser, doAppSyncGraphqlMutation, signInCognitoUser, TestDefinition, writeTestDefinitions } from '../../utils';
 import {
   createLeftRightJoin,
   createManyLeft,
@@ -18,11 +18,11 @@ import {
   updatePrimary,
   updateRelatedMany,
   updateRelatedOne,
-} from './graphql-schemas/restricted-field-auth/ddb-only/graphql/mutations';
+} from './graphql-schemas/gen1-ddb-only/graphql/mutations';
 
 jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
 
-describe('Associated type fields with more restrictive auth rules than the model are redacted in a homogeneous DDB environment', () => {
+describe('Associated type fields with more restrictive auth rules than the model are redacted using gen1 fields-based connections', () => {
   const region = process.env.CLI_REGION ?? 'us-west-2';
   const projFolderName = 'restricted-field-auth';
 
@@ -42,10 +42,10 @@ describe('Associated type fields with more restrictive auth rules than the model
     // restricted fields on the associated records are redacted.
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projFolderName);
-      const templatePath = path.resolve(path.join(__dirname, 'backends', 'restricted-field-auth'));
+      const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'restricted-field-auth'));
       const name = await initCDKProject(projRoot, templatePath);
 
-      const schemaPath = path.resolve(path.join(__dirname, 'graphql-schemas', 'restricted-field-auth', 'ddb-only', 'schema.graphql'));
+      const schemaPath = path.resolve(path.join(__dirname, 'graphql-schemas', 'gen1-ddb-only', 'schema.graphql'));
       const schema = fs.readFileSync(schemaPath).toString();
 
       const testDefinitions: Record<string, TestDefinition> = {

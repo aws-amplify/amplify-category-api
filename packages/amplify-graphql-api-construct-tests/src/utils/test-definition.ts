@@ -21,6 +21,6 @@ export const writeTestDefinitions = (testDefinitions: Record<string, TestDefinit
     const filePath = path.join(projRoot, `${key}.test-definition.json`);
     const content = JSON.stringify(testDefinition);
     fs.writeFileSync(filePath, content);
-    console.log(`Wrote ${filePath}`);
+    console.log(`Wrote test definition to ${filePath}`);
   });
 };
