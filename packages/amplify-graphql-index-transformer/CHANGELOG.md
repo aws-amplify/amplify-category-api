@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.4.0-zz-0411-gen2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.3.8...@aws-amplify/graphql-index-transformer@2.4.0-zz-0411-gen2.0) (2024-04-11)
+
+### Features
+
+- iam access support for searchable, index and sql directives ([#2398](https://github.com/aws-amplify/amplify-category-api/issues/2398)) ([c2a3d92](https://github.com/aws-amplify/amplify-category-api/commit/c2a3d92e89891e9585aa1c26731f132171e271be))
+
 ## [2.3.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.3.7...@aws-amplify/graphql-index-transformer@2.3.8) (2024-03-28)
 
 **Note:** Version bump only for package @aws-amplify/graphql-index-transformer

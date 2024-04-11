@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.5.0-zz-0411-gen2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.4.2...@aws-amplify/graphql-relational-transformer@2.5.0-zz-0411-gen2.0) (2024-04-11)
+
+### Bug Fixes
+
+- **graphql-relational-transformer:** ddb references relationships with composite sortkeys ([#2425](https://github.com/aws-amplify/amplify-category-api/issues/2425)) ([0c45218](https://github.com/aws-amplify/amplify-category-api/commit/0c45218556794b43faed450cfdba4e36fb8d7436))
+- propagate mutation context to relational fields ([#2416](https://github.com/aws-amplify/amplify-category-api/issues/2416)) ([fd7f6fb](https://github.com/aws-amplify/amplify-category-api/commit/fd7f6fbc17c199331c4b04debaff69ea0424cd74))
+- propagate operation in references-style ddb resolver ([#2447](https://github.com/aws-amplify/amplify-category-api/issues/2447)) ([460cf21](https://github.com/aws-amplify/amplify-category-api/commit/460cf217ce55ac3ef09749c552aac3a487cded69))
+
+### Features
+
+- **graphql-relational-transformer:** DDB references relational directives support (tagged-release.0) ([#2370](https://github.com/aws-amplify/amplify-category-api/issues/2370)) ([bdaaabf](https://github.com/aws-amplify/amplify-category-api/commit/bdaaabfb76d23b2331613c413b9760a01f9e1d8a))
+
 ## [2.4.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.4.1...@aws-amplify/graphql-relational-transformer@2.4.2) (2024-03-28)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.8.0-zz-0411-gen2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.7.0...@aws-amplify/data-construct@1.8.0-zz-0411-gen2.0) (2024-04-11)
+
+### Features
+
+- generic iam authorization ([#2385](https://github.com/aws-amplify/amplify-category-api/issues/2385)) ([550ee80](https://github.com/aws-amplify/amplify-category-api/commit/550ee803275817d25447ff1400d55eb1ad4cd0c2))
+
 # [1.7.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.6.0...@aws-amplify/data-construct@1.7.0) (2024-03-28)
 
 ### Features
