@@ -93,6 +93,7 @@ export abstract class DataSourceAdapter {
 // @public (undocumented)
 export type DataSourceConfig = {
     secretName: string;
+    identifier: string;
     vpcConfig?: VpcConfig;
 };
 

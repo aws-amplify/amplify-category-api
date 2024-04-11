@@ -1,0 +1,25 @@
+version: 0.2
+env:
+  shell: bash
+  variables:
+    AMPLIFY_DIR: /root/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin
+    AMPLIFY_PATH: /root/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin/amplify
+    CI: true
+    CODEBUILD: true
+    NODE_OPTIONS: --max-old-space-size=8096
+phases:
+  build:
+    commands:
+      - codebuild-breakpoint
+      - source ./shared-scripts.sh && _setupCDKTestsLinux
+      - source ./shared-scripts.sh && _runCDKTestsLinux
+  post_build:
+    commands:
+      - source ./shared-scripts.sh && _unassumeTestAccountCredentials
+      - aws sts get-caller-identity
+      - source ./shared-scripts.sh && _scanArtifacts && _emitCDKConstructCanaryMetric
+
+artifacts:
+  files:
+    - '**/*'
+  base-directory: $CODEBUILD_SRC_DIR/packages/amplify-graphql-api-construct-tests/amplify-e2e-reports

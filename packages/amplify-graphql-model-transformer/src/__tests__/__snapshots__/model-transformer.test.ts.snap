@@ -225,6 +225,1098 @@ type Subscription {
 "
 `;
 
+exports[`ModelTransformer: remove null timestamp fields from input createdAt null 1`] = `
+"type CreatedAtNull {
+  id: ID!
+  title: String!
+  updatedAt: AWSDateTime!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelCreatedAtNullConnection {
+  items: [CreatedAtNull]!
+  nextToken: String
+}
+
+input ModelCreatedAtNullFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelCreatedAtNullFilterInput]
+  or: [ModelCreatedAtNullFilterInput]
+  not: ModelCreatedAtNullFilterInput
+}
+
+type Query {
+  getCreatedAtNull(id: ID!): CreatedAtNull
+  listCreatedAtNulls(filter: ModelCreatedAtNullFilterInput, limit: Int, nextToken: String): ModelCreatedAtNullConnection
+}
+
+input ModelCreatedAtNullConditionInput {
+  title: ModelStringInput
+  and: [ModelCreatedAtNullConditionInput]
+  or: [ModelCreatedAtNullConditionInput]
+  not: ModelCreatedAtNullConditionInput
+  updatedAt: ModelStringInput
+}
+
+input CreateCreatedAtNullInput {
+  id: ID
+  title: String!
+}
+
+input UpdateCreatedAtNullInput {
+  id: ID!
+  title: String
+}
+
+input DeleteCreatedAtNullInput {
+  id: ID!
+}
+
+type Mutation {
+  createCreatedAtNull(input: CreateCreatedAtNullInput!, condition: ModelCreatedAtNullConditionInput): CreatedAtNull
+  updateCreatedAtNull(input: UpdateCreatedAtNullInput!, condition: ModelCreatedAtNullConditionInput): CreatedAtNull
+  deleteCreatedAtNull(input: DeleteCreatedAtNullInput!, condition: ModelCreatedAtNullConditionInput): CreatedAtNull
+}
+
+input ModelSubscriptionCreatedAtNullFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionCreatedAtNullFilterInput]
+  or: [ModelSubscriptionCreatedAtNullFilterInput]
+}
+
+type Subscription {
+  onCreateCreatedAtNull(filter: ModelSubscriptionCreatedAtNullFilterInput): CreatedAtNull @aws_subscribe(mutations: [\\"createCreatedAtNull\\"])
+  onUpdateCreatedAtNull(filter: ModelSubscriptionCreatedAtNullFilterInput): CreatedAtNull @aws_subscribe(mutations: [\\"updateCreatedAtNull\\"])
+  onDeleteCreatedAtNull(filter: ModelSubscriptionCreatedAtNullFilterInput): CreatedAtNull @aws_subscribe(mutations: [\\"deleteCreatedAtNull\\"])
+}
+"
+`;
+
+exports[`ModelTransformer: remove null timestamp fields from input createdAt null and updatedAt null 1`] = `
+"type CreatedAtAndUpdatedAtNull {
+  id: ID!
+  title: String!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelCreatedAtAndUpdatedAtNullConnection {
+  items: [CreatedAtAndUpdatedAtNull]!
+  nextToken: String
+}
+
+input ModelCreatedAtAndUpdatedAtNullFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  and: [ModelCreatedAtAndUpdatedAtNullFilterInput]
+  or: [ModelCreatedAtAndUpdatedAtNullFilterInput]
+  not: ModelCreatedAtAndUpdatedAtNullFilterInput
+}
+
+type Query {
+  getCreatedAtAndUpdatedAtNull(id: ID!): CreatedAtAndUpdatedAtNull
+  listCreatedAtAndUpdatedAtNulls(filter: ModelCreatedAtAndUpdatedAtNullFilterInput, limit: Int, nextToken: String): ModelCreatedAtAndUpdatedAtNullConnection
+}
+
+input ModelCreatedAtAndUpdatedAtNullConditionInput {
+  title: ModelStringInput
+  and: [ModelCreatedAtAndUpdatedAtNullConditionInput]
+  or: [ModelCreatedAtAndUpdatedAtNullConditionInput]
+  not: ModelCreatedAtAndUpdatedAtNullConditionInput
+}
+
+input CreateCreatedAtAndUpdatedAtNullInput {
+  id: ID
+  title: String!
+}
+
+input UpdateCreatedAtAndUpdatedAtNullInput {
+  id: ID!
+  title: String
+}
+
+input DeleteCreatedAtAndUpdatedAtNullInput {
+  id: ID!
+}
+
+type Mutation {
+  createCreatedAtAndUpdatedAtNull(input: CreateCreatedAtAndUpdatedAtNullInput!, condition: ModelCreatedAtAndUpdatedAtNullConditionInput): CreatedAtAndUpdatedAtNull
+  updateCreatedAtAndUpdatedAtNull(input: UpdateCreatedAtAndUpdatedAtNullInput!, condition: ModelCreatedAtAndUpdatedAtNullConditionInput): CreatedAtAndUpdatedAtNull
+  deleteCreatedAtAndUpdatedAtNull(input: DeleteCreatedAtAndUpdatedAtNullInput!, condition: ModelCreatedAtAndUpdatedAtNullConditionInput): CreatedAtAndUpdatedAtNull
+}
+
+input ModelSubscriptionCreatedAtAndUpdatedAtNullFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  and: [ModelSubscriptionCreatedAtAndUpdatedAtNullFilterInput]
+  or: [ModelSubscriptionCreatedAtAndUpdatedAtNullFilterInput]
+}
+
+type Subscription {
+  onCreateCreatedAtAndUpdatedAtNull(filter: ModelSubscriptionCreatedAtAndUpdatedAtNullFilterInput): CreatedAtAndUpdatedAtNull @aws_subscribe(mutations: [\\"createCreatedAtAndUpdatedAtNull\\"])
+  onUpdateCreatedAtAndUpdatedAtNull(filter: ModelSubscriptionCreatedAtAndUpdatedAtNullFilterInput): CreatedAtAndUpdatedAtNull @aws_subscribe(mutations: [\\"updateCreatedAtAndUpdatedAtNull\\"])
+  onDeleteCreatedAtAndUpdatedAtNull(filter: ModelSubscriptionCreatedAtAndUpdatedAtNullFilterInput): CreatedAtAndUpdatedAtNull @aws_subscribe(mutations: [\\"deleteCreatedAtAndUpdatedAtNull\\"])
+}
+"
+`;
+
+exports[`ModelTransformer: remove null timestamp fields from input custom createdAt and updatedAt null 1`] = `
+"type CustomCreatedAtAndUpdatedAtNull {
+  id: ID!
+  title: String!
+  createdOn: AWSDateTime!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelCustomCreatedAtAndUpdatedAtNullConnection {
+  items: [CustomCreatedAtAndUpdatedAtNull]!
+  nextToken: String
+}
+
+input ModelCustomCreatedAtAndUpdatedAtNullFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  createdOn: ModelStringInput
+  and: [ModelCustomCreatedAtAndUpdatedAtNullFilterInput]
+  or: [ModelCustomCreatedAtAndUpdatedAtNullFilterInput]
+  not: ModelCustomCreatedAtAndUpdatedAtNullFilterInput
+}
+
+type Query {
+  getCustomCreatedAtAndUpdatedAtNull(id: ID!): CustomCreatedAtAndUpdatedAtNull
+  listCustomCreatedAtAndUpdatedAtNulls(filter: ModelCustomCreatedAtAndUpdatedAtNullFilterInput, limit: Int, nextToken: String): ModelCustomCreatedAtAndUpdatedAtNullConnection
+}
+
+input ModelCustomCreatedAtAndUpdatedAtNullConditionInput {
+  title: ModelStringInput
+  and: [ModelCustomCreatedAtAndUpdatedAtNullConditionInput]
+  or: [ModelCustomCreatedAtAndUpdatedAtNullConditionInput]
+  not: ModelCustomCreatedAtAndUpdatedAtNullConditionInput
+  createdOn: ModelStringInput
+}
+
+input CreateCustomCreatedAtAndUpdatedAtNullInput {
+  id: ID
+  title: String!
+}
+
+input UpdateCustomCreatedAtAndUpdatedAtNullInput {
+  id: ID!
+  title: String
+}
+
+input DeleteCustomCreatedAtAndUpdatedAtNullInput {
+  id: ID!
+}
+
+type Mutation {
+  createCustomCreatedAtAndUpdatedAtNull(input: CreateCustomCreatedAtAndUpdatedAtNullInput!, condition: ModelCustomCreatedAtAndUpdatedAtNullConditionInput): CustomCreatedAtAndUpdatedAtNull
+  updateCustomCreatedAtAndUpdatedAtNull(input: UpdateCustomCreatedAtAndUpdatedAtNullInput!, condition: ModelCustomCreatedAtAndUpdatedAtNullConditionInput): CustomCreatedAtAndUpdatedAtNull
+  deleteCustomCreatedAtAndUpdatedAtNull(input: DeleteCustomCreatedAtAndUpdatedAtNullInput!, condition: ModelCustomCreatedAtAndUpdatedAtNullConditionInput): CustomCreatedAtAndUpdatedAtNull
+}
+
+input ModelSubscriptionCustomCreatedAtAndUpdatedAtNullFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  createdOn: ModelSubscriptionStringInput
+  and: [ModelSubscriptionCustomCreatedAtAndUpdatedAtNullFilterInput]
+  or: [ModelSubscriptionCustomCreatedAtAndUpdatedAtNullFilterInput]
+}
+
+type Subscription {
+  onCreateCustomCreatedAtAndUpdatedAtNull(filter: ModelSubscriptionCustomCreatedAtAndUpdatedAtNullFilterInput): CustomCreatedAtAndUpdatedAtNull @aws_subscribe(mutations: [\\"createCustomCreatedAtAndUpdatedAtNull\\"])
+  onUpdateCustomCreatedAtAndUpdatedAtNull(filter: ModelSubscriptionCustomCreatedAtAndUpdatedAtNullFilterInput): CustomCreatedAtAndUpdatedAtNull @aws_subscribe(mutations: [\\"updateCustomCreatedAtAndUpdatedAtNull\\"])
+  onDeleteCustomCreatedAtAndUpdatedAtNull(filter: ModelSubscriptionCustomCreatedAtAndUpdatedAtNullFilterInput): CustomCreatedAtAndUpdatedAtNull @aws_subscribe(mutations: [\\"deleteCustomCreatedAtAndUpdatedAtNull\\"])
+}
+"
+`;
+
+exports[`ModelTransformer: remove null timestamp fields from input timestamps null 1`] = `
+"type TimeStampsNull {
+  id: ID!
+  title: String!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelTimeStampsNullConnection {
+  items: [TimeStampsNull]!
+  nextToken: String
+}
+
+input ModelTimeStampsNullFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  and: [ModelTimeStampsNullFilterInput]
+  or: [ModelTimeStampsNullFilterInput]
+  not: ModelTimeStampsNullFilterInput
+}
+
+type Query {
+  getTimeStampsNull(id: ID!): TimeStampsNull
+  listTimeStampsNulls(filter: ModelTimeStampsNullFilterInput, limit: Int, nextToken: String): ModelTimeStampsNullConnection
+}
+
+input ModelTimeStampsNullConditionInput {
+  title: ModelStringInput
+  and: [ModelTimeStampsNullConditionInput]
+  or: [ModelTimeStampsNullConditionInput]
+  not: ModelTimeStampsNullConditionInput
+}
+
+input CreateTimeStampsNullInput {
+  id: ID
+  title: String!
+}
+
+input UpdateTimeStampsNullInput {
+  id: ID!
+  title: String
+}
+
+input DeleteTimeStampsNullInput {
+  id: ID!
+}
+
+type Mutation {
+  createTimeStampsNull(input: CreateTimeStampsNullInput!, condition: ModelTimeStampsNullConditionInput): TimeStampsNull
+  updateTimeStampsNull(input: UpdateTimeStampsNullInput!, condition: ModelTimeStampsNullConditionInput): TimeStampsNull
+  deleteTimeStampsNull(input: DeleteTimeStampsNullInput!, condition: ModelTimeStampsNullConditionInput): TimeStampsNull
+}
+
+input ModelSubscriptionTimeStampsNullFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  and: [ModelSubscriptionTimeStampsNullFilterInput]
+  or: [ModelSubscriptionTimeStampsNullFilterInput]
+}
+
+type Subscription {
+  onCreateTimeStampsNull(filter: ModelSubscriptionTimeStampsNullFilterInput): TimeStampsNull @aws_subscribe(mutations: [\\"createTimeStampsNull\\"])
+  onUpdateTimeStampsNull(filter: ModelSubscriptionTimeStampsNullFilterInput): TimeStampsNull @aws_subscribe(mutations: [\\"updateTimeStampsNull\\"])
+  onDeleteTimeStampsNull(filter: ModelSubscriptionTimeStampsNullFilterInput): TimeStampsNull @aws_subscribe(mutations: [\\"deleteTimeStampsNull\\"])
+}
+"
+`;
+
+exports[`ModelTransformer: remove null timestamp fields from input updatedAt null 1`] = `
+"type UpdatedAtNull {
+  id: ID!
+  title: String!
+  createdAt: AWSDateTime!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelUpdatedAtNullConnection {
+  items: [UpdatedAtNull]!
+  nextToken: String
+}
+
+input ModelUpdatedAtNullFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  createdAt: ModelStringInput
+  and: [ModelUpdatedAtNullFilterInput]
+  or: [ModelUpdatedAtNullFilterInput]
+  not: ModelUpdatedAtNullFilterInput
+}
+
+type Query {
+  getUpdatedAtNull(id: ID!): UpdatedAtNull
+  listUpdatedAtNulls(filter: ModelUpdatedAtNullFilterInput, limit: Int, nextToken: String): ModelUpdatedAtNullConnection
+}
+
+input ModelUpdatedAtNullConditionInput {
+  title: ModelStringInput
+  and: [ModelUpdatedAtNullConditionInput]
+  or: [ModelUpdatedAtNullConditionInput]
+  not: ModelUpdatedAtNullConditionInput
+  createdAt: ModelStringInput
+}
+
+input CreateUpdatedAtNullInput {
+  id: ID
+  title: String!
+}
+
+input UpdateUpdatedAtNullInput {
+  id: ID!
+  title: String
+}
+
+input DeleteUpdatedAtNullInput {
+  id: ID!
+}
+
+type Mutation {
+  createUpdatedAtNull(input: CreateUpdatedAtNullInput!, condition: ModelUpdatedAtNullConditionInput): UpdatedAtNull
+  updateUpdatedAtNull(input: UpdateUpdatedAtNullInput!, condition: ModelUpdatedAtNullConditionInput): UpdatedAtNull
+  deleteUpdatedAtNull(input: DeleteUpdatedAtNullInput!, condition: ModelUpdatedAtNullConditionInput): UpdatedAtNull
+}
+
+input ModelSubscriptionUpdatedAtNullFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionUpdatedAtNullFilterInput]
+  or: [ModelSubscriptionUpdatedAtNullFilterInput]
+}
+
+type Subscription {
+  onCreateUpdatedAtNull(filter: ModelSubscriptionUpdatedAtNullFilterInput): UpdatedAtNull @aws_subscribe(mutations: [\\"createUpdatedAtNull\\"])
+  onUpdateUpdatedAtNull(filter: ModelSubscriptionUpdatedAtNullFilterInput): UpdatedAtNull @aws_subscribe(mutations: [\\"updateUpdatedAtNull\\"])
+  onDeleteUpdatedAtNull(filter: ModelSubscriptionUpdatedAtNullFilterInput): UpdatedAtNull @aws_subscribe(mutations: [\\"deleteUpdatedAtNull\\"])
+}
+"
+`;
+
 exports[`ModelTransformer: should filter known input types from create and update input fields 1`] = `
 "type Test {
   id: ID!
@@ -4126,8 +5218,6 @@ input ModelPostConditionInput {
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
   _deleted: ModelBooleanInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
 }
 
 input CreatePostInput {

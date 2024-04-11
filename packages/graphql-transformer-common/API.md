@@ -524,6 +524,7 @@ export const TYPESCRIPT_DATA_SCHEMA_CONSTANTS: {
     PROPERTY_DATABASE: string;
     PROPERTY_CONNECTION_URI: string;
     PROPERTY_ENGINE: string;
+    PROPERTY_IDENTIFIER: string;
 };
 
 // @public (undocumented)

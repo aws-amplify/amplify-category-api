@@ -1,0 +1,213 @@
+version: 0.2
+env:
+  shell: bash
+  compute-type: BUILD_GENERAL1_MEDIUM
+batch:
+  fast-fail: false
+  build-graph:
+    - identifier: build_linux
+      buildspec: codebuild_specs/build_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+    - identifier: test
+      buildspec: codebuild_specs/test.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - build_linux
+    - identifier: publish_to_local_registry
+      buildspec: codebuild_specs/publish_to_local_registry.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+      depend-on:
+        - build_linux
+    - identifier: default_ddb_canary_ap_east_1
+      buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/default-ddb-canary.test.ts
+          CLI_REGION: ap-east-1
+          CANARY_METRIC_NAME: DefaultDynamoDbModelDataSourceStrategySuccessRate
+      depend-on:
+        - publish_to_local_registry
+    - identifier: default_ddb_canary_ap_northeast_1
+      buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/default-ddb-canary.test.ts
+          CLI_REGION: ap-northeast-1
+          CANARY_METRIC_NAME: DefaultDynamoDbModelDataSourceStrategySuccessRate
+      depend-on:
+        - publish_to_local_registry
+    - identifier: default_ddb_canary_ap_northeast_2
+      buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/default-ddb-canary.test.ts
+          CLI_REGION: ap-northeast-2
+          CANARY_METRIC_NAME: DefaultDynamoDbModelDataSourceStrategySuccessRate
+      depend-on:
+        - publish_to_local_registry
+    - identifier: default_ddb_canary_ap_south_1
+      buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/default-ddb-canary.test.ts
+          CLI_REGION: ap-south-1
+          CANARY_METRIC_NAME: DefaultDynamoDbModelDataSourceStrategySuccessRate
+      depend-on:
+        - publish_to_local_registry
+    - identifier: default_ddb_canary_ap_southeast_1
+      buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/default-ddb-canary.test.ts
+          CLI_REGION: ap-southeast-1
+          CANARY_METRIC_NAME: DefaultDynamoDbModelDataSourceStrategySuccessRate
+      depend-on:
+        - publish_to_local_registry
+    - identifier: default_ddb_canary_ap_southeast_2
+      buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/default-ddb-canary.test.ts
+          CLI_REGION: ap-southeast-2
+          CANARY_METRIC_NAME: DefaultDynamoDbModelDataSourceStrategySuccessRate
+      depend-on:
+        - publish_to_local_registry
+    - identifier: default_ddb_canary_ca_central_1
+      buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/default-ddb-canary.test.ts
+          CLI_REGION: ca-central-1
+          CANARY_METRIC_NAME: DefaultDynamoDbModelDataSourceStrategySuccessRate
+      depend-on:
+        - publish_to_local_registry
+    - identifier: default_ddb_canary_eu_central_1
+      buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/default-ddb-canary.test.ts
+          CLI_REGION: eu-central-1
+          CANARY_METRIC_NAME: DefaultDynamoDbModelDataSourceStrategySuccessRate
+      depend-on:
+        - publish_to_local_registry
+    - identifier: default_ddb_canary_eu_north_1
+      buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/default-ddb-canary.test.ts
+          CLI_REGION: eu-north-1
+          CANARY_METRIC_NAME: DefaultDynamoDbModelDataSourceStrategySuccessRate
+      depend-on:
+        - publish_to_local_registry
+    - identifier: default_ddb_canary_eu_south_1
+      buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/default-ddb-canary.test.ts
+          CLI_REGION: eu-south-1
+          CANARY_METRIC_NAME: DefaultDynamoDbModelDataSourceStrategySuccessRate
+      depend-on:
+        - publish_to_local_registry
+    - identifier: default_ddb_canary_eu_west_1
+      buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/default-ddb-canary.test.ts
+          CLI_REGION: eu-west-1
+          CANARY_METRIC_NAME: DefaultDynamoDbModelDataSourceStrategySuccessRate
+      depend-on:
+        - publish_to_local_registry
+    - identifier: default_ddb_canary_eu_west_2
+      buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/default-ddb-canary.test.ts
+          CLI_REGION: eu-west-2
+          CANARY_METRIC_NAME: DefaultDynamoDbModelDataSourceStrategySuccessRate
+      depend-on:
+        - publish_to_local_registry
+    - identifier: default_ddb_canary_eu_west_3
+      buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/default-ddb-canary.test.ts
+          CLI_REGION: eu-west-3
+          CANARY_METRIC_NAME: DefaultDynamoDbModelDataSourceStrategySuccessRate
+      depend-on:
+        - publish_to_local_registry
+    - identifier: default_ddb_canary_me_south_1
+      buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/default-ddb-canary.test.ts
+          CLI_REGION: me-south-1
+          CANARY_METRIC_NAME: DefaultDynamoDbModelDataSourceStrategySuccessRate
+      depend-on:
+        - publish_to_local_registry
+    - identifier: default_ddb_canary_sa_east_1
+      buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/default-ddb-canary.test.ts
+          CLI_REGION: sa-east-1
+          CANARY_METRIC_NAME: DefaultDynamoDbModelDataSourceStrategySuccessRate
+      depend-on:
+        - publish_to_local_registry
+    - identifier: default_ddb_canary_us_east_1
+      buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/default-ddb-canary.test.ts
+          CLI_REGION: us-east-1
+          CANARY_METRIC_NAME: DefaultDynamoDbModelDataSourceStrategySuccessRate
+      depend-on:
+        - publish_to_local_registry
+    - identifier: default_ddb_canary_us_east_2
+      buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/default-ddb-canary.test.ts
+          CLI_REGION: us-east-2
+          CANARY_METRIC_NAME: DefaultDynamoDbModelDataSourceStrategySuccessRate
+      depend-on:
+        - publish_to_local_registry
+    - identifier: default_ddb_canary_us_west_1
+      buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/default-ddb-canary.test.ts
+          CLI_REGION: us-west-1
+          CANARY_METRIC_NAME: DefaultDynamoDbModelDataSourceStrategySuccessRate
+      depend-on:
+        - publish_to_local_registry
+    - identifier: default_ddb_canary_us_west_2
+      buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/default-ddb-canary.test.ts
+          CLI_REGION: us-west-2
+          CANARY_METRIC_NAME: DefaultDynamoDbModelDataSourceStrategySuccessRate
+      depend-on:
+        - publish_to_local_registry

@@ -10481,9 +10481,9 @@ aws-sdk-mock@^5.6.2:
     traverse "^0.6.6"
 
 aws-sdk@2.518.0, aws-sdk@^2.1113.0, aws-sdk@^2.1141.0, aws-sdk@^2.1231.0, aws-sdk@^2.1464.0:
-  version "2.1593.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1593.0.tgz#37cb0afa89040fad3fab6231afb665f0987d8b83"
-  integrity sha512-Oiu6HxWax6Ns75IEYNTVmxT9G1klHMszJKfnHSFv/LlNg432TdkI8Irefw2XRTMxTcWCjbxSnG4+HYDHWE+mXw==
+  version "2.1596.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1596.0.tgz#606dcf063cad6992f0e78190983241475317c6a2"
+  integrity sha512-0C0TGFW3ANoZ1AkSKIIjTpEfN9WQ7jbwLODsdU2TIPkJBuv7UcOkTPuKoiowhi5sOFZmyx58SG3g12j+BJpyEg==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -20883,9 +20883,9 @@ tar-stream@^2.1.4, tar-stream@^2.2.0, tar-stream@~2.2.0:
     readable-stream "^3.1.1"
 
 tar@^6.1.0, tar@^6.1.11, tar@^6.1.2:
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/tar/-/tar-6.2.0.tgz#b14ce49a79cb1cd23bc9b016302dea5474493f73"
-  integrity sha512-/Wo7DcT0u5HUV486xg675HtjNd3BXZ6xDbzsCUZPt5iw8bTQ63bP0Raut3mvro9u+CUyq7YQd8Cx55fsZXxqLQ==
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/tar/-/tar-6.2.1.tgz#717549c541bc3c2af15751bea94b1dd068d4b03a"
+  integrity sha512-DZ4yORTwrbTj/7MZYq2w+/ZFdI6OZ/f9SFHR+71gIVUZhOQPHzVCLpvRnPgyaMpfWxxk/4ONva3GQSyNIKRv6A==
   dependencies:
     chownr "^2.0.0"
     fs-minipass "^2.0.0"
