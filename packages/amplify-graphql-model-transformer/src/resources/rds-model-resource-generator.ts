@@ -14,8 +14,8 @@ import {
   TransformerContextProvider,
   isSqlModelDataSourceSsmDbConnectionConfig,
   isSqlModelDataSourceSecretsManagerDbConnectionConfig,
+  isSqlModelDataSourceSsmDbConnectionStringConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { ResourceConstants } from 'graphql-transformer-common';
 import { LambdaDataSource } from 'aws-cdk-lib/aws-appsync';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { ModelVTLGenerator, RDSModelVTLGenerator } from '../resolvers';
@@ -26,7 +26,9 @@ import {
   createRdsPatchingLambda,
   createRdsPatchingLambdaRole,
   setRDSLayerMappings,
+  setRDSSNSTopicMappings,
   CredentialStorageMethod,
+  createSNSTopicARNCustomResource,
 } from '../resolvers/rds';
 import { ModelResourceGenerator } from './model-resource-generator';
 
@@ -101,8 +103,6 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
     const engine = getImportedRDSTypeFromStrategyDbType(dbType);
     const dbConnectionConfig = strategy.dbConnectionConfig;
     const secretEntry = strategy.dbConnectionConfig;
-    const { AmplifySQLLayerNotificationTopicAccount, AmplifySQLLayerNotificationTopicName } = ResourceConstants.RESOURCES;
-
     const lambdaRoleScope = context.stackManager.getScopeFor(resourceNames.sqlLambdaExecutionRole, resourceNames.sqlStack);
     const lambdaScope = context.stackManager.getScopeFor(resourceNames.sqlLambdaFunction, resourceNames.sqlStack);
 
@@ -134,6 +134,10 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       environment.database = secretEntry.databaseName;
       environment.host = secretEntry.hostname;
       credentialStorageMethod = CredentialStorageMethod.SECRETS_MANAGER;
+    } else if (isSqlModelDataSourceSsmDbConnectionStringConfig(secretEntry)) {
+      environment.CREDENTIAL_STORAGE_METHOD = 'SSM';
+      environment.connectionString = secretEntry.connectionUriSsmPath;
+      credentialStorageMethod = CredentialStorageMethod.SSM;
     }
 
     const lambda = createRdsLambda(
@@ -162,14 +166,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
     });
 
     // Add SNS subscription for patching notifications
-    const topicArn = Fn.join(':', [
-      'arn',
-      'aws',
-      'sns',
-      Fn.ref('AWS::Region'),
-      AmplifySQLLayerNotificationTopicAccount,
-      AmplifySQLLayerNotificationTopicName,
-    ]);
+    const topicArn = resolveSNSTopicARN(lambdaScope, context, resourceNames);
 
     const patchingSubscriptionScope = context.stackManager.getScopeFor(resourceNames.sqlPatchingSubscription, resourceNames.sqlStack);
     const snsTopic = Topic.fromTopicArn(patchingSubscriptionScope, resourceNames.sqlPatchingTopic, topicArn);
@@ -238,4 +235,25 @@ const resolveLayerVersion = (scope: Construct, context: TransformerContextProvid
     layerVersionArn = layerVersionCustomResource.getResponseField('Body');
   }
   return layerVersionArn;
+};
+
+/**
+ * Resolves the SNS topic ARN that the patching lambda in the customer's account subscribes to listen for lambda layer updates from the service. In the Gen1 CLI flow, the transform-graphql-schema-v2
+ * buildAPIProject function retrieves the latest layer version from the S3 bucket. In the CDK construct, such async behavior at synth time
+ * is forbidden, so we use an AwsCustomResource to resolve the latest layer version. The AwsCustomResource does not work with the CLI custom
+ * synth functionality, so we fork the behavior at this point.
+ *
+ * Note that in either case, the returned value is not actually the literal layer ARN, but rather a reference to be resolved at deploy time:
+ * in the CLI case, it's the resolution of the SQLLayerMapping; in the CDK case, it's the 'Body' response field from the AwsCustomResource's
+ * invocation of s3::GetObject.
+ *
+ * TODO: Remove this once we remove SQL imports from Gen1 CLI.
+ */
+const resolveSNSTopicARN = (scope: Construct, context: TransformerContextProvider, resourceNames: SQLLambdaResourceNames): string => {
+  if (context.rdsSnsTopicMapping) {
+    setRDSSNSTopicMappings(scope, context.rdsSnsTopicMapping, resourceNames);
+    return Fn.findInMap(resourceNames.sqlSNSTopicArnMapping, Fn.ref('AWS::Region'), 'topicArn');
+  }
+  const layerVersionCustomResource = createSNSTopicARNCustomResource(scope, resourceNames);
+  return layerVersionCustomResource.getResponseField('Body');
 };

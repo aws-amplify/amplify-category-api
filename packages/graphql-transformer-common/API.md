@@ -407,11 +407,10 @@ export class ResourceConstants {
         OpenSearchStreamingLambdaIAMRoleLogicalID: string;
         OpenSearchStreamingLambdaFunctionLogicalID: string;
         OpenSearchDataSourceLogicalID: string;
-        AmplifySQLLayerNotificationTopicName: string;
-        AmplifySQLLayerNotificationTopicAccount: string;
-        SQLLayerVersionManifestBucket: string;
-        SQLLayerVersionManifestBucketRegion: string;
+        SQLLayerManifestBucket: string;
+        SQLLayerManifestBucketRegion: string;
         SQLLayerVersionManifestKeyPrefix: string;
+        SQLSNSTopicARNManifestKeyPrefix: string;
         NoneDataSource: string;
         AuthCognitoUserPoolLogicalID: string;
         AuthCognitoUserPoolNativeClientLogicalID: string;
@@ -525,6 +524,7 @@ export const TYPESCRIPT_DATA_SCHEMA_CONSTANTS: {
     PROPERTY_DATABASE: string;
     PROPERTY_CONNECTION_URI: string;
     PROPERTY_ENGINE: string;
+    PROPERTY_IDENTIFIER: string;
 };
 
 // @public (undocumented)

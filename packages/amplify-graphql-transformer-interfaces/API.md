@@ -232,6 +232,9 @@ export const isSqlModelDataSourceSecretsManagerDbConnectionConfig: (obj: any) =>
 export const isSqlModelDataSourceSsmDbConnectionConfig: (obj: any) => obj is SqlModelDataSourceSsmDbConnectionConfig;
 
 // @public (undocumented)
+export const isSqlModelDataSourceSsmDbConnectionStringConfig: (obj: any) => obj is SqlModelDataSourceSsmDbConnectionStringConfig;
+
+// @public (undocumented)
 export type MappingTemplateProvider = InlineMappingTemplateProvider | S3MappingTemplateProvider;
 
 // @public (undocumented)
@@ -311,6 +314,20 @@ export interface RDSLayerMappingProvider {
 }
 
 // @public (undocumented)
+export interface RDSSNSTopicMapping {
+    // (undocumented)
+    readonly [key: string]: {
+        topicArn: string;
+    };
+}
+
+// @public (undocumented)
+export interface RDSSNSTopicMappingProvider {
+    // (undocumented)
+    rdsSnsTopicMapping?: RDSSNSTopicMapping;
+}
+
+// @public (undocumented)
 type ReadonlyArray_2<T> = Readonly<Array<Readonly<T>>>;
 export { ReadonlyArray_2 as ReadonlyArray }
 
@@ -381,7 +398,7 @@ export interface SQLLambdaModelDataSourceStrategy extends ModelDataSourceStrateg
 }
 
 // @public (undocumented)
-export type SqlModelDataSourceDbConnectionConfig = SqlModelDataSourceSecretsManagerDbConnectionConfig | SqlModelDataSourceSsmDbConnectionConfig;
+export type SqlModelDataSourceDbConnectionConfig = SqlModelDataSourceSecretsManagerDbConnectionConfig | SqlModelDataSourceSsmDbConnectionConfig | SqlModelDataSourceSsmDbConnectionStringConfig;
 
 // @public (undocumented)
 export interface SqlModelDataSourceSecretsManagerDbConnectionConfig {
@@ -409,6 +426,12 @@ export interface SqlModelDataSourceSsmDbConnectionConfig {
     readonly portSsmPath: string;
     // (undocumented)
     readonly usernameSsmPath: string;
+}
+
+// @public (undocumented)
+export interface SqlModelDataSourceSsmDbConnectionStringConfig {
+    // (undocumented)
+    readonly connectionUriSsmPath: string;
 }
 
 // @public (undocumented)
@@ -537,7 +560,7 @@ export interface TransformerContextOutputProvider {
 }
 
 // @public (undocumented)
-export interface TransformerContextProvider extends DataSourceStrategiesProvider, RDSLayerMappingProvider {
+export interface TransformerContextProvider extends DataSourceStrategiesProvider, RDSLayerMappingProvider, RDSSNSTopicMappingProvider {
     // (undocumented)
     api: GraphQLAPIProvider;
     // (undocumented)

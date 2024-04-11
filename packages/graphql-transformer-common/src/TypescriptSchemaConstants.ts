@@ -22,4 +22,5 @@ export const TYPESCRIPT_DATA_SCHEMA_CONSTANTS = {
   PROPERTY_DATABASE: 'database',
   PROPERTY_CONNECTION_URI: 'connectionUri',
   PROPERTY_ENGINE: 'engine',
+  PROPERTY_IDENTIFIER: 'identifier',
 };

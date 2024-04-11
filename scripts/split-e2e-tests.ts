@@ -66,10 +66,6 @@ type CandidateJob = {
 const FORCE_REGION_MAP = {
   interactions: 'us-west-2',
   containers: 'us-east-1',
-  'rds-pg-userpool-auth-fields': 'ap-northeast-2',
-  'rds-pg-oidc-auth-fields': 'ap-northeast-2',
-  'rds-mysql-userpool-auth-fields': 'ap-northeast-2',
-  'rds-mysql-oidc-auth-fields': 'ap-northeast-2',
 };
 
 // some tests require additional time, the parent account can handle longer tests (up to 90 minutes)
@@ -136,15 +132,18 @@ const RUN_SOLO: (string | RegExp)[] = [
   /src\/__tests__\/deploy-velocity\/.*\.test\.ts/,
   // SQL tests
   /src\/__tests__\/rds-.*\.test\.ts/,
+  /src\/__tests__\/sql-.*\.test\.ts/,
   // CDK tests
   /src\/__tests__\/base-cdk.*\.test\.ts/,
   'src/__tests__/amplify-table-1.test.ts',
   'src/__tests__/amplify-table-3.test.ts',
+  'src/__tests__/amplify-table-4.test.ts',
   'src/__tests__/api_canary.test.ts',
-  'src/__tests__/sql-models.test.ts',
   'src/__tests__/amplify-table-2.test.ts',
   'src/__tests__/admin-role.test.ts',
   'src/__tests__/all-auth-modes.test.ts',
+  'src/__tests__/default-ddb-canary.test.ts',
+  'src/__tests__/amplify-ddb-canary.test.ts',
 ];
 
 const RUN_IN_ALL_REGIONS = [
@@ -157,6 +156,7 @@ const RUN_IN_ALL_REGIONS = [
 const RUN_IN_NON_OPT_IN_REGIONS: (string | RegExp)[] = [
   // SQL tests
   /src\/__tests__\/rds-.*\.test\.ts/,
+  /src\/__tests__\/sql-.*\.test\.ts/,
   // Searchable tests
   /src\/__tests__\/.*searchable.*\.test\.ts/,
 ];
@@ -226,7 +226,11 @@ const splitTests = (baseJobLinux: any, testDirectory: string, pickTests?: (testS
 
       if (RUN_SOLO.find((solo) => test === solo || test.match(solo))) {
         if (RUN_IN_ALL_REGIONS.find((allRegions) => test === allRegions || test.match(allRegions))) {
-          testRegions.forEach((region) => {
+          const shouldRunInNonOptInRegion = RUN_IN_NON_OPT_IN_REGIONS.find(
+            (nonOptInTest) => test.toLowerCase() === nonOptInTest || test.toLowerCase().match(nonOptInTest),
+          );
+          const regionsToRunTest = shouldRunInNonOptInRegion ? nonOptInRegions : testRegions;
+          regionsToRunTest.forEach((region) => {
             const newSoloJob = createJob(os, jobIdx, true);
             jobIdx++;
             newSoloJob.tests.push(test);

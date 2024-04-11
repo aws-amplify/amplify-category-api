@@ -143,24 +143,23 @@ batch:
           CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
-    - identifier: sql_generate_unauth_resolvers_sync_query_datastore_api_6
+    - identifier: resolvers_sync_query_datastore_api_6_api_lambda_auth
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/sql-generate-unauth.test.ts|src/__tests__/resolvers.test.ts|src/__tests__/graphql-v2/sync_query_datastore.test.ts|src/__tests__/api_6.test.ts
+            src/__tests__/resolvers.test.ts|src/__tests__/graphql-v2/sync_query_datastore.test.ts|src/__tests__/api_6.test.ts|src/__tests__/graphql-v2/api_lambda_auth.test.ts
           CLI_REGION: sa-east-1
       depend-on:
         - publish_to_local_registry
-    - identifier: api_lambda_auth_api_9
+    - identifier: api_9
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          TEST_SUITE: >-
-            src/__tests__/graphql-v2/api_lambda_auth.test.ts|src/__tests__/api_9.test.ts
-          CLI_REGION: eu-south-1
+          TEST_SUITE: src/__tests__/api_9.test.ts
+          CLI_REGION: sa-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: api_10
@@ -668,7 +667,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/rds-mysql-oidc-auth-fields.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_oidc_auth
@@ -704,7 +703,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/rds-mysql-userpool-auth-fields.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_userpool_auth
@@ -839,7 +838,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/rds-pg-oidc-auth-fields.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_pg_oidc_auth
@@ -884,7 +883,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/rds-pg-userpool-auth-fields.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: eu-west-3
       depend-on:
         - publish_to_local_registry
     - identifier: rds_pg_userpool_auth
@@ -932,13 +931,22 @@ batch:
           CLI_REGION: us-west-1
       depend-on:
         - publish_to_local_registry
+    - identifier: sql_generate_unauth
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/sql-generate-unauth.test.ts
+          CLI_REGION: us-west-2
+      depend-on:
+        - publish_to_local_registry
     - identifier: apigw
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/apigw.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: ap-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: containers_api_2
@@ -956,7 +964,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-auth-14.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: ap-northeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_7
@@ -965,7 +973,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-auth-7.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: ap-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_9
@@ -974,7 +982,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-auth-9.test.ts
-          CLI_REGION: ap-south-1
+          CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: api_1
@@ -983,7 +991,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/api_1.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_5
@@ -992,7 +1000,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-auth-5.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: ca-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: searchable_datastore
@@ -1001,7 +1009,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/graphql-v2/searchable-datastore.test.ts
-          CLI_REGION: ca-central-1
+          CLI_REGION: eu-central-1
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
@@ -1011,7 +1019,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-iterative-update-4.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: eu-north-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_searchable
@@ -1020,7 +1028,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-searchable.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: us-east-1
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
@@ -1068,7 +1076,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/api_2.test.ts
-          CLI_REGION: sa-east-1
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: searchable_migration
@@ -1077,7 +1085,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/transformer-migrations/searchable-migration.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: us-east-2
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
@@ -1099,7 +1107,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-empty-table.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-10k-records.test.ts
-          CLI_REGION: ca-central-1
+          CLI_REGION: eu-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
@@ -1110,7 +1118,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-empty-table.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-10k-records.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: eu-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
@@ -1121,7 +1129,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-empty-table.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-10k-records.test.ts
-          CLI_REGION: eu-north-1
+          CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: >-
@@ -1132,7 +1140,17 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-empty-table.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-single-record.test.ts|src/__tests__/relationships.test.ts
-          CLI_REGION: eu-south-1
+          CLI_REGION: eu-west-3
+      depend-on:
+        - publish_to_local_registry
+    - identifier: restricted_field_auth_ddb_only_restricted_field_auth_sql_only
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/restricted-field-auth-ddb-only.test.ts|src/__tests__/restricted-field-auth-sql-only.test.ts
+          CLI_REGION: us-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: admin_role
@@ -1153,13 +1171,22 @@ batch:
           CLI_REGION: ap-northeast-2
       depend-on:
         - publish_to_local_registry
+    - identifier: amplify_ddb_canary
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/amplify-ddb-canary.test.ts
+          CLI_REGION: ap-south-1
+      depend-on:
+        - publish_to_local_registry
     - identifier: amplify_table_1
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/amplify-table-1.test.ts
-          CLI_REGION: ap-south-1
+          CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: amplify_table_2
@@ -1168,7 +1195,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/amplify-table-2.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: amplify_table_3
@@ -1177,7 +1204,16 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/amplify-table-3.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: ca-central-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: amplify_table_4
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/amplify-table-4.test.ts
+          CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: base_cdk_ap_east_1
@@ -1351,13 +1387,22 @@ batch:
           CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
+    - identifier: default_ddb_canary
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/default-ddb-canary.test.ts
+          CLI_REGION: eu-north-1
+      depend-on:
+        - publish_to_local_registry
     - identifier: 3_gsis_100k_records
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/deploy-velocity/3-gsis-100k-records.test.ts
-          CLI_REGION: eu-west-1
+          CLI_REGION: me-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: replace_2_gsis_100k_records
@@ -1366,7 +1411,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/deploy-velocity/replace-2-gsis-100k-records.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: sa-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: replace_2_gsis_update_attr_100k_records
@@ -1376,7 +1421,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/deploy-velocity/replace-2-gsis-update-attr-100k-records.test.ts
-          CLI_REGION: eu-west-3
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: single_gsi_100k_records
@@ -1385,16 +1430,52 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/deploy-velocity/single-gsi-100k-records.test.ts
-          CLI_REGION: me-south-1
+          CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
-    - identifier: sql_models
+    - identifier: sql_models_1
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
-          TEST_SUITE: src/__tests__/sql-models.test.ts
-          CLI_REGION: us-east-1
+          TEST_SUITE: src/__tests__/sql-models-1.test.ts
+          CLI_REGION: us-west-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: sql_models_2
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/sql-models-2.test.ts
+          CLI_REGION: eu-north-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: sql_mysql_canary
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/sql-mysql-canary.test.ts
+          CLI_REGION: ap-northeast-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: sql_pg_canary
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/sql-pg-canary.test.ts
+          CLI_REGION: ap-northeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: sql_pg_models
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/sql-pg-models.test.ts
+          CLI_REGION: ap-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-

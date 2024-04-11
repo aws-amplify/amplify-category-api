@@ -121,7 +121,17 @@ export interface SubnetAvailabilityZone {
  */
 export type SqlModelDataSourceDbConnectionConfig =
   | SqlModelDataSourceSecretsManagerDbConnectionConfig
-  | SqlModelDataSourceSsmDbConnectionConfig;
+  | SqlModelDataSourceSsmDbConnectionConfig
+  | SqlModelDataSourceSsmDbConnectionStringConfig;
+
+/**
+ * The configuration option to use a Secure Systems Manager parameter to store the connection string to the database.
+ * @experimental
+ */
+export interface SqlModelDataSourceSsmDbConnectionStringConfig {
+  /** The SSM Path to the secure connection string used for connecting to the database. **/
+  readonly connectionUriSsmPath: string;
+}
 
 /*
  * The credentials stored in Secrets Manager that the lambda data source will use to connect to the database.
@@ -220,11 +230,30 @@ export interface RDSLayerMapping {
 }
 
 /**
+ * Maps a given AWS region to the SQL SNS topic ARN for that region. TODO: Once we remove SQL imports from Gen1 CLI, remove this
+ * from the transformer interfaces package in favor of the model generator, which is the only place that needs it now that we always resolve
+ * the layer mapping at deploy time.
+ */
+export interface RDSSNSTopicMapping {
+  readonly [key: string]: {
+    topicArn: string;
+  };
+}
+
+/**
  * Defines types that vend an rdsLayerMapping field. This is used solely for the Gen1 CLI import API flow, since wiring the custom resource
  * provider used by the CDK isn't worth the cost. TODO: Remove this once we remove SQL imports from Gen1 CLI.
  */
 export interface RDSLayerMappingProvider {
   rdsLayerMapping?: RDSLayerMapping;
+}
+
+/**
+ * Defines types that vend an rdsSnsTopicMapping field. This is used solely for the Gen1 CLI import API flow, since wiring the custom resource
+ * provider used by the CDK isn't worth the cost. TODO: Remove this once we remove SQL imports from Gen1 CLI.
+ */
+export interface RDSSNSTopicMappingProvider {
+  rdsSnsTopicMapping?: RDSSNSTopicMapping;
 }
 
 /**
@@ -267,4 +296,13 @@ export const isSqlModelDataSourceSecretsManagerDbConnectionConfig = (
     typeof obj.databaseName === 'string' &&
     typeof obj.hostname === 'string'
   );
+};
+
+/**
+ * Type predicate that returns true if the object is a SqlModelDataSourceSsmDbConnectionStringConfig.
+ * @param obj the object to inspect
+ * @returns true if the object is shaped like a SqlModelDataSourceSsmDbConnectionStringConfig
+ */
+export const isSqlModelDataSourceSsmDbConnectionStringConfig = (obj: any): obj is SqlModelDataSourceSsmDbConnectionStringConfig => {
+  return (typeof obj === 'object' || typeof obj === 'function') && typeof obj.connectionUriSsmPath === 'string';
 };
