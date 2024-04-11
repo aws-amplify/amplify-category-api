@@ -3,25 +3,17 @@ import * as fs from 'fs-extra';
 
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import * as generator from 'generate-password';
+import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../../commands';
 import {
   createCognitoUser,
   dbDetailsToModelDataSourceStrategy,
-  doAppSyncGraphqlMutation,
   signInCognitoUser,
   TestDefinition,
+  writeStackPrefix,
   writeTestDefinitions,
 } from '../../utils';
 import { SqlDatabaseDetails, SqlDatatabaseController } from '../../sql-datatabase-controller';
-import {
-  createPrimary,
-  createRelatedMany,
-  createRelatedOne,
-  updatePrimary,
-  updateRelatedMany,
-  updateRelatedOne,
-} from './graphql-schemas/gen2/graphql/mutations';
-import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
 import {
   testCreatePrimaryRedacted,
   testUpdatePrimaryRedacted,
@@ -110,6 +102,7 @@ describe('Associated type fields with more restrictive auth rules than the model
         },
       };
 
+      writeStackPrefix('RFSqlSql', projRoot);
       writeTestDefinitions(testDefinitions, projRoot);
 
       const outputs = await cdkDeploy(projRoot, '--all');
@@ -200,6 +193,7 @@ describe('Associated type fields with more restrictive auth rules than the model
         },
       };
 
+      writeStackPrefix('RFDdbDdb', projRoot);
       writeTestDefinitions(testDefinitions, projRoot);
 
       const outputs = await cdkDeploy(projRoot, '--all');
@@ -290,6 +284,7 @@ describe('Associated type fields with more restrictive auth rules than the model
         },
       };
 
+      writeStackPrefix('RFSqlDdb', projRoot);
       writeTestDefinitions(testDefinitions, projRoot);
 
       const outputs = await cdkDeploy(projRoot, '--all');
@@ -381,6 +376,7 @@ describe('Associated type fields with more restrictive auth rules than the model
         },
       };
 
+      writeStackPrefix('RFDdbSql', projRoot);
       writeTestDefinitions(testDefinitions, projRoot);
 
       const outputs = await cdkDeploy(projRoot, '--all');

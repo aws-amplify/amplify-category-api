@@ -4,7 +4,14 @@ import * as fs from 'fs-extra';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../../commands';
-import { createCognitoUser, doAppSyncGraphqlMutation, signInCognitoUser, TestDefinition, writeTestDefinitions } from '../../utils';
+import {
+  createCognitoUser,
+  doAppSyncGraphqlMutation,
+  signInCognitoUser,
+  TestDefinition,
+  writeStackPrefix,
+  writeTestDefinitions,
+} from '../../utils';
 import {
   createLeftRightJoin,
   createManyLeft,
@@ -55,6 +62,7 @@ describe('Associated type fields with more restrictive auth rules than the model
         },
       };
 
+      writeStackPrefix('RFGen1', projRoot);
       writeTestDefinitions(testDefinitions, projRoot);
 
       const outputs = await cdkDeploy(projRoot, '--all');
