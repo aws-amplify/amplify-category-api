@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.26-0411-gen2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@2.2.25...@aws-amplify/graphql-schema-test-library@2.2.26-0411-gen2.0) (2024-04-11)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-test-library
+
 ## [2.2.25](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@2.2.24...@aws-amplify/graphql-schema-test-library@2.2.25) (2024-04-11)
 
 **Note:** Version bump only for package @aws-amplify/graphql-schema-test-library
