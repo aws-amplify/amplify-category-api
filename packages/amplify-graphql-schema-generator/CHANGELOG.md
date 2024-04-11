@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.8.0...@aws-amplify/graphql-schema-generator@0.8.1) (2024-04-11)
+
+### Bug Fixes
+
+- **api:** add identifier to generated ts data schema ([#2440](https://github.com/aws-amplify/amplify-category-api/issues/2440)) ([aa7de30](https://github.com/aws-amplify/amplify-category-api/commit/aa7de30e4abb49e2684477607b3cadbe2fbc4e20))
+
 # [0.8.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.7.2...@aws-amplify/graphql-schema-generator@0.8.0) (2024-03-28)
 
 ### Features
