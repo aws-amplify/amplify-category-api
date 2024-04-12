@@ -2,11 +2,14 @@ import { App, Stack } from 'aws-cdk-lib';
 import { DefaultTransformHost } from '../transform-host';
 import { GraphQLApi } from '../graphql-api';
 import { InlineTemplate } from '../cdk-compat/template-asset';
+import { AssetManager } from '../transformer-context/asset-manager';
 
 describe('addResolver', () => {
   const app = new App();
   const stack = new Stack(app, 'test-root-stack');
-  const transformHost = new DefaultTransformHost({ api: new GraphQLApi(stack, 'testId', { name: 'testApiName' }) });
+  const transformHost = new DefaultTransformHost({
+    api: new GraphQLApi(stack, 'testId', { name: 'testApiName', assetManager: new AssetManager() }),
+  });
 
   it('generates resolver name with hash for non-alphanumeric type names', () => {
     const cfnResolver = transformHost.addResolver(
