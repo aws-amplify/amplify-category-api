@@ -139,6 +139,8 @@ export class AmplifyGraphqlApi extends Construct {
   constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps) {
     super(scope, id);
 
+    validateNoOtherAmplifyGraphqlApiInStack(this);
+
     const {
       definition,
       authorizationModes,
@@ -152,8 +154,6 @@ export class AmplifyGraphqlApi extends Construct {
       outputStorageStrategy,
       dataStoreConfiguration,
     } = props;
-
-    validateNoOtherAmplifyGraphqlApiInStack(this);
 
     if (conflictResolution && dataStoreConfiguration) {
       throw new Error(
@@ -228,7 +228,6 @@ export class AmplifyGraphqlApi extends Construct {
 
     this.resources = getGeneratedResources(this);
     this.generatedFunctionSlots = getGeneratedFunctionSlots(assetManager.resolverAssets);
-
     this.storeOutput(outputStorageStrategy);
 
     this.apiId = this.resources.cfnResources.cfnGraphqlApi.attrApiId;
