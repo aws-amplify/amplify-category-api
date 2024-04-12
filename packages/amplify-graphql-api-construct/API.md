@@ -128,7 +128,6 @@ export interface AmplifyGraphqlApiProps {
     readonly conflictResolution?: ConflictResolution;
     readonly dataStoreConfiguration?: DataStoreConfiguration;
     readonly definition: IAmplifyGraphqlDefinition;
-    readonly disableOutputStorage?: boolean;
     readonly functionNameMap?: Record<string, IFunction>;
     readonly functionSlots?: FunctionSlot[];
     readonly outputStorageStrategy?: IBackendOutputStorageStrategy;

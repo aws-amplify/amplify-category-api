@@ -150,13 +150,10 @@ export class AmplifyGraphqlApi extends Construct {
       translationBehavior,
       functionNameMap,
       outputStorageStrategy,
-      disableOutputStorage,
       dataStoreConfiguration,
     } = props;
 
-    console.log('disableOutputStorage:', disableOutputStorage);
-
-    if (!disableOutputStorage) {
+    if (false) {
       validateNoOtherAmplifyGraphqlApiInStack(this);
     }
 
@@ -234,9 +231,7 @@ export class AmplifyGraphqlApi extends Construct {
     this.resources = getGeneratedResources(this);
     this.generatedFunctionSlots = getGeneratedFunctionSlots(assetManager.resolverAssets);
 
-    if (!disableOutputStorage) {
-      this.storeOutput(outputStorageStrategy);
-    }
+    this.storeOutput(outputStorageStrategy);
 
     this.apiId = this.resources.cfnResources.cfnGraphqlApi.attrApiId;
     this.graphqlUrl = this.resources.cfnResources.cfnGraphqlApi.attrGraphQlUrl;
@@ -409,6 +404,7 @@ export class AmplifyGraphqlApi extends Construct {
  * @param scope the scope this construct is created in.
  */
 const validateNoOtherAmplifyGraphqlApiInStack = (scope: Construct): void => {
+  // TODO: only check parent stack
   const rootStack = getStackForScope(scope, true);
 
   let wasOtherAmplifyGraphlApiFound = false;

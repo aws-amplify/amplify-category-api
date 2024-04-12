@@ -3537,7 +3537,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 802
+        "line": 795
       },
       "name": "AddFunctionProps",
       "properties": [
@@ -3550,7 +3550,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 806
+            "line": 799
           },
           "name": "dataSource",
           "type": {
@@ -3566,7 +3566,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 811
+            "line": 804
           },
           "name": "name",
           "type": {
@@ -3583,7 +3583,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 846
+            "line": 839
           },
           "name": "code",
           "optional": true,
@@ -3601,7 +3601,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 818
+            "line": 811
           },
           "name": "description",
           "optional": true,
@@ -3619,7 +3619,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 825
+            "line": 818
           },
           "name": "requestMappingTemplate",
           "optional": true,
@@ -3637,7 +3637,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 832
+            "line": 825
           },
           "name": "responseMappingTemplate",
           "optional": true,
@@ -3655,7 +3655,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 839
+            "line": 832
           },
           "name": "runtime",
           "optional": true,
@@ -3998,7 +3998,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 294
+            "line": 289
           },
           "name": "addDynamoDbDataSource",
           "parameters": [
@@ -4047,7 +4047,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 306
+            "line": 301
           },
           "name": "addElasticsearchDataSource",
           "parameters": [
@@ -4094,7 +4094,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 316
+            "line": 311
           },
           "name": "addEventBridgeDataSource",
           "parameters": [
@@ -4141,7 +4141,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 398
+            "line": 393
           },
           "name": "addFunction",
           "parameters": [
@@ -4176,7 +4176,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 327
+            "line": 322
           },
           "name": "addHttpDataSource",
           "parameters": [
@@ -4224,7 +4224,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 338
+            "line": 333
           },
           "name": "addLambdaDataSource",
           "parameters": [
@@ -4272,7 +4272,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 349
+            "line": 344
           },
           "name": "addNoneDataSource",
           "parameters": [
@@ -4311,7 +4311,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 360
+            "line": 355
           },
           "name": "addOpenSearchDataSource",
           "parameters": [
@@ -4359,7 +4359,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 373
+            "line": 368
           },
           "name": "addRdsDataSource",
           "parameters": [
@@ -4426,7 +4426,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 389
+            "line": 384
           },
           "name": "addResolver",
           "parameters": [
@@ -4585,7 +4585,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 705
+        "line": 698
       },
       "name": "AmplifyGraphqlApiCfnResources",
       "properties": [
@@ -4598,7 +4598,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 759
+            "line": 752
           },
           "name": "additionalCfnResources",
           "type": {
@@ -4619,7 +4619,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 744
+            "line": 737
           },
           "name": "amplifyDynamoDbTables",
           "type": {
@@ -4640,7 +4640,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 734
+            "line": 727
           },
           "name": "cfnDataSources",
           "type": {
@@ -4661,7 +4661,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 729
+            "line": 722
           },
           "name": "cfnFunctionConfigurations",
           "type": {
@@ -4682,7 +4682,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 754
+            "line": 747
           },
           "name": "cfnFunctions",
           "type": {
@@ -4703,7 +4703,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 709
+            "line": 702
           },
           "name": "cfnGraphqlApi",
           "type": {
@@ -4719,7 +4719,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 714
+            "line": 707
           },
           "name": "cfnGraphqlSchema",
           "type": {
@@ -4735,7 +4735,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 724
+            "line": 717
           },
           "name": "cfnResolvers",
           "type": {
@@ -4756,7 +4756,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 749
+            "line": 742
           },
           "name": "cfnRoles",
           "type": {
@@ -4777,7 +4777,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 739
+            "line": 732
           },
           "name": "cfnTables",
           "type": {
@@ -4798,7 +4798,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 719
+            "line": 712
           },
           "name": "cfnApiKey",
           "optional": true,
@@ -4906,30 +4906,12 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 698
+            "line": 691
           },
           "name": "dataStoreConfiguration",
           "optional": true,
           "type": {
             "fqn": "@aws-amplify/graphql-api-construct.DataStoreConfiguration"
-          }
-        },
-        {
-          "abstract": true,
-          "docs": {
-            "remarks": "Output storage should be disabled when creating multiple GraphQL APIs in a single CDK synthesis.\noutputStorageStrategy will be ignored if this is set to true.",
-            "stability": "stable",
-            "summary": "Disables storing construct output."
-          },
-          "immutable": true,
-          "locationInModule": {
-            "filename": "src/types.ts",
-            "line": 692
-          },
-          "name": "disableOutputStorage",
-          "optional": true,
-          "type": {
-            "primitive": "boolean"
           }
         },
         {
@@ -5108,7 +5090,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 766
+        "line": 759
       },
       "name": "AmplifyGraphqlApiResources",
       "properties": [
@@ -5121,7 +5103,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 790
+            "line": 783
           },
           "name": "cfnResources",
           "type": {
@@ -5137,7 +5119,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 785
+            "line": 778
           },
           "name": "functions",
           "type": {
@@ -5158,7 +5140,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 770
+            "line": 763
           },
           "name": "graphqlApi",
           "type": {
@@ -5174,7 +5156,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 795
+            "line": 788
           },
           "name": "nestedStacks",
           "type": {
@@ -5195,7 +5177,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 780
+            "line": 773
           },
           "name": "roles",
           "type": {
@@ -5216,7 +5198,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 775
+            "line": 768
           },
           "name": "tables",
           "type": {
@@ -8189,5 +8171,5 @@
     }
   },
   "version": "1.8.0",
-  "fingerprint": "1XKKCBNCXZXmKFpw8wYoJkurbqaqAWgJg/+IsTb1lAM="
+  "fingerprint": "CYYn0IUq1ioUyjNlHtA/PPzD2CoE0iWOYcrehod1hWU="
 }

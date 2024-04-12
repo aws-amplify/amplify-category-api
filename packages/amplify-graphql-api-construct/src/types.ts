@@ -685,13 +685,6 @@ export interface AmplifyGraphqlApiProps {
   readonly outputStorageStrategy?: IBackendOutputStorageStrategy;
 
   /**
-   * Disables storing construct output.
-   * Output storage should be disabled when creating multiple GraphQL APIs in a single CDK synthesis.
-   * outputStorageStrategy will be ignored if this is set to true.
-   */
-  readonly disableOutputStorage?: boolean;
-
-  /**
    * Configure DataStore conflict resolution on the Api. Conflict resolution is required to enable DataStore Api functionality.
    * For more information, refer to https://docs.amplify.aws/lib/datastore/getting-started/q/platform/js/
    */
