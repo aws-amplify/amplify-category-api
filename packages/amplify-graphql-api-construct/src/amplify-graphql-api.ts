@@ -153,9 +153,7 @@ export class AmplifyGraphqlApi extends Construct {
       dataStoreConfiguration,
     } = props;
 
-    if (false) {
-      validateNoOtherAmplifyGraphqlApiInStack(this);
-    }
+    validateNoOtherAmplifyGraphqlApiInStack(this);
 
     if (conflictResolution && dataStoreConfiguration) {
       throw new Error(
@@ -404,8 +402,7 @@ export class AmplifyGraphqlApi extends Construct {
  * @param scope the scope this construct is created in.
  */
 const validateNoOtherAmplifyGraphqlApiInStack = (scope: Construct): void => {
-  // TODO: only check parent stack
-  const rootStack = getStackForScope(scope, true);
+  const rootStack = getStackForScope(scope, false);
 
   let wasOtherAmplifyGraphlApiFound = false;
   walkAndProcessNodes(rootStack, (node: Construct) => {
@@ -415,9 +412,7 @@ const validateNoOtherAmplifyGraphqlApiInStack = (scope: Construct): void => {
   });
 
   if (wasOtherAmplifyGraphlApiFound) {
-    throw new Error(
-      'Only one AmplifyGraphqlApi is expected in a stack when using output storage. Set `disableOutputStorage` to true if using multiple AmplifyGraphqlApis.',
-    );
+    throw new Error('Only one AmplifyGraphqlApi is expected in a stack. Place the AmplifyGraphqlApis in separate nested stacks.');
   }
 };
 
