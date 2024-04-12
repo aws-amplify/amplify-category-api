@@ -465,3 +465,14 @@ function _emitCreateApiCanaryMetric {
     --dimensions branch=main,region=$CLI_REGION \
     --region us-west-2
 }
+
+function _emitCDKConstructCanaryMetric {
+  aws cloudwatch \
+    put-metric-data \
+    --metric-name $CANARY_METRIC_NAME \
+    --namespace amplify-graphql-api-construct-tests \
+    --unit Count \
+    --value $CODEBUILD_BUILD_SUCCEEDING \
+    --dimensions branch=release,region=$CLI_REGION \
+    --region us-west-2
+}
