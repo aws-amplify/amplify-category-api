@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import { Template } from 'aws-cdk-lib/assertions';
+import { Construct } from 'constructs';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 
@@ -165,5 +166,44 @@ describe('basic functionality', () => {
     new AmplifyGraphqlApi(nested1, 'TestApi1', { definition, authorizationModes });
 
     expect(() => new AmplifyGraphqlApi(nested2, 'TestApi2', { definition, authorizationModes })).not.toThrow();
+  });
+
+  it('allows multiple cdk pipeline stages', () => {
+    class BackendStack extends cdk.Stack {
+      constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+        super(scope, id, props);
+
+        const definition = AmplifyGraphqlDefinition.fromString('type Todo @model @auth(rules: [{ allow: public }]) { id: ID! }');
+        const authorizationModes = { apiKeyConfig: { expires: cdk.Duration.days(7) } };
+        new AmplifyGraphqlApi(this, 'MyGraphqlApi', {
+          definition,
+          authorizationModes,
+        });
+      }
+    }
+    class MyApplication extends cdk.Stage {
+      constructor(scope: Construct, id: string, props?: cdk.StageProps) {
+        super(scope, id, props);
+
+        new BackendStack(this, 'MyBackendStack');
+      }
+    }
+    class MyPipelineStack extends cdk.Stack {
+      constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+        super(scope, id, props);
+
+        const pipeline = new cdk.pipelines.CodePipeline(this, 'Pipeline', {
+          synth: new cdk.pipelines.ShellStep('Synth', {
+            input: cdk.pipelines.CodePipelineSource.gitHub('OWNER/REPO', 'main'),
+            commands: ['npx cdk synth'],
+          }),
+        });
+
+        pipeline.addStage(new MyApplication(this, 'stageone'));
+
+        pipeline.addStage(new MyApplication(this, 'stagetwo'));
+      }
+    }
+    expect(() => new MyPipelineStack(new cdk.App(), 'MyPipelineStack', {})).not.toThrow();
   });
 });
