@@ -3542,5 +3542,151 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       checkListItemExistence(listTodosResult2, `list${modelName}`, todoPrivateFields['id'], true);
       checkListResponseErrors(listTodosResult2, expectedFieldErrors(ownerAndGroupFields, modelName, false));
     });
+
+    test('owner rule on relational models should respect owner auth rule - has one and belongs to', async () => {
+      const modelNamePrimaryOne = 'PrimaryOne';
+      const modelNameRelatedOne = 'RelatedOne';
+      const user1PrimaryOneHelper = user1ModelOperationHelpers[modelNamePrimaryOne];
+      const user2RelatedOneHelper = user2ModelOperationHelpers[modelNameRelatedOne];
+
+      const primaryRecord = {
+        id: '1',
+        owner: userName1,
+      };
+      const relatedRecord = {
+        id: '1',
+        relatedOwner: userName2,
+        primaryId: primaryRecord['id'],
+      };
+      const createResultSetNamePrimary = `create${modelNamePrimaryOne}`;
+      const createResultSetNameRelated = `create${modelNameRelatedOne}`;
+
+      // Create a primary record with user1
+      const createResultPrimary = await user1PrimaryOneHelper.create(createResultSetNamePrimary, primaryRecord, 'id owner');
+      expect(createResultPrimary.data[createResultSetNamePrimary].id).toBeDefined();
+      expect(createResultPrimary.data[createResultSetNamePrimary].id).toEqual(primaryRecord['id']);
+      expect(createResultPrimary.data[createResultSetNamePrimary].owner).toEqual(userName1);
+
+      // Create a related record with user2
+      const createResultRelated = await user2RelatedOneHelper.create(createResultSetNameRelated, relatedRecord, 'id relatedOwner primaryId');
+      expect(createResultRelated.data[createResultSetNameRelated].id).toBeDefined();
+      expect(createResultRelated.data[createResultSetNameRelated].id).toEqual(relatedRecord['id']);
+      expect(createResultRelated.data[createResultSetNameRelated].relatedOwner).toEqual(userName2);
+      expect(createResultRelated.data[createResultSetNameRelated].primaryId).toEqual(relatedRecord['primaryId']);
+
+      // Get primary record with user1, related record should be null
+      const primaryWithRelatedQuery = `
+        query GetPrimaryOne($id: String!) {
+          getPrimaryOne(id: $id) {
+            id
+            owner
+            relatedOne {
+              id
+              relatedOwner
+            }
+          }
+        }
+      `;
+      const getResultSetNamePrimary = `get${modelNamePrimaryOne}`;
+      const getResultPrimary = await user1PrimaryOneHelper.get({ id: primaryRecord['id'] }, primaryWithRelatedQuery);
+      expect(getResultPrimary.data[getResultSetNamePrimary].id).toEqual(primaryRecord['id']);
+      expect(getResultPrimary.data[getResultSetNamePrimary].owner).toEqual(userName1);
+      expect(getResultPrimary.data[getResultSetNamePrimary].relatedOne).toBeNull();
+
+      // Get related record with user2, related record should be null
+      const relatedWithPrimaryQuery = `
+        query GetRelatedOne($id: String!) {
+          getRelatedOne(id: $id) {
+            id
+            relatedOwner
+            primaryId
+            primary {
+              id
+              owner
+            }
+          }
+        }
+      `;
+      const getResultSetNameRelated = `get${modelNameRelatedOne}`;
+      const getResultRelated = await user2RelatedOneHelper.get({ id: relatedRecord['id'] }, relatedWithPrimaryQuery);
+      expect(getResultRelated.data[getResultSetNameRelated].id).toEqual(relatedRecord['id']);
+      expect(getResultRelated.data[getResultSetNameRelated].relatedOwner).toEqual(userName2);
+      expect(getResultRelated.data[getResultSetNameRelated].primaryId).toEqual(relatedRecord['primaryId']);
+      expect(getResultRelated.data[getResultSetNameRelated].primary).toBeNull();
+    });
+
+    test('owner rule on relational models should respect owner auth rule - has many and belongs to', async () => {
+      const modelNamePrimaryTwo = 'PrimaryTwo';
+      const modelNameRelatedTwo = 'RelatedTwo';
+      const user1PrimaryTwoHelper = user1ModelOperationHelpers[modelNamePrimaryTwo];
+      const user1RelatedTwoHelper = user1ModelOperationHelpers[modelNameRelatedTwo];
+      const user2RelatedTwoHelper = user2ModelOperationHelpers[modelNameRelatedTwo];
+
+      const primaryRecord = {
+        id: '1',
+        owner: userName1,
+      };
+      const relatedRecord1 = {
+        id: '1',
+        relatedOwner: userName2,
+        primaryId: primaryRecord['id'],
+      };
+      const relatedRecord2 = {
+        id: '2',
+        relatedOwner: userName1,
+        primaryId: primaryRecord['id'],
+      };
+      const createResultSetNamePrimary = `create${modelNamePrimaryTwo}`;
+      const createResultSetNameRelated = `create${modelNameRelatedTwo}`;
+
+      // Create a primary record with user1
+      const createResultPrimary = await user1PrimaryTwoHelper.create(createResultSetNamePrimary, primaryRecord, 'id owner');
+      expect(createResultPrimary.data[createResultSetNamePrimary].id).toBeDefined();
+      expect(createResultPrimary.data[createResultSetNamePrimary].id).toEqual(primaryRecord['id']);
+      expect(createResultPrimary.data[createResultSetNamePrimary].owner).toEqual(userName1);
+
+      // Create a related record with user2
+      const createResultRelated1 = await user2RelatedTwoHelper.create(createResultSetNameRelated, relatedRecord1, 'id relatedOwner primaryId');
+      expect(createResultRelated1.data[createResultSetNameRelated].id).toBeDefined();
+      expect(createResultRelated1.data[createResultSetNameRelated].id).toEqual(relatedRecord1['id']);
+      expect(createResultRelated1.data[createResultSetNameRelated].relatedOwner).toEqual(userName2);
+      expect(createResultRelated1.data[createResultSetNameRelated].primaryId).toEqual(relatedRecord1['primaryId']);
+
+      // Create a related record with user1
+      const createResultRelated2 = await user1RelatedTwoHelper.create(createResultSetNameRelated, relatedRecord2, 'id relatedOwner primaryId');
+      expect(createResultRelated2.data[createResultSetNameRelated].id).toBeDefined();
+      expect(createResultRelated2.data[createResultSetNameRelated].id).toEqual(relatedRecord2['id']);
+      expect(createResultRelated2.data[createResultSetNameRelated].relatedOwner).toEqual(userName1);
+      expect(createResultRelated2.data[createResultSetNameRelated].primaryId).toEqual(relatedRecord2['primaryId']);
+
+      // Get primary record with user1, related field should return only the records with relatedOwner as user1
+      const primaryWithRelatedQuery = `
+        query GetPrimaryTwo($id: String!) {
+          getPrimaryTwo(id: $id) {
+            id
+            owner
+            relatedTwos {
+              items {
+                id
+                relatedOwner
+                primaryId
+              }
+            }
+          }
+        }
+      `;
+      const getResultSetNamePrimary = `get${modelNamePrimaryTwo}`;
+      const getResultPrimary = await user1PrimaryTwoHelper.get({ id: primaryRecord['id'] }, primaryWithRelatedQuery);
+      expect(getResultPrimary.data[getResultSetNamePrimary].id).toEqual(primaryRecord['id']);
+      expect(getResultPrimary.data[getResultSetNamePrimary].owner).toEqual(userName1);
+      expect(getResultPrimary.data[getResultSetNamePrimary].relatedTwos).toBeDefined();
+      expect(getResultPrimary.data[getResultSetNamePrimary].relatedTwos.items).toBeDefined();
+      expect(getResultPrimary.data[getResultSetNamePrimary].relatedTwos.items.length).toEqual(1);
+      expect(getResultPrimary.data[getResultSetNamePrimary].relatedTwos.items[0]).toEqual(expect.objectContaining({
+        id: relatedRecord2['id'],
+        relatedOwner: userName1,
+        primaryId: relatedRecord2['primaryId'],
+      }));
+    });
   });
 };
