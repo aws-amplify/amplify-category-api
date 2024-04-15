@@ -3568,7 +3568,11 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       expect(createResultPrimary.data[createResultSetNamePrimary].owner).toEqual(userName1);
 
       // Create a related record with user2
-      const createResultRelated = await user2RelatedOneHelper.create(createResultSetNameRelated, relatedRecord, 'id relatedOwner primaryId');
+      const createResultRelated = await user2RelatedOneHelper.create(
+        createResultSetNameRelated,
+        relatedRecord,
+        'id relatedOwner primaryId',
+      );
       expect(createResultRelated.data[createResultSetNameRelated].id).toBeDefined();
       expect(createResultRelated.data[createResultSetNameRelated].id).toEqual(relatedRecord['id']);
       expect(createResultRelated.data[createResultSetNameRelated].relatedOwner).toEqual(userName2);
@@ -3646,14 +3650,22 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       expect(createResultPrimary.data[createResultSetNamePrimary].owner).toEqual(userName1);
 
       // Create a related record with user2
-      const createResultRelated1 = await user2RelatedTwoHelper.create(createResultSetNameRelated, relatedRecord1, 'id relatedOwner primaryId');
+      const createResultRelated1 = await user2RelatedTwoHelper.create(
+        createResultSetNameRelated,
+        relatedRecord1,
+        'id relatedOwner primaryId',
+      );
       expect(createResultRelated1.data[createResultSetNameRelated].id).toBeDefined();
       expect(createResultRelated1.data[createResultSetNameRelated].id).toEqual(relatedRecord1['id']);
       expect(createResultRelated1.data[createResultSetNameRelated].relatedOwner).toEqual(userName2);
       expect(createResultRelated1.data[createResultSetNameRelated].primaryId).toEqual(relatedRecord1['primaryId']);
 
       // Create a related record with user1
-      const createResultRelated2 = await user1RelatedTwoHelper.create(createResultSetNameRelated, relatedRecord2, 'id relatedOwner primaryId');
+      const createResultRelated2 = await user1RelatedTwoHelper.create(
+        createResultSetNameRelated,
+        relatedRecord2,
+        'id relatedOwner primaryId',
+      );
       expect(createResultRelated2.data[createResultSetNameRelated].id).toBeDefined();
       expect(createResultRelated2.data[createResultSetNameRelated].id).toEqual(relatedRecord2['id']);
       expect(createResultRelated2.data[createResultSetNameRelated].relatedOwner).toEqual(userName1);
@@ -3682,11 +3694,13 @@ export const testUserPoolFieldAuth = (engine: ImportedRDSType): void => {
       expect(getResultPrimary.data[getResultSetNamePrimary].relatedTwos).toBeDefined();
       expect(getResultPrimary.data[getResultSetNamePrimary].relatedTwos.items).toBeDefined();
       expect(getResultPrimary.data[getResultSetNamePrimary].relatedTwos.items.length).toEqual(1);
-      expect(getResultPrimary.data[getResultSetNamePrimary].relatedTwos.items[0]).toEqual(expect.objectContaining({
-        id: relatedRecord2['id'],
-        relatedOwner: userName1,
-        primaryId: relatedRecord2['primaryId'],
-      }));
+      expect(getResultPrimary.data[getResultSetNamePrimary].relatedTwos.items[0]).toEqual(
+        expect.objectContaining({
+          id: relatedRecord2['id'],
+          relatedOwner: userName1,
+          primaryId: relatedRecord2['primaryId'],
+        }),
+      );
     });
   });
 };
