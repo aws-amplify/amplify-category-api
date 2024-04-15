@@ -40,7 +40,7 @@
     "jest-environment-node": "^26.6.2",
     "knex": "~2.4.0",
     "lodash": "^4.17.21",
-    "mysql2": "~2.3.3",
+    "mysql2": "~3.9.4",
     "node-fetch": "^2.6.7",
     "node-pty": "beta",
     "pg": "~8.11.3",
