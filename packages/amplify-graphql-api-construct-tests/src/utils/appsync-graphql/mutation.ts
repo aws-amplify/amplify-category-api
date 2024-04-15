@@ -1,9 +1,4 @@
-import {
-  AppSyncGraphqlResponse,
-  doAppSyncGraphqlOperation,
-  OperationAuthInputAccessToken,
-  OperationAuthInputApiKey,
-} from './common';
+import { AppSyncGraphqlResponse, doAppSyncGraphqlOperation, OperationAuthInputAccessToken, OperationAuthInputApiKey } from './common';
 
 interface MutationVariableType {
   input: any;

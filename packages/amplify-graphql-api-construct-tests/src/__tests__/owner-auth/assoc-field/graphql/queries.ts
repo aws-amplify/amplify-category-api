@@ -1,7 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import * as APITypes from "../API";
+import * as APITypes from '../API';
 type GeneratedQuery<InputType, OutputType> = string & {
   __generatedQueryInput: InputType;
   __generatedQueryOutput: OutputType;
@@ -42,10 +42,7 @@ export const getPrimary = /* GraphQL */ `query GetPrimary($id: String!) {
     }
   }
 }
-` as GeneratedQuery<
-  APITypes.GetPrimaryQueryVariables,
-  APITypes.GetPrimaryQuery
->;
+` as GeneratedQuery<APITypes.GetPrimaryQueryVariables, APITypes.GetPrimaryQuery>;
 export const listPrimaries = /* GraphQL */ `query ListPrimaries(
   $id: String
   $filter: ModelPrimaryFilterInput
@@ -84,10 +81,7 @@ export const listPrimaries = /* GraphQL */ `query ListPrimaries(
     nextToken
   }
 }
-` as GeneratedQuery<
-  APITypes.ListPrimariesQueryVariables,
-  APITypes.ListPrimariesQuery
->;
+` as GeneratedQuery<APITypes.ListPrimariesQueryVariables, APITypes.ListPrimariesQuery>;
 export const getRelatedMany = /* GraphQL */ `query GetRelatedMany($id: String!) {
   getRelatedMany(id: $id) {
     id
@@ -116,10 +110,7 @@ export const getRelatedMany = /* GraphQL */ `query GetRelatedMany($id: String!) 
     }
   }
 }
-` as GeneratedQuery<
-  APITypes.GetRelatedManyQueryVariables,
-  APITypes.GetRelatedManyQuery
->;
+` as GeneratedQuery<APITypes.GetRelatedManyQueryVariables, APITypes.GetRelatedManyQuery>;
 export const listRelatedManies = /* GraphQL */ `query ListRelatedManies(
   $id: String
   $filter: ModelRelatedManyFilterInput
@@ -154,10 +145,7 @@ export const listRelatedManies = /* GraphQL */ `query ListRelatedManies(
     nextToken
   }
 }
-` as GeneratedQuery<
-  APITypes.ListRelatedManiesQueryVariables,
-  APITypes.ListRelatedManiesQuery
->;
+` as GeneratedQuery<APITypes.ListRelatedManiesQueryVariables, APITypes.ListRelatedManiesQuery>;
 export const getRelatedOne = /* GraphQL */ `query GetRelatedOne($id: String!) {
   getRelatedOne(id: $id) {
     id
@@ -186,10 +174,7 @@ export const getRelatedOne = /* GraphQL */ `query GetRelatedOne($id: String!) {
     }
   }
 }
-` as GeneratedQuery<
-  APITypes.GetRelatedOneQueryVariables,
-  APITypes.GetRelatedOneQuery
->;
+` as GeneratedQuery<APITypes.GetRelatedOneQueryVariables, APITypes.GetRelatedOneQuery>;
 export const listRelatedOnes = /* GraphQL */ `query ListRelatedOnes(
   $id: String
   $filter: ModelRelatedOneFilterInput
@@ -224,7 +209,4 @@ export const listRelatedOnes = /* GraphQL */ `query ListRelatedOnes(
     nextToken
   }
 }
-` as GeneratedQuery<
-  APITypes.ListRelatedOnesQueryVariables,
-  APITypes.ListRelatedOnesQuery
->;
+` as GeneratedQuery<APITypes.ListRelatedOnesQueryVariables, APITypes.ListRelatedOnesQuery>;

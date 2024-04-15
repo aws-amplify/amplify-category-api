@@ -416,7 +416,6 @@ export const testGetRelatedManyRedactedForDifferentOwners = async (
   const relatedOneId = `ro${currentId}`;
   const relatedManyId = `rm${currentId}`;
 
-
   await doCreatePrimary(apiEndpoint, accessToken2, primaryId);
   await doCreateRelatedOne(apiEndpoint, accessToken2, relatedOneId, primaryId);
   await doCreateRelatedMany(apiEndpoint, accessToken1, relatedManyId, primaryId);
