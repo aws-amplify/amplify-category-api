@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.7.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.6.0...amplify-category-api-e2e-core@4.7.0) (2024-04-11)
+
+### Features
+
+- add cdk sql connection string support ([#2409](https://github.com/aws-amplify/amplify-category-api/issues/2409)) ([274d117](https://github.com/aws-amplify/amplify-category-api/commit/274d1176d96e265d02817a975848c767d6d43c31))
+
 # [4.6.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.5.2...amplify-category-api-e2e-core@4.6.0) (2024-03-28)
 
 ### Features

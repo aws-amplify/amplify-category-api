@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-e2e-tests",
-  "version": "3.20.3",
+  "version": "3.21.0",
   "description": "E2e test suite",
   "repository": {
     "type": "git",
@@ -25,9 +25,9 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-app": "^5.0.21",
-    "@aws-amplify/graphql-schema-generator": "0.8.0",
-    "@aws-amplify/graphql-transformer-core": "2.5.1",
-    "amplify-category-api-e2e-core": "4.6.0",
+    "@aws-amplify/graphql-schema-generator": "0.8.1",
+    "@aws-amplify/graphql-transformer-core": "2.6.0",
+    "amplify-category-api-e2e-core": "4.7.0",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-sdk": "^2.1113.0",
@@ -39,8 +39,8 @@
     "generate-password": "~1.7.0",
     "graphql": "^15.5.0",
     "graphql-tag": "^2.10.1",
-    "graphql-transformer-common": "4.29.0",
-    "graphql-transformer-core": "8.2.8",
+    "graphql-transformer-common": "4.30.0",
+    "graphql-transformer-core": "8.2.9",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
     "pluralize": "^8.0.0",
@@ -52,7 +52,7 @@
     "@aws-amplify/amplify-cli-core": "^4.2.10"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-interfaces": "3.5.0",
+    "@aws-amplify/graphql-transformer-interfaces": "3.6.0",
     "@types/lodash": "^4.14.149",
     "@types/ws": "^7.4.4",
     "ts-node": "^8.10.2"

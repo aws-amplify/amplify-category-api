@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.8.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.7.0...@aws-amplify/graphql-model-transformer@2.8.0) (2024-04-11)
+
+### Bug Fixes
+
+- **amplify-table:** describe ttl rate limit ([#2410](https://github.com/aws-amplify/amplify-category-api/issues/2410)) ([0d2ea6a](https://github.com/aws-amplify/amplify-category-api/commit/0d2ea6a85497e75886cabcdb0f0246d1e562f1c3))
+- remove null timestamp fields from filter input ([#2435](https://github.com/aws-amplify/amplify-category-api/issues/2435)) ([045ece2](https://github.com/aws-amplify/amplify-category-api/commit/045ece2ed41a34baa5e6c5ed0c2b9ec8fddaf5f1))
+
+### Features
+
+- add cdk sql connection string support ([#2409](https://github.com/aws-amplify/amplify-category-api/issues/2409)) ([274d117](https://github.com/aws-amplify/amplify-category-api/commit/274d1176d96e265d02817a975848c767d6d43c31))
+- Fetch SNS topic ARN from SQL manifest ([#2345](https://github.com/aws-amplify/amplify-category-api/issues/2345)) ([fca256e](https://github.com/aws-amplify/amplify-category-api/commit/fca256e7cabf5af838b28b26c4ae0c3c8b1583eb))
+
 # [2.7.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.6.0...@aws-amplify/graphql-model-transformer@2.7.0) (2024-03-28)
 
 ### Features

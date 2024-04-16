@@ -77,6 +77,7 @@ import { secret } from \\"@aws-amplify/backend\\";
 
 export const schema = configure({
     database: {
+        identifier: \\"ID1234567890\\",
         engine: \\"postgresql\\",
         connectionUri: secret(\\"CONN_STR\\"),
         vpcConfig: {
@@ -111,6 +112,7 @@ import { secret } from \\"@aws-amplify/backend\\";
 
 export const schema = configure({
     database: {
+        identifier: \\"ID1234567890\\",
         engine: \\"mysql\\",
         connectionUri: secret(\\"CONN_STR\\"),
         vpcConfig: {
@@ -161,6 +163,7 @@ import { secret } from \\"@aws-amplify/backend\\";
 
 export const schema = configure({
     database: {
+        identifier: \\"ID1234567890\\",
         engine: \\"mysql\\",
         connectionUri: secret(\\"CONN_STR\\")
     }
@@ -174,6 +177,51 @@ export const schema = configure({
     \\"Profile\\": a.model({
         id: a.string().required(),
         details: a.string()
+    }).identifier([
+        \\"id\\"
+    ])
+});
+"
+`;
+
+exports[`Type name conversions ts schema generator should invoke generate schema 1`] = `
+"/* eslint-disable */
+import { a } from \\"@aws-amplify/data-schema\\";
+import { configure } from \\"@aws-amplify/data-schema/internals\\";
+import { secret } from \\"@aws-amplify/backend\\";
+
+export const schema = configure({
+    database: {
+        identifier: \\"IDNb9LVUQdGlNwNzYAgL6A\\",
+        engine: \\"mysql\\",
+        connectionUri: secret(\\"secret\\"),
+        vpcConfig: {
+            vpcId: \\"abc\\",
+            securityGroupIds: [
+                \\"sg0\\",
+                \\"sg1\\",
+                \\"sg2\\"
+            ],
+            subnetAvailabilityZones: [
+                {
+                    subnetId: \\"sb0\\",
+                    availabilityZone: \\"az0\\"
+                },
+                {
+                    subnetId: \\"sb1\\",
+                    availabilityZone: \\"az1\\"
+                },
+                {
+                    subnetId: \\"sb2\\",
+                    availabilityZone: \\"az2\\"
+                }
+            ]
+        }
+    }
+}).schema({
+    \\"User\\": a.model({
+        id: a.string().required(),
+        name: a.string()
     }).identifier([
         \\"id\\"
     ])

@@ -114,6 +114,32 @@ export const schema = `
     groupContent: String @refersTo(name: "group_content") @auth(rules: [{ allow: groups, groupsField: "customGroup", operations: [create, read] }])
     groupsContent: String @refersTo(name: "groups_content") @auth(rules: [{ allow: groups, groupsField: "customGroups", operations: [update, read] }])
   }
+
+  type PrimaryOne @model @auth(rules: [{ allow: owner }]) {
+    id: String! @primaryKey
+    owner: String
+    relatedOne: RelatedOne @hasOne(references: ["primaryId"])
+  }
+
+  type RelatedOne @model @auth(rules: [{ allow: owner, ownerField: "relatedOwner" }]) {
+    id: String! @primaryKey
+    relatedOwner: String
+    primaryId: String
+    primary: PrimaryOne @belongsTo(references: ["primaryId"])
+  }
+
+  type PrimaryTwo @model @auth(rules: [{ allow: owner }]) {
+    id: String! @primaryKey
+    owner: String
+    relatedTwos: [RelatedTwo] @hasMany(references: ["primaryId"])
+  }
+
+  type RelatedTwo @model @auth(rules: [{ allow: owner, ownerField: "relatedOwner" }]) {
+    id: String! @primaryKey
+    relatedOwner: String
+    primaryId: String
+    primary: PrimaryTwo @belongsTo(references: ["primaryId"])
+  }
 `;
 
 export const sqlCreateStatements = (engine: ImportedRDSType): string[] => generateDDL(schema, engine);

@@ -6,6 +6,8 @@ import {
   getSseUpdate,
   getPointInTimeRecoveryUpdate,
   getDeletionProtectionUpdate,
+  extractOldTableInputFromEvent,
+  isTtlModified,
 } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
 import * as CustomDDB from '../resources/amplify-dynamodb-table/amplify-table-types';
 import {
@@ -538,6 +540,79 @@ describe('Custom Resource Lambda Tests', () => {
       const createTableInput = toCreateTableInput(tableDef);
       expect(createTableInput).toMatchSnapshot();
     });
+    it('should extract the correct old table definition from event object', () => {
+      const mockEvent = {
+        ServiceToken: 'mockServiceToken',
+        ResponseURL: 'mockResponseURL',
+        StackId: 'mockStackId',
+        RequestId: 'mockRequestId',
+        LogicalResourceId: 'mockLogicalResourceId',
+        ResourceType: 'mockResourceType',
+        RequestType: 'Create' as RequestType,
+        ResourceProperties: {
+          ServiceToken: 'mockServiceToken',
+        },
+        OldResourceProperties: {
+          ServiceToken: 'mockServiceToken',
+          tableName: 'mockTableName',
+          attributeDefinitions: [
+            {
+              attributeName: 'todoId',
+              attributeType: 'S',
+            },
+            {
+              attributeName: 'name',
+              attributeType: 'S',
+            },
+            {
+              attributeName: 'name2',
+              attributeType: 'S',
+            },
+          ],
+          keySchema: [
+            {
+              attributeName: 'todoId',
+              keyType: 'HASH',
+            },
+            {
+              attributeName: 'name',
+              keyType: 'RANGE',
+            },
+          ],
+          globalSecondaryIndexes: [
+            {
+              indexName: 'byName2',
+              keySchema: [
+                {
+                  attributeName: 'name2',
+                  keyType: 'HASH',
+                },
+              ],
+              projection: {
+                projectionType: 'ALL',
+              },
+              provisionedThroughput: {
+                readCapacityUnits: '5',
+                writeCapacityUnits: '5',
+              },
+            },
+          ],
+          billingMode: 'PROVISIONED',
+          provisionedThroughput: {
+            readCapacityUnits: '5',
+            writeCapacityUnits: '5',
+          },
+          sseSpecification: {
+            sseEnabled: 'true',
+          },
+          streamSpecification: {
+            streamViewType: 'NEW_AND_OLD_IMAGES',
+          },
+        },
+      };
+      const tableDef = extractOldTableInputFromEvent(mockEvent);
+      expect(tableDef).toMatchSnapshot();
+    });
   });
   describe('Non GSI update', () => {
     let currentState: TableDescription;
@@ -1009,6 +1084,51 @@ describe('Custom Resource Lambda Tests', () => {
         nextUpdate = getNextAtomicUpdate(currentState, endState);
         expect(nextUpdate).toMatchSnapshot();
       });
+    });
+  });
+  describe('isTtlModified', () => {
+    it('return false if two ttl are undefined', () => {
+      expect(isTtlModified(undefined, undefined)).toBe(false);
+    });
+    it('return false if two ttl are same', () => {
+      const oldTtl = {
+        enabled: true,
+        attributeName: '_ttl',
+      };
+      const newTtl = {
+        enabled: true,
+        attributeName: '_ttl',
+      };
+      expect(isTtlModified(oldTtl, newTtl)).toBe(false);
+    });
+    it('return true if one of the ttl is undefined', () => {
+      const newTtl = {
+        enabled: true,
+        attributeName: '_ttl',
+      };
+      expect(isTtlModified(undefined, newTtl)).toBe(true);
+    });
+    it('return true if ttl switch is different', () => {
+      const oldTtl = {
+        enabled: true,
+        attributeName: '_ttl',
+      };
+      const newTtl = {
+        enabled: false,
+        attributeName: '_ttl',
+      };
+      expect(isTtlModified(oldTtl, newTtl)).toBe(true);
+    });
+    it('return true if ttl attribute name is different', () => {
+      const oldTtl = {
+        enabled: true,
+        attributeName: '_ttl',
+      };
+      const newTtl = {
+        enabled: true,
+        attributeName: '_ttl2',
+      };
+      expect(isTtlModified(oldTtl, newTtl)).toBe(true);
     });
   });
 });

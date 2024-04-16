@@ -65,6 +65,65 @@ Object {
 }
 `;
 
+exports[`Custom Resource Lambda Tests Extract table definition input from event test should extract the correct old table definition from event object 1`] = `
+Object {
+  "attributeDefinitions": Array [
+    Object {
+      "attributeName": "todoId",
+      "attributeType": "S",
+    },
+    Object {
+      "attributeName": "name",
+      "attributeType": "S",
+    },
+    Object {
+      "attributeName": "name2",
+      "attributeType": "S",
+    },
+  ],
+  "billingMode": "PROVISIONED",
+  "globalSecondaryIndexes": Array [
+    Object {
+      "indexName": "byName2",
+      "keySchema": Array [
+        Object {
+          "attributeName": "name2",
+          "keyType": "HASH",
+        },
+      ],
+      "projection": Object {
+        "projectionType": "ALL",
+      },
+      "provisionedThroughput": Object {
+        "readCapacityUnits": 5,
+        "writeCapacityUnits": 5,
+      },
+    },
+  ],
+  "keySchema": Array [
+    Object {
+      "attributeName": "todoId",
+      "keyType": "HASH",
+    },
+    Object {
+      "attributeName": "name",
+      "keyType": "RANGE",
+    },
+  ],
+  "provisionedThroughput": Object {
+    "readCapacityUnits": 5,
+    "writeCapacityUnits": 5,
+  },
+  "sseSpecification": Object {
+    "sseEnabled": true,
+  },
+  "streamSpecification": Object {
+    "streamViewType": "NEW_AND_OLD_IMAGES",
+  },
+  "tableName": "mockTableName",
+}
+`;
+
 exports[`Custom Resource Lambda Tests Extract table definition input from event test should extract the correct table definition from event object and parse it into create table input 1`] = `
 Object {
   "attributeDefinitions": Array [

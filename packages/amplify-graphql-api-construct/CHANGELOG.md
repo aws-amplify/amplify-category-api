@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.8.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.7.0...@aws-amplify/graphql-api-construct@1.8.0) (2024-04-11)
+
+### Bug Fixes
+
+- propagate mutation context to relational fields ([#2416](https://github.com/aws-amplify/amplify-category-api/issues/2416)) ([fd7f6fb](https://github.com/aws-amplify/amplify-category-api/commit/fd7f6fbc17c199331c4b04debaff69ea0424cd74))
+
+### Features
+
+- add cdk sql connection string support ([#2409](https://github.com/aws-amplify/amplify-category-api/issues/2409)) ([274d117](https://github.com/aws-amplify/amplify-category-api/commit/274d1176d96e265d02817a975848c767d6d43c31))
+- adds a default none data source ([#2408](https://github.com/aws-amplify/amplify-category-api/issues/2408)) ([98ae284](https://github.com/aws-amplify/amplify-category-api/commit/98ae284f6af99195369eaac5e8fb0d62ebbc536d))
+- Fetch SNS topic ARN from SQL manifest ([#2345](https://github.com/aws-amplify/amplify-category-api/issues/2345)) ([fca256e](https://github.com/aws-amplify/amplify-category-api/commit/fca256e7cabf5af838b28b26c4ae0c3c8b1583eb))
+
 # [1.7.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.6.0...@aws-amplify/graphql-api-construct@1.7.0) (2024-03-28)
 
 ### Features

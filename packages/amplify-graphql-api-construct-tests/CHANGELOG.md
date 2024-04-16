@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.4.0...amplify-graphql-api-construct-tests@1.5.0) (2024-04-11)
+
+### Bug Fixes
+
+- **amplify-table:** describe ttl rate limit ([#2410](https://github.com/aws-amplify/amplify-category-api/issues/2410)) ([0d2ea6a](https://github.com/aws-amplify/amplify-category-api/commit/0d2ea6a85497e75886cabcdb0f0246d1e562f1c3))
+- propagate mutation context to relational fields ([#2416](https://github.com/aws-amplify/amplify-category-api/issues/2416)) ([fd7f6fb](https://github.com/aws-amplify/amplify-category-api/commit/fd7f6fbc17c199331c4b04debaff69ea0424cd74))
+
+### Features
+
+- add canaries to monitor deployments using Amplify GraphQL CDK construct ([#2438](https://github.com/aws-amplify/amplify-category-api/issues/2438)) ([e5d2c7e](https://github.com/aws-amplify/amplify-category-api/commit/e5d2c7e8789904b9e348decc6d16d58b1e58ada1))
+- add cdk sql connection string support ([#2409](https://github.com/aws-amplify/amplify-category-api/issues/2409)) ([274d117](https://github.com/aws-amplify/amplify-category-api/commit/274d1176d96e265d02817a975848c767d6d43c31))
+
 # [1.4.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.3.0...amplify-graphql-api-construct-tests@1.4.0) (2024-03-28)
 
 ### Features

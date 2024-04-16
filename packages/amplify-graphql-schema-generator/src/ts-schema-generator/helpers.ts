@@ -120,6 +120,7 @@ const exportModifier = ts.factory.createModifier(ts.SyntaxKind.ExportKeyword);
 
 export type DataSourceConfig = {
   secretName: string;
+  identifier: string;
   vpcConfig?: VpcConfig;
 };
 
@@ -231,6 +232,10 @@ export const createConfigureExpression = (schema: Schema, config: DataSourceConf
     return ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A);
   }
   const databaseConfig = [
+    ts.factory.createPropertyAssignment(
+      ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.PROPERTY_IDENTIFIER),
+      ts.factory.createStringLiteral(config.identifier),
+    ),
     ts.factory.createPropertyAssignment(
       ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.PROPERTY_ENGINE),
       ts.factory.createStringLiteral(convertDBEngineToDBProtocol(schema.getEngine().type)),
