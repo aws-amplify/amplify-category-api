@@ -33,7 +33,7 @@ import {
   str,
   toJson,
 } from 'graphql-mapping-template';
-import { NONE_VALUE, ResolverResourceIDs, setArgs } from 'graphql-transformer-common';
+import { ModelResourceIDs, NONE_VALUE, ResolverResourceIDs, setArgs } from 'graphql-transformer-common';
 import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
 import { condenseRangeKey } from '../resolvers';
 import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from '../types';
@@ -48,17 +48,27 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
   makeQueryExpression = (references: string[]): ObjectNode => {
     if (references.length > 1) {
       const rangeKeyFields = references.slice(1);
-      const condensedSortKeyValue = condenseRangeKey(rangeKeyFields);
+      const condensedSortKeyName = condenseRangeKey(rangeKeyFields);
+      // This is the format that used by `makeHasManyGetItemsConnectionWithKeyResolver`
+      // to define the sortkeys values for the relationship GSI (assigned to the Primary model's primarykey's sortkeys)
+      // `sortKeyValue0`, `sortKeyValue1`,`sortKeyValueN` e.g.
+      // #set( $sortKeyValue0 = <pk sk 0>
+      // #set( $sortKeyValue1 = <pk sk 1>
+      // These variables are then used in the query object as
+      // ":sortKey": $util.dynamodb.toDynamoDB("${sortKeyValue0}#${sortKeyValue1}"")
+      const condensedSortKeyValue = rangeKeyFields
+        .map((key, idx) => `\${${SORT_KEY_VALUE}${idx}}`)
+        .join(ModelResourceIDs.ModelCompositeKeySeparator());
 
       return obj({
         expression: str('#partitionKey = :partitionKey AND #sortKey = :sortKey'),
         expressionNames: obj({
           '#partitionKey': str(references[0]),
-          '#sortKey': str(condensedSortKeyValue),
+          '#sortKey': str(condensedSortKeyName),
         }),
         expressionValues: obj({
           ':partitionKey': ref(`util.dynamodb.toDynamoDB($${PARTITION_KEY_VALUE})`),
-          ':sortKey': ref(`util.dynamodb.toDynamoDB($${condensedSortKeyValue})`),
+          ':sortKey': ref(`util.dynamodb.toDynamoDB("${condensedSortKeyValue}")`),
         }),
       });
     }
