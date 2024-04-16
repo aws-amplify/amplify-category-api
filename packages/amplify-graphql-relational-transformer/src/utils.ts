@@ -165,7 +165,7 @@ export const ensureFieldsArray = (
   config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration,
 ): void => {
   if (config.references) {
-    throw new InvalidDirectiveError(`DynamoDB models do not support 'references' on @${config.directiveName} directive.`);
+    throw new InvalidDirectiveError(`'references' defined on ${config.object.name.value}.${config.field.name.value} @${config.directive}. Expecting 'fields' only.`);
   }
 
   if (!config.fields) {
@@ -181,7 +181,7 @@ export const ensureReferencesArray = (
   config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration,
 ): void => {
   if (config.fields) {
-    throw new InvalidDirectiveError(`Relational database models do not support 'fields' on @${config.directiveName} directive.`);
+    throw new InvalidDirectiveError(`'fields' defined on ${config.object.name.value}.${config.field.name.value} @${config.directive}. Expecting 'references' only.`);
   }
 
   if (!config.references) {
@@ -195,11 +195,15 @@ export const ensureReferencesArray = (
 
 export const ensureReferencesBidirectionality = (
   config: HasManyDirectiveConfiguration | BelongsToDirectiveConfiguration, // TODO: Add HasOnyDirectiveConfiguration
+  ctx: TransformerContextProvider,
 ): void => {
   if (config.fields) {
     // TODO: Better error message
     throw new InvalidDirectiveError('fields and references cannot be used together.');
   }
+
+  
+
 
   /*
     1. find related directives:

@@ -12,7 +12,7 @@ import {
   updateTableForReferencesConnection,
 } from '../resolvers';
 import { HasManyDirectiveConfiguration } from '../types';
-import { ensureReferencesArray, getReferencesNodes, registerHasManyForeignKeyMappings, validateParentReferencesFields } from '../utils';
+import { ensureReferencesArray, ensureReferencesBidirectionality, getReferencesNodes, registerHasManyForeignKeyMappings, validateParentReferencesFields } from '../utils';
 
 /**
  * HasManyDirectiveDDBReferencesTransformer executes transformations based on `@hasMany(references: [String!])` configurations
@@ -55,11 +55,12 @@ export class HasManyDirectiveDDBReferencesTransformer implements DataSourceBased
     if (config.indexName) {
       const mappedObjectName = context.resourceHelper.getModelNameMapping(config.object.name.value);
       throw new Error(
-        `Invalid @hasMany directive on ${mappedObjectName}.${config.field.name.value} - indexName is not supported with DDB references.`,
+        `Invalid @hasMany directive on ${mappedObjectName}.${config.field.name.value} - indexName is not supported with DynamoDB references.`,
       );
     }
     ensureReferencesArray(config);
     validateParentReferencesFields(config, context);
+    ensureReferencesBidirectionality(config, context);
     const objectName = config.object.name.value;
     const fieldName = config.field.name.value;
     config.indexName = `gsi-${objectName}.${fieldName}`;

@@ -55,7 +55,7 @@ export class HasOneDirectiveDDBReferencesTransformer implements DataSourceBasedD
     if (config.indexName) {
       const mappedObjectName = context.resourceHelper.getModelNameMapping(config.object.name.value);
       throw new Error(
-        `Invalid @${config.directiveName} directive on ${mappedObjectName}.${config.field.name.value} - indexName is not supported with DDB references.`,
+        `Invalid @${config.directiveName} directive on ${mappedObjectName}.${config.field.name.value} - indexName is not supported with DynamoDB references.`,
       );
     }
     ensureReferencesArray(config);

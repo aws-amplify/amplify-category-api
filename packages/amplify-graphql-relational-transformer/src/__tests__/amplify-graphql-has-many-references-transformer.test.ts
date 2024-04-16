@@ -67,7 +67,7 @@ test('fails if indexName is provided with references', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('Invalid @hasMany directive on Team.members - indexName is not supported with DDB references.');
+  ).toThrowError('Invalid @hasMany directive on Team.members - indexName is not supported with DynamoDB references.');
 });
 
 test('fails if property does not exist on related type with references', () => {

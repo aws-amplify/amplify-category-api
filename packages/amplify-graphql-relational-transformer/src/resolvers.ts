@@ -38,8 +38,8 @@ import { getConnectionAttributeName, getObjectPrimaryKey } from './utils';
  *
  * Preconditions: `config.references >= 1` and `config.referenceNodes >= 1`
  *
- * @param config The `HasManyDirectiveConfiguration` for DDB references.
- * @param ctx The `TransformerContextProvider` for DDB references.
+ * @param config The `HasManyDirectiveConfiguration` for DynamoDB references.
+ * @param ctx The `TransformerContextProvider` for DynamoDB references.
  */
 export const updateTableForReferencesConnection = (
   config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration,
@@ -263,7 +263,7 @@ export const setFieldMappingResolverReference = (
 };
 
 /**
- * In a DDB references based relationship, when the Primary model has a primary key with composite
+ * In a DynamoDB references based relationship, when the Primary model has a primary key with composite
  * sort key (>= 2 sort key fields), we need to add function slots in the Mutation resolvers (create, update, delete)
  * of the Related model in order to write the composite sort key attribute to the Related model's table.
  *
@@ -290,7 +290,7 @@ export const updateRelatedModelMutationResolversForCompositeSortKeys = (
   const objectName = ctx.output.getMutationTypeName();
   if (!objectName) {
     throw new Error(`
-      Mutation type name is undefined when updated mutation resolvers for composite sortKeys used in DDB references based relationships.
+      Mutation type name is undefined when updated mutation resolvers for composite sortKeys used in DynamoDB references based relationships.
       This should not happen, please file a bug at https://github.com/aws-amplify/amplify-category-api/issues/new/choose`);
   }
 
