@@ -303,5 +303,20 @@ describe('AmplifyDynamoDbTable', () => {
         expect(testResource.cfnOptions.updateReplacePolicy).toBe('Retain');
       });
     });
+
+    describe('tableName', () => {
+      it('has no default value', () => {
+        validateProps({
+          tableName: Match.absent(),
+        });
+      });
+
+      it('validates if table name is set', () => {
+        tableWrapper.tableName = 'example';
+        validateProps({
+          tableName: 'example',
+        });
+      });
+    });
   });
 });
