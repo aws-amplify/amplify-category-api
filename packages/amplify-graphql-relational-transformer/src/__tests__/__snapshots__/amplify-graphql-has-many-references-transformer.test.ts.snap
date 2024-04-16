@@ -746,6 +746,9 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 #if( !$lambdaInput.args.input )
   #set( $lambdaInput.args.input = {} )
 #end
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
+#end
 $util.qr($lambdaInput.args.input.put(\\"id\\", $util.defaultIfNull($ctx.source.teamId, \\"\\")))
 {
   \\"version\\": \\"2018-05-29\\",
@@ -772,6 +775,9 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 #if( !$lambdaInput.args.input )
   #set( $lambdaInput.args.input = {} )
+#end
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
 #end
 $util.qr($lambdaInput.args.input.put(\\"id\\", $util.defaultIfNull($ctx.source.teamId, \\"\\")))
 {
