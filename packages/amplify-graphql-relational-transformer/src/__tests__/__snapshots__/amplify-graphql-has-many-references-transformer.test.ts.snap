@@ -543,7 +543,7 @@ exports[`has many references with partition key + sort key 1`] = `
   },
   \\"expressionValues\\": {
       \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue),
-      \\":sortKey\\": $util.dynamodb.toDynamoDB(\${sortKeyValue0})
+      \\":sortKey\\": $util.dynamodb.toDynamoDB(\\"\${sortKeyValue0}\\")
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
