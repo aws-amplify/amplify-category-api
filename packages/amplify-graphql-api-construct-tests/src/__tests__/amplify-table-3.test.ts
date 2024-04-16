@@ -38,7 +38,7 @@ describe('CDK amplify table 3', () => {
     let updateTemplatePath;
     updateTemplatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', 'simple-todo', 'updateKeySchema', 'disabled'));
     updateCDKAppWithTemplate(projRoot, updateTemplatePath);
-    await expect(() => cdkDeploy(projRoot, '--all')).rejects.toThrow();
+    await expect(cdkDeploy(projRoot, '--all')).rejects.toThrow();
     const tableAfterFailure = await getDDBTable(tableName, region);
     expect(tableAfterFailure.Table.KeySchema[0]).toEqual({
       AttributeName: 'id',

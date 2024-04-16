@@ -104,6 +104,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
         this.constructFieldMappingInput(),
         qref(methodCall(ref('lambdaInput.args.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments'), obj({})))),
         iff(not(ref('lambdaInput.args.filter')), set(ref('lambdaInput.args.filter'), obj({}))),
+        this.constructRelationalFieldAuthFilterStatement('lambdaInput.args.metadata.authFilter'),
         ...joinCondition,
         qref(
           methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
@@ -140,6 +141,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
         this.constructFieldMappingInput(),
         qref(methodCall(ref('lambdaInput.args.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments'), obj({})))),
         iff(not(ref('lambdaInput.args.input')), set(ref('lambdaInput.args.input'), obj({}))),
+        this.constructRelationalFieldAuthFilterStatement('lambdaInput.args.metadata.authFilter'),
         ...joinCondition,
         obj({
           version: str('2018-05-29'),
@@ -298,4 +300,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
       ),
     ]);
   };
+
+  constructRelationalFieldAuthFilterStatement = (keyName: string): Expression =>
+    iff(not(methodCall(ref('util.isNullOrEmpty'), ref('ctx.stash.authFilter'))), set(ref(keyName), ref('ctx.stash.authFilter')));
 }
