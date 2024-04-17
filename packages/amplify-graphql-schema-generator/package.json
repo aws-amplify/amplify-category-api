@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-schema-generator",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "description": "Amplify GraphQL schema generator",
   "repository": {
     "type": "git",
@@ -40,7 +40,7 @@
     "graphql": "^15.5.0",
     "graphql-transformer-common": "4.30.0",
     "knex": "~2.4.0",
-    "mysql2": "~2.3.3",
+    "mysql2": "~3.9.4",
     "ora": "^4.0.3",
     "pg": "~8.11.3",
     "pluralize": "^8.0.0",

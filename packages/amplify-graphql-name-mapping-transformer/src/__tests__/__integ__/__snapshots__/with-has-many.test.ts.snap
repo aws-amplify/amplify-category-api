@@ -440,6 +440,9 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 #if( !$lambdaInput.args.filter )
   #set( $lambdaInput.args.filter = {} )
 #end
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
+#end
 $util.qr($lambdaInput.args.filter.put(\\"employeeId\\", {
   \\"eq\\": $util.defaultIfNull($ctx.source.id, \\"\\")
 }))
@@ -469,6 +472,9 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 #if( !$lambdaInput.args.input )
   #set( $lambdaInput.args.input = {} )
+#end
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
 #end
 $util.qr($lambdaInput.args.input.put(\\"id\\", $util.defaultIfNull($ctx.source.employeeId, \\"\\")))
 {
