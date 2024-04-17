@@ -3,7 +3,7 @@ import { Construct, IConstruct } from 'constructs';
 import { Grant, IGrantable, IRole } from 'aws-cdk-lib/aws-iam';
 // eslint-disable-next-line import/no-cycle
 import { TransformHostProvider } from './transform-host-provider';
-import { AssetManagerProvider } from './transformer-context/asset-manager-provider';
+import { AssetProvider } from './asset-provider';
 
 // Auth Config Modes
 export type AppSyncAuthMode = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_IAM' | 'OPENID_CONNECT' | 'AWS_LAMBDA';
@@ -114,13 +114,13 @@ export interface InlineMappingTemplateProvider {
 
 export interface S3MappingTemplateProvider {
   type: TemplateType.S3_LOCATION;
-  bind: (scope: Construct, assetManager: AssetManagerProvider) => string;
+  bind: (scope: Construct, assetProvider: AssetProvider) => string;
   getTemplateHash: () => string;
 }
 
 export interface S3MappingFunctionCodeProvider {
   type: TemplateType.S3_LOCATION;
-  bind: (scope: Construct, assetManager: AssetManagerProvider) => IAsset;
+  bind: (scope: Construct, assetProvider: AssetProvider) => IAsset;
 }
 
 export type MappingTemplateProvider = InlineMappingTemplateProvider | S3MappingTemplateProvider;
@@ -129,7 +129,7 @@ export interface GraphQLAPIProvider extends IConstruct {
   readonly apiId: string;
   readonly host: TransformHostProvider;
   readonly name: string;
-  readonly assetManager: AssetManagerProvider;
+  readonly assetProvider: AssetProvider;
 
   // getDefaultAuthorization(): Readonly<AuthorizationMode>;
   // getAdditionalAuthorizationModes(): Readonly<AuthorizationMode[]>;

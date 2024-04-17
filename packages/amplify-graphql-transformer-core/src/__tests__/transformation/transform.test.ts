@@ -11,13 +11,12 @@ import { GraphQLApi } from '../../graphql-api';
 import { GraphQLTransform } from '../../transformation/transform';
 import { TransformerOutput } from '../../transformer-context/output';
 import { StackManager } from '../../transformer-context/stack-manager';
-import { AssetManager } from '../../transformer-context/asset-manager';
 
 class TestGraphQLTransform extends GraphQLTransform {
-  testGenerateGraphQlApi(stackManager: StackManager, assetManager: AssetManager, output: TransformerOutput): GraphQLApi {
+  testGenerateGraphQlApi(stackManager: StackManager, output: TransformerOutput): GraphQLApi {
     return this.generateGraphQlApi(
       stackManager,
-      assetManager,
+      { provide: jest.fn() },
       {
         amplifyEnvironmentName: 'NONE',
         apiName: 'testApi',
@@ -74,11 +73,10 @@ describe('GraphQLTransform', () => {
       const app = new App();
       const stack = new Stack(app, 'TestStack');
       const stackManager = new StackManager(stack, testNestedStackProvider, undefined, {});
-      const assetManager = new AssetManager();
       const transformerOutput = {
         buildSchema: jest.fn(() => ''),
       } as unknown as TransformerOutput;
-      transform.testGenerateGraphQlApi(stackManager, assetManager, transformerOutput);
+      transform.testGenerateGraphQlApi(stackManager, transformerOutput);
       if (isAPIKeyExpected) {
         expect(stackManager.scope.node.tryFindChild('GraphQLAPIKeyOutput')).toBeDefined();
       } else {
@@ -104,11 +102,10 @@ describe('GraphQLTransform', () => {
       const app = new App();
       const stack = new Stack(app, 'TestStack');
       const stackManager = new StackManager(stack, testNestedStackProvider, undefined, {});
-      const assetManager = new AssetManager();
       const transformerOutput = {
         buildSchema: jest.fn(() => ''),
       } as unknown as TransformerOutput;
-      transform.testGenerateGraphQlApi(stackManager, assetManager, transformerOutput);
+      transform.testGenerateGraphQlApi(stackManager, transformerOutput);
     });
 
     it('creates an api key for apps with API_KEY authorization', () => {

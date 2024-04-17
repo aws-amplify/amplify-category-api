@@ -1,7 +1,6 @@
 /* eslint-disable max-classes-per-file, no-underscore-dangle */
 import {
   AppSyncAuthConfiguration,
-  AssetManagerProvider,
   AssetProvider,
   SqlDirectiveDataSourceStrategy,
   DataSourceStrategiesProvider,
@@ -30,11 +29,9 @@ import { TransformerContextProviderRegistry } from './provider-registry';
 import { ResolverManager } from './resolver';
 import { TransformerResourceHelper } from './resource-helper';
 import { StackManager } from './stack-manager';
-import { AssetManager } from './asset-manager';
 
 export { TransformerResolver, NONE_DATA_SOURCE_NAME } from './resolver';
 export { StackManager } from './stack-manager';
-export { AssetManager } from './asset-manager';
 export class TransformerContextMetadata implements TransformerContextMetadataProvider {
   /**
    * Used by transformers to pass information between one another.
@@ -81,7 +78,7 @@ export class TransformerContext implements TransformerContextProvider {
 
   public readonly stackManager: StackManagerProvider;
 
-  public readonly assetManager: AssetManagerProvider;
+  public readonly assetProvider: AssetProvider;
 
   public readonly resourceHelper: TransformerResourceHelper;
 
@@ -138,7 +135,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.resolvers = new ResolverManager();
     this.resourceHelper = new TransformerResourceHelper(synthParameters);
     this.stackManager = new StackManager(scope, nestedStackProvider, parameterProvider, stackMapping);
-    this.assetManager = new AssetManager(assetProvider);
+    this.assetProvider = assetProvider;
     this.synthParameters = synthParameters;
     this.transformParameters = transformParameters;
   }

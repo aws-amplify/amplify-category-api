@@ -10,8 +10,6 @@ import { ApiKeyConfig } from 'aws-cdk-lib/aws-appsync';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AppSyncDataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
 import { AppSyncFunctionConfigurationProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { AssetManagerProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { AssetProps } from '@aws-amplify/graphql-transformer-interfaces';
 import { AssetProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationConfig } from 'aws-cdk-lib/aws-appsync';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
@@ -63,7 +61,6 @@ import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSLayerMappingProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSSNSTopicMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSSNSTopicMappingProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { S3Asset } from '@aws-amplify/graphql-transformer-interfaces';
 import { S3MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { SchemaDefinitionNode } from 'graphql';
 import { SqlDirectiveDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
@@ -101,13 +98,6 @@ import { UnionTypeExtensionNode } from 'graphql';
 
 // @public (undocumented)
 export const APICategory = "api";
-
-// @public (undocumented)
-export class AssetManager implements AssetManagerProvider {
-    constructor(assetProvider: AssetProvider);
-    // (undocumented)
-    createAsset(scope: Construct, name: string, props: AssetProps): S3Asset;
-}
 
 // @public (undocumented)
 export function collectDirectives(sdl: string): DirectiveNode[];
@@ -283,7 +273,7 @@ export class GraphQLTransform {
     // Warning: (ae-forgotten-export) The symbol "GraphQLApi" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    protected generateGraphQlApi(stackManager: StackManagerProvider, assetManager: AssetManagerProvider, synthParameters: SynthParameters, output: TransformerOutput, transformParameters: TransformParameters): GraphQLApi;
+    protected generateGraphQlApi(stackManager: StackManagerProvider, assetProvider: AssetProvider, synthParameters: SynthParameters, output: TransformerOutput, transformParameters: TransformParameters): GraphQLApi;
     // (undocumented)
     getLogs(): TransformerLog[];
     // (undocumented)

@@ -51,8 +51,8 @@ export class AppSyncFunctionConfiguration extends Construct {
   constructor(scope: Construct, id: string, props: FunctionConfigurationProps) {
     super(scope, id);
 
-    const requestTemplate = props.requestMappingTemplate.bind(this, props.api.assetManager);
-    const responseTemplate = props.responseMappingTemplate.bind(this, props.api.assetManager);
+    const requestTemplate = props.requestMappingTemplate.bind(this, props.api.assetProvider);
+    const responseTemplate = props.responseMappingTemplate.bind(this, props.api.assetProvider);
     this.function = new CfnFunctionConfiguration(this, `${id}.AppSyncFunction`, {
       name: id,
       apiId: props.api.apiId,

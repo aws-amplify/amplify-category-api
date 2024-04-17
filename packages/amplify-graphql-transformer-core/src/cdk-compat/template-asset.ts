@@ -6,7 +6,7 @@ import {
   S3Asset,
   S3MappingFunctionCodeProvider,
   S3MappingTemplateProvider,
-  AssetManagerProvider,
+  AssetProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct } from 'constructs';
 
@@ -24,9 +24,9 @@ export class S3MappingFunctionCode implements S3MappingFunctionCodeProvider {
     this.filePath = filePath;
   }
 
-  bind(scope: Construct, assetManager: AssetManagerProvider): S3Asset {
+  bind(scope: Construct, assetProvider: AssetProvider): S3Asset {
     if (!this.asset) {
-      this.asset = assetManager.createAsset(scope, `Code${this.fileName}`, {
+      this.asset = assetProvider.provide(scope, `Code${this.fileName}`, {
         fileContent: this.filePath,
         fileName: this.fileName,
       });
@@ -54,10 +54,10 @@ export class S3MappingTemplate implements S3MappingTemplateProvider {
     this.name = name || `mapping-template-${assetHash}.vtl`;
   }
 
-  bind(scope: Construct, assetManager: AssetManagerProvider): string {
+  bind(scope: Construct, assetProvider: AssetProvider): string {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
-      this.asset = assetManager.createAsset(scope, `Template${this.name}`, {
+      this.asset = assetProvider.provide(scope, `Template${this.name}`, {
         fileContent: this.content,
         fileName: this.name,
       });

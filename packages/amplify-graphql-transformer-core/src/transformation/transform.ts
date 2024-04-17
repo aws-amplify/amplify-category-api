@@ -8,7 +8,6 @@ import {
   SynthParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type {
-  AssetManagerProvider,
   AssetProvider,
   StackManagerProvider,
   TransformParameterProvider,
@@ -303,7 +302,7 @@ export class GraphQLTransform {
     const output: TransformerOutput = context.output as TransformerOutput;
     const api = this.generateGraphQlApi(
       context.stackManager,
-      context.assetManager,
+      context.assetProvider,
       context.synthParameters,
       output,
       context.transformParameters,
@@ -342,7 +341,7 @@ export class GraphQLTransform {
 
   protected generateGraphQlApi(
     stackManager: StackManagerProvider,
-    assetManager: AssetManagerProvider,
+    assetProvider: AssetProvider,
     synthParameters: SynthParameters,
     output: TransformerOutput,
     transformParameters: TransformParameters,
@@ -365,7 +364,7 @@ export class GraphQLTransform {
       sandboxModeEnabled: this.transformParameters.sandboxModeEnabled,
       environmentName: env,
       disableResolverDeduping: this.transformParameters.disableResolverDeduping,
-      assetManager,
+      assetProvider,
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
       (mode) => mode?.authorizationType,

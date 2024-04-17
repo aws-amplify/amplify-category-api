@@ -135,21 +135,16 @@ export interface AppSyncFunctionConfigurationProvider extends IConstruct {
 }
 
 // @public (undocumented)
-export interface AssetManagerProvider {
-    // (undocumented)
-    createAsset: (scope: Construct, name: string, props: AssetProps) => S3Asset;
-}
-
-// @public (undocumented)
 export type AssetProps = {
     readonly fileContent: string;
     readonly fileName: string;
 };
 
 // @public (undocumented)
-export type AssetProvider = {
+export interface AssetProvider {
+    // (undocumented)
     provide: (scope: Construct, name: string, props: AssetProps) => S3Asset;
-};
+}
 
 // Warning: (ae-forgotten-export) The symbol "NoneDataSourceProvider" needs to be exported by the entry point index.d.ts
 //
@@ -205,7 +200,7 @@ export interface GraphQLAPIProvider extends IConstruct {
     // (undocumented)
     readonly apiId: string;
     // (undocumented)
-    readonly assetManager: AssetManagerProvider;
+    readonly assetProvider: AssetProvider;
     // (undocumented)
     grant: (grantee: IGrantable, resources: APIIAMResourceProvider, ...actions: string[]) => Grant;
     // (undocumented)
@@ -358,7 +353,7 @@ export type S3Asset = {
 // @public (undocumented)
 export interface S3MappingFunctionCodeProvider {
     // (undocumented)
-    bind: (scope: Construct, assetManager: AssetManagerProvider) => IAsset;
+    bind: (scope: Construct, assetProvider: AssetProvider) => IAsset;
     // (undocumented)
     type: MappingTemplateType.S3_LOCATION;
 }
@@ -366,7 +361,7 @@ export interface S3MappingFunctionCodeProvider {
 // @public (undocumented)
 export interface S3MappingTemplateProvider {
     // (undocumented)
-    bind: (scope: Construct, assetManager: AssetManagerProvider) => string;
+    bind: (scope: Construct, assetProvider: AssetProvider) => string;
     // (undocumented)
     getTemplateHash: () => string;
     // (undocumented)

@@ -35,7 +35,7 @@ export class TransformerSchema {
       throw new Error('Schema not bound');
     }
     if (!this.asset) {
-      this.asset = this.api.assetManager.createAsset(this.api, 'schema', {
+      this.asset = this.api.assetProvider.provide(this.api, 'schema', {
         fileName: 'schema.graphql',
         fileContent: removeAmplifyInputDefinition(this.definition),
       });

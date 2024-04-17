@@ -3,7 +3,7 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import * as cdk from 'aws-cdk-lib';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
-import { AssetProps, S3Asset } from '@aws-amplify/graphql-transformer-interfaces';
+import { AssetProps, S3Asset, AssetProvider as AssetProviderInterface } from '@aws-amplify/graphql-transformer-interfaces';
 
 const TEMP_PREFIX = 'transformer-assets';
 const FUNCTION_PREFIX = 'functions';
@@ -12,11 +12,11 @@ const RESOLVER_PREFIX = 'resolvers';
 /**
  * The asset provider bridges the gap between creation of file assets in the transformer (which provide a name+contents tuple)
  * with the path method which is used in CDK.
+ * The CDK S3 asset require the contents to be written the file system first.
+ * The asser provider writes to a temporary directory before creating the CDK S3 asset.
  *
- * The AssetProvider is used by the AssetManager in the transformers to handle writing the file contents to temporary file
- * and then creating the CDK s3 Asset with the temporary file.
  */
-export class AssetProvider {
+export class AssetProvider implements AssetProviderInterface {
   private readonly tempAssetDir: string;
   public readonly resolverAssets: Record<string, string> = {};
 
