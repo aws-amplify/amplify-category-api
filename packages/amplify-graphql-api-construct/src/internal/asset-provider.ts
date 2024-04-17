@@ -13,7 +13,8 @@ const RESOLVER_PREFIX = 'resolvers';
  * The asset provider bridges the gap between creation of file assets in the transformer (which provide a name+contents tuple)
  * with the path method which is used in CDK.
  *
- * The asset provider implements how assets should be handled when created in the transformers.
+ * The AssetProvider is used by the AssetManager in the transformers to handle writing the file contents to temporary file
+ * and then creating the CDK s3 Asset with the temporary file.
  */
 export class AssetProvider {
   private readonly tempAssetDir: string;
@@ -24,10 +25,10 @@ export class AssetProvider {
   }
 
   /**
-   * Creates a new CDK S3 asset and stores file contents in a temporary directory.
+   * Creates a new CDK S3 asset. The file contents in assetProps is first stored in a temporary file that is referenced by the CDK S3 asset.
    * @param assetScope the parent of the asset
    * @param assetId unique ID for CDK S3 asset
-   * @param assetProps name and contents of tile in the temporary directory
+   * @param assetProps name and contents of file to be added to CDK S3 asset
    * @returns the CDK S3 asset
    */
   public provide(assetScope: Construct, assetId: string, assetProps: AssetProps): S3Asset {
