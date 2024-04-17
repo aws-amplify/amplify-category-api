@@ -2,6 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
 import * as cdk from 'aws-cdk-lib';
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+import { AssetProps, S3Asset } from '@aws-amplify/graphql-transformer-interfaces';
 
 const TEMP_PREFIX = 'transformer-assets';
 const FUNCTION_PREFIX = 'functions';
@@ -11,7 +13,7 @@ const RESOLVER_PREFIX = 'resolvers';
  * The asset manager bridges the gap between creation of file assets in the transformer (which provide a name+contents tuple)
  * with the path method which is used in CDK.
  */
-export class AssetManager {
+export class AssetProvider {
   private readonly tempAssetDir: string;
   public readonly resolverAssets: Record<string, string> = {};
 
@@ -19,7 +21,11 @@ export class AssetManager {
     this.tempAssetDir = cdk.FileSystem.mkdtemp(`${TEMP_PREFIX}-${scope.node.addr}`);
   }
 
-  public addAsset(fileName: string, contents: string): string {
+  public provide(assetScope: Construct, assetId: string, assetProps: AssetProps): S3Asset {
+    return new Asset(assetScope, assetId, { path: this.addAsset(assetProps.fileName, assetProps.fileContent) });
+  }
+
+  private addAsset(fileName: string, contents: string): string {
     this.trackResolverAsset(fileName, contents);
     const writableContents = this.isContentsAReference(fileName) ? this.dereferenceContents(contents) : contents;
     const filePath = path.join(this.tempAssetDir, fileName);
