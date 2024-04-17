@@ -2,7 +2,7 @@ import { AssetManagerProvider, AssetProvider, S3Asset, AssetProps } from '@aws-a
 import { Construct } from 'constructs';
 
 /**
- * Uses the asset provider to store assets in a temporary directory and create CDK S3 Assets.
+ * Uses the asset provider to create CDK S3 Assets.
  */
 export class AssetManager implements AssetManagerProvider {
   private assetProvider: AssetProvider;
