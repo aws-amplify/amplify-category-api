@@ -10,8 +10,10 @@ const FUNCTION_PREFIX = 'functions';
 const RESOLVER_PREFIX = 'resolvers';
 
 /**
- * The asset manager bridges the gap between creation of file assets in the transformer (which provide a name+contents tuple)
+ * The asset provider bridges the gap between creation of file assets in the transformer (which provide a name+contents tuple)
  * with the path method which is used in CDK.
+ *
+ * The asset provider implements how assets should be handled when created in the transformers.
  */
 export class AssetProvider {
   private readonly tempAssetDir: string;
@@ -21,6 +23,13 @@ export class AssetProvider {
     this.tempAssetDir = cdk.FileSystem.mkdtemp(`${TEMP_PREFIX}-${scope.node.addr}`);
   }
 
+  /**
+   * Creates a new CDK S3 asset and stores file contents in a temporary directory.
+   * @param assetScope the parent of the asset
+   * @param assetId unique ID for CDK S3 asset
+   * @param assetProps name and contents of tile in the temporary directory
+   * @returns the CDK S3 asset
+   */
   public provide(assetScope: Construct, assetId: string, assetProps: AssetProps): S3Asset {
     return new Asset(assetScope, assetId, { path: this.addAsset(assetProps.fileName, assetProps.fileContent) });
   }
