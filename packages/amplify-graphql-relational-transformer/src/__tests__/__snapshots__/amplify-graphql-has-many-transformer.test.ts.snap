@@ -317,6 +317,9 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 #if( !$lambdaInput.args.filter )
   #set( $lambdaInput.args.filter = {} )
 #end
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
+#end
 $util.qr($lambdaInput.args.filter.put(\\"systemId\\", {
   \\"eq\\": $util.defaultIfNull($ctx.source.systemId, \\"\\")
 }))
@@ -337,7 +340,13 @@ exports[`@hasMany directive with RDS datasource composite key should generate co
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.toJson($ctx.result)
+  #set( $resultValue = $ctx.result )
+  #if( $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) == \\"Mutation\\" )
+    #foreach( $item in $resultValue.items )
+      $util.qr($item.put(\\"__operation\\", \\"Mutation\\"))
+    #end
+  #end
+  $util.toJson($resultValue)
 #end
 ## [End] ResponseTemplate. **"
 `;
@@ -637,6 +646,9 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 #if( !$lambdaInput.args.filter )
   #set( $lambdaInput.args.filter = {} )
 #end
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
+#end
 $util.qr($lambdaInput.args.filter.put(\\"blogId\\", {
   \\"eq\\": $util.defaultIfNull($ctx.source.id, \\"\\")
 }))
@@ -654,7 +666,13 @@ exports[`@hasMany directive with RDS datasource happy case should generate corre
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.toJson($ctx.result)
+  #set( $resultValue = $ctx.result )
+  #if( $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) == \\"Mutation\\" )
+    #foreach( $item in $resultValue.items )
+      $util.qr($item.put(\\"__operation\\", \\"Mutation\\"))
+    #end
+  #end
+  $util.toJson($resultValue)
 #end
 ## [End] ResponseTemplate. **"
 `;
@@ -13081,6 +13099,11 @@ $util.error($ctx.error.message, $ctx.error.type)
   #if( !$result )
     #set( $result = $ctx.result )
   #end
+  #if( $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) == \\"Mutation\\" )
+    #foreach( $item in $result.items )
+      $util.qr($item.put(\\"__operation\\", \\"Mutation\\"))
+    #end
+  #end
   $util.toJson($result)
 #end",
   "Friendship.friend.req.vtl": "#if( $ctx.stash.deniedField )
@@ -13217,6 +13240,11 @@ $util.error($ctx.error.message, $ctx.error.type)
 #else
   #if( !$result )
     #set( $result = $ctx.result )
+  #end
+  #if( $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) == \\"Mutation\\" )
+    #foreach( $item in $result.items )
+      $util.qr($item.put(\\"__operation\\", \\"Mutation\\"))
+    #end
   #end
   $util.toJson($result)
 #end",
@@ -15987,7 +16015,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 $util.error($ctx.error.message, $ctx.error.type)
 #else
   #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-    $util.toJson($ctx.result.items[0])
+    #set( $resultValue = $ctx.result.items[0] )
+    #set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
+    #if( $operation == \\"Mutation\\" )
+      $util.qr($resultValue.put(\\"__operation\\", \\"Mutation\\"))
+    #end
+    $util.toJson($resultValue)
   #else
     #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
 $util.unauthorized()
@@ -16130,6 +16163,11 @@ $util.error($ctx.error.message, $ctx.error.type)
   #if( !$result )
     #set( $result = $ctx.result )
   #end
+  #if( $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) == \\"Mutation\\" )
+    #foreach( $item in $result.items )
+      $util.qr($item.put(\\"__operation\\", \\"Mutation\\"))
+    #end
+  #end
   $util.toJson($result)
 #end",
   "PostAuthor.post.req.vtl": "#if( $ctx.stash.deniedField )
@@ -16161,7 +16199,12 @@ $util.error($ctx.error.message, $ctx.error.type)
 $util.error($ctx.error.message, $ctx.error.type)
 #else
   #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-    $util.toJson($ctx.result.items[0])
+    #set( $resultValue = $ctx.result.items[0] )
+    #set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
+    #if( $operation == \\"Mutation\\" )
+      $util.qr($resultValue.put(\\"__operation\\", \\"Mutation\\"))
+    #end
+    $util.toJson($resultValue)
   #else
     #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
 $util.unauthorized()
@@ -16248,6 +16291,11 @@ $util.error($ctx.error.message, $ctx.error.type)
   #if( !$result )
     #set( $result = $ctx.result )
   #end
+  #if( $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) == \\"Mutation\\" )
+    #foreach( $item in $result.items )
+      $util.qr($item.put(\\"__operation\\", \\"Mutation\\"))
+    #end
+  #end
   $util.toJson($result)
 #end",
   "PostModel.singleAuthor.req.vtl": "#if( $ctx.stash.deniedField )
@@ -16281,7 +16329,12 @@ $util.error($ctx.error.message, $ctx.error.type)
 $util.error($ctx.error.message, $ctx.error.type)
 #else
   #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-    $util.toJson($ctx.result.items[0])
+    #set( $resultValue = $ctx.result.items[0] )
+    #set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
+    #if( $operation == \\"Mutation\\" )
+      $util.qr($resultValue.put(\\"__operation\\", \\"Mutation\\"))
+    #end
+    $util.toJson($resultValue)
   #else
     #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
 $util.unauthorized()
@@ -18015,6 +18068,11 @@ $util.error($ctx.error.message, $ctx.error.type)
   #if( !$result )
     #set( $result = $ctx.result )
   #end
+  #if( $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) == \\"Mutation\\" )
+    #foreach( $item in $result.items )
+      $util.qr($item.put(\\"__operation\\", \\"Mutation\\"))
+    #end
+  #end
   $util.toJson($result)
 #end",
   "UserModel.authorPosts.req.vtl": "#if( $ctx.stash.deniedField )
@@ -18129,6 +18187,11 @@ $util.error($ctx.error.message, $ctx.error.type)
 #else
   #if( !$result )
     #set( $result = $ctx.result )
+  #end
+  #if( $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) == \\"Mutation\\" )
+    #foreach( $item in $result.items )
+      $util.qr($item.put(\\"__operation\\", \\"Mutation\\"))
+    #end
   #end
   $util.toJson($result)
 #end",

@@ -10,6 +10,7 @@ import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 // @public (undocumented)
 export type DataSourceConfig = {
     secretName: string;
+    identifier: string;
     vpcConfig?: VpcConfig;
 };
 

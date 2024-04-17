@@ -306,6 +306,9 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 #if( !$lambdaInput.args.input )
   #set( $lambdaInput.args.input = {} )
 #end
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
+#end
 $util.qr($lambdaInput.args.input.put(\\"firstName\\", $util.defaultIfNull($ctx.source.userFirstName, \\"\\")))
 $util.qr($lambdaInput.args.input.put(\\"lastName\\", $util.defaultIfNull($ctx.source.userLastName, \\"\\")))
 {
@@ -321,7 +324,12 @@ exports[`@belongsTo directive with RDS datasource composite key should generate 
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.toJson($ctx.result)
+  #set( $resultValue = $ctx.result )
+  #set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
+  #if( $operation == \\"Mutation\\" )
+    $util.qr($resultValue.put(\\"__operation\\", \\"Mutation\\"))
+  #end
+  $util.toJson($resultValue)
 #end
 ## [End] ResponseTemplate. **"
 `;
@@ -622,6 +630,9 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 #if( !$lambdaInput.args.input )
   #set( $lambdaInput.args.input = {} )
 #end
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
+#end
 $util.qr($lambdaInput.args.input.put(\\"id\\", $util.defaultIfNull($ctx.source.userId, \\"\\")))
 {
   \\"version\\": \\"2018-05-29\\",
@@ -636,7 +647,12 @@ exports[`@belongsTo directive with RDS datasource happy case should generate cor
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.toJson($ctx.result)
+  #set( $resultValue = $ctx.result )
+  #set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
+  #if( $operation == \\"Mutation\\" )
+    $util.qr($resultValue.put(\\"__operation\\", \\"Mutation\\"))
+  #end
+  $util.toJson($resultValue)
 #end
 ## [End] ResponseTemplate. **"
 `;

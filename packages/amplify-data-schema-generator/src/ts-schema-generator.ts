@@ -7,6 +7,7 @@ import {
   Schema,
   getHostVpc,
 } from '@aws-amplify/graphql-schema-generator';
+import { createHash } from 'crypto';
 import { generateTypescriptDataSchema } from './generate-ts-schema';
 
 // This is the contract for the customer facing API to provide the database configuration in a typescript file.
@@ -28,6 +29,7 @@ export class TypescriptDataSchemaGenerator {
     return generateTypescriptDataSchema(schema, {
       secretName: config.connectionUriSecretName,
       vpcConfig: await getHostVpc(config.host),
+      identifier: TypescriptDataSchemaGenerator.createIdentifier(config),
     });
   };
 
@@ -59,5 +61,21 @@ export class TypescriptDataSchemaGenerator {
     adapter.cleanup();
     models.forEach((m) => schema.addModel(m));
     return schema;
+  };
+
+  private static createIdentifier = (config: TypescriptDataSchemaGeneratorConfig): string => {
+    const { host, database, engine, port } = config;
+    // Do not include any secrets such as username or password to compute hash.
+    // The reason we compute the hash is to generate an unique ID for a SQL datasource that remains the same on subsequent deployments.
+    // Currently we use engine, host, database and port to generate an unique id.
+    const identifierString = host.concat(engine, database, port.toString());
+    const identifierHash = createHash('md5').update(identifierString).digest('base64');
+    const identifier = `ID${TypescriptDataSchemaGenerator.removeNonAlphaNumericChars(identifierHash)}`;
+    // Identifier must contain only AlphaNumeric characters.
+    return identifier;
+  };
+
+  private static removeNonAlphaNumericChars = (str: string): string => {
+    return str.split(/[^A-Za-z0-9]*/).join('');
   };
 }

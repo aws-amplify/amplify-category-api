@@ -29,7 +29,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-schema-generator": "0.8.0",
+    "@aws-amplify/graphql-schema-generator": "0.8.2",
     "typescript": "^4.8.4"
   },
   "devDependencies": {

@@ -23,9 +23,13 @@ import {
   iff,
   not,
   raw,
+  nul,
+  equals,
+  forEach,
 } from 'graphql-mapping-template';
 import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from '../types';
 import { RelationalResolverGenerator } from './generator';
+import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
 
 const CONNECTION_STACK = 'ConnectionStack';
 
@@ -69,7 +73,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
         `${object.name.value}.${field.name.value}.req.vtl`,
       ),
       MappingTemplate.s3MappingTemplateFromString(
-        this.generateConnectionLambdaResponseMappingTemplate(),
+        this.generateListConnectionLambdaResponseMappingTemplate(),
         `${object.name.value}.${field.name.value}.res.vtl`,
       ),
     );
@@ -100,6 +104,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
         this.constructFieldMappingInput(),
         qref(methodCall(ref('lambdaInput.args.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments'), obj({})))),
         iff(not(ref('lambdaInput.args.filter')), set(ref('lambdaInput.args.filter'), obj({}))),
+        this.constructRelationalFieldAuthFilterStatement('lambdaInput.args.metadata.authFilter'),
         ...joinCondition,
         qref(
           methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
@@ -136,6 +141,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
         this.constructFieldMappingInput(),
         qref(methodCall(ref('lambdaInput.args.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments'), obj({})))),
         iff(not(ref('lambdaInput.args.input')), set(ref('lambdaInput.args.input'), obj({}))),
+        this.constructRelationalFieldAuthFilterStatement('lambdaInput.args.metadata.authFilter'),
         ...joinCondition,
         obj({
           version: str('2018-05-29'),
@@ -149,10 +155,41 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
   /**
    * Generate connection response template for RDS.
    */
-  generateConnectionLambdaResponseMappingTemplate = (): string => {
+  generateSingleItemConnectionLambdaResponseMappingTemplate = (): string => {
     const statements: Expression[] = [];
     statements.push(
-      ifElse(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type')), toJson(ref('ctx.result'))),
+      ifElse(
+        ref('ctx.error'),
+        methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type')),
+
+        // Make sure the retrieved item has the __operation field, so the individual type resolver can appropriately redact fields
+        compoundExpression([
+          set(ref('resultValue'), ref('ctx.result')),
+          set(ref('operation'), methodCall(ref('util.defaultIfNull'), methodCall(ref('ctx.source.get'), str(OPERATION_KEY)), nul())),
+          iff(equals(ref('operation'), str('Mutation')), qref(methodCall(ref('resultValue.put'), str(OPERATION_KEY), str('Mutation')))),
+          toJson(ref('resultValue')),
+        ]),
+      ),
+    );
+    return printBlock('ResponseTemplate')(compoundExpression(statements));
+  };
+
+  generateListConnectionLambdaResponseMappingTemplate = (): string => {
+    const statements: Expression[] = [];
+    statements.push(
+      ifElse(
+        ref('ctx.error'),
+        methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type')),
+        // Make sure each retrieved item has the __operation field, so the individual type resolver can appropriately redact fields
+        compoundExpression([
+          set(ref('resultValue'), ref('ctx.result')),
+          iff(
+            equals(methodCall(ref('util.defaultIfNull'), methodCall(ref('ctx.source.get'), str(OPERATION_KEY)), nul()), str('Mutation')),
+            forEach(ref('item'), ref('resultValue.items'), [qref(methodCall(ref('item.put'), str(OPERATION_KEY), str('Mutation')))]),
+          ),
+          raw('$util.toJson($resultValue)'),
+        ]),
+      ),
     );
     return printBlock('ResponseTemplate')(compoundExpression(statements));
   };
@@ -206,7 +243,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
         `${object.name.value}.${field.name.value}.req.vtl`,
       ),
       MappingTemplate.s3MappingTemplateFromString(
-        this.generateConnectionLambdaResponseMappingTemplate(),
+        this.generateSingleItemConnectionLambdaResponseMappingTemplate(),
         `${object.name.value}.${field.name.value}.res.vtl`,
       ),
     );
@@ -243,7 +280,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
         `${object.name.value}.${field.name.value}.req.vtl`,
       ),
       MappingTemplate.s3MappingTemplateFromString(
-        this.generateConnectionLambdaResponseMappingTemplate(),
+        this.generateSingleItemConnectionLambdaResponseMappingTemplate(),
         `${object.name.value}.${field.name.value}.res.vtl`,
       ),
     );
@@ -263,4 +300,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
       ),
     ]);
   };
+
+  constructRelationalFieldAuthFilterStatement = (keyName: string): Expression =>
+    iff(not(methodCall(ref('util.isNullOrEmpty'), ref('ctx.stash.authFilter'))), set(ref(keyName), ref('ctx.stash.authFilter')));
 }

@@ -1,8 +1,61 @@
 import { Engine, Field, Model, Schema } from '@aws-amplify/graphql-schema-generator';
 import { generateTypescriptDataSchema } from '../generate-ts-schema';
 import { DataSourceConfig } from '../helpers';
+import { TypescriptDataSchemaGenerator } from '../ts-schema-generator';
+
+jest.mock('@aws-amplify/graphql-schema-generator', () => {
+  const schemaGenerator = jest.requireActual('@aws-amplify/graphql-schema-generator');
+  return {
+    ...schemaGenerator,
+    getHostVpc: jest.fn(() => {
+      return {
+        vpcId: 'abc',
+        securityGroupIds: ['sg0', 'sg1', 'sg2'],
+        subnetAvailabilityZoneConfig: [
+          {
+            subnetId: 'sb0',
+            availabilityZone: 'az0',
+          },
+          {
+            subnetId: 'sb1',
+            availabilityZone: 'az1',
+          },
+          {
+            subnetId: 'sb2',
+            availabilityZone: 'az2',
+          },
+        ],
+      };
+    }),
+  };
+});
 
 describe('Type name conversions', () => {
+  it('ts schema generator should invoke generate schema', async () => {
+    const dbschema = new Schema(new Engine('MySQL'));
+    const model = new Model('User');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
+    model.setPrimaryKey(['id']);
+    dbschema.addModel(model);
+
+    const buildSchemaMockMethod = jest.spyOn(TypescriptDataSchemaGenerator as any, 'buildSchema');
+    buildSchemaMockMethod.mockImplementation(() => {
+      return dbschema;
+    });
+
+    const schema = await TypescriptDataSchemaGenerator.generate({
+      engine: 'mysql',
+      host: 'host',
+      port: 3306,
+      database: 'database',
+      username: 'username',
+      password: 'password',
+      connectionUriSecretName: 'secret',
+    });
+    expect(schema).toMatchSnapshot();
+  });
+
   it('basic models should generate correct typescript data schema', () => {
     const dbschema = new Schema(new Engine('MySQL'));
     let model = new Model('User');
@@ -75,6 +128,7 @@ describe('Type name conversions', () => {
     dbschema.addModel(model);
 
     const config: DataSourceConfig = {
+      identifier: 'ID1234567890',
       secretName: 'CONN_STR',
       vpcConfig: {
         vpcId: '123',
@@ -109,6 +163,7 @@ describe('Type name conversions', () => {
     dbschema.addModel(model);
 
     const config: DataSourceConfig = {
+      identifier: 'ID1234567890',
       secretName: 'CONN_STR',
       vpcConfig: {
         vpcId: '123',
@@ -141,6 +196,7 @@ describe('Type name conversions', () => {
     dbschema.addModel(model);
 
     const config: DataSourceConfig = {
+      identifier: 'ID1234567890',
       secretName: 'CONN_STR',
     };
 
