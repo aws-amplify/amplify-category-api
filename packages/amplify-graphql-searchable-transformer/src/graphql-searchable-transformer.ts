@@ -41,7 +41,7 @@ import {
   makeDirective,
 } from 'graphql-transformer-common';
 import { createParametersStack as createParametersInStack } from './cdk/create-cfnParameters';
-import { requestTemplate, responseTemplate, sandboxMappingTemplate } from './generate-resolver-vtl';
+import { requestTemplate, responseTemplate, postAuthMappingTemplate } from './generate-resolver-vtl';
 import {
   makeSearchableScalarInputObject,
   makeSearchableSortDirectionEnumObject,
@@ -63,6 +63,8 @@ import { createStackOutputs } from './cdk/create-cfnOutput';
 
 const nonKeywordTypes = ['Int', 'Float', 'Boolean', 'AWSTimestamp', 'AWSDate', 'AWSDateTime'];
 const STACK_NAME = 'SearchableStack';
+const API_KEY_DIRECTIVE = 'aws_api_key';
+const AWS_IAM_DIRECTIVE = 'aws_iam';
 
 const getTable = (context: TransformerContextProvider, definition: ObjectTypeDefinitionNode): IConstruct => {
   const ddbDataSource = context.dataSources.get(definition) as DynamoDbDataSource;
@@ -373,7 +375,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       resolver.addToSlot(
         'postAuth',
         MappingTemplate.s3MappingTemplateFromString(
-          sandboxMappingTemplate(context.transformParameters.sandboxModeEnabled, fields),
+          postAuthMappingTemplate(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess, fields),
           `${typeName}.${def.fieldName}.{slotName}.{slotIndex}.res.vtl`,
         ),
       );
@@ -417,8 +419,17 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       generateSearchableXConnectionType(ctx, definition);
       generateSearchableAggregateTypes(ctx);
       const directives = [];
-      if (!hasAuth && ctx.transformParameters.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
-        directives.push(makeDirective('aws_api_key', []));
+      if (!hasAuth) {
+        if (ctx.transformParameters.sandboxModeEnabled && ctx.synthParameters.enableIamAccess) {
+          // If both sandbox and iam access are enabled we add service directive regardless of default.
+          // This is because any explicit directive makes default not applicable to a model.
+          directives.push(makeDirective(API_KEY_DIRECTIVE, []));
+          directives.push(makeDirective(AWS_IAM_DIRECTIVE, []));
+        } else if (ctx.transformParameters.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
+          directives.push(makeDirective(API_KEY_DIRECTIVE, []));
+        } else if (ctx.synthParameters.enableIamAccess && ctx.authConfig.defaultAuthentication.authenticationType !== 'AWS_IAM') {
+          directives.push(makeDirective(AWS_IAM_DIRECTIVE, []));
+        }
       }
       const queryField = makeField(
         fieldName,

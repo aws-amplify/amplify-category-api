@@ -45,7 +45,6 @@ import {
   SIZE_CONDITIONS,
   STRING_CONDITIONS,
   STRING_FUNCTIONS,
-  API_KEY_DIRECTIVE,
   SUBSCRIPTION_STRING_CONDITIONS,
   SUBSCRIPTION_ID_CONDITIONS,
   SUBSCRIPTION_INT_CONDITIONS,
@@ -487,15 +486,15 @@ export const makeModelSortDirectionEnumObject = (): EnumTypeDefinitionNode => {
   const name = 'ModelSortDirection';
   return EnumWrapper.create(name, ['ASC', 'DESC']).serialize();
 };
-// the smaller version of it's @auth equivalent since we only support
-// apikey as the only global auth rule
+
 /**
- * Propagates api key to nested types
+ * Propagates service directives to nested types
  */
-export const propagateApiKeyToNestedTypes = (
+export const propagateDirectivesToNestedTypes = (
   ctx: TransformerContextProvider,
   def: ObjectTypeDefinitionNode,
   seenNonModelTypes: Set<string>,
+  serviceDirectives: DirectiveNode[],
 ): void => {
   const nonModelTypePredicate = (fieldType: TypeDefinitionNode): TypeDefinitionNode | undefined => {
     if (fieldType) {
@@ -513,11 +512,15 @@ export const propagateApiKeyToNestedTypes = (
   for (const nonModelFieldType of nonModelFieldTypes) {
     const nonModelName = nonModelFieldType.name.value;
     const hasSeenType = seenNonModelTypes.has(nonModelName);
-    const hasApiKey = nonModelFieldType.directives?.some((dir) => dir.name.value === API_KEY_DIRECTIVE) ?? false;
-    if (!hasSeenType && !hasApiKey) {
+    if (!hasSeenType) {
+      for (const serviceDirective of serviceDirectives) {
+        const hasDirective = nonModelFieldType.directives?.some((dir) => dir.name.value === serviceDirective.name.value) ?? false;
+        if (!hasDirective) {
+          extendTypeWithDirectives(ctx, nonModelName, [serviceDirective]);
+        }
+      }
       seenNonModelTypes.add(nonModelName);
-      extendTypeWithDirectives(ctx, nonModelName, [makeDirective(API_KEY_DIRECTIVE, [])]);
-      propagateApiKeyToNestedTypes(ctx, nonModelFieldType as ObjectTypeDefinitionNode, seenNonModelTypes);
+      propagateDirectivesToNestedTypes(ctx, nonModelFieldType as ObjectTypeDefinitionNode, seenNonModelTypes, serviceDirectives);
     }
   }
 };

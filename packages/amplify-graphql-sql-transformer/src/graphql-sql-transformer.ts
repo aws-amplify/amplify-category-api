@@ -24,6 +24,9 @@ import {
   iff,
   notEquals,
   not,
+  equals,
+  ret,
+  and,
 } from 'graphql-mapping-template';
 import { ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { DirectiveNode, ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
@@ -133,7 +136,7 @@ export class SqlTransformer extends TransformerPluginBase {
         resolver.addToSlot(
           'postAuth',
           MappingTemplate.s3MappingTemplateFromString(
-            generateAuthExpressionForSandboxMode(context.transformParameters.sandboxModeEnabled),
+            generatePostAuthExpression(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess),
             `${config.resolverTypeName}.${config.resolverFieldName}.{slotName}.{slotIndex}.req.vtl`,
           ),
         );
@@ -144,16 +147,40 @@ export class SqlTransformer extends TransformerPluginBase {
   };
 }
 
-const generateAuthExpressionForSandboxMode = (enabled: boolean): string => {
-  let exp;
+/**
+ * Generates post auth resolver expression.
+ *
+ * 1. Pass through if 'ctx.stash.hasAuth' is true (auth directive is present)
+ * 2. Pass through for API key auth type if sandbox is enabled.
+ * 3. Pass through for IAM auth type if generic IAM access is enabled and principal is not coming from Cognito.
+ * 4. Otherwise, rejects as unauthorized.
+ *
+ * @param isSandboxModeEnabled a flag indicating if sandbox is enabled.
+ * @param genericIamAccessEnabled a flag indicating if generic IAM access is enabled.
+ * @param fields list of fields authorized to access.
+ * @returns an expression.
+ */
+const generatePostAuthExpression = (isSandboxModeEnabled: boolean, genericIamAccessEnabled: boolean | undefined): string => {
   const API_KEY = 'API Key Authorization';
+  const IAM_AUTH_TYPE = 'IAM Authorization';
 
-  if (enabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY)), methodCall(ref('util.unauthorized')));
-  else exp = methodCall(ref('util.unauthorized'));
+  const expressions: Array<Expression> = [];
+  if (isSandboxModeEnabled) {
+    expressions.push(iff(equals(methodCall(ref('util.authType')), str(API_KEY)), ret(toJson(obj({})))));
+  }
+  if (genericIamAccessEnabled) {
+    const isNonCognitoIAMPrincipal = and([
+      equals(ref('util.authType()'), str(IAM_AUTH_TYPE)),
+      methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityPoolId')),
+      methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityId')),
+    ]);
+    expressions.push(iff(isNonCognitoIAMPrincipal, ret(toJson(obj({})))));
+  }
+  expressions.push(methodCall(ref('util.unauthorized')));
 
-  return printBlock(`Sandbox Mode ${enabled ? 'Enabled' : 'Disabled'}`)(
-    compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), exp), toJson(obj({}))]),
-  );
+  return printBlock(
+    `Sandbox Mode ${isSandboxModeEnabled ? 'Enabled' : 'Disabled'}, IAM Access ${genericIamAccessEnabled ? 'Enabled' : 'Disabled'}`,
+  )(compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), compoundExpression(expressions)), toJson(obj({}))]));
 };
 
 const getStatementFromStatementAttribute = (config: SqlDirectiveConfiguration): string => {

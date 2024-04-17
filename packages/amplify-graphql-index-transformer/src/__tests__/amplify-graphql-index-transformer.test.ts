@@ -1450,6 +1450,113 @@ describe('Index query resolver creation', () => {
       dataSources: {
         get: jest.fn(),
       },
+      synthParameters: {},
     };
   };
+});
+
+describe('auth', () => {
+  const API_KEY = 'API Key Authorization';
+  const IAM_AUTH_TYPE = 'IAM Authorization';
+
+  const schema = /* GraphQL */ `
+    type Test @model {
+      id: ID!
+      description: String @index(name: "index1")
+    }
+  `;
+
+  it('sandbox auth enabled should add apiKey if not default mode of auth', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
+      synthParameters: {
+        enableIamAccess: false,
+      },
+      authConfig: {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [
+          {
+            authenticationType: 'API_KEY',
+          },
+        ],
+      },
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).toContain('aws_api_key');
+    expect(out.schema).not.toContain('aws_iam');
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toBeDefined();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toContain(API_KEY);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).not.toContain(IAM_AUTH_TYPE);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toMatchSnapshot();
+  });
+
+  it('iam auth enabled should add aws_iam if not default mode of auth', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: false,
+      },
+      synthParameters: {
+        enableIamAccess: true,
+      },
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).not.toContain('aws_api_key');
+    expect(out.schema).toContain('aws_iam');
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toBeDefined();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).not.toContain(API_KEY);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toContain(IAM_AUTH_TYPE);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toMatchSnapshot();
+  });
+
+  it('iam and sandbox auth enabled should add aws_iam and aws_api_key if not default mode of auth', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
+      synthParameters: {
+        enableIamAccess: true,
+      },
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).toContain('aws_api_key');
+    expect(out.schema).toContain('aws_iam');
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toBeDefined();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toContain(API_KEY);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toContain(IAM_AUTH_TYPE);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toMatchSnapshot();
+  });
+
+  it('iam and sandbox auth disable should not add service directives', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: false,
+      },
+      synthParameters: {
+        enableIamAccess: false,
+      },
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).not.toContain('aws_api_key');
+    expect(out.schema).not.toContain('aws_iam');
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toBeDefined();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).not.toContain(API_KEY);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).not.toContain(IAM_AUTH_TYPE);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toMatchSnapshot();
+  });
 });

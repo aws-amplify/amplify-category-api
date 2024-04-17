@@ -13,7 +13,7 @@ import {
   generateDefaultRDSExpression,
   generateFieldAuthResponse,
   generateFieldResolverForOwner,
-  generateSandboxExpressionForField,
+  generatePostAuthExpressionForField,
   setDeniedFieldFlag,
 } from './resolvers';
 import { generateAuthExpressionForSubscriptions } from './resolvers/subscription';
@@ -65,7 +65,7 @@ export class RDSAuthVTLGenerator implements AuthVTLGenerator {
     roles: Array<RoleDefinition>,
     fields: ReadonlyArray<FieldDefinitionNode>,
     allowedAggFields: Array<string>,
-  ): string => generateDefaultRDSExpression();
+  ): string => generateDefaultRDSExpression(providers.genericIamAccessEnabled);
 
   generateAuthExpressionForSubscriptions = (providers: ConfiguredAuthProviders, roles: Array<RoleDefinition>): string =>
     generateAuthExpressionForSubscriptions(providers, roles);
@@ -84,5 +84,6 @@ export class RDSAuthVTLGenerator implements AuthVTLGenerator {
 
   generateFieldResolverForOwner = (entity: string): string => generateFieldResolverForOwner(entity);
 
-  generateSandboxExpressionForField = (sandboxEnabled: boolean): string => generateSandboxExpressionForField(sandboxEnabled);
+  generatePostAuthExpressionForField = (sandboxEnabled: boolean, genericIamAccessEnabled: boolean): string =>
+    generatePostAuthExpressionForField(sandboxEnabled, genericIamAccessEnabled);
 }

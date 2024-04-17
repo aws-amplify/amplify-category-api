@@ -1,5 +1,5 @@
-import { RemovalPolicy } from 'aws-cdk-lib';
-import { Bucket, IBucket } from 'aws-cdk-lib/aws-s3';
+import { RemovalPolicy, Fn } from 'aws-cdk-lib';
+import { Bucket, HttpMethods, IBucket } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
 
@@ -8,6 +8,7 @@ export type CodegenAssetsProps = {
 };
 
 const MODEL_SCHEMA_KEY = 'model-schema.graphql';
+const CONSOLE_SERVICE_ENDPOINT = Fn.join('', ['https://', Fn.ref('AWS::Region'), '.console.aws.amazon.com/amplify']);
 
 /**
  * Construct an S3 URI string for a given bucket and key.
@@ -30,6 +31,14 @@ export class CodegenAssets extends Construct {
     const bucket = new Bucket(this, `${id}Bucket`, {
       removalPolicy: RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
+      // Enabling CORS to allow console to access the codegen assets.
+      cors: [
+        {
+          allowedMethods: [HttpMethods.GET, HttpMethods.HEAD],
+          allowedHeaders: ['*'],
+          allowedOrigins: [CONSOLE_SERVICE_ENDPOINT],
+        },
+      ],
     });
 
     const deployment = new BucketDeployment(this, `${id}Deployment`, {

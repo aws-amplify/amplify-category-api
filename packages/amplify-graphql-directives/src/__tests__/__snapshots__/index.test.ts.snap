@@ -25,6 +25,7 @@ Object {
   enum AuthProvider {
     apiKey
     iam
+    identityPool
     oidc
     userPools
     function
