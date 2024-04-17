@@ -12,8 +12,8 @@ const RESOLVER_PREFIX = 'resolvers';
 /**
  * The asset provider bridges the gap between creation of file assets in the transformer (which provide a name+contents tuple)
  * with the path method which is used in CDK.
- * The CDK S3 asset require the contents to be written the file system first.
- * The asser provider writes to a temporary directory before creating the CDK S3 asset.
+ * The CDK S3 asset require the contents to be written to the file system first.
+ * The asset provider writes to a temporary directory before creating the CDK S3 asset.
  *
  */
 export class AssetProvider implements AssetProviderInterface {
