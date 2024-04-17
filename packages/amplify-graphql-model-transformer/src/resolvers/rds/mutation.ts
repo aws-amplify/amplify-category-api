@@ -32,11 +32,11 @@ export const generateCreateInitSlotTemplate = (modelConfig: ModelDirectiveConfig
     ),
   ];
 
+  if (initializeIdField) {
+    statements.push(qref(methodCall(ref('ctx.stash.defaultValues.put'), str('id'), methodCall(ref('util.autoId')))));
+  }
   if (modelConfig?.timestamps) {
     statements.push(set(ref('createdAt'), methodCall(ref('util.time.nowISO8601'))));
-    if (initializeIdField) {
-      statements.push(qref(methodCall(ref('ctx.stash.defaultValues.put'), str('id'), methodCall(ref('util.autoId')))));
-    }
     if (modelConfig.timestamps.createdAt) {
       statements.push(qref(methodCall(ref('ctx.stash.defaultValues.put'), str(modelConfig.timestamps.createdAt), ref('createdAt'))));
     }
