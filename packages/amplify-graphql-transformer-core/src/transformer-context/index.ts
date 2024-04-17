@@ -138,8 +138,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.resolvers = new ResolverManager();
     this.resourceHelper = new TransformerResourceHelper(synthParameters);
     this.stackManager = new StackManager(scope, nestedStackProvider, parameterProvider, stackMapping);
-    this.assetManager = new AssetManager();
-    this.assetManager.setAssetProvider(assetProvider);
+    this.assetManager = new AssetManager(assetProvider);
     this.synthParameters = synthParameters;
     this.transformParameters = transformParameters;
   }

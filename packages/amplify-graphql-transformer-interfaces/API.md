@@ -138,8 +138,6 @@ export interface AppSyncFunctionConfigurationProvider extends IConstruct {
 export interface AssetManagerProvider {
     // (undocumented)
     createAsset: (scope: Construct, name: string, props: AssetProps) => S3Asset;
-    // (undocumented)
-    setAssetProvider: (provider: AssetProvider) => void;
 }
 
 // @public (undocumented)

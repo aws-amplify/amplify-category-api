@@ -104,10 +104,9 @@ export const APICategory = "api";
 
 // @public (undocumented)
 export class AssetManager implements AssetManagerProvider {
+    constructor(assetProvider: AssetProvider);
     // (undocumented)
     createAsset(scope: Construct, name: string, props: AssetProps): S3Asset;
-    // (undocumented)
-    setAssetProvider(provider: AssetProvider): void;
 }
 
 // @public (undocumented)
