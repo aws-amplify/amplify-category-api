@@ -11,6 +11,10 @@ import {
   ModelDataSourceStrategy,
 } from '@aws-amplify/graphql-api-construct';
 
+// This app defines a CDK stack that is configured with various command files written into the project root directory. To use it:
+// - Write test definition(s) to `projRoot/*-test-definition.json`
+// - Write the stack prefix to `projRoot/stack-prefix.txt`
+
 interface TestDefinition {
   schema: string;
   strategy: ModelDataSourceStrategy;
@@ -33,9 +37,12 @@ const combineTestDefinitionsInDirectory = (directory: string): IAmplifyGraphqlDe
   return AmplifyGraphqlDefinition.combine(definitions);
 };
 
-// Keeping this short so we don't bump up against resource length limits (e.g., 140 characters for lambda layers).
+const projRoot = path.normalize(path.join(__dirname, '..'));
+
+// Read the prefix to use when naming stack assets. Keep this short so you don't bump up against resource length limits (e.g., 140
+// characters for lambda layers).
 // arn:aws:lambda:ap-northeast-2:012345678901:layer:${PREFIX}ApiAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentAwsCliLayerABCDEF12:1
-const PREFIX = 'RFAuthTest';
+const PREFIX = fs.readFileSync(path.join(projRoot, 'stack-prefix.txt'));
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
@@ -62,15 +69,14 @@ const userPoolClient = userPool.addClient(`${PREFIX}UserPoolClient`, {
   },
 });
 
-const testDefinitionDir = path.normalize(path.join(__dirname, '..'));
-const combinedDefinition = combineTestDefinitionsInDirectory(testDefinitionDir);
+const combinedDefinition = combineTestDefinitionsInDirectory(projRoot);
 
 new AmplifyGraphqlApi(stack, `${PREFIX}Api`, {
   definition: combinedDefinition,
   authorizationModes: {
     defaultAuthorizationMode: 'AMAZON_COGNITO_USER_POOLS',
     userPoolConfig: { userPool },
-    apiKeyConfig: { expires: Duration.days(360) },
+    apiKeyConfig: { expires: Duration.days(7) },
   },
 });
 

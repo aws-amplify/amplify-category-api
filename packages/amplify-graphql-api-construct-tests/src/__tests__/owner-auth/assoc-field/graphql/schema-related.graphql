@@ -1,0 +1,13 @@
+type RelatedMany @model @auth(rules: [{ allow: owner }]) {
+  id: String! @primaryKey
+  owner: String
+  primaryId: String
+  primary: Primary @belongsTo(references: ["primaryId"])
+}
+
+type RelatedOne @model @auth(rules: [{ allow: owner }]) {
+  id: String! @primaryKey
+  owner: String
+  primaryId: String
+  primary: Primary @belongsTo(references: ["primaryId"])
+}
