@@ -1992,7 +1992,7 @@ describe('ModelTransformer:', () => {
         );
       });
 
-      it('should include autoId when id is type Int, Float, or Boolean', async () => {
+      it('should not include autoId when id is type Int, Float, or Boolean', async () => {
         const schema = `
           type Foo @model {
               id: Int
@@ -2119,7 +2119,7 @@ describe('ModelTransformer:', () => {
         );
       });
 
-      it('should include autoId when id is type Int, Float, or Boolean', async () => {
+      it('should not include autoId when id is type Int, Float, or Boolean', async () => {
         const schema = `
           type Foo @model {
               id: Int
