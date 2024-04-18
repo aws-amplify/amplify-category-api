@@ -16,7 +16,7 @@ describe('CDK GraphQL Transformer - Relationships', () => {
    */
   beforeAll(async () => {
     projRoot = await createNewProjectDir('cdkrelationships');
-    const templatePath = path.resolve(path.join(__dirname, 'backends', 'relationships'));
+    const templatePath = path.resolve(path.join(__dirname, '..', '..', 'backends', 'relationships'));
     const name = await initCDKProject(projRoot, templatePath);
     const outputs = await cdkDeploy(projRoot, '--all');
     apiEndpoint = outputs[name].awsAppsyncApiEndpoint;
