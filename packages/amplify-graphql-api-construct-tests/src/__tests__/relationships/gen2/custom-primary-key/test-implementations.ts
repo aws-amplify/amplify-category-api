@@ -247,11 +247,7 @@ const assertRelatedOneCpkTwoContainsAssociated = (
 // RelatedMany as source
 // =======================================================================
 // #region RelatedMany as source model
-export const testCreateRelatedManyCpkSkOneContainsAssociated = async (
-  currentId: number,
-  apiEndpoint: string,
-  apiKey: string,
-): Promise<void> => {
+export const testRelatedManyCpkSkOneContainsAssociated = async (currentId: number, apiEndpoint: string, apiKey: string): Promise<void> => {
   const primaryVariables = getPrimaryVariables(currentId);
   const relatedVariables = getRelatedVariables(primaryVariables);
   const args = {
@@ -320,11 +316,7 @@ export const testCreateRelatedManyCpkSkOneContainsAssociated = async (
   assertRelatedManyCpkOneContainsAssociated(relatedManyUpdateB, primaryVariables);
 };
 
-export const testCreateRelatedManypkSkTwoContainsAssociated = async (
-  currentId: number,
-  apiEndpoint: string,
-  apiKey: string,
-): Promise<void> => {
+export const testRelatedManypkSkTwoContainsAssociated = async (currentId: number, apiEndpoint: string, apiKey: string): Promise<void> => {
   const primaryVariables = getPrimaryVariables(currentId);
   const relatedVariables = getRelatedVariables(primaryVariables);
   const args = {
