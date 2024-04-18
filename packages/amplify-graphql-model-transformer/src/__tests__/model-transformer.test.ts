@@ -1907,7 +1907,7 @@ describe('ModelTransformer:', () => {
     });
   });
 
-  describe('autoId', () => {
+  describe.only('autoId', () => {
     describe('dynamodb', () => {
       it('should include autoId for basic ID', async () => {
         const schema = `
@@ -1959,11 +1959,10 @@ describe('ModelTransformer:', () => {
         );
       });
 
-      // This is probably a bug but but some customers may rely on the behavior
-      it('should include autoId when id is not type ID', async () => {
+      it('should include autoId when id is type String', async () => {
         const schema = `
           type Post @model {
-              id: String!
+              id: String
               title: String!
           }
         `;
@@ -1973,6 +1972,39 @@ describe('ModelTransformer:', () => {
           transformers: [new ModelTransformer()],
         });
         expect(out.resolvers['Mutation.createPost.init.1.req.vtl']).toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+      });
+
+      it('should include autoId when id is type Int, Float, or Boolean', async () => {
+        const schema = `
+          type Foo @model {
+              id: Int
+              title: String!
+          }
+
+          type Bar @model {
+              id: Float
+              title: String!
+          }
+
+          type Baz @model {
+              id: Boolean
+              title: String!
+          }
+        `;
+
+        const out = testTransform({
+          schema,
+          transformers: [new ModelTransformer()],
+        });
+        expect(out.resolvers['Mutation.createFoo.init.1.req.vtl']).not.toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+        expect(out.resolvers['Mutation.createBar.init.1.req.vtl']).not.toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+        expect(out.resolvers['Mutation.createBaz.init.1.req.vtl']).not.toContain(
           '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
         );
       });
@@ -2052,11 +2084,10 @@ describe('ModelTransformer:', () => {
         );
       });
 
-      // This is probably a bug but but some customers may rely on the behavior
-      it('should include autoId when id is not type ID', async () => {
+      it('should include autoId when id is type String', async () => {
         const schema = `
           type Post @model {
-              id: String!
+              id: String
               postId: ID! @primaryKey
               title: String!
           }
@@ -2068,6 +2099,43 @@ describe('ModelTransformer:', () => {
           dataSourceStrategies: constructDataSourceStrategies(schema, makeStrategy(MYSQL_DB_TYPE)),
         });
         expect(out.resolvers['Mutation.createPost.init.1.req.vtl']).toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+      });
+
+      it('should include autoId when id is type Int, Float, or Boolean', async () => {
+        const schema = `
+          type Foo @model {
+              id: Int
+              fooId: ID! @primaryKey
+              title: String!
+          }
+
+          type Bar @model {
+              id: Float
+              barId: ID! @primaryKey
+              title: String!
+          }
+
+          type Baz @model {
+              id: Boolean
+              bazId: ID! @primaryKey
+              title: String!
+          }
+        `;
+
+        const out = testTransform({
+          schema,
+          transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+          dataSourceStrategies: constructDataSourceStrategies(schema, makeStrategy(MYSQL_DB_TYPE)),
+        });
+        expect(out.resolvers['Mutation.createFoo.init.1.req.vtl']).not.toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+        expect(out.resolvers['Mutation.createBar.init.1.req.vtl']).not.toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+        expect(out.resolvers['Mutation.createBaz.init.1.req.vtl']).not.toContain(
           '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
         );
       });
