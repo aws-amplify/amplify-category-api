@@ -3,21 +3,21 @@ import * as fs from 'fs-extra';
 
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
-import { cdkDeploy, cdkDestroy, initCDKProject } from '../../../../commands';
-import { TestDefinition, writeStackPrefix, writeTestDefinitions } from '../../../../utils';
+import { cdkDeploy, cdkDestroy, initCDKProject } from '../../../commands';
+import { TestDefinition, writeStackPrefix, writeTestDefinitions } from '../../../utils';
 import {
-    testPrimaryCpkSkOneContainsAssociated,
-    testPrimaryCpkSkTwoContainAssociated,
-    testRelatedManyCpkSkOneContainsAssociated,
-    testRelatedManypkSkTwoContainsAssociated,
-    testRelatedOneCpkSkOneContainsAssociated,
-    testRelatedOneCpkSkTwoContainsAssociated,
+  testPrimaryCpkSkOneContainsAssociated,
+  testPrimaryCpkSkTwoContainAssociated,
+  testRelatedManyCpkSkOneContainsAssociated,
+  testRelatedManypkSkTwoContainsAssociated,
+  testRelatedOneCpkSkOneContainsAssociated,
+  testRelatedOneCpkSkTwoContainsAssociated,
 } from './test-implementations';
 
 jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
 
 describe('Relationships defined using composite primary are supported', () => {
-  const baseProjFolderName = 'composite-prinary-key';
+  const baseProjFolderName = 'composite-pk';
 
   describe('DDB Primary, DDB Related', () => {
     const projFolderName = `${baseProjFolderName}-ddb-primary-ddb-related`;
@@ -32,7 +32,7 @@ describe('Relationships defined using composite primary are supported', () => {
 
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projFolderName);
-      const templatePath = path.resolve(path.join(__dirname, '..', '..', '..', 'backends', 'configurable-stack'));
+      const templatePath = path.resolve(path.join(__dirname, '..', '..', 'backends', 'configurable-stack'));
       const name = await initCDKProject(projRoot, templatePath);
 
       const primarySchemaOneSkPath = path.resolve(path.join(__dirname, 'graphql', 'schema-primary-cpk-1sk.graphql'));

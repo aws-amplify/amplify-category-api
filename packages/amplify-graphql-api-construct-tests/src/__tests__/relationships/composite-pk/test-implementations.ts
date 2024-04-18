@@ -1,4 +1,4 @@
-import { doAppSyncGraphqlMutation, doAppSyncGraphqlQuery } from '../../../../utils';
+import { doAppSyncGraphqlMutation, doAppSyncGraphqlQuery } from '../../../utils';
 import {
   GetPrimaryCPKSKOneQuery,
   GetPrimaryCPKSKTwoQuery,
@@ -40,7 +40,7 @@ export const testPrimaryCpkSkOneContainsAssociated = async (currentId: number, a
   const relatedVariables = getRelatedVariables(primaryVariables);
   const args = {
     apiEndpoint,
-    auth: { apiKey: apiKey },
+    auth: { apiKey },
   };
 
   // Create two RelatedManyCPKSKOne records

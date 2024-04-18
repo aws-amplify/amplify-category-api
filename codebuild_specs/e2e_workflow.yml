@@ -1119,13 +1119,13 @@ batch:
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        restricted_field_auth_gen2_restricted_field_auth_gen1_relationships_cpk_relationships_gen1
+        restricted_field_auth_gen2_restricted_field_auth_gen1_relationships_gen1_relationships_cpk
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/restricted-field-auth/restricted-field-auth-gen2.test.ts|src/__tests__/restricted-field-auth/restricted-field-auth-gen1.test.ts|src/__tests__/relationships/gen2/custom-primary-key/relationships-cpk.test.ts|src/__tests__/relationships/gen1/relationships-gen1.test.ts
+            src/__tests__/restricted-field-auth/restricted-field-auth-gen2.test.ts|src/__tests__/restricted-field-auth/restricted-field-auth-gen1.test.ts|src/__tests__/relationships/gen1/relationships-gen1.test.ts|src/__tests__/relationships/composite-pk/relationships-cpk.test.ts
           CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
