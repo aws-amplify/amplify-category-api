@@ -13250,8 +13250,8 @@ $util.error($ctx.error.message, $ctx.error.type)
 #end",
   "Mutation.createChild.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
 $util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
 $util.toJson({
@@ -13353,8 +13353,8 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 ## [End] ResponseTemplate. **",
   "Mutation.createFriendship.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
 $util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
 $util.toJson({
@@ -13452,8 +13452,8 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 ## [End] ResponseTemplate. **",
   "Mutation.createParent.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
 $util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
 $util.toJson({
@@ -13551,8 +13551,8 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 ## [End] ResponseTemplate. **",
   "Mutation.createPost.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
 $util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
 $util.toJson({
@@ -13642,8 +13642,8 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 ## [End] ResponseTemplate. **",
   "Mutation.createPostAuthor.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
 $util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
 $util.toJson({
@@ -13741,8 +13741,8 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 ## [End] ResponseTemplate. **",
   "Mutation.createPostModel.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
 $util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
 $util.toJson({
@@ -13832,8 +13832,8 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 ## [End] ResponseTemplate. **",
   "Mutation.createUser.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
 $util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
 $util.toJson({
@@ -13940,8 +13940,8 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 ## [End] ResponseTemplate. **",
   "Mutation.createUserModel.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
 $util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
 $util.toJson({

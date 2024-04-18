@@ -2158,8 +2158,8 @@ exports[`ModelTransformer: should generate sync resolver with ConflictHandlerTyp
 Object {
   "Mutation.createPost.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
 $util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
 $util.toJson({
@@ -2745,8 +2745,8 @@ exports[`ModelTransformer: should generate sync resolver with ConflictHandlerTyp
 Object {
   "Mutation.createPost.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
 $util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
 $util.toJson({
@@ -3332,8 +3332,8 @@ exports[`ModelTransformer: should generate sync resolver with ConflictHandlerTyp
 Object {
   "Mutation.createPost.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
 $util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
 $util.toJson({
@@ -5701,8 +5701,8 @@ exports[`ModelTransformer: should successfully transform rds schema with array a
 Object {
   "Mutation.createNote.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+#set( $createdAt = $util.time.nowISO8601() )
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
   \\"payload\\": {}
@@ -6229,8 +6229,8 @@ exports[`ModelTransformer: should successfully transform rds schema with array a
 Object {
   "Mutation.createNote.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+#set( $createdAt = $util.time.nowISO8601() )
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
   \\"payload\\": {}
