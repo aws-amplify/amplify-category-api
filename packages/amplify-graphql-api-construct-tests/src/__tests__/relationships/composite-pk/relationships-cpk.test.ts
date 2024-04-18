@@ -32,7 +32,7 @@ describe('Relationships defined using composite primary are supported', () => {
 
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projFolderName);
-      const templatePath = path.resolve(path.join(__dirname, '..', '..', 'backends', 'configurable-stack'));
+      const templatePath = path.resolve(path.join(__dirname, '..', '..', 'backends', 'configurable-sandbox-stack'));
       const name = await initCDKProject(projRoot, templatePath);
 
       const primarySchemaOneSkPath = path.resolve(path.join(__dirname, 'graphql', 'schema-primary-cpk-1sk.graphql'));
@@ -58,8 +58,8 @@ describe('Relationships defined using composite primary are supported', () => {
       writeTestDefinitions(testDefinitions, projRoot);
 
       const outputs = await cdkDeploy(projRoot, '--all');
-      apiEndpoint = outputs[name].apiEndpoint;
-      apiKey = outputs[name].apiKey;
+      apiEndpoint = outputs[name].awsAppsyncApiEndpoint;
+      apiKey = outputs[name].awsAppsyncApiKey;
     });
 
     afterAll(async () => {
