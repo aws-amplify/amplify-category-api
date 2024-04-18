@@ -1907,7 +1907,7 @@ describe('ModelTransformer:', () => {
     });
   });
 
-  describe.only('autoId', () => {
+  describe('autoId', () => {
     describe('dynamodb', () => {
       it('should include autoId for basic ID', async () => {
         const schema = `
