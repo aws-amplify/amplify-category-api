@@ -21,6 +21,7 @@ import { InputValueDefinitionNode } from 'graphql';
 import { MutationFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { QueryFieldType } from '@aws-amplify/graphql-transformer-interfaces';
+import { QuietReferenceNode } from 'graphql-mapping-template';
 import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { SubscriptionFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { SyncConfig } from '@aws-amplify/graphql-transformer-core';
@@ -45,6 +46,9 @@ export const addModelConditionInputs: (ctx: TransformerTransformSchemaStepContex
 
 // @public (undocumented)
 export const createEnumModelFilters: (ctx: TransformerTransformSchemaStepContextProvider, type: ObjectTypeDefinitionNode) => InputObjectTypeDefinitionNode[];
+
+// @public (undocumented)
+export const defaultAutoId: () => QuietReferenceNode;
 
 // @public (undocumented)
 export class DynamoDBModelVTLGenerator implements ModelVTLGenerator {

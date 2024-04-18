@@ -12,6 +12,8 @@ import {
   and,
   equals,
   ret,
+  qref,
+  QuietReferenceNode,
 } from 'graphql-mapping-template';
 
 const API_KEY = 'API Key Authorization';
@@ -55,4 +57,11 @@ export const generatePostAuthExpression = (isSandboxModeEnabled: boolean, generi
  */
 export const generateResolverKey = (typeName: string, fieldName: string): string => {
   return `${typeName}.${fieldName}`;
+};
+
+/**
+ * Add set default value for id field to util.autoId.
+ */
+export const defaultAutoId = (): QuietReferenceNode => {
+  return qref(methodCall(ref('ctx.stash.defaultValues.put'), str('id'), methodCall(ref('util.autoId'))));
 };
