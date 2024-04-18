@@ -1,17 +1,17 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as fs from 'fs-extra';
+
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
-import { cdkDeploy, initCDKProject } from '../../../../commands';
+import { cdkDeploy, cdkDestroy, initCDKProject } from '../../../../commands';
 import { TestDefinition, writeStackPrefix, writeTestDefinitions } from '../../../../utils';
 import {
-  testCreateRelatedManyCpkSkOneContainsAssociated,
-  testCreateRelatedManypkSkTwoContainsAssociated,
-  testPrimaryCpkSkOneContainsAssociated,
-  testPrimaryCpkSkTwoContainAssociated,
-  testRelatedManyCpkSkOneContainsAssociated,
-  testRelatedOneCpkSkOneContainsAssociated,
-  testRelatedOneCpkSkTwoContainsAssociated,
+    testPrimaryCpkSkOneContainsAssociated,
+    testPrimaryCpkSkTwoContainAssociated,
+    testRelatedManyCpkSkOneContainsAssociated,
+    testRelatedManypkSkTwoContainsAssociated,
+    testRelatedOneCpkSkOneContainsAssociated,
+    testRelatedOneCpkSkTwoContainsAssociated,
 } from './test-implementations';
 
 jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
@@ -64,7 +64,7 @@ describe('Relationships defined using composite primary are supported', () => {
 
     afterAll(async () => {
       try {
-        await cdkDeploy(projRoot, '--all');
+        await cdkDestroy(projRoot, '--all');
       } catch (err) {
         console.log(`Error invoking 'cdk destroy': ${err}`);
       }
@@ -98,7 +98,7 @@ describe('Relationships defined using composite primary are supported', () => {
       });
 
       test('Associated models included in query and mutation response with two sort keys', async () => {
-        await testRelatedOneCpkSkTwoContainsAssociated(currentId, apiEndpoint, apiKey);
+        await testRelatedManypkSkTwoContainsAssociated(currentId, apiEndpoint, apiKey);
       });
     });
   });
