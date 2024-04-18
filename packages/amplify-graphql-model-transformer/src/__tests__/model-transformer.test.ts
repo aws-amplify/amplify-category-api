@@ -1942,10 +1942,26 @@ describe('ModelTransformer:', () => {
         );
       });
 
-      it('should include autoId when timestamps are null', async () => {
+      it('should include autoId when timestamps are null with explicit id', async () => {
         const schema = `
           type Post @model(timestamps: null) {
               id: ID!
+              title: String!
+          }
+        `;
+
+        const out = testTransform({
+          schema,
+          transformers: [new ModelTransformer()],
+        });
+        expect(out.resolvers['Mutation.createPost.init.1.req.vtl']).toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+      });
+
+      it('should include autoId when timestamps are null with implicit id', async () => {
+        const schema = `
+          type Post @model(timestamps: null) {
               title: String!
           }
         `;
