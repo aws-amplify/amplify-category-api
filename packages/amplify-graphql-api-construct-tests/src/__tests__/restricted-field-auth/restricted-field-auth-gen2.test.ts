@@ -31,7 +31,7 @@ jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
 // the associated records are redacted.
 describe('Associated type fields with more restrictive auth rules than the model are redacted using gen2 references-based connections', () => {
   const region = process.env.CLI_REGION ?? 'us-west-2';
-  const baseProjFolderName = 'restricted-field-auth';
+  const baseProjFolderName = 'restricted-field-auth-gen2';
 
   const [dbUsername, dbIdentifier] = generator.generateMultiple(2);
   const dbname = 'default_db';
@@ -86,7 +86,7 @@ describe('Associated type fields with more restrictive auth rules than the model
 
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projFolderName);
-      const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'restricted-field-auth'));
+      const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'configurable-stack'));
       const name = await initCDKProject(projRoot, templatePath);
 
       const primarySchemaPath = path.resolve(path.join(__dirname, 'graphql-schemas', 'gen2', 'schema-primary.graphql'));
@@ -177,7 +177,7 @@ describe('Associated type fields with more restrictive auth rules than the model
 
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projFolderName);
-      const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'restricted-field-auth'));
+      const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'configurable-stack'));
       const name = await initCDKProject(projRoot, templatePath);
 
       const primarySchemaPath = path.resolve(path.join(__dirname, 'graphql-schemas', 'gen2', 'schema-primary.graphql'));
@@ -264,7 +264,7 @@ describe('Associated type fields with more restrictive auth rules than the model
 
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projFolderName);
-      const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'restricted-field-auth'));
+      const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'configurable-stack'));
       const name = await initCDKProject(projRoot, templatePath);
 
       const primarySchemaPath = path.resolve(path.join(__dirname, 'graphql-schemas', 'gen2', 'schema-primary.graphql'));
@@ -355,7 +355,7 @@ describe('Associated type fields with more restrictive auth rules than the model
 
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projFolderName);
-      const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'restricted-field-auth'));
+      const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'configurable-stack'));
       const name = await initCDKProject(projRoot, templatePath);
 
       const primarySchemaPath = path.resolve(path.join(__dirname, 'graphql-schemas', 'gen2', 'schema-primary.graphql'));

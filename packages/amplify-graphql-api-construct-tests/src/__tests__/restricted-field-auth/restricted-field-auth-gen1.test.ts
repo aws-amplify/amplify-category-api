@@ -31,7 +31,7 @@ jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
 
 describe('Associated type fields with more restrictive auth rules than the model are redacted using gen1 fields-based connections', () => {
   const region = process.env.CLI_REGION ?? 'us-west-2';
-  const projFolderName = 'restricted-field-auth';
+  const projFolderName = 'restricted-field-auth-ddb';
 
   describe('DDB primary, DDB related', () => {
     let accessToken: string;
@@ -49,7 +49,7 @@ describe('Associated type fields with more restrictive auth rules than the model
     // restricted fields on the associated records are redacted.
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projFolderName);
-      const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'restricted-field-auth'));
+      const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'configurable-stack'));
       const name = await initCDKProject(projRoot, templatePath);
 
       const schemaPath = path.resolve(path.join(__dirname, 'graphql-schemas', 'gen1-ddb-only', 'schema.graphql'));
