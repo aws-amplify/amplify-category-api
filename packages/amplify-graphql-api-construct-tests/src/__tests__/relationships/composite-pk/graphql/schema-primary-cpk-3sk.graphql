@@ -1,0 +1,8 @@
+type PrimaryCPKSKThree @model {
+  id: ID! @primaryKey(sortKeyFields: ["skOne", "skTwo", "skThree"])
+  skOne: ID!
+  skTwo: ID!
+  skThree: ID!
+  relatedMany: [RelatedManyCPKSKThree] @hasMany(references: ["primaryId", "primarySkOne", "primarySkTwo", "primarySkThree"])
+  relatedOne: RelatedOneCPKSKThree @hasOne(references: ["primaryId", "primarySkOne", "primarySkTwo", "primarySkThree"])
+}

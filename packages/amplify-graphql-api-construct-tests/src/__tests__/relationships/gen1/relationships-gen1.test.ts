@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
-import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
-import { graphql } from '../graphql-request';
+import { initCDKProject, cdkDeploy, cdkDestroy } from '../../../commands';
+import { graphql } from '../../../graphql-request';
 
 jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
 
@@ -16,7 +16,7 @@ describe('CDK GraphQL Transformer - Relationships', () => {
    */
   beforeAll(async () => {
     projRoot = await createNewProjectDir('cdkrelationships');
-    const templatePath = path.resolve(path.join(__dirname, 'backends', 'relationships'));
+    const templatePath = path.resolve(path.join(__dirname, '..', '..', 'backends', 'relationships'));
     const name = await initCDKProject(projRoot, templatePath);
     const outputs = await cdkDeploy(projRoot, '--all');
     apiEndpoint = outputs[name].awsAppsyncApiEndpoint;

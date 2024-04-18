@@ -438,7 +438,7 @@ exports[`has many references with multiple sort keys 2`] = `
   },
   \\"expressionValues\\": {
       \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue),
-      \\":sortKey\\": $util.dynamodb.toDynamoDB($teamMantra#teamOrganization)
+      \\":sortKey\\": $util.dynamodb.toDynamoDB(\\"\${sortKeyValue0}#\${sortKeyValue1}\\")
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -543,7 +543,7 @@ exports[`has many references with partition key + sort key 1`] = `
   },
   \\"expressionValues\\": {
       \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue),
-      \\":sortKey\\": $util.dynamodb.toDynamoDB($teamMantra)
+      \\":sortKey\\": $util.dynamodb.toDynamoDB(\\"\${sortKeyValue0}\\")
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
