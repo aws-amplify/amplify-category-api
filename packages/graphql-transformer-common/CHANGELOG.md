@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.30.1-gen2-release-0418-2.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.30.0...graphql-transformer-common@4.30.1-gen2-release-0418-2.0) (2024-04-18)
+
+**Note:** Version bump only for package graphql-transformer-common
+
 # [4.30.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.29.0...graphql-transformer-common@4.30.0) (2024-04-11)
 
 ### Bug Fixes
