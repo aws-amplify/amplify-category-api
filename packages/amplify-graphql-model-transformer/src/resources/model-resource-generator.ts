@@ -352,8 +352,11 @@ export abstract class ModelResourceGenerator {
         operationName: fieldName,
         modelConfig: this.modelDirectiveMap.get(type.name.value)!,
       };
+
+      // check for implicit id field
       const outputType = ctx.output.getObject(type.name.value);
       const initializeIdField = !!outputType?.fields!.find((field) => field.name.value === 'id');
+
       resolver.addToSlot(
         'init',
         MappingTemplate.s3MappingTemplateFromString(
