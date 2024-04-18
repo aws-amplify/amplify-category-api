@@ -2047,7 +2047,7 @@ describe('ModelTransformer:', () => {
         );
       });
 
-      it('should not include autoId for implicit ID', async () => {
+      it('should not include autoId when id field is not included', async () => {
         const schema = `
           type Post @model {
               postId: ID! @primaryKey
