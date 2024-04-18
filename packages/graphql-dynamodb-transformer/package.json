@@ -1,6 +1,6 @@
 {
   "name": "graphql-dynamodb-transformer",
-  "version": "7.2.76",
+  "version": "7.2.77-gen2-release-0418.0",
   "description": "An AppSync model transform that takes a simple model and creates a DynamoDB table, DynamoDB stream.",
   "repository": {
     "type": "git",
@@ -28,8 +28,8 @@
     "cloudform-types": "^4.2.0",
     "graphql": "^15.5.0",
     "graphql-mapping-template": "4.20.15",
-    "graphql-transformer-common": "4.30.0",
-    "graphql-transformer-core": "8.2.9",
+    "graphql-transformer-common": "4.30.1-gen2-release-0418.0",
+    "graphql-transformer-core": "8.2.10-gen2-release-0418.0",
     "md5": "^2.2.1",
     "pluralize": "^8.0.0"
   },
