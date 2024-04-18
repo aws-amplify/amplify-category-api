@@ -2058,6 +2058,24 @@ describe('ModelTransformer:', () => {
           '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
         );
       });
+
+      it('should include autoId when using a custom primary key and an explict id', async () => {
+        const schema = `
+          type Post @model {
+              id: ID!
+              postId: ID! @primaryKey
+              title: String!
+          }
+        `;
+
+        const out = testTransform({
+          schema,
+          transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        });
+        expect(out.resolvers['Mutation.createPost.init.1.req.vtl']).toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+      });
     });
 
     describe('sql', () => {
