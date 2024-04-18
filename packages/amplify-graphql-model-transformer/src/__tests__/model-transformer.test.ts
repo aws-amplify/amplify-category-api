@@ -1942,6 +1942,23 @@ describe('ModelTransformer:', () => {
         );
       });
 
+      it('should include autoId for id with @primaryKey', async () => {
+        const schema = `
+          type Post @model {
+            id: ID! @primaryKey
+            title: String!
+          }
+        `;
+
+        const out = testTransform({
+          schema,
+          transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        });
+        expect(out.resolvers['Mutation.createPost.init.1.req.vtl']).toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+      });
+
       it('should include autoId when timestamps are null with explicit id', async () => {
         const schema = `
           type Post @model(timestamps: null) {
@@ -2077,6 +2094,23 @@ describe('ModelTransformer:', () => {
           dataSourceStrategies: constructDataSourceStrategies(schema, makeStrategy(MYSQL_DB_TYPE)),
         });
         expect(out.resolvers['Mutation.createPost.init.1.req.vtl']).not.toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+      });
+
+      it('should include autoId for id with @primaryKey', async () => {
+        const schema = `
+          type Post @model {
+            id: ID! @primaryKey
+            title: String!
+          }
+        `;
+
+        const out = testTransform({
+          schema,
+          transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        });
+        expect(out.resolvers['Mutation.createPost.init.1.req.vtl']).toContain(
           '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
         );
       });
