@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
-import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
-import { graphql } from '../graphql-request';
+import { initCDKProject, cdkDeploy, cdkDestroy } from '../../../commands';
+import { graphql } from '../../../graphql-request';
 
 jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
 

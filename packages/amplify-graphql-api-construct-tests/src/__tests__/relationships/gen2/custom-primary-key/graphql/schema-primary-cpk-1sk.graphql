@@ -1,0 +1,6 @@
+type PrimaryCPKSKOne @model {
+  id: ID! @primaryKey(sortKeyFields: ["skOne"])
+  skOne: ID!
+  relatedMany: [RelatedManyCPKSKOne] @hasMany(references: ["primaryId", "primarySkOne"])
+  relatedOne: RelatedOneCPKSKOne @hasOne(references: ["primaryId", "primarySkOne"])
+}
