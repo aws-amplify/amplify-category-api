@@ -27,6 +27,7 @@ import {
   getRelatedManyCPKSKOne,
   getRelatedManyCPKSKTwo,
   getRelatedOneCPKSKOne,
+  getRelatedOneCPKSKTwo,
 } from './graphql/queries';
 
 // =======================================================================
@@ -148,16 +149,24 @@ export const testRelatedOneCpkSkOneContainsAssociated = async (currentId: number
   const relatedOneCreateResult = await doAppSyncGraphqlMutation({ ...args, query: createRelatedOneCPKSKOne, variables: relatedVariables });
 
   // Assert create mutation response contains associated models
-  const relatedOneCreate = relatedOneCreateResult.body.data.createPrimaryCPKSKOne;
+  const relatedOneCreate = relatedOneCreateResult.body.data.createRelatedOneCPKSKOne;
   assertRelatedOneCpkOneContainsAssociated(relatedOneCreate, primaryVariables);
 
   // Assert get query response contains associated models
-  const relatedOneGetResult = await doAppSyncGraphqlQuery({ ...args, query: getRelatedOneCPKSKOne, variables: relatedVariables });
+  const relatedOneGetResult = await doAppSyncGraphqlQuery({
+    ...args,
+    query: getRelatedOneCPKSKOne,
+    variables: { id: relatedOneCreate.id, ...relatedVariables },
+  });
   const relatedOneGet = relatedOneGetResult.body.data.getRelatedOneCPKSKOne;
   assertRelatedOneCpkOneContainsAssociated(relatedOneGet, primaryVariables);
 
   // Assert update mutation response contains associated models
-  const relatedOneUpdatedResult = await doAppSyncGraphqlMutation({ ...args, query: updateRelatedOneCPKSKOne, variables: relatedVariables });
+  const relatedOneUpdatedResult = await doAppSyncGraphqlMutation({
+    ...args,
+    query: updateRelatedOneCPKSKOne,
+    variables: { id: relatedOneCreate.id, ...relatedVariables },
+  });
   const relatedOneUpdate = relatedOneUpdatedResult.body.data.updateRelatedOneCPKSKOne;
   assertRelatedOneCpkOneContainsAssociated(relatedOneUpdate, primaryVariables);
 };
@@ -185,12 +194,20 @@ export const testRelatedOneCpkSkTwoContainsAssociated = async (currentId: number
   assertRelatedOneCpkTwoContainsAssociated(relatedOneCreate, primaryVariables);
 
   // Assert get query response contains associated models
-  const relatedOneGetResult = await doAppSyncGraphqlQuery({ ...args, query: getRelatedOneCPKSKOne, variables: relatedVariables });
-  const relatedOneGet = relatedOneGetResult.body.data.getRelatedOneCPKSKOne;
+  const relatedOneGetResult = await doAppSyncGraphqlQuery({
+    ...args,
+    query: getRelatedOneCPKSKTwo,
+    variables: { id: relatedOneCreate.id, ...relatedVariables },
+  });
+  const relatedOneGet = relatedOneGetResult.body.data.getRelatedOneCPKSKTwo;
   assertRelatedOneCpkTwoContainsAssociated(relatedOneGet, primaryVariables);
 
   // Assert update mutation response contains associated models
-  const relatedOneUpdatedResult = await doAppSyncGraphqlMutation({ ...args, query: updateRelatedOneCPKSKTwo, variables: relatedVariables });
+  const relatedOneUpdatedResult = await doAppSyncGraphqlMutation({
+    ...args,
+    query: updateRelatedOneCPKSKTwo,
+    variables: { id: relatedOneCreate.id, ...relatedVariables },
+  });
   const relatedOneUpdate = relatedOneUpdatedResult.body.data.updateRelatedOneCPKSKTwo;
   assertRelatedOneCpkTwoContainsAssociated(relatedOneUpdate, primaryVariables);
 };
