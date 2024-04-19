@@ -442,20 +442,35 @@ export const storeDbConnectionConfig = async (options: {
 export const storeDbConnectionStringConfig = async (options: {
   region: string;
   pathPrefix: string;
-  connectionUri: string;
+  connectionUri: string | string[];
 }): Promise<{
-  connectionUriSsmPath: string;
+  connectionUriSsmPath: string | string[];
 }> => {
-  await storeSSMParameters({
-    region: options.region,
-    pathPrefix: options.pathPrefix,
-    parameters: {
-      connectionUri: options.connectionUri,
-    },
-  });
-  return {
-    connectionUriSsmPath: `${options.pathPrefix}/connectionUri`,
-  };
+  if (typeof options.connectionUri === 'string') {
+    await storeSSMParameters({
+      region: options.region,
+      pathPrefix: options.pathPrefix,
+      parameters: {
+        connectionUri: options.connectionUri,
+      },
+    });
+    return {
+      connectionUriSsmPath: `${options.pathPrefix}/connectionUri`,
+    };
+  } else {
+    options.connectionUri.forEach(async (connectionUri, index) => {
+      await storeSSMParameters({
+        region: options.region,
+        pathPrefix: options.pathPrefix,
+        parameters: {
+          [`connectionUri${index}`]: connectionUri,
+        },
+      });
+    });
+    return {
+      connectionUriSsmPath: options.connectionUri.map((_, index) => `${options.pathPrefix}/connectionUri${index}`),
+    };
+  }
 };
 
 export const storeSSMParameters = async (options: { region: string; pathPrefix: string; parameters: Record<string, string> }) => {

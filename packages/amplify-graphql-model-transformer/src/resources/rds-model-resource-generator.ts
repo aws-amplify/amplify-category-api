@@ -136,7 +136,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       credentialStorageMethod = CredentialStorageMethod.SECRETS_MANAGER;
     } else if (isSqlModelDataSourceSsmDbConnectionStringConfig(secretEntry)) {
       environment.CREDENTIAL_STORAGE_METHOD = 'SSM';
-      environment.connectionString = secretEntry.connectionUriSsmPath;
+      environment.connectionString = JSON.stringify(secretEntry.connectionUriSsmPath);
       credentialStorageMethod = CredentialStorageMethod.SSM;
     }
 

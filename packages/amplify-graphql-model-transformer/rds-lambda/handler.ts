@@ -144,6 +144,36 @@ const getSecretManagerValue = async (secretArn: string | undefined): Promise<{ u
   }
 }
 
+const resolveConnectionStringValue = async (jsonConnectionString: string): Promise<string> => {
+  const parsedJsonConnectionString = JSON.parse(jsonConnectionString);
+  const ssmRequestError = 'Unable to connect to the database. Check the logs for more details.';
+  const ssmLoggedError = 'Unable to fetch the connection Uri from SSM for the provided paths.';
+  console.log(`connection uri SSM paths: ${parsedJsonConnectionString}`);
+  if (Array.isArray(parsedJsonConnectionString)) {
+    for (const connectionUriSsmPath of parsedJsonConnectionString) {
+      console.log(`Trying to fetch connection string from SSM path: ${connectionUriSsmPath}`);
+      try {
+        return await getSSMValue(connectionUriSsmPath);
+      }
+      catch (e) {
+        // try the next secret path;
+        continue;
+      }
+    }
+    console.log(ssmLoggedError);
+    throw new Error(ssmRequestError);
+  }
+  else {
+    try {
+      return await getSSMValue(parsedJsonConnectionString);
+    }
+    catch (e) {
+      console.log(ssmLoggedError);
+      throw new Error(ssmRequestError);
+    }
+  }
+};
+
 
 const getDBConfig = async (): DBConfig => {
   const config: DBConfig = {};
@@ -153,9 +183,9 @@ const getDBConfig = async (): DBConfig => {
       createSSMClient();
     }
 
-    const connectionString = process.env.connectionString;
-    if (connectionString) {
-      config.connectionString = await getSSMValue(connectionString);
+    const jsonConnectionString = process.env.connectionString;
+    if (jsonConnectionString) {
+      config.connectionString = await resolveConnectionStringValue(jsonConnectionString);
       return config;
     }
 

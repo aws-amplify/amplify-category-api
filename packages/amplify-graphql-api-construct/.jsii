@@ -7610,7 +7610,21 @@
           },
           "name": "connectionUriSsmPath",
           "type": {
-            "primitive": "string"
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "primitive": "string"
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
           }
         }
       ],
@@ -8171,5 +8185,5 @@
     }
   },
   "version": "1.8.1",
-  "fingerprint": "RYLDuPcXrKkJVdyr+N3cvr80/DnbRL4kKh9QZAl4lUY="
+  "fingerprint": "hF3IhO8jnMvruVK74WA/JcSZ7FQvl6/6Sl4Y84Vq1qw="
 }

@@ -115,9 +115,18 @@ export class SqlDatatabaseController {
         this.options.dbname,
       ),
     });
+    const dbConnectionStringConfigMultiple = await storeDbConnectionStringConfig({
+      region: this.options.region,
+      pathPrefix,
+      connectionUri: [
+        'dummy connection uri',
+        this.getConnectionUri(engine, this.options.username, dbConfig.password, dbConfig.endpoint, dbConfig.port, this.options.dbname),
+      ],
+    });
     const parameters = {
       ...dbConnectionConfigSSM,
       ...dbConnectionStringConfigSSM,
+      ...dbConnectionStringConfigMultiple,
     };
     if (!dbConnectionConfigSSM) {
       throw new Error('Failed to store db connection config for SSM');
@@ -144,6 +153,7 @@ export class SqlDatatabaseController {
           secretArn: dbConfig.managedSecretArn,
         },
         connectionUri: dbConnectionStringConfigSSM,
+        connectionUriMultiple: dbConnectionStringConfigMultiple,
       },
     };
 
@@ -179,9 +189,11 @@ export class SqlDatatabaseController {
             ],
           });
         } else if (isSqlModelDataSourceSsmDbConnectionStringConfig(dbConnectionConfig)) {
+          const { connectionUriSsmPath } = dbConnectionConfig;
+          const paths = Array.isArray(connectionUriSsmPath) ? connectionUriSsmPath : [connectionUriSsmPath];
           return deleteSSMParameters({
             region: this.options.region,
-            parameterNames: [dbConnectionConfig.connectionUriSsmPath],
+            parameterNames: paths,
           });
         }
       }),

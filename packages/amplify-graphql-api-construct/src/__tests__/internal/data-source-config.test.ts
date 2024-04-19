@@ -281,5 +281,43 @@ describe('datasource config', () => {
         'Invalid data source strategy "mysqlStrategy". Following SSM paths must start with \'/\' in dbConnectionConfig: connectionUriPath.',
       );
     });
+
+    it('validateDataSourceStrategy passes when multiple valid connection string SSM Paths are passed', () => {
+      expect(() =>
+        validateDataSourceStrategy({
+          name: 'mysqlStrategy',
+          dbType: 'MYSQL',
+          dbConnectionConfig: {
+            connectionUriSsmPath: ['/test/connectionUri/1', '/test/connectionUri/2'],
+          },
+        }),
+      ).not.toThrow();
+    });
+
+    it('validateDataSourceStrategy fails when any of the connection string SSM Paths is not valid', () => {
+      expect(() =>
+        validateDataSourceStrategy({
+          name: 'mysqlStrategy',
+          dbType: 'MYSQL',
+          dbConnectionConfig: {
+            connectionUriSsmPath: ['/test/connectionUri/1', 'connectionUriPath'],
+          },
+        }),
+      ).toThrow(
+        'Invalid data source strategy "mysqlStrategy". Following SSM paths must start with \'/\' in dbConnectionConfig: connectionUriPath.',
+      );
+    });
+
+    it('validateDataSourceStrategy fails the connection string SSM Path is an empty array', () => {
+      expect(() =>
+        validateDataSourceStrategy({
+          name: 'mysqlStrategy',
+          dbType: 'MYSQL',
+          dbConnectionConfig: {
+            connectionUriSsmPath: [],
+          },
+        }),
+      ).toThrow('Invalid data source strategy "mysqlStrategy". connectionUriSsmPath must be a string or non-empty array.');
+    });
   });
 });

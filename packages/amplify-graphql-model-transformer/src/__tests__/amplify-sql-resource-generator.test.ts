@@ -275,4 +275,74 @@ describe('ModelTransformer with SQL data sources:', () => {
     expect(envVars.CREDENTIAL_STORAGE_METHOD).toEqual('SSM');
     expect(envVars.SSM_ENDPOINT).toBeDefined();
   });
+
+  it('should accept multiple connection uris as input', () => {
+    const connectionStringMySql = {
+      ...mysqlStrategy,
+      dbConnectionConfig: {
+        connectionUriSsmPath: ['/test/connectionUri/1', '/test/connectionUri/2'],
+      },
+    };
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(validSchema, connectionStringMySql),
+    });
+    expect(out).toBeDefined();
+    const resourceNames = getResourceNamesForStrategy(connectionStringMySql);
+    const sqlApiStack = out.stacks[resourceNames.sqlStack];
+    expect(sqlApiStack).toBeDefined();
+
+    // Check that SSM permissions are assigned
+    const [, policy] =
+      Object.entries(sqlApiStack.Resources!).find(([resourceName]) => {
+        return resourceName.startsWith(resourceNames.sqlLambdaExecutionRolePolicy);
+      }) || [];
+
+    expect(policy).toBeDefined();
+    const {
+      Properties: { PolicyDocument },
+    } = policy;
+    expect(PolicyDocument.Statement.length).toEqual(2);
+
+    const ssmStatements = PolicyDocument.Statement.filter(
+      (statement: any) => JSON.stringify(statement.Action) === JSON.stringify(['ssm:GetParameter', 'ssm:GetParameters']),
+    );
+    const ssmPaths = connectionStringMySql.dbConnectionConfig.connectionUriSsmPath;
+    expect(ssmStatements.length).toEqual(1);
+    expect(ssmStatements[0].Resource).toEqual(ssmPaths.map((ssmPath) => `arn:aws:ssm:*:*:parameter${ssmPath}`));
+
+    // Check that secrets manager permissions are not assigned
+    const secretsManagerStatements = PolicyDocument.Statement.filter(
+      (statement: any) => statement.Action === 'secretsmanager:GetSecretValue',
+    );
+    expect(secretsManagerStatements.length).toEqual(0);
+
+    const kmsStatements = PolicyDocument.Statement.filter((statement: any) => statement.Action === 'kms:Decrypt');
+    expect(kmsStatements.length).toEqual(0);
+
+    // Check that cloudwatch permissions are assigned
+    const cloudWatchStatements = PolicyDocument.Statement.filter(
+      (statement: any) =>
+        JSON.stringify(statement.Action) === JSON.stringify(['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents']),
+    );
+    expect(cloudWatchStatements.length).toEqual(1);
+    expect(cloudWatchStatements[0].Resource).toEqual('arn:aws:logs:*:*:*');
+
+    expect(PolicyDocument).toMatchSnapshot();
+
+    // Check that the connection uri is passed to the lambda as an environment variable
+    const [, sqlLambda] =
+      Object.entries(sqlApiStack.Resources!).find(([resourceName]) => {
+        return resourceName.startsWith(resourceNames.sqlLambdaFunction);
+      }) || [];
+    expect(sqlLambda).toBeDefined();
+    const envVars = sqlLambda.Properties.Environment.Variables;
+    expect(envVars).toBeDefined();
+    // The connection string information that is set in the lambda environment should be a valid JSON.
+    expect(envVars.connectionString).toBeDefined();
+    expect(JSON.parse(envVars.connectionString)).toEqual(ssmPaths);
+    expect(envVars.CREDENTIAL_STORAGE_METHOD).toEqual('SSM');
+    expect(envVars.SSM_ENDPOINT).toBeDefined();
+  });
 });
