@@ -4,6 +4,7 @@ import { AuthTransformer } from '../graphql-auth-transformer';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
 import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
+import { BelongsToTransformer } from '@aws-amplify/graphql-relational-transformer/src';
 
 const IAM_ACCESS_CHECK_DDB =
   '#if( $util.authType() == "IAM Authorization" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )';
@@ -458,6 +459,7 @@ describe('rds', () => {
       type Post @model {
         id: ID! @primaryKey
         blogId: ID!
+        blog: Blog @belongsTo(references: "blogId")
         title: String!
         createdAt: String
         updatedAt: String
@@ -476,7 +478,13 @@ describe('rds', () => {
       transformParameters: {
         sandboxModeEnabled: true,
       },
-      transformers: [new ModelTransformer(), new HasManyTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
+      transformers: [
+        new ModelTransformer(),
+        new HasManyTransformer(),
+        new BelongsToTransformer(),
+        new AuthTransformer(),
+        new PrimaryKeyTransformer(),
+      ],
       dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlStrategy),
     });
     expect(out).toBeDefined();
