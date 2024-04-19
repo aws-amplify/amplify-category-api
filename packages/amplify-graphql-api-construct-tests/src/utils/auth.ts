@@ -114,3 +114,34 @@ export const signInCognitoUser = async (options: SignInCognitoUserInput): Promis
     username,
   };
 };
+
+export const getUsernameClaimFromJwt = (accessToken: string): string => {
+  const claims: any = getClaimsFromJwt(accessToken);
+  if (typeof claims['username'] === 'string') {
+    return claims['username'];
+  }
+  throw new Error(`Could not extract username claim from JWT ${accessToken}`);
+};
+
+export const getSubClaimFromJwt = (accessToken: string): string => {
+  const claims: any = getClaimsFromJwt(accessToken);
+  if (typeof claims['sub'] === 'string') {
+    return claims['sub'];
+  }
+  throw new Error(`Could not extract sub claim from JWT ${accessToken}`);
+};
+
+export const getConsolidatedAmplifyOwnerFieldFromJwt = (accessToken: string): string => {
+  const username = getUsernameClaimFromJwt(accessToken);
+  const sub = getSubClaimFromJwt(accessToken);
+  const owner = `${sub}::${username}`;
+  return owner;
+};
+
+export const getClaimsFromJwt = (accessToken: string): any => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_sig, claimsBase64] = accessToken.split('.');
+  const claimsString = Buffer.from(claimsBase64, 'base64').toString();
+  const claims: any = JSON.parse(claimsString);
+  return claims;
+};

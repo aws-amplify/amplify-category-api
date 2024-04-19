@@ -22,11 +22,19 @@ import {
   testCreateRelatedOneRedactedForDifferentOwners,
   testCreateRelatedOneVisibleForSameOwner,
   testGetPrimaryRedactedForDifferentOwners,
+  testGetPrimaryUnauthorizedForDifferentOwner,
   testGetPrimaryVisibleForSameOwner,
   testGetRelatedManyRedactedForDifferentOwners,
   testGetRelatedManyVisibleForSameOwner,
   testGetRelatedOneRedactedForDifferentOwners,
   testGetRelatedOneVisibleForSameOwner,
+  testListPrimariesRedactedForDifferentOwners,
+  testListPrimariesRedactsTopLevelItemsForDifferentOwners,
+  testListPrimariesVisibleForSameOwner,
+  testListRelatedManiesRedactedForDifferentOwners,
+  testListRelatedManiesVisibleForSameOwner,
+  testListRelatedOnesRedactedForDifferentOwners,
+  testListRelatedOnesVisibleForSameOwner,
   testUpdatePrimaryRedactedForDifferentOwners,
   testUpdatePrimaryVisibleForSameOwner,
   testUpdateRelatedManyRedactedForDifferentOwners,
@@ -183,8 +191,26 @@ describe('Associated fields protected by owner auth control visibility appropria
         await testGetPrimaryVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
-      test('getPrimary redacts relations if created by same owner', async () => {
+      test('getPrimary redacts relations if created by different owner', async () => {
         await testGetPrimaryRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
+      });
+
+      test('listPrimaries shows relations if created by same owner', async () => {
+        await testListPrimariesVisibleForSameOwner(currentId, apiEndpoint, accessToken);
+      });
+
+      test('listPrimaries redacts relations if created by different owner', async () => {
+        await testListPrimariesRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
+      });
+
+      // We will only test get and list redaction of top-level items for the Primary model, since there is no interesting difference between
+      // the use cases for GetRelated* or ListRelated*
+      test('getPrimary unauthorized top-level item if created by different owner', async () => {
+        await testGetPrimaryUnauthorizedForDifferentOwner(currentId, apiEndpoint, accessToken, accessToken2);
+      });
+
+      test('listPrimaries redacts top-level items if created by different owner', async () => {
+        await testListPrimariesRedactsTopLevelItemsForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
       });
     });
 
@@ -209,8 +235,16 @@ describe('Associated fields protected by owner auth control visibility appropria
         await testGetRelatedOneVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
-      test('getRelatedOne redacts relations if created by same owner', async () => {
+      test('getRelatedOne redacts relations if created by different owner', async () => {
         await testGetRelatedOneRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
+      });
+
+      test('listRelatedOnes shows relations if created by same owner', async () => {
+        await testListRelatedOnesVisibleForSameOwner(currentId, apiEndpoint, accessToken);
+      });
+
+      test('listRelatedOnes redacts relations if created by different owner', async () => {
+        await testListRelatedOnesRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
       });
     });
 
@@ -235,8 +269,16 @@ describe('Associated fields protected by owner auth control visibility appropria
         await testGetRelatedManyVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
-      test('getRelatedMany redacts relations if created by same owner', async () => {
+      test('getRelatedMany redacts relations if created by different owner', async () => {
         await testGetRelatedManyRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
+      });
+
+      test('listRelatedManies shows relations if created by same owner', async () => {
+        await testListRelatedManiesVisibleForSameOwner(currentId, apiEndpoint, accessToken);
+      });
+
+      test('listRelatedManies redacts relations if created by different owner', async () => {
+        await testListRelatedManiesRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
       });
     });
   });
@@ -339,8 +381,26 @@ describe('Associated fields protected by owner auth control visibility appropria
         await testGetPrimaryVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
-      test('getPrimary redacts relations if created by same owner', async () => {
+      test('getPrimary redacts relations if created by different owner', async () => {
         await testGetPrimaryRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
+      });
+
+      test('listPrimaries shows relations if created by same owner', async () => {
+        await testListPrimariesVisibleForSameOwner(currentId, apiEndpoint, accessToken);
+      });
+
+      test('listPrimaries redacts relations if created by different owner', async () => {
+        await testListPrimariesRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
+      });
+
+      // We will only test get and list redaction of top-level items for the Primary model, since there is no interesting difference between
+      // the use cases for GetRelated* or ListRelated*
+      test('getPrimary unauthorized top-level item if created by different owner', async () => {
+        await testGetPrimaryUnauthorizedForDifferentOwner(currentId, apiEndpoint, accessToken, accessToken2);
+      });
+
+      test('listPrimaries redacts top-level items if created by different owner', async () => {
+        await testListPrimariesRedactsTopLevelItemsForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
       });
     });
 
@@ -365,8 +425,16 @@ describe('Associated fields protected by owner auth control visibility appropria
         await testGetRelatedOneVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
-      test('getRelatedOne redacts relations if created by same owner', async () => {
+      test('getRelatedOne redacts relations if created by different owner', async () => {
         await testGetRelatedOneRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
+      });
+
+      test('listRelatedOnes shows relations if created by same owner', async () => {
+        await testListRelatedOnesVisibleForSameOwner(currentId, apiEndpoint, accessToken);
+      });
+
+      test('listRelatedOnes redacts relations if created by different owner', async () => {
+        await testListRelatedOnesRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
       });
     });
 
@@ -391,8 +459,16 @@ describe('Associated fields protected by owner auth control visibility appropria
         await testGetRelatedManyVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
-      test('getRelatedMany redacts relations if created by same owner', async () => {
+      test('getRelatedMany redacts relations if created by different owner', async () => {
         await testGetRelatedManyRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
+      });
+
+      test('listRelatedManies shows relations if created by same owner', async () => {
+        await testListRelatedManiesVisibleForSameOwner(currentId, apiEndpoint, accessToken);
+      });
+
+      test('listRelatedManies redacts relations if created by different owner', async () => {
+        await testListRelatedManiesRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
       });
     });
   });
@@ -499,8 +575,26 @@ describe('Associated fields protected by owner auth control visibility appropria
         await testGetPrimaryVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
-      test('getPrimary redacts relations if created by same owner', async () => {
+      test('getPrimary redacts relations if created by different owner', async () => {
         await testGetPrimaryRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
+      });
+
+      test('listPrimaries shows relations if created by same owner', async () => {
+        await testListPrimariesVisibleForSameOwner(currentId, apiEndpoint, accessToken);
+      });
+
+      test('listPrimaries redacts relations if created by different owner', async () => {
+        await testListPrimariesRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
+      });
+
+      // We will only test get and list redaction of top-level items for the Primary model, since there is no interesting difference between
+      // the use cases for GetRelated* or ListRelated*
+      test('getPrimary unauthorized top-level item if created by different owner', async () => {
+        await testGetPrimaryUnauthorizedForDifferentOwner(currentId, apiEndpoint, accessToken, accessToken2);
+      });
+
+      test('listPrimaries redacts top-level items if created by different owner', async () => {
+        await testListPrimariesRedactsTopLevelItemsForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
       });
     });
 
@@ -525,8 +619,16 @@ describe('Associated fields protected by owner auth control visibility appropria
         await testGetRelatedOneVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
-      test('getRelatedOne redacts relations if created by same owner', async () => {
+      test('getRelatedOne redacts relations if created by different owner', async () => {
         await testGetRelatedOneRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
+      });
+
+      test('listRelatedOnes shows relations if created by same owner', async () => {
+        await testListRelatedOnesVisibleForSameOwner(currentId, apiEndpoint, accessToken);
+      });
+
+      test('listRelatedOnes redacts relations if created by different owner', async () => {
+        await testListRelatedOnesRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
       });
     });
 
@@ -551,8 +653,16 @@ describe('Associated fields protected by owner auth control visibility appropria
         await testGetRelatedManyVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
-      test('getRelatedMany redacts relations if created by same owner', async () => {
+      test('getRelatedMany redacts relations if created by different owner', async () => {
         await testGetRelatedManyRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
+      });
+
+      test('listRelatedManies shows relations if created by same owner', async () => {
+        await testListRelatedManiesVisibleForSameOwner(currentId, apiEndpoint, accessToken);
+      });
+
+      test('listRelatedManies redacts relations if created by different owner', async () => {
+        await testListRelatedManiesRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
       });
     });
   });
@@ -660,8 +770,26 @@ describe('Associated fields protected by owner auth control visibility appropria
         await testGetPrimaryVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
-      test('getPrimary redacts relations if created by same owner', async () => {
+      test('getPrimary redacts relations if created by different owner', async () => {
         await testGetPrimaryRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
+      });
+
+      test('listPrimaries shows relations if created by same owner', async () => {
+        await testListPrimariesVisibleForSameOwner(currentId, apiEndpoint, accessToken);
+      });
+
+      test('listPrimaries redacts relations if created by different owner', async () => {
+        await testListPrimariesRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
+      });
+
+      // We will only test get and list redaction of top-level items for the Primary model, since there is no interesting difference between
+      // the use cases for GetRelated* or ListRelated*
+      test('getPrimary unauthorized top-level item if created by different owner', async () => {
+        await testGetPrimaryUnauthorizedForDifferentOwner(currentId, apiEndpoint, accessToken, accessToken2);
+      });
+
+      test('listPrimaries redacts top-level items if created by different owner', async () => {
+        await testListPrimariesRedactsTopLevelItemsForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
       });
     });
 
@@ -686,8 +814,16 @@ describe('Associated fields protected by owner auth control visibility appropria
         await testGetRelatedOneVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
-      test('getRelatedOne redacts relations if created by same owner', async () => {
+      test('getRelatedOne redacts relations if created by different owner', async () => {
         await testGetRelatedOneRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
+      });
+
+      test('listRelatedOnes shows relations if created by same owner', async () => {
+        await testListRelatedOnesVisibleForSameOwner(currentId, apiEndpoint, accessToken);
+      });
+
+      test('listRelatedOnes redacts relations if created by different owner', async () => {
+        await testListRelatedOnesRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
       });
     });
 
@@ -712,8 +848,16 @@ describe('Associated fields protected by owner auth control visibility appropria
         await testGetRelatedManyVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
-      test('getRelatedMany redacts relations if created by same owner', async () => {
+      test('getRelatedMany redacts relations if created by different owner', async () => {
         await testGetRelatedManyRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
+      });
+
+      test('listRelatedManies shows relations if created by same owner', async () => {
+        await testListRelatedManiesVisibleForSameOwner(currentId, apiEndpoint, accessToken);
+      });
+
+      test('listRelatedManies redacts relations if created by different owner', async () => {
+        await testListRelatedManiesRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
       });
     });
   });

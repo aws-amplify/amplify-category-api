@@ -135,15 +135,16 @@ const RUN_SOLO: (string | RegExp)[] = [
   /src\/__tests__\/sql-.*\.test\.ts/,
   // CDK tests
   /src\/__tests__\/base-cdk.*\.test\.ts/,
+  'src/__tests__/admin-role.test.ts',
+  'src/__tests__/all-auth-modes.test.ts',
+  'src/__tests__/amplify-ddb-canary.test.ts',
   'src/__tests__/amplify-table-1.test.ts',
+  'src/__tests__/amplify-table-2.test.ts',
   'src/__tests__/amplify-table-3.test.ts',
   'src/__tests__/amplify-table-4.test.ts',
   'src/__tests__/api_canary.test.ts',
-  'src/__tests__/amplify-table-2.test.ts',
-  'src/__tests__/admin-role.test.ts',
-  'src/__tests__/all-auth-modes.test.ts',
   'src/__tests__/default-ddb-canary.test.ts',
-  'src/__tests__/amplify-ddb-canary.test.ts',
+  /src\/__tests__\/owner-auth\/.*\.test\.ts/,
 ];
 
 const RUN_IN_ALL_REGIONS = [

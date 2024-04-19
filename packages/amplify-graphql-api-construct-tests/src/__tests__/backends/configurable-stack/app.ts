@@ -39,10 +39,10 @@ const combineTestDefinitionsInDirectory = (directory: string): IAmplifyGraphqlDe
 
 const projRoot = path.normalize(path.join(__dirname, '..'));
 
-// Read the prefix to use when naming stack assets. Keep this short so you don't bump up against resource length limits (e.g., 140
-// characters for lambda layers).
+// Read the prefix to use when naming stack assets. Keep this short (<=15 characters) so you don't bump up against resource length limits
+// (e.g., 140 characters for lambda layers). Prefixes longer than 15 characters will be truncated.
 // arn:aws:lambda:ap-northeast-2:012345678901:layer:${PREFIX}ApiAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentAwsCliLayerABCDEF12:1
-const PREFIX = fs.readFileSync(path.join(projRoot, 'stack-prefix.txt'));
+const PREFIX = fs.readFileSync(path.join(projRoot, 'stack-prefix.txt')).toString().substring(0, 15);
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
@@ -76,7 +76,7 @@ new AmplifyGraphqlApi(stack, `${PREFIX}Api`, {
   authorizationModes: {
     defaultAuthorizationMode: 'AMAZON_COGNITO_USER_POOLS',
     userPoolConfig: { userPool },
-    apiKeyConfig: { expires: Duration.days(7) },
+    apiKeyConfig: { expires: Duration.days(2) },
   },
 });
 
