@@ -13,6 +13,7 @@ type Part {
   partName: String
   systemId: String!
   systemName: String!
+  system: System
 }
 
 input ModelStringInput {
@@ -362,6 +363,7 @@ type Post {
   id: String!
   content: String
   blogId: String
+  blog: Blog
 }
 
 input ModelStringInput {

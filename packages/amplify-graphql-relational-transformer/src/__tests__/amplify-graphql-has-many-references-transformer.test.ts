@@ -128,7 +128,7 @@ test('fails if related type does not exist', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError(); // TODO: Fix validation error messaging - 'Unknown type "Foo". Did you mean "Member"?'
+  ).toThrowError('Schema validation failed.');
 });
 
 test('fails if hasMany related type is not an array', () => {
@@ -149,7 +149,7 @@ test('fails if hasMany related type is not an array', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError(); // TODO: Error message
+  ).toThrowError('@hasMany must be used with a list. Use @hasOne for non-list types.');
 });
 
 test('fails if uni-directional hasMany', () => {
@@ -165,13 +165,14 @@ test('fails if uni-directional hasMany', () => {
       team: Team
     }`;
 
-  // TODO: This should fail -- find appropriate place to validate.
-  // expect(() =>
-  //   testTransform({
-  //     schema: inputSchema,
-  //     transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
-  //   }),
-  // ).toThrowError();
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError(
+    'Uni-directional relationships are not supported. Expected @belongsTo in Member to match @hasMany in Team.members: Member',
+  );
 });
 
 test('fails if used as a has one relationship', () => {
@@ -253,19 +254,19 @@ test('many to many query', () => {
       type Post @model {
         id: ID!
         title: String!
-        editors: [PostEditor] @hasMany(references: ["editorID"])
+        editors: [PostEditor] @hasMany(references: ["postID"])
       }
       type PostEditor @model(queries: null) {
         id: ID!
         postID: ID!
         editorID: ID!
-        post: Post! @belongsTo(references: ["postID"])
-        editor: User! @belongsTo(references: ["editorID"])
+        post: Post @belongsTo(references: ["postID"])
+        editor: User @belongsTo(references: ["editorID"])
       }
       type User @model {
         id: ID!
         username: String!
-        posts: [PostEditor] @hasMany(references: ["postID"])
+        posts: [PostEditor] @hasMany(references: ["editorID"])
       }`;
 
   const out = testTransform({

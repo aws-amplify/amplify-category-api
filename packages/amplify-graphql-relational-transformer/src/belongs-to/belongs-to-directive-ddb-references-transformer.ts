@@ -13,6 +13,7 @@ import {
   getBelongsToReferencesNodes,
   registerHasOneForeignKeyMappings,
   validateChildReferencesFields,
+  validateReferencesBidirectionality,
 } from '../utils';
 
 /**
@@ -54,5 +55,6 @@ export class BelongsToDirectiveDDBReferencesTransformer implements DataSourceBas
     ensureReferencesArray(config);
     validateChildReferencesFields(config, context as TransformerContextProvider);
     config.referenceNodes = getBelongsToReferencesNodes(config, context);
+    validateReferencesBidirectionality(config);
   };
 }

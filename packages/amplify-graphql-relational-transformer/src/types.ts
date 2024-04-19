@@ -1,6 +1,14 @@
 import { DirectiveNode, FieldDefinitionNode, ObjectTypeDefinitionNode, ObjectTypeExtensionNode } from 'graphql';
 import { WritableDraft } from 'immer/dist/types/types-external';
 
+/**
+ * Relational directive configuration types that can be used with references based relationships
+ */
+export type ReferencesRelationalDirectiveConfiguration =
+  | HasManyDirectiveConfiguration
+  | HasOneDirectiveConfiguration
+  | BelongsToDirectiveConfiguration;
+
 export type HasOneDirectiveConfiguration = {
   directiveName: string;
   object: ObjectTypeDefinitionNode;

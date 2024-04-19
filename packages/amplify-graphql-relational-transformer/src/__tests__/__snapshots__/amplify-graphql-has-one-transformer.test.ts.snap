@@ -11,6 +11,7 @@ type Profile {
   profileId: String!
   userFirstName: String
   userLastName: String!
+  user: User
 }
 
 input ModelStringInput {
@@ -348,6 +349,7 @@ type Profile {
   id: String!
   createdAt: AWSDateTime
   userId: String!
+  user: User
 }
 
 input ModelStringInput {

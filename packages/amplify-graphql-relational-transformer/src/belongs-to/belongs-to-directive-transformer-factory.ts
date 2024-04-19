@@ -1,3 +1,4 @@
+import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { ModelDataSourceStrategyDbType } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
 import { BelongsToDirectiveConfiguration } from '../types';
@@ -26,8 +27,7 @@ export const getBelongsToDirectiveTransformer = (
       if (config.references) {
         // Passing both references and fields is not supported.
         if (config.fields) {
-          // TODO: Better error message
-          throw new Error('Something went wrong >> cannot have both references and fields.');
+          throw new InvalidDirectiveError(`fields and references cannot be defined in the same ${config.directiveName}. Use 'references'`);
         }
         if (config.references.length < 1) {
           throw new Error(`Invalid @belongsTo directive on ${config.field.name.value} - empty references list`);

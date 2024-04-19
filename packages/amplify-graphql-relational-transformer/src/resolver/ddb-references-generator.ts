@@ -1,4 +1,5 @@
 import {
+  InvalidDirectiveError,
   MappingTemplate,
   getKeySchema,
   getModelDataSourceNameForTypeName,
@@ -33,7 +34,7 @@ import {
   str,
   toJson,
 } from 'graphql-mapping-template';
-import { ModelResourceIDs, NONE_VALUE, ResolverResourceIDs, setArgs } from 'graphql-transformer-common';
+import { ModelResourceIDs, NONE_VALUE, ResolverResourceIDs, directiveExists, setArgs } from 'graphql-transformer-common';
 import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
 import { condenseRangeKey } from '../resolvers';
 import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from '../types';
@@ -93,8 +94,8 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
     const { field, indexName, limit, object, references, relatedType } = config;
 
     if (references.length < 1) {
-      // TODO: Better error message
-      throw new Error('references should be populated.');
+      // If references is empty at this point, something has gone horribly wrong. Time to bail.
+      throw new InvalidDirectiveError(`Expected references for @${config.directiveName} on ${object.name.value}.${field.name.value}`);
     }
 
     const primaryKeyFields: string[] = getPrimaryKeyFields(object);
@@ -220,8 +221,8 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
   makeHasOneGetItemConnectionWithKeyResolver = (config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void => {
     const { field, indexName, references, object, relatedType } = config;
     if (references.length < 1) {
-      // TODO: Better error message
-      throw new Error('references should be populated.');
+      // If references is empty at this point, something has gone horribly wrong. Time to bail.
+      throw new InvalidDirectiveError(`Expected references for @${config.directiveName} on ${object.name.value}.${field.name.value}`);
     }
     const primaryKeyFields: string[] = getPrimaryKeyFields(object);
     const dataSourceName = getModelDataSourceNameForTypeName(ctx, relatedType.name.value);

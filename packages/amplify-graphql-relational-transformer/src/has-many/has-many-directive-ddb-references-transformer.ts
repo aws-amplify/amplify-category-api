@@ -12,7 +12,13 @@ import {
   updateTableForReferencesConnection,
 } from '../resolvers';
 import { HasManyDirectiveConfiguration } from '../types';
-import { ensureReferencesArray, ensureReferencesBidirectionality, getReferencesNodes, registerHasManyForeignKeyMappings, validateParentReferencesFields } from '../utils';
+import {
+  ensureReferencesArray,
+  getReferencesNodes,
+  registerHasManyForeignKeyMappings,
+  validateParentReferencesFields,
+  validateReferencesBidirectionality,
+} from '../utils';
 
 /**
  * HasManyDirectiveDDBReferencesTransformer executes transformations based on `@hasMany(references: [String!])` configurations
@@ -60,12 +66,11 @@ export class HasManyDirectiveDDBReferencesTransformer implements DataSourceBased
     }
     ensureReferencesArray(config);
     validateParentReferencesFields(config, context);
-    ensureReferencesBidirectionality(config, context);
     const objectName = config.object.name.value;
     const fieldName = config.field.name.value;
     config.indexName = `gsi-${objectName}.${fieldName}`;
     config.referenceNodes = getReferencesNodes(config, context);
 
-    // TODO: validate bidirectionality
+    validateReferencesBidirectionality(config);
   };
 }

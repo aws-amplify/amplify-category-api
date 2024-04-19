@@ -6,7 +6,17 @@ import {
   TransformerResourceHelperProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
-import { DirectiveNode, EnumTypeDefinitionNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
+import {
+  DirectiveNode,
+  EnumTypeDefinitionNode,
+  FieldDefinitionNode,
+  isNonNullType,
+  Kind,
+  ListValueNode,
+  NamedTypeNode,
+  ObjectTypeDefinitionNode,
+  StringValueNode,
+} from 'graphql';
 import {
   getBaseType,
   isScalarOrEnum,
@@ -15,12 +25,14 @@ import {
   makeNonNullType,
   toCamelCase,
   toPascalCase,
+  unwrapNonNull,
 } from 'graphql-transformer-common';
 import {
   BelongsToDirectiveConfiguration,
   HasManyDirectiveConfiguration,
   HasOneDirectiveConfiguration,
   ManyToManyDirectiveConfiguration,
+  ReferencesRelationalDirectiveConfiguration,
 } from './types';
 
 export const validateParentReferencesFields = (
@@ -165,7 +177,9 @@ export const ensureFieldsArray = (
   config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration,
 ): void => {
   if (config.references) {
-    throw new InvalidDirectiveError(`'references' defined on ${config.object.name.value}.${config.field.name.value} @${config.directive}. Expecting 'fields' only.`);
+    throw new InvalidDirectiveError(
+      `'references' defined on ${config.object.name.value}.${config.field.name.value} @${config.directive}. Expecting 'fields' only.`,
+    );
   }
 
   if (!config.fields) {
@@ -181,7 +195,9 @@ export const ensureReferencesArray = (
   config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration,
 ): void => {
   if (config.fields) {
-    throw new InvalidDirectiveError(`'fields' defined on ${config.object.name.value}.${config.field.name.value} @${config.directive}. Expecting 'references' only.`);
+    throw new InvalidDirectiveError(
+      `'fields' defined on ${config.object.name.value}.${config.field.name.value} @${config.directive}. Expecting 'references' only.`,
+    );
   }
 
   if (!config.references) {
@@ -193,29 +209,157 @@ export const ensureReferencesArray = (
   }
 };
 
-export const ensureReferencesBidirectionality = (
-  config: HasManyDirectiveConfiguration | BelongsToDirectiveConfiguration, // TODO: Add HasOnyDirectiveConfiguration
-  ctx: TransformerContextProvider,
-): void => {
-  if (config.fields) {
-    // TODO: Better error message
-    throw new InvalidDirectiveError('fields and references cannot be used together.');
+/**
+ * Given a {@link ReferencesRelationalDirectiveConfiguration}, this finds the connection field on the associated model by:
+ * - associated model's field type matches the type of the source model
+ * - associated field has a counterpart directive as defined in {@link getAssociatedRelationalDirectiveTypes}
+ * @param config {@link ReferencesRelationalDirectiveConfiguration}
+ * @returns the `associatedField: FieldDefinitionNode` and `associatedReferences: string[]`
+ */
+const getReferencesAssociatedField = (
+  config: ReferencesRelationalDirectiveConfiguration,
+): { associatedField: FieldDefinitionNode; associatedReferences: string[] } => {
+  const { object } = config;
+
+  const expectedBidirectionalErrorMessages = (): string => {
+    const associatedDirectiveTypes = getAssociatedRelationalDirectiveTypes(config.directiveName);
+    const associatedDirectiveDescription = associatedDirectiveTypes.map((directiveName) => `@${directiveName}`).join(' or ');
+    return (
+      `Expected ${associatedDirectiveDescription} in ${config.relatedType.name.value} to match @${config.directiveName}` +
+      ` in ${config.object.name.value}.${config.field.name.value}: ${config.relatedType.name.value}`
+    );
+  };
+
+  const associatedConnection = config.relatedType.fields?.flatMap((associatedField) => {
+    // associated model's field type matches the type of the source model
+    if (getBaseType(associatedField.type) !== object.name.value) {
+      return [];
+    }
+
+    // associated field has a counterpart directive as defined in {@link getAssociatedRelationalDirectiveTypes}
+    const associatedRelationalDirective = associatedField.directives?.find((directive) => {
+      return getAssociatedRelationalDirectiveTypes(config.directiveName)
+        .map((directiveType) => directiveType)
+        .includes(directive.name.value);
+    });
+
+    if (!associatedRelationalDirective) {
+      throw new InvalidDirectiveError(`Uni-directional relationships are not supported. ${expectedBidirectionalErrorMessages()}`);
+    }
+
+    // extract the `references` arguments
+    const associatedDirectiveReferencesArgNode = associatedRelationalDirective.arguments?.find((arg) => arg.name.value === 'references')
+      ?.value as ListValueNode | StringValueNode;
+
+    const getReferencesFromArgNode = (argument: ListValueNode | StringValueNode): string[] => {
+      if (argument.kind === 'ListValue') {
+        return argument.values.map((value) => (value as StringValueNode).value);
+      }
+      return [argument.value];
+    };
+    const associatedReferences = getReferencesFromArgNode(associatedDirectiveReferencesArgNode);
+
+    return [
+      {
+        associatedField,
+        associatedReferences,
+      },
+    ];
+  });
+
+  // if we didn't find any matches, bail. This is not a bidirectional relationship.
+  // the `length > 1` is validated further upstream of relational transformers.
+  if (!associatedConnection || associatedConnection.length === 0) {
+    throw new InvalidDirectiveError(`Uni-directional relationships are not supported. ${expectedBidirectionalErrorMessages()}`);
   }
 
-  
+  return associatedConnection[0];
+};
 
+/**
+ * Compare the types of two {@link FieldDefinitionNode}s for equality for references based relationships as defined below:
+ * - Each field's {@link TypeNode} must be either (but don't need to match). {@link ListType} will fail this check.
+ *    - {@link NamedType}
+ *    - {@link NonNullType} where the underlying type is {@link NamedType}
+ * - Each underlying {@link NamedType}.name.value must be equal **or** both must be either `ID` or `String`.
+ *
+ * Note: argument order doesn't matter.
+ * @param a {@link FieldDefinitionNode}
+ * @param b {@link FieldDefinitionNode}
+ * @returns `boolean` indicating if field types match.
+ */
+const referenceFieldTypeMatchesPrimaryKey = (a: FieldDefinitionNode, b: FieldDefinitionNode): boolean => {
+  // `String` and `ID` are considered equal types for when comparing
+  // the Related model's references fields with their counterparts within
+  // the Primary model's primary key fields.
+  const areEquivalentTypes = (c: string, d: string): boolean => {
+    const matching = ['ID', 'String'];
+    return c === d || (matching.includes(c) && matching.includes(d));
+  };
 
-  /*
-    1. find related directives:
-      - if hasMany --> belongsTo
-      - if hasOne --> belongsTo
-      - if belongsTo --> hasMany | hasOne
-    2. find matching propertyName
-      - directive.arguments[].references === config.references (order matters)
-    3. validate matching type
-      - field.type.name.value === config.type
+  const typeA = (unwrapNonNull(a.type) as NamedTypeNode).name.value;
+  const typeB = (unwrapNonNull(b.type) as NamedTypeNode).name.value;
+  return areEquivalentTypes(typeA, typeB);
+};
 
-  */
+/**
+ * Validates the a {@link ReferencesRelationalDirectiveConfiguration} conforms to the following rules:
+ * - relationship is bidirectional
+ *  - hasOne and hasMany have a belongsTo counterpart
+ *  - belongsTo has a hasOne or hasMany counterpart
+ * - both sides of the relationship have identical `references` arguments defined
+ * - the `references` match the primary key of the Primary model
+ *   - references[0] is the primaryKey's paritionKey on the Primary model
+ *   - references[1...n] are the primaryKey's sortKey(s) on the Primary model
+ *   - types match (id / string / number)
+ * - the `references` are fields defined on the Related model
+ *   - field names match the named `references` arguments
+ *   - Related model references fields types match those of the Primary model's primaryKey
+ * @param config {@link ReferencesRelationalDirectiveConfiguration}
+ */
+export const validateReferencesBidirectionality = (config: ReferencesRelationalDirectiveConfiguration): void => {
+  const { directiveName, object, references, referenceNodes, relatedType } = config;
+  const { associatedReferences } = getReferencesAssociatedField(config);
+
+  // Checking that the references passed to the directive of connection field on the associated model:
+  // - length matches ()
+  if (
+    !(references.length === associatedReferences.length) ||
+    !references.every((reference, index) => reference === associatedReferences[index])
+  ) {
+    throw new Error('');
+  }
+
+  // We're validating bi-directionality of all supported directives (hasMany / hasOne / belongsTo).
+  // To make the Primary model primaryKey  <--> Related model reference field type validation easier for us,
+  // let's move from Source and Associated models to Primary and Related models.
+  const primaryModel = directiveName === 'belongsTo' ? relatedType : object;
+  const relatedModel = directiveName === 'belongsTo' ? object : relatedType;
+  const primaryKeyFieldNames = getPrimaryKeyFields(primaryModel);
+  const primaryKeys = primaryModel.fields?.filter((field) => primaryKeyFieldNames.includes(field.name.value));
+
+  if (!primaryKeys) {
+    // This shouldn't happen as primary keys are either explicitly defined
+    // or implicitly added way upstream from here. We're doing this to shed the `| undefined` below.
+    // If this happens, it's a bug.
+    throw new Error(`
+      Expected to find primary keys on ${primaryModel.name.value} while validating relational bidirectionaly.
+      This shouldn't happen -- please open an issue at https://github.com/aws-amplify/amplify-category-api
+    `);
+  }
+
+  // Related model references fields types match those of the Primary model's primaryKey
+  primaryKeys
+    .map((key, index) => [key, referenceNodes[index]])
+    .forEach(([primaryKey, referenceField]) => {
+      if (!referenceFieldTypeMatchesPrimaryKey(primaryKey, referenceField)) {
+        throw new InvalidDirectiveError(
+          `Type mismatch between primary key field(s) of ${primaryModel.name.value}` +
+            ` and reference fields of ${relatedModel.name.value}.` +
+            ` Type of ${primaryModel.name.value}.${primaryKey.name.value} does not match type of ${relatedModel.name.value}.${referenceField.name.value}`,
+        );
+      }
+    });
 };
 
 export const getModelDirective = (objectType: ObjectTypeDefinitionNode): DirectiveNode | undefined => {
@@ -267,6 +411,17 @@ export const getFieldsNodes = (
     return fieldNode;
   });
 };
+const getAssociatedRelationalDirectiveTypes = (sourceRelationalDirectiveType: string): string[] => {
+  switch (sourceRelationalDirectiveType) {
+    case 'hasOne':
+    case 'hasMany':
+      return ['belongsTo'];
+    case 'belongsTo':
+      return ['hasOne', 'hasMany'];
+    default:
+      throw new Error(`Unexpected directive type ${sourceRelationalDirectiveType}`);
+  }
+};
 
 export const getReferencesNodes = (
   config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration,
@@ -275,11 +430,10 @@ export const getReferencesNodes = (
   const { directiveName, references, relatedType } = config;
   const enums = ctx.output.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[];
 
-  return references.map((fieldName) => {
+  const referenceNodes = references.map((fieldName) => {
     const fieldNode = relatedType.fields!.find((field) => field.name.value === fieldName);
 
     if (!fieldNode) {
-      // TODO: include more directive / type information to help debugging.
       throw new InvalidDirectiveError(`${fieldName} is not a field in ${relatedType.name.value}`);
     }
 
@@ -289,6 +443,16 @@ export const getReferencesNodes = (
 
     return fieldNode;
   });
+
+  // Ensure that the reference fields have consistent nullability
+  const firstReferenceNodeIsNonNull = isNonNullType(referenceNodes[0]);
+  referenceNodes.slice(1).forEach((node) => {
+    if (isNonNullType(node) !== firstReferenceNodeIsNonNull) {
+      throw new InvalidDirectiveError('reference fields must have consistent nullability');
+    }
+  });
+
+  return referenceNodes;
 };
 
 export const getBelongsToReferencesNodes = (
