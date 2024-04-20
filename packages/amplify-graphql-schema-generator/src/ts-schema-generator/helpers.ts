@@ -139,9 +139,17 @@ export type DataSourceConfig = {
  * @returns Typescript data schema in TS Node format
  */
 export const createSchema = (schema: Schema, config?: DataSourceConfig): ts.Node => {
-  const models = schema.getModels().map((model) => {
-    return createModel(model);
-  });
+  const modelsWithPrimaryKeyCount = schema.getModels().filter((model) => model.getPrimaryKey()).length;
+  if (modelsWithPrimaryKeyCount === 0) {
+    throw new Error('No valid tables found. Make sure at least one table has a primary key.');
+  }
+
+  const models = schema
+    .getModels()
+    .filter((model) => model.getPrimaryKey())
+    .map((model) => {
+      return createModel(model);
+    });
   const tsSchema = ts.factory.createCallExpression(
     ts.factory.createPropertyAccessExpression(
       createConfigureExpression(schema, config),
