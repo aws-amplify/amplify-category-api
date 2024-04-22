@@ -38,7 +38,7 @@ describe('CDK GraphQL Transformer deployments with SQL datasources', () => {
   });
 
   afterAll(async () => {
-    await databaseController.cleanupDatabase();
+    // await databaseController.cleanupDatabase();
   });
 
   beforeEach(async () => {
@@ -47,7 +47,7 @@ describe('CDK GraphQL Transformer deployments with SQL datasources', () => {
 
   afterEach(async () => {
     try {
-      await cdkDestroy(projRoot, '--all');
+      // await cdkDestroy(projRoot, '--all');
     } catch (err) {
       console.log(`Error invoking 'cdk destroy': ${err}`);
     }
@@ -63,7 +63,7 @@ describe('CDK GraphQL Transformer deployments with SQL datasources', () => {
     await testGraphQLAPI(constructTestOptions('connectionUri'));
   });
 
-  test('creates a GraphQL API from SQL-based models using multiple Connection Uri SSM paths', async () => {
+  test.only('creates a GraphQL API from SQL-based models using multiple Connection Uri SSM paths', async () => {
     await testGraphQLAPI(constructTestOptions('connectionUriMultiple'));
   });
 

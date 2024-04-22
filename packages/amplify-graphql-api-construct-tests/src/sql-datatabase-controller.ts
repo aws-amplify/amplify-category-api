@@ -119,7 +119,7 @@ export class SqlDatatabaseController {
       region: this.options.region,
       pathPrefix,
       connectionUri: [
-        'dummy connection uri',
+        'mysql://username:password@host:port/dbname',
         this.getConnectionUri(engine, this.options.username, dbConfig.password, dbConfig.endpoint, dbConfig.port, this.options.dbname),
       ],
     });
@@ -131,7 +131,7 @@ export class SqlDatatabaseController {
     if (!dbConnectionConfigSSM) {
       throw new Error('Failed to store db connection config for SSM');
     }
-    console.log(`Stored db connection config in SSM: ${JSON.stringify(Object.keys(parameters))}`);
+    console.log(`Stored db connection config in SSM: ${JSON.stringify(parameters)}`);
 
     this.databaseDetails = {
       dbConfig: {
@@ -226,7 +226,7 @@ export class SqlDatatabaseController {
     });
     const filePath = path.join(projRoot, 'db-details.json');
     fs.writeFileSync(filePath, detailsStr);
-    console.log(`Wrote DB details at ${filePath}`);
+    console.log(`Wrote DB details ${detailsStr} at ${filePath}`);
   };
 
   /**

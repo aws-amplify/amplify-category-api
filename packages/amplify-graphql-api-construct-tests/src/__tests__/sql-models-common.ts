@@ -32,6 +32,7 @@ export const testGraphQLAPI = async (options: {
       }
     `,
   );
+  console.log(`create result: ${JSON.stringify(result)}`);
 
   const todo = result.body.data.createTodo;
   expect(todo).toBeDefined();
