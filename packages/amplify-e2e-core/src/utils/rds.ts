@@ -458,17 +458,15 @@ export const storeDbConnectionStringConfig = async (options: {
       connectionUriSsmPath: `${options.pathPrefix}/connectionUri`,
     };
   } else {
-    options.connectionUri.forEach(async (connectionUri, index) => {
-      await storeSSMParameters({
-        region: options.region,
-        pathPrefix: options.pathPrefix,
-        parameters: {
-          [`connectionUri${index}`]: connectionUri,
-        },
-      });
+    await storeSSMParameters({
+      region: options.region,
+      pathPrefix: options.pathPrefix,
+      parameters: {
+        connectionUri: options.connectionUri[1],
+      },
     });
     return {
-      connectionUriSsmPath: options.connectionUri.map((_, index) => `${options.pathPrefix}/connectionUri${index}`),
+      connectionUriSsmPath: [`${options.pathPrefix}/connectionUri/doesnotexist`, `${options.pathPrefix}/connectionUri`],
     };
   }
 };

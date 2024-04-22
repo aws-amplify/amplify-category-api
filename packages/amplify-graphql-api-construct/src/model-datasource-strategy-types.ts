@@ -131,7 +131,12 @@ export type SqlModelDataSourceDbConnectionConfig =
  * @experimental
  */
 export interface SqlModelDataSourceSsmDbConnectionStringConfig {
-  /** The SSM Path to the secure connection string used for connecting to the database. **/
+  /**
+   * The SSM Path to the secure connection string used for connecting to the database. If more than one path is provided,
+   * the SQL Lambda will attempt to retrieve connection information from each path in order until it finds a valid
+   * path entry, then stop. If the connection information contained in that path is invalid, the SQL Lambda will not
+   * attempt to retrieve connection information from subsequent paths in the array.
+   **/
   readonly connectionUriSsmPath: string | string[];
 }
 

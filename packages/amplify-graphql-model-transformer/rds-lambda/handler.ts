@@ -148,10 +148,8 @@ const resolveConnectionStringValue = async (jsonConnectionString: string): Promi
   const parsedJsonConnectionString = JSON.parse(jsonConnectionString);
   const ssmRequestError = 'Unable to connect to the database. Check the logs for more details.';
   const ssmLoggedError = 'Unable to fetch the connection Uri from SSM for the provided paths.';
-  console.log(`connection uri SSM paths: ${parsedJsonConnectionString}`);
   if (Array.isArray(parsedJsonConnectionString)) {
     for (const connectionUriSsmPath of parsedJsonConnectionString) {
-      console.log(`Trying to fetch connection string from SSM path: ${connectionUriSsmPath}`);
       try {
         return await getSSMValue(connectionUriSsmPath);
       }
