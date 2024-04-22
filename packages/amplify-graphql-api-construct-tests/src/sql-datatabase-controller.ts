@@ -119,7 +119,7 @@ export class SqlDatatabaseController {
       region: this.options.region,
       pathPrefix,
       connectionUri: [
-        'mysql://username:password@host:port/dbname',
+        'mysql://username:password@host:3306/dbname',
         this.getConnectionUri(engine, this.options.username, dbConfig.password, dbConfig.endpoint, dbConfig.port, this.options.dbname),
       ],
     });
