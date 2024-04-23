@@ -51,7 +51,7 @@ jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
 // the associated records are redacted.
 describe('Associated fields protected by owner auth control visibility appropriately', () => {
   const region = process.env.CLI_REGION ?? 'us-west-2';
-  const baseProjFolderName = 'assoc-field';
+  const baseProjFolderName = path.basename(__filename, '.test.ts');
 
   const [dbUsername, dbIdentifier] = generator.generateMultiple(2);
   const dbname = 'default_db';
@@ -110,10 +110,14 @@ describe('Associated fields protected by owner auth control visibility appropria
       const templatePath = path.resolve(path.join(__dirname, '..', '..', 'backends', 'configurable-stack'));
       const name = await initCDKProject(projRoot, templatePath);
 
-      const primarySchemaPath = path.resolve(path.join(__dirname, 'graphql', 'schema-primary.graphql'));
+      const primarySchemaPath = path.resolve(
+        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-primary.graphql'),
+      );
       const primarySchema = fs.readFileSync(primarySchemaPath).toString();
 
-      const relatedSchemaPath = path.resolve(path.join(__dirname, 'graphql', 'schema-related.graphql'));
+      const relatedSchemaPath = path.resolve(
+        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-related.graphql'),
+      );
       const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
 
       const testDefinitions: Record<string, TestDefinition> = {
@@ -300,10 +304,14 @@ describe('Associated fields protected by owner auth control visibility appropria
       const templatePath = path.resolve(path.join(__dirname, '..', '..', 'backends', 'configurable-stack'));
       const name = await initCDKProject(projRoot, templatePath);
 
-      const primarySchemaPath = path.resolve(path.join(__dirname, 'graphql', 'schema-primary.graphql'));
+      const primarySchemaPath = path.resolve(
+        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-primary.graphql'),
+      );
       const primarySchema = fs.readFileSync(primarySchemaPath).toString();
 
-      const relatedSchemaPath = path.resolve(path.join(__dirname, 'graphql', 'schema-related.graphql'));
+      const relatedSchemaPath = path.resolve(
+        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-related.graphql'),
+      );
       const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
 
       const testDefinitions: Record<string, TestDefinition> = {
@@ -490,10 +498,14 @@ describe('Associated fields protected by owner auth control visibility appropria
       const templatePath = path.resolve(path.join(__dirname, '..', '..', 'backends', 'configurable-stack'));
       const name = await initCDKProject(projRoot, templatePath);
 
-      const primarySchemaPath = path.resolve(path.join(__dirname, 'graphql', 'schema-primary.graphql'));
+      const primarySchemaPath = path.resolve(
+        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-primary.graphql'),
+      );
       const primarySchema = fs.readFileSync(primarySchemaPath).toString();
 
-      const relatedSchemaPath = path.resolve(path.join(__dirname, 'graphql', 'schema-related.graphql'));
+      const relatedSchemaPath = path.resolve(
+        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-related.graphql'),
+      );
       const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
 
       const testDefinitions: Record<string, TestDefinition> = {
@@ -684,11 +696,15 @@ describe('Associated fields protected by owner auth control visibility appropria
       const templatePath = path.resolve(path.join(__dirname, '..', '..', 'backends', 'configurable-stack'));
       const name = await initCDKProject(projRoot, templatePath);
 
-      const primarySchemaPath = path.resolve(path.join(__dirname, 'graphql', 'schema-primary.graphql'));
+      const primarySchemaPath = path.resolve(
+        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-primary.graphql'),
+      );
 
       const primarySchema = fs.readFileSync(primarySchemaPath).toString();
 
-      const relatedSchemaPath = path.resolve(path.join(__dirname, 'graphql', 'schema-related.graphql'));
+      const relatedSchemaPath = path.resolve(
+        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-related.graphql'),
+      );
       const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
 
       const testDefinitions: Record<string, TestDefinition> = {
