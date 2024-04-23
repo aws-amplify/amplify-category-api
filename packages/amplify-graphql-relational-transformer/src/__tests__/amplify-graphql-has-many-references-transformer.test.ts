@@ -171,7 +171,7 @@ test('fails if uni-directional hasMany', () => {
       transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     }),
   ).toThrowError(
-    'Uni-directional relationships are not supported. Expected @belongsTo in Member to match @hasMany in Team.members: Member',
+    'Uni-directional relationships are not supported. Add a @belongsTo field in Member to match the @hasMany field Team.members',
   );
 });
 

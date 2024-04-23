@@ -27,6 +27,7 @@ import {
   toPascalCase,
   unwrapNonNull,
 } from 'graphql-transformer-common';
+import { BelongsToDirective, HasManyDirective, HasOneDirective } from '@aws-amplify/graphql-directives';
 import {
   BelongsToDirectiveConfiguration,
   HasManyDirectiveConfiguration,
@@ -225,8 +226,8 @@ const getReferencesAssociatedField = (
     const associatedDirectiveTypes = getAssociatedRelationalDirectiveTypes(config.directiveName);
     const associatedDirectiveDescription = associatedDirectiveTypes.map((directiveName) => `@${directiveName}`).join(' or ');
     return (
-      `Expected ${associatedDirectiveDescription} in ${config.relatedType.name.value} to match @${config.directiveName}` +
-      ` in ${config.object.name.value}.${config.field.name.value}: ${config.relatedType.name.value}`
+      `Add a ${associatedDirectiveDescription} field in ${config.relatedType.name.value} to match the @${config.directiveName}` +
+      ` field ${config.object.name.value}.${config.field.name.value}`
     );
   };
 
@@ -413,11 +414,11 @@ export const getFieldsNodes = (
 };
 const getAssociatedRelationalDirectiveTypes = (sourceRelationalDirectiveType: string): string[] => {
   switch (sourceRelationalDirectiveType) {
-    case 'hasOne':
-    case 'hasMany':
-      return ['belongsTo'];
-    case 'belongsTo':
-      return ['hasOne', 'hasMany'];
+    case HasOneDirective.name:
+    case HasManyDirective.name:
+      return [BelongsToDirective.name];
+    case BelongsToDirective.name:
+      return [HasOneDirective.name, HasManyDirective.name];
     default:
       throw new Error(`Unexpected directive type ${sourceRelationalDirectiveType}`);
   }

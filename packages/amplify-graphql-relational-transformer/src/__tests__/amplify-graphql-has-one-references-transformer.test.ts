@@ -221,7 +221,9 @@ test('uni-directional @hasOne fails', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('Uni-directional relationships are not supported. Expected @belongsTo in Test1 to match @hasOne in Test.testObj: Test1');
+  ).toThrowError(
+    'Uni-directional relationships are not supported. Add a @belongsTo field in Test1 to match the @hasOne field Test.testObj',
+  );
 });
 
 test('fails if used as a has many relation', () => {
