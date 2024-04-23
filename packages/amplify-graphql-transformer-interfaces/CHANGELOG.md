@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-gen2-release-0423.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.6.0...@aws-amplify/graphql-transformer-interfaces@3.7.0-gen2-release-0423.0) (2024-04-23)
+
+### Features
+
+- allow multiple graphql APIs in a cdk app ([#2406](https://github.com/aws-amplify/amplify-category-api/issues/2406)) ([72ca6ba](https://github.com/aws-amplify/amplify-category-api/commit/72ca6ba7243d1f267d38be76e43d623d16608c14))
+- generic iam authorization ([#2385](https://github.com/aws-amplify/amplify-category-api/issues/2385)) ([550ee80](https://github.com/aws-amplify/amplify-category-api/commit/550ee803275817d25447ff1400d55eb1ad4cd0c2))
+- iam access support for searchable, index and sql directives ([#2398](https://github.com/aws-amplify/amplify-category-api/issues/2398)) ([c2a3d92](https://github.com/aws-amplify/amplify-category-api/commit/c2a3d92e89891e9585aa1c26731f132171e271be))
+- support multiple connection Uris for SQL databases ([#2481](https://github.com/aws-amplify/amplify-category-api/issues/2481)) ([7ea8000](https://github.com/aws-amplify/amplify-category-api/commit/7ea8000026d3f8fe9c791720701250fa958c9bc8))
+
 # [3.6.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.5.0...@aws-amplify/graphql-transformer-interfaces@3.6.0) (2024-04-11)
 
 ### Features

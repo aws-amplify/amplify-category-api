@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.7.0-gen2-release-0423.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.6.0...@aws-amplify/graphql-transformer-core@2.7.0-gen2-release-0423.0) (2024-04-23)
+
+### Features
+
+- allow multiple graphql APIs in a cdk app ([#2406](https://github.com/aws-amplify/amplify-category-api/issues/2406)) ([72ca6ba](https://github.com/aws-amplify/amplify-category-api/commit/72ca6ba7243d1f267d38be76e43d623d16608c14))
+
 # [2.6.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.5.1...@aws-amplify/graphql-transformer-core@2.6.0) (2024-04-11)
 
 ### Features
