@@ -434,7 +434,7 @@ export interface SqlModelDataSourceSsmDbConnectionConfig {
 // @public (undocumented)
 export interface SqlModelDataSourceSsmDbConnectionStringConfig {
     // (undocumented)
-    readonly connectionUriSsmPath: string;
+    readonly connectionUriSsmPath: string | string[];
 }
 
 // @public (undocumented)
