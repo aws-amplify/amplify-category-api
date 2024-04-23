@@ -12,7 +12,13 @@ import {
   updateTableForReferencesConnection,
 } from '../resolvers';
 import { HasOneDirectiveConfiguration } from '../types';
-import { ensureReferencesArray, getReferencesNodes, registerHasOneForeignKeyMappings, validateParentReferencesFields } from '../utils';
+import {
+  ensureReferencesArray,
+  getReferencesNodes,
+  registerHasOneForeignKeyMappings,
+  validateParentReferencesFields,
+  validateReferencesBidirectionality,
+} from '../utils';
 
 /**
  * HasOneDirectiveDDBFieldsTransformer executes transformations based on `@hasOne(references: [String!])` configurations
@@ -55,7 +61,7 @@ export class HasOneDirectiveDDBReferencesTransformer implements DataSourceBasedD
     if (config.indexName) {
       const mappedObjectName = context.resourceHelper.getModelNameMapping(config.object.name.value);
       throw new Error(
-        `Invalid @${config.directiveName} directive on ${mappedObjectName}.${config.field.name.value} - indexName is not supported with DDB references.`,
+        `Invalid @${config.directiveName} directive on ${mappedObjectName}.${config.field.name.value} - indexName is not supported with DynamoDB references.`,
       );
     }
     ensureReferencesArray(config);
@@ -64,5 +70,6 @@ export class HasOneDirectiveDDBReferencesTransformer implements DataSourceBasedD
     const fieldName = config.field.name.value;
     config.indexName = `gsi-${objectName}.${fieldName}`;
     config.referenceNodes = getReferencesNodes(config, context);
+    validateReferencesBidirectionality(config);
   };
 }

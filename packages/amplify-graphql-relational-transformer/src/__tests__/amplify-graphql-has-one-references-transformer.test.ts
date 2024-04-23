@@ -48,15 +48,12 @@ test('fails if @hasOne was used with a related type that is not a model', () => 
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError();
-  // TODO: Fix error message
-  // Currently throws 'Cannot find datasource type for model Team'
-  // Should throw 'Object type Team must be annotated with @model.'
+  ).toThrowError('Object type Team must be annotated with @model.');
 });
 
 test('fails if the related type does not exist', () => {
   const inputSchema = `
-    type Project @Model {
+    type Project @model {
         id: ID!
         name: String
         team: Team1 @hasOne(references: ["projectID"])
@@ -80,7 +77,7 @@ test('fails if the related type does not exist', () => {
 
 test('fails if an empty list of fields is passed in', () => {
   const inputSchema = `
-    type Project @Model {
+    type Project @model {
         id: ID!
         name: String
         team: Team @hasOne(references: [])
@@ -98,7 +95,7 @@ test('fails if an empty list of fields is passed in', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError(); // TODO -- Error message
+  ).toThrowError('Invalid @hasMany directive on team - empty references list');
 });
 
 test('fails if any of the fields passed in are not in the related model', () => {
@@ -136,17 +133,19 @@ test('fails if @hasOne field does not match related type primary key', () => {
     type Team @model {
         id: ID!
         name: String
-        projectID: String!
+        projectID: Int!
         project: Project @belongsTo(references: ["projectID"])
     }
   `;
-  // TODO: Currently not throwing. Need to add some validation that types match.
-  // expect(() =>
-  //   testTransform({
-  //     schema: inputSchema,
-  //     transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
-  //   }),
-  // ).toThrowError('projectID field is not of type ID');
+
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError(
+    'Type mismatch between primary key field(s) of Project and reference fields of Team. Type of Project.id does not match type of Team.projectID',
+  );
 });
 
 test('fails if sort key type does not match related type sort key', () => {
@@ -162,17 +161,19 @@ test('fails if sort key type does not match related type sort key', () => {
         id: ID!
         name: String
         projectID: ID
-        projectResourceID: String
+        projectResourceID: Int
         project: Project @belongsTo(references: ["projectID", "projectResourceID"])
       }
     `;
-  // TODO: Currently not throwing. Need to add some validation that types match.
-  // expect(() =>
-  //   testTransform({
-  //     schema: inputSchema,
-  //     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
-  //   }),
-  // ).toThrowError('projectResourceID field is not of type ID');
+
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError(
+    'Type mismatch between primary key field(s) of Project and reference fields of Team. Type of Project.resourceID does not match type of Team.projectResourceID',
+  );
 });
 
 test('fails if partial sort key is provided', () => {
@@ -200,7 +201,7 @@ test('fails if partial sort key is provided', () => {
   ).toThrowError('The number of references provided to @hasOne must match the number of primary keys on Project.');
 });
 
-test('accepts @hasOne without a sort key', () => {
+test('uni-directional @hasOne fails', () => {
   const inputSchema = `
     type Test @model {
       id: ID!
@@ -209,7 +210,7 @@ test('accepts @hasOne without a sort key', () => {
     }
 
     type Test1 @model {
-      id: ID! @primaryKey(sortKeyFields: ["friendID", "name"])
+      id: ID!
       friendID: ID!
       name: String!
     }
@@ -220,7 +221,9 @@ test('accepts @hasOne without a sort key', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     }),
-  ).not.toThrowError();
+  ).toThrowError(
+    'Uni-directional relationships are not supported. Add a @belongsTo field in Test1 to match the @hasOne field Test.testObj',
+  );
 });
 
 test('fails if used as a has many relation', () => {

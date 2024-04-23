@@ -9,6 +9,8 @@ import {
   getStrategyDbTypeFromTypeNode,
 } from '@aws-amplify/graphql-transformer-core';
 import {
+  ModelDataSourceStrategy,
+  ModelDataSourceStrategyDbType,
   TransformerContextProvider,
   TransformerPreProcessContextProvider,
   TransformerPrepareStepContextProvider,
@@ -20,6 +22,7 @@ import {
   DocumentNode,
   FieldDefinitionNode,
   InterfaceTypeDefinitionNode,
+  NamedTypeNode,
   ObjectTypeDefinitionNode,
   ObjectTypeExtensionNode,
 } from 'graphql';
@@ -77,7 +80,6 @@ export class HasManyTransformer extends TransformerPluginBase {
    * so that it represents any schema modifications the plugin needs
    */
   mutateSchema = (context: TransformerPreProcessContextProvider): DocumentNode => {
-    // TODO: Split out fields and references based logic
     const resultDoc: DocumentNode = produce(context.inputDocument, (draftDoc) => {
       const connectingFieldsMap = new Map<string, Array<WritableDraft<FieldDefinitionNode>>>(); // key: type name | value: connecting field
       const filteredDefs = draftDoc?.definitions?.filter(
@@ -157,16 +159,29 @@ export class HasManyTransformer extends TransformerPluginBase {
 const validate = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field } = config;
 
-  const dbType = getStrategyDbTypeFromTypeNode(field.type, ctx);
+  if (!isListType(field.type)) {
+    throw new InvalidDirectiveError(`@${HasManyDirective.name} must be used with a list. Use @hasOne for non-list types.`);
+  }
+
+  let dbType: ModelDataSourceStrategyDbType;
+  try {
+    // getStrategyDbTypeFromTypeNode throws if a datasource is not found for the model. We want to catch that condition
+    // here to provide a friendlier error message, since the most likely error scenario is that the customer neglected to annotate one
+    // of the types with `@model`.
+    // Since this transformer gets invoked on both sides of the `belongsTo` relationship, a failure at this point is about the
+    // field itself, not the related type.
+    dbType = getStrategyDbTypeFromTypeNode(field.type, ctx);
+  } catch {
+    throw new InvalidDirectiveError(
+      `Object type ${(field.type as NamedTypeNode)?.name.value ?? field.name} must be annotated with @model.`,
+    );
+  }
+
   config.relatedType = getRelatedType(config, ctx);
 
   const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType, config);
   dataSourceBasedTransformer.validate(ctx, config);
   validateModelDirective(config);
-
-  if (!isListType(field.type)) {
-    throw new InvalidDirectiveError(`@${HasManyDirective.name} must be used with a list. Use @hasOne for non-list types.`);
-  }
 
   config.connectionFields = [];
   validateRelatedModelDirective(config);

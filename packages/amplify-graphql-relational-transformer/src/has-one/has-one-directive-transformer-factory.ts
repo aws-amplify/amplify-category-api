@@ -4,6 +4,7 @@ import { DataSourceBasedDirectiveTransformer } from '../data-source-based-direct
 import { HasOneDirectiveDDBFieldsTransformer } from './has-one-directive-ddb-fields-transformer';
 import { HasOneDirectiveSQLTransformer } from './has-one-directive-sql-transformer';
 import { HasOneDirectiveDDBReferencesTransformer } from './has-one-directive-ddb-references-transformer';
+import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 
 const hasOneDirectiveMySqlTransformer = new HasOneDirectiveSQLTransformer();
 const hasOneDirectivePostgresTransformer = new HasOneDirectiveSQLTransformer();
@@ -26,8 +27,7 @@ export const getHasOneDirectiveTransformer = (
       if (config.references) {
         // Passing both references and fields is not supported.
         if (config.fields) {
-          // TODO: Better error message
-          throw new Error('Something went wrong >> cannot have both references and fields.');
+          throw new InvalidDirectiveError(`fields and references cannot be defined in the same ${config.directiveName}. Use 'references'`);
         }
         if (config.references.length < 1) {
           throw new Error(`Invalid @hasMany directive on ${config.field.name.value} - empty references list`);

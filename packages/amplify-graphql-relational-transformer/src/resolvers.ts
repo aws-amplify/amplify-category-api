@@ -1,6 +1,6 @@
 import { attributeTypeFromType, overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
-import { MappingTemplate, getTable } from '@aws-amplify/graphql-transformer-core';
+import { InvalidDirectiveError, MappingTemplate, getTable } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
@@ -38,8 +38,8 @@ import { getConnectionAttributeName, getObjectPrimaryKey } from './utils';
  *
  * Preconditions: `config.references >= 1` and `config.referenceNodes >= 1`
  *
- * @param config The `HasManyDirectiveConfiguration` for DDB references.
- * @param ctx The `TransformerContextProvider` for DDB references.
+ * @param config The `HasManyDirectiveConfiguration` for DynamoDB references.
+ * @param ctx The `TransformerContextProvider` for DynamoDB references.
  */
 export const updateTableForReferencesConnection = (
   config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration,
@@ -48,16 +48,23 @@ export const updateTableForReferencesConnection = (
   const { referenceNodes, indexName, references, relatedType } = config;
 
   if (references.length < 1 || referenceNodes.length < 1) {
-    throw new Error('references should not be empty here'); // TODO: better error message
+    // We've validated that references are not-empty further upstream.
+    // If this `if` block is hit, we can't continue.
+    throw new Error(`references not found for ${config.object.name.value}.${config.field.name.value} @${config.directiveName}`);
   }
 
   const relatedTable = getTable(ctx, relatedType);
   const gsis = relatedTable.globalSecondaryIndexes;
   if (gsis.some((gsi: any) => gsi.indexName === indexName)) {
-    // TODO: In the existing `fields` based implementation, this returns.
-    // However, this is likely a schema misconfiguration in the `references`
-    // world because we don't support specifying indexName.
-    return;
+    // We create a GSI on the Related model's table for querying
+    // relationships using the format 'gsi-{PrimaryModelName}.{PrimaryModelConnectionField}'
+    // If the related table already has a GSI with that name, bail to prevent
+    // undefined runtime behavior.
+    throw new InvalidDirectiveError(
+      `Global secondary index ${indexName} defined on ${relatedType.name.value} conflicts with the naming convention` +
+        ' used to create implicit GSIs for querying relationships.' +
+        ' Please rename your @index',
+    );
   }
 
   // `referenceNodes` are ordered based on the `references` argument in the `@<relational-directive>(references:)`
@@ -69,8 +76,6 @@ export const updateTableForReferencesConnection = (
   const referenceNode = referenceNodes[0];
   const partitionKeyName = referenceNode.name.value;
   // Grabbing the type of the related field.
-  // TODO: Validate types of related field and primary's pk match
-  // -- ideally further up the chain
   const partitionKeyType = attributeTypeFromType(referenceNode.type, ctx);
 
   // The sortKeys are any referencesNodes following the first element.
@@ -263,7 +268,7 @@ export const setFieldMappingResolverReference = (
 };
 
 /**
- * In a DDB references based relationship, when the Primary model has a primary key with composite
+ * In a DynamoDB references based relationship, when the Primary model has a primary key with composite
  * sort key (>= 2 sort key fields), we need to add function slots in the Mutation resolvers (create, update, delete)
  * of the Related model in order to write the composite sort key attribute to the Related model's table.
  *
@@ -290,7 +295,7 @@ export const updateRelatedModelMutationResolversForCompositeSortKeys = (
   const objectName = ctx.output.getMutationTypeName();
   if (!objectName) {
     throw new Error(`
-      Mutation type name is undefined when updated mutation resolvers for composite sortKeys used in DDB references based relationships.
+      Mutation type name is undefined when updated mutation resolvers for composite sortKeys used in DynamoDB references based relationships.
       This should not happen, please file a bug at https://github.com/aws-amplify/amplify-category-api/issues/new/choose`);
   }
 

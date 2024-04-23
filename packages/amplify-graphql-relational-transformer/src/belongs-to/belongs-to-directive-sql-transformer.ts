@@ -8,7 +8,12 @@ import { DataSourceBasedDirectiveTransformer } from '../data-source-based-direct
 import { getGenerator } from '../resolver/generator-factory';
 import { setFieldMappingResolverReference } from '../resolvers';
 import { BelongsToDirectiveConfiguration } from '../types';
-import { ensureReferencesArray, getBelongsToReferencesNodes, validateChildReferencesFields } from '../utils';
+import {
+  ensureReferencesArray,
+  getBelongsToReferencesNodes,
+  validateChildReferencesFields,
+  validateReferencesBidirectionality,
+} from '../utils';
 
 /**
  * BelongsToDirectiveSQLTransformer executes transformations based on `@belongsTo(references: [String!])` configurations
@@ -34,5 +39,6 @@ export class BelongsToDirectiveSQLTransformer implements DataSourceBasedDirectiv
   validate = (context: TransformerContextProvider, config: BelongsToDirectiveConfiguration): void => {
     ensureReferencesArray(config);
     config.referenceNodes = getBelongsToReferencesNodes(config, context);
+    validateReferencesBidirectionality(config);
   };
 }

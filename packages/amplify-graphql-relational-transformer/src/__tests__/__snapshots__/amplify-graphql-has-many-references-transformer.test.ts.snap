@@ -804,8 +804,8 @@ type PostEditor {
   id: ID!
   postID: ID!
   editorID: ID!
-  post: Post!
-  editor: User!
+  post: Post
+  editor: User
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
   _version: Int!
