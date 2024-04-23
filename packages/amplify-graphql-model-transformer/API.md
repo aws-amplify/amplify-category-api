@@ -201,7 +201,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     // (undocumented)
     before: (ctx: TransformerBeforeStepContextProvider) => void;
     // (undocumented)
-    createIAMRole: (context: TransformerContextProvider, def: ObjectTypeDefinitionNode, stack: cdk.Stack, tableName: string) => iam.Role;
+    createIAMRole: (context: TransformerContextProvider, def: ObjectTypeDefinitionNode, stack: cdk.Stack, tableName: string) => iam.IRole;
     // (undocumented)
     ensureModelSortDirectionEnum: (ctx: TransformerValidationStepContextProvider) => void;
     // (undocumented)
