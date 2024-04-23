@@ -5,11 +5,12 @@ import { ObjectTypeDefinitionNode } from 'graphql';
 import { setResourceName } from '@aws-amplify/graphql-transformer-core';
 import { AttributeType, StreamViewType, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
-
-import { Duration, aws_iam, aws_lambda, custom_resources, aws_logs } from 'aws-cdk-lib';
+import { Duration, aws_iam, aws_lambda } from 'aws-cdk-lib';
 import { DynamoModelResourceGenerator } from '../dynamo-model-resource-generator';
 import * as path from 'path';
 import { AmplifyDynamoDBTable } from './amplify-dynamodb-table-construct';
+import { WaiterStateMachine } from './waiter-state-machine';
+import { Provider } from './provider';
 
 /**
  * AmplifyDynamoModelResourceGenerator is a subclass of DynamoModelResourceGenerator,
@@ -18,8 +19,7 @@ import { AmplifyDynamoDBTable } from './amplify-dynamodb-table-construct';
 
 export const ITERATIVE_TABLE_STACK_NAME = 'AmplifyTableManager';
 export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGenerator {
-  private customResourceServiceToken: string = '';
-  private ddbManagerPolicy?: aws_iam.Policy;
+  private customResourceServiceToken = '';
 
   generateResources(ctx: TransformerContextProvider): void {
     if (!this.isEnabled()) {
@@ -44,8 +44,18 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
       this.createModelTable(scope, model, ctx);
     });
 
-    if (this.ddbManagerPolicy) {
-      this.ddbManagerPolicy?.addStatements(
+    this.generateResolvers(ctx);
+  }
+
+  protected createCustomProviderResource(scope: Construct, context: TransformerContextProvider): void {
+    const lambdaCode = aws_lambda.Code.fromAsset(
+      path.join(__dirname, '..', '..', '..', 'lib', 'resources', 'amplify-dynamodb-table', 'amplify-table-manager-lambda'),
+      { exclude: ['*.ts'] },
+    );
+
+    // PolicyDocument that grants access to Create/Update/Delete relevant DynamoDB tables
+    const lambdaPolicyDocument = new aws_iam.PolicyDocument({
+      statements: [
         new aws_iam.PolicyStatement({
           actions: [
             'dynamodb:CreateTable',
@@ -58,52 +68,82 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
             'dynamodb:UpdateTimeToLive',
           ],
           resources: [
+            // eslint-disable-next-line no-template-curly-in-string
             cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}', {
-              apiId: ctx.api.apiId,
-              envName: ctx.synthParameters.amplifyEnvironmentName,
+              apiId: context.api.apiId,
+              envName: context.synthParameters.amplifyEnvironmentName,
             }),
           ],
         }),
-      );
-    }
-
-    this.generateResolvers(ctx);
-  }
-
-  protected createCustomProviderResource(scope: Construct, context: TransformerContextProvider): void {
-    // Policy that grants access to Create/Update/Delete DynamoDB tables
-    this.ddbManagerPolicy = new aws_iam.Policy(scope, 'CreateUpdateDeleteTablesPolicy');
-
-    const lambdaCode = aws_lambda.Code.fromAsset(
-      path.join(__dirname, '..', '..', '..', 'lib', 'resources', 'amplify-dynamodb-table', 'amplify-table-manager-lambda'),
-    );
-
-    // lambda that will handle DDB CFN events
-    const gsiOnEventHandler = new aws_lambda.Function(scope, ResourceConstants.RESOURCES.TableManagerOnEventHandlerLogicalID, {
-      runtime: aws_lambda.Runtime.NODEJS_18_X,
-      code: lambdaCode,
-      handler: 'amplify-table-manager-handler.onEvent',
-      timeout: Duration.minutes(14),
+      ],
     });
 
-    // lambda that will poll for provisioning to complete
-    const gsiIsCompleteHandler = new aws_lambda.Function(scope, ResourceConstants.RESOURCES.TableManagerIsCompleteHandlerLogicalID, {
-      runtime: aws_lambda.Runtime.NODEJS_18_X,
-      code: lambdaCode,
-      handler: 'amplify-table-manager-handler.isComplete',
-      timeout: Duration.minutes(14),
+    // Note: The isCompleteRole and onEventRole are similar enough that you might ask "why not just use a single role?"
+    // 1. Doing so creates a circular dependency between someCombinedRole <-> waiterStateMachine
+    // 2. The isCompleteHandler doesn't need permissions to invoke the waiterStateMachine.
+
+    // Role assumed by the isCompleteHandler.
+    // We want to avoid the auto-generated default policy for this to avoid unnecessary deployment time
+    // slowdowns, hence the `withPolicyUpdates()`
+    const isCompleteRole = new aws_iam.Role(scope, 'AmplifyManagedTableIsCompleteRole', {
+      assumedBy: new aws_iam.ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies: [aws_iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
+      inlinePolicies: {
+        CreateUpdateDeleteTablesPolicy: lambdaPolicyDocument,
+      },
+    }).withoutPolicyUpdates();
+
+    // Role assumed by the onEventHandler (custom resource entry point).
+    // We need to keep this open to modification so that waiter state machine can grant it
+    // invocation permissions below, hence no `withoutPolicyUpdates()`
+    const onEventRole = new aws_iam.Role(scope, 'AmplifyManagedTableOnEventRole', {
+      assumedBy: new aws_iam.ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies: [aws_iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
+      inlinePolicies: {
+        CreateUpdateDeleteTablesPolicy: lambdaPolicyDocument,
+      },
     });
 
-    this.ddbManagerPolicy.attachToRole(gsiOnEventHandler.role!);
-    this.ddbManagerPolicy.attachToRole(gsiIsCompleteHandler.role!);
-    const customResourceProvider = new custom_resources.Provider(scope, ResourceConstants.RESOURCES.TableManagerCustomProviderLogicalID, {
-      onEventHandler: gsiOnEventHandler,
-      isCompleteHandler: gsiIsCompleteHandler,
-      logRetention: aws_logs.RetentionDays.ONE_MONTH,
-      queryInterval: Duration.seconds(30),
-      totalTimeout: Duration.hours(2),
+    // Create the custom resource provider with the infrastructure to handle resource modifications.
+    /** !! Be extra cautious about any modifications to this code -- see inline note in {@link Provider} !! */
+    const customResourceProvider = new Provider(scope, ResourceConstants.RESOURCES.TableManagerCustomProviderLogicalID, {
+      lambdaCode,
+      onEventHandlerName: 'amplify-table-manager-handler.onEvent',
+      onEventRole,
+      isCompleteHandlerName: 'amplify-table-manager-handler.isComplete',
+      isCompleteRole,
     });
-    this.customResourceServiceToken = customResourceProvider.serviceToken;
+
+    const { onEventHandler, isCompleteHandler, serviceToken } = customResourceProvider;
+
+    // --- Waiter state machine configuration
+    // Invoke isCompleteHandler every 10 seconds to query completion status.
+    // 10 seconds is the current value because it showed deployment time improvements
+    // over higher values. < 10 seconds showed diminishing returns of those improvements
+    // at the cost of more lambda invocations.
+    const queryInterval = Duration.seconds(10);
+    // CloudFormation times out custom resource requests at 1 hour.
+    // https://github.com/aws/aws-cdk/blob/11621e78c8f8188fcdd528d01cd2aa8bd97db58f/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts#L59-L66
+    // Once that happens, there's no use continuing to invoke the isComplete handler.
+    const totalTimeout = Duration.hours(1);
+    const stateMachineProps = {
+      isCompleteHandler,
+      queryInterval,
+      totalTimeout,
+      maxAttempts: totalTimeout.toSeconds() / queryInterval.toSeconds(),
+      backoffRate: 1,
+    };
+
+    const waiterStateMachine = new WaiterStateMachine(scope, 'AmplifyTableWaiterStateMachine', stateMachineProps);
+
+    // The onEventHandler needs to know the state machine ARN to start it, so that it can query completion status
+    // when invoking the isCompleteHandler.
+    onEventHandler.addEnvironment('WAITER_STATE_MACHINE_ARN', waiterStateMachine.stateMachineArn);
+    // It also needs permissions to invoke it.
+    waiterStateMachine.grantStartExecution(onEventHandler);
+    // This is the entry point of the custom resource -- make sure this value never changes!
+    /** See inline note in {@link Provider} for more details */
+    this.customResourceServiceToken = serviceToken;
   }
 
   protected createModelTable(scope: Construct, def: ObjectTypeDefinitionNode, context: TransformerContextProvider): void {

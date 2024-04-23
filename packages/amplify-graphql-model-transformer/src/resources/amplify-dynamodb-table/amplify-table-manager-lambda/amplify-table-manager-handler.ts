@@ -1,20 +1,24 @@
 import {
-  DynamoDB,
   AttributeDefinition,
   ContinuousBackupsDescription,
   CreateGlobalSecondaryIndexAction,
   CreateTableCommandInput,
+  DescribeTimeToLiveCommandOutput,
+  DynamoDB,
   GlobalSecondaryIndexDescription,
   KeySchemaElement,
   Projection,
+  ResourceNotFoundException,
   TableDescription,
   TimeToLiveDescription,
   UpdateContinuousBackupsCommandInput,
   UpdateTableCommandInput,
   UpdateTimeToLiveCommandInput,
-  ResourceNotFoundException,
-  DescribeTimeToLiveCommandOutput,
 } from '@aws-sdk/client-dynamodb';
+import { OnEventResponse } from '../amplify-table-manager-lambda-types';
+import * as cfnResponse from './cfn-response';
+import { startExecution } from './outbound';
+import { getEnv, log } from './util';
 
 const ddbClient = new DynamoDB();
 
@@ -25,24 +29,98 @@ const notFinished: AWSCDKAsyncCustomResource.IsCompleteResponse = {
   IsComplete: false,
 };
 
+// #region Entry points
 /**
- * Util function to log especially for nested objects and arrays
- * @param msg
- * @param other arrays of arguments to be logged
+ * Handler for requests sent from CloudFormation for custom resource.
+ * This is the entry point of the custom resource.
+ *
+ * Note: This is adapted from the AWS CDK's provider framework.
+ * https://github.com/aws/aws-cdk/blob/11621e7/packages/aws-cdk-lib/custom-resources/lib/provider-framework/runtime/framework.ts
+ * @param cfnRequest Request received from CloudFormation
  */
-const log = (msg: string, ...other: any[]) => {
-  console.log(
-    msg,
-    other.map((o) => (typeof o === 'object' ? JSON.stringify(o, undefined, 2) : o)),
-  );
+export const onEvent = async (cfnRequest: AWSLambda.CloudFormationCustomResourceEvent): Promise<void> => {
+  const sanitizedRequest = { ...cfnRequest, ResponseURL: '...' } as const;
+  log('onEventHandler', sanitizedRequest);
+
+  cfnRequest.ResourceProperties = cfnRequest.ResourceProperties || {};
+
+  const onEventResult = await processOnEvent(sanitizedRequest);
+  log('onEvent returned:', onEventResult);
+
+  // merge the request and the result from onEvent to form the complete resource event
+  // this also performs validation.
+  const resourceEvent = createResponseEvent(cfnRequest, onEventResult);
+  log('event:', onEventResult);
+
+  if (cfnRequest.RequestType == 'Delete') {
+    // If the RequestType is `Delete`, we can submit the response to CFN.
+    // There's no need to invoke the waiter state machine.
+    log('Submitting response to CloudFormation');
+    await cfnResponse.submitResponse('SUCCESS', resourceEvent, { noEcho: resourceEvent.NoEcho });
+  } else {
+    // otherwise we start the waiter state machine to invoke
+    // `isComplete` in predefined intervals.
+    const waiter = {
+      stateMachineArn: getEnv('WAITER_STATE_MACHINE_ARN'),
+      name: resourceEvent.RequestId,
+      input: JSON.stringify(resourceEvent),
+    };
+
+    log('starting waiter', {
+      stateMachineArn: waiter.stateMachineArn,
+      name: resourceEvent.RequestId,
+    });
+
+    await startExecution(waiter);
+  }
 };
 
 /**
- * OnEvent handler to process the CFN event, including `Create`, `Update` and `Delete`
+ * Handler for state machine events polling completion status of resource modification.
+ *
+ * Note: This is adapted from the AWS CDK's provider framework.
+ * https://github.com/aws/aws-cdk/blob/11621e7/packages/aws-cdk-lib/custom-resources/lib/provider-framework/runtime/framework.ts
+ * @param event isComplete request received from Waiter State Machine.
+ */
+export const isComplete = async (event: AWSCDKAsyncCustomResource.IsCompleteRequest): Promise<void> => {
+  const sanitizedRequest = { ...event, ResponseURL: '...' } as const;
+  log('isComplete', sanitizedRequest);
+
+  const isCompleteResult = await processIsComplete(sanitizedRequest);
+  log('isComplete result', isCompleteResult);
+
+  // if we are not complete, return false, and don't send a response back.
+  if (!isCompleteResult.IsComplete) {
+    if (isCompleteResult.Data && Object.keys(isCompleteResult.Data).length > 0) {
+      throw new Error('"Data" is not allowed if "IsComplete" is "False"');
+    }
+
+    // This must be the full event, it will be deserialized in `onTimeout` to send the response to CloudFormation
+    throw new cfnResponse.Retry(JSON.stringify(event));
+  }
+
+  const response = {
+    ...event,
+    ...isCompleteResult,
+    Data: {
+      ...event.Data,
+      ...isCompleteResult.Data,
+    },
+  };
+
+  await cfnResponse.submitResponse('SUCCESS', response, { noEcho: event.NoEcho });
+};
+// #endregion Entry Points
+
+// #region Resource Modification Logic
+/**
+ * Resource modification logic for OnEvent handler to process the CFN event, including `Create`, `Update` and `Delete`
  * @param event CFN event
  * @returns Response object which is sent back to CFN
  */
-export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): Promise<AWSCDKAsyncCustomResource.OnEventResponse> => {
+export const processOnEvent = async (
+  event: AWSCDKAsyncCustomResource.OnEventRequest,
+): Promise<AWSCDKAsyncCustomResource.OnEventResponse> => {
   console.log({ ...event, ResponseURL: '[redacted]' });
   const tableDef = extractTableInputFromEvent(event);
   console.log('Input table state: ', tableDef);
@@ -226,7 +304,7 @@ export const onEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
  * @param event CFN event
  * @returns Response object with `isComplete` bool attribute to indicate the completeness of process
  */
-export const isComplete = async (
+export const processIsComplete = async (
   event: AWSCDKAsyncCustomResource.IsCompleteRequest,
 ): Promise<AWSCDKAsyncCustomResource.IsCompleteResponse> => {
   log('got event', { ...event, ResponseURL: '[redacted]' });
@@ -330,6 +408,64 @@ const replaceTable = async (
   };
   log('Returning result', result);
   return result;
+};
+// #endregion Resource Modification Logic
+
+// #region Helpers
+/**
+ * Creates a response event to provide to the state machine
+ *
+ * Note: This is taken from the AWS CDK's provider framework.
+ * https://github.com/aws/aws-cdk/blob/11621e7/packages/aws-cdk-lib/custom-resources/lib/provider-framework/runtime/framework.ts
+ * @param cfnRequest OnEvent request received from CloudFormation
+ * @param onEventResult OnEventResponse received from modifying resource
+ * @returns IsCompleteRequest to pass to state machine -> isComplete flow
+ */
+const createResponseEvent = (
+  cfnRequest: AWSLambda.CloudFormationCustomResourceEvent,
+  onEventResult: OnEventResponse,
+): AWSCDKAsyncCustomResource.IsCompleteRequest => {
+  onEventResult = onEventResult || {};
+  const physicalResourceId = onEventResult.PhysicalResourceId || defaultPhysicalResourceId(cfnRequest);
+
+  if (cfnRequest.RequestType === 'Delete' && physicalResourceId != cfnRequest.PhysicalResourceId) {
+    throw new Error(
+      `DELETE: cannot change the physical resource ID from "${cfnRequest.PhysicalResourceId} to "${onEventResult.PhysicalResourceId}" during deletion"`,
+    );
+  }
+
+  if (cfnRequest.RequestType === 'Update' && physicalResourceId !== cfnRequest.PhysicalResourceId) {
+    log(`UPDATE: changing physical resource ID from "${cfnRequest.PhysicalResourceId}" to "${onEventResult.PhysicalResourceId}"`);
+  }
+
+  return {
+    ...cfnRequest,
+    ...onEventResult,
+    PhysicalResourceId: physicalResourceId,
+  };
+};
+
+/**
+ * Calculates the default physical resource ID based in case handler did not return a PhysicalResourceId.
+ *
+ * For "CREATE", it uses the RequestId.
+ * For "UPDATE" and "DELETE" and returns the current PhysicalResourceId (the one provided in `event`).
+ *
+ * Note: This is taken from the AWS CDK's provider framework.
+ * https://github.com/aws/aws-cdk/blob/11621e7/packages/aws-cdk-lib/custom-resources/lib/provider-framework/runtime/framework.ts
+ */
+const defaultPhysicalResourceId = (req: AWSLambda.CloudFormationCustomResourceEvent): string => {
+  switch (req.RequestType) {
+    case 'Create':
+      return req.RequestId;
+
+    case 'Update':
+    case 'Delete':
+      return req.PhysicalResourceId;
+
+    default:
+      throw new Error(`Invalid "RequestType" in request "${JSON.stringify(req)}"`);
+  }
 };
 
 /**
@@ -1096,3 +1232,4 @@ const retry = async <T>(
  * @returns void
  */
 const sleep = async (milliseconds: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, milliseconds));
+// #endregion Helpers
