@@ -33,8 +33,12 @@ describe('ModelTransformer:', () => {
     const amplifyTableManagerStack = out.stacks[ITERATIVE_TABLE_STACK_NAME];
     expect(amplifyTableManagerStack).toBeDefined();
     // DynamoDB manager policy should be generated correctly
-    const policyKey = Object.keys(amplifyTableManagerStack.Resources!).find((r) => r.includes('CreateUpdateDeleteTablesPolicy'));
-    const ddbManagerPolicy = amplifyTableManagerStack.Resources![`${policyKey}`];
+    const ddbManagerPolicy = Object.values(amplifyTableManagerStack.Resources!)
+      .filter((resource) => resource.Type === 'AWS::IAM::Role')
+      .flatMap((role: any) => role.Properties.Policies)
+      .filter((policies: any) => policies !== undefined)
+      .reduce((acc, value) => acc.concat(value), [])
+      .find((policy: any) => policy.PolicyName === 'CreateUpdateDeleteTablesPolicy')
     expect(ddbManagerPolicy).toBeDefined();
     expect(ddbManagerPolicy).toMatchSnapshot();
     // Post table resource should be generated within the custom table type
