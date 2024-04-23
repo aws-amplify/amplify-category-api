@@ -38,7 +38,7 @@ describe('ModelTransformer:', () => {
       .flatMap((role: any) => role.Properties.Policies)
       .filter((policies: any) => policies !== undefined)
       .reduce((acc, value) => acc.concat(value), [])
-      .find((policy: any) => policy.PolicyName === 'CreateUpdateDeleteTablesPolicy')
+      .find((policy: any) => policy.PolicyName === 'CreateUpdateDeleteTablesPolicy');
     expect(ddbManagerPolicy).toBeDefined();
     expect(ddbManagerPolicy).toMatchSnapshot();
     // Post table resource should be generated within the custom table type
