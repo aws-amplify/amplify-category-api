@@ -373,11 +373,14 @@ export const createRdsLambdaRole = (
         );
       }
     } else if (isSqlModelDataSourceSsmDbConnectionStringConfig(secretEntry)) {
+      const connectionUriSsmPaths = Array.isArray(secretEntry.connectionUriSsmPath)
+        ? secretEntry.connectionUriSsmPath
+        : [secretEntry.connectionUriSsmPath];
       policyStatements.push(
         new PolicyStatement({
           actions: ['ssm:GetParameter', 'ssm:GetParameters'],
           effect: Effect.ALLOW,
-          resources: [`arn:aws:ssm:*:*:parameter${secretEntry.connectionUriSsmPath}`],
+          resources: connectionUriSsmPaths.map((ssmPath) => `arn:aws:ssm:*:*:parameter${ssmPath}`),
         }),
       );
     } else {

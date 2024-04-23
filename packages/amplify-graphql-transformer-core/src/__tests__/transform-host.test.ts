@@ -6,7 +6,9 @@ import { InlineTemplate } from '../cdk-compat/template-asset';
 describe('addResolver', () => {
   const app = new App();
   const stack = new Stack(app, 'test-root-stack');
-  const transformHost = new DefaultTransformHost({ api: new GraphQLApi(stack, 'testId', { name: 'testApiName' }) });
+  const transformHost = new DefaultTransformHost({
+    api: new GraphQLApi(stack, 'testId', { name: 'testApiName', assetProvider: { provide: jest.fn() } }),
+  });
 
   it('generates resolver name with hash for non-alphanumeric type names', () => {
     const cfnResolver = transformHost.addResolver(
