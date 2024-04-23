@@ -62,6 +62,13 @@ describe('SQL bound API definitions', () => {
       expect(isSqlModelDataSourceDbConnectionConfig(dbConfig)).toBe(true);
     });
 
+    it('accepts multiple connection uri SSM paths in DB configuration', () => {
+      const dbConfig = {
+        connectionUriSsmPath: ['/ssm/path/connectionUri/1', '/ssm/path/connectionUri/2'],
+      };
+      expect(isSqlModelDataSourceDbConnectionConfig(dbConfig)).toBe(true);
+    });
+
     it('does not accept a connection uri object in DB configuration', () => {
       const dbConfig = {
         connectionUriSsmPath: {},

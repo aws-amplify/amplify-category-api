@@ -59,8 +59,12 @@ describe('CDK GraphQL Transformer deployments with SQL datasources', () => {
     await testGraphQLAPI(constructTestOptions('ssm'));
   });
 
-  test('creates a GraphQL API from SQL-based models using Connection String SSM parameter', async () => {
+  test('creates a GraphQL API from SQL-based models using Connection Uri SSM path', async () => {
     await testGraphQLAPI(constructTestOptions('connectionUri'));
+  });
+
+  test('creates a GraphQL API from SQL-based models using multiple Connection Uri SSM paths', async () => {
+    await testGraphQLAPI(constructTestOptions('connectionUriMultiple'));
   });
 
   const constructTestOptions = (connectionConfigName: string) => ({
