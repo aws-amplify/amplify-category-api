@@ -144,15 +144,15 @@ describe('Relationships protected with group auth', () => {
       apiEndpoint = testConfig.apiEndpoint;
     });
 
-    // afterAll(async () => {
-    //   try {
-    //     await cdkDestroy(projRoot, '--all');
-    //   } catch (err) {
-    //     console.log(`Error invoking 'cdk destroy': ${err}`);
-    //   }
+    afterAll(async () => {
+      try {
+        await cdkDestroy(projRoot, '--all');
+      } catch (err) {
+        console.log(`Error invoking 'cdk destroy': ${err}`);
+      }
 
-    //   deleteProjectDir(projRoot);
-    // });
+      deleteProjectDir(projRoot);
+    });
 
     describe('Actors belonging to Group1', () => {
       describe('Primary as source model', () => {
