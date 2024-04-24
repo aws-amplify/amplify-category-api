@@ -383,7 +383,7 @@ export interface SqlModelDataSourceSsmDbConnectionConfig {
 
 // @public
 export interface SqlModelDataSourceSsmDbConnectionStringConfig {
-    readonly connectionUriSsmPath: string | string[];
+    readonly connectionUriSsmPath: string;
 }
 
 // @public

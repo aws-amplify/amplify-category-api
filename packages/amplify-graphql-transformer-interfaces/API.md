@@ -141,10 +141,9 @@ export type AssetProps = {
 };
 
 // @public (undocumented)
-export interface AssetProvider {
-    // (undocumented)
+export type AssetProvider = {
     provide: (scope: Construct, name: string, props: AssetProps) => S3Asset;
-}
+};
 
 // Warning: (ae-forgotten-export) The symbol "NoneDataSourceProvider" needs to be exported by the entry point index.d.ts
 //
@@ -199,8 +198,6 @@ export interface GraphQLAPIProvider extends IConstruct {
     addToSchema: (addition: string) => void;
     // (undocumented)
     readonly apiId: string;
-    // (undocumented)
-    readonly assetProvider: AssetProvider;
     // (undocumented)
     grant: (grantee: IGrantable, resources: APIIAMResourceProvider, ...actions: string[]) => Grant;
     // (undocumented)
@@ -353,7 +350,7 @@ export type S3Asset = {
 // @public (undocumented)
 export interface S3MappingFunctionCodeProvider {
     // (undocumented)
-    bind: (scope: Construct, assetProvider: AssetProvider) => IAsset;
+    bind: (scope: Construct) => IAsset;
     // (undocumented)
     type: MappingTemplateType.S3_LOCATION;
 }
@@ -361,7 +358,7 @@ export interface S3MappingFunctionCodeProvider {
 // @public (undocumented)
 export interface S3MappingTemplateProvider {
     // (undocumented)
-    bind: (scope: Construct, assetProvider: AssetProvider) => string;
+    bind: (scope: Construct) => string;
     // (undocumented)
     getTemplateHash: () => string;
     // (undocumented)
@@ -434,7 +431,7 @@ export interface SqlModelDataSourceSsmDbConnectionConfig {
 // @public (undocumented)
 export interface SqlModelDataSourceSsmDbConnectionStringConfig {
     // (undocumented)
-    readonly connectionUriSsmPath: string | string[];
+    readonly connectionUriSsmPath: string;
 }
 
 // @public (undocumented)
@@ -922,7 +919,7 @@ export interface VpcConfig {
 
 // Warnings were encountered during analysis:
 //
-// src/graphql-api-provider.ts:36:3 - (ae-forgotten-export) The symbol "OpenIDConnectConfig" needs to be exported by the entry point index.d.ts
+// src/graphql-api-provider.ts:35:3 - (ae-forgotten-export) The symbol "OpenIDConnectConfig" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

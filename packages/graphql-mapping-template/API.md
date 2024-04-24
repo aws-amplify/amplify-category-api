@@ -137,7 +137,7 @@ export interface EqualsNode {
 }
 
 // @public (undocumented)
-export type Expression = IfNode | IfElseNode | AndNode | OrNode | ParensNode | EqualsNode | NotEqualsNode | ForEachNode | StringNode | RawNode | QuotesNode | FloatNode | IntNode | BooleanNode | NullNode | ReferenceNode | QuietReferenceNode | ObjectNode | ListNode | SetNode | CommentNode | CompoundExpressionNode | ToJsonNode | IsNullOrEmptyNode | NotNode | NewLineNode | ReturnNode;
+export type Expression = IfNode | IfElseNode | AndNode | OrNode | ParensNode | EqualsNode | NotEqualsNode | GreaterThanNode | ForEachNode | StringNode | RawNode | QuotesNode | FloatNode | IntNode | BooleanNode | NullNode | ReferenceNode | QuietReferenceNode | ObjectNode | ListNode | SetNode | CommentNode | CompoundExpressionNode | ToJsonNode | IsNullOrEmptyNode | NotNode | NewLineNode | ReturnNode;
 
 // @public (undocumented)
 export function float(value: number): FloatNode;
@@ -163,6 +163,19 @@ export interface ForEachNode {
     key: ReferenceNode;
     // (undocumented)
     kind: 'ForEach';
+}
+
+// @public (undocumented)
+export function greaterThan(leftExpr: Expression, rightExpr: Expression): GreaterThanNode;
+
+// @public (undocumented)
+export interface GreaterThanNode {
+    // (undocumented)
+    kind: 'GreaterThan';
+    // (undocumented)
+    leftExpr: Expression;
+    // (undocumented)
+    rightExpr: Expression;
 }
 
 // @public (undocumented)
