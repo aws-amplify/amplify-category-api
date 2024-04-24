@@ -8,6 +8,7 @@ import { TestDefinition, writeStackPrefix, writeTestDefinitions } from '../../..
 import {
   testPrimaryCpkSkOneContainsAssociated,
   testPrimaryCpkSkTwoContainAssociated,
+  testPrimaryMultipleHasOneContainsOneHasOne,
   testRelatedManyCpkSkOneContainsAssociated,
   testRelatedManypkSkTwoContainsAssociated,
   testRelatedOneCpkSkOneContainsAssociated,
@@ -79,6 +80,10 @@ describe('Relationships defined using composite primary are supported', () => {
 
       test('Associated models included in query and mutation response with two sort keys', async () => {
         await testPrimaryCpkSkTwoContainAssociated(currentId, apiEndpoint, apiKey);
+      });
+
+      test('Multiple RelatedOne associated records returns one RelatedOne record', async () => {
+        await testPrimaryMultipleHasOneContainsOneHasOne(currentId, apiEndpoint, apiKey);
       });
     });
 

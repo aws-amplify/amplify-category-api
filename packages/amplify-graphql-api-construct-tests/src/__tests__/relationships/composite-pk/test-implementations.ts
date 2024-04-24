@@ -105,6 +105,40 @@ export const testPrimaryCpkSkTwoContainAssociated = async (currentId: number, ap
   assertPrimaryCpkTwoContainsAssociated(primaryUpdate, primaryVariables);
 };
 
+export const testPrimaryMultipleHasOneContainsOneHasOne = async (currentId: number, apiEndpoint: string, apiKey: string): Promise<void> => {
+  const primaryVariables = getPrimaryVariablesSkOne(currentId);
+  const relatedVariables = getRelatedVariablesSkOne(primaryVariables);
+  const args = {
+    apiEndpoint,
+    auth: { apiKey },
+  };
+  // Create two `RelatedOne`s
+  await doAppSyncGraphqlMutation({ ...args, query: createRelatedOneCPKSKOne, variables: relatedVariables });
+  await doAppSyncGraphqlMutation({ ...args, query: createRelatedOneCPKSKOne, variables: relatedVariables });
+
+  // Create PrimaryCPKSKOne
+  const primaryCreateResult = await doAppSyncGraphqlMutation({ ...args, query: createPrimaryCPKSKOne, variables: primaryVariables });
+  // Assert create mutation response contains one RelatedOne model
+  const primaryCreate = primaryCreateResult.body.data.createPrimaryCPKSKOne;
+  expect(primaryCreate.relatedOne).toBeDefined();
+  expect(primaryCreate.relatedOne.primaryId).toEqual(primaryVariables.id);
+  expect(primaryCreate.relatedOne.primarySkOne).toEqual(primaryVariables.skOne);
+
+  // Assert get query response contains one RelatedOne model
+  const primaryGetResult = await doAppSyncGraphqlQuery({ ...args, query: getPrimaryCPKSKOne, variables: primaryVariables });
+  const primaryGet = primaryGetResult.body.data.getPrimaryCPKSKOne;
+  expect(primaryGet.relatedOne).toBeDefined();
+  expect(primaryGet.relatedOne.primaryId).toEqual(primaryVariables.id);
+  expect(primaryGet.relatedOne.primarySkOne).toEqual(primaryVariables.skOne);
+
+  // Assert update mutation response contains one RelatedOne model
+  const primaryUpdateResult = await doAppSyncGraphqlMutation({ ...args, query: updatePrimaryCPKSKOne, variables: primaryVariables });
+  const primaryUpdate = primaryUpdateResult.body.data.updatePrimaryCPKSKOne;
+  expect(primaryUpdate.relatedOne).toBeDefined();
+  expect(primaryUpdate.relatedOne.primaryId).toEqual(primaryVariables.id);
+  expect(primaryUpdate.relatedOne.primarySkOne).toEqual(primaryVariables.skOne);
+};
+
 // #region Primary assertions
 const assertPrimaryCpkOneContainsAssociated = (
   primary: RecursiveOmit<GetPrimaryCPKSKOneQuery['getPrimaryCPKSKOne'], '__typename'>,
@@ -126,6 +160,7 @@ const assertPrimaryCpkTwoContainsAssociated = (
   expect(primary.skTwo).toEqual(expected.skTwo);
   expect(primary.relatedOne.primarySkTwo).toEqual(expected.skTwo);
 };
+
 // #endregion Primary assertions
 // #endregion Primary as source model
 

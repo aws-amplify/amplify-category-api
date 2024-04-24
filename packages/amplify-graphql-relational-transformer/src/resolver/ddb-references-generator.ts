@@ -1,7 +1,6 @@
 import {
   InvalidDirectiveError,
   MappingTemplate,
-  getKeySchema,
   getModelDataSourceNameForTypeName,
   getPrimaryKeyFields,
   getTable,
@@ -16,6 +15,7 @@ import {
   compoundExpression,
   equals,
   forEach,
+  greaterThan,
   ifElse,
   iff,
   int,
@@ -34,7 +34,7 @@ import {
   str,
   toJson,
 } from 'graphql-mapping-template';
-import { ModelResourceIDs, NONE_VALUE, ResolverResourceIDs, directiveExists, setArgs } from 'graphql-transformer-common';
+import { ModelResourceIDs, NONE_VALUE, ResolverResourceIDs, setArgs } from 'graphql-transformer-common';
 import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
 import { condenseRangeKey } from '../resolvers';
 import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from '../types';
@@ -313,7 +313,7 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
           DynamoDBMappingTemplate.dynamoDBResponse(
             false,
             ifElse(
-              and([not(ref('ctx.result.items.isEmpty()')), equals(ref('ctx.result.scannedCount'), int(1))]),
+              not(ref('ctx.result.items.isEmpty()')),
               // Make sure the retrieved item has the __operation field, so the individual type resolver can appropriately redact fields
               compoundExpression([
                 set(ref('resultValue'), ref('ctx.result.items[0]')),
@@ -324,10 +324,11 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
                 ),
                 toJson(ref('resultValue')),
               ]),
-              // TODO: Should we be checking scannedCount > 0 instead of == 1 here?
-              // The current `fields` based implementation checks if scannedCount == 1
               compoundExpression([
-                iff(and([ref('ctx.result.items.isEmpty()'), equals(ref('ctx.result.scannedCount'), int(1))]), ref('util.unauthorized()')),
+                iff(
+                  and([ref('ctx.result.items.isEmpty()'), greaterThan(ref('ctx.result.scannedCount'), int(0))]),
+                  ref('util.unauthorized()'),
+                ),
                 toJson(nul()),
               ]),
             ),
