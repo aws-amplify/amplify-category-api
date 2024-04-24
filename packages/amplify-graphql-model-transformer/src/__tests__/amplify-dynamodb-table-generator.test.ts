@@ -54,5 +54,37 @@ describe('ModelTransformer:', () => {
     expect(commentTable).toBeDefined();
     expect(commentTable.Type).toBe('AWS::DynamoDB::Table');
     validateModelSchema(parse(out.schema));
+
+    // Outputs should contain a reference to the Arn to the entry point (onEventHandler)
+    // of the provider for the AmplifyTableManager custom resource.
+    // If any of these assertions should fail, it is likely caused by a change in the custom resource provider
+    /** {@link Provider} */ // that caused the entry point ARN to change.
+    // !! This will result in broken redeployments !!
+    // Friends don't let friends mutate custom resource entry point ARNs.
+    const outputs = amplifyTableManagerStack.Outputs!
+    expect(outputs).toBeDefined();
+    const rootStackName = 'transformerrootstack';
+    const tableManagerStackName = 'AmplifyTableManager';
+    const onEventHandlerName = 'TableManagerCustomProviderframeworkonEvent';
+    // See https://github.com/aws/aws-cdk/blob/6fdc4582f659549021a64a4d676fce12fc241715/packages/aws-cdk-lib/core/lib/stack.ts#L1288-L1333 for more information
+    const entryPointKeyStableLogicalIdHash = 'F1C8BD67';
+    const onEventHandlerStableLogicalIdHash = '1DFC2ECC';
+
+    const entrypointArnOutputsKey = `${rootStackName}${tableManagerStackName}${onEventHandlerName}${entryPointKeyStableLogicalIdHash}Arn`
+    const entryPointOutput = outputs[entrypointArnOutputsKey]
+
+    const onEventHandlerResourceName = `${onEventHandlerName}${onEventHandlerStableLogicalIdHash}`;
+    expect(entryPointOutput).toBeDefined();
+    expect(entryPointOutput['Value']['Fn::GetAtt']).toEqual([
+      onEventHandlerResourceName, /* TableManagerCustomProviderframeworkonEvent1DFC2ECC */
+      'Arn'
+    ]);
+
+    // Since we verified above that the ARN for this resource is included in the stack outputs,
+    // we know that the resource itself exists in the stack. But better safe than sorry.
+    const amplifyTableManagerResources = amplifyTableManagerStack.Resources
+    expect(amplifyTableManagerResources).toBeDefined()
+    const onEventHandlerLambda = amplifyTableManagerResources![onEventHandlerResourceName];
+    expect(onEventHandlerLambda).toBeDefined();
   });
 });
