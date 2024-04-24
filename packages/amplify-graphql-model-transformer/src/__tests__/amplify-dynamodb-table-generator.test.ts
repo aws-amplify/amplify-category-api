@@ -61,7 +61,7 @@ describe('ModelTransformer:', () => {
     /** {@link Provider} */ // that caused the entry point ARN to change.
     // !! This will result in broken redeployments !!
     // Friends don't let friends mutate custom resource entry point ARNs.
-    const outputs = amplifyTableManagerStack.Outputs!
+    const outputs = amplifyTableManagerStack.Outputs!;
     expect(outputs).toBeDefined();
     const rootStackName = 'transformerrootstack';
     const tableManagerStackName = 'AmplifyTableManager';
@@ -70,20 +70,20 @@ describe('ModelTransformer:', () => {
     const entryPointKeyStableLogicalIdHash = 'F1C8BD67';
     const onEventHandlerStableLogicalIdHash = '1DFC2ECC';
 
-    const entrypointArnOutputsKey = `${rootStackName}${tableManagerStackName}${onEventHandlerName}${entryPointKeyStableLogicalIdHash}Arn`
-    const entryPointOutput = outputs[entrypointArnOutputsKey]
+    const entrypointArnOutputsKey = `${rootStackName}${tableManagerStackName}${onEventHandlerName}${entryPointKeyStableLogicalIdHash}Arn`;
+    const entryPointOutput = outputs[entrypointArnOutputsKey];
 
     const onEventHandlerResourceName = `${onEventHandlerName}${onEventHandlerStableLogicalIdHash}`;
     expect(entryPointOutput).toBeDefined();
     expect(entryPointOutput['Value']['Fn::GetAtt']).toEqual([
-      onEventHandlerResourceName, /* TableManagerCustomProviderframeworkonEvent1DFC2ECC */
-      'Arn'
+      onEventHandlerResourceName /* TableManagerCustomProviderframeworkonEvent1DFC2ECC */,
+      'Arn',
     ]);
 
     // Since we verified above that the ARN for this resource is included in the stack outputs,
     // we know that the resource itself exists in the stack. But better safe than sorry.
-    const amplifyTableManagerResources = amplifyTableManagerStack.Resources
-    expect(amplifyTableManagerResources).toBeDefined()
+    const amplifyTableManagerResources = amplifyTableManagerStack.Resources;
+    expect(amplifyTableManagerResources).toBeDefined();
     const onEventHandlerLambda = amplifyTableManagerResources![onEventHandlerResourceName];
     expect(onEventHandlerLambda).toBeDefined();
   });
