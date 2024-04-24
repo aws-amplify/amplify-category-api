@@ -44,6 +44,12 @@ export const addDirectivesToOperation: (ctx: TransformerTransformSchemaStepConte
 export const addModelConditionInputs: (ctx: TransformerTransformSchemaStepContextProvider) => void;
 
 // @public (undocumented)
+export const constructArrayFieldsStatement: (tableName: string, ctx: TransformerContextProvider) => Expression;
+
+// @public (undocumented)
+export const constructNonScalarFieldsStatement: (tableName: string, ctx: TransformerContextProvider) => Expression;
+
+// @public (undocumented)
 export const createEnumModelFilters: (ctx: TransformerTransformSchemaStepContextProvider, type: ObjectTypeDefinitionNode) => InputObjectTypeDefinitionNode[];
 
 // @public (undocumented)
