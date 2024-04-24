@@ -1,4 +1,4 @@
-import { withRetries } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/util';
+import { getEnv, withRetries } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/util';
 
 test('withRetries() will invoke a throwing function multiple times', async () => {
   let invocations = 0;
@@ -15,4 +15,11 @@ test('withRetries() will invoke a throwing function multiple times', async () =>
   ).rejects.toThrow(/Ruh roh!/);
 
   expect(invocations).toBeGreaterThan(1);
+});
+
+test('getEnv succeeds with existing / fails with non-existing', () => {
+    process.env['FOO'] = 'BAR';
+    const fooValue = getEnv('FOO');
+    expect(fooValue).toEqual('BAR');
+    expect(() => getEnv('')).toThrowError();
 });

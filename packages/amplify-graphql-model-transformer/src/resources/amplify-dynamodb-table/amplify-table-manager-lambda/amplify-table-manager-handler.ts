@@ -1,3 +1,4 @@
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
 import {
   AttributeDefinition,
   ContinuousBackupsDescription,
@@ -30,6 +31,8 @@ const notFinished: AWSCDKAsyncCustomResource.IsCompleteResponse = {
 };
 
 // #region Entry points
+export const onEvent = cfnResponse.safeHandler(onEventHandler);
+export const isComplete = cfnResponse.safeHandler(isCompleteHandler);
 /**
  * Handler for requests sent from CloudFormation for custom resource.
  * This is the entry point of the custom resource.
@@ -38,7 +41,8 @@ const notFinished: AWSCDKAsyncCustomResource.IsCompleteResponse = {
  * https://github.com/aws/aws-cdk/blob/11621e7/packages/aws-cdk-lib/custom-resources/lib/provider-framework/runtime/framework.ts
  * @param cfnRequest Request received from CloudFormation
  */
-export const onEvent = async (cfnRequest: AWSLambda.CloudFormationCustomResourceEvent): Promise<void> => {
+// eslint-disable-next-line func-style
+async function onEventHandler(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent): Promise<void> {
   const sanitizedRequest = { ...cfnRequest, ResponseURL: '...' } as const;
   log('onEventHandler', sanitizedRequest);
 
@@ -82,7 +86,8 @@ export const onEvent = async (cfnRequest: AWSLambda.CloudFormationCustomResource
  * https://github.com/aws/aws-cdk/blob/11621e7/packages/aws-cdk-lib/custom-resources/lib/provider-framework/runtime/framework.ts
  * @param event isComplete request received from Waiter State Machine.
  */
-export const isComplete = async (event: AWSCDKAsyncCustomResource.IsCompleteRequest): Promise<void> => {
+// eslint-disable-next-line func-style
+async function isCompleteHandler(event: AWSCDKAsyncCustomResource.IsCompleteRequest): Promise<void> {
   const sanitizedRequest = { ...event, ResponseURL: '...' } as const;
   log('isComplete', sanitizedRequest);
 
@@ -118,7 +123,7 @@ export const isComplete = async (event: AWSCDKAsyncCustomResource.IsCompleteRequ
  * @param event CFN event
  * @returns Response object which is sent back to CFN
  */
-export const processOnEvent = async (
+const processOnEvent = async (
   event: AWSCDKAsyncCustomResource.OnEventRequest,
 ): Promise<AWSCDKAsyncCustomResource.OnEventResponse> => {
   console.log({ ...event, ResponseURL: '[redacted]' });
@@ -304,7 +309,7 @@ export const processOnEvent = async (
  * @param event CFN event
  * @returns Response object with `isComplete` bool attribute to indicate the completeness of process
  */
-export const processIsComplete = async (
+const processIsComplete = async (
   event: AWSCDKAsyncCustomResource.IsCompleteRequest,
 ): Promise<AWSCDKAsyncCustomResource.IsCompleteResponse> => {
   log('got event', { ...event, ResponseURL: '[redacted]' });
