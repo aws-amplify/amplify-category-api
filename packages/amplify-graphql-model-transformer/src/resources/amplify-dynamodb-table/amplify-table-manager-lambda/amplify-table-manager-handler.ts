@@ -77,7 +77,7 @@ async function onEventHandler(cfnRequest: AWSLambda.CloudFormationCustomResource
 
     await startExecution(waiter);
   }
-};
+}
 
 /**
  * Handler for state machine events polling completion status of resource modification.
@@ -114,7 +114,7 @@ async function isCompleteHandler(event: AWSCDKAsyncCustomResource.IsCompleteRequ
   };
 
   await cfnResponse.submitResponse('SUCCESS', response, { noEcho: event.NoEcho });
-};
+}
 // #endregion Entry Points
 
 // #region Resource Modification Logic
@@ -123,9 +123,7 @@ async function isCompleteHandler(event: AWSCDKAsyncCustomResource.IsCompleteRequ
  * @param event CFN event
  * @returns Response object which is sent back to CFN
  */
-const processOnEvent = async (
-  event: AWSCDKAsyncCustomResource.OnEventRequest,
-): Promise<AWSCDKAsyncCustomResource.OnEventResponse> => {
+const processOnEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): Promise<AWSCDKAsyncCustomResource.OnEventResponse> => {
   console.log({ ...event, ResponseURL: '[redacted]' });
   const tableDef = extractTableInputFromEvent(event);
   console.log('Input table state: ', tableDef);

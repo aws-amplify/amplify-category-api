@@ -34,12 +34,12 @@ test('if isComplete is specified, the isComplete framework handler is also inclu
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'amplify-table-manager-handler.onEvent',
     Timeout: 840,
-    Role: { 'Fn::GetAtt': [ 'OnEventRole56094035', 'Arn' ] },
+    Role: { 'Fn::GetAtt': ['OnEventRole56094035', 'Arn'] },
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'amplify-table-manager-handler.isComplete',
     Timeout: 840,
-    Role: { 'Fn::GetAtt': [ 'IsCompleteRole3501BB5A', 'Arn' ] },
+    Role: { 'Fn::GetAtt': ['IsCompleteRole3501BB5A', 'Arn'] },
   });
 });
