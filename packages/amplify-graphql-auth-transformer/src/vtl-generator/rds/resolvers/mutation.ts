@@ -1,6 +1,7 @@
 import { compoundExpression, list, methodCall, nul, obj, printBlock, qref, ref, set, str, Expression } from 'graphql-mapping-template';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
+import { constructArrayFieldsStatement, constructNonScalarFieldsStatement } from '@aws-amplify/graphql-model-transformer';
 import { ConfiguredAuthProviders, RoleDefinition } from '../../../utils';
 import {
   constructAuthorizedInputStatement,
@@ -71,6 +72,8 @@ export const generateAuthRequestExpression = (ctx: TransformerContextProvider, d
       set(ref('lambdaInput.operationName'), str(operationName)),
       set(ref('lambdaInput.args.metadata'), obj({})),
       set(ref('lambdaInput.args.metadata.keys'), list([])),
+      constructNonScalarFieldsStatement(def.name.value, ctx),
+      constructArrayFieldsStatement(def.name.value, ctx),
       constructFieldMappingInput(),
       qref(
         methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
