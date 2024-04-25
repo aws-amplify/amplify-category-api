@@ -35,6 +35,7 @@ import {
   updateRelatedMany,
   updateRelatedManyCPKSKOne,
   updateRelatedManyCPKSKTwo,
+  updateRelatedOne,
   updateRelatedOneCPKSKOne,
   updateRelatedOneCPKSKTwo,
 } from './graphql/mutations';
@@ -255,10 +256,10 @@ export const testRelatedOneContainsAssociated = async (currentId: number, apiEnd
   // Assert update mutation response contains associated models
   const relatedOneUpdatedResult = await doAppSyncGraphqlMutation({
     ...args,
-    query: updateRelatedOneCPKSKOne,
+    query: updateRelatedOne,
     variables: { id: relatedOneCreate.id, ...relatedVariables },
   });
-  const relatedOneUpdate = relatedOneUpdatedResult.body.data.updateRelatedOneCPKSKOne;
+  const relatedOneUpdate = relatedOneUpdatedResult.body.data.updateRelatedOne;
   assertRelatedOneContainsAssociated(relatedOneUpdate, primaryVariables);
 };
 
@@ -348,9 +349,9 @@ const assertRelatedOneContainsAssociated = (
   expected: CreatePrimaryInput,
 ): void => {
   expect(relatedOne).toBeDefined();
-  expect(relatedOne.primary.id).toEqual(expected.id);
-  expect(relatedOne).toBeDefined();
   expect(relatedOne.primaryId).toEqual(expected.id);
+  expect(relatedOne.primary).toBeDefined();
+  expect(relatedOne.primary.id).toEqual(expected.id);
 };
 
 const assertRelatedOneCpkOneContainsAssociated = (
@@ -358,8 +359,8 @@ const assertRelatedOneCpkOneContainsAssociated = (
   expected: CreatePrimaryCPKSKOneInput,
 ): void => {
   assertRelatedOneContainsAssociated(relatedOne, expected);
-  expect(relatedOne.primary.skOne).toEqual(expected.skOne);
   expect(relatedOne.primarySkOne).toEqual(expected.skOne);
+  expect(relatedOne.primary.skOne).toEqual(expected.skOne);
 };
 
 const assertRelatedOneCpkTwoContainsAssociated = (
