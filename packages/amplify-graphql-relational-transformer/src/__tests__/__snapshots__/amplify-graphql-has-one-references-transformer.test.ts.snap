@@ -1316,7 +1316,7 @@ $util.toJson(null)
   "Team.project.res.vtl": "#if( $ctx.error )
 $util.error($ctx.error.message, $ctx.error.type)
 #else
-  #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+  #if( !$ctx.result.items.isEmpty() )
     #set( $resultValue = $ctx.result.items[0] )
     #set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
     #if( $operation == \\"Mutation\\" )
@@ -1324,7 +1324,7 @@ $util.error($ctx.error.message, $ctx.error.type)
     #end
     $util.toJson($resultValue)
   #else
-    #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+    #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount > 0 )
 $util.unauthorized()
     #end
     $util.toJson(null)
