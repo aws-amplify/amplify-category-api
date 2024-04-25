@@ -3,111 +3,81 @@
 //  This file was automatically generated and should not be edited.
 
 export type Primary = {
-  __typename: 'Primary';
-  createdAt: string;
   id: string;
   relatedMany?: ModelRelatedManyConnection | null;
   relatedOne?: RelatedOne | null;
-  updatedAt: string;
 };
 
 export type ModelRelatedManyConnection = {
-  __typename: 'ModelRelatedManyConnection';
   items: Array<RelatedMany | null>;
   nextToken?: string | null;
 };
 
 export type RelatedMany = {
-  __typename: 'RelatedMany';
-  createdAt: string;
   id: string;
   primary?: Primary | null;
   primaryId?: string | null;
-  updatedAt: string;
 };
 
 export type RelatedOne = {
-  __typename: 'RelatedOne';
-  createdAt: string;
   id: string;
   primary?: Primary | null;
   primaryId?: string | null;
-  updatedAt: string;
 };
 
 export type PrimaryCPKSKOne = {
-  __typename: 'PrimaryCPKSKOne';
-  createdAt: string;
   id: string;
   relatedMany?: ModelRelatedManyCPKSKOneConnection | null;
   relatedOne?: RelatedOneCPKSKOne | null;
   skOne: string;
-  updatedAt: string;
 };
 
 export type ModelRelatedManyCPKSKOneConnection = {
-  __typename: 'ModelRelatedManyCPKSKOneConnection';
   items: Array<RelatedManyCPKSKOne | null>;
   nextToken?: string | null;
 };
 
 export type RelatedManyCPKSKOne = {
-  __typename: 'RelatedManyCPKSKOne';
-  createdAt: string;
   id: string;
   primary?: PrimaryCPKSKOne | null;
   primaryId?: string | null;
   primarySkOne?: string | null;
-  updatedAt: string;
 };
 
 export type RelatedOneCPKSKOne = {
-  __typename: 'RelatedOneCPKSKOne';
-  createdAt: string;
   id: string;
   primary?: PrimaryCPKSKOne | null;
   primaryId?: string | null;
   primarySkOne?: string | null;
-  updatedAt: string;
 };
 
 export type PrimaryCPKSKTwo = {
-  __typename: 'PrimaryCPKSKTwo';
-  createdAt: string;
   id: string;
   relatedMany?: ModelRelatedManyCPKSKTwoConnection | null;
   relatedOne?: RelatedOneCPKSKTwo | null;
   skOne: string;
   skTwo: string;
-  updatedAt: string;
 };
 
 export type ModelRelatedManyCPKSKTwoConnection = {
-  __typename: 'ModelRelatedManyCPKSKTwoConnection';
   items: Array<RelatedManyCPKSKTwo | null>;
   nextToken?: string | null;
 };
 
 export type RelatedManyCPKSKTwo = {
-  __typename: 'RelatedManyCPKSKTwo';
-  createdAt: string;
   id: string;
   primary?: PrimaryCPKSKTwo | null;
   primaryId?: string | null;
   primarySkOne?: string | null;
   primarySkTwo?: string | null;
-  updatedAt: string;
 };
 
 export type RelatedOneCPKSKTwo = {
-  __typename: 'RelatedOneCPKSKTwo';
-  createdAt: string;
   id: string;
   primary?: PrimaryCPKSKTwo | null;
   primaryId?: string | null;
   primarySkOne?: string | null;
   primarySkTwo?: string | null;
-  updatedAt: string;
 };
 
 export type ModelPrimaryFilterInput = {
@@ -180,7 +150,6 @@ export enum ModelSortDirection {
 }
 
 export type ModelPrimaryConnection = {
-  __typename: 'ModelPrimaryConnection';
   items: Array<Primary | null>;
   nextToken?: string | null;
 };
@@ -206,7 +175,6 @@ export type ModelIDKeyConditionInput = {
 };
 
 export type ModelPrimaryCPKSKOneConnection = {
-  __typename: 'ModelPrimaryCPKSKOneConnection';
   items: Array<PrimaryCPKSKOne | null>;
   nextToken?: string | null;
 };
@@ -238,7 +206,6 @@ export type ModelPrimaryCPKSKTwoPrimaryCompositeKeyInput = {
 };
 
 export type ModelPrimaryCPKSKTwoConnection = {
-  __typename: 'ModelPrimaryCPKSKTwoConnection';
   items: Array<PrimaryCPKSKTwo | null>;
   nextToken?: string | null;
 };
@@ -288,7 +255,6 @@ export type ModelRelatedOneCPKSKOneFilterInput = {
 };
 
 export type ModelRelatedOneCPKSKOneConnection = {
-  __typename: 'ModelRelatedOneCPKSKOneConnection';
   items: Array<RelatedOneCPKSKOne | null>;
   nextToken?: string | null;
 };
@@ -306,7 +272,6 @@ export type ModelRelatedOneCPKSKTwoFilterInput = {
 };
 
 export type ModelRelatedOneCPKSKTwoConnection = {
-  __typename: 'ModelRelatedOneCPKSKTwoConnection';
   items: Array<RelatedOneCPKSKTwo | null>;
   nextToken?: string | null;
 };
@@ -322,7 +287,6 @@ export type ModelRelatedOneFilterInput = {
 };
 
 export type ModelRelatedOneConnection = {
-  __typename: 'ModelRelatedOneConnection';
   items: Array<RelatedOne | null>;
   nextToken?: string | null;
 };
@@ -675,21 +639,14 @@ export type GetPrimaryQueryVariables = {
 
 export type GetPrimaryQuery = {
   getPrimary?: {
-    __typename: 'Primary';
-    createdAt: string;
     id: string;
     relatedMany?: {
-      __typename: 'ModelRelatedManyConnection';
       nextToken?: string | null;
     } | null;
     relatedOne?: {
-      __typename: 'RelatedOne';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
-      updatedAt: string;
     } | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -700,23 +657,16 @@ export type GetPrimaryCPKSKOneQueryVariables = {
 
 export type GetPrimaryCPKSKOneQuery = {
   getPrimaryCPKSKOne?: {
-    __typename: 'PrimaryCPKSKOne';
-    createdAt: string;
     id: string;
     relatedMany?: {
-      __typename: 'ModelRelatedManyCPKSKOneConnection';
       nextToken?: string | null;
     } | null;
     relatedOne?: {
-      __typename: 'RelatedOneCPKSKOne';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
       primarySkOne?: string | null;
-      updatedAt: string;
     } | null;
     skOne: string;
-    updatedAt: string;
   } | null;
 };
 
@@ -728,25 +678,18 @@ export type GetPrimaryCPKSKTwoQueryVariables = {
 
 export type GetPrimaryCPKSKTwoQuery = {
   getPrimaryCPKSKTwo?: {
-    __typename: 'PrimaryCPKSKTwo';
-    createdAt: string;
     id: string;
     relatedMany?: {
-      __typename: 'ModelRelatedManyCPKSKTwoConnection';
       nextToken?: string | null;
     } | null;
     relatedOne?: {
-      __typename: 'RelatedOneCPKSKTwo';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
       primarySkOne?: string | null;
       primarySkTwo?: string | null;
-      updatedAt: string;
     } | null;
     skOne: string;
     skTwo: string;
-    updatedAt: string;
   } | null;
 };
 
@@ -756,17 +699,11 @@ export type GetRelatedManyQueryVariables = {
 
 export type GetRelatedManyQuery = {
   getRelatedMany?: {
-    __typename: 'RelatedMany';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'Primary';
-      createdAt: string;
       id: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -776,19 +713,13 @@ export type GetRelatedManyCPKSKOneQueryVariables = {
 
 export type GetRelatedManyCPKSKOneQuery = {
   getRelatedManyCPKSKOne?: {
-    __typename: 'RelatedManyCPKSKOne';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKOne';
-      createdAt: string;
       id: string;
       skOne: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -798,21 +729,15 @@ export type GetRelatedManyCPKSKTwoQueryVariables = {
 
 export type GetRelatedManyCPKSKTwoQuery = {
   getRelatedManyCPKSKTwo?: {
-    __typename: 'RelatedManyCPKSKTwo';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKTwo';
-      createdAt: string;
       id: string;
       skOne: string;
       skTwo: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
     primarySkTwo?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -822,17 +747,11 @@ export type GetRelatedOneQueryVariables = {
 
 export type GetRelatedOneQuery = {
   getRelatedOne?: {
-    __typename: 'RelatedOne';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'Primary';
-      createdAt: string;
       id: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -842,19 +761,13 @@ export type GetRelatedOneCPKSKOneQueryVariables = {
 
 export type GetRelatedOneCPKSKOneQuery = {
   getRelatedOneCPKSKOne?: {
-    __typename: 'RelatedOneCPKSKOne';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKOne';
-      createdAt: string;
       id: string;
       skOne: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -864,21 +777,15 @@ export type GetRelatedOneCPKSKTwoQueryVariables = {
 
 export type GetRelatedOneCPKSKTwoQuery = {
   getRelatedOneCPKSKTwo?: {
-    __typename: 'RelatedOneCPKSKTwo';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKTwo';
-      createdAt: string;
       id: string;
       skOne: string;
       skTwo: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
     primarySkTwo?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -892,12 +799,8 @@ export type ListPrimariesQueryVariables = {
 
 export type ListPrimariesQuery = {
   listPrimaries?: {
-    __typename: 'ModelPrimaryConnection';
     items: Array<{
-      __typename: 'Primary';
-      createdAt: string;
       id: string;
-      updatedAt: string;
     } | null>;
     nextToken?: string | null;
   } | null;
@@ -914,13 +817,9 @@ export type ListPrimaryCPKSKOnesQueryVariables = {
 
 export type ListPrimaryCPKSKOnesQuery = {
   listPrimaryCPKSKOnes?: {
-    __typename: 'ModelPrimaryCPKSKOneConnection';
     items: Array<{
-      __typename: 'PrimaryCPKSKOne';
-      createdAt: string;
       id: string;
       skOne: string;
-      updatedAt: string;
     } | null>;
     nextToken?: string | null;
   } | null;
@@ -937,14 +836,10 @@ export type ListPrimaryCPKSKTwosQueryVariables = {
 
 export type ListPrimaryCPKSKTwosQuery = {
   listPrimaryCPKSKTwos?: {
-    __typename: 'ModelPrimaryCPKSKTwoConnection';
     items: Array<{
-      __typename: 'PrimaryCPKSKTwo';
-      createdAt: string;
       id: string;
       skOne: string;
       skTwo: string;
-      updatedAt: string;
     } | null>;
     nextToken?: string | null;
   } | null;
@@ -960,13 +855,9 @@ export type ListRelatedManiesQueryVariables = {
 
 export type ListRelatedManiesQuery = {
   listRelatedManies?: {
-    __typename: 'ModelRelatedManyConnection';
     items: Array<{
-      __typename: 'RelatedMany';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
-      updatedAt: string;
     } | null>;
     nextToken?: string | null;
   } | null;
@@ -982,14 +873,10 @@ export type ListRelatedManyCPKSKOnesQueryVariables = {
 
 export type ListRelatedManyCPKSKOnesQuery = {
   listRelatedManyCPKSKOnes?: {
-    __typename: 'ModelRelatedManyCPKSKOneConnection';
     items: Array<{
-      __typename: 'RelatedManyCPKSKOne';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
       primarySkOne?: string | null;
-      updatedAt: string;
     } | null>;
     nextToken?: string | null;
   } | null;
@@ -1005,15 +892,11 @@ export type ListRelatedManyCPKSKTwosQueryVariables = {
 
 export type ListRelatedManyCPKSKTwosQuery = {
   listRelatedManyCPKSKTwos?: {
-    __typename: 'ModelRelatedManyCPKSKTwoConnection';
     items: Array<{
-      __typename: 'RelatedManyCPKSKTwo';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
       primarySkOne?: string | null;
       primarySkTwo?: string | null;
-      updatedAt: string;
     } | null>;
     nextToken?: string | null;
   } | null;
@@ -1029,14 +912,10 @@ export type ListRelatedOneCPKSKOnesQueryVariables = {
 
 export type ListRelatedOneCPKSKOnesQuery = {
   listRelatedOneCPKSKOnes?: {
-    __typename: 'ModelRelatedOneCPKSKOneConnection';
     items: Array<{
-      __typename: 'RelatedOneCPKSKOne';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
       primarySkOne?: string | null;
-      updatedAt: string;
     } | null>;
     nextToken?: string | null;
   } | null;
@@ -1052,15 +931,11 @@ export type ListRelatedOneCPKSKTwosQueryVariables = {
 
 export type ListRelatedOneCPKSKTwosQuery = {
   listRelatedOneCPKSKTwos?: {
-    __typename: 'ModelRelatedOneCPKSKTwoConnection';
     items: Array<{
-      __typename: 'RelatedOneCPKSKTwo';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
       primarySkOne?: string | null;
       primarySkTwo?: string | null;
-      updatedAt: string;
     } | null>;
     nextToken?: string | null;
   } | null;
@@ -1076,13 +951,9 @@ export type ListRelatedOnesQueryVariables = {
 
 export type ListRelatedOnesQuery = {
   listRelatedOnes?: {
-    __typename: 'ModelRelatedOneConnection';
     items: Array<{
-      __typename: 'RelatedOne';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
-      updatedAt: string;
     } | null>;
     nextToken?: string | null;
   } | null;
@@ -1095,21 +966,14 @@ export type CreatePrimaryMutationVariables = {
 
 export type CreatePrimaryMutation = {
   createPrimary?: {
-    __typename: 'Primary';
-    createdAt: string;
     id: string;
     relatedMany?: {
-      __typename: 'ModelRelatedManyConnection';
       nextToken?: string | null;
     } | null;
     relatedOne?: {
-      __typename: 'RelatedOne';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
-      updatedAt: string;
     } | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1120,23 +984,16 @@ export type CreatePrimaryCPKSKOneMutationVariables = {
 
 export type CreatePrimaryCPKSKOneMutation = {
   createPrimaryCPKSKOne?: {
-    __typename: 'PrimaryCPKSKOne';
-    createdAt: string;
     id: string;
     relatedMany?: {
-      __typename: 'ModelRelatedManyCPKSKOneConnection';
       nextToken?: string | null;
     } | null;
     relatedOne?: {
-      __typename: 'RelatedOneCPKSKOne';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
       primarySkOne?: string | null;
-      updatedAt: string;
     } | null;
     skOne: string;
-    updatedAt: string;
   } | null;
 };
 
@@ -1147,25 +1004,18 @@ export type CreatePrimaryCPKSKTwoMutationVariables = {
 
 export type CreatePrimaryCPKSKTwoMutation = {
   createPrimaryCPKSKTwo?: {
-    __typename: 'PrimaryCPKSKTwo';
-    createdAt: string;
     id: string;
     relatedMany?: {
-      __typename: 'ModelRelatedManyCPKSKTwoConnection';
       nextToken?: string | null;
     } | null;
     relatedOne?: {
-      __typename: 'RelatedOneCPKSKTwo';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
       primarySkOne?: string | null;
       primarySkTwo?: string | null;
-      updatedAt: string;
     } | null;
     skOne: string;
     skTwo: string;
-    updatedAt: string;
   } | null;
 };
 
@@ -1176,17 +1026,11 @@ export type CreateRelatedManyMutationVariables = {
 
 export type CreateRelatedManyMutation = {
   createRelatedMany?: {
-    __typename: 'RelatedMany';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'Primary';
-      createdAt: string;
       id: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1197,19 +1041,13 @@ export type CreateRelatedManyCPKSKOneMutationVariables = {
 
 export type CreateRelatedManyCPKSKOneMutation = {
   createRelatedManyCPKSKOne?: {
-    __typename: 'RelatedManyCPKSKOne';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKOne';
-      createdAt: string;
       id: string;
       skOne: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1220,21 +1058,15 @@ export type CreateRelatedManyCPKSKTwoMutationVariables = {
 
 export type CreateRelatedManyCPKSKTwoMutation = {
   createRelatedManyCPKSKTwo?: {
-    __typename: 'RelatedManyCPKSKTwo';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKTwo';
-      createdAt: string;
       id: string;
       skOne: string;
       skTwo: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
     primarySkTwo?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1245,17 +1077,11 @@ export type CreateRelatedOneMutationVariables = {
 
 export type CreateRelatedOneMutation = {
   createRelatedOne?: {
-    __typename: 'RelatedOne';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'Primary';
-      createdAt: string;
       id: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1266,19 +1092,13 @@ export type CreateRelatedOneCPKSKOneMutationVariables = {
 
 export type CreateRelatedOneCPKSKOneMutation = {
   createRelatedOneCPKSKOne?: {
-    __typename: 'RelatedOneCPKSKOne';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKOne';
-      createdAt: string;
       id: string;
       skOne: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1289,21 +1109,15 @@ export type CreateRelatedOneCPKSKTwoMutationVariables = {
 
 export type CreateRelatedOneCPKSKTwoMutation = {
   createRelatedOneCPKSKTwo?: {
-    __typename: 'RelatedOneCPKSKTwo';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKTwo';
-      createdAt: string;
       id: string;
       skOne: string;
       skTwo: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
     primarySkTwo?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1314,21 +1128,14 @@ export type DeletePrimaryMutationVariables = {
 
 export type DeletePrimaryMutation = {
   deletePrimary?: {
-    __typename: 'Primary';
-    createdAt: string;
     id: string;
     relatedMany?: {
-      __typename: 'ModelRelatedManyConnection';
       nextToken?: string | null;
     } | null;
     relatedOne?: {
-      __typename: 'RelatedOne';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
-      updatedAt: string;
     } | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1339,23 +1146,16 @@ export type DeletePrimaryCPKSKOneMutationVariables = {
 
 export type DeletePrimaryCPKSKOneMutation = {
   deletePrimaryCPKSKOne?: {
-    __typename: 'PrimaryCPKSKOne';
-    createdAt: string;
     id: string;
     relatedMany?: {
-      __typename: 'ModelRelatedManyCPKSKOneConnection';
       nextToken?: string | null;
     } | null;
     relatedOne?: {
-      __typename: 'RelatedOneCPKSKOne';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
       primarySkOne?: string | null;
-      updatedAt: string;
     } | null;
     skOne: string;
-    updatedAt: string;
   } | null;
 };
 
@@ -1366,25 +1166,18 @@ export type DeletePrimaryCPKSKTwoMutationVariables = {
 
 export type DeletePrimaryCPKSKTwoMutation = {
   deletePrimaryCPKSKTwo?: {
-    __typename: 'PrimaryCPKSKTwo';
-    createdAt: string;
     id: string;
     relatedMany?: {
-      __typename: 'ModelRelatedManyCPKSKTwoConnection';
       nextToken?: string | null;
     } | null;
     relatedOne?: {
-      __typename: 'RelatedOneCPKSKTwo';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
       primarySkOne?: string | null;
       primarySkTwo?: string | null;
-      updatedAt: string;
     } | null;
     skOne: string;
     skTwo: string;
-    updatedAt: string;
   } | null;
 };
 
@@ -1395,17 +1188,11 @@ export type DeleteRelatedManyMutationVariables = {
 
 export type DeleteRelatedManyMutation = {
   deleteRelatedMany?: {
-    __typename: 'RelatedMany';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'Primary';
-      createdAt: string;
       id: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1416,19 +1203,13 @@ export type DeleteRelatedManyCPKSKOneMutationVariables = {
 
 export type DeleteRelatedManyCPKSKOneMutation = {
   deleteRelatedManyCPKSKOne?: {
-    __typename: 'RelatedManyCPKSKOne';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKOne';
-      createdAt: string;
       id: string;
       skOne: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1439,21 +1220,15 @@ export type DeleteRelatedManyCPKSKTwoMutationVariables = {
 
 export type DeleteRelatedManyCPKSKTwoMutation = {
   deleteRelatedManyCPKSKTwo?: {
-    __typename: 'RelatedManyCPKSKTwo';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKTwo';
-      createdAt: string;
       id: string;
       skOne: string;
       skTwo: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
     primarySkTwo?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1464,17 +1239,11 @@ export type DeleteRelatedOneMutationVariables = {
 
 export type DeleteRelatedOneMutation = {
   deleteRelatedOne?: {
-    __typename: 'RelatedOne';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'Primary';
-      createdAt: string;
       id: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1485,19 +1254,13 @@ export type DeleteRelatedOneCPKSKOneMutationVariables = {
 
 export type DeleteRelatedOneCPKSKOneMutation = {
   deleteRelatedOneCPKSKOne?: {
-    __typename: 'RelatedOneCPKSKOne';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKOne';
-      createdAt: string;
       id: string;
       skOne: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1508,21 +1271,15 @@ export type DeleteRelatedOneCPKSKTwoMutationVariables = {
 
 export type DeleteRelatedOneCPKSKTwoMutation = {
   deleteRelatedOneCPKSKTwo?: {
-    __typename: 'RelatedOneCPKSKTwo';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKTwo';
-      createdAt: string;
       id: string;
       skOne: string;
       skTwo: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
     primarySkTwo?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1533,21 +1290,14 @@ export type UpdatePrimaryMutationVariables = {
 
 export type UpdatePrimaryMutation = {
   updatePrimary?: {
-    __typename: 'Primary';
-    createdAt: string;
     id: string;
     relatedMany?: {
-      __typename: 'ModelRelatedManyConnection';
       nextToken?: string | null;
     } | null;
     relatedOne?: {
-      __typename: 'RelatedOne';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
-      updatedAt: string;
     } | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1558,23 +1308,16 @@ export type UpdatePrimaryCPKSKOneMutationVariables = {
 
 export type UpdatePrimaryCPKSKOneMutation = {
   updatePrimaryCPKSKOne?: {
-    __typename: 'PrimaryCPKSKOne';
-    createdAt: string;
     id: string;
     relatedMany?: {
-      __typename: 'ModelRelatedManyCPKSKOneConnection';
       nextToken?: string | null;
     } | null;
     relatedOne?: {
-      __typename: 'RelatedOneCPKSKOne';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
       primarySkOne?: string | null;
-      updatedAt: string;
     } | null;
     skOne: string;
-    updatedAt: string;
   } | null;
 };
 
@@ -1585,25 +1328,18 @@ export type UpdatePrimaryCPKSKTwoMutationVariables = {
 
 export type UpdatePrimaryCPKSKTwoMutation = {
   updatePrimaryCPKSKTwo?: {
-    __typename: 'PrimaryCPKSKTwo';
-    createdAt: string;
     id: string;
     relatedMany?: {
-      __typename: 'ModelRelatedManyCPKSKTwoConnection';
       nextToken?: string | null;
     } | null;
     relatedOne?: {
-      __typename: 'RelatedOneCPKSKTwo';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
       primarySkOne?: string | null;
       primarySkTwo?: string | null;
-      updatedAt: string;
     } | null;
     skOne: string;
     skTwo: string;
-    updatedAt: string;
   } | null;
 };
 
@@ -1614,17 +1350,11 @@ export type UpdateRelatedManyMutationVariables = {
 
 export type UpdateRelatedManyMutation = {
   updateRelatedMany?: {
-    __typename: 'RelatedMany';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'Primary';
-      createdAt: string;
       id: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1635,19 +1365,13 @@ export type UpdateRelatedManyCPKSKOneMutationVariables = {
 
 export type UpdateRelatedManyCPKSKOneMutation = {
   updateRelatedManyCPKSKOne?: {
-    __typename: 'RelatedManyCPKSKOne';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKOne';
-      createdAt: string;
       id: string;
       skOne: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1658,21 +1382,15 @@ export type UpdateRelatedManyCPKSKTwoMutationVariables = {
 
 export type UpdateRelatedManyCPKSKTwoMutation = {
   updateRelatedManyCPKSKTwo?: {
-    __typename: 'RelatedManyCPKSKTwo';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKTwo';
-      createdAt: string;
       id: string;
       skOne: string;
       skTwo: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
     primarySkTwo?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1683,17 +1401,11 @@ export type UpdateRelatedOneMutationVariables = {
 
 export type UpdateRelatedOneMutation = {
   updateRelatedOne?: {
-    __typename: 'RelatedOne';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'Primary';
-      createdAt: string;
       id: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1704,19 +1416,13 @@ export type UpdateRelatedOneCPKSKOneMutationVariables = {
 
 export type UpdateRelatedOneCPKSKOneMutation = {
   updateRelatedOneCPKSKOne?: {
-    __typename: 'RelatedOneCPKSKOne';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKOne';
-      createdAt: string;
       id: string;
       skOne: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1727,21 +1433,15 @@ export type UpdateRelatedOneCPKSKTwoMutationVariables = {
 
 export type UpdateRelatedOneCPKSKTwoMutation = {
   updateRelatedOneCPKSKTwo?: {
-    __typename: 'RelatedOneCPKSKTwo';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKTwo';
-      createdAt: string;
       id: string;
       skOne: string;
       skTwo: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
     primarySkTwo?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1751,21 +1451,14 @@ export type OnCreatePrimarySubscriptionVariables = {
 
 export type OnCreatePrimarySubscription = {
   onCreatePrimary?: {
-    __typename: 'Primary';
-    createdAt: string;
     id: string;
     relatedMany?: {
-      __typename: 'ModelRelatedManyConnection';
       nextToken?: string | null;
     } | null;
     relatedOne?: {
-      __typename: 'RelatedOne';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
-      updatedAt: string;
     } | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1775,23 +1468,16 @@ export type OnCreatePrimaryCPKSKOneSubscriptionVariables = {
 
 export type OnCreatePrimaryCPKSKOneSubscription = {
   onCreatePrimaryCPKSKOne?: {
-    __typename: 'PrimaryCPKSKOne';
-    createdAt: string;
     id: string;
     relatedMany?: {
-      __typename: 'ModelRelatedManyCPKSKOneConnection';
       nextToken?: string | null;
     } | null;
     relatedOne?: {
-      __typename: 'RelatedOneCPKSKOne';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
       primarySkOne?: string | null;
-      updatedAt: string;
     } | null;
     skOne: string;
-    updatedAt: string;
   } | null;
 };
 
@@ -1801,25 +1487,18 @@ export type OnCreatePrimaryCPKSKTwoSubscriptionVariables = {
 
 export type OnCreatePrimaryCPKSKTwoSubscription = {
   onCreatePrimaryCPKSKTwo?: {
-    __typename: 'PrimaryCPKSKTwo';
-    createdAt: string;
     id: string;
     relatedMany?: {
-      __typename: 'ModelRelatedManyCPKSKTwoConnection';
       nextToken?: string | null;
     } | null;
     relatedOne?: {
-      __typename: 'RelatedOneCPKSKTwo';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
       primarySkOne?: string | null;
       primarySkTwo?: string | null;
-      updatedAt: string;
     } | null;
     skOne: string;
     skTwo: string;
-    updatedAt: string;
   } | null;
 };
 
@@ -1829,17 +1508,11 @@ export type OnCreateRelatedManySubscriptionVariables = {
 
 export type OnCreateRelatedManySubscription = {
   onCreateRelatedMany?: {
-    __typename: 'RelatedMany';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'Primary';
-      createdAt: string;
       id: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1849,19 +1522,13 @@ export type OnCreateRelatedManyCPKSKOneSubscriptionVariables = {
 
 export type OnCreateRelatedManyCPKSKOneSubscription = {
   onCreateRelatedManyCPKSKOne?: {
-    __typename: 'RelatedManyCPKSKOne';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKOne';
-      createdAt: string;
       id: string;
       skOne: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1871,21 +1538,15 @@ export type OnCreateRelatedManyCPKSKTwoSubscriptionVariables = {
 
 export type OnCreateRelatedManyCPKSKTwoSubscription = {
   onCreateRelatedManyCPKSKTwo?: {
-    __typename: 'RelatedManyCPKSKTwo';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKTwo';
-      createdAt: string;
       id: string;
       skOne: string;
       skTwo: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
     primarySkTwo?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1895,17 +1556,11 @@ export type OnCreateRelatedOneSubscriptionVariables = {
 
 export type OnCreateRelatedOneSubscription = {
   onCreateRelatedOne?: {
-    __typename: 'RelatedOne';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'Primary';
-      createdAt: string;
       id: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1915,19 +1570,13 @@ export type OnCreateRelatedOneCPKSKOneSubscriptionVariables = {
 
 export type OnCreateRelatedOneCPKSKOneSubscription = {
   onCreateRelatedOneCPKSKOne?: {
-    __typename: 'RelatedOneCPKSKOne';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKOne';
-      createdAt: string;
       id: string;
       skOne: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1937,21 +1586,15 @@ export type OnCreateRelatedOneCPKSKTwoSubscriptionVariables = {
 
 export type OnCreateRelatedOneCPKSKTwoSubscription = {
   onCreateRelatedOneCPKSKTwo?: {
-    __typename: 'RelatedOneCPKSKTwo';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKTwo';
-      createdAt: string;
       id: string;
       skOne: string;
       skTwo: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
     primarySkTwo?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1961,21 +1604,14 @@ export type OnDeletePrimarySubscriptionVariables = {
 
 export type OnDeletePrimarySubscription = {
   onDeletePrimary?: {
-    __typename: 'Primary';
-    createdAt: string;
     id: string;
     relatedMany?: {
-      __typename: 'ModelRelatedManyConnection';
       nextToken?: string | null;
     } | null;
     relatedOne?: {
-      __typename: 'RelatedOne';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
-      updatedAt: string;
     } | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -1985,23 +1621,16 @@ export type OnDeletePrimaryCPKSKOneSubscriptionVariables = {
 
 export type OnDeletePrimaryCPKSKOneSubscription = {
   onDeletePrimaryCPKSKOne?: {
-    __typename: 'PrimaryCPKSKOne';
-    createdAt: string;
     id: string;
     relatedMany?: {
-      __typename: 'ModelRelatedManyCPKSKOneConnection';
       nextToken?: string | null;
     } | null;
     relatedOne?: {
-      __typename: 'RelatedOneCPKSKOne';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
       primarySkOne?: string | null;
-      updatedAt: string;
     } | null;
     skOne: string;
-    updatedAt: string;
   } | null;
 };
 
@@ -2011,25 +1640,18 @@ export type OnDeletePrimaryCPKSKTwoSubscriptionVariables = {
 
 export type OnDeletePrimaryCPKSKTwoSubscription = {
   onDeletePrimaryCPKSKTwo?: {
-    __typename: 'PrimaryCPKSKTwo';
-    createdAt: string;
     id: string;
     relatedMany?: {
-      __typename: 'ModelRelatedManyCPKSKTwoConnection';
       nextToken?: string | null;
     } | null;
     relatedOne?: {
-      __typename: 'RelatedOneCPKSKTwo';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
       primarySkOne?: string | null;
       primarySkTwo?: string | null;
-      updatedAt: string;
     } | null;
     skOne: string;
     skTwo: string;
-    updatedAt: string;
   } | null;
 };
 
@@ -2039,17 +1661,11 @@ export type OnDeleteRelatedManySubscriptionVariables = {
 
 export type OnDeleteRelatedManySubscription = {
   onDeleteRelatedMany?: {
-    __typename: 'RelatedMany';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'Primary';
-      createdAt: string;
       id: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -2059,19 +1675,13 @@ export type OnDeleteRelatedManyCPKSKOneSubscriptionVariables = {
 
 export type OnDeleteRelatedManyCPKSKOneSubscription = {
   onDeleteRelatedManyCPKSKOne?: {
-    __typename: 'RelatedManyCPKSKOne';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKOne';
-      createdAt: string;
       id: string;
       skOne: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -2081,21 +1691,15 @@ export type OnDeleteRelatedManyCPKSKTwoSubscriptionVariables = {
 
 export type OnDeleteRelatedManyCPKSKTwoSubscription = {
   onDeleteRelatedManyCPKSKTwo?: {
-    __typename: 'RelatedManyCPKSKTwo';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKTwo';
-      createdAt: string;
       id: string;
       skOne: string;
       skTwo: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
     primarySkTwo?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -2105,17 +1709,11 @@ export type OnDeleteRelatedOneSubscriptionVariables = {
 
 export type OnDeleteRelatedOneSubscription = {
   onDeleteRelatedOne?: {
-    __typename: 'RelatedOne';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'Primary';
-      createdAt: string;
       id: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -2125,19 +1723,13 @@ export type OnDeleteRelatedOneCPKSKOneSubscriptionVariables = {
 
 export type OnDeleteRelatedOneCPKSKOneSubscription = {
   onDeleteRelatedOneCPKSKOne?: {
-    __typename: 'RelatedOneCPKSKOne';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKOne';
-      createdAt: string;
       id: string;
       skOne: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -2147,21 +1739,15 @@ export type OnDeleteRelatedOneCPKSKTwoSubscriptionVariables = {
 
 export type OnDeleteRelatedOneCPKSKTwoSubscription = {
   onDeleteRelatedOneCPKSKTwo?: {
-    __typename: 'RelatedOneCPKSKTwo';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKTwo';
-      createdAt: string;
       id: string;
       skOne: string;
       skTwo: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
     primarySkTwo?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -2171,21 +1757,14 @@ export type OnUpdatePrimarySubscriptionVariables = {
 
 export type OnUpdatePrimarySubscription = {
   onUpdatePrimary?: {
-    __typename: 'Primary';
-    createdAt: string;
     id: string;
     relatedMany?: {
-      __typename: 'ModelRelatedManyConnection';
       nextToken?: string | null;
     } | null;
     relatedOne?: {
-      __typename: 'RelatedOne';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
-      updatedAt: string;
     } | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -2195,23 +1774,16 @@ export type OnUpdatePrimaryCPKSKOneSubscriptionVariables = {
 
 export type OnUpdatePrimaryCPKSKOneSubscription = {
   onUpdatePrimaryCPKSKOne?: {
-    __typename: 'PrimaryCPKSKOne';
-    createdAt: string;
     id: string;
     relatedMany?: {
-      __typename: 'ModelRelatedManyCPKSKOneConnection';
       nextToken?: string | null;
     } | null;
     relatedOne?: {
-      __typename: 'RelatedOneCPKSKOne';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
       primarySkOne?: string | null;
-      updatedAt: string;
     } | null;
     skOne: string;
-    updatedAt: string;
   } | null;
 };
 
@@ -2221,25 +1793,18 @@ export type OnUpdatePrimaryCPKSKTwoSubscriptionVariables = {
 
 export type OnUpdatePrimaryCPKSKTwoSubscription = {
   onUpdatePrimaryCPKSKTwo?: {
-    __typename: 'PrimaryCPKSKTwo';
-    createdAt: string;
     id: string;
     relatedMany?: {
-      __typename: 'ModelRelatedManyCPKSKTwoConnection';
       nextToken?: string | null;
     } | null;
     relatedOne?: {
-      __typename: 'RelatedOneCPKSKTwo';
-      createdAt: string;
       id: string;
       primaryId?: string | null;
       primarySkOne?: string | null;
       primarySkTwo?: string | null;
-      updatedAt: string;
     } | null;
     skOne: string;
     skTwo: string;
-    updatedAt: string;
   } | null;
 };
 
@@ -2249,17 +1814,11 @@ export type OnUpdateRelatedManySubscriptionVariables = {
 
 export type OnUpdateRelatedManySubscription = {
   onUpdateRelatedMany?: {
-    __typename: 'RelatedMany';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'Primary';
-      createdAt: string;
       id: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -2269,19 +1828,13 @@ export type OnUpdateRelatedManyCPKSKOneSubscriptionVariables = {
 
 export type OnUpdateRelatedManyCPKSKOneSubscription = {
   onUpdateRelatedManyCPKSKOne?: {
-    __typename: 'RelatedManyCPKSKOne';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKOne';
-      createdAt: string;
       id: string;
       skOne: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -2291,21 +1844,15 @@ export type OnUpdateRelatedManyCPKSKTwoSubscriptionVariables = {
 
 export type OnUpdateRelatedManyCPKSKTwoSubscription = {
   onUpdateRelatedManyCPKSKTwo?: {
-    __typename: 'RelatedManyCPKSKTwo';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKTwo';
-      createdAt: string;
       id: string;
       skOne: string;
       skTwo: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
     primarySkTwo?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -2315,17 +1862,11 @@ export type OnUpdateRelatedOneSubscriptionVariables = {
 
 export type OnUpdateRelatedOneSubscription = {
   onUpdateRelatedOne?: {
-    __typename: 'RelatedOne';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'Primary';
-      createdAt: string;
       id: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -2335,19 +1876,13 @@ export type OnUpdateRelatedOneCPKSKOneSubscriptionVariables = {
 
 export type OnUpdateRelatedOneCPKSKOneSubscription = {
   onUpdateRelatedOneCPKSKOne?: {
-    __typename: 'RelatedOneCPKSKOne';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKOne';
-      createdAt: string;
       id: string;
       skOne: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
-    updatedAt: string;
   } | null;
 };
 
@@ -2357,20 +1892,14 @@ export type OnUpdateRelatedOneCPKSKTwoSubscriptionVariables = {
 
 export type OnUpdateRelatedOneCPKSKTwoSubscription = {
   onUpdateRelatedOneCPKSKTwo?: {
-    __typename: 'RelatedOneCPKSKTwo';
-    createdAt: string;
     id: string;
     primary?: {
-      __typename: 'PrimaryCPKSKTwo';
-      createdAt: string;
       id: string;
       skOne: string;
       skTwo: string;
-      updatedAt: string;
     } | null;
     primaryId?: string | null;
     primarySkOne?: string | null;
     primarySkTwo?: string | null;
-    updatedAt: string;
   } | null;
 };

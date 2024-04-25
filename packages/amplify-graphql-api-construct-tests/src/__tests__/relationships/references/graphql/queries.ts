@@ -10,175 +10,118 @@ type GeneratedQuery<InputType, OutputType> = string & {
 
 export const getPrimary = /* GraphQL */ `query GetPrimary($id: ID!) {
   getPrimary(id: $id) {
-    createdAt
     id
     relatedMany {
       nextToken
-      __typename
     }
     relatedOne {
-      createdAt
       id
       primaryId
-      updatedAt
-      __typename
     }
-    updatedAt
-    __typename
   }
 }
 ` as GeneratedQuery<APITypes.GetPrimaryQueryVariables, APITypes.GetPrimaryQuery>;
 export const getPrimaryCPKSKOne = /* GraphQL */ `query GetPrimaryCPKSKOne($id: ID!, $skOne: ID!) {
   getPrimaryCPKSKOne(id: $id, skOne: $skOne) {
-    createdAt
     id
     relatedMany {
       nextToken
-      __typename
     }
     relatedOne {
-      createdAt
       id
       primaryId
       primarySkOne
-      updatedAt
-      __typename
     }
     skOne
-    updatedAt
-    __typename
   }
 }
 ` as GeneratedQuery<APITypes.GetPrimaryCPKSKOneQueryVariables, APITypes.GetPrimaryCPKSKOneQuery>;
 export const getPrimaryCPKSKTwo = /* GraphQL */ `query GetPrimaryCPKSKTwo($id: ID!, $skOne: ID!, $skTwo: ID!) {
   getPrimaryCPKSKTwo(id: $id, skOne: $skOne, skTwo: $skTwo) {
-    createdAt
     id
     relatedMany {
       nextToken
-      __typename
     }
     relatedOne {
-      createdAt
       id
       primaryId
       primarySkOne
       primarySkTwo
-      updatedAt
-      __typename
     }
     skOne
     skTwo
-    updatedAt
-    __typename
   }
 }
 ` as GeneratedQuery<APITypes.GetPrimaryCPKSKTwoQueryVariables, APITypes.GetPrimaryCPKSKTwoQuery>;
 export const getRelatedMany = /* GraphQL */ `query GetRelatedMany($id: ID!) {
   getRelatedMany(id: $id) {
-    createdAt
     id
     primary {
-      createdAt
       id
-      updatedAt
-      __typename
     }
     primaryId
-    updatedAt
-    __typename
   }
 }
 ` as GeneratedQuery<APITypes.GetRelatedManyQueryVariables, APITypes.GetRelatedManyQuery>;
 export const getRelatedManyCPKSKOne = /* GraphQL */ `query GetRelatedManyCPKSKOne($id: String!) {
   getRelatedManyCPKSKOne(id: $id) {
-    createdAt
     id
     primary {
-      createdAt
       id
       skOne
-      updatedAt
-      __typename
     }
     primaryId
     primarySkOne
-    updatedAt
-    __typename
   }
 }
 ` as GeneratedQuery<APITypes.GetRelatedManyCPKSKOneQueryVariables, APITypes.GetRelatedManyCPKSKOneQuery>;
 export const getRelatedManyCPKSKTwo = /* GraphQL */ `query GetRelatedManyCPKSKTwo($id: String!) {
   getRelatedManyCPKSKTwo(id: $id) {
-    createdAt
     id
     primary {
-      createdAt
       id
       skOne
       skTwo
-      updatedAt
-      __typename
     }
     primaryId
     primarySkOne
     primarySkTwo
-    updatedAt
-    __typename
   }
 }
 ` as GeneratedQuery<APITypes.GetRelatedManyCPKSKTwoQueryVariables, APITypes.GetRelatedManyCPKSKTwoQuery>;
 export const getRelatedOne = /* GraphQL */ `query GetRelatedOne($id: ID!) {
   getRelatedOne(id: $id) {
-    createdAt
     id
     primary {
-      createdAt
       id
-      updatedAt
-      __typename
     }
     primaryId
-    updatedAt
-    __typename
   }
 }
 ` as GeneratedQuery<APITypes.GetRelatedOneQueryVariables, APITypes.GetRelatedOneQuery>;
 export const getRelatedOneCPKSKOne = /* GraphQL */ `query GetRelatedOneCPKSKOne($id: String!) {
   getRelatedOneCPKSKOne(id: $id) {
-    createdAt
     id
     primary {
-      createdAt
       id
       skOne
-      updatedAt
-      __typename
     }
     primaryId
     primarySkOne
-    updatedAt
-    __typename
   }
 }
 ` as GeneratedQuery<APITypes.GetRelatedOneCPKSKOneQueryVariables, APITypes.GetRelatedOneCPKSKOneQuery>;
 export const getRelatedOneCPKSKTwo = /* GraphQL */ `query GetRelatedOneCPKSKTwo($id: String!) {
   getRelatedOneCPKSKTwo(id: $id) {
-    createdAt
     id
     primary {
-      createdAt
       id
       skOne
       skTwo
-      updatedAt
-      __typename
     }
     primaryId
     primarySkOne
     primarySkTwo
-    updatedAt
-    __typename
   }
 }
 ` as GeneratedQuery<APITypes.GetRelatedOneCPKSKTwoQueryVariables, APITypes.GetRelatedOneCPKSKTwoQuery>;
@@ -197,13 +140,9 @@ export const listPrimaries = /* GraphQL */ `query ListPrimaries(
     sortDirection: $sortDirection
   ) {
     items {
-      createdAt
       id
-      updatedAt
-      __typename
     }
     nextToken
-    __typename
   }
 }
 ` as GeneratedQuery<APITypes.ListPrimariesQueryVariables, APITypes.ListPrimariesQuery>;
@@ -224,14 +163,10 @@ export const listPrimaryCPKSKOnes = /* GraphQL */ `query ListPrimaryCPKSKOnes(
     sortDirection: $sortDirection
   ) {
     items {
-      createdAt
       id
       skOne
-      updatedAt
-      __typename
     }
     nextToken
-    __typename
   }
 }
 ` as GeneratedQuery<APITypes.ListPrimaryCPKSKOnesQueryVariables, APITypes.ListPrimaryCPKSKOnesQuery>;
@@ -252,15 +187,11 @@ export const listPrimaryCPKSKTwos = /* GraphQL */ `query ListPrimaryCPKSKTwos(
     sortDirection: $sortDirection
   ) {
     items {
-      createdAt
       id
       skOne
       skTwo
-      updatedAt
-      __typename
     }
     nextToken
-    __typename
   }
 }
 ` as GeneratedQuery<APITypes.ListPrimaryCPKSKTwosQueryVariables, APITypes.ListPrimaryCPKSKTwosQuery>;
@@ -279,14 +210,10 @@ export const listRelatedManies = /* GraphQL */ `query ListRelatedManies(
     sortDirection: $sortDirection
   ) {
     items {
-      createdAt
       id
       primaryId
-      updatedAt
-      __typename
     }
     nextToken
-    __typename
   }
 }
 ` as GeneratedQuery<APITypes.ListRelatedManiesQueryVariables, APITypes.ListRelatedManiesQuery>;
@@ -305,15 +232,11 @@ export const listRelatedManyCPKSKOnes = /* GraphQL */ `query ListRelatedManyCPKS
     sortDirection: $sortDirection
   ) {
     items {
-      createdAt
       id
       primaryId
       primarySkOne
-      updatedAt
-      __typename
     }
     nextToken
-    __typename
   }
 }
 ` as GeneratedQuery<APITypes.ListRelatedManyCPKSKOnesQueryVariables, APITypes.ListRelatedManyCPKSKOnesQuery>;
@@ -332,16 +255,12 @@ export const listRelatedManyCPKSKTwos = /* GraphQL */ `query ListRelatedManyCPKS
     sortDirection: $sortDirection
   ) {
     items {
-      createdAt
       id
       primaryId
       primarySkOne
       primarySkTwo
-      updatedAt
-      __typename
     }
     nextToken
-    __typename
   }
 }
 ` as GeneratedQuery<APITypes.ListRelatedManyCPKSKTwosQueryVariables, APITypes.ListRelatedManyCPKSKTwosQuery>;
@@ -360,15 +279,11 @@ export const listRelatedOneCPKSKOnes = /* GraphQL */ `query ListRelatedOneCPKSKO
     sortDirection: $sortDirection
   ) {
     items {
-      createdAt
       id
       primaryId
       primarySkOne
-      updatedAt
-      __typename
     }
     nextToken
-    __typename
   }
 }
 ` as GeneratedQuery<APITypes.ListRelatedOneCPKSKOnesQueryVariables, APITypes.ListRelatedOneCPKSKOnesQuery>;
@@ -387,16 +302,12 @@ export const listRelatedOneCPKSKTwos = /* GraphQL */ `query ListRelatedOneCPKSKT
     sortDirection: $sortDirection
   ) {
     items {
-      createdAt
       id
       primaryId
       primarySkOne
       primarySkTwo
-      updatedAt
-      __typename
     }
     nextToken
-    __typename
   }
 }
 ` as GeneratedQuery<APITypes.ListRelatedOneCPKSKTwosQueryVariables, APITypes.ListRelatedOneCPKSKTwosQuery>;
@@ -415,14 +326,10 @@ export const listRelatedOnes = /* GraphQL */ `query ListRelatedOnes(
     sortDirection: $sortDirection
   ) {
     items {
-      createdAt
       id
       primaryId
-      updatedAt
-      __typename
     }
     nextToken
-    __typename
   }
 }
 ` as GeneratedQuery<APITypes.ListRelatedOnesQueryVariables, APITypes.ListRelatedOnesQuery>;
