@@ -53,7 +53,7 @@ jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
 // the associated records are redacted.
 //
 // For these tests, "Group1" owns Primary, "Group2" owns Related, and "Group3" is an Admin who owns both
-describe('Relationships protected with group auth', () => {
+describe('Relationships protected with static group auth', () => {
   const region = process.env.CLI_REGION ?? 'us-west-2';
   const baseProjFolderName = path.basename(__filename, '.test.ts');
 
