@@ -144,6 +144,7 @@ const RUN_SOLO: (string | RegExp)[] = [
   'src/__tests__/amplify-table-4.test.ts',
   'src/__tests__/api_canary.test.ts',
   'src/__tests__/default-ddb-canary.test.ts',
+  /src\/__tests__\/group-auth\/.*\.test\.ts/,
   /src\/__tests__\/owner-auth\/.*\.test\.ts/,
 ];
 

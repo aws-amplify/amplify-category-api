@@ -1,10 +1,34 @@
 import {
+  AdminAddUserToGroupCommand,
   AdminCreateUserCommand,
   AdminSetUserPasswordCommand,
   CognitoIdentityProviderClient,
   InitiateAuthCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import * as generator from 'generate-password';
+
+export interface AddCognitoUserToGroupInput {
+  region: string;
+  userPoolId: string;
+  username: string;
+  group: string;
+}
+
+/**
+ * Adds a user to a preexisting Cognito User Pool group. Remember to do this prior to signing in the user, so the group appears in the JWT
+ * claim
+ */
+export const addCognitoUserToGroup = async (options: AddCognitoUserToGroupInput): Promise<void> => {
+  const { region, userPoolId, username, group } = options;
+  const client = new CognitoIdentityProviderClient({ region });
+
+  const command = new AdminAddUserToGroupCommand({
+    UserPoolId: userPoolId,
+    Username: username,
+    GroupName: group,
+  });
+  await client.send(command);
+};
 
 export interface CreateCognitoUserInput {
   region: string;
@@ -16,7 +40,6 @@ export interface CreateCognitoUserOutput {
   password: string;
   email: string;
 }
-
 /**
  * Creates a new user record and sets a permanent password it
  */

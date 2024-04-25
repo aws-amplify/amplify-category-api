@@ -3,7 +3,7 @@ import 'source-map-support/register';
 import * as fs from 'fs';
 import * as path from 'path';
 import { App, CfnOutput, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
-import { UserPool } from 'aws-cdk-lib/aws-cognito';
+import { CfnUserPoolGroup, UserPool } from 'aws-cdk-lib/aws-cognito';
 import {
   AmplifyGraphqlApi,
   AmplifyGraphqlDefinition,
@@ -59,6 +59,15 @@ const userPool = new UserPool(stack, `${PREFIX}UserPool`, {
   deletionProtection: false,
 });
 userPool.applyRemovalPolicy(RemovalPolicy.DESTROY);
+
+// Create 3 user pool groups for group based auth tests
+[1, 2, 3].forEach((idx) => {
+  new CfnUserPoolGroup(userPool, `${PREFIX}CUPGroup${idx}`, {
+    userPoolId: userPool.userPoolId,
+    groupName: `Group${idx}`,
+    precedence: idx * 10,
+  });
+});
 
 // Allow username/password without SRP, so our tests can easily login without having to set up an Amplify project and client library. Also
 // enable SRP, so we can troubleshoot in the console if need be.
