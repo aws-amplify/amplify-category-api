@@ -2,7 +2,7 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-import * as APITypes from "../API";
+import * as APITypes from '../API';
 type GeneratedMutation<InputType, OutputType> = string & {
   __generatedMutationInput: InputType;
   __generatedMutationOutput: OutputType;
@@ -30,10 +30,7 @@ export const createPrimary = /* GraphQL */ `mutation CreatePrimary(
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.CreatePrimaryMutationVariables,
-  APITypes.CreatePrimaryMutation
->;
+` as GeneratedMutation<APITypes.CreatePrimaryMutationVariables, APITypes.CreatePrimaryMutation>;
 export const createPrimaryCPKSKOne = /* GraphQL */ `mutation CreatePrimaryCPKSKOne(
   $condition: ModelPrimaryCPKSKOneConditionInput
   $input: CreatePrimaryCPKSKOneInput!
@@ -58,10 +55,7 @@ export const createPrimaryCPKSKOne = /* GraphQL */ `mutation CreatePrimaryCPKSKO
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.CreatePrimaryCPKSKOneMutationVariables,
-  APITypes.CreatePrimaryCPKSKOneMutation
->;
+` as GeneratedMutation<APITypes.CreatePrimaryCPKSKOneMutationVariables, APITypes.CreatePrimaryCPKSKOneMutation>;
 export const createPrimaryCPKSKTwo = /* GraphQL */ `mutation CreatePrimaryCPKSKTwo(
   $condition: ModelPrimaryCPKSKTwoConditionInput
   $input: CreatePrimaryCPKSKTwoInput!
@@ -88,10 +82,7 @@ export const createPrimaryCPKSKTwo = /* GraphQL */ `mutation CreatePrimaryCPKSKT
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.CreatePrimaryCPKSKTwoMutationVariables,
-  APITypes.CreatePrimaryCPKSKTwoMutation
->;
+` as GeneratedMutation<APITypes.CreatePrimaryCPKSKTwoMutationVariables, APITypes.CreatePrimaryCPKSKTwoMutation>;
 export const createRelatedMany = /* GraphQL */ `mutation CreateRelatedMany(
   $condition: ModelRelatedManyConditionInput
   $input: CreateRelatedManyInput!
@@ -110,10 +101,7 @@ export const createRelatedMany = /* GraphQL */ `mutation CreateRelatedMany(
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.CreateRelatedManyMutationVariables,
-  APITypes.CreateRelatedManyMutation
->;
+` as GeneratedMutation<APITypes.CreateRelatedManyMutationVariables, APITypes.CreateRelatedManyMutation>;
 export const createRelatedManyCPKSKOne = /* GraphQL */ `mutation CreateRelatedManyCPKSKOne(
   $condition: ModelRelatedManyCPKSKOneConditionInput
   $input: CreateRelatedManyCPKSKOneInput!
@@ -134,10 +122,7 @@ export const createRelatedManyCPKSKOne = /* GraphQL */ `mutation CreateRelatedMa
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.CreateRelatedManyCPKSKOneMutationVariables,
-  APITypes.CreateRelatedManyCPKSKOneMutation
->;
+` as GeneratedMutation<APITypes.CreateRelatedManyCPKSKOneMutationVariables, APITypes.CreateRelatedManyCPKSKOneMutation>;
 export const createRelatedManyCPKSKTwo = /* GraphQL */ `mutation CreateRelatedManyCPKSKTwo(
   $condition: ModelRelatedManyCPKSKTwoConditionInput
   $input: CreateRelatedManyCPKSKTwoInput!
@@ -160,10 +145,7 @@ export const createRelatedManyCPKSKTwo = /* GraphQL */ `mutation CreateRelatedMa
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.CreateRelatedManyCPKSKTwoMutationVariables,
-  APITypes.CreateRelatedManyCPKSKTwoMutation
->;
+` as GeneratedMutation<APITypes.CreateRelatedManyCPKSKTwoMutationVariables, APITypes.CreateRelatedManyCPKSKTwoMutation>;
 export const createRelatedOne = /* GraphQL */ `mutation CreateRelatedOne(
   $condition: ModelRelatedOneConditionInput
   $input: CreateRelatedOneInput!
@@ -182,10 +164,7 @@ export const createRelatedOne = /* GraphQL */ `mutation CreateRelatedOne(
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.CreateRelatedOneMutationVariables,
-  APITypes.CreateRelatedOneMutation
->;
+` as GeneratedMutation<APITypes.CreateRelatedOneMutationVariables, APITypes.CreateRelatedOneMutation>;
 export const createRelatedOneCPKSKOne = /* GraphQL */ `mutation CreateRelatedOneCPKSKOne(
   $condition: ModelRelatedOneCPKSKOneConditionInput
   $input: CreateRelatedOneCPKSKOneInput!
@@ -206,10 +185,7 @@ export const createRelatedOneCPKSKOne = /* GraphQL */ `mutation CreateRelatedOne
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.CreateRelatedOneCPKSKOneMutationVariables,
-  APITypes.CreateRelatedOneCPKSKOneMutation
->;
+` as GeneratedMutation<APITypes.CreateRelatedOneCPKSKOneMutationVariables, APITypes.CreateRelatedOneCPKSKOneMutation>;
 export const createRelatedOneCPKSKTwo = /* GraphQL */ `mutation CreateRelatedOneCPKSKTwo(
   $condition: ModelRelatedOneCPKSKTwoConditionInput
   $input: CreateRelatedOneCPKSKTwoInput!
@@ -232,10 +208,7 @@ export const createRelatedOneCPKSKTwo = /* GraphQL */ `mutation CreateRelatedOne
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.CreateRelatedOneCPKSKTwoMutationVariables,
-  APITypes.CreateRelatedOneCPKSKTwoMutation
->;
+` as GeneratedMutation<APITypes.CreateRelatedOneCPKSKTwoMutationVariables, APITypes.CreateRelatedOneCPKSKTwoMutation>;
 export const deletePrimary = /* GraphQL */ `mutation DeletePrimary(
   $condition: ModelPrimaryConditionInput
   $input: DeletePrimaryInput!
@@ -258,10 +231,7 @@ export const deletePrimary = /* GraphQL */ `mutation DeletePrimary(
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.DeletePrimaryMutationVariables,
-  APITypes.DeletePrimaryMutation
->;
+` as GeneratedMutation<APITypes.DeletePrimaryMutationVariables, APITypes.DeletePrimaryMutation>;
 export const deletePrimaryCPKSKOne = /* GraphQL */ `mutation DeletePrimaryCPKSKOne(
   $condition: ModelPrimaryCPKSKOneConditionInput
   $input: DeletePrimaryCPKSKOneInput!
@@ -286,10 +256,7 @@ export const deletePrimaryCPKSKOne = /* GraphQL */ `mutation DeletePrimaryCPKSKO
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.DeletePrimaryCPKSKOneMutationVariables,
-  APITypes.DeletePrimaryCPKSKOneMutation
->;
+` as GeneratedMutation<APITypes.DeletePrimaryCPKSKOneMutationVariables, APITypes.DeletePrimaryCPKSKOneMutation>;
 export const deletePrimaryCPKSKTwo = /* GraphQL */ `mutation DeletePrimaryCPKSKTwo(
   $condition: ModelPrimaryCPKSKTwoConditionInput
   $input: DeletePrimaryCPKSKTwoInput!
@@ -316,10 +283,7 @@ export const deletePrimaryCPKSKTwo = /* GraphQL */ `mutation DeletePrimaryCPKSKT
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.DeletePrimaryCPKSKTwoMutationVariables,
-  APITypes.DeletePrimaryCPKSKTwoMutation
->;
+` as GeneratedMutation<APITypes.DeletePrimaryCPKSKTwoMutationVariables, APITypes.DeletePrimaryCPKSKTwoMutation>;
 export const deleteRelatedMany = /* GraphQL */ `mutation DeleteRelatedMany(
   $condition: ModelRelatedManyConditionInput
   $input: DeleteRelatedManyInput!
@@ -338,10 +302,7 @@ export const deleteRelatedMany = /* GraphQL */ `mutation DeleteRelatedMany(
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.DeleteRelatedManyMutationVariables,
-  APITypes.DeleteRelatedManyMutation
->;
+` as GeneratedMutation<APITypes.DeleteRelatedManyMutationVariables, APITypes.DeleteRelatedManyMutation>;
 export const deleteRelatedManyCPKSKOne = /* GraphQL */ `mutation DeleteRelatedManyCPKSKOne(
   $condition: ModelRelatedManyCPKSKOneConditionInput
   $input: DeleteRelatedManyCPKSKOneInput!
@@ -362,10 +323,7 @@ export const deleteRelatedManyCPKSKOne = /* GraphQL */ `mutation DeleteRelatedMa
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.DeleteRelatedManyCPKSKOneMutationVariables,
-  APITypes.DeleteRelatedManyCPKSKOneMutation
->;
+` as GeneratedMutation<APITypes.DeleteRelatedManyCPKSKOneMutationVariables, APITypes.DeleteRelatedManyCPKSKOneMutation>;
 export const deleteRelatedManyCPKSKTwo = /* GraphQL */ `mutation DeleteRelatedManyCPKSKTwo(
   $condition: ModelRelatedManyCPKSKTwoConditionInput
   $input: DeleteRelatedManyCPKSKTwoInput!
@@ -388,10 +346,7 @@ export const deleteRelatedManyCPKSKTwo = /* GraphQL */ `mutation DeleteRelatedMa
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.DeleteRelatedManyCPKSKTwoMutationVariables,
-  APITypes.DeleteRelatedManyCPKSKTwoMutation
->;
+` as GeneratedMutation<APITypes.DeleteRelatedManyCPKSKTwoMutationVariables, APITypes.DeleteRelatedManyCPKSKTwoMutation>;
 export const deleteRelatedOne = /* GraphQL */ `mutation DeleteRelatedOne(
   $condition: ModelRelatedOneConditionInput
   $input: DeleteRelatedOneInput!
@@ -410,10 +365,7 @@ export const deleteRelatedOne = /* GraphQL */ `mutation DeleteRelatedOne(
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.DeleteRelatedOneMutationVariables,
-  APITypes.DeleteRelatedOneMutation
->;
+` as GeneratedMutation<APITypes.DeleteRelatedOneMutationVariables, APITypes.DeleteRelatedOneMutation>;
 export const deleteRelatedOneCPKSKOne = /* GraphQL */ `mutation DeleteRelatedOneCPKSKOne(
   $condition: ModelRelatedOneCPKSKOneConditionInput
   $input: DeleteRelatedOneCPKSKOneInput!
@@ -434,10 +386,7 @@ export const deleteRelatedOneCPKSKOne = /* GraphQL */ `mutation DeleteRelatedOne
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.DeleteRelatedOneCPKSKOneMutationVariables,
-  APITypes.DeleteRelatedOneCPKSKOneMutation
->;
+` as GeneratedMutation<APITypes.DeleteRelatedOneCPKSKOneMutationVariables, APITypes.DeleteRelatedOneCPKSKOneMutation>;
 export const deleteRelatedOneCPKSKTwo = /* GraphQL */ `mutation DeleteRelatedOneCPKSKTwo(
   $condition: ModelRelatedOneCPKSKTwoConditionInput
   $input: DeleteRelatedOneCPKSKTwoInput!
@@ -460,10 +409,7 @@ export const deleteRelatedOneCPKSKTwo = /* GraphQL */ `mutation DeleteRelatedOne
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.DeleteRelatedOneCPKSKTwoMutationVariables,
-  APITypes.DeleteRelatedOneCPKSKTwoMutation
->;
+` as GeneratedMutation<APITypes.DeleteRelatedOneCPKSKTwoMutationVariables, APITypes.DeleteRelatedOneCPKSKTwoMutation>;
 export const updatePrimary = /* GraphQL */ `mutation UpdatePrimary(
   $condition: ModelPrimaryConditionInput
   $input: UpdatePrimaryInput!
@@ -486,10 +432,7 @@ export const updatePrimary = /* GraphQL */ `mutation UpdatePrimary(
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.UpdatePrimaryMutationVariables,
-  APITypes.UpdatePrimaryMutation
->;
+` as GeneratedMutation<APITypes.UpdatePrimaryMutationVariables, APITypes.UpdatePrimaryMutation>;
 export const updatePrimaryCPKSKOne = /* GraphQL */ `mutation UpdatePrimaryCPKSKOne(
   $condition: ModelPrimaryCPKSKOneConditionInput
   $input: UpdatePrimaryCPKSKOneInput!
@@ -514,10 +457,7 @@ export const updatePrimaryCPKSKOne = /* GraphQL */ `mutation UpdatePrimaryCPKSKO
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.UpdatePrimaryCPKSKOneMutationVariables,
-  APITypes.UpdatePrimaryCPKSKOneMutation
->;
+` as GeneratedMutation<APITypes.UpdatePrimaryCPKSKOneMutationVariables, APITypes.UpdatePrimaryCPKSKOneMutation>;
 export const updatePrimaryCPKSKTwo = /* GraphQL */ `mutation UpdatePrimaryCPKSKTwo(
   $condition: ModelPrimaryCPKSKTwoConditionInput
   $input: UpdatePrimaryCPKSKTwoInput!
@@ -544,10 +484,7 @@ export const updatePrimaryCPKSKTwo = /* GraphQL */ `mutation UpdatePrimaryCPKSKT
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.UpdatePrimaryCPKSKTwoMutationVariables,
-  APITypes.UpdatePrimaryCPKSKTwoMutation
->;
+` as GeneratedMutation<APITypes.UpdatePrimaryCPKSKTwoMutationVariables, APITypes.UpdatePrimaryCPKSKTwoMutation>;
 export const updateRelatedMany = /* GraphQL */ `mutation UpdateRelatedMany(
   $condition: ModelRelatedManyConditionInput
   $input: UpdateRelatedManyInput!
@@ -566,10 +503,7 @@ export const updateRelatedMany = /* GraphQL */ `mutation UpdateRelatedMany(
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.UpdateRelatedManyMutationVariables,
-  APITypes.UpdateRelatedManyMutation
->;
+` as GeneratedMutation<APITypes.UpdateRelatedManyMutationVariables, APITypes.UpdateRelatedManyMutation>;
 export const updateRelatedManyCPKSKOne = /* GraphQL */ `mutation UpdateRelatedManyCPKSKOne(
   $condition: ModelRelatedManyCPKSKOneConditionInput
   $input: UpdateRelatedManyCPKSKOneInput!
@@ -590,10 +524,7 @@ export const updateRelatedManyCPKSKOne = /* GraphQL */ `mutation UpdateRelatedMa
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.UpdateRelatedManyCPKSKOneMutationVariables,
-  APITypes.UpdateRelatedManyCPKSKOneMutation
->;
+` as GeneratedMutation<APITypes.UpdateRelatedManyCPKSKOneMutationVariables, APITypes.UpdateRelatedManyCPKSKOneMutation>;
 export const updateRelatedManyCPKSKTwo = /* GraphQL */ `mutation UpdateRelatedManyCPKSKTwo(
   $condition: ModelRelatedManyCPKSKTwoConditionInput
   $input: UpdateRelatedManyCPKSKTwoInput!
@@ -616,10 +547,7 @@ export const updateRelatedManyCPKSKTwo = /* GraphQL */ `mutation UpdateRelatedMa
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.UpdateRelatedManyCPKSKTwoMutationVariables,
-  APITypes.UpdateRelatedManyCPKSKTwoMutation
->;
+` as GeneratedMutation<APITypes.UpdateRelatedManyCPKSKTwoMutationVariables, APITypes.UpdateRelatedManyCPKSKTwoMutation>;
 export const updateRelatedOne = /* GraphQL */ `mutation UpdateRelatedOne(
   $condition: ModelRelatedOneConditionInput
   $input: UpdateRelatedOneInput!
@@ -638,10 +566,7 @@ export const updateRelatedOne = /* GraphQL */ `mutation UpdateRelatedOne(
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.UpdateRelatedOneMutationVariables,
-  APITypes.UpdateRelatedOneMutation
->;
+` as GeneratedMutation<APITypes.UpdateRelatedOneMutationVariables, APITypes.UpdateRelatedOneMutation>;
 export const updateRelatedOneCPKSKOne = /* GraphQL */ `mutation UpdateRelatedOneCPKSKOne(
   $condition: ModelRelatedOneCPKSKOneConditionInput
   $input: UpdateRelatedOneCPKSKOneInput!
@@ -662,10 +587,7 @@ export const updateRelatedOneCPKSKOne = /* GraphQL */ `mutation UpdateRelatedOne
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.UpdateRelatedOneCPKSKOneMutationVariables,
-  APITypes.UpdateRelatedOneCPKSKOneMutation
->;
+` as GeneratedMutation<APITypes.UpdateRelatedOneCPKSKOneMutationVariables, APITypes.UpdateRelatedOneCPKSKOneMutation>;
 export const updateRelatedOneCPKSKTwo = /* GraphQL */ `mutation UpdateRelatedOneCPKSKTwo(
   $condition: ModelRelatedOneCPKSKTwoConditionInput
   $input: UpdateRelatedOneCPKSKTwoInput!
@@ -688,7 +610,4 @@ export const updateRelatedOneCPKSKTwo = /* GraphQL */ `mutation UpdateRelatedOne
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.UpdateRelatedOneCPKSKTwoMutationVariables,
-  APITypes.UpdateRelatedOneCPKSKTwoMutation
->;
+` as GeneratedMutation<APITypes.UpdateRelatedOneCPKSKTwoMutationVariables, APITypes.UpdateRelatedOneCPKSKTwoMutation>;

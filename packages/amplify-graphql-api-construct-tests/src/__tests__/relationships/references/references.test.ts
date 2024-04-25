@@ -336,7 +336,7 @@ describe('References relationships', () => {
         'ddb-related': {
           schema: [relatedSchema, relatedSchemaOneSk, relatedSchemaTwoSk].join('\n'),
           strategy: DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
-        }
+        },
       };
 
       writeStackPrefix('RefSqlDdb', projRoot);
@@ -446,7 +446,7 @@ describe('References relationships', () => {
         'sql-related': {
           schema: [relatedSchema, relatedSchemaOneSk, relatedSchemaTwoSk].join('\n'),
           strategy: dbDetailsToModelDataSourceStrategy(dbDetails, 'sqlrelated', 'MYSQL', 'secretsManagerManagedSecret'),
-        }
+        },
       };
 
       writeStackPrefix('RefSqlDdb', projRoot);

@@ -637,7 +637,7 @@ const getPrimaryVariablesSkOne = (currentId: number): UpdatePrimaryCPKSKOneInput
 const getPrimaryVariablesSkTwo = (currentId: number): UpdatePrimaryCPKSKTwoInput => {
   return {
     ...getPrimaryVariablesSkOne(currentId),
-    skTwo: `psktwo${currentId}`
+    skTwo: `psktwo${currentId}`,
   };
 };
 

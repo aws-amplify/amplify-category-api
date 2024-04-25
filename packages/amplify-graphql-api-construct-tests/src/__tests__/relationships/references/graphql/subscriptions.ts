@@ -2,7 +2,7 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-import * as APITypes from "./API";
+import * as APITypes from './API';
 type GeneratedSubscription<InputType, OutputType> = string & {
   __generatedSubscriptionInput: InputType;
   __generatedSubscriptionOutput: OutputType;
@@ -27,10 +27,7 @@ export const onCreatePrimary = /* GraphQL */ `subscription OnCreatePrimary($filt
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnCreatePrimarySubscriptionVariables,
-  APITypes.OnCreatePrimarySubscription
->;
+` as GeneratedSubscription<APITypes.OnCreatePrimarySubscriptionVariables, APITypes.OnCreatePrimarySubscription>;
 export const onCreatePrimaryCPKSKOne = /* GraphQL */ `subscription OnCreatePrimaryCPKSKOne(
   $filter: ModelSubscriptionPrimaryCPKSKOneFilterInput
 ) {
@@ -54,10 +51,7 @@ export const onCreatePrimaryCPKSKOne = /* GraphQL */ `subscription OnCreatePrima
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnCreatePrimaryCPKSKOneSubscriptionVariables,
-  APITypes.OnCreatePrimaryCPKSKOneSubscription
->;
+` as GeneratedSubscription<APITypes.OnCreatePrimaryCPKSKOneSubscriptionVariables, APITypes.OnCreatePrimaryCPKSKOneSubscription>;
 export const onCreatePrimaryCPKSKTwo = /* GraphQL */ `subscription OnCreatePrimaryCPKSKTwo(
   $filter: ModelSubscriptionPrimaryCPKSKTwoFilterInput
 ) {
@@ -83,10 +77,7 @@ export const onCreatePrimaryCPKSKTwo = /* GraphQL */ `subscription OnCreatePrima
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnCreatePrimaryCPKSKTwoSubscriptionVariables,
-  APITypes.OnCreatePrimaryCPKSKTwoSubscription
->;
+` as GeneratedSubscription<APITypes.OnCreatePrimaryCPKSKTwoSubscriptionVariables, APITypes.OnCreatePrimaryCPKSKTwoSubscription>;
 export const onCreateRelatedMany = /* GraphQL */ `subscription OnCreateRelatedMany(
   $filter: ModelSubscriptionRelatedManyFilterInput
 ) {
@@ -104,10 +95,7 @@ export const onCreateRelatedMany = /* GraphQL */ `subscription OnCreateRelatedMa
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnCreateRelatedManySubscriptionVariables,
-  APITypes.OnCreateRelatedManySubscription
->;
+` as GeneratedSubscription<APITypes.OnCreateRelatedManySubscriptionVariables, APITypes.OnCreateRelatedManySubscription>;
 export const onCreateRelatedManyCPKSKOne = /* GraphQL */ `subscription OnCreateRelatedManyCPKSKOne(
   $filter: ModelSubscriptionRelatedManyCPKSKOneFilterInput
 ) {
@@ -127,10 +115,7 @@ export const onCreateRelatedManyCPKSKOne = /* GraphQL */ `subscription OnCreateR
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnCreateRelatedManyCPKSKOneSubscriptionVariables,
-  APITypes.OnCreateRelatedManyCPKSKOneSubscription
->;
+` as GeneratedSubscription<APITypes.OnCreateRelatedManyCPKSKOneSubscriptionVariables, APITypes.OnCreateRelatedManyCPKSKOneSubscription>;
 export const onCreateRelatedManyCPKSKTwo = /* GraphQL */ `subscription OnCreateRelatedManyCPKSKTwo(
   $filter: ModelSubscriptionRelatedManyCPKSKTwoFilterInput
 ) {
@@ -152,10 +137,7 @@ export const onCreateRelatedManyCPKSKTwo = /* GraphQL */ `subscription OnCreateR
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnCreateRelatedManyCPKSKTwoSubscriptionVariables,
-  APITypes.OnCreateRelatedManyCPKSKTwoSubscription
->;
+` as GeneratedSubscription<APITypes.OnCreateRelatedManyCPKSKTwoSubscriptionVariables, APITypes.OnCreateRelatedManyCPKSKTwoSubscription>;
 export const onCreateRelatedOne = /* GraphQL */ `subscription OnCreateRelatedOne(
   $filter: ModelSubscriptionRelatedOneFilterInput
 ) {
@@ -173,10 +155,7 @@ export const onCreateRelatedOne = /* GraphQL */ `subscription OnCreateRelatedOne
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnCreateRelatedOneSubscriptionVariables,
-  APITypes.OnCreateRelatedOneSubscription
->;
+` as GeneratedSubscription<APITypes.OnCreateRelatedOneSubscriptionVariables, APITypes.OnCreateRelatedOneSubscription>;
 export const onCreateRelatedOneCPKSKOne = /* GraphQL */ `subscription OnCreateRelatedOneCPKSKOne(
   $filter: ModelSubscriptionRelatedOneCPKSKOneFilterInput
 ) {
@@ -196,10 +175,7 @@ export const onCreateRelatedOneCPKSKOne = /* GraphQL */ `subscription OnCreateRe
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnCreateRelatedOneCPKSKOneSubscriptionVariables,
-  APITypes.OnCreateRelatedOneCPKSKOneSubscription
->;
+` as GeneratedSubscription<APITypes.OnCreateRelatedOneCPKSKOneSubscriptionVariables, APITypes.OnCreateRelatedOneCPKSKOneSubscription>;
 export const onCreateRelatedOneCPKSKTwo = /* GraphQL */ `subscription OnCreateRelatedOneCPKSKTwo(
   $filter: ModelSubscriptionRelatedOneCPKSKTwoFilterInput
 ) {
@@ -221,10 +197,7 @@ export const onCreateRelatedOneCPKSKTwo = /* GraphQL */ `subscription OnCreateRe
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnCreateRelatedOneCPKSKTwoSubscriptionVariables,
-  APITypes.OnCreateRelatedOneCPKSKTwoSubscription
->;
+` as GeneratedSubscription<APITypes.OnCreateRelatedOneCPKSKTwoSubscriptionVariables, APITypes.OnCreateRelatedOneCPKSKTwoSubscription>;
 export const onDeletePrimary = /* GraphQL */ `subscription OnDeletePrimary($filter: ModelSubscriptionPrimaryFilterInput) {
   onDeletePrimary(filter: $filter) {
     createdAt
@@ -244,10 +217,7 @@ export const onDeletePrimary = /* GraphQL */ `subscription OnDeletePrimary($filt
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnDeletePrimarySubscriptionVariables,
-  APITypes.OnDeletePrimarySubscription
->;
+` as GeneratedSubscription<APITypes.OnDeletePrimarySubscriptionVariables, APITypes.OnDeletePrimarySubscription>;
 export const onDeletePrimaryCPKSKOne = /* GraphQL */ `subscription OnDeletePrimaryCPKSKOne(
   $filter: ModelSubscriptionPrimaryCPKSKOneFilterInput
 ) {
@@ -271,10 +241,7 @@ export const onDeletePrimaryCPKSKOne = /* GraphQL */ `subscription OnDeletePrima
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnDeletePrimaryCPKSKOneSubscriptionVariables,
-  APITypes.OnDeletePrimaryCPKSKOneSubscription
->;
+` as GeneratedSubscription<APITypes.OnDeletePrimaryCPKSKOneSubscriptionVariables, APITypes.OnDeletePrimaryCPKSKOneSubscription>;
 export const onDeletePrimaryCPKSKTwo = /* GraphQL */ `subscription OnDeletePrimaryCPKSKTwo(
   $filter: ModelSubscriptionPrimaryCPKSKTwoFilterInput
 ) {
@@ -300,10 +267,7 @@ export const onDeletePrimaryCPKSKTwo = /* GraphQL */ `subscription OnDeletePrima
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnDeletePrimaryCPKSKTwoSubscriptionVariables,
-  APITypes.OnDeletePrimaryCPKSKTwoSubscription
->;
+` as GeneratedSubscription<APITypes.OnDeletePrimaryCPKSKTwoSubscriptionVariables, APITypes.OnDeletePrimaryCPKSKTwoSubscription>;
 export const onDeleteRelatedMany = /* GraphQL */ `subscription OnDeleteRelatedMany(
   $filter: ModelSubscriptionRelatedManyFilterInput
 ) {
@@ -321,10 +285,7 @@ export const onDeleteRelatedMany = /* GraphQL */ `subscription OnDeleteRelatedMa
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnDeleteRelatedManySubscriptionVariables,
-  APITypes.OnDeleteRelatedManySubscription
->;
+` as GeneratedSubscription<APITypes.OnDeleteRelatedManySubscriptionVariables, APITypes.OnDeleteRelatedManySubscription>;
 export const onDeleteRelatedManyCPKSKOne = /* GraphQL */ `subscription OnDeleteRelatedManyCPKSKOne(
   $filter: ModelSubscriptionRelatedManyCPKSKOneFilterInput
 ) {
@@ -344,10 +305,7 @@ export const onDeleteRelatedManyCPKSKOne = /* GraphQL */ `subscription OnDeleteR
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnDeleteRelatedManyCPKSKOneSubscriptionVariables,
-  APITypes.OnDeleteRelatedManyCPKSKOneSubscription
->;
+` as GeneratedSubscription<APITypes.OnDeleteRelatedManyCPKSKOneSubscriptionVariables, APITypes.OnDeleteRelatedManyCPKSKOneSubscription>;
 export const onDeleteRelatedManyCPKSKTwo = /* GraphQL */ `subscription OnDeleteRelatedManyCPKSKTwo(
   $filter: ModelSubscriptionRelatedManyCPKSKTwoFilterInput
 ) {
@@ -369,10 +327,7 @@ export const onDeleteRelatedManyCPKSKTwo = /* GraphQL */ `subscription OnDeleteR
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnDeleteRelatedManyCPKSKTwoSubscriptionVariables,
-  APITypes.OnDeleteRelatedManyCPKSKTwoSubscription
->;
+` as GeneratedSubscription<APITypes.OnDeleteRelatedManyCPKSKTwoSubscriptionVariables, APITypes.OnDeleteRelatedManyCPKSKTwoSubscription>;
 export const onDeleteRelatedOne = /* GraphQL */ `subscription OnDeleteRelatedOne(
   $filter: ModelSubscriptionRelatedOneFilterInput
 ) {
@@ -390,10 +345,7 @@ export const onDeleteRelatedOne = /* GraphQL */ `subscription OnDeleteRelatedOne
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnDeleteRelatedOneSubscriptionVariables,
-  APITypes.OnDeleteRelatedOneSubscription
->;
+` as GeneratedSubscription<APITypes.OnDeleteRelatedOneSubscriptionVariables, APITypes.OnDeleteRelatedOneSubscription>;
 export const onDeleteRelatedOneCPKSKOne = /* GraphQL */ `subscription OnDeleteRelatedOneCPKSKOne(
   $filter: ModelSubscriptionRelatedOneCPKSKOneFilterInput
 ) {
@@ -413,10 +365,7 @@ export const onDeleteRelatedOneCPKSKOne = /* GraphQL */ `subscription OnDeleteRe
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnDeleteRelatedOneCPKSKOneSubscriptionVariables,
-  APITypes.OnDeleteRelatedOneCPKSKOneSubscription
->;
+` as GeneratedSubscription<APITypes.OnDeleteRelatedOneCPKSKOneSubscriptionVariables, APITypes.OnDeleteRelatedOneCPKSKOneSubscription>;
 export const onDeleteRelatedOneCPKSKTwo = /* GraphQL */ `subscription OnDeleteRelatedOneCPKSKTwo(
   $filter: ModelSubscriptionRelatedOneCPKSKTwoFilterInput
 ) {
@@ -438,10 +387,7 @@ export const onDeleteRelatedOneCPKSKTwo = /* GraphQL */ `subscription OnDeleteRe
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnDeleteRelatedOneCPKSKTwoSubscriptionVariables,
-  APITypes.OnDeleteRelatedOneCPKSKTwoSubscription
->;
+` as GeneratedSubscription<APITypes.OnDeleteRelatedOneCPKSKTwoSubscriptionVariables, APITypes.OnDeleteRelatedOneCPKSKTwoSubscription>;
 export const onUpdatePrimary = /* GraphQL */ `subscription OnUpdatePrimary($filter: ModelSubscriptionPrimaryFilterInput) {
   onUpdatePrimary(filter: $filter) {
     createdAt
@@ -461,10 +407,7 @@ export const onUpdatePrimary = /* GraphQL */ `subscription OnUpdatePrimary($filt
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnUpdatePrimarySubscriptionVariables,
-  APITypes.OnUpdatePrimarySubscription
->;
+` as GeneratedSubscription<APITypes.OnUpdatePrimarySubscriptionVariables, APITypes.OnUpdatePrimarySubscription>;
 export const onUpdatePrimaryCPKSKOne = /* GraphQL */ `subscription OnUpdatePrimaryCPKSKOne(
   $filter: ModelSubscriptionPrimaryCPKSKOneFilterInput
 ) {
@@ -488,10 +431,7 @@ export const onUpdatePrimaryCPKSKOne = /* GraphQL */ `subscription OnUpdatePrima
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnUpdatePrimaryCPKSKOneSubscriptionVariables,
-  APITypes.OnUpdatePrimaryCPKSKOneSubscription
->;
+` as GeneratedSubscription<APITypes.OnUpdatePrimaryCPKSKOneSubscriptionVariables, APITypes.OnUpdatePrimaryCPKSKOneSubscription>;
 export const onUpdatePrimaryCPKSKTwo = /* GraphQL */ `subscription OnUpdatePrimaryCPKSKTwo(
   $filter: ModelSubscriptionPrimaryCPKSKTwoFilterInput
 ) {
@@ -517,10 +457,7 @@ export const onUpdatePrimaryCPKSKTwo = /* GraphQL */ `subscription OnUpdatePrima
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnUpdatePrimaryCPKSKTwoSubscriptionVariables,
-  APITypes.OnUpdatePrimaryCPKSKTwoSubscription
->;
+` as GeneratedSubscription<APITypes.OnUpdatePrimaryCPKSKTwoSubscriptionVariables, APITypes.OnUpdatePrimaryCPKSKTwoSubscription>;
 export const onUpdateRelatedMany = /* GraphQL */ `subscription OnUpdateRelatedMany(
   $filter: ModelSubscriptionRelatedManyFilterInput
 ) {
@@ -538,10 +475,7 @@ export const onUpdateRelatedMany = /* GraphQL */ `subscription OnUpdateRelatedMa
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnUpdateRelatedManySubscriptionVariables,
-  APITypes.OnUpdateRelatedManySubscription
->;
+` as GeneratedSubscription<APITypes.OnUpdateRelatedManySubscriptionVariables, APITypes.OnUpdateRelatedManySubscription>;
 export const onUpdateRelatedManyCPKSKOne = /* GraphQL */ `subscription OnUpdateRelatedManyCPKSKOne(
   $filter: ModelSubscriptionRelatedManyCPKSKOneFilterInput
 ) {
@@ -561,10 +495,7 @@ export const onUpdateRelatedManyCPKSKOne = /* GraphQL */ `subscription OnUpdateR
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnUpdateRelatedManyCPKSKOneSubscriptionVariables,
-  APITypes.OnUpdateRelatedManyCPKSKOneSubscription
->;
+` as GeneratedSubscription<APITypes.OnUpdateRelatedManyCPKSKOneSubscriptionVariables, APITypes.OnUpdateRelatedManyCPKSKOneSubscription>;
 export const onUpdateRelatedManyCPKSKTwo = /* GraphQL */ `subscription OnUpdateRelatedManyCPKSKTwo(
   $filter: ModelSubscriptionRelatedManyCPKSKTwoFilterInput
 ) {
@@ -586,10 +517,7 @@ export const onUpdateRelatedManyCPKSKTwo = /* GraphQL */ `subscription OnUpdateR
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnUpdateRelatedManyCPKSKTwoSubscriptionVariables,
-  APITypes.OnUpdateRelatedManyCPKSKTwoSubscription
->;
+` as GeneratedSubscription<APITypes.OnUpdateRelatedManyCPKSKTwoSubscriptionVariables, APITypes.OnUpdateRelatedManyCPKSKTwoSubscription>;
 export const onUpdateRelatedOne = /* GraphQL */ `subscription OnUpdateRelatedOne(
   $filter: ModelSubscriptionRelatedOneFilterInput
 ) {
@@ -607,10 +535,7 @@ export const onUpdateRelatedOne = /* GraphQL */ `subscription OnUpdateRelatedOne
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnUpdateRelatedOneSubscriptionVariables,
-  APITypes.OnUpdateRelatedOneSubscription
->;
+` as GeneratedSubscription<APITypes.OnUpdateRelatedOneSubscriptionVariables, APITypes.OnUpdateRelatedOneSubscription>;
 export const onUpdateRelatedOneCPKSKOne = /* GraphQL */ `subscription OnUpdateRelatedOneCPKSKOne(
   $filter: ModelSubscriptionRelatedOneCPKSKOneFilterInput
 ) {
@@ -630,10 +555,7 @@ export const onUpdateRelatedOneCPKSKOne = /* GraphQL */ `subscription OnUpdateRe
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnUpdateRelatedOneCPKSKOneSubscriptionVariables,
-  APITypes.OnUpdateRelatedOneCPKSKOneSubscription
->;
+` as GeneratedSubscription<APITypes.OnUpdateRelatedOneCPKSKOneSubscriptionVariables, APITypes.OnUpdateRelatedOneCPKSKOneSubscription>;
 export const onUpdateRelatedOneCPKSKTwo = /* GraphQL */ `subscription OnUpdateRelatedOneCPKSKTwo(
   $filter: ModelSubscriptionRelatedOneCPKSKTwoFilterInput
 ) {
@@ -655,7 +577,4 @@ export const onUpdateRelatedOneCPKSKTwo = /* GraphQL */ `subscription OnUpdateRe
     __typename
   }
 }
-` as GeneratedSubscription<
-  APITypes.OnUpdateRelatedOneCPKSKTwoSubscriptionVariables,
-  APITypes.OnUpdateRelatedOneCPKSKTwoSubscription
->;
+` as GeneratedSubscription<APITypes.OnUpdateRelatedOneCPKSKTwoSubscriptionVariables, APITypes.OnUpdateRelatedOneCPKSKTwoSubscription>;

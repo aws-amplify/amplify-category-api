@@ -2,7 +2,7 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-import * as APITypes from "../API";
+import * as APITypes from '../API';
 type GeneratedQuery<InputType, OutputType> = string & {
   __generatedQueryInput: InputType;
   __generatedQueryOutput: OutputType;
@@ -27,10 +27,7 @@ export const getPrimary = /* GraphQL */ `query GetPrimary($id: ID!) {
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.GetPrimaryQueryVariables,
-  APITypes.GetPrimaryQuery
->;
+` as GeneratedQuery<APITypes.GetPrimaryQueryVariables, APITypes.GetPrimaryQuery>;
 export const getPrimaryCPKSKOne = /* GraphQL */ `query GetPrimaryCPKSKOne($id: ID!, $skOne: ID!) {
   getPrimaryCPKSKOne(id: $id, skOne: $skOne) {
     createdAt
@@ -52,10 +49,7 @@ export const getPrimaryCPKSKOne = /* GraphQL */ `query GetPrimaryCPKSKOne($id: I
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.GetPrimaryCPKSKOneQueryVariables,
-  APITypes.GetPrimaryCPKSKOneQuery
->;
+` as GeneratedQuery<APITypes.GetPrimaryCPKSKOneQueryVariables, APITypes.GetPrimaryCPKSKOneQuery>;
 export const getPrimaryCPKSKTwo = /* GraphQL */ `query GetPrimaryCPKSKTwo($id: ID!, $skOne: ID!, $skTwo: ID!) {
   getPrimaryCPKSKTwo(id: $id, skOne: $skOne, skTwo: $skTwo) {
     createdAt
@@ -79,10 +73,7 @@ export const getPrimaryCPKSKTwo = /* GraphQL */ `query GetPrimaryCPKSKTwo($id: I
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.GetPrimaryCPKSKTwoQueryVariables,
-  APITypes.GetPrimaryCPKSKTwoQuery
->;
+` as GeneratedQuery<APITypes.GetPrimaryCPKSKTwoQueryVariables, APITypes.GetPrimaryCPKSKTwoQuery>;
 export const getRelatedMany = /* GraphQL */ `query GetRelatedMany($id: ID!) {
   getRelatedMany(id: $id) {
     createdAt
@@ -98,10 +89,7 @@ export const getRelatedMany = /* GraphQL */ `query GetRelatedMany($id: ID!) {
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.GetRelatedManyQueryVariables,
-  APITypes.GetRelatedManyQuery
->;
+` as GeneratedQuery<APITypes.GetRelatedManyQueryVariables, APITypes.GetRelatedManyQuery>;
 export const getRelatedManyCPKSKOne = /* GraphQL */ `query GetRelatedManyCPKSKOne($id: String!) {
   getRelatedManyCPKSKOne(id: $id) {
     createdAt
@@ -119,10 +107,7 @@ export const getRelatedManyCPKSKOne = /* GraphQL */ `query GetRelatedManyCPKSKOn
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.GetRelatedManyCPKSKOneQueryVariables,
-  APITypes.GetRelatedManyCPKSKOneQuery
->;
+` as GeneratedQuery<APITypes.GetRelatedManyCPKSKOneQueryVariables, APITypes.GetRelatedManyCPKSKOneQuery>;
 export const getRelatedManyCPKSKTwo = /* GraphQL */ `query GetRelatedManyCPKSKTwo($id: String!) {
   getRelatedManyCPKSKTwo(id: $id) {
     createdAt
@@ -142,10 +127,7 @@ export const getRelatedManyCPKSKTwo = /* GraphQL */ `query GetRelatedManyCPKSKTw
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.GetRelatedManyCPKSKTwoQueryVariables,
-  APITypes.GetRelatedManyCPKSKTwoQuery
->;
+` as GeneratedQuery<APITypes.GetRelatedManyCPKSKTwoQueryVariables, APITypes.GetRelatedManyCPKSKTwoQuery>;
 export const getRelatedOne = /* GraphQL */ `query GetRelatedOne($id: ID!) {
   getRelatedOne(id: $id) {
     createdAt
@@ -161,10 +143,7 @@ export const getRelatedOne = /* GraphQL */ `query GetRelatedOne($id: ID!) {
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.GetRelatedOneQueryVariables,
-  APITypes.GetRelatedOneQuery
->;
+` as GeneratedQuery<APITypes.GetRelatedOneQueryVariables, APITypes.GetRelatedOneQuery>;
 export const getRelatedOneCPKSKOne = /* GraphQL */ `query GetRelatedOneCPKSKOne($id: String!) {
   getRelatedOneCPKSKOne(id: $id) {
     createdAt
@@ -182,10 +161,7 @@ export const getRelatedOneCPKSKOne = /* GraphQL */ `query GetRelatedOneCPKSKOne(
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.GetRelatedOneCPKSKOneQueryVariables,
-  APITypes.GetRelatedOneCPKSKOneQuery
->;
+` as GeneratedQuery<APITypes.GetRelatedOneCPKSKOneQueryVariables, APITypes.GetRelatedOneCPKSKOneQuery>;
 export const getRelatedOneCPKSKTwo = /* GraphQL */ `query GetRelatedOneCPKSKTwo($id: String!) {
   getRelatedOneCPKSKTwo(id: $id) {
     createdAt
@@ -205,10 +181,7 @@ export const getRelatedOneCPKSKTwo = /* GraphQL */ `query GetRelatedOneCPKSKTwo(
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.GetRelatedOneCPKSKTwoQueryVariables,
-  APITypes.GetRelatedOneCPKSKTwoQuery
->;
+` as GeneratedQuery<APITypes.GetRelatedOneCPKSKTwoQueryVariables, APITypes.GetRelatedOneCPKSKTwoQuery>;
 export const listPrimaries = /* GraphQL */ `query ListPrimaries(
   $filter: ModelPrimaryFilterInput
   $id: ID
@@ -233,10 +206,7 @@ export const listPrimaries = /* GraphQL */ `query ListPrimaries(
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.ListPrimariesQueryVariables,
-  APITypes.ListPrimariesQuery
->;
+` as GeneratedQuery<APITypes.ListPrimariesQueryVariables, APITypes.ListPrimariesQuery>;
 export const listPrimaryCPKSKOnes = /* GraphQL */ `query ListPrimaryCPKSKOnes(
   $filter: ModelPrimaryCPKSKOneFilterInput
   $id: ID
@@ -264,10 +234,7 @@ export const listPrimaryCPKSKOnes = /* GraphQL */ `query ListPrimaryCPKSKOnes(
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.ListPrimaryCPKSKOnesQueryVariables,
-  APITypes.ListPrimaryCPKSKOnesQuery
->;
+` as GeneratedQuery<APITypes.ListPrimaryCPKSKOnesQueryVariables, APITypes.ListPrimaryCPKSKOnesQuery>;
 export const listPrimaryCPKSKTwos = /* GraphQL */ `query ListPrimaryCPKSKTwos(
   $filter: ModelPrimaryCPKSKTwoFilterInput
   $id: ID
@@ -296,10 +263,7 @@ export const listPrimaryCPKSKTwos = /* GraphQL */ `query ListPrimaryCPKSKTwos(
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.ListPrimaryCPKSKTwosQueryVariables,
-  APITypes.ListPrimaryCPKSKTwosQuery
->;
+` as GeneratedQuery<APITypes.ListPrimaryCPKSKTwosQueryVariables, APITypes.ListPrimaryCPKSKTwosQuery>;
 export const listRelatedManies = /* GraphQL */ `query ListRelatedManies(
   $filter: ModelRelatedManyFilterInput
   $id: ID
@@ -325,10 +289,7 @@ export const listRelatedManies = /* GraphQL */ `query ListRelatedManies(
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.ListRelatedManiesQueryVariables,
-  APITypes.ListRelatedManiesQuery
->;
+` as GeneratedQuery<APITypes.ListRelatedManiesQueryVariables, APITypes.ListRelatedManiesQuery>;
 export const listRelatedManyCPKSKOnes = /* GraphQL */ `query ListRelatedManyCPKSKOnes(
   $filter: ModelRelatedManyCPKSKOneFilterInput
   $id: String
@@ -355,10 +316,7 @@ export const listRelatedManyCPKSKOnes = /* GraphQL */ `query ListRelatedManyCPKS
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.ListRelatedManyCPKSKOnesQueryVariables,
-  APITypes.ListRelatedManyCPKSKOnesQuery
->;
+` as GeneratedQuery<APITypes.ListRelatedManyCPKSKOnesQueryVariables, APITypes.ListRelatedManyCPKSKOnesQuery>;
 export const listRelatedManyCPKSKTwos = /* GraphQL */ `query ListRelatedManyCPKSKTwos(
   $filter: ModelRelatedManyCPKSKTwoFilterInput
   $id: String
@@ -386,10 +344,7 @@ export const listRelatedManyCPKSKTwos = /* GraphQL */ `query ListRelatedManyCPKS
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.ListRelatedManyCPKSKTwosQueryVariables,
-  APITypes.ListRelatedManyCPKSKTwosQuery
->;
+` as GeneratedQuery<APITypes.ListRelatedManyCPKSKTwosQueryVariables, APITypes.ListRelatedManyCPKSKTwosQuery>;
 export const listRelatedOneCPKSKOnes = /* GraphQL */ `query ListRelatedOneCPKSKOnes(
   $filter: ModelRelatedOneCPKSKOneFilterInput
   $id: String
@@ -416,10 +371,7 @@ export const listRelatedOneCPKSKOnes = /* GraphQL */ `query ListRelatedOneCPKSKO
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.ListRelatedOneCPKSKOnesQueryVariables,
-  APITypes.ListRelatedOneCPKSKOnesQuery
->;
+` as GeneratedQuery<APITypes.ListRelatedOneCPKSKOnesQueryVariables, APITypes.ListRelatedOneCPKSKOnesQuery>;
 export const listRelatedOneCPKSKTwos = /* GraphQL */ `query ListRelatedOneCPKSKTwos(
   $filter: ModelRelatedOneCPKSKTwoFilterInput
   $id: String
@@ -447,10 +399,7 @@ export const listRelatedOneCPKSKTwos = /* GraphQL */ `query ListRelatedOneCPKSKT
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.ListRelatedOneCPKSKTwosQueryVariables,
-  APITypes.ListRelatedOneCPKSKTwosQuery
->;
+` as GeneratedQuery<APITypes.ListRelatedOneCPKSKTwosQueryVariables, APITypes.ListRelatedOneCPKSKTwosQuery>;
 export const listRelatedOnes = /* GraphQL */ `query ListRelatedOnes(
   $filter: ModelRelatedOneFilterInput
   $id: ID
@@ -476,7 +425,4 @@ export const listRelatedOnes = /* GraphQL */ `query ListRelatedOnes(
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.ListRelatedOnesQueryVariables,
-  APITypes.ListRelatedOnesQuery
->;
+` as GeneratedQuery<APITypes.ListRelatedOnesQueryVariables, APITypes.ListRelatedOnesQuery>;
