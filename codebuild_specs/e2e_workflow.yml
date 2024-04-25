@@ -1477,7 +1477,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/group-auth/static-group-auth/static-group-auth.test.ts
-          CLI_REGION: ap-east-1
+          CLI_REGION: ap-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: assoc_field
