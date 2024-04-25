@@ -199,4 +199,48 @@ describe('Type name conversions', () => {
     const graphqlSchema = generateTypescriptDataSchema(dbschema, config);
     expect(graphqlSchema).toMatchSnapshot();
   });
+
+  it('generate typescript data schema should skip processing tables without primary key', () => {
+    const dbschema = new Schema(new Engine('MySQL'));
+    let model = new Model('User');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
+    model.setPrimaryKey(['id']);
+    dbschema.addModel(model);
+
+    model = new Model('Profile');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('details', { kind: 'Scalar', name: 'String' }));
+    dbschema.addModel(model);
+
+    const config: DataSourceConfig = {
+      identifier: 'ID1234567890',
+      secretName: 'CONN_STR',
+    };
+
+    const graphqlSchema = generateTypescriptDataSchema(dbschema, config);
+    expect(graphqlSchema).toMatchSnapshot();
+  });
+
+  it('generate typescript data schema throw error if none of the tables have primary key', () => {
+    const dbschema = new Schema(new Engine('MySQL'));
+    let model = new Model('User');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
+    dbschema.addModel(model);
+
+    model = new Model('Profile');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('details', { kind: 'Scalar', name: 'String' }));
+    dbschema.addModel(model);
+
+    const config: DataSourceConfig = {
+      identifier: 'ID1234567890',
+      secretName: 'CONN_STR',
+    };
+
+    expect(() => generateTypescriptDataSchema(dbschema, config)).toThrowError(
+      'No valid tables found. Make sure at least one table has a primary key.',
+    );
+  });
 });
