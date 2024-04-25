@@ -230,14 +230,14 @@ export const testRelatedOneContainsAssociated = async (currentId: number, apiEnd
     auth: { apiKey: apiKey },
   };
 
-  // Create PrimaryCPKSKOne
+  // Create Primary
   await doAppSyncGraphqlMutation({ ...args, query: createPrimary, variables: primaryVariables });
 
-  // Create two RelatedManyCPKSKOne records
+  // Create two RelatedMany records
   await doAppSyncGraphqlMutation({ ...args, query: createRelatedMany, variables: relatedVariables });
   await doAppSyncGraphqlMutation({ ...args, query: createRelatedMany, variables: relatedVariables });
 
-  // Create RelatedOneCPKSKOne
+  // Create RelatedOne
   const relatedOneCreateResult = await doAppSyncGraphqlMutation({ ...args, query: createRelatedOne, variables: relatedVariables });
   // Assert create mutation response contains associated models
   const relatedOneCreate = relatedOneCreateResult.body.data.createRelatedOne;
@@ -386,13 +386,13 @@ export const testRelatedManyContainsAssociated = async (currentId: number, apiEn
     auth: { apiKey: apiKey },
   };
 
-  // Create PrimaryCPKSKOne
+  // Create Primary
   await doAppSyncGraphqlMutation({ ...args, query: createPrimary, variables: primaryVariables });
 
-  // Create RelatedOneCPKSKOne
+  // Create RelatedOne
   await doAppSyncGraphqlMutation({ ...args, query: createRelatedOne, variables: relatedVariables });
 
-  // Create two RelatedManyCPKSKOne records
+  // Create two RelatedMany records
   const relatedManyCreateResultA = await doAppSyncGraphqlMutation({
     ...args,
     query: createRelatedMany,
