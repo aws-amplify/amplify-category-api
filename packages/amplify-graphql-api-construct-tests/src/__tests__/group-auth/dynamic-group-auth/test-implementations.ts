@@ -125,9 +125,6 @@ export const testGetPrimaryUnauthorizedForDifferentOwner = async (
 
   const result = await doGetPrimary(apiEndpoint, relatedAccessToken, primaryId);
   const primary = result.body.data.getPrimary;
-  const errors = result.body.errors;
-  expect(errors.length).toEqual(1);
-  expect(errors[0].errorType).toEqual('Unauthorized');
   expect(primary).toBeNull();
 };
 

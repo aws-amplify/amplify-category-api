@@ -1,7 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import * as APITypes from "./API";
+import * as APITypes from './API';
 type GeneratedMutation<InputType, OutputType> = string & {
   __generatedMutationInput: InputType;
   __generatedMutationOutput: OutputType;
@@ -51,10 +51,7 @@ export const createPrimary = /* GraphQL */ `mutation CreatePrimary(
     }
   }
 }
-` as GeneratedMutation<
-  APITypes.CreatePrimaryMutationVariables,
-  APITypes.CreatePrimaryMutation
->;
+` as GeneratedMutation<APITypes.CreatePrimaryMutationVariables, APITypes.CreatePrimaryMutation>;
 export const updatePrimary = /* GraphQL */ `mutation UpdatePrimary(
   $input: UpdatePrimaryInput!
   $condition: ModelPrimaryConditionInput
@@ -99,10 +96,7 @@ export const updatePrimary = /* GraphQL */ `mutation UpdatePrimary(
     }
   }
 }
-` as GeneratedMutation<
-  APITypes.UpdatePrimaryMutationVariables,
-  APITypes.UpdatePrimaryMutation
->;
+` as GeneratedMutation<APITypes.UpdatePrimaryMutationVariables, APITypes.UpdatePrimaryMutation>;
 export const deletePrimary = /* GraphQL */ `mutation DeletePrimary(
   $input: DeletePrimaryInput!
   $condition: ModelPrimaryConditionInput
@@ -147,10 +141,7 @@ export const deletePrimary = /* GraphQL */ `mutation DeletePrimary(
     }
   }
 }
-` as GeneratedMutation<
-  APITypes.DeletePrimaryMutationVariables,
-  APITypes.DeletePrimaryMutation
->;
+` as GeneratedMutation<APITypes.DeletePrimaryMutationVariables, APITypes.DeletePrimaryMutation>;
 export const createRelatedMany = /* GraphQL */ `mutation CreateRelatedMany(
   $input: CreateRelatedManyInput!
   $condition: ModelRelatedManyConditionInput
@@ -187,10 +178,7 @@ export const createRelatedMany = /* GraphQL */ `mutation CreateRelatedMany(
     }
   }
 }
-` as GeneratedMutation<
-  APITypes.CreateRelatedManyMutationVariables,
-  APITypes.CreateRelatedManyMutation
->;
+` as GeneratedMutation<APITypes.CreateRelatedManyMutationVariables, APITypes.CreateRelatedManyMutation>;
 export const updateRelatedMany = /* GraphQL */ `mutation UpdateRelatedMany(
   $input: UpdateRelatedManyInput!
   $condition: ModelRelatedManyConditionInput
@@ -227,10 +215,7 @@ export const updateRelatedMany = /* GraphQL */ `mutation UpdateRelatedMany(
     }
   }
 }
-` as GeneratedMutation<
-  APITypes.UpdateRelatedManyMutationVariables,
-  APITypes.UpdateRelatedManyMutation
->;
+` as GeneratedMutation<APITypes.UpdateRelatedManyMutationVariables, APITypes.UpdateRelatedManyMutation>;
 export const deleteRelatedMany = /* GraphQL */ `mutation DeleteRelatedMany(
   $input: DeleteRelatedManyInput!
   $condition: ModelRelatedManyConditionInput
@@ -267,10 +252,7 @@ export const deleteRelatedMany = /* GraphQL */ `mutation DeleteRelatedMany(
     }
   }
 }
-` as GeneratedMutation<
-  APITypes.DeleteRelatedManyMutationVariables,
-  APITypes.DeleteRelatedManyMutation
->;
+` as GeneratedMutation<APITypes.DeleteRelatedManyMutationVariables, APITypes.DeleteRelatedManyMutation>;
 export const createRelatedOne = /* GraphQL */ `mutation CreateRelatedOne(
   $input: CreateRelatedOneInput!
   $condition: ModelRelatedOneConditionInput
@@ -307,10 +289,7 @@ export const createRelatedOne = /* GraphQL */ `mutation CreateRelatedOne(
     }
   }
 }
-` as GeneratedMutation<
-  APITypes.CreateRelatedOneMutationVariables,
-  APITypes.CreateRelatedOneMutation
->;
+` as GeneratedMutation<APITypes.CreateRelatedOneMutationVariables, APITypes.CreateRelatedOneMutation>;
 export const updateRelatedOne = /* GraphQL */ `mutation UpdateRelatedOne(
   $input: UpdateRelatedOneInput!
   $condition: ModelRelatedOneConditionInput
@@ -347,10 +326,7 @@ export const updateRelatedOne = /* GraphQL */ `mutation UpdateRelatedOne(
     }
   }
 }
-` as GeneratedMutation<
-  APITypes.UpdateRelatedOneMutationVariables,
-  APITypes.UpdateRelatedOneMutation
->;
+` as GeneratedMutation<APITypes.UpdateRelatedOneMutationVariables, APITypes.UpdateRelatedOneMutation>;
 export const deleteRelatedOne = /* GraphQL */ `mutation DeleteRelatedOne(
   $input: DeleteRelatedOneInput!
   $condition: ModelRelatedOneConditionInput
@@ -387,7 +363,4 @@ export const deleteRelatedOne = /* GraphQL */ `mutation DeleteRelatedOne(
     }
   }
 }
-` as GeneratedMutation<
-  APITypes.DeleteRelatedOneMutationVariables,
-  APITypes.DeleteRelatedOneMutation
->;
+` as GeneratedMutation<APITypes.DeleteRelatedOneMutationVariables, APITypes.DeleteRelatedOneMutation>;
