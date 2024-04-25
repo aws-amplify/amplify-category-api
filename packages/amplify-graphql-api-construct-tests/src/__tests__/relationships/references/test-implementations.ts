@@ -2,36 +2,50 @@ import { doAppSyncGraphqlMutation, doAppSyncGraphqlQuery } from '../../../utils'
 import {
   CreatePrimaryCPKSKOneInput,
   CreatePrimaryCPKSKTwoInput,
+  CreatePrimaryInput,
   CreateRelatedOneCPKSKOneInput,
   CreateRelatedOneCPKSKTwoInput,
+  CreateRelatedOneInput,
   GetPrimaryCPKSKOneQuery,
   GetPrimaryCPKSKTwoQuery,
+  GetPrimaryQuery,
   GetRelatedManyCPKSKOneQuery,
   GetRelatedManyCPKSKTwoQuery,
+  GetRelatedManyQuery,
   GetRelatedOneCPKSKOneQuery,
   GetRelatedOneCPKSKTwoQuery,
+  GetRelatedOneQuery,
   UpdatePrimaryCPKSKOneInput,
   UpdatePrimaryCPKSKTwoInput,
+  UpdatePrimaryInput,
 } from './API';
 import {
+  createPrimary,
   createPrimaryCPKSKOne,
   createPrimaryCPKSKTwo,
+  createRelatedMany,
   createRelatedManyCPKSKOne,
   createRelatedManyCPKSKTwo,
+  createRelatedOne,
   createRelatedOneCPKSKOne,
   createRelatedOneCPKSKTwo,
+  updatePrimary,
   updatePrimaryCPKSKOne,
   updatePrimaryCPKSKTwo,
+  updateRelatedMany,
   updateRelatedManyCPKSKOne,
   updateRelatedManyCPKSKTwo,
   updateRelatedOneCPKSKOne,
   updateRelatedOneCPKSKTwo,
 } from './graphql/mutations';
 import {
+  getPrimary,
   getPrimaryCPKSKOne,
   getPrimaryCPKSKTwo,
+  getRelatedMany,
   getRelatedManyCPKSKOne,
   getRelatedManyCPKSKTwo,
+  getRelatedOne,
   getRelatedOneCPKSKOne,
   getRelatedOneCPKSKTwo,
 } from './graphql/queries';
@@ -40,6 +54,38 @@ import {
 // Primary as source
 // =======================================================================
 // #region Primary as source model
+
+export const testPrimaryContainsAssociated = async (currentId: number, apiEndpoint: string, apiKey: string): Promise<void> => {
+  const primaryVariables = getPrimaryVariables(currentId);
+  const relatedVariables = getRelatedVariables(primaryVariables);
+  const args = {
+    apiEndpoint,
+    auth: { apiKey },
+  };
+
+  // Create two RelatedMany records
+  await doAppSyncGraphqlMutation({ ...args, query: createRelatedMany, variables: relatedVariables });
+  await doAppSyncGraphqlMutation({ ...args, query: createRelatedMany, variables: relatedVariables });
+
+  // Create RelatedMany
+  await doAppSyncGraphqlMutation({ ...args, query: createRelatedOne, variables: relatedVariables });
+
+  // Create Primary
+  const primaryCreateResult = await doAppSyncGraphqlMutation({ ...args, query: createPrimary, variables: primaryVariables });
+  // Assert create mutation response contains associated models
+  const primaryCreate = primaryCreateResult.body.data.createPrimary;
+  assertPrimaryContainsAssociated(primaryCreate, primaryVariables);
+
+  // Assert get query response contains associated models
+  const primaryGetResult = await doAppSyncGraphqlQuery({ ...args, query: getPrimary, variables: primaryVariables });
+  const primaryGet = primaryGetResult.body.data.getPrimary;
+  assertPrimaryContainsAssociated(primaryGet, primaryVariables);
+
+  // Assert update mutation response contains associated models
+  const primaryUpdateResult = await doAppSyncGraphqlMutation({ ...args, query: updatePrimary, variables: primaryVariables });
+  const primaryUpdate = primaryUpdateResult.body.data.updatePrimary;
+  assertPrimaryContainsAssociated(primaryUpdate, primaryVariables);
+};
 
 export const testPrimaryCpkSkOneContainsAssociated = async (currentId: number, apiEndpoint: string, apiKey: string): Promise<void> => {
   const primaryVariables = getPrimaryVariablesSkOne(currentId);
@@ -140,15 +186,22 @@ export const testPrimaryMultipleHasOneContainsOneHasOne = async (currentId: numb
 };
 
 // #region Primary assertions
+const assertPrimaryContainsAssociated = (
+  primary: RecursiveOmit<GetPrimaryQuery['getPrimary'], '__typename'>,
+  expected: CreatePrimaryInput,
+): void => {
+  expect(primary).toBeDefined();
+  expect(primary.id).toEqual(expected.id);
+  expect(primary.relatedOne).toBeDefined();
+  expect(primary.relatedOne.primaryId).toEqual(expected.id);
+};
+
 const assertPrimaryCpkOneContainsAssociated = (
   primary: RecursiveOmit<GetPrimaryCPKSKOneQuery['getPrimaryCPKSKOne'], '__typename'>,
   expected: CreatePrimaryCPKSKOneInput,
 ): void => {
-  expect(primary).toBeDefined();
-  expect(primary.id).toEqual(expected.id);
+  assertPrimaryContainsAssociated(primary, expected);
   expect(primary.skOne).toEqual(expected.skOne);
-  expect(primary.relatedOne).toBeDefined();
-  expect(primary.relatedOne.primaryId).toEqual(expected.id);
   expect(primary.relatedOne.primarySkOne).toEqual(expected.skOne);
 };
 
@@ -168,6 +221,46 @@ const assertPrimaryCpkTwoContainsAssociated = (
 // RelatedOne as source
 // =======================================================================
 // #region RelatedOne as source model
+
+export const testRelatedOneContainsAssociated = async (currentId: number, apiEndpoint: string, apiKey: string): Promise<void> => {
+  const primaryVariables = getPrimaryVariables(currentId);
+  const relatedVariables = getRelatedVariables(primaryVariables);
+  const args = {
+    apiEndpoint,
+    auth: { apiKey: apiKey },
+  };
+
+  // Create PrimaryCPKSKOne
+  await doAppSyncGraphqlMutation({ ...args, query: createPrimary, variables: primaryVariables });
+
+  // Create two RelatedManyCPKSKOne records
+  await doAppSyncGraphqlMutation({ ...args, query: createRelatedMany, variables: relatedVariables });
+  await doAppSyncGraphqlMutation({ ...args, query: createRelatedMany, variables: relatedVariables });
+
+  // Create RelatedOneCPKSKOne
+  const relatedOneCreateResult = await doAppSyncGraphqlMutation({ ...args, query: createRelatedOne, variables: relatedVariables });
+  // Assert create mutation response contains associated models
+  const relatedOneCreate = relatedOneCreateResult.body.data.createRelatedOne;
+  assertRelatedOneContainsAssociated(relatedOneCreate, primaryVariables);
+
+  // Assert get query response contains associated models
+  const relatedOneGetResult = await doAppSyncGraphqlQuery({
+    ...args,
+    query: getRelatedOne,
+    variables: { id: relatedOneCreate.id, ...relatedVariables },
+  });
+  const relatedOneGet = relatedOneGetResult.body.data.getRelatedOne;
+  assertRelatedOneContainsAssociated(relatedOneGet, primaryVariables);
+
+  // Assert update mutation response contains associated models
+  const relatedOneUpdatedResult = await doAppSyncGraphqlMutation({
+    ...args,
+    query: updateRelatedOneCPKSKOne,
+    variables: { id: relatedOneCreate.id, ...relatedVariables },
+  });
+  const relatedOneUpdate = relatedOneUpdatedResult.body.data.updateRelatedOneCPKSKOne;
+  assertRelatedOneContainsAssociated(relatedOneUpdate, primaryVariables);
+};
 
 export const testRelatedOneCpkSkOneContainsAssociated = async (currentId: number, apiEndpoint: string, apiKey: string): Promise<void> => {
   const primaryVariables = getPrimaryVariablesSkOne(currentId);
@@ -250,15 +343,22 @@ export const testRelatedOneCpkSkTwoContainsAssociated = async (currentId: number
 };
 
 // #region RelatedOne assertions
+const assertRelatedOneContainsAssociated = (
+  relatedOne: RecursiveOmit<GetRelatedOneQuery['getRelatedOne'], '__typename'>,
+  expected: CreatePrimaryInput,
+): void => {
+  expect(relatedOne).toBeDefined();
+  expect(relatedOne.primary.id).toEqual(expected.id);
+  expect(relatedOne).toBeDefined();
+  expect(relatedOne.primaryId).toEqual(expected.id);
+};
+
 const assertRelatedOneCpkOneContainsAssociated = (
   relatedOne: RecursiveOmit<GetRelatedOneCPKSKOneQuery['getRelatedOneCPKSKOne'], '__typename'>,
   expected: CreatePrimaryCPKSKOneInput,
 ): void => {
-  expect(relatedOne).toBeDefined();
-  expect(relatedOne.primary.id).toEqual(expected.id);
+  assertRelatedOneContainsAssociated(relatedOne, expected);
   expect(relatedOne.primary.skOne).toEqual(expected.skOne);
-  expect(relatedOne).toBeDefined();
-  expect(relatedOne.primaryId).toEqual(expected.id);
   expect(relatedOne.primarySkOne).toEqual(expected.skOne);
 };
 
@@ -277,6 +377,74 @@ const assertRelatedOneCpkTwoContainsAssociated = (
 // RelatedMany as source
 // =======================================================================
 // #region RelatedMany as source model
+
+export const testRelatedManyContainsAssociated = async (currentId: number, apiEndpoint: string, apiKey: string): Promise<void> => {
+  const primaryVariables = getPrimaryVariables(currentId);
+  const relatedVariables = getRelatedVariables(primaryVariables);
+  const args = {
+    apiEndpoint,
+    auth: { apiKey: apiKey },
+  };
+
+  // Create PrimaryCPKSKOne
+  await doAppSyncGraphqlMutation({ ...args, query: createPrimary, variables: primaryVariables });
+
+  // Create RelatedOneCPKSKOne
+  await doAppSyncGraphqlMutation({ ...args, query: createRelatedOne, variables: relatedVariables });
+
+  // Create two RelatedManyCPKSKOne records
+  const relatedManyCreateResultA = await doAppSyncGraphqlMutation({
+    ...args,
+    query: createRelatedMany,
+    variables: relatedVariables,
+  });
+  const relatedManyCreateResultB = await doAppSyncGraphqlMutation({
+    ...args,
+    query: createRelatedMany,
+    variables: relatedVariables,
+  });
+  // Assert create mutation responses contains associated models
+  const relatedManyCreateA = relatedManyCreateResultA.body.data.createRelatedMany;
+  assertRelatedManyContainsAssociated(relatedManyCreateA, primaryVariables);
+
+  const relatedManyCreateB = relatedManyCreateResultB.body.data.createRelatedMany;
+  assertRelatedManyContainsAssociated(relatedManyCreateB, primaryVariables);
+
+  // Assert get query responses contains associated models
+  const relatedManyGetResultA = await doAppSyncGraphqlQuery({
+    ...args,
+    query: getRelatedMany,
+    variables: { id: relatedManyCreateA.id },
+  });
+  const relatedManyGetA = relatedManyGetResultA.body.data.getRelatedMany;
+  assertRelatedManyContainsAssociated(relatedManyGetA, primaryVariables);
+
+  const relatedManyGetResultB = await doAppSyncGraphqlQuery({
+    ...args,
+    query: getRelatedMany,
+    variables: { id: relatedManyCreateA.id },
+  });
+  const relatedManyGetB = relatedManyGetResultB.body.data.getRelatedMany;
+  assertRelatedManyContainsAssociated(relatedManyGetB, primaryVariables);
+
+  // Assert update mutation response contains associated models
+  const relatedManyUpdatedResultA = await doAppSyncGraphqlMutation({
+    ...args,
+    query: updateRelatedMany,
+    variables: { id: relatedManyCreateA.id, ...relatedVariables },
+  });
+  const relatedManyUpdateA = relatedManyUpdatedResultA.body.data.updateRelatedMany;
+  assertRelatedManyContainsAssociated(relatedManyUpdateA, primaryVariables);
+
+  const relatedManyUpdatedResultB = await doAppSyncGraphqlMutation({
+    ...args,
+    query: updateRelatedMany,
+    variables: { id: relatedManyCreateA.id, ...relatedVariables },
+  });
+  const relatedManyUpdateB = relatedManyUpdatedResultB.body.data.updateRelatedMany;
+  assertRelatedManyContainsAssociated(relatedManyUpdateB, primaryVariables);
+};
+
 export const testRelatedManyCpkSkOneContainsAssociated = async (currentId: number, apiEndpoint: string, apiKey: string): Promise<void> => {
   const primaryVariables = getPrimaryVariablesSkOne(currentId);
   const relatedVariables = getRelatedVariablesSkOne(primaryVariables);
@@ -414,15 +582,22 @@ export const testRelatedManypkSkTwoContainsAssociated = async (currentId: number
 };
 
 // #region RelatedMany assertions
+const assertRelatedManyContainsAssociated = (
+  relatedMany: RecursiveOmit<GetRelatedManyQuery['getRelatedMany'], '__typename'>,
+  expected: CreatePrimaryInput,
+): void => {
+  expect(relatedMany).toBeDefined();
+  expect(relatedMany.primaryId).toEqual(expected.id);
+  expect(relatedMany.primary).toBeDefined();
+  expect(relatedMany.primary.id).toEqual(expected.id);
+};
+
 const assertRelatedManyCpkOneContainsAssociated = (
   relatedMany: RecursiveOmit<GetRelatedManyCPKSKOneQuery['getRelatedManyCPKSKOne'], '__typename'>,
   expected: CreatePrimaryCPKSKOneInput,
 ): void => {
-  expect(relatedMany).toBeDefined();
-  expect(relatedMany.primaryId).toEqual(expected.id);
+  assertRelatedManyContainsAssociated(relatedMany, expected);
   expect(relatedMany.primarySkOne).toEqual(expected.skOne);
-  expect(relatedMany.primary).toBeDefined();
-  expect(relatedMany.primary.id).toEqual(expected.id);
   expect(relatedMany.primary.skOne).toEqual(expected.skOne);
 };
 
@@ -446,15 +621,30 @@ type RecursiveOmit<T, K extends PropertyKey> = {
   [P in keyof T as P extends K ? never : P]: RecursiveOmit<T[P], K extends `${infer R}` ? R : never>;
 };
 
-const getPrimaryVariablesSkOne = (currentId: number): UpdatePrimaryCPKSKOneInput => {
+const getPrimaryVariables = (currentId: number): UpdatePrimaryInput => {
   return {
     id: `p${currentId}`,
+  };
+};
+
+const getPrimaryVariablesSkOne = (currentId: number): UpdatePrimaryCPKSKOneInput => {
+  return {
+    ...getPrimaryVariables(currentId),
     skOne: `pskone${currentId}`,
   };
 };
 
 const getPrimaryVariablesSkTwo = (currentId: number): UpdatePrimaryCPKSKTwoInput => {
-  return { ...getPrimaryVariablesSkOne(currentId), skTwo: `psktwo${currentId}` };
+  return {
+    ...getPrimaryVariablesSkOne(currentId),
+    skTwo: `psktwo${currentId}`
+  };
+};
+
+const getRelatedVariables = (primaryVariables: UpdatePrimaryInput): CreateRelatedOneInput => {
+  return {
+    primaryId: primaryVariables.id,
+  };
 };
 
 const getRelatedVariablesSkOne = (primaryVariables: UpdatePrimaryCPKSKOneInput): CreateRelatedOneCPKSKOneInput => {
