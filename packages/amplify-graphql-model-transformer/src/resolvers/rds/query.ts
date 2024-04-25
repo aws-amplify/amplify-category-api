@@ -1,11 +1,11 @@
+import {
+  constructArrayFieldsStatement,
+  constructAuthFilterStatement,
+  constructFieldMappingInput,
+  constructNonScalarFieldsStatement,
+} from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { compoundExpression, list, methodCall, obj, printBlock, qref, ref, set, str } from 'graphql-mapping-template';
-import {
-  constructAuthFilterStatement,
-  constructNonScalarFieldsStatement,
-  constructFieldMappingInput,
-  constructArrayFieldsStatement,
-} from './resolver';
 
 export const generateLambdaListRequestTemplate = (
   tableName: string,

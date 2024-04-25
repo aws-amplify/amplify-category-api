@@ -13,9 +13,13 @@ import {
   toJson,
 } from 'graphql-mapping-template';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  constructArrayFieldsStatement,
+  constructFieldMappingInput,
+  constructNonScalarFieldsStatement,
+} from '@aws-amplify/graphql-transformer-core';
 import { ModelDirectiveConfiguration } from '../../directive';
 import { defaultAutoId } from '../common';
-import { constructArrayFieldsStatement, constructFieldMappingInput, constructNonScalarFieldsStatement } from './resolver';
 
 /**
  * Generate mapping template that sets default values for create mutation
