@@ -1119,24 +1119,24 @@ batch:
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        add_resources_restricted_field_auth_gen2_restricted_field_auth_gen1_references
+        add_resources_restricted_field_auth_gen2_restricted_field_auth_gen1_relationships_gen1
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/add-resources.test.ts|src/__tests__/restricted-field-auth/restricted-field-auth-gen2.test.ts|src/__tests__/restricted-field-auth/restricted-field-auth-gen1.test.ts|src/__tests__/relationships/references/references.test.ts
+            src/__tests__/add-resources.test.ts|src/__tests__/restricted-field-auth/restricted-field-auth-gen2.test.ts|src/__tests__/restricted-field-auth/restricted-field-auth-gen1.test.ts|src/__tests__/relationships/gen1/relationships-gen1.test.ts
           CLI_REGION: eu-north-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        relationships_gen1_single_gsi_single_record_single_gsi_empty_table_single_gsi_1k_records
+        relationships_cpk_single_gsi_single_record_single_gsi_empty_table_single_gsi_1k_records
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/relationships/gen1/relationships-gen1.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-empty-table.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-1k-records.test.ts
+            src/__tests__/relationships/composite-pk/relationships-cpk.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-empty-table.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-1k-records.test.ts
           CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
@@ -1486,7 +1486,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/owner-auth/bind-sql-ids/bind-sql-ids.test.ts
-          CLI_REGION: us-west-1
+          CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
     - identifier: assoc_field
@@ -1495,7 +1495,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/owner-auth/assoc-field/assoc-field.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
     - identifier: static_group_auth
@@ -1504,7 +1504,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/group-auth/static-group-auth/static-group-auth.test.ts
-          CLI_REGION: ap-east-1
+          CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
     - identifier: single_gsi_100k_records
