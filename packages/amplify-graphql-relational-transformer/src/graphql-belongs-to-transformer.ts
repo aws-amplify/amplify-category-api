@@ -2,19 +2,19 @@
 import {
   DDB_DB_TYPE,
   DirectiveWrapper,
-  generateGetArgumentsInput,
-  getStrategyDbTypeFromTypeNode,
-  getStrategyDbTypeFromModel,
   InvalidDirectiveError,
   TransformerPluginBase,
+  generateGetArgumentsInput,
+  getStrategyDbTypeFromModel,
+  getStrategyDbTypeFromTypeNode,
 } from '@aws-amplify/graphql-transformer-core';
 import {
+  ModelDataSourceStrategyDbType,
   TransformerContextProvider,
+  TransformerPreProcessContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
-  TransformerPreProcessContextProvider,
-  ModelDataSourceStrategyDbType,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { BelongsToDirective } from '@aws-amplify/graphql-directives';
 import {
@@ -28,6 +28,7 @@ import {
 import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 import produce from 'immer';
 import { WritableDraft } from 'immer/dist/types/types-external';
+import { getBelongsToDirectiveTransformer } from './belongs-to/belongs-to-directive-transformer-factory';
 import { ensureBelongsToConnectionField } from './schema';
 import { BelongsToDirectiveConfiguration, ObjectDefinition } from './types';
 import {
@@ -37,8 +38,6 @@ import {
   validateModelDirective,
   validateRelatedModelDirective,
 } from './utils';
-import { getGenerator } from './resolver/generator-factory';
-import { getBelongsToDirectiveTransformer } from './belongs-to/belongs-to-directive-transformer-factory';
 
 /**
  * Transformer for @belongsTo directive
@@ -130,7 +129,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
     this.directiveList.forEach((config) => {
       const modelName = config.object.name.value;
       const dbType = getStrategyDbTypeFromModel(context as TransformerContextProvider, modelName);
-      const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType);
+      const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType, config);
       dataSourceBasedTransformer.prepare(context, config);
     });
   };
@@ -140,7 +139,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
-      const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType);
+      const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType, config);
       dataSourceBasedTransformer.transformSchema(ctx, config);
       ensureBelongsToConnectionField(config, context);
     }
@@ -151,8 +150,8 @@ export class BelongsToTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
-      const generator = getGenerator(dbType);
-      generator.makeBelongsToGetItemConnectionWithKeyResolver(config, context);
+      const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType, config);
+      dataSourceBasedTransformer.generateResolvers(ctx, config);
     }
   };
 }
@@ -162,10 +161,11 @@ const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerConte
 
   let dbType: ModelDataSourceStrategyDbType;
   try {
-    // getStrategyDbTypeFromTypeNode throws if a datasource is not found for the model. We want to catch that condition here to provide a friendlier
-    // error message, since the most likely error scenario is that the customer neglected to annotate one of the types with `@model`. Since
-    // this transformer gets invoked on both sides of the `belongsTo` relationship, a failure at this point is about the field itself, not
-    // the related type.
+    // getStrategyDbTypeFromTypeNode throws if a datasource is not found for the model. We want to catch that condition
+    // here to provide a friendlier error message, since the most likely error scenario is that the customer neglected to annotate one
+    // of the types with `@model`.
+    // Since this transformer gets invoked on both sides of the `belongsTo` relationship, a failure at this point is about the
+    // field itself, not the related type.
     dbType = getStrategyDbTypeFromTypeNode(field.type, ctx);
   } catch {
     throw new InvalidDirectiveError(
@@ -174,7 +174,7 @@ const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerConte
   }
 
   config.relatedType = getRelatedType(config, ctx);
-  const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType);
+  const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType, config);
   dataSourceBasedTransformer.validate(ctx, config);
   validateModelDirective(config);
 

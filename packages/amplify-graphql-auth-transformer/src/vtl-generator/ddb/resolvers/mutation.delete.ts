@@ -30,16 +30,17 @@ import {
   RoleDefinition,
   splitRoles,
 } from '../../../utils';
+import { setHasAuthExpression } from '../../common';
 import {
   emptyPayload,
   getIdentityClaimExp,
   iamAdminRoleCheckExpression,
   iamCheck,
-  setHasAuthExpression,
   generateOwnerClaimExpression,
   generateOwnerClaimListExpression,
   generateOwnerMultiClaimExpression,
   generateInvalidClaimsCondition,
+  generateIAMAccessCheck,
 } from './helpers';
 
 /**
@@ -56,7 +57,12 @@ const apiKeyExpression = (roles: Array<RoleDefinition>): Expression | null => {
 /**
  * No need to combine allowed fields as the request can only be signed by one iam role
  */
-const iamExpression = (roles: Array<RoleDefinition>, hasAdminRolesEnabled = false, hasIdentityPoolId: boolean): Expression | null => {
+const iamExpression = (
+  roles: Array<RoleDefinition>,
+  hasAdminRolesEnabled = false,
+  hasIdentityPoolId: boolean,
+  genericIamAccessEnabled: boolean,
+): Expression | null => {
   const expression = new Array<Expression>();
   // allow if using an admin role
   if (hasAdminRolesEnabled) {
@@ -69,7 +75,11 @@ const iamExpression = (roles: Array<RoleDefinition>, hasAdminRolesEnabled = fals
   } else {
     expression.push(ref('util.unauthorized()'));
   }
-  return iff(equals(ref('util.authType()'), str(IAM_AUTH_TYPE)), compoundExpression(expression));
+
+  return iff(
+    equals(ref('util.authType()'), str(IAM_AUTH_TYPE)),
+    generateIAMAccessCheck(genericIamAccessEnabled, compoundExpression(expression)),
+  );
 };
 
 /**
@@ -206,7 +216,9 @@ export const generateAuthExpressionForDelete = (
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
   }
   if (providers.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.hasIdentityPoolId));
+    totalAuthExpressions.push(
+      iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.hasIdentityPoolId, providers.genericIamAccessEnabled),
+    );
   }
   if (providers.hasLambda) {
     totalAuthExpressions.push(lambdaExpression(lambdaRoles));

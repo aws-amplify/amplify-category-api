@@ -1,10 +1,34 @@
 import {
+  AdminAddUserToGroupCommand,
   AdminCreateUserCommand,
   AdminSetUserPasswordCommand,
   CognitoIdentityProviderClient,
   InitiateAuthCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import * as generator from 'generate-password';
+
+export interface AddCognitoUserToGroupInput {
+  region: string;
+  userPoolId: string;
+  username: string;
+  group: string;
+}
+
+/**
+ * Adds a user to a preexisting Cognito User Pool group. Remember to do this prior to signing in the user, so the group appears in the JWT
+ * claim
+ */
+export const addCognitoUserToGroup = async (options: AddCognitoUserToGroupInput): Promise<void> => {
+  const { region, userPoolId, username, group } = options;
+  const client = new CognitoIdentityProviderClient({ region });
+
+  const command = new AdminAddUserToGroupCommand({
+    UserPoolId: userPoolId,
+    Username: username,
+    GroupName: group,
+  });
+  await client.send(command);
+};
 
 export interface CreateCognitoUserInput {
   region: string;
@@ -16,7 +40,6 @@ export interface CreateCognitoUserOutput {
   password: string;
   email: string;
 }
-
 /**
  * Creates a new user record and sets a permanent password it
  */
@@ -113,4 +136,35 @@ export const signInCognitoUser = async (options: SignInCognitoUserInput): Promis
     idToken: authResult.IdToken!,
     username,
   };
+};
+
+export const getUsernameClaimFromJwt = (accessToken: string): string => {
+  const claims: any = getClaimsFromJwt(accessToken);
+  if (typeof claims['username'] === 'string') {
+    return claims['username'];
+  }
+  throw new Error(`Could not extract username claim from JWT ${accessToken}`);
+};
+
+export const getSubClaimFromJwt = (accessToken: string): string => {
+  const claims: any = getClaimsFromJwt(accessToken);
+  if (typeof claims['sub'] === 'string') {
+    return claims['sub'];
+  }
+  throw new Error(`Could not extract sub claim from JWT ${accessToken}`);
+};
+
+export const getConsolidatedAmplifyOwnerFieldFromJwt = (accessToken: string): string => {
+  const username = getUsernameClaimFromJwt(accessToken);
+  const sub = getSubClaimFromJwt(accessToken);
+  const owner = `${sub}::${username}`;
+  return owner;
+};
+
+export const getClaimsFromJwt = (accessToken: string): any => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_sig, claimsBase64] = accessToken.split('.');
+  const claimsString = Buffer.from(claimsBase64, 'base64').toString();
+  const claims: any = JSON.parse(claimsString);
+  return claims;
 };

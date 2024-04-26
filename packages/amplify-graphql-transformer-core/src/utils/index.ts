@@ -10,7 +10,15 @@ export { collectDirectives, collectDirectivesByTypeNames } from './type-map-util
 export { stripDirectives } from './strip-directives';
 export { getTable, getKeySchema, getSortKeyFieldNames, getStrategyDbTypeFromTypeNode } from './schema-utils';
 export { DEFAULT_SCHEMA_DEFINITION } from './defaultSchema';
-export { getParameterStoreSecretPath } from './rds-util';
+export {
+  constructArrayFieldsStatement,
+  constructAuthFilterStatement,
+  constructFieldMappingInput,
+  constructNonScalarFieldsStatement,
+  getArrayFields,
+  getNonScalarFields,
+  getParameterStoreSecretPath,
+} from './rds-util';
 export const APICategory = 'api';
 export {
   setResourceName,

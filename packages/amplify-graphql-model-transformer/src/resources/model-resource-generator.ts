@@ -9,7 +9,7 @@ import {
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { ResolverResourceIDs, toCamelCase } from 'graphql-transformer-common';
-import { generateAuthExpressionForSandboxMode, generateResolverKey, ModelVTLGenerator } from '../resolvers';
+import { generatePostAuthExpression, generateResolverKey, ModelVTLGenerator } from '../resolvers';
 import { ModelDirectiveConfiguration, SubscriptionLevel } from '../directive';
 import { ModelTransformerOptions } from '../types';
 
@@ -128,7 +128,7 @@ export abstract class ModelResourceGenerator {
         resolver.addToSlot(
           'postAuth',
           MappingTemplate.s3MappingTemplateFromString(
-            generateAuthExpressionForSandboxMode(context.transformParameters.sandboxModeEnabled),
+            generatePostAuthExpression(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess),
             `${query.typeName}.${query.fieldName}.{slotName}.{slotIndex}.req.vtl`,
           ),
         );
@@ -162,7 +162,7 @@ export abstract class ModelResourceGenerator {
         resolver.addToSlot(
           'postAuth',
           MappingTemplate.s3MappingTemplateFromString(
-            generateAuthExpressionForSandboxMode(context.transformParameters.sandboxModeEnabled),
+            generatePostAuthExpression(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess),
             `${mutation.typeName}.${mutation.fieldName}.{slotName}.{slotIndex}.req.vtl`,
           ),
         );
@@ -208,7 +208,7 @@ export abstract class ModelResourceGenerator {
             resolver.addToSlot(
               'postAuth',
               MappingTemplate.s3MappingTemplateFromString(
-                generateAuthExpressionForSandboxMode(context.transformParameters.sandboxModeEnabled),
+                generatePostAuthExpression(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess),
                 `${subscription.typeName}.${subscription.fieldName}.{slotName}.{slotIndex}.req.vtl`,
               ),
             );
@@ -352,7 +352,18 @@ export abstract class ModelResourceGenerator {
         operationName: fieldName,
         modelConfig: this.modelDirectiveMap.get(type.name.value)!,
       };
-      const initializeIdField = !!type.fields!.find((field) => field.name.value === 'id');
+
+      // check for implicit id field
+      const outputType = ctx.output.getObject(type.name.value);
+      const initializeIdField = !!outputType?.fields!.find(
+        (field) =>
+          field.name.value === 'id' &&
+          ((field.type.kind === 'NonNullType' &&
+            field.type.type.kind === 'NamedType' &&
+            (field.type.type.name.value === 'ID' || field.type.type.name.value === 'String')) ||
+            (field.type.kind === 'NamedType' && (field.type.name.value === 'ID' || field.type.name.value === 'String'))),
+      );
+
       resolver.addToSlot(
         'init',
         MappingTemplate.s3MappingTemplateFromString(

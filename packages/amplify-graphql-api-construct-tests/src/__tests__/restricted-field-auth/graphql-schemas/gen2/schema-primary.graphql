@@ -1,0 +1,7 @@
+type Primary @model @auth(rules: [{ allow: public, operations: [read] }, { allow: owner }]) {
+  id: String! @primaryKey
+  secret: String @auth(rules: [{ allow: owner }])
+  owner: String
+  relatedMany: [RelatedMany] @hasMany(references: ["primaryId"])
+  relatedOne: RelatedOne @hasOne(references: ["primaryId"])
+}

@@ -38,10 +38,10 @@ import {
   toCamelCase,
 } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode } from 'graphql';
+import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from '../types';
 import { condenseRangeKey } from '../resolvers';
 import { RelationalResolverGenerator } from './generator';
-import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
 
 const SORT_KEY_VALUE = 'sortKeyValue';
 const CONNECTION_STACK = 'ConnectionStack';
@@ -237,7 +237,15 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
    * @param config The connection directive configuration.
    * @param ctx The transformer context provider.
    */
-  makeHasOneGetItemConnectionWithKeyResolver = (
+  makeHasOneGetItemConnectionWithKeyResolver = (config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void => {
+    this.makeHasOneBelongToGetItemConnectionWithKeyResolver(config, ctx);
+  };
+
+  makeBelongsToGetItemConnectionWithKeyResolver = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
+    this.makeHasOneBelongToGetItemConnectionWithKeyResolver(config, ctx);
+  };
+
+  makeHasOneBelongToGetItemConnectionWithKeyResolver = (
     config: HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration,
     ctx: TransformerContextProvider,
   ): void => {
@@ -374,9 +382,5 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
         isPartitionKey ? `$${PARTITION_KEY_VALUE}` : `$ctx.source.${fieldName}`
       }, "${NONE_VALUE}")))`,
     );
-  };
-
-  makeBelongsToGetItemConnectionWithKeyResolver = (config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-    this.makeHasOneGetItemConnectionWithKeyResolver(config, ctx);
   };
 }

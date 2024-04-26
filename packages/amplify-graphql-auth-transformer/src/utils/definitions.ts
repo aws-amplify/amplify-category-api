@@ -8,7 +8,7 @@ export type AuthStrategy = 'owner' | 'groups' | 'public' | 'private' | 'custom';
 /**
  * AuthProvider
  */
-export type AuthProvider = 'apiKey' | 'iam' | 'oidc' | 'userPools' | 'function';
+export type AuthProvider = 'apiKey' | 'iam' | 'identityPool' | 'oidc' | 'userPools' | 'function';
 /**
  * ModelMutation
  */
@@ -103,6 +103,7 @@ export interface ConfiguredAuthProviders {
   hasAdminRolesEnabled: boolean;
   hasIdentityPoolId: boolean;
   shouldAddDefaultServiceDirective: boolean;
+  genericIamAccessEnabled: boolean;
 }
 
 export const authDirectiveDefinition = AuthDirective.definition;

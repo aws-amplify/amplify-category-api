@@ -1,31 +1,35 @@
 /* eslint-disable no-param-reassign */
+import { HasManyDirective } from '@aws-amplify/graphql-directives';
 import {
   DirectiveWrapper,
-  generateGetArgumentsInput,
-  getStrategyDbTypeFromTypeNode,
-  getStrategyDbTypeFromModel,
   InvalidDirectiveError,
   TransformerPluginBase,
+  generateGetArgumentsInput,
+  getStrategyDbTypeFromModel,
+  getStrategyDbTypeFromTypeNode,
 } from '@aws-amplify/graphql-transformer-core';
 import {
+  ModelDataSourceStrategy,
+  ModelDataSourceStrategyDbType,
   TransformerContextProvider,
+  TransformerPreProcessContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
-  TransformerPreProcessContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { HasManyDirective } from '@aws-amplify/graphql-directives';
-import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 import {
   DirectiveNode,
   DocumentNode,
   FieldDefinitionNode,
   InterfaceTypeDefinitionNode,
+  NamedTypeNode,
   ObjectTypeDefinitionNode,
   ObjectTypeExtensionNode,
 } from 'graphql';
+import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 import produce from 'immer';
 import { WritableDraft } from 'immer/dist/types/types-external';
+import { getHasManyDirectiveTransformer } from './has-many/has-many-directive-transformer-factory';
 import {
   addFieldsToDefinition,
   convertSortKeyFieldsToSortKeyConnectionFields,
@@ -42,8 +46,6 @@ import {
   validateModelDirective,
   validateRelatedModelDirective,
 } from './utils';
-import { getGenerator } from './resolver/generator-factory';
-import { getHasManyDirectiveTransformer } from './has-many/has-many-directive-transformer-factory';
 
 export class HasManyTransformer extends TransformerPluginBase {
   private directiveList: HasManyDirectiveConfiguration[] = [];
@@ -126,7 +128,7 @@ export class HasManyTransformer extends TransformerPluginBase {
     this.directiveList.forEach((config) => {
       const modelName = config.object.name.value;
       const dbType = getStrategyDbTypeFromModel(context as TransformerContextProvider, modelName);
-      const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType);
+      const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType, config);
       dataSourceBasedTransformer.prepare(context, config);
     });
   };
@@ -136,7 +138,7 @@ export class HasManyTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
-      const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType);
+      const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType, config);
       dataSourceBasedTransformer.transformSchema(ctx, config);
       ensureHasManyConnectionField(config, context);
       extendTypeWithConnection(config, context);
@@ -148,10 +150,8 @@ export class HasManyTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
-      const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType);
+      const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType, config);
       dataSourceBasedTransformer.generateResolvers(ctx, config);
-      const generator = getGenerator(dbType);
-      generator.makeHasManyGetItemsConnectionWithKeyResolver(config, context);
     }
   };
 }
@@ -159,16 +159,29 @@ export class HasManyTransformer extends TransformerPluginBase {
 const validate = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field } = config;
 
-  const dbType = getStrategyDbTypeFromTypeNode(field.type, ctx);
-  config.relatedType = getRelatedType(config, ctx);
-
-  const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType);
-  dataSourceBasedTransformer.validate(ctx, config);
-  validateModelDirective(config);
-
   if (!isListType(field.type)) {
     throw new InvalidDirectiveError(`@${HasManyDirective.name} must be used with a list. Use @hasOne for non-list types.`);
   }
+
+  let dbType: ModelDataSourceStrategyDbType;
+  try {
+    // getStrategyDbTypeFromTypeNode throws if a datasource is not found for the model. We want to catch that condition
+    // here to provide a friendlier error message, since the most likely error scenario is that the customer neglected to annotate one
+    // of the types with `@model`.
+    // Since this transformer gets invoked on both sides of the `belongsTo` relationship, a failure at this point is about the
+    // field itself, not the related type.
+    dbType = getStrategyDbTypeFromTypeNode(field.type, ctx);
+  } catch {
+    throw new InvalidDirectiveError(
+      `Object type ${(field.type as NamedTypeNode)?.name.value ?? field.name} must be annotated with @model.`,
+    );
+  }
+
+  config.relatedType = getRelatedType(config, ctx);
+
+  const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType, config);
+  dataSourceBasedTransformer.validate(ctx, config);
+  validateModelDirective(config);
 
   config.connectionFields = [];
   validateRelatedModelDirective(config);

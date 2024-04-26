@@ -98,9 +98,35 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
     expect(functions).toMatchObject({});
   });
 
-  it('combines homogenous related DDB default definitions', () => {
+  it('combines homogenous related gen1 DDB default definitions', () => {
     const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.order.ddb);
     const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.lineItem.ddb, DDB_DEFAULT_DATASOURCE_STRATEGY);
+    const api = makeApiByCombining(definition1, definition2);
+
+    const {
+      resources: {
+        cfnResources: { cfnGraphqlApi, cfnGraphqlSchema, cfnApiKey, cfnDataSources },
+        functions,
+      },
+    } = api;
+
+    expect(cfnGraphqlApi).toBeDefined();
+    expect(cfnGraphqlSchema).toBeDefined();
+    expect(cfnApiKey).toBeDefined();
+    expect(cfnDataSources).toBeDefined();
+
+    const ddbDataSources = Object.values(cfnDataSources).filter((dataSource) => dataSource.type === 'AMAZON_DYNAMODB');
+    expect(ddbDataSources.length).toEqual(2);
+
+    const lambdaDataSources = Object.values(cfnDataSources).filter((dataSource) => dataSource.type === 'AWS_LAMBDA');
+    expect(lambdaDataSources.length).toEqual(0);
+
+    expect(functions).toMatchObject({});
+  });
+
+  it('combines homogenous related gen2 DDB default definitions', () => {
+    const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.order.ddbGen2);
+    const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.lineItem.ddbGen2, DDB_DEFAULT_DATASOURCE_STRATEGY);
     const api = makeApiByCombining(definition1, definition2);
 
     const {
@@ -150,9 +176,35 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
     expect(functions).toMatchObject({});
   });
 
-  it('combines homogenous related DDB Amplify-managed table definitions', () => {
+  it('combines homogenous related DDB Amplify-managed table definitions using gen1 style relationships', () => {
     const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.order.ddb, DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY);
     const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.lineItem.ddb, DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY);
+    const api = makeApiByCombining(definition1, definition2);
+
+    const {
+      resources: {
+        cfnResources: { cfnGraphqlApi, cfnGraphqlSchema, cfnApiKey, cfnDataSources },
+        functions,
+      },
+    } = api;
+
+    expect(cfnGraphqlApi).toBeDefined();
+    expect(cfnGraphqlSchema).toBeDefined();
+    expect(cfnApiKey).toBeDefined();
+    expect(cfnDataSources).toBeDefined();
+
+    const ddbDataSources = Object.values(cfnDataSources).filter((dataSource) => dataSource.type === 'AMAZON_DYNAMODB');
+    expect(ddbDataSources.length).toEqual(2);
+
+    const lambdaDataSources = Object.values(cfnDataSources).filter((dataSource) => dataSource.type === 'AWS_LAMBDA');
+    expect(lambdaDataSources.length).toEqual(0);
+
+    expect(functions).toMatchObject({});
+  });
+
+  it('combines homogenous related DDB Amplify-managed table definitions using gen2 style relationships', () => {
+    const definition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.order.ddbGen2, DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY);
+    const definition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.lineItem.ddbGen2, DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY);
     const api = makeApiByCombining(definition1, definition2);
 
     const {
@@ -274,7 +326,7 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
     expect(functions['SQLFunctionsqlstrategy2']).toBeDefined();
   });
 
-  it('combines heterogeneous definitions as long as relationships do not cross the DDB/SQL boundary', () => {
+  it('combines heterogeneous definitions with relationships that do not cross the DDB/SQL boundary', () => {
     const sqlstrategy1 = mockSqlDataSourceStrategy({ name: 'sqlstrategy1' });
     const sqlstrategy2 = mockSqlDataSourceStrategy({ name: 'sqlstrategy2' });
     const ddbdefinition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.todo.ddb);
@@ -306,13 +358,35 @@ describe('AmplifyGraphqlDefinition.combine synthesis behavior', () => {
     expect(functions['SQLFunctionsqlstrategy2']).toBeDefined();
   });
 
-  it('fails to combine heterogeneous related definitions for multiple supported db types', () => {
+  it('combines heterogeneous definitions with relationships that do cross the DDB/SQL boundary', () => {
     const sqlstrategy1 = mockSqlDataSourceStrategy({ name: 'sqlstrategy1' });
     const sqlstrategy2 = mockSqlDataSourceStrategy({ name: 'sqlstrategy2' });
-    const ddbdefinition = AmplifyGraphqlDefinition.fromString(SCHEMAS.blog.ddb);
+    const ddbdefinition = AmplifyGraphqlDefinition.fromString(SCHEMAS.blog.ddbGen2);
     const sqldefinition1 = AmplifyGraphqlDefinition.fromString(SCHEMAS.post.sql, sqlstrategy1);
     const sqldefinition2 = AmplifyGraphqlDefinition.fromString(SCHEMAS.comment.sql, sqlstrategy2);
-    expect(() => makeApiByCombining(ddbdefinition, sqldefinition1, sqldefinition2)).toThrow();
+    const api = makeApiByCombining(ddbdefinition, sqldefinition1, sqldefinition2);
+    const {
+      resources: {
+        cfnResources: { cfnGraphqlApi, cfnGraphqlSchema, cfnApiKey, cfnDataSources },
+        functions,
+      },
+    } = api;
+
+    expect(cfnGraphqlApi).toBeDefined();
+    expect(cfnGraphqlSchema).toBeDefined();
+    expect(cfnApiKey).toBeDefined();
+    expect(cfnDataSources).toBeDefined();
+
+    const ddbDataSources = Object.values(cfnDataSources).filter((dataSource) => dataSource.type === 'AMAZON_DYNAMODB');
+    expect(ddbDataSources.length).toEqual(1);
+
+    const lambdaDataSources = Object.values(cfnDataSources).filter((dataSource) => dataSource.type === 'AWS_LAMBDA');
+    expect(lambdaDataSources.length).toEqual(2);
+
+    // Expect one SQL Lambda function per strategy
+    expect(functions).toBeDefined();
+    expect(functions['SQLFunctionsqlstrategy1']).toBeDefined();
+    expect(functions['SQLFunctionsqlstrategy2']).toBeDefined();
   });
 
   // We could technically implement checks for some of these in the `combine` factory method itself, but it would be a fairly naive check
