@@ -954,12 +954,13 @@ describe('@hasMany directive with RDS datasource', () => {
         id: String! @primaryKey
         content: String
         blogId: String
+        blog: Blog @belongsTo(references: ["blogId"])
       }
     `;
 
     const out = testTransform({
       schema: inputSchema,
-      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
       dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
     });
     expect(out).toBeDefined();
@@ -985,12 +986,13 @@ describe('@hasMany directive with RDS datasource', () => {
         partName: String
         systemId: String!
         systemName: String!
+        system: System @belongsTo(references: ["systemId", "systemName"])
       }
     `;
 
     const out = testTransform({
       schema: inputSchema,
-      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
       dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
     });
     expect(out).toBeDefined();

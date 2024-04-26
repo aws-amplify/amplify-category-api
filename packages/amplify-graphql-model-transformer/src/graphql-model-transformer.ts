@@ -71,9 +71,9 @@ import {
   makeModelSortDirectionEnumObject,
   makeMutationConditionInput,
   makeUpdateInputField,
-  propagateApiKeyToNestedTypes,
+  propagateDirectivesToNestedTypes,
 } from './graphql-types';
-import { API_KEY_DIRECTIVE } from './definitions';
+import { API_KEY_DIRECTIVE, AWS_IAM_DIRECTIVE } from './definitions';
 import { ModelDirectiveConfiguration, SubscriptionLevel } from './directive';
 import { ModelResourceGenerator } from './resources/model-resource-generator';
 import { DynamoModelResourceGenerator } from './resources/dynamo-model-resource-generator';
@@ -287,22 +287,37 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         }
       }
       // global auth check
-      if (!hasAuth && ctx.transformParameters.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
-        const apiKeyDirArray = [makeDirective(API_KEY_DIRECTIVE, [])];
-        extendTypeWithDirectives(ctx, def.name.value, apiKeyDirArray);
-        propagateApiKeyToNestedTypes(ctx as TransformerContextProvider, def, new Set<string>());
-        queryFields.forEach((operationField) => {
-          const operationName = operationField.name.value;
-          addDirectivesToOperation(ctx, ctx.output.getQueryTypeName()!, operationName, apiKeyDirArray);
-        });
-        mutationFields.forEach((operationField) => {
-          const operationName = operationField.name.value;
-          addDirectivesToOperation(ctx, ctx.output.getMutationTypeName()!, operationName, apiKeyDirArray);
-        });
-        subscriptionsFields.forEach((operationField) => {
-          const operationName = operationField.name.value;
-          addDirectivesToOperation(ctx, ctx.output.getSubscriptionTypeName()!, operationName, apiKeyDirArray);
-        });
+      if (!hasAuth) {
+        const serviceDirectiveNames = new Set<string>();
+
+        if (ctx.transformParameters.sandboxModeEnabled && ctx.synthParameters.enableIamAccess) {
+          // If both sandbox and iam access are enabled we add service directive regardless of default.
+          // This is because any explicit directive makes default not applicable to a model.
+          serviceDirectiveNames.add(API_KEY_DIRECTIVE);
+          serviceDirectiveNames.add(AWS_IAM_DIRECTIVE);
+        } else if (ctx.transformParameters.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
+          serviceDirectiveNames.add(API_KEY_DIRECTIVE);
+        } else if (ctx.synthParameters.enableIamAccess && ctx.authConfig.defaultAuthentication.authenticationType !== 'AWS_IAM') {
+          serviceDirectiveNames.add(AWS_IAM_DIRECTIVE);
+        }
+        const serviceDirectives: DirectiveNode[] = [...serviceDirectiveNames].map((directiveName) => makeDirective(directiveName, []));
+
+        if (serviceDirectives.length > 0) {
+          extendTypeWithDirectives(ctx, def.name.value, serviceDirectives);
+          propagateDirectivesToNestedTypes(ctx as TransformerContextProvider, def, new Set<string>(), serviceDirectives);
+          queryFields.forEach((operationField) => {
+            const operationName = operationField.name.value;
+            addDirectivesToOperation(ctx, ctx.output.getQueryTypeName()!, operationName, serviceDirectives);
+          });
+          mutationFields.forEach((operationField) => {
+            const operationName = operationField.name.value;
+            addDirectivesToOperation(ctx, ctx.output.getMutationTypeName()!, operationName, serviceDirectives);
+          });
+          subscriptionsFields.forEach((operationField) => {
+            const operationName = operationField.name.value;
+            addDirectivesToOperation(ctx, ctx.output.getSubscriptionTypeName()!, operationName, serviceDirectives);
+          });
+        }
       }
     });
   };

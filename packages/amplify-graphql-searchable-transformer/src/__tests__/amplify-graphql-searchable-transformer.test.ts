@@ -6,6 +6,7 @@ import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-t
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { SearchableModelTransformer } from '..';
 import { ALLOWABLE_SEARCHABLE_INSTANCE_TYPES } from '../constants';
+import { describe } from 'jest-circus';
 
 test('SearchableModelTransformer validation happy case', () => {
   const validSchema = `
@@ -443,5 +444,91 @@ describe('nodeToNodeEncryption transformParameter', () => {
         Enabled: true,
       },
     });
+  });
+});
+
+describe('auth', () => {
+  const schema = /* GraphQL */ `
+    type Todo @model @searchable {
+      content: String!
+    }
+  `;
+
+  it('sandbox auth enabled should add apiKey if not default mode of auth', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
+      synthParameters: {
+        enableIamAccess: false,
+      },
+      authConfig: {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [
+          {
+            authenticationType: 'API_KEY',
+          },
+        ],
+      },
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).toContain('aws_api_key');
+    expect(out.schema).not.toContain('aws_iam');
+    expect(out.schema).toMatchSnapshot();
+  });
+
+  it('iam auth enabled should add aws_iam if not default mode of auth', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: false,
+      },
+      synthParameters: {
+        enableIamAccess: true,
+      },
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).not.toContain('aws_api_key');
+    expect(out.schema).toContain('aws_iam');
+    expect(out.schema).toMatchSnapshot();
+  });
+
+  it('iam and sandbox auth enabled should add aws_iam and aws_api_key if not default mode of auth', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
+      synthParameters: {
+        enableIamAccess: true,
+      },
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).toContain('aws_api_key');
+    expect(out.schema).toContain('aws_iam');
+    expect(out.schema).toMatchSnapshot();
+  });
+
+  it('iam and sandbox auth disable should not add service directives', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: false,
+      },
+      synthParameters: {
+        enableIamAccess: false,
+      },
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).not.toContain('aws_api_key');
+    expect(out.schema).not.toContain('aws_iam');
+    expect(out.schema).toMatchSnapshot();
   });
 });

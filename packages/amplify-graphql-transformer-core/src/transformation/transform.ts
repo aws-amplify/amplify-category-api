@@ -300,7 +300,13 @@ export class GraphQLTransform {
 
     // Synth the API and make it available to allow transformer plugins to manipulate the API
     const output: TransformerOutput = context.output as TransformerOutput;
-    const api = this.generateGraphQlApi(context.stackManager, context.synthParameters, output, context.transformParameters);
+    const api = this.generateGraphQlApi(
+      context.stackManager,
+      context.assetProvider,
+      context.synthParameters,
+      output,
+      context.transformParameters,
+    );
 
     // generate resolvers
     (context as TransformerContext).bind(api);
@@ -335,6 +341,7 @@ export class GraphQLTransform {
 
   protected generateGraphQlApi(
     stackManager: StackManagerProvider,
+    assetProvider: AssetProvider,
     synthParameters: SynthParameters,
     output: TransformerOutput,
     transformParameters: TransformParameters,
@@ -357,6 +364,7 @@ export class GraphQLTransform {
       sandboxModeEnabled: this.transformParameters.sandboxModeEnabled,
       environmentName: env,
       disableResolverDeduping: this.transformParameters.disableResolverDeduping,
+      assetProvider,
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
       (mode) => mode?.authorizationType,

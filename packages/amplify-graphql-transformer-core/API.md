@@ -29,6 +29,7 @@ import { DocumentNode } from 'graphql/language';
 import { DocumentNode as DocumentNode_2 } from 'graphql';
 import { EnumTypeDefinitionNode } from 'graphql';
 import { EnumTypeExtensionNode } from 'graphql';
+import { Expression } from 'graphql-mapping-template';
 import { FieldDefinitionNode } from 'graphql';
 import { FieldNode } from 'graphql';
 import { Grant } from 'aws-cdk-lib/aws-iam';
@@ -122,7 +123,19 @@ export const enum ConflictHandlerType {
 }
 
 // @public (undocumented)
+export const constructArrayFieldsStatement: (tableName: string, ctx: TransformerContextProvider) => Expression;
+
+// @public (undocumented)
+export const constructAuthFilterStatement: (keyName: string) => Expression;
+
+// @public (undocumented)
 export const constructDataSourceStrategies: (schema: string, dataSourceStrategy: ModelDataSourceStrategy) => Record<string, ModelDataSourceStrategy>;
+
+// @public (undocumented)
+export const constructFieldMappingInput: () => Expression;
+
+// @public (undocumented)
+export const constructNonScalarFieldsStatement: (tableName: string, ctx: TransformerContextProvider) => Expression;
 
 // @public (undocumented)
 export const constructSqlDirectiveDataSourceStrategies: (schema: string, dataSourceStrategy: ModelDataSourceStrategy, customSqlStatements?: Record<string, string>) => SqlDirectiveDataSourceStrategy[];
@@ -202,6 +215,9 @@ export type GetArgumentsOptions = {
 };
 
 // @public (undocumented)
+export const getArrayFields: (object: ObjectTypeDefinitionNode | undefined, ctx: TransformerContextProvider) => string[];
+
+// @public (undocumented)
 export const getConditionInputName: (modelName: string) => string;
 
 // @public (undocumented)
@@ -232,6 +248,9 @@ export const getModelDataSourceStrategy: (ctx: DataSourceStrategiesProvider, typ
 
 // @public (undocumented)
 export const getModelTypeNames: (schema: string) => string[];
+
+// @public (undocumented)
+export const getNonScalarFields: (object: ObjectTypeDefinitionNode | undefined, ctx: TransformerContextProvider) => string[];
 
 // @public (undocumented)
 export const getParameterStoreSecretPath: (secret: string, secretsKey: string, apiName: string, environmentName: string, appId: string) => string;
@@ -273,7 +292,7 @@ export class GraphQLTransform {
     // Warning: (ae-forgotten-export) The symbol "GraphQLApi" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    protected generateGraphQlApi(stackManager: StackManagerProvider, synthParameters: SynthParameters, output: TransformerOutput, transformParameters: TransformParameters): GraphQLApi;
+    protected generateGraphQlApi(stackManager: StackManagerProvider, assetProvider: AssetProvider, synthParameters: SynthParameters, output: TransformerOutput, transformParameters: TransformParameters): GraphQLApi;
     // (undocumented)
     getLogs(): TransformerLog[];
     // (undocumented)

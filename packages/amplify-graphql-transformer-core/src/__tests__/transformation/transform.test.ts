@@ -16,6 +16,7 @@ class TestGraphQLTransform extends GraphQLTransform {
   testGenerateGraphQlApi(stackManager: StackManager, output: TransformerOutput): GraphQLApi {
     return this.generateGraphQlApi(
       stackManager,
+      { provide: jest.fn() },
       {
         amplifyEnvironmentName: 'NONE',
         apiName: 'testApi',

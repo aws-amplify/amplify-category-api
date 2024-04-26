@@ -9,7 +9,7 @@ import {
 } from '@aws-amplify/graphql-transformer-core';
 import { DocumentNode, Kind, parse } from 'graphql';
 import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { HasManyTransformer, HasOneTransformer } from '..';
+import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
 import { hasGeneratedField } from './test-helpers';
 
 test('fails if @hasOne was used on an object that is not a model type', () => {
@@ -768,12 +768,13 @@ describe('@hasOne directive with RDS datasource', () => {
         id: String! @primaryKey
         createdAt: AWSDateTime
         userId: String!
+        user: User @belongsTo(references: ["userId"])
       }
     `;
 
     const out = testTransform({
       schema: inputSchema,
-      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
       dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
     });
     expect(out).toBeDefined();
@@ -797,12 +798,13 @@ describe('@hasOne directive with RDS datasource', () => {
         profileId: String! @primaryKey
         userFirstName: String
         userLastName: String!
+        user: User @belongsTo(references: ["userFirstName", "userLastName"])
       }
     `;
 
     const out = testTransform({
       schema: inputSchema,
-      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
       dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
     });
     expect(out).toBeDefined();

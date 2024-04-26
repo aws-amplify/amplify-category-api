@@ -1,4 +1,4 @@
-import { makeModelSortDirectionEnumObject } from '@aws-amplify/graphql-model-transformer';
+import { createEnumModelFilters, makeModelSortDirectionEnumObject } from '@aws-amplify/graphql-model-transformer';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   EnumTypeDefinitionNode,
@@ -35,6 +35,9 @@ import {
 import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from './types';
 import { lookupResolverName } from './utils';
+
+const API_KEY_DIRECTIVE = 'aws_api_key';
+const AWS_IAM_DIRECTIVE = 'aws_iam';
 
 export function addKeyConditionInputs(
   config: PrimaryKeyDirectiveConfiguration | IndexDirectiveConfiguration,
@@ -333,9 +336,19 @@ export function ensureQueryField(config: IndexDirectiveConfiguration, ctx: Trans
   }
 
   args.push(makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')));
-  if (!hasAuth && ctx.transformParameters.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
-    directives.push(makeDirective('aws_api_key', []));
+  if (!hasAuth) {
+    if (ctx.transformParameters.sandboxModeEnabled && ctx.synthParameters.enableIamAccess) {
+      // If both sandbox and iam access are enabled we add service directive regardless of default.
+      // This is because any explicit directive makes default not applicable to a model.
+      directives.push(makeDirective(API_KEY_DIRECTIVE, []));
+      directives.push(makeDirective(AWS_IAM_DIRECTIVE, []));
+    } else if (ctx.transformParameters.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
+      directives.push(makeDirective(API_KEY_DIRECTIVE, []));
+    } else if (ctx.synthParameters.enableIamAccess && ctx.authConfig.defaultAuthentication.authenticationType !== 'AWS_IAM') {
+      directives.push(makeDirective(AWS_IAM_DIRECTIVE, []));
+    }
   }
+
   const queryFieldObj = makeConnectionField(queryField, object.name.value, args, directives);
 
   ctx.output.addQueryFields([queryFieldObj]);
@@ -373,12 +386,21 @@ export function ensureModelSortDirectionEnum(ctx: TransformerContextProvider): v
 }
 
 function generateFilterInputs(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void {
+  /**
+   * Create ModelFilterInput objects for enum fields within the filter input
+   * This function is also executed when generating the list query object in model transformer
+   * When the list query is disabled in model type, this code takes effect to ensure the enum filter types in the generated schema
+   */
+  const filterInputs = createEnumModelFilters(ctx, config.object);
   // Create the ModelXFilterInput
   const tableXQueryFilterInput = makeModelXFilterInputObject(config, ctx);
-
-  if (!ctx.output.hasType(tableXQueryFilterInput.name.value)) {
-    ctx.output.addInput(tableXQueryFilterInput);
-  }
+  filterInputs.push(tableXQueryFilterInput);
+  filterInputs.forEach((input) => {
+    const conditionInputName = input.name.value;
+    if (!ctx.output.hasType(conditionInputName)) {
+      ctx.output.addInput(input);
+    }
+  });
 }
 
 function makeModelXFilterInputObject(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): InputObjectTypeDefinitionNode {

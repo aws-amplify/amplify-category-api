@@ -27,13 +27,13 @@ export * from './iam';
  * Splits roles into key value pairs by auth type
  */
 export const splitRoles = (roles: Array<RoleDefinition>): RolesByProvider => ({
-  cognitoStaticRoles: roles.filter((r) => r.static && r.provider === 'userPools'),
-  cognitoDynamicRoles: roles.filter((r) => !r.static && r.provider === 'userPools'),
-  oidcStaticRoles: roles.filter((r) => r.static && r.provider === 'oidc'),
-  oidcDynamicRoles: roles.filter((r) => !r.static && r.provider === 'oidc'),
-  iamRoles: roles.filter((r) => r.provider === 'iam'),
-  apiKeyRoles: roles.filter((r) => r.provider === 'apiKey'),
-  lambdaRoles: roles.filter((r) => r.provider === 'function'),
+  cognitoStaticRoles: roles.filter((r) => r.static && isAuthProviderEqual(r.provider, 'userPools')),
+  cognitoDynamicRoles: roles.filter((r) => !r.static && isAuthProviderEqual(r.provider, 'userPools')),
+  oidcStaticRoles: roles.filter((r) => r.static && isAuthProviderEqual(r.provider, 'oidc')),
+  oidcDynamicRoles: roles.filter((r) => !r.static && isAuthProviderEqual(r.provider, 'oidc')),
+  iamRoles: roles.filter((r) => isAuthProviderEqual(r.provider, 'identityPool')),
+  apiKeyRoles: roles.filter((r) => isAuthProviderEqual(r.provider, 'apiKey')),
+  lambdaRoles: roles.filter((r) => isAuthProviderEqual(r.provider, 'function')),
 });
 
 /**
@@ -107,7 +107,7 @@ export const getAuthDirectiveRules = (authDir: DirectiveWrapper, options?: GetAu
       }
     }
 
-    if (rule.provider === 'iam') {
+    if (isAuthProviderEqual(rule.provider, 'identityPool')) {
       // eslint-disable-next-line no-param-reassign
       rule.generateIAMPolicy = true;
     }
@@ -161,7 +161,7 @@ export const getConfiguredAuthProviders = (context: TransformerBeforeStepContext
       case 'API_KEY':
         return 'apiKey';
       case 'AWS_IAM':
-        return 'iam';
+        return 'identityPool';
       case 'OPENID_CONNECT':
         return 'oidc';
       case 'AWS_LAMBDA':
@@ -173,12 +173,13 @@ export const getConfiguredAuthProviders = (context: TransformerBeforeStepContext
   const hasIAM = providers.some((p) => p === 'AWS_IAM');
   const hasAdminRolesEnabled = hasIAM && adminRoles?.length > 0;
   /**
-   * When AdminUI is enabled, all the types and operations get IAM auth. If the default auth mode is
+   * When AdminUI or generic IAM access is enabled, all the types and operations get IAM auth. If the default auth mode is
    * not IAM all the fields will need to have the default auth mode directive to ensure both IAM and default
    * auth modes are allowed to access
-   * default auth provider needs to be added if AdminUI is enabled and default auth type is not IAM
+   * default auth provider needs to be added if AdminUI or generic IAM access is enabled and default auth type is not IAM
    */
-  const shouldAddDefaultServiceDirective = hasAdminRolesEnabled && authConfig.defaultAuthentication.authenticationType !== 'AWS_IAM';
+  const shouldAddDefaultServiceDirective =
+    (hasAdminRolesEnabled || context.synthParameters.enableIamAccess) && authConfig.defaultAuthentication.authenticationType !== 'AWS_IAM';
   const configuredProviders: ConfiguredAuthProviders = {
     default: getAuthProvider(authConfig.defaultAuthentication.authenticationType),
     onlyDefaultAuthProviderConfigured: authConfig.additionalAuthenticationProviders.length === 0,
@@ -190,6 +191,19 @@ export const getConfiguredAuthProviders = (context: TransformerBeforeStepContext
     hasLambda: providers.some((p) => p === 'AWS_LAMBDA'),
     hasIAM,
     shouldAddDefaultServiceDirective,
+    genericIamAccessEnabled: synthParameters.enableIamAccess,
   };
   return configuredProviders;
+};
+
+export const isAuthProviderEqual = (provider: AuthProvider, otherProvider: AuthProvider): boolean => {
+  if (provider === otherProvider) {
+    return true;
+  }
+
+  if ((provider === 'iam' || provider === 'identityPool') && (otherProvider === 'iam' || otherProvider === 'identityPool')) {
+    return true;
+  }
+
+  return false;
 };

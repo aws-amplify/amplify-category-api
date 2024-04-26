@@ -11,6 +11,7 @@ type Profile {
   profileId: String!
   userFirstName: String
   userLastName: String!
+  user: User
 }
 
 input ModelStringInput {
@@ -299,6 +300,8 @@ exports[`@hasOne directive with RDS datasource composite key should generate cor
 #set( $lambdaInput.operationName = \\"GetItemConnectionQuery\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [\\"profileId\\"] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [\\"user\\"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
@@ -348,6 +351,7 @@ type Profile {
   id: String!
   createdAt: AWSDateTime
   userId: String!
+  user: User
 }
 
 input ModelStringInput {
@@ -626,6 +630,8 @@ exports[`@hasOne directive with RDS datasource happy case should generate correc
 #set( $lambdaInput.operationName = \\"GetItemConnectionQuery\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [\\"id\\"] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [\\"user\\"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))

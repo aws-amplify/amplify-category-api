@@ -89,7 +89,7 @@ beforeAll(async () => {
     const policy = await IAM_HELPER.createLambdaExecutionPolicy(LAMBDA_EXECUTION_POLICY_NAME);
     await wait(5000);
     LAMBDA_EXECUTION_POLICY_ARN = policy.Policy.Arn;
-    await IAM_HELPER.attachLambdaExecutionPolicy(policy.Policy.Arn, role.Role.RoleName);
+    await IAM_HELPER.attachPolicy(policy.Policy.Arn, role.Role.RoleName);
     await wait(10000);
     await LAMBDA_HELPER.createFunction(ECHO_FUNCTION_NAME, role.Role.Arn, 'echoFunction');
     await LAMBDA_HELPER.createFunction(HELLO_FUNCTION_NAME, role.Role.Arn, 'hello');
@@ -150,7 +150,7 @@ afterAll(async () => {
     console.warn(`Error during function cleanup: ${e}`);
   }
   try {
-    await IAM_HELPER.detachLambdaExecutionPolicy(LAMBDA_EXECUTION_POLICY_ARN, LAMBDA_EXECUTION_ROLE_NAME);
+    await IAM_HELPER.detachPolicy(LAMBDA_EXECUTION_POLICY_ARN, LAMBDA_EXECUTION_ROLE_NAME);
   } catch (e) {
     console.warn(`Error during policy dissociation: ${e}`);
   }

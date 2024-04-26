@@ -1,5 +1,33 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`ModelTransformer with SQL data sources: should accept multiple connection uris as input 1`] = `
+Object {
+  "Statement": Array [
+    Object {
+      "Action": Array [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:aws:logs:*:*:*",
+    },
+    Object {
+      "Action": Array [
+        "ssm:GetParameter",
+        "ssm:GetParameters",
+      ],
+      "Effect": "Allow",
+      "Resource": Array [
+        "arn:aws:ssm:*:*:parameter/test/connectionUri/1",
+        "arn:aws:ssm:*:*:parameter/test/connectionUri/2",
+      ],
+    },
+  ],
+  "Version": "2012-10-17",
+}
+`;
+
 exports[`ModelTransformer with SQL data sources: should assign SSM permissions 1`] = `
 Object {
   "Statement": Array [

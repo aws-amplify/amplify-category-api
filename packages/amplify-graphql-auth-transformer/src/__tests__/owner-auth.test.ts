@@ -4,7 +4,7 @@ import { PrimaryKeyTransformer, IndexTransformer } from '@aws-amplify/graphql-in
 import { validateModelSchema, constructDataSourceStrategies, MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
+import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { testTransform, mockSqlDataSourceStrategy } from '@aws-amplify/graphql-transformer-test-utils';
 import { AuthTransformer } from '../graphql-auth-transformer';
 import { getField, getObjectType } from './test-helpers';
@@ -558,6 +558,58 @@ describe('owner based @auth', () => {
     validateModelSchema(parse(out.schema));
     parse(out.schema);
     expect(out.schema).toMatchSnapshot();
+  });
+
+  test('@auth in bidirectional relational schema using references', () => {
+    const inputSchema = `
+      type Primary @model @auth(rules: [{ allow: owner }]) {
+        id: String! @primaryKey
+        owner: String
+        relatedMany: [RelatedMany] @hasMany(references: ["primaryId"])
+        relatedOne: RelatedOne @hasOne(references: ["primaryId"])
+      }
+
+      type RelatedMany @model @auth(rules: [{ allow: owner }]) {
+        id: String! @primaryKey
+        owner: String
+        primaryId: String
+        primary: Primary @belongsTo(references: ["primaryId"])
+      }
+
+      type RelatedOne @model @auth(rules: [{ allow: owner }]) {
+        id: String! @primaryKey
+        owner: String
+        primaryId: String
+        primary: Primary @belongsTo(references: ["primaryId"])
+      }
+    `;
+
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [],
+    };
+
+    const out = testTransform({
+      schema: inputSchema,
+      authConfig,
+      transformParameters: {
+        secondaryKeyAsGSI: false,
+      },
+      transformers: [
+        new ModelTransformer(),
+        new HasManyTransformer(),
+        new HasOneTransformer(),
+        new BelongsToTransformer(),
+        new PrimaryKeyTransformer(),
+        new AuthTransformer(),
+      ],
+    });
+
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
   });
 
   describe('with identity claim feature flag disabled', () => {

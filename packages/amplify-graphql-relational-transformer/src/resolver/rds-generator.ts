@@ -2,6 +2,8 @@ import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-int
 import { ResolverResourceIDs } from 'graphql-transformer-common';
 import {
   MappingTemplate,
+  constructArrayFieldsStatement,
+  constructNonScalarFieldsStatement,
   getModelDataSourceNameForTypeName,
   getModelDataSourceStrategy,
   getPrimaryKeyFields,
@@ -27,9 +29,9 @@ import {
   equals,
   forEach,
 } from 'graphql-mapping-template';
+import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from '../types';
 import { RelationalResolverGenerator } from './generator';
-import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
 
 const CONNECTION_STACK = 'ConnectionStack';
 
@@ -69,7 +71,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
       resolverResourceId,
       dataSource as any,
       MappingTemplate.s3MappingTemplateFromString(
-        this.generateHasManyLambdaRequestTemplate(mappedTableName, 'LIST', 'ConnectionQuery', connectionCondition),
+        this.generateHasManyLambdaRequestTemplate(mappedTableName, 'LIST', 'ConnectionQuery', connectionCondition, ctx),
         `${object.name.value}.${field.name.value}.req.vtl`,
       ),
       MappingTemplate.s3MappingTemplateFromString(
@@ -90,6 +92,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     operation: string,
     operationName: string,
     joinCondition: Expression[],
+    ctx: TransformerContextProvider,
   ): string => {
     return printBlock('Invoke RDS Lambda data source')(
       compoundExpression([
@@ -101,6 +104,8 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
         set(ref('lambdaInput.operationName'), str(operationName)),
         set(ref('lambdaInput.args.metadata'), obj({})),
         set(ref('lambdaInput.args.metadata.keys'), list([])),
+        constructArrayFieldsStatement(tableName, ctx),
+        constructNonScalarFieldsStatement(tableName, ctx),
         this.constructFieldMappingInput(),
         qref(methodCall(ref('lambdaInput.args.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments'), obj({})))),
         iff(not(ref('lambdaInput.args.filter')), set(ref('lambdaInput.args.filter'), obj({}))),
@@ -127,6 +132,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     operationName: string,
     joinCondition: Expression[],
     relatedTypePrimaryKeys: string[],
+    ctx: TransformerContextProvider,
   ): string => {
     return printBlock('Invoke RDS Lambda data source')(
       compoundExpression([
@@ -138,6 +144,8 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
         set(ref('lambdaInput.operationName'), str(operationName)),
         set(ref('lambdaInput.args.metadata'), obj({})),
         set(ref('lambdaInput.args.metadata.keys'), list(relatedTypePrimaryKeys.map((key) => str(key)))),
+        constructArrayFieldsStatement(tableName, ctx),
+        constructNonScalarFieldsStatement(tableName, ctx),
         this.constructFieldMappingInput(),
         qref(methodCall(ref('lambdaInput.args.putAll'), methodCall(ref('util.defaultIfNull'), ref('context.arguments'), obj({})))),
         iff(not(ref('lambdaInput.args.input')), set(ref('lambdaInput.args.input'), obj({}))),
@@ -239,6 +247,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
           'GetItemConnectionQuery',
           connectionCondition,
           relatedTypePrimaryKeys,
+          ctx,
         ),
         `${object.name.value}.${field.name.value}.req.vtl`,
       ),
@@ -276,7 +285,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
       resolverResourceId,
       dataSource as any,
       MappingTemplate.s3MappingTemplateFromString(
-        this.generateHasOneLambdaRequestTemplate(mappedTableName, 'GET', 'BelongsToConnectionQuery', connectionCondition, primaryKeys),
+        this.generateHasOneLambdaRequestTemplate(mappedTableName, 'GET', 'BelongsToConnectionQuery', connectionCondition, primaryKeys, ctx),
         `${object.name.value}.${field.name.value}.req.vtl`,
       ),
       MappingTemplate.s3MappingTemplateFromString(

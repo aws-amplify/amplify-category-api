@@ -10,8 +10,8 @@ import {
 
 const strategyProviders: Record<AuthStrategy, AuthProvider[]> = {
   owner: [],
-  public: ['apiKey', 'iam'],
-  private: ['iam'],
+  public: ['apiKey', 'iam', 'identityPool'],
+  private: ['iam', 'identityPool'],
   groups: [],
   custom: [],
 };

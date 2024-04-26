@@ -200,7 +200,18 @@ export const validateDataSourceStrategy = (strategy: ConstructModelDataSourceStr
     isSqlModelDataSourceSsmDbConnectionConfig(dbConnectionConfig) ||
     isSqlModelDataSourceSsmDbConnectionStringConfig(dbConnectionConfig)
   ) {
-    const invalidSSMPaths = Object.values(dbConnectionConfig).filter((value) => typeof value === 'string' && !isValidSSMPath(value));
+    const ssmPaths = Object.values(dbConnectionConfig).filter((value) => typeof value === 'string');
+    if (isSqlModelDataSourceSsmDbConnectionStringConfig(dbConnectionConfig)) {
+      const hasMultipleSSMPaths = Array.isArray(dbConnectionConfig?.connectionUriSsmPath);
+      if (hasMultipleSSMPaths) {
+        if (dbConnectionConfig?.connectionUriSsmPath?.length < 1) {
+          throw new Error(`Invalid data source strategy "${strategy.name}". connectionUriSsmPath must be a string or non-empty array.`);
+        }
+        ssmPaths.push(...dbConnectionConfig.connectionUriSsmPath);
+      }
+    }
+
+    const invalidSSMPaths = ssmPaths.filter((value) => !isValidSSMPath(value));
     if (invalidSSMPaths.length > 0) {
       throw new Error(
         `Invalid data source strategy "${

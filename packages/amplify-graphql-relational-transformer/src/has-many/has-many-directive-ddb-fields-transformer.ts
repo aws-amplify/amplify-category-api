@@ -1,12 +1,14 @@
+import { DDB_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
+import { getGenerator } from '../resolver/generator-factory';
 import { updateTableForConnection } from '../resolvers';
 import { HasManyDirectiveConfiguration } from '../types';
-import { registerHasManyForeignKeyMappings, getRelatedTypeIndex, ensureFieldsArray, getFieldsNodes } from '../utils';
-import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
+import { ensureFieldsArray, getFieldsNodes, getRelatedTypeIndex, registerHasManyForeignKeyMappings } from '../utils';
 
 /**
  * HasManyDirectiveDDBFieldsTransformer executes transformations based on `@hasMany(fields: [String!])` configurations
@@ -15,10 +17,7 @@ import { DataSourceBasedDirectiveTransformer } from '../data-source-based-direct
  * This should not be used for `@hasMany(references: [String!])` definitions.
  */
 export class HasManyDirectiveDDBFieldsTransformer implements DataSourceBasedDirectiveTransformer<HasManyDirectiveConfiguration> {
-  dbType: 'DYNAMODB';
-  constructor(dbType: 'DYNAMODB') {
-    this.dbType = dbType;
-  }
+  dbType = DDB_DB_TYPE;
 
   prepare = (context: TransformerPrepareStepContextProvider, config: HasManyDirectiveConfiguration): void => {
     const modelName = config.object.name.value;
@@ -37,6 +36,8 @@ export class HasManyDirectiveDDBFieldsTransformer implements DataSourceBasedDire
 
   generateResolvers = (context: TransformerContextProvider, config: HasManyDirectiveConfiguration): void => {
     updateTableForConnection(config, context);
+    const generator = getGenerator(this.dbType);
+    generator.makeHasManyGetItemsConnectionWithKeyResolver(config, context);
   };
 
   validate = (context: TransformerContextProvider, config: HasManyDirectiveConfiguration): void => {

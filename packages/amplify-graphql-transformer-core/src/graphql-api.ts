@@ -1,4 +1,9 @@
-import { APIIAMResourceProvider, GraphQLAPIProvider, TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  AssetProvider,
+  APIIAMResourceProvider,
+  GraphQLAPIProvider,
+  TransformHostProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import {
   ApiKeyConfig,
   AuthorizationConfig,
@@ -119,6 +124,7 @@ export type TransformerAPIProps = GraphqlApiProps & {
   readonly sandboxModeEnabled?: boolean;
   readonly environmentName?: string;
   readonly disableResolverDeduping?: boolean;
+  readonly assetProvider: AssetProvider;
 };
 export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   /**
@@ -182,6 +188,11 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
    */
   public readonly environmentName?: string;
 
+  /**
+   * The asset manager to store file assets in a temporary directory.
+   */
+  public readonly assetProvider: AssetProvider;
+
   private schemaResource: CfnGraphQLSchema;
 
   private api: CfnGraphQLApi;
@@ -221,6 +232,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     this.graphqlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
     this.schema = props.schema ?? new TransformerSchema();
+    this.assetProvider = props.assetProvider;
     this.schemaResource = this.schema.bind(this);
 
     const hasApiKey = modes.some((mode) => mode.authorizationType === AuthorizationType.API_KEY);

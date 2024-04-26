@@ -21,6 +21,7 @@ import { InputValueDefinitionNode } from 'graphql';
 import { MutationFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { QueryFieldType } from '@aws-amplify/graphql-transformer-interfaces';
+import { QuietReferenceNode } from 'graphql-mapping-template';
 import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { SubscriptionFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { SyncConfig } from '@aws-amplify/graphql-transformer-core';
@@ -45,6 +46,9 @@ export const addModelConditionInputs: (ctx: TransformerTransformSchemaStepContex
 
 // @public (undocumented)
 export const createEnumModelFilters: (ctx: TransformerTransformSchemaStepContextProvider, type: ObjectTypeDefinitionNode) => InputObjectTypeDefinitionNode[];
+
+// @public (undocumented)
+export const defaultAutoId: () => QuietReferenceNode;
 
 // @public (undocumented)
 export class DynamoDBModelVTLGenerator implements ModelVTLGenerator {
@@ -81,10 +85,10 @@ export const extendTypeWithDirectives: (ctx: TransformerTransformSchemaStepConte
 export const generateApplyDefaultsToInputTemplate: (target: string) => Expression;
 
 // @public (undocumented)
-export const generateAuthExpressionForSandboxMode: (enabled: boolean) => string;
+export function generateModelScalarFilterInputName(typeName: string, includeFilter: boolean, isSubscriptionFilter?: boolean): string;
 
 // @public (undocumented)
-export function generateModelScalarFilterInputName(typeName: string, includeFilter: boolean, isSubscriptionFilter?: boolean): string;
+export const generatePostAuthExpression: (isSandboxModeEnabled: boolean, genericIamAccessEnabled: boolean | undefined) => string;
 
 // @public (undocumented)
 export const generateResolverKey: (typeName: string, fieldName: string) => string;
@@ -313,7 +317,7 @@ export interface ModelVTLGenerator {
 export const OPERATION_KEY = "__operation";
 
 // @public (undocumented)
-export const propagateApiKeyToNestedTypes: (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode, seenNonModelTypes: Set<string>) => void;
+export const propagateDirectivesToNestedTypes: (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode, seenNonModelTypes: Set<string>, serviceDirectives: DirectiveNode[]) => void;
 
 // Warning: (ae-forgotten-export) The symbol "ModelResourceGenerator" needs to be exported by the entry point index.d.ts
 //

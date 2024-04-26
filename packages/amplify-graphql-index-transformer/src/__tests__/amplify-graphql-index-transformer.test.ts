@@ -8,7 +8,7 @@ import {
   validateModelSchema,
 } from '@aws-amplify/graphql-transformer-core';
 import { Template as AssertionTemplate } from 'aws-cdk-lib/assertions';
-import { DocumentNode, parse } from 'graphql';
+import { DocumentNode, InputObjectTypeDefinitionNode, parse } from 'graphql';
 import {
   AmplifyApiGraphQlResourceStackTemplate,
   mockSqlDataSourceStrategy,
@@ -619,6 +619,53 @@ test('sort direction and filter input are generated if default list query does n
   expect(sortDirection).toBeDefined();
   const todoInputType = schema.definitions.find((def: any) => def.name && def.name.value === 'ModelTodoFilterInput');
   expect(todoInputType).toBeDefined();
+});
+
+test('enum input types within the filter input are generated if default list query does not exist', () => {
+  const inputSchema = `
+    type Todo @model(queries: { get: "getTodo", list: null }) {
+      id: ID!
+      description: String
+      createdAt: AWSDateTime @index(name: "byCreatedAt", queryField: "byCreatedAt")
+      status: Status!
+      statusList: [Status!]
+    }
+    enum Status {
+      progress
+      completed
+      rejected
+    }
+  `;
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new IndexTransformer()],
+  });
+  const schema = parse(out.schema);
+
+  validateModelSchema(schema);
+
+  const todoInputType = schema.definitions.find(
+    (d: any) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'ModelTodoFilterInput',
+  );
+  expect(todoInputType).toBeDefined();
+  const enumInputType = schema.definitions.find(
+    (d: any) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'ModelStatusInput',
+  ) as InputObjectTypeDefinitionNode;
+  expect(enumInputType).toBeDefined();
+  const enumInputTypeFields = enumInputType.fields;
+  expect(enumInputTypeFields).toBeDefined();
+  expect(enumInputTypeFields?.length).toBe(2);
+  const enumInputTypeFieldNames = enumInputTypeFields?.map((f) => f.name.value);
+  expect(enumInputTypeFieldNames).toEqual(['eq', 'ne']);
+  const enumInputListType = schema.definitions.find(
+    (d: any) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'ModelStatusListInput',
+  ) as InputObjectTypeDefinitionNode;
+  expect(enumInputListType).toBeDefined();
+  const enumInputListTypeFields = enumInputListType.fields;
+  expect(enumInputListTypeFields).toBeDefined();
+  expect(enumInputListTypeFields?.length).toBe(4);
+  const enumInputListTypeFieldNames = enumInputListTypeFields?.map((f) => f.name.value);
+  expect(enumInputListTypeFieldNames).toEqual(['eq', 'ne', 'contains', 'notContains']);
 });
 
 test('@index adds an LSI with secondaryKeyAsGSI FF set to false', () => {
@@ -1450,6 +1497,113 @@ describe('Index query resolver creation', () => {
       dataSources: {
         get: jest.fn(),
       },
+      synthParameters: {},
     };
   };
+});
+
+describe('auth', () => {
+  const API_KEY = 'API Key Authorization';
+  const IAM_AUTH_TYPE = 'IAM Authorization';
+
+  const schema = /* GraphQL */ `
+    type Test @model {
+      id: ID!
+      description: String @index(name: "index1")
+    }
+  `;
+
+  it('sandbox auth enabled should add apiKey if not default mode of auth', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
+      synthParameters: {
+        enableIamAccess: false,
+      },
+      authConfig: {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [
+          {
+            authenticationType: 'API_KEY',
+          },
+        ],
+      },
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).toContain('aws_api_key');
+    expect(out.schema).not.toContain('aws_iam');
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toBeDefined();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toContain(API_KEY);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).not.toContain(IAM_AUTH_TYPE);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toMatchSnapshot();
+  });
+
+  it('iam auth enabled should add aws_iam if not default mode of auth', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: false,
+      },
+      synthParameters: {
+        enableIamAccess: true,
+      },
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).not.toContain('aws_api_key');
+    expect(out.schema).toContain('aws_iam');
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toBeDefined();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).not.toContain(API_KEY);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toContain(IAM_AUTH_TYPE);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toMatchSnapshot();
+  });
+
+  it('iam and sandbox auth enabled should add aws_iam and aws_api_key if not default mode of auth', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
+      synthParameters: {
+        enableIamAccess: true,
+      },
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).toContain('aws_api_key');
+    expect(out.schema).toContain('aws_iam');
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toBeDefined();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toContain(API_KEY);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toContain(IAM_AUTH_TYPE);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toMatchSnapshot();
+  });
+
+  it('iam and sandbox auth disable should not add service directives', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: false,
+      },
+      synthParameters: {
+        enableIamAccess: false,
+      },
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).not.toContain('aws_api_key');
+    expect(out.schema).not.toContain('aws_iam');
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toBeDefined();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).not.toContain(API_KEY);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).not.toContain(IAM_AUTH_TYPE);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toMatchSnapshot();
+  });
 });

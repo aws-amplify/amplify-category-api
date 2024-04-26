@@ -67,7 +67,7 @@ export interface AuthDirective {
 export const authDirectiveDefinition: string;
 
 // @public (undocumented)
-export type AuthProvider = 'apiKey' | 'iam' | 'oidc' | 'userPools' | 'function';
+export type AuthProvider = 'apiKey' | 'iam' | 'identityPool' | 'oidc' | 'userPools' | 'function';
 
 // @public (undocumented)
 export interface AuthRule {
@@ -164,6 +164,8 @@ export const COGNITO_AUTH_TYPE = "User Pool Authorization";
 export interface ConfiguredAuthProviders {
     // (undocumented)
     default: AuthProvider;
+    // (undocumented)
+    genericIamAccessEnabled: boolean;
     // (undocumented)
     hasAdminRolesEnabled: boolean;
     // (undocumented)

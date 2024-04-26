@@ -13,7 +13,7 @@ export type RelationalDirectiveConfiguration =
 
 /**
  * Represents a subset of transformer methods based on a specific
- * data source (currently SQL / DDB Fields).
+ * data source (currently SQL References / DynamoDB References / DynamoDB Fields).
  *
  * Each method is to be invoked by the applicable relational transformer when iterating through
  * its directive configurations the applicable transformer step.

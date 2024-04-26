@@ -4,10 +4,8 @@ import {
   Expression,
   compoundExpression,
   ifElse,
-  iff,
   list,
   methodCall,
-  not,
   obj,
   printBlock,
   qref,
@@ -16,8 +14,15 @@ import {
   str,
   toJson,
 } from 'graphql-mapping-template';
-import { ResourceConstants, isArrayOrObject, isListType } from 'graphql-transformer-common';
-import { SQLLambdaResourceNames, setResourceName } from '@aws-amplify/graphql-transformer-core';
+import { ResourceConstants } from 'graphql-transformer-common';
+import {
+  constructArrayFieldsStatement,
+  constructAuthFilterStatement,
+  constructFieldMappingInput,
+  constructNonScalarFieldsStatement,
+  setResourceName,
+  SQLLambdaResourceNames,
+} from '@aws-amplify/graphql-transformer-core';
 import {
   GraphQLAPIProvider,
   RDSLayerMapping,
@@ -34,7 +39,6 @@ import {
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction, LayerVersion, Runtime, Alias, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
-import { EnumTypeDefinitionNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
 import { CfnVPCEndpoint } from 'aws-cdk-lib/aws-ec2';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
 
@@ -67,9 +71,9 @@ export const setRDSLayerMappings = (scope: Construct, mapping: RDSLayerMapping, 
   });
 
 /**
- * Define RDS Patching SNS Topic ARN region mappings. The optional `mapping` can be specified in place of the defaults that are hardcoded at the time
- * this package is published. For the CLI flow, the `mapping` will be downloaded at runtime during the `amplify push` flow. For the CDK,
- * the layer version will be resolved by a custom CDK resource.
+ * Define RDS Patching SNS Topic ARN region mappings. The optional `mapping` can be specified in place of the defaults that are hardcoded at
+ * the time this package is published. For the CLI flow, the `mapping` will be downloaded at runtime during the `amplify push` flow. For the
+ * CDK, the layer version will be resolved by a custom CDK resource.
  * @param scope Construct
  * @param mapping an RDSSNSTopicMapping to use in place of the defaults
  */
@@ -201,8 +205,8 @@ export const createLayerVersionCustomResource = (scope: Construct, resourceNames
 };
 
 /**
- * Generates an AwsCustomResource to resolve the SNS Topic ARNs that the lambda used for updating the SQL Lambda Layer version installed into the customer
- * account.
+ * Generates an AwsCustomResource to resolve the SNS Topic ARNs that the lambda used for updating the SQL Lambda Layer version installed
+ * into the customer account.
  */
 export const createSNSTopicARNCustomResource = (scope: Construct, resourceNames: SQLLambdaResourceNames): AwsCustomResource => {
   const { SQLLayerManifestBucket, SQLLayerManifestBucketRegion, SQLSNSTopicARNManifestKeyPrefix } = ResourceConstants.RESOURCES;
@@ -373,11 +377,14 @@ export const createRdsLambdaRole = (
         );
       }
     } else if (isSqlModelDataSourceSsmDbConnectionStringConfig(secretEntry)) {
+      const connectionUriSsmPaths = Array.isArray(secretEntry.connectionUriSsmPath)
+        ? secretEntry.connectionUriSsmPath
+        : [secretEntry.connectionUriSsmPath];
       policyStatements.push(
         new PolicyStatement({
           actions: ['ssm:GetParameter', 'ssm:GetParameters'],
           effect: Effect.ALLOW,
-          resources: [`arn:aws:ssm:*:*:parameter${secretEntry.connectionUriSsmPath}`],
+          resources: connectionUriSsmPaths.map((ssmPath) => `arn:aws:ssm:*:*:parameter${ssmPath}`),
         }),
       );
     } else {
@@ -544,39 +551,3 @@ export const generateDefaultLambdaResponseMappingTemplate = (isSyncEnabled: bool
 
   return printBlock('ResponseTemplate')(compoundExpression(statements));
 };
-
-export const getNonScalarFields = (object: ObjectTypeDefinitionNode | undefined, ctx: TransformerContextProvider): string[] => {
-  if (!object) {
-    return [];
-  }
-  const enums = ctx.output.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[];
-  return object.fields?.filter((f: FieldDefinitionNode) => isArrayOrObject(f.type, enums)).map((f) => f.name.value) || [];
-};
-
-export const getArrayFields = (object: ObjectTypeDefinitionNode | undefined, ctx: TransformerContextProvider): string[] => {
-  if (!object) {
-    return [];
-  }
-  return object.fields?.filter((f: FieldDefinitionNode) => isListType(f.type)).map((f) => f.name.value) || [];
-};
-
-export const constructNonScalarFieldsStatement = (tableName: string, ctx: TransformerContextProvider): Expression =>
-  set(ref('lambdaInput.args.metadata.nonScalarFields'), list(getNonScalarFields(ctx.output.getObject(tableName), ctx).map(str)));
-
-export const constructArrayFieldsStatement = (tableName: string, ctx: TransformerContextProvider): Expression =>
-  set(ref('lambdaInput.args.metadata.arrayFields'), list(getArrayFields(ctx.output.getObject(tableName), ctx).map(str)));
-
-export const constructFieldMappingInput = (): Expression => {
-  return compoundExpression([
-    set(ref('lambdaInput.args.metadata.fieldMap'), obj({})),
-    qref(
-      methodCall(
-        ref('lambdaInput.args.metadata.fieldMap.putAll'),
-        methodCall(ref('util.defaultIfNull'), ref('context.stash.fieldMap'), obj({})),
-      ),
-    ),
-  ]);
-};
-
-export const constructAuthFilterStatement = (keyName: string): Expression =>
-  iff(not(methodCall(ref('util.isNullOrEmpty'), ref('ctx.stash.authFilter'))), set(ref(keyName), ref('ctx.stash.authFilter')));
