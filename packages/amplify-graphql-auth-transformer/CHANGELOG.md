@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.5.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.4.4...@aws-amplify/graphql-auth-transformer@3.5.0) (2024-04-26)
+
+### Bug Fixes
+
+- **api:** handle error on generate ts data schema when no tables with primary key ([#2483](https://github.com/aws-amplify/amplify-category-api/issues/2483)) ([30a333b](https://github.com/aws-amplify/amplify-category-api/commit/30a333b97934d732c724a9e165edae278cb0c8f5))
+- relational bidirectionality validation and improved error messages ([#2482](https://github.com/aws-amplify/amplify-category-api/issues/2482)) ([568fbc3](https://github.com/aws-amplify/amplify-category-api/commit/568fbc365e4945693f685ba8896d2e5f14031f2d))
+- some API updates that were automerged ([1a1f120](https://github.com/aws-amplify/amplify-category-api/commit/1a1f12043d0cba99a7572778acb9e265aa71ba67))
+
+### Features
+
+- deprecate iam auth provider and rename it to identityPool ([#2320](https://github.com/aws-amplify/amplify-category-api/issues/2320)) ([#2394](https://github.com/aws-amplify/amplify-category-api/issues/2394)) ([383985b](https://github.com/aws-amplify/amplify-category-api/commit/383985ba20dcb04acada10593f8398b7dae79190))
+- generic iam authorization ([#2385](https://github.com/aws-amplify/amplify-category-api/issues/2385)) ([550ee80](https://github.com/aws-amplify/amplify-category-api/commit/550ee803275817d25447ff1400d55eb1ad4cd0c2))
+
 ## [3.4.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.4.3...@aws-amplify/graphql-auth-transformer@3.4.4) (2024-04-16)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer

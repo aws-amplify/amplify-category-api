@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.8.2...@aws-amplify/graphql-schema-generator@0.8.3) (2024-04-26)
+
+### Bug Fixes
+
+- **api:** add auto generated comment to the generated typescript data schema file ([#2473](https://github.com/aws-amplify/amplify-category-api/issues/2473)) ([e4dfb1f](https://github.com/aws-amplify/amplify-category-api/commit/e4dfb1ffcffd87e1da73c438fb5da0d04f07dd48))
+- **api:** handle error on generate ts data schema when no tables with primary key ([#2483](https://github.com/aws-amplify/amplify-category-api/issues/2483)) ([30a333b](https://github.com/aws-amplify/amplify-category-api/commit/30a333b97934d732c724a9e165edae278cb0c8f5))
+
 ## [0.8.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.8.1...@aws-amplify/graphql-schema-generator@0.8.2) (2024-04-16)
 
 **Note:** Version bump only for package @aws-amplify/graphql-schema-generator

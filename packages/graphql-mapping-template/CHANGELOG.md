@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.20.16](https://github.com/aws-amplify/amplify-category-api/compare/graphql-mapping-template@4.20.15...graphql-mapping-template@4.20.16) (2024-04-26)
+
+### Bug Fixes
+
+- ddb references hasOne returns record if multiple exist ([#2497](https://github.com/aws-amplify/amplify-category-api/issues/2497)) ([c105138](https://github.com/aws-amplify/amplify-category-api/commit/c1051384780c732ea2ddb98301994bda55bb62d9))
+
 ## [4.20.15](https://github.com/aws-amplify/amplify-category-api/compare/graphql-mapping-template@4.20.14...graphql-mapping-template@4.20.15) (2024-02-28)
 
 **Note:** Version bump only for package graphql-mapping-template

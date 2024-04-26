@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.3.9...@aws-amplify/graphql-index-transformer@2.4.0) (2024-04-26)
+
+### Bug Fixes
+
+- auto generated id when timestamps: null ([#2470](https://github.com/aws-amplify/amplify-category-api/issues/2470)) ([936a4f9](https://github.com/aws-amplify/amplify-category-api/commit/936a4f9b40ae21a7bd4250616c8d83835bb75784))
+- enum input type in filter input when list is disabled ([#2446](https://github.com/aws-amplify/amplify-category-api/issues/2446)) ([13c2716](https://github.com/aws-amplify/amplify-category-api/commit/13c27168708149207427a7c83493b02a61df070f))
+
+### Features
+
+- iam access support for searchable, index and sql directives ([#2398](https://github.com/aws-amplify/amplify-category-api/issues/2398)) ([c2a3d92](https://github.com/aws-amplify/amplify-category-api/commit/c2a3d92e89891e9585aa1c26731f132171e271be))
+
 ## [2.3.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.3.8...@aws-amplify/graphql-index-transformer@2.3.9) (2024-04-11)
 
 **Note:** Version bump only for package @aws-amplify/graphql-index-transformer

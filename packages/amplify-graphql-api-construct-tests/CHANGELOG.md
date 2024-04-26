@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.5.1...amplify-graphql-api-construct-tests@1.6.0) (2024-04-26)
+
+### Bug Fixes
+
+- add non-scalar and array fields to SQL relations ([#2501](https://github.com/aws-amplify/amplify-category-api/issues/2501)) ([511f020](https://github.com/aws-amplify/amplify-category-api/commit/511f0202583e3e2110a2c22f3bfd24845ea038c0))
+- ddb references hasOne returns record if multiple exist ([#2497](https://github.com/aws-amplify/amplify-category-api/issues/2497)) ([c105138](https://github.com/aws-amplify/amplify-category-api/commit/c1051384780c732ea2ddb98301994bda55bb62d9))
+- hasMany belongsTo dynamodb references composite primary key ([#2471](https://github.com/aws-amplify/amplify-category-api/issues/2471)) ([6f49747](https://github.com/aws-amplify/amplify-category-api/commit/6f497472703bbc97e7d35e2fae8423fc820934d4))
+- propagate operation in references-style ddb resolver ([#2447](https://github.com/aws-amplify/amplify-category-api/issues/2447)) ([460cf21](https://github.com/aws-amplify/amplify-category-api/commit/460cf217ce55ac3ef09749c552aac3a487cded69))
+
+### Features
+
+- **api:** enable cors on codegen asset bucket ([#2366](https://github.com/aws-amplify/amplify-category-api/issues/2366)) ([b69a492](https://github.com/aws-amplify/amplify-category-api/commit/b69a4924002ecb17780b9c3a0f33f44f59d9b642))
+- generic iam authorization ([#2385](https://github.com/aws-amplify/amplify-category-api/issues/2385)) ([550ee80](https://github.com/aws-amplify/amplify-category-api/commit/550ee803275817d25447ff1400d55eb1ad4cd0c2))
+- support multiple connection Uris for SQL databases ([#2481](https://github.com/aws-amplify/amplify-category-api/issues/2481)) ([7ea8000](https://github.com/aws-amplify/amplify-category-api/commit/7ea8000026d3f8fe9c791720701250fa958c9bc8))
+
 ## [1.5.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.5.0...amplify-graphql-api-construct-tests@1.5.1) (2024-04-16)
 
 **Note:** Version bump only for package amplify-graphql-api-construct-tests

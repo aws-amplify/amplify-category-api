@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.9.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.8.1...@aws-amplify/graphql-api-construct@1.9.0) (2024-04-26)
+
+### Features
+
+- allow multiple graphql APIs in a cdk app ([#2406](https://github.com/aws-amplify/amplify-category-api/issues/2406)) ([72ca6ba](https://github.com/aws-amplify/amplify-category-api/commit/72ca6ba7243d1f267d38be76e43d623d16608c14))
+- **api:** enable cors on codegen asset bucket ([#2366](https://github.com/aws-amplify/amplify-category-api/issues/2366)) ([b69a492](https://github.com/aws-amplify/amplify-category-api/commit/b69a4924002ecb17780b9c3a0f33f44f59d9b642))
+- generic iam authorization ([#2385](https://github.com/aws-amplify/amplify-category-api/issues/2385)) ([550ee80](https://github.com/aws-amplify/amplify-category-api/commit/550ee803275817d25447ff1400d55eb1ad4cd0c2))
+- support multiple connection Uris for SQL databases ([#2481](https://github.com/aws-amplify/amplify-category-api/issues/2481)) ([7ea8000](https://github.com/aws-amplify/amplify-category-api/commit/7ea8000026d3f8fe9c791720701250fa958c9bc8))
+
 ## [1.8.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.8.0...@aws-amplify/graphql-api-construct@1.8.1) (2024-04-16)
 
 **Note:** Version bump only for package @aws-amplify/graphql-api-construct

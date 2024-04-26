@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.22.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.21.1...amplify-category-api-e2e-tests@3.22.0) (2024-04-26)
+
+### Features
+
+- deprecate iam auth provider and rename it to identityPool ([#2320](https://github.com/aws-amplify/amplify-category-api/issues/2320)) ([#2394](https://github.com/aws-amplify/amplify-category-api/issues/2394)) ([383985b](https://github.com/aws-amplify/amplify-category-api/commit/383985ba20dcb04acada10593f8398b7dae79190))
+
 ## [3.21.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.21.0...amplify-category-api-e2e-tests@3.21.1) (2024-04-16)
 
 ### Bug Fixes
