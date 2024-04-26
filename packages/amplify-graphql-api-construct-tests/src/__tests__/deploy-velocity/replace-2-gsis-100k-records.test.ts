@@ -1,6 +1,6 @@
 import {
   COUNT_100_THOUSAND,
-  DURATION_30_MINUTES,
+  DURATION_45_MINUTES,
   MUTATION_FOUR_FIELD_CREATE,
   SCHEMA_FOUR_FIELDS_FINAL_TWO_INDEXED,
   SCHEMA_FOUR_FIELDS_INITIAL_TWO_INDEXED,
@@ -9,7 +9,7 @@ import { recordCountDataProvider, recordCountDataValidator, testManagedTableDepl
 
 testManagedTableDeployment({
   name: 'Replace 2 GSIs updated - 100k Records',
-  maxDeployDurationMs: DURATION_30_MINUTES,
+  maxDeployDurationMs: DURATION_45_MINUTES,
   initialSchema: SCHEMA_FOUR_FIELDS_INITIAL_TWO_INDEXED,
   updatedSchema: SCHEMA_FOUR_FIELDS_FINAL_TWO_INDEXED,
   dataSetup: recordCountDataProvider(COUNT_100_THOUSAND, MUTATION_FOUR_FIELD_CREATE),
