@@ -54,7 +54,6 @@ async function onEventHandler(cfnRequest: AWSLambda.CloudFormationCustomResource
   // merge the request and the result from onEvent to form the complete resource event
   // this also performs validation.
   const resourceEvent = createResponseEvent(cfnRequest, onEventResult);
-  log('event:', onEventResult);
 
   if (cfnRequest.RequestType == 'Delete') {
     // If the RequestType is `Delete`, we can submit the response to CFN.
