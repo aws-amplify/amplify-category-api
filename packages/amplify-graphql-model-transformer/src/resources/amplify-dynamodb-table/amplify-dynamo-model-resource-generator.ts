@@ -84,7 +84,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
 
     // Role assumed by the isCompleteHandler.
     // We want to avoid the auto-generated default policy for this to avoid unnecessary deployment time
-    // slowdowns, hence the `withPolicyUpdates()`
+    // slowdowns, hence the `withoutPolicyUpdates()`
     const isCompleteRole = new aws_iam.Role(scope, 'AmplifyManagedTableIsCompleteRole', {
       assumedBy: new aws_iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicies: [aws_iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
