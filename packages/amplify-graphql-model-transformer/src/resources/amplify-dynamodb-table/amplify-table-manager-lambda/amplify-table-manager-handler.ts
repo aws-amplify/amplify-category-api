@@ -43,7 +43,7 @@ export const isComplete = cfnResponse.safeHandler(isCompleteHandler);
  */
 // eslint-disable-next-line func-style
 async function onEventHandler(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent): Promise<void> {
-  const sanitizedRequest = { ...cfnRequest, ResponseURL: '...' } as const;
+  const sanitizedRequest = { ...cfnRequest, ResponseURL: '[redacted]' } as const;
   log('onEventHandler', sanitizedRequest);
 
   cfnRequest.ResourceProperties = cfnRequest.ResourceProperties || {};
@@ -87,7 +87,7 @@ async function onEventHandler(cfnRequest: AWSLambda.CloudFormationCustomResource
  */
 // eslint-disable-next-line func-style
 async function isCompleteHandler(event: AWSCDKAsyncCustomResource.IsCompleteRequest): Promise<void> {
-  const sanitizedRequest = { ...event, ResponseURL: '...' } as const;
+  const sanitizedRequest = { ...event, ResponseURL: '[redacted]' } as const;
   log('isComplete', sanitizedRequest);
 
   const isCompleteResult = await processIsComplete(sanitizedRequest);
