@@ -4,8 +4,8 @@ import { Construct } from 'constructs';
 /**
  * Lightweight construct wrapper for custom resource provider 'Custom::AmplifyDynamoDBTable'
  * Encapsulating the entry point (onEventHandler) within this `Provider` construct is necessary
- * to maintain a stable custom resource entry point ARN that is consistent with previously deployed
- * versions when the CDK's provider framework.
+ * to maintain a stable custom resource entry point ARN that is consistent with versions
+ * previously deployed with the CDK's provider framework.
  *
  * IMPORTANT: The construct name and lambda function ID should not be changed.
  * These are components that make up the resolved ARN.
