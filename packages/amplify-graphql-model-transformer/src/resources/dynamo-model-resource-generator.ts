@@ -127,7 +127,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     context: TransformerContextProvider,
     table: ITable,
     scope: Construct,
-    role: iam.Role,
+    role: iam.IRole,
     dataSourceLogicalName: string,
   ): void {
     const datasourceRoleLogicalID = ModelResourceIDs.ModelTableDataSourceID(def!.name.value);
@@ -233,56 +233,61 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
   /**
    * createIAMRole
    */
-  createIAMRole = (context: TransformerContextProvider, def: ObjectTypeDefinitionNode, scope: Construct, tableName: string): iam.Role => {
+  createIAMRole = (context: TransformerContextProvider, def: ObjectTypeDefinitionNode, scope: Construct, tableName: string): iam.IRole => {
     const roleName = context.resourceHelper.generateIAMRoleName(ModelResourceIDs.ModelTableIAMRoleID(def!.name.value));
+    const amplifyDataStoreTableName = context.resourceHelper.generateTableName(SyncResourceIDs.syncTableName);
     const role = new iam.Role(scope, ModelResourceIDs.ModelTableIAMRoleID(def!.name.value), {
       roleName,
       assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
+      // Use an inline policy here to prevent unnecessary policy resources from being generated
+      // and slowing down deployments.
+      inlinePolicies: {
+        DynamoDBAccess: new iam.PolicyDocument({
+          statements: [
+            new iam.PolicyStatement({
+              effect: iam.Effect.ALLOW,
+              actions: [
+                'dynamodb:BatchGetItem',
+                'dynamodb:BatchWriteItem',
+                'dynamodb:PutItem',
+                'dynamodb:DeleteItem',
+                'dynamodb:GetItem',
+                'dynamodb:Scan',
+                'dynamodb:Query',
+                'dynamodb:UpdateItem',
+                'dynamodb:ConditionCheckItem',
+                'dynamodb:DescribeTable',
+                'dynamodb:GetRecords',
+                'dynamodb:GetShardIterator',
+              ],
+              resources: [
+                // eslint-disable-next-line no-template-curly-in-string
+                cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
+                  tablename: tableName,
+                }),
+                // eslint-disable-next-line no-template-curly-in-string
+                cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
+                  tablename: tableName,
+                }),
+                ...(context.isProjectUsingDataStore()
+                  ? [
+                      // eslint-disable-next-line no-template-curly-in-string
+                      cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
+                        tablename: amplifyDataStoreTableName,
+                      }),
+                      // eslint-disable-next-line no-template-curly-in-string
+                      cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
+                        tablename: amplifyDataStoreTableName,
+                      }),
+                    ]
+                  : []),
+              ],
+            }),
+          ],
+        }),
+      },
     });
     setResourceName(role, { name: ModelResourceIDs.ModelTableIAMRoleID(def!.name.value), setOnDefaultChild: true });
-
-    const amplifyDataStoreTableName = context.resourceHelper.generateTableName(SyncResourceIDs.syncTableName);
-    role.attachInlinePolicy(
-      new iam.Policy(scope, 'DynamoDBAccess', {
-        statements: [
-          new iam.PolicyStatement({
-            effect: iam.Effect.ALLOW,
-            actions: [
-              'dynamodb:BatchGetItem',
-              'dynamodb:BatchWriteItem',
-              'dynamodb:PutItem',
-              'dynamodb:DeleteItem',
-              'dynamodb:GetItem',
-              'dynamodb:Scan',
-              'dynamodb:Query',
-              'dynamodb:UpdateItem',
-            ],
-            resources: [
-              // eslint-disable-next-line no-template-curly-in-string
-              cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
-                tablename: tableName,
-              }),
-              // eslint-disable-next-line no-template-curly-in-string
-              cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
-                tablename: tableName,
-              }),
-              ...(context.isProjectUsingDataStore()
-                ? [
-                    // eslint-disable-next-line no-template-curly-in-string
-                    cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
-                      tablename: amplifyDataStoreTableName,
-                    }),
-                    // eslint-disable-next-line no-template-curly-in-string
-                    cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
-                      tablename: amplifyDataStoreTableName,
-                    }),
-                  ]
-                : []),
-            ],
-          }),
-        ],
-      }),
-    );
 
     const syncConfig = SyncUtils.getSyncConfig(context, def!.name.value);
     if (syncConfig && SyncUtils.isLambdaSyncConfig(syncConfig)) {
@@ -291,6 +296,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
       );
     }
 
-    return role;
+    // return an `IRole` to prevent modification and default policy generation.
+    return role.withoutPolicyUpdates();
   };
 }

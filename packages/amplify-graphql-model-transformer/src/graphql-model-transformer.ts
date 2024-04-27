@@ -746,7 +746,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   /**
    * createIAMRole
    */
-  createIAMRole = (context: TransformerContextProvider, def: ObjectTypeDefinitionNode, stack: cdk.Stack, tableName: string): iam.Role => {
+  createIAMRole = (context: TransformerContextProvider, def: ObjectTypeDefinitionNode, stack: cdk.Stack, tableName: string): iam.IRole => {
     const ddbGenerator = this.resourceGeneratorMap.get(DDB_DB_TYPE) as DynamoModelResourceGenerator;
     return ddbGenerator.createIAMRole(context, def, stack, tableName);
   };
