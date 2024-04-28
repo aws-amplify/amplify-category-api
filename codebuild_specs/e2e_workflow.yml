@@ -1607,44 +1607,14 @@ batch:
           CLI_REGION: sa-east-1
       depend-on:
         - publish_to_local_registry
-    - identifier: restricted_field_auth_gen2_ddbprimary_ddbrelated
+    - identifier: restricted_field_auth_gen2
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: >-
-            src/__tests__/restricted-field-auth/restricted-field-auth-gen2-ddbprimary-ddbrelated.test.ts
+            src/__tests__/restricted-field-auth/restricted-field-auth-gen2.test.ts
           CLI_REGION: us-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: restricted_field_auth_gen2_ddbprimary_sqlrelated
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/restricted-field-auth/restricted-field-auth-gen2-ddbprimary-sqlrelated.test.ts
-          CLI_REGION: us-east-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: restricted_field_auth_gen2_sqlprimary_ddbrelated
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/restricted-field-auth/restricted-field-auth-gen2-sqlprimary-ddbrelated.test.ts
-          CLI_REGION: us-west-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: restricted_field_auth_gen2_sqlprimary_sqlrelated
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/restricted-field-auth/restricted-field-auth-gen2-sqlprimary-sqlrelated.test.ts
-          CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: sql_iam_access
@@ -1653,7 +1623,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/sql-iam-access.test.ts
-          CLI_REGION: eu-west-3
+          CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
     - identifier: sql_models_1
@@ -1662,7 +1632,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/sql-models-1.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: us-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: sql_models_2
@@ -1671,7 +1641,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/sql-models-2.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: sql_mysql_canary
@@ -1680,7 +1650,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/sql-mysql-canary.test.ts
-          CLI_REGION: ap-south-1
+          CLI_REGION: eu-west-3
       depend-on:
         - publish_to_local_registry
     - identifier: sql_pg_canary
@@ -1689,7 +1659,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/sql-pg-canary.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: sql_pg_models
@@ -1698,7 +1668,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/sql-pg-models.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: ap-northeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: >-
