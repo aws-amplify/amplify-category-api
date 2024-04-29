@@ -458,7 +458,7 @@ test('Should not resolve to secondary index of connected model if the index is d
       content: String! @index
       comments: [Comment] @hasMany(indexName:"byParent", fields:["customId", "content"])
     }
-    
+
     type Comment @model {
       childId: ID! @primaryKey(sortKeyFields:["content"])
       content: String!
@@ -783,7 +783,7 @@ describe('@belongsTo directive with RDS datasource', () => {
       type Profile @model {
         profileId: String! @primaryKey
         userFirstName: String
-        userLastName: String!
+        userLastName: String
         user: User @belongsTo(references: ["userFirstName", "userLastName"])
       }
     `;

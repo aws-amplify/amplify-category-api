@@ -797,7 +797,7 @@ describe('@hasOne directive with RDS datasource', () => {
       type Profile @model {
         profileId: String! @primaryKey
         userFirstName: String
-        userLastName: String!
+        userLastName: String
         user: User @belongsTo(references: ["userFirstName", "userLastName"])
       }
     `;
