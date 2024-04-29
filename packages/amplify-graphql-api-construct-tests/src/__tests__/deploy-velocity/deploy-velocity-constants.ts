@@ -7,6 +7,7 @@ export const DURATION_20_MINUTES = 20 * ONE_MINUTE;
 export const DURATION_30_MINUTES = 30 * ONE_MINUTE;
 export const DURATION_45_MINUTES = 45 * ONE_MINUTE;
 export const DURATION_1_HOUR = 60 * ONE_MINUTE;
+export const DURATION_90_MINUTES = 90 * ONE_MINUTE;
 
 export const COUNT_1_THOUSAND = 1000;
 export const COUNT_10_THOUSAND = 10000;
