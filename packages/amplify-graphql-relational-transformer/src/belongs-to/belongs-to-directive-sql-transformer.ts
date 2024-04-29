@@ -13,6 +13,7 @@ import {
   getBelongsToReferencesNodes,
   validateChildReferencesFields,
   validateReferencesBidirectionality,
+  validateReferencesRelationalFieldNullability,
 } from '../utils';
 
 /**
@@ -39,6 +40,7 @@ export class BelongsToDirectiveSQLTransformer implements DataSourceBasedDirectiv
   validate = (context: TransformerContextProvider, config: BelongsToDirectiveConfiguration): void => {
     ensureReferencesArray(config);
     config.referenceNodes = getBelongsToReferencesNodes(config, context);
+    validateReferencesRelationalFieldNullability(config);
     validateReferencesBidirectionality(config);
   };
 }

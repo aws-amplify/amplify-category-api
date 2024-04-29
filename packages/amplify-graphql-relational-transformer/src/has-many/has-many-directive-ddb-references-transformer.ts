@@ -18,6 +18,7 @@ import {
   registerHasManyForeignKeyMappings,
   validateParentReferencesFields,
   validateReferencesBidirectionality,
+  validateReferencesRelationalFieldNullability,
 } from '../utils';
 
 /**
@@ -66,11 +67,11 @@ export class HasManyDirectiveDDBReferencesTransformer implements DataSourceBased
     }
     ensureReferencesArray(config);
     validateParentReferencesFields(config, context);
+    validateReferencesRelationalFieldNullability(config);
     const objectName = config.object.name.value;
     const fieldName = config.field.name.value;
     config.indexName = `gsi-${objectName}.${fieldName}`;
     config.referenceNodes = getReferencesNodes(config, context);
-
     validateReferencesBidirectionality(config);
   };
 }

@@ -10,7 +10,6 @@ import {
   DirectiveNode,
   EnumTypeDefinitionNode,
   FieldDefinitionNode,
-  isNonNullType,
   Kind,
   ListValueNode,
   NamedTypeNode,
@@ -304,7 +303,53 @@ const referenceFieldTypeMatchesPrimaryKey = (a: FieldDefinitionNode, b: FieldDef
 };
 
 /**
- * Validates the a {@link ReferencesRelationalDirectiveConfiguration} conforms to the following rules:
+ * Validates that a given {@link ReferencesRelationalDirectiveConfiguration} is decorated on a non-required (nullable)
+ * field.
+ *
+ * Valid:
+ *  `members: [Member] @hasMany(references: 'teamId')
+ *  `team: Team @belongsTo(references: 'teamId)`
+ *  `project: Project @hasOne(references: 'teamId)`
+ *
+ * Invalid:
+ *  `members: [Member]! @hasMany(references: 'teamId')
+ *  `members: [Member!] @hasMany(references: 'teamId')
+ *  `members: [Member!]! @hasMany(references: 'teamId')
+ *  `team: Team! @belongsTo(references: 'teamId)`
+ *  `project: Project! @hasOne(references: 'teamId)`
+ * @param config {@link ReferencesRelationalDirectiveConfiguration}
+ */
+export const validateReferencesRelationalFieldNullability = (config: ReferencesRelationalDirectiveConfiguration): void => {
+  const { field, object, relatedType } = config;
+  const fieldType = field.type;
+  const relatedTypeName = relatedType.name.value;
+
+  if (fieldType.kind === Kind.NON_NULL_TYPE) {
+    const fieldDescription =
+      `${object.name.value}.${field.name.value}: ` +
+      `${config.directiveName === HasManyDirective.name ? `[${relatedTypeName}]` : relatedTypeName}`;
+    throw new InvalidDirectiveError(
+      `@${config.directiveName} fields must not be required. Change '${fieldDescription}!' to '${fieldDescription}'`,
+    );
+  }
+
+  if (fieldType.kind === Kind.LIST_TYPE && fieldType.type.kind === Kind.NON_NULL_TYPE) {
+    const fieldDescription = (typeDescription: string): string => {
+      return `${config.object.name.value}.${config.field.name.value}: ${typeDescription}`;
+    };
+    const relatedTypeIs = config.directiveName === HasManyDirective.name ? `[${relatedTypeName}!]` : `${relatedTypeName}!`;
+    const relatedTypeShould = config.directiveName === HasManyDirective.name ? `[${relatedTypeName}]` : `${relatedTypeName}`;
+
+    throw new InvalidDirectiveError(
+      `@${config.directiveName} fields must not be required. Change '${fieldDescription(relatedTypeIs)}' to '${fieldDescription(
+        relatedTypeShould,
+      )}'`,
+    );
+  }
+};
+
+/**
+ * Validates that a given {@link ReferencesRelationalDirectiveConfiguration} conforms to the following rules:
  * - relationship is bidirectional
  *  - hasOne and hasMany have a belongsTo counterpart
  *  - belongsTo has a hasOne or hasMany counterpart
@@ -446,9 +491,10 @@ export const getReferencesNodes = (
   });
 
   // Ensure that the reference fields have consistent nullability
-  const firstReferenceNodeIsNonNull = isNonNullType(referenceNodes[0]);
+  const firstReferenceNodeIsNonNull = referenceNodes[0].type.kind === Kind.NON_NULL_TYPE;
   referenceNodes.slice(1).forEach((node) => {
-    if (isNonNullType(node) !== firstReferenceNodeIsNonNull) {
+    const isNonNull = node.type.kind === Kind.NON_NULL_TYPE;
+    if (isNonNull !== firstReferenceNodeIsNonNull) {
       throw new InvalidDirectiveError('reference fields must have consistent nullability');
     }
   });

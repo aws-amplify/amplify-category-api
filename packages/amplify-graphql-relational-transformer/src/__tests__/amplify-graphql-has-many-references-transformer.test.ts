@@ -185,7 +185,7 @@ test('fails if used as a has one relationship', () => {
     type Member @model {
       id: ID!
       teamID: String
-      team: Team @belongsTo(fields: ["teamID"])
+      team: Team @belongsTo(references: ["teamID"])
     }`;
 
   expect(() =>
@@ -194,6 +194,113 @@ test('fails if used as a has one relationship', () => {
       transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     }),
   ).toThrowError('@hasMany must be used with a list. Use @hasOne for non-list types.');
+});
+
+test('fails if primary relational field list type is required', () => {
+  const inputSchema = `
+    type Team @model {
+      id: ID!
+      name: String!
+      members: [Member]! @hasMany(references: ["teamID"])
+    }
+    type Member @model {
+      id: ID!
+      teamID: String
+      team: Team @belongsTo(references: ["teamID"])
+    }`;
+
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError("@hasMany fields must not be required. Change 'Team.members: [Member]!' to 'Team.members: [Member]'");
+});
+
+test('fails if primary relational field element type required', () => {
+  const inputSchema = `
+    type Team @model {
+      id: ID!
+      name: String!
+      members: [Member!] @hasMany(references: ["teamID"])
+    }
+    type Member @model {
+      id: ID!
+      teamID: String
+      team: Team @belongsTo(references: ["teamID"])
+    }`;
+
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError("@hasMany fields must not be required. Change 'Team.members: [Member!]' to 'Team.members: [Member]'");
+});
+
+test('fails if primary relational field list type and element type are required', () => {
+  const inputSchema = `
+    type Team @model {
+      id: ID!
+      name: String!
+      members: [Member!]! @hasMany(references: ["teamID"])
+    }
+    type Member @model {
+      id: ID!
+      teamID: String
+      team: Team @belongsTo(references: ["teamID"])
+    }`;
+
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError("@hasMany fields must not be required. Change 'Team.members: [Member]!' to 'Team.members: [Member]'");
+});
+
+test('fails if related relational field is required', () => {
+  const inputSchema = `
+    type Team @model {
+      id: ID!
+      name: String!
+      members: [Member] @hasMany(references: ["teamID"])
+    }
+    type Member @model {
+      id: ID!
+      teamID: String
+      team: Team! @belongsTo(references: ["teamID"])
+    }`;
+
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError("@belongsTo fields must not be required. Change 'Member.team: Team!' to 'Member.team: Team'");
+});
+
+test('fails with inconsistent nullability of reference fields', () => {
+  const inputSchema = `
+    type Member @model {
+      name: String
+      teamId: String!
+      teamMantra: String
+      team: Team @belongsTo(references: ["teamId", "teamMantra"])
+    }
+    type Team @model {
+      id: String! @primaryKey(sortKeyFields: ["mantra"])
+      mantra: String!
+      members: [Member] @hasMany(references: ["teamId", "teamMantra"])
+    }
+  `;
+
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError('reference fields must have consistent nullability');
 });
 
 test('hasMany / hasOne - belongsTo across data source type boundary', () => {
@@ -215,7 +322,7 @@ test('hasMany / hasOne - belongsTo across data source type boundary', () => {
     type Team @model {
       id: String! @primaryKey
       mantra: String
-      members: [Member!] @hasMany(references: "teamId")
+      members: [Member] @hasMany(references: "teamId")
       project: Project @hasOne(references: "teamId")
     }
   `;

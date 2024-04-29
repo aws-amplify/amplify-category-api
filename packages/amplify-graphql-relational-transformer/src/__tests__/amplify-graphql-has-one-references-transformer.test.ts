@@ -277,6 +277,74 @@ test('fails if object type fields are provided', () => {
   ).toThrowError('All reference fields provided to @hasOne must be scalar or enum fields.');
 });
 
+test('fails if primary relational field is required', () => {
+  const inputSchema = `
+  type Project @model {
+    name: String
+    teamId: String
+    team: Team @belongsTo(references: "teamId")
+  }
+
+  type Team @model {
+    id: String!
+    mantra: String
+    project: Project! @hasOne(references: "teamId")
+  }`;
+
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError("@hasOne fields must not be required. Change 'Team.project: Project!' to 'Team.project: Project'");
+});
+
+test('fails if related relational field is required', () => {
+  const inputSchema = `
+  type Project @model {
+    name: String
+    teamId: String
+    team: Team! @belongsTo(references: "teamId")
+  }
+
+  type Team @model {
+    id: String!
+    mantra: String
+    project: Project @hasOne(references: "teamId")
+  }`;
+
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError("@belongsTo fields must not be required. Change 'Project.team: Team!' to 'Project.team: Team'");
+});
+
+test('fails with inconsistent nullability of reference fields', () => {
+  const inputSchema = `
+    type Project @model {
+      name: String
+      teamId: String!
+      teamMantra: String
+      team: Team @belongsTo(references: ["teamId", "teamMantra"])
+    }
+
+    type Team @model {
+      id: String! @primaryKey(sortKeyFields: ["mantra"])
+      mantra: String!
+      project: Project @hasOne(references: ["teamId", "teamMantra"])
+    }
+  `;
+
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+    }),
+  ).toThrowError('reference fields must have consistent nullability');
+});
+
 test('has one references single partition key', () => {
   const inputSchema = `
     type Project @model {
