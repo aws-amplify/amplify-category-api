@@ -344,9 +344,9 @@ test('fails with inconsistent nullability of reference fields', () => {
     }),
   ).toThrowError(
     "Reference fields defined on related type: 'Project' for @hasOne(references: ['teamId', 'teamMantra']) Team.project relationship have inconsistent nullability." +
-    "\nRequired fields: 'teamId'" +
-    "\nNullable fields: 'teamMantra'" +
-    "\nUpdate reference fields on type 'Project' to have consistent nullability -- either all required or all nullable."
+      "\nRequired fields: 'teamId'" +
+      "\nNullable fields: 'teamMantra'" +
+      "\nUpdate reference fields on type 'Project' to have consistent nullability -- either all required or all nullable.",
   );
 });
 

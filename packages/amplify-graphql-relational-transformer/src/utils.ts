@@ -508,9 +508,9 @@ export const getReferencesNodes = (
       const referencesDescription = '[' + references.map((reference) => `'${reference}'`).join(', ') + ']';
       const fieldDescription = `@${directiveName}(references: ${referencesDescription}) ${config.object.name.value}.${config.field.name.value}`;
       throw new InvalidDirectiveError(
-          `Reference fields defined on related type: '${relatedType.name.value}' for ${fieldDescription} relationship have inconsistent nullability.` +
-           `\nRequired fields: ${nonNullReferenceFields}` +
-           `\nNullable fields: ${nullableReferenceFields}` +
+        `Reference fields defined on related type: '${relatedType.name.value}' for ${fieldDescription} relationship have inconsistent nullability.` +
+          `\nRequired fields: ${nonNullReferenceFields}` +
+          `\nNullable fields: ${nullableReferenceFields}` +
           `\nUpdate reference fields on type '${relatedType.name.value}' to have consistent nullability -- either all required or all nullable.`,
       );
     }
