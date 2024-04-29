@@ -176,10 +176,10 @@ export const createRdsLambda = (
  */
 export const createLayerVersionCustomResource = (scope: Construct, resourceNames: SQLLambdaResourceNames): AwsCustomResource => {
   const { SQLLayerManifestBucket, SQLLayerManifestBucketRegion, SQLLayerVersionManifestKeyPrefix } = ResourceConstants.RESOURCES;
-
+  const SQLLayerBetaManifestBucket = `${SQLLayerManifestBucket}-beta`;
   const key = Fn.join('', [SQLLayerVersionManifestKeyPrefix, Fn.ref('AWS::Region')]);
 
-  const manifestArn = `arn:aws:s3:::${SQLLayerManifestBucket}/${key}`;
+  const manifestArn = `arn:aws:s3:::${SQLLayerBetaManifestBucket}/${key}`;
 
   const resourceName = resourceNames.sqlLayerVersionResolverCustomResource;
   const customResource = new AwsCustomResource(scope, resourceName, {
@@ -189,7 +189,7 @@ export const createLayerVersionCustomResource = (scope: Construct, resourceNames
       action: 'getObject',
       region: SQLLayerManifestBucketRegion,
       parameters: {
-        Bucket: SQLLayerManifestBucket,
+        Bucket: SQLLayerBetaManifestBucket,
         Key: key,
       },
       // Make the physical ID change each time we do a deployment, so we always check for the latest version. This means we will never have
