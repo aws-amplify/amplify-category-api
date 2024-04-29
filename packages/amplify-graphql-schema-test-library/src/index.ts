@@ -502,7 +502,7 @@ export const schemas: { [key: string]: TransformerSchema } = {
         instanceId: ID!
         recordId: ID!
         content: String
-        related: [Related!] @hasMany(references: ["primaryTenantId", "primaryInstanceId", "primaryRecordId"])
+        related: [Related] @hasMany(references: ["primaryTenantId", "primaryInstanceId", "primaryRecordId"])
       }
       
       type Related @model {

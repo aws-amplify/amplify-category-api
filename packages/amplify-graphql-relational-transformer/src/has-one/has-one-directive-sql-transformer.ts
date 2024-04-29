@@ -7,7 +7,13 @@ import {
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
 import { setFieldMappingResolverReference } from '../resolvers';
 import { HasOneDirectiveConfiguration } from '../types';
-import { ensureReferencesArray, getReferencesNodes, validateParentReferencesFields, validateReferencesBidirectionality } from '../utils';
+import {
+  ensureReferencesArray,
+  getReferencesNodes,
+  validateParentReferencesFields,
+  validateReferencesBidirectionality,
+  validateReferencesRelationalFieldNullability,
+} from '../utils';
 import { getGenerator } from '../resolver/generator-factory';
 
 /**
@@ -34,6 +40,7 @@ export class HasOneDirectiveSQLTransformer implements DataSourceBasedDirectiveTr
   validate = (context: TransformerContextProvider, config: HasOneDirectiveConfiguration): void => {
     ensureReferencesArray(config);
     config.referenceNodes = getReferencesNodes(config, context);
+    validateReferencesRelationalFieldNullability(config);
     validateReferencesBidirectionality(config);
   };
 }

@@ -18,6 +18,7 @@ import {
   registerHasOneForeignKeyMappings,
   validateParentReferencesFields,
   validateReferencesBidirectionality,
+  validateReferencesRelationalFieldNullability,
 } from '../utils';
 
 /**
@@ -66,6 +67,7 @@ export class HasOneDirectiveDDBReferencesTransformer implements DataSourceBasedD
     }
     ensureReferencesArray(config);
     validateParentReferencesFields(config, context);
+    validateReferencesRelationalFieldNullability(config);
     const objectName = config.object.name.value;
     const fieldName = config.field.name.value;
     config.indexName = `gsi-${objectName}.${fieldName}`;

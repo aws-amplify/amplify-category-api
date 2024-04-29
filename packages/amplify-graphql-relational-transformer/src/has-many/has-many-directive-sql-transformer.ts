@@ -8,7 +8,13 @@ import { DataSourceBasedDirectiveTransformer } from '../data-source-based-direct
 import { getGenerator } from '../resolver/generator-factory';
 import { setFieldMappingResolverReference } from '../resolvers';
 import { HasManyDirectiveConfiguration } from '../types';
-import { ensureReferencesArray, getReferencesNodes, validateParentReferencesFields, validateReferencesBidirectionality } from '../utils';
+import {
+  ensureReferencesArray,
+  getReferencesNodes,
+  validateParentReferencesFields,
+  validateReferencesBidirectionality,
+  validateReferencesRelationalFieldNullability,
+} from '../utils';
 
 /**
  * HasManyDirectiveSQLTransformer executes transformations based on `@hasMany(references: [String!])` configurations
@@ -34,6 +40,7 @@ export class HasManyDirectiveSQLTransformer implements DataSourceBasedDirectiveT
   validate = (context: TransformerContextProvider, config: HasManyDirectiveConfiguration): void => {
     ensureReferencesArray(config);
     config.referenceNodes = getReferencesNodes(config, context);
+    validateReferencesRelationalFieldNullability(config);
     validateReferencesBidirectionality(config);
   };
 }
