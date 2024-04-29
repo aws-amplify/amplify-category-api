@@ -199,6 +199,7 @@ export const createLayerVersionCustomResource = (scope: Construct, resourceNames
     policy: AwsCustomResourcePolicy.fromSdkCalls({
       resources: [manifestArn],
     }),
+    installLatestAwsSdk: false,
   });
 
   return customResource;
@@ -233,6 +234,7 @@ export const createSNSTopicARNCustomResource = (scope: Construct, resourceNames:
     policy: AwsCustomResourcePolicy.fromSdkCalls({
       resources: [manifestArn],
     }),
+    installLatestAwsSdk: false,
   });
 
   return customResource;
