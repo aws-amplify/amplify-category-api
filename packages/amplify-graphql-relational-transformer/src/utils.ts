@@ -490,12 +490,29 @@ export const getReferencesNodes = (
     return fieldNode;
   });
 
-  // Ensure that the reference fields have consistent nullability
+  // Validate that the reference fields have consistent nullability
   const firstReferenceNodeIsNonNull = referenceNodes[0].type.kind === Kind.NON_NULL_TYPE;
-  referenceNodes.slice(1).forEach((node) => {
-    const isNonNull = node.type.kind === Kind.NON_NULL_TYPE;
+  referenceNodes.slice(1).forEach((referenceNode) => {
+    const isNonNull = referenceNode.type.kind === Kind.NON_NULL_TYPE;
     if (isNonNull !== firstReferenceNodeIsNonNull) {
-      throw new InvalidDirectiveError('reference fields must have consistent nullability');
+      const nonNullReferenceFields = referenceNodes
+        .filter((node) => node.type.kind === Kind.NON_NULL_TYPE)
+        .map((node) => `'${node.name.value}'`)
+        .join(', ');
+
+      const nullableReferenceFields = referenceNodes
+        .filter((node) => node.type.kind !== Kind.NON_NULL_TYPE)
+        .map((node) => `'${node.name.value}'`)
+        .join(', ');
+
+      const referencesDescription = '[' + references.map((reference) => `'${reference}'`).join(', ') + ']';
+      const fieldDescription = `@${directiveName}(references: ${referencesDescription}) ${config.object.name.value}.${config.field.name.value}`;
+      throw new InvalidDirectiveError(
+          `Reference fields defined on related type: '${relatedType.name.value}' for ${fieldDescription} relationship have inconsistent nullability.` +
+           `\nRequired fields: ${nonNullReferenceFields}` +
+           `\nNullable fields: ${nullableReferenceFields}` +
+          `\nUpdate reference fields on type '${relatedType.name.value}' to have consistent nullability -- either all required or all nullable.`,
+      );
     }
   });
 

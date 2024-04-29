@@ -342,7 +342,12 @@ test('fails with inconsistent nullability of reference fields', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('reference fields must have consistent nullability');
+  ).toThrowError(
+    "Reference fields defined on related type: 'Project' for @hasOne(references: ['teamId', 'teamMantra']) Team.project relationship have inconsistent nullability." +
+    "\nRequired fields: 'teamId'" +
+    "\nNullable fields: 'teamMantra'" +
+    "\nUpdate reference fields on type 'Project' to have consistent nullability -- either all required or all nullable."
+  );
 });
 
 test('has one references single partition key', () => {

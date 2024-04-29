@@ -300,7 +300,12 @@ test('fails with inconsistent nullability of reference fields', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('reference fields must have consistent nullability');
+  ).toThrowError(
+    "Reference fields defined on related type: 'Member' for @hasMany(references: ['teamId', 'teamMantra']) Team.members relationship have inconsistent nullability." +
+    "\nRequired fields: 'teamId'" +
+    "\nNullable fields: 'teamMantra'" +
+    "\nUpdate reference fields on type 'Member' to have consistent nullability -- either all required or all nullable."
+  );
 });
 
 test('hasMany / hasOne - belongsTo across data source type boundary', () => {
