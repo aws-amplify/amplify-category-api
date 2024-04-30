@@ -4,6 +4,7 @@ import ora from 'ora';
 import { Field, Index } from '../schema-representation';
 import { DataSourceAdapter } from './datasource-adapter';
 import { MySQLStringDataSourceAdapter } from './mysql-string-datasource-adapter';
+import { getSSLConfig } from '../certs';
 
 const spinner = ora();
 export interface MySQLDataSourceConfig {
@@ -55,7 +56,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
       port: this.config.port,
       user: this.config.username,
       password: this.config.password,
-      ssl: { rejectUnauthorized: false },
+      ssl: getSSLConfig(this.config.host),
     };
     try {
       this.dbBuilder = knex({
