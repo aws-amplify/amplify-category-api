@@ -1331,5 +1331,45 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
         });
       }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access customGetTodoStaticGroup on type Query"`);
     });
+
+    test.only('multiple dynamic auth rule model should respect owner rule when groups field is null', async () => {
+      const modelName = 'TodoOwnerAndGroup';
+      const modelHelper = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema)[modelName];
+      const todo = {
+        id: Date.now().toString(),
+        content: 'Todo',
+        groupsField: null,
+        owners: [userName1],
+      };
+      const createResult = await modelHelper.create(`create${modelName}`, todo);
+      expect(createResult.data.createTodoOwnerAndGroup).toBeDefined();
+      expect(createResult.data.createTodoOwnerAndGroup.id).toEqual(todo.id);
+      expect(createResult.data.createTodoOwnerAndGroup.content).toEqual(todo.content);
+      expect(createResult.data.createTodoOwnerAndGroup.groupsField).toEqual(null);
+      expect(createResult.data.createTodoOwnerAndGroup.owners).toBeDefined();
+      expect(createResult.data.createTodoOwnerAndGroup.owners).toHaveLength(1);
+  
+      const updatedTodo = {
+        id: todo.id,
+        content: 'Todo-Updated',
+      };
+      const updateResult = await modelHelper.update(`update${modelName}`, updatedTodo);
+      expect(updateResult.data.updateTodoOwnerAndGroup).toBeDefined();
+      expect(updateResult.data.updateTodoOwnerAndGroup.id).toEqual(updatedTodo.id);
+      expect(updateResult.data.updateTodoOwnerAndGroup.content).toEqual(updatedTodo.content);
+      expect(updateResult.data.updateTodoOwnerAndGroup.groupsField).toEqual(null);
+      expect(updateResult.data.updateTodoOwnerAndGroup.owners).toBeDefined();
+      expect(updateResult.data.updateTodoOwnerAndGroup.owners).toHaveLength(1);
+  
+      const getResult = await modelHelper.get({
+        id: updatedTodo.id,
+      });
+      expect(getResult.data.getTodoOwnerAndGroup).toBeDefined();
+      expect(getResult.data.getTodoOwnerAndGroup.id).toEqual(updatedTodo.id);
+      expect(getResult.data.getTodoOwnerAndGroup.content).toEqual(updatedTodo.content);
+      expect(getResult.data.getTodoOwnerAndGroup.groupsField).toEqual(null);
+      expect(getResult.data.getTodoOwnerAndGroup.owners).toBeDefined();
+      expect(getResult.data.getTodoOwnerAndGroup.owners).toHaveLength(1);
+    });
   });
 };
