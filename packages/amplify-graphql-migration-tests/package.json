@@ -67,7 +67,7 @@
     "@aws-amplify/graphql-transformer-interfaces": "3.7.0",
     "@aws-amplify/graphql-transformer-migrator": "2.2.22",
     "@aws-amplify/graphql-transformer-test-utils": "0.5.1",
-    "@aws-cdk/cloudformation-diff": "~2.80.0",
+    "@aws-cdk/cloudformation-diff": "~2.129.0",
     "aws-cdk-lib": "~2.129.0",
     "fs-extra": "^8.1.0",
     "graphql-auth-transformer": "7.2.79",
