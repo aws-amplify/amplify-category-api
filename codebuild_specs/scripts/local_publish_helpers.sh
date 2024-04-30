@@ -56,6 +56,7 @@ function changeSudoNpmGlobalPath {
 
 function setNpmRegistryUrlToLocal {
     # Set registry to local registry
+    echo "Setting custom NPM registry: $custom_registry_url."
     npm set registry "$custom_registry_url"
     yarn config set registry "$custom_registry_url"
 }
