@@ -1927,8 +1927,8 @@ exports[`rds simple model with apiKey and iam access 7`] = `
   \\"type\\": \\"public\\",
   \\"provider\\": \\"apiKey\\"
 }))
-  #set( $authResult = $util.authRules.queryAuth($authRules) )
-  #if( !$authResult || ($authResult && !$authResult.authorized) )
+  #set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
+  #if( !$authResult )
     $util.unauthorized()
   #end
   #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -1971,8 +1971,8 @@ exports[`rds simple model with apiKey and iam access 9`] = `
   \\"type\\": \\"public\\",
   \\"provider\\": \\"apiKey\\"
 }))
-  #set( $authResult = $util.authRules.queryAuth($authRules) )
-  #if( !$authResult || ($authResult && !$authResult.authorized) )
+  #set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
+  #if( !$authResult )
     $util.unauthorized()
   #end
   #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -2272,8 +2272,8 @@ $util.qr($authRules.add({
   \\"type\\": \\"public\\",
   \\"provider\\": \\"apiKey\\"
 }))
-#set( $authResult = $util.authRules.queryAuth($authRules) )
-#if( !$authResult || ($authResult && !$authResult.authorized) )
+#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
+#if( !$authResult )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -2308,8 +2308,8 @@ $util.qr($authRules.add({
   \\"type\\": \\"public\\",
   \\"provider\\": \\"apiKey\\"
 }))
-#set( $authResult = $util.authRules.queryAuth($authRules) )
-#if( !$authResult || ($authResult && !$authResult.authorized) )
+#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
+#if( !$authResult )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -2613,8 +2613,8 @@ exports[`rds simple model with iam provider and iam access 7`] = `
   \\"provider\\": \\"iam\\",
   \\"roleArn\\": $ctx.stash.unauthRole
 }))
-  #set( $authResult = $util.authRules.queryAuth($authRules) )
-  #if( !$authResult || ($authResult && !$authResult.authorized) )
+  #set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
+  #if( !$authResult )
     $util.unauthorized()
   #end
   #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -2658,8 +2658,8 @@ exports[`rds simple model with iam provider and iam access 9`] = `
   \\"provider\\": \\"iam\\",
   \\"roleArn\\": $ctx.stash.unauthRole
 }))
-  #set( $authResult = $util.authRules.queryAuth($authRules) )
-  #if( !$authResult || ($authResult && !$authResult.authorized) )
+  #set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
+  #if( !$authResult )
     $util.unauthorized()
   #end
   #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -2994,8 +2994,8 @@ exports[`rds simple model with iam provider and iam access and non default AWS_I
   \\"provider\\": \\"iam\\",
   \\"roleArn\\": $ctx.stash.unauthRole
 }))
-  #set( $authResult = $util.authRules.queryAuth($authRules) )
-  #if( !$authResult || ($authResult && !$authResult.authorized) )
+  #set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
+  #if( !$authResult )
     $util.unauthorized()
   #end
   #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -3039,8 +3039,8 @@ exports[`rds simple model with iam provider and iam access and non default AWS_I
   \\"provider\\": \\"iam\\",
   \\"roleArn\\": $ctx.stash.unauthRole
 }))
-  #set( $authResult = $util.authRules.queryAuth($authRules) )
-  #if( !$authResult || ($authResult && !$authResult.authorized) )
+  #set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
+  #if( !$authResult )
     $util.unauthorized()
   #end
   #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -3347,8 +3347,8 @@ $util.qr($authRules.add({
   \\"provider\\": \\"iam\\",
   \\"roleArn\\": $ctx.stash.unauthRole
 }))
-#set( $authResult = $util.authRules.queryAuth($authRules) )
-#if( !$authResult || ($authResult && !$authResult.authorized) )
+#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
+#if( !$authResult )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -3384,8 +3384,8 @@ $util.qr($authRules.add({
   \\"provider\\": \\"iam\\",
   \\"roleArn\\": $ctx.stash.unauthRole
 }))
-#set( $authResult = $util.authRules.queryAuth($authRules) )
-#if( !$authResult || ($authResult && !$authResult.authorized) )
+#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
+#if( !$authResult )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )

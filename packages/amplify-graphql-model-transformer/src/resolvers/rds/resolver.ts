@@ -488,7 +488,6 @@ export const generateLambdaRequestTemplate = (
       set(ref('lambdaInput.operationName'), str(operationName)),
       set(ref('lambdaInput.args.metadata'), obj({})),
       set(ref('lambdaInput.args.metadata.keys'), list([])),
-      constructAuthFilterStatement('lambdaInput.args.metadata.authFilter'),
       constructNonScalarFieldsStatement(tableName, ctx),
       constructArrayFieldsStatement(tableName, ctx),
       constructFieldMappingInput(),
