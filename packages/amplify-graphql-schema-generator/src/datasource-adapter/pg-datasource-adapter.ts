@@ -1,7 +1,8 @@
 import { knex } from 'knex';
-import { invokeSchemaInspectorLambda } from '../utils/vpc-helper';
 import ora from 'ora';
-import { EnumType, Field, FieldDataType, FieldType, Index } from '../schema-representation';
+import { invokeSchemaInspectorLambda } from '../utils/vpc-helper';
+import { Field, Index } from '../schema-representation';
+import { getSSLConfig } from '../utils';
 import { DataSourceAdapter } from './datasource-adapter';
 import { PostgresStringDataSourceAdapter, expectedColumns } from './pg-string-datasource-adapter';
 
@@ -57,7 +58,7 @@ export class PostgresDataSourceAdapter extends DataSourceAdapter {
       port: this.config.port,
       user: this.config.username,
       password: this.config.password,
-      ssl: { rejectUnauthorized: false },
+      ssl: getSSLConfig(this.config.host),
     };
     try {
       this.dbBuilder = knex({
