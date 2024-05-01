@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.1-cdk-upgrade-2.129.0.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.9.0...@aws-amplify/graphql-model-transformer@2.9.1-cdk-upgrade-2.129.0.0) (2024-05-01)
+
+### Bug Fixes
+
+- **graphql-relational-transformer:** nullability enforcement for references relational fields ([#2510](https://github.com/aws-amplify/amplify-category-api/issues/2510)) ([d540097](https://github.com/aws-amplify/amplify-category-api/commit/d54009736092410b2d6e78ebf116a38298bf03ce))
+- set installLatestAwsSdk on AwsCustomResource to false ([#2509](https://github.com/aws-amplify/amplify-category-api/issues/2509)) ([53665c0](https://github.com/aws-amplify/amplify-category-api/commit/53665c05122ce2339c8c5358b9b6b57395e4de87))
+
+### Performance Improvements
+
+- **graphql-model-transformer:** minimal provider framework and inline policies ([#2490](https://github.com/aws-amplify/amplify-category-api/issues/2490)) ([a86c816](https://github.com/aws-amplify/amplify-category-api/commit/a86c816ceb288376c4dfa9b1d12413edd28cf75e))
+
 # [2.9.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.8.0...@aws-amplify/graphql-model-transformer@2.9.0) (2024-04-26)
 
 ### Bug Fixes

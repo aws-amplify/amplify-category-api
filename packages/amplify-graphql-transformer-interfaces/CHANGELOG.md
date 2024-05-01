@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.7.1-cdk-upgrade-2.129.0.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.7.0...@aws-amplify/graphql-transformer-interfaces@3.7.1-cdk-upgrade-2.129.0.0) (2024-05-01)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces
+
 # [3.7.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.6.0...@aws-amplify/graphql-transformer-interfaces@3.7.0) (2024-04-26)
 
 ### Features

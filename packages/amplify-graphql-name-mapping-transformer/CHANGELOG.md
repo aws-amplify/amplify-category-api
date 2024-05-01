@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.13-cdk-upgrade-2.129.0.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.12...@aws-amplify/graphql-maps-to-transformer@3.4.13-cdk-upgrade-2.129.0.0) (2024-05-01)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
 ## [3.4.12](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.11...@aws-amplify/graphql-maps-to-transformer@3.4.12) (2024-04-26)
 
 ### Bug Fixes

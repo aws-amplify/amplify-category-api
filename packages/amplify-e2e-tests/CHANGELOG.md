@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.22.1-cdk-upgrade-2.129.0.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.0...amplify-category-api-e2e-tests@3.22.1-cdk-upgrade-2.129.0.0) (2024-05-01)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
 # [3.22.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.21.1...amplify-category-api-e2e-tests@3.22.0) (2024-04-26)
 
 ### Features
