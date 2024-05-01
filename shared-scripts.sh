@@ -164,6 +164,14 @@ function _publishToLocalRegistry {
 
     _generateChangeLog
 }
+function _publishLocalWorkspace {
+    source codebuild_specs/scripts/local_publish_helpers.sh
+    startLocalRegistry "$(pwd)/codebuild_specs/scripts/verdaccio.yaml"
+    setNpmRegistryUrlToLocal
+    setNpmTag
+    yarn publish-to-verdaccio
+    unsetNpmRegistryUrl
+}
 function _generateChangeLog {
     echo "Generate Change Log"
     git reset --hard HEAD
