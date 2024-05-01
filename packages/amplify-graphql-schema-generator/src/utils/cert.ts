@@ -23,6 +23,6 @@ const getRDSCertificate = (): string => {
   // The certificate is publicly available and downloaded from https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem
   // Proxies require
   const RDS_CERT_FILE_NAME = 'aws-rds-global-bundle.pem';
-  const RDS_CERT_FILE_PATH = path.join(__dirname, RDS_CERT_FILE_NAME);
+  const RDS_CERT_FILE_PATH = path.join(__dirname, '..', '..', 'certs', RDS_CERT_FILE_NAME);
   return fs.readFileSync(RDS_CERT_FILE_PATH, 'utf-8');
 };

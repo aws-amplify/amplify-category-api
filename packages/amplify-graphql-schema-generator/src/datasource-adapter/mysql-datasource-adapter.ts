@@ -1,10 +1,10 @@
 import { knex } from 'knex';
-import { invokeSchemaInspectorLambda } from '../utils/vpc-helper';
 import ora from 'ora';
+import { invokeSchemaInspectorLambda } from '../utils/vpc-helper';
 import { Field, Index } from '../schema-representation';
+import { getSSLConfig } from '../utils';
 import { DataSourceAdapter } from './datasource-adapter';
 import { MySQLStringDataSourceAdapter } from './mysql-string-datasource-adapter';
-import { getSSLConfig } from '../certs';
 
 const spinner = ora();
 export interface MySQLDataSourceConfig {

@@ -1,4 +1,3 @@
-import * as path from 'path';
 import * as fs from 'fs';
 import knex, { Knex } from 'knex';
 
@@ -36,8 +35,7 @@ export const establishDBConnection = (config: any): any => {
 };
 
 const getRDSCertificate = (): string => {
-  // This certificate file is copied from the parent folder `amplify-graphql-schema-generator/src/certs/aws-rds-global-bundle.pem`.
+  // This certificate file is copied from the parent folder `amplify-graphql-schema-generator/certs/aws-rds-global-bundle.pem`.
   const RDS_CERT_FILE_NAME = 'aws-rds-global-bundle.pem';
-  const RDS_CERT_FILE_PATH = path.join(__dirname, RDS_CERT_FILE_NAME);
-  return fs.readFileSync(RDS_CERT_FILE_PATH, 'utf-8');
+  return fs.readFileSync(RDS_CERT_FILE_NAME, 'utf-8');
 };

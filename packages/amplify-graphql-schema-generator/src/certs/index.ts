@@ -1,1 +1,0 @@
-export { getSSLConfig } from './cert';
