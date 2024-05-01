@@ -345,4 +345,45 @@ describe('ModelTransformer with SQL data sources:', () => {
     expect(envVars.CREDENTIAL_STORAGE_METHOD).toEqual('SSM');
     expect(envVars.SSM_ENDPOINT).toBeDefined();
   });
+
+  it('should tag the SQL function', async () => {
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlStrategy),
+    });
+    expect(out).toBeDefined();
+    const resourceNames = getResourceNamesForStrategy(mysqlStrategy);
+    const sqlApiStack = out.stacks[resourceNames.sqlStack];
+    expect(sqlApiStack).toBeDefined();
+    expect(sqlApiStack.Resources).toBeDefined();
+
+    const sqlFunction = Object.entries(sqlApiStack.Resources!).find(([key, _]) => key.startsWith(resourceNames.sqlLambdaFunction));
+    expect(sqlFunction).toBeDefined();
+
+    const tags = sqlFunction![1].Properties.Tags;
+    expect(tags).toBeDefined();
+    expect(tags.length).toEqual(1);
+    expect(tags[0].Key).toEqual('amplify:function-type');
+    expect(tags[0].Value).toEqual('sql-data-source');
+  });
+
+  it('should add a description to the SQL function', async () => {
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlStrategy),
+    });
+    expect(out).toBeDefined();
+    const resourceNames = getResourceNamesForStrategy(mysqlStrategy);
+    const sqlApiStack = out.stacks[resourceNames.sqlStack];
+    expect(sqlApiStack).toBeDefined();
+    expect(sqlApiStack.Resources).toBeDefined();
+
+    const sqlFunction = Object.entries(sqlApiStack.Resources!).find(([key, _]) => key.startsWith(resourceNames.sqlLambdaFunction));
+    expect(sqlFunction).toBeDefined();
+
+    const description = sqlFunction![1].Properties.Description;
+    expect(description).toEqual('Amplify-managed SQL function');
+  });
 });

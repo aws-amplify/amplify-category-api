@@ -10,6 +10,9 @@
 # Dependency Licensing approval
 dependency_licenses.txt @aws-amplify/amplify-data-admins
 
+# RDS certificate approval
+aws-rds-global-bundle.pem @aws-amplify/amplify-data-admins
+
 # Changes to CI/CD scripts/buildspecs need admin approval, except as noted
 /codebuild_specs/ @aws-amplify/amplify-data-admins
 /scripts/ @aws-amplify/amplify-data-admins

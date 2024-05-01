@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-relational-transformer",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "description": "Amplify GraphQL relational modeling transformers",
   "repository": {
     "type": "git",
@@ -29,8 +29,8 @@
   },
   "dependencies": {
     "@aws-amplify/graphql-directives": "1.1.0",
-    "@aws-amplify/graphql-index-transformer": "2.4.0",
-    "@aws-amplify/graphql-model-transformer": "2.9.0",
+    "@aws-amplify/graphql-index-transformer": "2.4.1",
+    "@aws-amplify/graphql-model-transformer": "2.9.1",
     "@aws-amplify/graphql-transformer-core": "2.7.0",
     "@aws-amplify/graphql-transformer-interfaces": "3.7.0",
     "graphql": "^15.5.0",
