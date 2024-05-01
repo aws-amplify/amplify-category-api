@@ -73,6 +73,7 @@ export interface TransformHostProvider {
     timeout?: Duration,
     scope?: Construct,
     vpc?: VpcConfig,
+    description?: string,
   ) => IFunction;
 
   getDataSource: (name: string) => BaseDataSource | void;
