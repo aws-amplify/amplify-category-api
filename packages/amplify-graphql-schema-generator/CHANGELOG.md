@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.8.3...@aws-amplify/graphql-schema-generator@0.8.4) (2024-05-01)
+
+### Bug Fixes
+
+- enable ssl for generate schema command ([#2516](https://github.com/aws-amplify/amplify-category-api/issues/2516)) ([4e7e122](https://github.com/aws-amplify/amplify-category-api/commit/4e7e12283292cda3c485d50a657dcf82c570fd73))
+
 ## [0.8.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.8.2...@aws-amplify/graphql-schema-generator@0.8.3) (2024-04-26)
 
 ### Bug Fixes
