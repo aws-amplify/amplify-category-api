@@ -1694,7 +1694,7 @@ describe('ModelTransformer:', () => {
             tags: [String!]
             attachments: Attachment
         }
-  
+
         type Attachment {
           report: String!
           image: String!
@@ -2207,6 +2207,113 @@ describe('ModelTransformer:', () => {
           '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
         );
       });
+    });
+  });
+
+  describe('No global auth', () => {
+    it('sandbox mode + IAM access enabled', () => {
+      const schema = `
+      type Post @model {
+          id: ID! @primaryKey
+          title: String!
+      }
+    `;
+
+      const out = testTransform({
+        schema,
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        transformParameters: {
+          sandboxModeEnabled: true,
+        },
+        synthParameters: {
+          enableIamAccess: true,
+        },
+      });
+
+      const parsed = parse(out.schema);
+      validateModelSchema(parsed);
+
+      const postType = getObjectType(parsed, 'Post')!;
+      expect(postType).toBeDefined();
+      expect(postType.directives).toBeDefined();
+      expect(postType.directives!.length).toEqual(2);
+      const directiveNames = postType.directives!.map((dir) => dir.name.value);
+      expect(directiveNames).toContain('aws_api_key');
+      expect(directiveNames).toContain('aws_iam');
+    });
+
+    it('sandbox mode + default authentication not API_KEY', () => {
+      const schema = `
+      type Post @model {
+          id: ID! @primaryKey
+          title: String!
+      }
+    `;
+
+      const out = testTransform({
+        schema,
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        transformParameters: {
+          sandboxModeEnabled: true,
+        },
+        authConfig: {
+          defaultAuthentication: {
+            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+          },
+          additionalAuthenticationProviders: [
+            {
+              authenticationType: 'API_KEY',
+            },
+          ],
+        },
+      });
+
+      const parsed = parse(out.schema);
+      validateModelSchema(parsed);
+
+      const postType = getObjectType(parsed, 'Post')!;
+      expect(postType).toBeDefined();
+      expect(postType.directives).toBeDefined();
+      expect(postType.directives!.length).toEqual(1);
+      const directiveNames = postType.directives!.map((dir) => dir.name.value);
+      expect(directiveNames).toContain('aws_api_key');
+    });
+
+    it('IAM access enabled + default authentication not AWS_IAM', () => {
+      const schema = `
+      type Post @model {
+          id: ID! @primaryKey
+          title: String!
+      }
+    `;
+
+      const out = testTransform({
+        schema,
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        synthParameters: {
+          enableIamAccess: true,
+        },
+        authConfig: {
+          defaultAuthentication: {
+            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+          },
+          additionalAuthenticationProviders: [
+            {
+              authenticationType: 'AWS_IAM',
+            },
+          ],
+        },
+      });
+
+      const parsed = parse(out.schema);
+      validateModelSchema(parsed);
+
+      const postType = getObjectType(parsed, 'Post')!;
+      expect(postType).toBeDefined();
+      expect(postType.directives).toBeDefined();
+      expect(postType.directives!.length).toEqual(1);
+      const directiveNames = postType.directives!.map((dir) => dir.name.value);
+      expect(directiveNames).toContain('aws_iam');
     });
   });
 });

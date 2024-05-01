@@ -10,7 +10,7 @@ exports[`@belongsTo directive with RDS datasource composite key should generate 
 type Profile {
   profileId: String!
   userFirstName: String
-  userLastName: String!
+  userLastName: String
   user: User
 }
 
@@ -255,7 +255,7 @@ input ModelProfileConditionInput {
 input CreateProfileInput {
   profileId: String!
   userFirstName: String
-  userLastName: String!
+  userLastName: String
 }
 
 input UpdateProfileInput {

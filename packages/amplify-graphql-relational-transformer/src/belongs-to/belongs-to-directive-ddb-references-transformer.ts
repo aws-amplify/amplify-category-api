@@ -14,6 +14,7 @@ import {
   registerHasOneForeignKeyMappings,
   validateChildReferencesFields,
   validateReferencesBidirectionality,
+  validateReferencesRelationalFieldNullability,
 } from '../utils';
 
 /**
@@ -54,6 +55,7 @@ export class BelongsToDirectiveDDBReferencesTransformer implements DataSourceBas
   validate = (context: TransformerContextProvider, config: BelongsToDirectiveConfiguration): void => {
     ensureReferencesArray(config);
     validateChildReferencesFields(config, context as TransformerContextProvider);
+    validateReferencesRelationalFieldNullability(config);
     config.referenceNodes = getBelongsToReferencesNodes(config, context);
     validateReferencesBidirectionality(config);
   };

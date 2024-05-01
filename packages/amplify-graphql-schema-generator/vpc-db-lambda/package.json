@@ -14,7 +14,7 @@
   "dependencies": {
     "@aws-sdk/client-lambda": "3.338.0",
     "knex": "~2.4.0",
-    "mysql2": "~3.9.4",
+    "mysql2": "~3.9.7",
     "pg": "~8.11.3"
   }
 }

@@ -176,6 +176,12 @@ export const getParentNode: (ancestors: any[]) => ObjectTypeDefinitionNode | und
 export const getRefersToDirective: (name: string) => DirectiveNode;
 
 // @public (undocumented)
+export const getSSLConfig: (host: string) => {
+    rejectUnauthorized: boolean;
+    ca?: string;
+};
+
+// @public (undocumented)
 export const graphqlSchemaFromSQLSchema: (sqlSchema: string, engineType: ImportedRDSType) => string;
 
 // @public (undocumented)
