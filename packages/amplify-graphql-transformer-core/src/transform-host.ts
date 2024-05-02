@@ -249,6 +249,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     timeout?: Duration,
     scope?: Construct,
     vpc?: VpcConfig,
+    description?: string,
   ): IFunction => {
     const dummyCode = 'if __name__ == "__main__":'; // assing dummy code so as to be overriden later
     const fn = new Function(scope || this.api, functionName, {
@@ -259,6 +260,7 @@ export class DefaultTransformHost implements TransformHostProvider {
       layers,
       environment,
       timeout,
+      description,
     });
     fn.addLayers();
     const cfnFn = fn.node.defaultChild as CfnFunction;
