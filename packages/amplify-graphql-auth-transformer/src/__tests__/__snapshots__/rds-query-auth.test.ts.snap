@@ -18,8 +18,8 @@ $util.qr($authRules.add({
   \\"roleArn\\": $ctx.stash.authRole,
   \\"cognitoIdentityPoolId\\": $ctx.stash.identityPoolId
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -56,8 +56,8 @@ $util.qr($authRules.add({
   \\"roleArn\\": $ctx.stash.authRole,
   \\"cognitoIdentityPoolId\\": $ctx.stash.identityPoolId
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -93,8 +93,8 @@ $util.qr($authRules.add({
   \\"provider\\": \\"iam\\",
   \\"roleArn\\": $ctx.stash.unauthRole
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -130,8 +130,8 @@ $util.qr($authRules.add({
   \\"provider\\": \\"iam\\",
   \\"roleArn\\": $ctx.stash.unauthRole
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -166,8 +166,8 @@ $util.qr($authRules.add({
   \\"type\\": \\"public\\",
   \\"provider\\": \\"apiKey\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -202,8 +202,8 @@ $util.qr($authRules.add({
   \\"type\\": \\"public\\",
   \\"provider\\": \\"apiKey\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -238,8 +238,8 @@ $util.qr($authRules.add({
   \\"type\\": \\"private\\",
   \\"provider\\": \\"userPools\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -274,8 +274,8 @@ $util.qr($authRules.add({
   \\"type\\": \\"private\\",
   \\"provider\\": \\"userPools\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -312,8 +312,8 @@ $util.qr($authRules.add({
   \\"ownerFieldName\\": \\"owner\\",
   \\"ownerFieldType\\": \\"string\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -350,8 +350,8 @@ $util.qr($authRules.add({
   \\"ownerFieldName\\": \\"owner\\",
   \\"ownerFieldType\\": \\"string\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -388,8 +388,8 @@ $util.qr($authRules.add({
   \\"ownerFieldName\\": \\"owners\\",
   \\"ownerFieldType\\": \\"string[]\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -426,8 +426,8 @@ $util.qr($authRules.add({
   \\"ownerFieldName\\": \\"owners\\",
   \\"ownerFieldType\\": \\"string[]\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -470,8 +470,8 @@ $util.qr($authRules.add({
   \\"allowedGroups\\":   [\\"Moderator\\"],
   \\"groupClaim\\": \\"cognito:groups\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -514,8 +514,8 @@ $util.qr($authRules.add({
   \\"allowedGroups\\":   [\\"Moderator\\"],
   \\"groupClaim\\": \\"cognito:groups\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -553,8 +553,8 @@ $util.qr($authRules.add({
   \\"groupsFieldType\\": \\"string\\",
   \\"groupClaim\\": \\"cognito:groups\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -592,8 +592,8 @@ $util.qr($authRules.add({
   \\"groupsFieldType\\": \\"string\\",
   \\"groupClaim\\": \\"cognito:groups\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -631,8 +631,8 @@ $util.qr($authRules.add({
   \\"groupsFieldType\\": \\"string[]\\",
   \\"groupClaim\\": \\"cognito:groups\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -670,8 +670,8 @@ $util.qr($authRules.add({
   \\"groupsFieldType\\": \\"string[]\\",
   \\"groupClaim\\": \\"cognito:groups\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -706,8 +706,8 @@ $util.qr($authRules.add({
   \\"type\\": \\"custom\\",
   \\"provider\\": \\"function\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -742,8 +742,8 @@ $util.qr($authRules.add({
   \\"type\\": \\"custom\\",
   \\"provider\\": \\"function\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -780,8 +780,8 @@ $util.qr($authRules.add({
   \\"roleArn\\": $ctx.stash.authRole,
   \\"cognitoIdentityPoolId\\": $ctx.stash.identityPoolId
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -818,8 +818,8 @@ $util.qr($authRules.add({
   \\"roleArn\\": $ctx.stash.authRole,
   \\"cognitoIdentityPoolId\\": $ctx.stash.identityPoolId
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -855,8 +855,8 @@ $util.qr($authRules.add({
   \\"provider\\": \\"iam\\",
   \\"roleArn\\": $ctx.stash.unauthRole
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -892,8 +892,8 @@ $util.qr($authRules.add({
   \\"provider\\": \\"iam\\",
   \\"roleArn\\": $ctx.stash.unauthRole
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -928,8 +928,8 @@ $util.qr($authRules.add({
   \\"type\\": \\"private\\",
   \\"provider\\": \\"oidc\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -964,8 +964,8 @@ $util.qr($authRules.add({
   \\"type\\": \\"private\\",
   \\"provider\\": \\"oidc\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -1003,8 +1003,8 @@ $util.qr($authRules.add({
   \\"ownerFieldType\\": \\"string\\",
   \\"identityClaim\\": \\"sub::username\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -1042,8 +1042,8 @@ $util.qr($authRules.add({
   \\"ownerFieldType\\": \\"string\\",
   \\"identityClaim\\": \\"sub::username\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -1081,8 +1081,8 @@ $util.qr($authRules.add({
   \\"ownerFieldType\\": \\"string[]\\",
   \\"identityClaim\\": \\"sub::username\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -1120,8 +1120,8 @@ $util.qr($authRules.add({
   \\"ownerFieldType\\": \\"string[]\\",
   \\"identityClaim\\": \\"sub::username\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -1164,8 +1164,8 @@ $util.qr($authRules.add({
   \\"allowedGroups\\":   [\\"Moderator\\"],
   \\"groupClaim\\": \\"cognito:groups\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -1208,8 +1208,8 @@ $util.qr($authRules.add({
   \\"allowedGroups\\":   [\\"Moderator\\"],
   \\"groupClaim\\": \\"cognito:groups\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -1247,8 +1247,8 @@ $util.qr($authRules.add({
   \\"groupsFieldType\\": \\"string\\",
   \\"groupClaim\\": \\"cognito:groups\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -1286,8 +1286,8 @@ $util.qr($authRules.add({
   \\"groupsFieldType\\": \\"string\\",
   \\"groupClaim\\": \\"cognito:groups\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -1325,8 +1325,8 @@ $util.qr($authRules.add({
   \\"groupsFieldType\\": \\"string[]\\",
   \\"groupClaim\\": \\"cognito:groups\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -1364,8 +1364,8 @@ $util.qr($authRules.add({
   \\"groupsFieldType\\": \\"string[]\\",
   \\"groupClaim\\": \\"cognito:groups\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )

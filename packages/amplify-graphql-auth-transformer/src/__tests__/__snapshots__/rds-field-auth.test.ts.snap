@@ -150,8 +150,8 @@ $util.qr($authRules.add({
   \\"groupsFieldType\\": \\"string[]\\",
   \\"groupClaim\\": \\"cognito:groups\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
@@ -192,8 +192,8 @@ $util.qr($authRules.add({
   \\"groupsFieldType\\": \\"string[]\\",
   \\"groupClaim\\": \\"cognito:groups\\"
 }))
-#set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
-#if( !$authResult )
+#set( $authResult = $util.authRules.queryAuth($authRules) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )

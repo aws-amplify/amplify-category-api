@@ -18,10 +18,8 @@ export const generateAuthExpressionForQueries = (
 ): string => {
   const expressions = [];
   expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, fields, providers.hasIdentityPoolId, true)));
-  expressions.push(set(ref('authResult'), methodCall(ref('util.authRules.validateUsingSource'), ref('authRules'), ref('ctx.source'))));
-  expressions.push(compoundExpression([iff(not(ref('authResult')), methodCall(ref('util.unauthorized')))]));
-  expressions.push(constructAuthFilter());
-  expressions.push(emptyPayload);
+  expressions.push(set(ref('authResult'), methodCall(ref('util.authRules.queryAuth'), ref('authRules'))));
+  expressions.push(validateAuthResult(), constructAuthFilter(), emptyPayload);
   return printBlock('Authorization rules')(generateIAMAccessCheck(providers.genericIamAccessEnabled, compoundExpression(expressions)));
 };
 
