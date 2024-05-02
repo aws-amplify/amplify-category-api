@@ -13,11 +13,12 @@ import {
   set,
   str,
   toJson,
+  not,
+  raw,
 } from 'graphql-mapping-template';
 import { ResourceConstants } from 'graphql-transformer-common';
 import {
   constructArrayFieldsStatement,
-  constructAuthFilterStatement,
   constructFieldMappingInput,
   constructNonScalarFieldsStatement,
   setResourceName,
@@ -511,17 +512,26 @@ export const generateLambdaRequestTemplate = (
  */
 export const generateGetLambdaResponseTemplate = (isSyncEnabled: boolean): string => {
   const statements: Expression[] = [];
+  const resultExpression = compoundExpression([
+    set(ref('authResult'), methodCall(ref('util.authRules.validateUsingSource'), ref('authRules'), ref('ctx.source'))),
+    ifElse(
+      not(ref('authResult')),
+      compoundExpression([methodCall(ref('util.unauthorized')), methodCall(ref('util.toJson'), raw('null'))]),
+      toJson(ref('ctx.result')),
+    ),
+  ]);
+
   if (isSyncEnabled) {
     statements.push(
       ifElse(
         ref('ctx.error'),
         methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type'), ref('ctx.result')),
-        toJson(ref('ctx.result')),
+        resultExpression,
       ),
     );
   } else {
     statements.push(
-      ifElse(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type')), toJson(ref('ctx.result'))),
+      ifElse(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type')), resultExpression),
     );
   }
 
