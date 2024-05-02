@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.29-acdk-upgrade-2-129.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@2.2.28...@aws-amplify/graphql-schema-test-library@2.2.29-acdk-upgrade-2-129.0) (2024-05-02)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-test-library
+
 ## [2.2.28](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@2.2.27...@aws-amplify/graphql-schema-test-library@2.2.28) (2024-05-01)
 
 ### Bug Fixes

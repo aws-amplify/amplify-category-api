@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-acdk-upgrade-2-129.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.7.0...@aws-amplify/graphql-transformer-interfaces@3.8.0-acdk-upgrade-2-129.0) (2024-05-02)
+
+### Features
+
+- add tag to SQL datasource function ([#2511](https://github.com/aws-amplify/amplify-category-api/issues/2511)) ([d64fc1e](https://github.com/aws-amplify/amplify-category-api/commit/d64fc1e4d19c923cf985e30e26ce95c565a8839b))
+
 # [3.7.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.6.0...@aws-amplify/graphql-transformer-interfaces@3.7.0) (2024-04-26)
 
 ### Features
