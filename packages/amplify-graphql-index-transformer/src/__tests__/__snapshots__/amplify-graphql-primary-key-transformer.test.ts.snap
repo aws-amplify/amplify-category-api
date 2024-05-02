@@ -189,7 +189,13 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, 
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.toJson($ctx.result)
+  #set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
+  #if( !$authResult )
+    $util.unauthorized()
+    $util.toJson(null)
+  #else
+    $util.toJson($ctx.result)
+  #end
 #end
 ## [End] ResponseTemplate. **",
   "Query.listTests.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
@@ -484,7 +490,13 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, 
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.toJson($ctx.result)
+  #set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
+  #if( !$authResult )
+    $util.unauthorized()
+    $util.toJson(null)
+  #else
+    $util.toJson($ctx.result)
+  #end
 #end
 ## [End] ResponseTemplate. **",
   "Query.listTests.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
@@ -774,7 +786,13 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, 
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.toJson($ctx.result)
+  #set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
+  #if( !$authResult )
+    $util.unauthorized()
+    $util.toJson(null)
+  #else
+    $util.toJson($ctx.result)
+  #end
 #end
 ## [End] ResponseTemplate. **",
   "Query.listTests.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
@@ -1068,7 +1086,13 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, 
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.toJson($ctx.result)
+  #set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
+  #if( !$authResult )
+    $util.unauthorized()
+    $util.toJson(null)
+  #else
+    $util.toJson($ctx.result)
+  #end
 #end
 ## [End] ResponseTemplate. **",
   "Subscription.onCreateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
@@ -1314,7 +1338,13 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, 
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.toJson($ctx.result)
+  #set( $authResult = $util.authRules.validateUsingSource($authRules, $ctx.source) )
+  #if( !$authResult )
+    $util.unauthorized()
+    $util.toJson(null)
+  #else
+    $util.toJson($ctx.result)
+  #end
 #end
 ## [End] ResponseTemplate. **",
   "Query.testList.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
