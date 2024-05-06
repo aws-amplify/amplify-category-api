@@ -33,6 +33,7 @@ const STARTUP_TIMEOUT_MS = 10000;
 
   // when the server is ready a line like "http address - http://localhost:4873/ - verdaccio/5.24.1" is printed
   if (!npmProxyLogs.includes('http address')) {
+    console.log(await readFile(LOG_FILE, 'utf-8'));
     throw new Error(`Failed to start npm proxy within the timeout. Check the logs in ${LOG_FILE}`);
   }
 
