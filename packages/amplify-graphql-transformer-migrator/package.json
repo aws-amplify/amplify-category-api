@@ -35,8 +35,8 @@
     "lodash": "^4.17.21"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-cli-core": "^4.2.10",
-    "@aws-amplify/amplify-environment-parameters": "^1.9.1",
+    "@aws-amplify/amplify-cli-core": "4.3.5-acdk-upgrade-2-129.1",
+    "@aws-amplify/amplify-environment-parameters": "1.9.10-acdk-upgrade-2-129.1",
     "@aws-amplify/amplify-prompts": "^2.8.4"
   },
   "devDependencies": {

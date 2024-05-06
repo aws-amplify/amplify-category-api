@@ -24,7 +24,7 @@
     "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-app": "^5.0.21",
+    "@aws-amplify/amplify-app": "5.0.31-acdk-upgrade-2-129.1",
     "@aws-amplify/graphql-schema-generator": "0.8.5-acdk-upgrade-2-129.0",
     "@aws-amplify/graphql-transformer-core": "2.8.0-acdk-upgrade-2-129.0",
     "amplify-category-api-e2e-core": "4.8.2-acdk-upgrade-2-129.0",
@@ -49,7 +49,7 @@
     "yargs": "^15.1.0"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-cli-core": "^4.2.10"
+    "@aws-amplify/amplify-cli-core": "4.3.5-acdk-upgrade-2-129.1"
   },
   "devDependencies": {
     "@aws-amplify/graphql-transformer-interfaces": "3.8.0-acdk-upgrade-2-129.0",

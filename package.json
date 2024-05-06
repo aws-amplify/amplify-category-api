@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "amplify-category-api",
   "scripts": {
-    "add-cli-no-save": "yarn add @aws-amplify/cli-internal -W --pure-lockfile && git checkout -- package.json",
+    "add-cli-no-save": "yarn add @aws-amplify/cli-internal@12.11.2-acdk-upgrade-2-129 -W --pure-lockfile && git checkout -- package.json",
     "authenticate-e2e-profile": "source scripts/cloud-utils.sh && authenticateWithE2EProfile",
     "build-tests-changed": "lerna run build-tests --since main",
     "build-tests": "lerna run build-tests",
@@ -248,7 +248,6 @@
     "jest-environment-jsdom": "26.6.2",
     "jest-environment-node": "26.6.2",
     "ts-jest": "^26.5.5",
-    "axios": "^1.6.0",
-    "aws-cdk-lib": "2.129.0"
+    "axios": "^1.6.0"
   }
 }
