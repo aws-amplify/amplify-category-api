@@ -5,5 +5,6 @@ env:
 phases:
   build:
     commands:
+      - git fetch --tags
       - git tag | head -100
       - source ./shared-scripts.sh && _deprecate
