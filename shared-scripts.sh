@@ -465,7 +465,6 @@ function _deprecate {
   echo "Authenticate with NPM"
   # PUBLISH_TOKEN=$(echo "$NPM_PUBLISH_TOKEN" | jq -r '.token')
   # echo "//registry.npmjs.org/:_authToken=$PUBLISH_TOKEN" > ~/.npmrc
-  git fetch --tags
   git tag | head -100
   yarn deprecate
 }
