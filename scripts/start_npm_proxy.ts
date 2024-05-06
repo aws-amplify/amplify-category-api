@@ -18,7 +18,7 @@ const STARTUP_TIMEOUT_MS = 10000;
     await unlink(LOG_FILE);
   }
   // start the server in a detached process
-  await execa.commandSync(`verdaccio -c verdaccio.config.yaml &>${LOG_FILE} &`, {
+  await execa.commandSync(`npx verdaccio -c verdaccio.config.yaml &>${LOG_FILE} &`, {
     shell: 'bash',
   });
 
