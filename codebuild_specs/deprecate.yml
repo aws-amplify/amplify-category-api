@@ -7,5 +7,5 @@ phases:
     commands:
       - git log | head -100
       - git describe --all
-      - git describe 143a2665877e3d55592e38e33f7b6bb55df90b51 --abbrev=0
+      - git describe --always 143a2665877e3d55592e38e33f7b6bb55df90b51 --abbrev=0
       - source ./shared-scripts.sh && _deprecate
