@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "amplify-category-api",
   "scripts": {
-    "add-cli-no-save": "yarn add @aws-amplify/cli-internal@12.11.2-acdk-upgrade-2-129 -W --pure-lockfile && git checkout -- package.json",
+    "add-cli-no-save": "yarn add @aws-amplify/cli-internal@12.11.2-acdk-upgrade-2-129.1 -W --pure-lockfile && git checkout -- package.json",
     "authenticate-e2e-profile": "source scripts/cloud-utils.sh && authenticateWithE2EProfile",
     "build-tests-changed": "lerna run build-tests --since main",
     "build-tests": "lerna run build-tests",
