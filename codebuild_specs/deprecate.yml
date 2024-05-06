@@ -5,4 +5,5 @@ env:
 phases:
   build:
     commands:
+      - git describe --all
       - source ./shared-scripts.sh && _deprecate
