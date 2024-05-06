@@ -468,6 +468,7 @@ function _deprecate {
       PUBLISH_TOKEN=$(echo "$NPM_PUBLISH_TOKEN" | jq -r '.token')
       echo "//registry.npmjs.org/:_authToken=$PUBLISH_TOKEN" > ~/.npmrc
   else
+    source codebuild_specs/scripts/local_publish_helpers.sh
     startLocalRegistry "$(pwd)/codebuild_specs/scripts/verdaccio.yaml"
     setNpmRegistryUrlToLocal
   fi
