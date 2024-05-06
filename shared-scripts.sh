@@ -463,9 +463,16 @@ function _deprecate {
   loadCacheFromBuildJob
   echo "Deprecate"
   echo "Authenticate with NPM"
-  # PUBLISH_TOKEN=$(echo "$NPM_PUBLISH_TOKEN" | jq -r '.token')
-  # echo "//registry.npmjs.org/:_authToken=$PUBLISH_TOKEN" > ~/.npmrc
+  if [$USE_NPM_REGISTRY];
+  then
+      PUBLISH_TOKEN=$(echo "$NPM_PUBLISH_TOKEN" | jq -r '.token')
+      echo "//registry.npmjs.org/:_authToken=$PUBLISH_TOKEN" > ~/.npmrc
+  else
+    startLocalRegistry "$(pwd)/codebuild_specs/scripts/verdaccio.yaml"
+    setNpmRegistryUrlToLocal
+  fi
   yarn deprecate
+  unsetNpmRegistryUrl
 }
 
 # Accepts the value as an input parameter, i.e. 1 for success, 0 for failure.
