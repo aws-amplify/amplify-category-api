@@ -123,12 +123,7 @@ export class GitClient {
    */
   getNearestReleaseCommit = async (commitHash: string = 'HEAD', { inclusive }: { inclusive: boolean } = { inclusive: true }) => {
     // get the most recent tag before (or at if inclusive=false) the current release tag
-    const { stdout: previousReleaseTag } = await this.exec('git', [
-      'describe',
-      '--always',
-      `${commitHash}${inclusive ? '' : '^'}`,
-      '--abbrev=0',
-    ]);
+    const { stdout: previousReleaseTag } = await this.exec('git', ['describe', `${commitHash}${inclusive ? '' : '^'}`, '--abbrev=0']);
 
     // get the commit hash associated with the previous release tag
     const { stdout: previousReleaseCommitHash } = await this.exec('git', ['log', '-1', previousReleaseTag, '--pretty=%H']);
