@@ -1467,7 +1467,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/group-auth/dynamic-group-auth/dynamic-group-auth-ddbprimary-sqlrelated.test.ts
-          CLI_REGION: ap-east-1
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: dynamic_group_auth_sqlprimary_ddbrelated
