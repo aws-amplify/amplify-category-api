@@ -463,8 +463,7 @@ function _deprecate {
   loadCacheFromBuildJob
   echo "Deprecate"
   echo "Authenticate with NPM"
-  if [$USE_NPM_REGISTRY];
-  then
+  if [ "$USE_NPM_REGISTRY" == "true" ]; then
       PUBLISH_TOKEN=$(echo "$NPM_PUBLISH_TOKEN" | jq -r '.token')
       echo "//registry.npmjs.org/:_authToken=$PUBLISH_TOKEN" > ~/.npmrc
   else
