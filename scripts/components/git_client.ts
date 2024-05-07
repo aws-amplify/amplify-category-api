@@ -189,7 +189,7 @@ export class GitClient {
       `);
     }
 
-    // check that this commit was made by the github-actions bot
+    // check that this commit was made by the amplify-data-ci bot
     const { stdout: commitAuthor } = await this.exec('git', ['log', '-1', '--pretty="%an"', releaseCommitHash]);
     if (!commitAuthor.includes('amplify-data-ci')) {
       throw new Error(`
