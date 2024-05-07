@@ -1,5 +1,13 @@
 import { parse } from 'graphql';
-import { getConditionInputName, getConnectionName, getFilterInputName, getPrimaryKeyFieldNodes, getPrimaryKeyFields, getSubscriptionFilterInputName, getType } from '../../utils';
+import {
+  getConditionInputName,
+  getConnectionName,
+  getFilterInputName,
+  getPrimaryKeyFieldNodes,
+  getPrimaryKeyFields,
+  getSubscriptionFilterInputName,
+  getType,
+} from '../../utils';
 
 describe('model-util', () => {
   describe('getType', () => {

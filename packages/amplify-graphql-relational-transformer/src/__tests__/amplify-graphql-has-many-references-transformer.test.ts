@@ -49,6 +49,113 @@ test('has many query', () => {
   expect(out.resolvers['Member.team.req.vtl']).toMatchSnapshot();
 });
 
+test('has many query with implicit IDs', () => {
+  const inputSchema = `
+    type Team @model {
+      name: String!
+      members: [Member] @hasMany(references: ["teamID"])
+    }
+    type Member @model {
+      teamID: ID!
+      team: Team @belongsTo(references: ["teamID"])
+    }
+  `;
+
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+  });
+
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+  expect(out.schema).toMatchSnapshot();
+  expect((out.stacks as any).ConnectionStack.Resources.TeammembersResolver).toBeTruthy();
+
+  const testObjType = schema.definitions.find((def: any) => def.name && def.name.value === 'Team') as any;
+  expect(testObjType).toBeDefined();
+
+  const relatedField = testObjType.fields.find((f: any) => f.name.value === 'members');
+  expect(relatedField).toBeDefined();
+  expect((relatedField.type as any).name.value).toEqual('ModelMemberConnection');
+  expect(relatedField.type.kind).toEqual(Kind.NAMED_TYPE);
+  expect(relatedField.arguments.length).toEqual(4);
+  expect(relatedField.arguments.find((f: any) => f.name.value === 'filter')).toBeDefined();
+  expect(relatedField.arguments.find((f: any) => f.name.value === 'limit')).toBeDefined();
+  expect(relatedField.arguments.find((f: any) => f.name.value === 'nextToken')).toBeDefined();
+  expect(relatedField.arguments.find((f: any) => f.name.value === 'sortDirection')).toBeDefined();
+
+  expect(out.resolvers['Team.members.req.vtl']).toBeDefined();
+  expect(out.resolvers['Team.members.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Member.team.req.vtl']).toBeDefined();
+  expect(out.resolvers['Member.team.req.vtl']).toMatchSnapshot();
+});
+
+test('fails if reference field has different type than primary key with implicit id and primary key', () => {
+  const inputSchema = `
+    type Team @model {
+      name: String!
+      members: [Member] @hasMany(references: ["teamID"])
+    }
+    type Member @model {
+      teamID: Int
+      team: Team @belongsTo(references: ["teamID"])
+    }
+  `;
+
+  const transformOptions = {
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+  };
+  expect(() => testTransform(transformOptions)).toThrowError(
+    'Type mismatch between primary key field(s) of Team and reference fields of Member. Type of Team.id does not match type of Member.teamID',
+  );
+});
+
+test('fails if reference field has different type than primary key with explicit id and implicit primary key', () => {
+  const inputSchema = `
+    type Team @model {
+      id: ID!
+      name: String!
+      members: [Member] @hasMany(references: ["teamID"])
+    }
+    type Member @model {
+      teamID: Int
+      team: Team @belongsTo(references: ["teamID"])
+    }
+  `;
+
+  const transformOptions = {
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+  };
+  expect(() => testTransform(transformOptions)).toThrowError(
+    'Type mismatch between primary key field(s) of Team and reference fields of Member. Type of Team.id does not match type of Member.teamID',
+  );
+});
+
+test('fails if reference field has different type than primary key with explicit id and explicit primary key', () => {
+  const inputSchema = `
+    type Team @model {
+      id: ID! @primaryKey
+      name: String!
+      members: [Member] @hasMany(references: ["teamID"])
+    }
+    type Member @model {
+      teamID: Int
+      team: Team @belongsTo(references: ["teamID"])
+    }
+  `;
+
+  const transformOptions = {
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+  };
+  expect(() => testTransform(transformOptions)).toThrowError(
+    'Type mismatch between primary key field(s) of Team and reference fields of Member. Type of Team.id does not match type of Member.teamID',
+  );
+});
+
 test('fails if indexName is provided with references', () => {
   const inputSchema = `
     type Team @model {
@@ -171,7 +278,7 @@ test('fails if uni-directional hasMany', () => {
       transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     }),
   ).toThrowError(
-    'Uni-directional relationships are not supported. Add a @belongsTo field in Member to match the @hasMany field Team.members',
+    'Uni-directional relationships are not supported. Add a @belongsTo field in Member to match the @hasMany field Team.members, and ensure the number and type of reference fields match the number and type of primary key fields in Team.',
   );
 });
 
@@ -477,4 +584,128 @@ test('has many references with multiple sort keys', () => {
   expect(out.resolvers['Team.members.req.vtl']).toMatchSnapshot();
   expect(out.resolvers['Member.team.req.vtl']).toBeDefined();
   expect(out.resolvers['Member.team.req.vtl']).toMatchSnapshot();
+});
+
+test('fails to validate if reference lengths do not match', () => {
+  const inputSchema = /* GraphQL */ `
+    type Primary @model {
+      content: String
+      related: [Related] @hasMany(references: ["primaryPk"])
+    }
+
+    type Related @model {
+      content: String
+      primaryPk: ID
+      primarySk: ID
+      primary: Primary @belongsTo(references: ["primaryPk", "primarySk"])
+    }
+  `;
+
+  const transformParams = {
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+  };
+
+  expect(() => testTransform(transformParams)).toThrowError(
+    'Uni-directional relationships are not supported. Add a @belongsTo field in Related to match the @hasMany field Primary.related, and ' +
+      'ensure the number and type of reference fields match the number and type of primary key fields in Primary.',
+  );
+});
+
+test('has many references with multiple relationships to the same model', () => {
+  const inputSchema = /* GraphQL */ `
+    type Primary @model {
+      content: String
+      related1: [Related] @hasMany(references: ["primaryId1"])
+      related2: [Related] @hasMany(references: ["primaryId2"])
+    }
+
+    type Related @model {
+      content: String
+      primaryId1: ID
+      primaryId2: ID
+      primary1: Primary @belongsTo(references: ["primaryId1"])
+      primary2: Primary @belongsTo(references: ["primaryId2"])
+    }
+  `;
+
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+  });
+
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+  // The important assertions for Primary.related* are that the GSI being used to query is associated with the correct field
+  expect(out.resolvers['Primary.related1.req.vtl']).toBeDefined();
+  expect(out.resolvers['Primary.related1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Primary.related1.req.vtl']).toContain('"index": "gsi-Primary.related1"');
+  expect(out.resolvers['Primary.related2.req.vtl']).toBeDefined();
+  expect(out.resolvers['Primary.related2.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Primary.related2.req.vtl']).toContain('"index": "gsi-Primary.related2"');
+
+  // The important assertions for Related.primary* are that the correct reference field is being used for primary lookup
+  expect(out.resolvers['Related.primary1.req.vtl']).toBeDefined();
+  expect(out.resolvers['Related.primary1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Related.primary1.req.vtl']).toContain('connectionAttibutes.get("primaryId1")');
+  expect(out.resolvers['Related.primary2.req.vtl']).toBeDefined();
+  expect(out.resolvers['Related.primary2.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Related.primary2.req.vtl']).toContain('connectionAttibutes.get("primaryId2")');
+});
+
+test('has many references with multiple relationships to the same model with composite primary key', () => {
+  const inputSchema = /* GraphQL */ `
+    type Primary @model {
+      pk: ID! @primaryKey(sortKeyFields: ["sk1", "sk2"])
+      sk1: ID!
+      sk2: ID!
+      content: String
+      related1: [Related] @hasMany(references: ["primaryPk1", "primarySk11", "primarySk12"])
+      related2: [Related] @hasMany(references: ["primaryPk2", "primarySk21", "primarySk22"])
+    }
+
+    type Related @model {
+      content: String
+      primaryPk1: ID
+      primarySk11: ID
+      primarySk12: ID
+      primaryPk2: ID
+      primarySk21: ID
+      primarySk22: ID
+      primary1: Primary @belongsTo(references: ["primaryPk1", "primarySk11", "primarySk12"])
+      primary2: Primary @belongsTo(references: ["primaryPk2", "primarySk21", "primarySk22"])
+    }
+  `;
+
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+  });
+
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+
+  // The important assertions for Primary.related* are that the GSI being used to query is associated with the correct field
+  expect(out.resolvers['Primary.related1.req.vtl']).toBeDefined();
+  expect(out.resolvers['Primary.related1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Primary.related1.req.vtl']).toContain('"index": "gsi-Primary.related1"');
+
+  expect(out.resolvers['Primary.related2.req.vtl']).toBeDefined();
+  expect(out.resolvers['Primary.related2.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Primary.related2.req.vtl']).toContain('"index": "gsi-Primary.related2"');
+
+  // The important assertions for Related.primary* are that the correct reference field is being used for primary lookup
+  expect(out.resolvers['Related.primary1.req.vtl']).toBeDefined();
+  expect(out.resolvers['Related.primary1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Related.primary1.req.vtl']).toContain('connectionAttibutes.get("primaryPk1")');
+  // eslint-disable-next-line no-template-curly-in-string
+  expect(out.resolvers['Related.primary1.req.vtl']).toContain('"${ctx.source.primarySk11}#${ctx.source.primarySk12}"');
+
+  expect(out.resolvers['Related.primary2.req.vtl']).toBeDefined();
+  expect(out.resolvers['Related.primary2.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Related.primary2.req.vtl']).toContain('connectionAttibutes.get("primaryPk2")');
+  // eslint-disable-next-line no-template-curly-in-string
+  expect(out.resolvers['Related.primary2.req.vtl']).toContain('"${ctx.source.primarySk21}#${ctx.source.primarySk22}"');
 });
