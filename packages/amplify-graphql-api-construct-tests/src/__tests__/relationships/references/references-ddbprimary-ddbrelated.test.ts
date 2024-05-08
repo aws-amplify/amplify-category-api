@@ -1,12 +1,11 @@
 /* eslint-disable import/namespace */
+import * as path from 'path';
+import * as fs from 'fs-extra';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
-import * as fs from 'fs-extra';
-import * as generator from 'generate-password';
-import * as path from 'path';
 import { cdkDeploy, cdkDestroy, initCDKProject } from '../../../commands';
-import { SqlDatabaseDetails, SqlDatatabaseController } from '../../../sql-datatabase-controller';
-import { TestDefinition, dbDetailsToModelDataSourceStrategy, writeStackConfig, writeTestDefinitions } from '../../../utils';
+import { TestDefinition, writeStackConfig, writeTestDefinitions } from '../../../utils';
+import { DURATION_1_HOUR } from '../../../utils/duration-constants';
 import {
   testPrimaryContainsAssociated,
   testPrimaryCpkSkOneContainsAssociated,
@@ -20,10 +19,9 @@ import {
   testRelatedOneCpkSkTwoContainsAssociated,
 } from './test-implementations';
 
-jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
+jest.setTimeout(DURATION_1_HOUR);
 
 describe('References relationships', () => {
-  const region = process.env.CLI_REGION ?? 'us-west-2';
   const baseProjFolderName = path.basename(__filename, '.test.ts');
 
   describe('DDB Primary, DDB Related', () => {

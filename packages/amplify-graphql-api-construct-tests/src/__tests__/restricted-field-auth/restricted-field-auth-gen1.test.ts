@@ -12,6 +12,7 @@ import {
   writeStackConfig,
   writeTestDefinitions,
 } from '../../utils';
+import { DURATION_1_HOUR } from '../../utils/duration-constants';
 import {
   createLeftRightJoin,
   createManyLeft,
@@ -27,7 +28,7 @@ import {
   updateRelatedOne,
 } from './graphql-schemas/gen1-ddb-only/graphql/mutations';
 
-jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
+jest.setTimeout(DURATION_1_HOUR);
 
 describe('Associated type fields with more restrictive auth rules than the model are redacted using gen1 fields-based connections', () => {
   const region = process.env.CLI_REGION ?? 'us-west-2';
