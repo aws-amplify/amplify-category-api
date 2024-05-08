@@ -822,10 +822,10 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         undefined,
       );
     }
-    // const doesRelatedModelHasDynamicAuthRules = roleDefinitions.some((role) => role.strategy === 'owner' || role.strategy === 'groups' )
 
-    // const redactRelationalFieldBasedOnModelLevelAuthRules =
-
+    /**
+     * An enabled subscription is the prerequisite for relational field redaction
+     */
     const hasSubsEnabled = this.modelDirectiveConfig.get(typeName) && this.modelDirectiveConfig.get(typeName).subscriptions?.level === 'on';
     if (hasSubsEnabled) {
       if (needsFieldResolver || redactRelationalField) {
@@ -835,15 +835,6 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         )}\n${relatedAuthExpression}`;
       }
     }
-    // const redactRelationalField: boolean = hasSubsEnabled && (fieldRoles && fieldRoles.length > 0)
-
-    // if (fieldRoles || doesRelatedModelHasDynamicAuthRules) {
-    //   const hasSubsEnabled = this.modelDirectiveConfig.get(typeName)!.subscriptions?.level === 'on';
-    //   relatedAuthExpression = `${this.getVtlGenerator(ctx, def.name.value).setDeniedFieldFlag(
-    //     'Mutation',
-    //     hasSubsEnabled,
-    //   )}\n${relatedAuthExpression}`;
-    // }
 
     const resolver = ctx.resolvers.getResolver(typeName, field.name.value) as TransformerResolverProvider;
     if (fieldAuthExpression) {
