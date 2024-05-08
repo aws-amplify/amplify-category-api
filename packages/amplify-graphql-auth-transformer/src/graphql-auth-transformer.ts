@@ -744,6 +744,19 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       }
       // relational field read roles are already processed with filter in parent call
       const fieldReadRoleDefinitions = fieldRoles.map((r) => this.roleMap.get(r)!);
+
+      /**
+       * Compare if two auth roles are identical
+       * @param role1 auth role 1
+       * @param role2 auth role 2
+       * @returns boolean for two roles are identical
+       */
+      const isIdenticalAuthRole = (role1: RoleDefinition, role2: RoleDefinition): boolean =>
+        role1.provider === role2.provider &&
+        role1.strategy === role2.strategy &&
+        role1.static === role2.static &&
+        role1.claim === role2.claim &&
+        role1.entity === role2.entity;
       /**
        * Determine if the given relational field role have the same access as one of the related model auth roles
        * Usually this means an auth role have the exact same provider, strategy, claim and entity
@@ -755,10 +768,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       const isFieldRoleHavingAccessToBothSide = (fieldRole: RoleDefinition, relatedModelRoles: RoleDefinition[]): boolean =>
         relatedModelRoles.some(
           (relatedRole) =>
-            (relatedRole.provider === fieldRole.provider &&
-              relatedRole.strategy === fieldRole.strategy &&
-              relatedRole.claim === fieldRole.claim &&
-              relatedRole.entity === fieldRole.entity) ||
+            isIdenticalAuthRole(relatedRole, fieldRole) ||
             (relatedRole.provider === fieldRole.provider &&
               (relatedRole.provider === 'userPools' || relatedRole.provider === 'oidc') &&
               (fieldRole.strategy === 'private' || relatedRole.strategy === 'private')),
@@ -785,9 +795,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
           redactRelationalField = !(
             fieldReadRoleDefinitions.length === relatedModelReadRoleDefinitions.length &&
             relatedModelReadRoleDefinitions.every((relatedRole) => {
-              return fieldReadRoleDefinitions.some(
-                (fr) => fr.provider === relatedRole.provider && fr.strategy === relatedRole.strategy && !isDynamicAuthOrCustomAuth(fr),
-              );
+              return fieldReadRoleDefinitions.some((fr) => isIdenticalAuthRole(fr, relatedRole) && !isDynamicAuthOrCustomAuth(fr));
             })
           );
           break;
