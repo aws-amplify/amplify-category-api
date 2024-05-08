@@ -9,9 +9,9 @@ import { SqlDatabaseDetails, SqlDatatabaseController } from '../../../sql-datata
 import { DURATION_1_HOUR } from '../../../utils/duration-constants';
 import {
   deployStack,
-  testPrimaryRetrievesCorrectRelationships,
-  testRelatedManyRetrievesCorrectRelationships,
-  testRelatedOneRetrievesCorrectRelationships,
+  testCanNavigateBetweenLeafNodes,
+  testCanNavigateToLeafFromRoot,
+  testCanNavigateToRootFromLeaf,
 } from './test-implementations';
 
 jest.setTimeout(DURATION_1_HOUR);
@@ -28,19 +28,9 @@ describe('Models with multiple relationships', () => {
   // snippets. That allows us to reuse the same snippets across both DDB and SQL data sources, simplifying the test fixture data.
   const databaseController = new SqlDatatabaseController(
     [
-      'drop table if exists `RelatedMany`;',
-      'drop table if exists `RelatedOne`;',
-      'drop table if exists `Primary`;',
-
-      'create table `Primary` ( id varchar(64) primary key not null, content varchar(64));',
-
-      'create table `RelatedMany`( id varchar(64) primary key not null, content varchar(64), `primaryId1` varchar(64), `primaryId2` varchar(64));',
-      'create index `RelatedMany_primaryId1` on `RelatedMany`(`primaryId1`);',
-      'create index `RelatedMany_primaryId2` on `RelatedMany`(`primaryId2`);',
-
-      'create table `RelatedOne`( id varchar(64) primary key not null, content varchar(64), `primaryId1` varchar(64), `primaryId2` varchar(64));',
-      'create index `RelatedOne_primaryId1` on `RelatedOne`(`primaryId1`);',
-      'create index `RelatedOne_primaryId2` on `RelatedOne`(`primaryId2`);',
+      'drop table if exists `TreeNode`;',
+      'create table `TreeNode` ( id varchar(64) primary key not null, value varchar(64), `parentId` varchar(64));',
+      'create index `TreeNode_parentId` on `TreeNode`(`parentId`);',
     ],
     {
       identifier: dbIdentifier,
@@ -52,15 +42,54 @@ describe('Models with multiple relationships', () => {
   );
 
   beforeAll(async () => {
-    dbDetails = await databaseController.setupDatabase();
+    // dbDetails = await databaseController.setupDatabase();
+    dbDetails = {
+      dbConfig: {
+        dbName: 'default_db',
+        dbType: 'MYSQL',
+        endpoint: 'fhnnvcizbr.cxudc8crpgqw.us-west-2.rds.amazonaws.com',
+        port: 3306,
+        strategyName: 'mysqlDBStrategy',
+        vpcConfig: {
+          vpcId: 'vpc-0a8a4272',
+          securityGroupIds: ['sg-17a20862'],
+          subnetAvailabilityZones: [
+            {
+              subnetId: 'subnet-75a3f90c',
+              availabilityZone: 'us-west-2a',
+            },
+            {
+              subnetId: 'subnet-c54f088e',
+              availabilityZone: 'us-west-2b',
+            },
+            {
+              subnetId: 'subnet-5471450e',
+              availabilityZone: 'us-west-2c',
+            },
+            {
+              subnetId: 'subnet-5f739274',
+              availabilityZone: 'us-west-2d',
+            },
+          ],
+        },
+      },
+      connectionConfigs: {
+        secretsManagerManagedSecret: {
+          databaseName: 'default_db',
+          hostname: 'fhnnvcizbr.cxudc8crpgqw.us-west-2.rds.amazonaws.com',
+          port: 3306,
+          secretArn: 'arn:aws:secretsmanager:us-west-2:779656175277:secret:rds!db-0721fd57-c76d-4539-a56a-c49f68f69cf7-o86kf0',
+        },
+      },
+    };
   });
 
-  afterAll(async () => {
-    await databaseController.cleanupDatabase();
-  });
+  // afterAll(async () => {
+  //   await databaseController.cleanupDatabase();
+  // });
 
   describe('SQL primary, SQL related', () => {
-    const projFolderName = `${baseProjFolderName}-sql-primary-sql-related`;
+    const projFolderName = `${baseProjFolderName}-sql`;
     let apiEndpoint: string;
     let apiKey: string;
     let currentId: number;
@@ -75,24 +104,17 @@ describe('Models with multiple relationships', () => {
       const templatePath = path.resolve(path.join(__dirname, '..', '..', 'backends', 'configurable-stack'));
       const name = await initCDKProject(projRoot, templatePath);
 
-      const primarySchemaPath = path.resolve(
-        path.join(__dirname, '..', '..', 'graphql-schemas', 'multi-relationship', 'schema-primary.graphql'),
-      );
-      const primarySchema = fs.readFileSync(primarySchemaPath).toString();
-
-      const relatedSchemaPath = path.resolve(
-        path.join(__dirname, '..', '..', 'graphql-schemas', 'multi-relationship', 'schema-related.graphql'),
-      );
-      const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
+      const schemaPath = path.resolve(path.join(__dirname, '..', '..', 'graphql-schemas', 'recursive', 'schema.graphql'));
+      const schema = fs.readFileSync(schemaPath).toString();
 
       const testDefinitions: Record<string, TestDefinition> = {
         'sql-only': {
-          schema: primarySchema + '\n' + relatedSchema,
+          schema,
           strategy: dbDetailsToModelDataSourceStrategy(dbDetails, 'sqlonly', 'MYSQL', 'secretsManagerManagedSecret'),
         },
       };
 
-      writeStackConfig(projRoot, { prefix: 'MultiRelSqlSql', useSandbox: true });
+      writeStackConfig(projRoot, { prefix: 'RecursiveSql', useSandbox: true });
       writeTestDefinitions(testDefinitions, projRoot);
 
       const testConfig = await deployStack({
@@ -114,16 +136,16 @@ describe('Models with multiple relationships', () => {
       deleteProjectDir(projRoot);
     });
 
-    test('primary retrieves correct relationships', async () => {
-      await testPrimaryRetrievesCorrectRelationships(currentId, apiEndpoint, apiKey);
+    test('can navigate to leaf from root', async () => {
+      await testCanNavigateToLeafFromRoot(currentId, apiEndpoint, apiKey);
     });
 
-    test('relatedMany retrieves correct relationships', async () => {
-      await testRelatedManyRetrievesCorrectRelationships(currentId, apiEndpoint, apiKey);
+    test('can navigate to root from leaf', async () => {
+      await testCanNavigateToRootFromLeaf(currentId, apiEndpoint, apiKey);
     });
 
-    test('relatedOne retrieves correct relationships', async () => {
-      await testRelatedOneRetrievesCorrectRelationships(currentId, apiEndpoint, apiKey);
+    test('can navigate between leaf nodes', async () => {
+      await testCanNavigateBetweenLeafNodes(currentId, apiEndpoint, apiKey);
     });
   });
 });
