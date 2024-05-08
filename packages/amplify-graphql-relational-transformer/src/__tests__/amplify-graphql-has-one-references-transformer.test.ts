@@ -685,7 +685,6 @@ test('has one references with multiple relationships to the same model with comp
 test('supports recursive schemas', () => {
   const inputSchema = /* GraphQL */ `
     type TreeNode @model {
-      pk: ID!
       value: String
       parentId: ID
       parent: TreeNode @belongsTo(references: ["parentId"])
