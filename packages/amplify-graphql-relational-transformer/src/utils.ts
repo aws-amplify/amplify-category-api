@@ -252,8 +252,9 @@ const getReferencesAssociatedField = (
         .includes(directive.name.value);
     });
 
+    // The field has the right base type, but isn't the proper association, so skip to the next candidate
     if (!associatedRelationalDirective) {
-      throw new InvalidDirectiveError(`Uni-directional relationships are not supported. ${expectedBidirectionalErrorMessages()}`);
+      return [];
     }
 
     // extract the `references` arguments

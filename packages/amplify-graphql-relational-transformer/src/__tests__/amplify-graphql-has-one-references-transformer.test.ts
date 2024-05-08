@@ -681,3 +681,35 @@ test('has one references with multiple relationships to the same model with comp
   // eslint-disable-next-line no-template-curly-in-string
   expect(out.resolvers['Related.primary2.req.vtl']).toContain('"${ctx.source.primarySk21}#${ctx.source.primarySk22}"');
 });
+
+test('supports recursive schemas', () => {
+  const inputSchema = /* GraphQL */ `
+    type TreeNode @model {
+      pk: ID!
+      value: String
+      parentId: ID
+      parent: TreeNode @belongsTo(references: ["parentId"])
+      child: TreeNode @hasOne(references: ["parentId"])
+    }
+  `;
+
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+  });
+
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+
+  // The important assertion for `child` is that the GSI being used to query is associated with the `parentId` field
+  expect(out.resolvers['TreeNode.child.req.vtl']).toBeDefined();
+  expect(out.resolvers['TreeNode.child.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['TreeNode.child.req.vtl']).toContain('"index": "gsi-TreeNode.child"');
+  expect(out.resolvers['TreeNode.child.req.vtl']).toContain('"#partitionKey": "parentId"');
+
+  // The important assertion for `parent` is that the query is being performed on the `parentId` field
+  expect(out.resolvers['TreeNode.parent.req.vtl']).toBeDefined();
+  expect(out.resolvers['TreeNode.parent.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['TreeNode.parent.req.vtl']).toContain('connectionAttibutes.get("parentId")');
+});
