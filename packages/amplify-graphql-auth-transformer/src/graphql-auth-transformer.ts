@@ -721,87 +721,16 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   ): void => {
     let fieldAuthExpression: string;
     let relatedAuthExpression: string;
-    // Not redact relational field by default
-    let redactRelationalField: boolean = false;
+    // Relational field redaction is default to `needsFieldResolver`, which stays consistent with current behavior of always redacting relational field when field resolver is needed
+    let redactRelationalField: boolean = needsFieldResolver;
     const relatedModelObject = this.getRelatedModelObject(ctx, getBaseType(field.type));
     const relatedModelName = relatedModelObject.name.value;
     if (this.authModelConfig.has(relatedModelName)) {
       const acm = this.authModelConfig.get(relatedModelName);
       // Get read roles and definitions for related model
-      const relatedModelReadRoles = [...new Set(...READ_MODEL_OPERATIONS.map((op) => acm.getRolesPerOperation(op)))];
-      let relatedModelReadRoleDefinitions = relatedModelReadRoles.map((r) => this.roleMap.get(r)!);
-      // When userpool private roles are detected, filter out the non-private userpool roles
-      if (relatedModelReadRoleDefinitions.some((r) => r.provider === 'userPools' && r.strategy === 'private')) {
-        relatedModelReadRoleDefinitions = relatedModelReadRoleDefinitions.filter(
-          (r) => !(r.provider === 'userPools' && r.strategy !== 'private'),
-        );
-      }
-      // When oidc private roles are detected, filter out the non-private oidc roles
-      if (relatedModelReadRoleDefinitions.some((r) => r.provider === 'oidc' && r.strategy === 'private')) {
-        relatedModelReadRoleDefinitions = relatedModelReadRoleDefinitions.filter(
-          (r) => !(r.provider === 'oidc' && r.strategy !== 'private'),
-        );
-      }
-      // relational field read roles are already processed with filter in parent call
-      const fieldReadRoleDefinitions = fieldRoles.map((r) => this.roleMap.get(r)!);
-
-      /**
-       * Compare if two auth roles are identical
-       * @param role1 auth role 1
-       * @param role2 auth role 2
-       * @returns boolean for two roles are identical
-       */
-      const isIdenticalAuthRole = (role1: RoleDefinition, role2: RoleDefinition): boolean =>
-        role1.provider === role2.provider &&
-        role1.strategy === role2.strategy &&
-        role1.static === role2.static &&
-        role1.claim === role2.claim &&
-        role1.entity === role2.entity;
-      /**
-       * Determine if the given relational field role have the same access as one of the related model auth roles
-       * Usually this means an auth role have the exact same provider, strategy, claim and entity
-       * One special case is when the provider 'userPools' or 'oidc' exists on both sides and at least one side have 'private' role
-       * @param fieldRole relational field auth role
-       * @param relatedModelRoles related model auth roles
-       * @returns boolean for the field can access both sides or not
-       */
-      const isFieldRoleHavingAccessToBothSide = (fieldRole: RoleDefinition, relatedModelRoles: RoleDefinition[]): boolean =>
-        relatedModelRoles.some(
-          (relatedRole) =>
-            isIdenticalAuthRole(relatedRole, fieldRole) ||
-            (relatedRole.provider === fieldRole.provider &&
-              (relatedRole.provider === 'userPools' || relatedRole.provider === 'oidc') &&
-              (fieldRole.strategy === 'private' || relatedRole.strategy === 'private')),
-        );
-      /**
-       * Determine the given auth role is either dynamic auth role or custom auth role
-       * These auth client authorization depends on the dynamic field or custom auth logic apart from the auth type
-       * Which authenticates differently based on the given dynamic field value
-       * @param role auth role definition
-       * @returns boolean for the auth role is a dynamic or custom auth role
-       */
-      const isDynamicAuthOrCustomAuth = (role: RoleDefinition): boolean =>
-        (role.static === false && (role.strategy === 'owner' || role.strategy === 'groups')) || role.strategy === 'custom';
-      /**
-       * Loop through the field read role
-       * Once there is one role detected to have access on both side, the auth role definitions will be compared to determine whether
-       * to redac the field or not
-       */
-      for (let fieldRole of fieldReadRoleDefinitions) {
-        // When two role definitions have an overlap
-        if (isFieldRoleHavingAccessToBothSide(fieldRole, relatedModelReadRoleDefinitions)) {
-          // Check if two role definitions are identical without dynamic auth role or custom auth role
-          // If not, redact the relational field
-          redactRelationalField = !(
-            fieldReadRoleDefinitions.length === relatedModelReadRoleDefinitions.length &&
-            relatedModelReadRoleDefinitions.every((relatedRole) => {
-              return fieldReadRoleDefinitions.some((fr) => isIdenticalAuthRole(fr, relatedRole) && !isDynamicAuthOrCustomAuth(fr));
-            })
-          );
-          break;
-        }
-      }
-
+      const relatedModelReadRoleDefinitions = [...new Set(...READ_MODEL_OPERATIONS.map((op) => acm.getRolesPerOperation(op)))].map(
+        (r) => this.roleMap.get(r)!,
+      );
       relatedAuthExpression = this.getVtlGenerator(ctx, relatedModelName).generateAuthExpressionForRelationQuery(
         ctx,
         def,
@@ -811,6 +740,81 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         relatedModelReadRoleDefinitions,
         relatedModelObject.fields ?? [],
       );
+      // When the default redaction is false, it means no field resolver is involved
+      // Need the additional check on model level auth rules of both sides to determine the relational field redaction
+      if (!redactRelationalField) {
+        let filteredRelatedModelReadRoleDefinitions = relatedModelReadRoleDefinitions;
+        // When userpool private roles are detected, filter out the non-private userpool roles
+        if (filteredRelatedModelReadRoleDefinitions.some((r) => r.provider === 'userPools' && r.strategy === 'private')) {
+          filteredRelatedModelReadRoleDefinitions = filteredRelatedModelReadRoleDefinitions.filter(
+            (r) => !(r.provider === 'userPools' && r.strategy !== 'private'),
+          );
+        }
+        // When oidc private roles are detected, filter out the non-private oidc roles
+        if (filteredRelatedModelReadRoleDefinitions.some((r) => r.provider === 'oidc' && r.strategy === 'private')) {
+          filteredRelatedModelReadRoleDefinitions = filteredRelatedModelReadRoleDefinitions.filter(
+            (r) => !(r.provider === 'oidc' && r.strategy !== 'private'),
+          );
+        }
+        // relational field read roles are already processed with filter in parent call
+        const fieldReadRoleDefinitions = fieldRoles.map((r) => this.roleMap.get(r)!);
+        /**
+         * Compare if two auth roles are identical
+         * @param role1 auth role 1
+         * @param role2 auth role 2
+         * @returns boolean for two roles are identical
+         */
+        const isIdenticalAuthRole = (role1: RoleDefinition, role2: RoleDefinition): boolean =>
+          role1.provider === role2.provider &&
+          role1.strategy === role2.strategy &&
+          role1.static === role2.static &&
+          role1.claim === role2.claim &&
+          role1.entity === role2.entity;
+        /**
+         * Determine if the given relational field role have the same access as one of the related model auth roles
+         * Usually this means an auth role have the exact same provider, strategy, claim and entity
+         * One special case is when the provider 'userPools' or 'oidc' exists on both sides and at least one side have 'private' role
+         * @param fieldRole relational field auth role
+         * @param relatedModelRoles related model auth roles
+         * @returns boolean for the field can access both sides or not
+         */
+        const isFieldRoleHavingAccessToBothSide = (fieldRole: RoleDefinition, relatedModelRoles: RoleDefinition[]): boolean =>
+          relatedModelRoles.some(
+            (relatedRole) =>
+              isIdenticalAuthRole(relatedRole, fieldRole) ||
+              (relatedRole.provider === fieldRole.provider &&
+                (relatedRole.provider === 'userPools' || relatedRole.provider === 'oidc') &&
+                (fieldRole.strategy === 'private' || relatedRole.strategy === 'private')),
+          );
+        /**
+         * Determine the given auth role is either dynamic auth role or custom auth role
+         * These auth client authorization depends on the dynamic field or custom auth logic apart from the auth type
+         * Which authenticates differently based on the given dynamic field value
+         * @param role auth role definition
+         * @returns boolean for the auth role is a dynamic or custom auth role
+         */
+        const isDynamicAuthOrCustomAuth = (role: RoleDefinition): boolean =>
+          (role.static === false && (role.strategy === 'owner' || role.strategy === 'groups')) || role.strategy === 'custom';
+        /**
+         * Loop through the field read role
+         * Once there is one role detected to have access on both side, the auth role definitions will be compared to determine whether
+         * to redac the field or not
+         */
+        for (let fieldRole of fieldReadRoleDefinitions) {
+          // When two role definitions have an overlap
+          if (isFieldRoleHavingAccessToBothSide(fieldRole, filteredRelatedModelReadRoleDefinitions)) {
+            // Check if two role definitions are identical without dynamic auth role or custom auth role
+            // If not, redact the relational field
+            redactRelationalField = !(
+              fieldReadRoleDefinitions.length === filteredRelatedModelReadRoleDefinitions.length &&
+              filteredRelatedModelReadRoleDefinitions.every((relatedRole) => {
+                return fieldReadRoleDefinitions.some((fr) => isIdenticalAuthRole(fr, relatedRole) && !isDynamicAuthOrCustomAuth(fr));
+              })
+            );
+            break;
+          }
+        }
+      }
     } else {
       // if the related @model does not have auth we need to add a post auth expression
       relatedAuthExpression = this.getVtlGenerator(ctx, def.name.value).generatePostAuthExpressionForField(
@@ -835,13 +839,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
      * An enabled subscription is the prerequisite for relational field redaction
      */
     const hasSubsEnabled = this.modelDirectiveConfig.get(typeName) && this.modelDirectiveConfig.get(typeName).subscriptions?.level === 'on';
-    if (hasSubsEnabled) {
-      if (needsFieldResolver || redactRelationalField) {
-        relatedAuthExpression = `${this.getVtlGenerator(ctx, def.name.value).setDeniedFieldFlag(
-          'Mutation',
-          true,
-        )}\n${relatedAuthExpression}`;
-      }
+    if (hasSubsEnabled && redactRelationalField) {
+      relatedAuthExpression = `${this.getVtlGenerator(ctx, def.name.value).setDeniedFieldFlag('Mutation', true)}\n${relatedAuthExpression}`;
     }
 
     const resolver = ctx.resolvers.getResolver(typeName, field.name.value) as TransformerResolverProvider;
