@@ -290,7 +290,10 @@ input ModelSubscriptionMemberFilterInput {
 
 exports[`has many query 2`] = `
 "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
@@ -418,7 +421,10 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 
 exports[`has many references with multiple sort keys 2`] = `
 "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
@@ -524,7 +530,10 @@ exports[`has many references with multiple sort keys 3`] = `
 
 exports[`has many references with partition key + sort key 1`] = `
 "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
@@ -658,7 +667,10 @@ exports[`hasMany / hasOne - belongsTo across data source type boundary 1`] = `
 
 exports[`hasMany / hasOne - belongsTo across data source type boundary 2`] = `
 "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
