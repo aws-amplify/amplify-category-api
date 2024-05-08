@@ -10,7 +10,7 @@ import {
   dbDetailsToModelDataSourceStrategy,
   signInCognitoUser,
   TestDefinition,
-  writeStackPrefix,
+  writeStackConfig,
   writeTestDefinitions,
 } from '../../../utils';
 import { SqlDatabaseDetails, SqlDatatabaseController } from '../../../sql-datatabase-controller';
@@ -126,7 +126,7 @@ describe('Relationships protected with dynamic group auth', () => {
         },
       };
 
-      writeStackPrefix('DynGrpSqlSql', projRoot);
+      writeStackConfig(projRoot, { prefix: 'DynGrpSqlSql' });
       writeTestDefinitions(testDefinitions, projRoot);
 
       const testConfig = await deployStackAndCreateUsers({

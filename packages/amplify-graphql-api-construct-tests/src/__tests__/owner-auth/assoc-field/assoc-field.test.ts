@@ -10,7 +10,7 @@ import {
   dbDetailsToModelDataSourceStrategy,
   signInCognitoUser,
   TestDefinition,
-  writeStackPrefix,
+  writeStackConfig,
   writeTestDefinitions,
 } from '../../../utils';
 import { SqlDatabaseDetails, SqlDatatabaseController } from '../../../sql-datatabase-controller';
@@ -127,7 +127,7 @@ describe('Associated fields protected by owner auth control visibility appropria
         },
       };
 
-      writeStackPrefix('AFDdbDdb', projRoot);
+      writeStackConfig(projRoot, { prefix: 'AFDdbDdb' });
       writeTestDefinitions(testDefinitions, projRoot);
 
       const outputs = await cdkDeploy(projRoot, '--all');
@@ -321,7 +321,7 @@ describe('Associated fields protected by owner auth control visibility appropria
         },
       };
 
-      writeStackPrefix('AFSqlSql', projRoot);
+      writeStackConfig(projRoot, { prefix: 'AFSqlSql' });
       writeTestDefinitions(testDefinitions, projRoot);
 
       const outputs = await cdkDeploy(projRoot, '--all');
@@ -519,7 +519,7 @@ describe('Associated fields protected by owner auth control visibility appropria
         },
       };
 
-      writeStackPrefix('AFSqlDdb', projRoot);
+      writeStackConfig(projRoot, { prefix: 'AFSqlDdb' });
       writeTestDefinitions(testDefinitions, projRoot);
 
       const outputs = await cdkDeploy(projRoot, '--all');
@@ -718,7 +718,7 @@ describe('Associated fields protected by owner auth control visibility appropria
         },
       };
 
-      writeStackPrefix('AFDdbSql', projRoot);
+      writeStackConfig(projRoot, { prefix: 'AFDdbSql' });
       writeTestDefinitions(testDefinitions, projRoot);
 
       const outputs = await cdkDeploy(projRoot, '--all');

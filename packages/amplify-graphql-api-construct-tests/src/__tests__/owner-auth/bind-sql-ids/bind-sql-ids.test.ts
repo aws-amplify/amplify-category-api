@@ -10,7 +10,7 @@ import {
   dbDetailsToModelDataSourceStrategy,
   signInCognitoUser,
   TestDefinition,
-  writeStackPrefix,
+  writeStackConfig,
   writeTestDefinitions,
 } from '../../../utils';
 import { SqlDatabaseDetails, SqlDatatabaseController } from '../../../sql-datatabase-controller';
@@ -100,7 +100,7 @@ describe('Reference IDs pointing to SQL data sources are bound to prevent SQL in
         },
       };
 
-      writeStackPrefix('BindIdsSqlSql', projRoot);
+      writeStackConfig(projRoot, { prefix: 'BindIdsSqlSql' });
       writeTestDefinitions(testDefinitions, projRoot);
 
       const outputs = await cdkDeploy(projRoot, '--all');
@@ -194,7 +194,7 @@ describe('Reference IDs pointing to SQL data sources are bound to prevent SQL in
         },
       };
 
-      writeStackPrefix('BindIdsSqlDdb', projRoot);
+      writeStackConfig(projRoot, { prefix: 'BindIdsSqlDdb' });
       writeTestDefinitions(testDefinitions, projRoot);
 
       const outputs = await cdkDeploy(projRoot, '--all');

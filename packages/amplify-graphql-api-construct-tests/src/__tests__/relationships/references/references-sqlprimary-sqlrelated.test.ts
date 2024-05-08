@@ -5,7 +5,7 @@ import * as generator from 'generate-password';
 import * as path from 'path';
 import { cdkDeploy, cdkDestroy, initCDKProject } from '../../../commands';
 import { SqlDatabaseDetails, SqlDatatabaseController } from '../../../sql-datatabase-controller';
-import { TestDefinition, dbDetailsToModelDataSourceStrategy, writeStackPrefix, writeTestDefinitions } from '../../../utils';
+import { TestDefinition, dbDetailsToModelDataSourceStrategy, writeStackConfig, writeTestDefinitions } from '../../../utils';
 import {
   testPrimaryContainsAssociated,
   testPrimaryCpkSkOneContainsAssociated,
@@ -94,7 +94,7 @@ describe('References relationships', () => {
 
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projFolderName);
-      const templatePath = path.resolve(path.join(__dirname, '..', '..', 'backends', 'configurable-sandbox-stack'));
+      const templatePath = path.resolve(path.join(__dirname, '..', '..', 'backends', 'configurable-stack'));
       const name = await initCDKProject(projRoot, templatePath);
 
       const primarySchemaPath = path.resolve(path.join(__dirname, 'graphql', 'schema-primary.graphql'));
@@ -122,7 +122,7 @@ describe('References relationships', () => {
         },
       };
 
-      writeStackPrefix('RefSqlSql', projRoot);
+      writeStackConfig(projRoot, { prefix: 'RefSqlSql', useSandbox: true });
       writeTestDefinitions(testDefinitions, projRoot);
 
       const outputs = await cdkDeploy(projRoot, '--all');

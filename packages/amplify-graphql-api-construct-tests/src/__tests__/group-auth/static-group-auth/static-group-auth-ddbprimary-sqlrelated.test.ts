@@ -11,7 +11,7 @@ import {
   dbDetailsToModelDataSourceStrategy,
   signInCognitoUser,
   TestDefinition,
-  writeStackPrefix,
+  writeStackConfig,
   writeTestDefinitions,
 } from '../../../utils';
 import { SqlDatabaseDetails, SqlDatatabaseController } from '../../../sql-datatabase-controller';
@@ -134,7 +134,7 @@ describe('Relationships protected with static group auth', () => {
         },
       };
 
-      writeStackPrefix('StaticGrpDdbSql', projRoot);
+      writeStackConfig(projRoot, { prefix: 'StaticGrpDdbSql' });
       writeTestDefinitions(testDefinitions, projRoot);
 
       const testConfig = await deployStackAndCreateUsers({

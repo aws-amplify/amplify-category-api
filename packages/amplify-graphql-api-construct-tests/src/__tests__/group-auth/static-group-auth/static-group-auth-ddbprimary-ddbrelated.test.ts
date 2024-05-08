@@ -9,7 +9,7 @@ import {
   createCognitoUser,
   signInCognitoUser,
   TestDefinition,
-  writeStackPrefix,
+  writeStackConfig,
   writeTestDefinitions,
 } from '../../../utils';
 import {
@@ -89,7 +89,7 @@ describe('Relationships protected with static group auth', () => {
         },
       };
 
-      writeStackPrefix('StaticGrpDdbDdb', projRoot);
+      writeStackConfig(projRoot, { prefix: 'StaticGrpDdbDdb' });
       writeTestDefinitions(testDefinitions, projRoot);
 
       const testConfig = await deployStackAndCreateUsers({

@@ -10,7 +10,7 @@ import {
   dbDetailsToModelDataSourceStrategy,
   signInCognitoUser,
   TestDefinition,
-  writeStackPrefix,
+  writeStackConfig,
   writeTestDefinitions,
 } from '../../utils';
 import { SqlDatabaseDetails, SqlDatatabaseController } from '../../sql-datatabase-controller';
@@ -102,7 +102,7 @@ describe('Associated type fields with more restrictive auth rules than the model
         },
       };
 
-      writeStackPrefix('RFSqlSql', projRoot);
+      writeStackConfig(projRoot, { prefix: 'RFSqlSql' });
       writeTestDefinitions(testDefinitions, projRoot);
 
       const outputs = await cdkDeploy(projRoot, '--all');
@@ -193,7 +193,7 @@ describe('Associated type fields with more restrictive auth rules than the model
         },
       };
 
-      writeStackPrefix('RFDdbDdb', projRoot);
+      writeStackConfig(projRoot, { prefix: 'RFDdbDdb' });
       writeTestDefinitions(testDefinitions, projRoot);
 
       const outputs = await cdkDeploy(projRoot, '--all');
@@ -284,7 +284,7 @@ describe('Associated type fields with more restrictive auth rules than the model
         },
       };
 
-      writeStackPrefix('RFSqlDdb', projRoot);
+      writeStackConfig(projRoot, { prefix: 'RFSqlDdb' });
       writeTestDefinitions(testDefinitions, projRoot);
 
       const outputs = await cdkDeploy(projRoot, '--all');
@@ -376,7 +376,7 @@ describe('Associated type fields with more restrictive auth rules than the model
         },
       };
 
-      writeStackPrefix('RFDdbSql', projRoot);
+      writeStackConfig(projRoot, { prefix: 'RFDdbSql' });
       writeTestDefinitions(testDefinitions, projRoot);
 
       const outputs = await cdkDeploy(projRoot, '--all');

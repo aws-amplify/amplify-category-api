@@ -9,7 +9,7 @@ import {
   doAppSyncGraphqlMutation,
   signInCognitoUser,
   TestDefinition,
-  writeStackPrefix,
+  writeStackConfig,
   writeTestDefinitions,
 } from '../../utils';
 import {
@@ -62,7 +62,7 @@ describe('Associated type fields with more restrictive auth rules than the model
         },
       };
 
-      writeStackPrefix('RFGen1', projRoot);
+      writeStackConfig(projRoot, { prefix: 'RFGen1' });
       writeTestDefinitions(testDefinitions, projRoot);
 
       const outputs = await cdkDeploy(projRoot, '--all');

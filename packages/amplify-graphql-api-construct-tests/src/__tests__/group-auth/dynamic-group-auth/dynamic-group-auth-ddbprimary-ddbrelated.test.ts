@@ -9,7 +9,7 @@ import {
   createCognitoUser,
   signInCognitoUser,
   TestDefinition,
-  writeStackPrefix,
+  writeStackConfig,
   writeTestDefinitions,
 } from '../../../utils';
 import {
@@ -85,7 +85,7 @@ describe('Relationships protected with dynamic group auth', () => {
         },
       };
 
-      writeStackPrefix('DynGrpDdbDdb', projRoot);
+      writeStackConfig(projRoot, { prefix: 'DynGrpDdbDdb' });
       writeTestDefinitions(testDefinitions, projRoot);
 
       const testConfig = await deployStackAndCreateUsers({
