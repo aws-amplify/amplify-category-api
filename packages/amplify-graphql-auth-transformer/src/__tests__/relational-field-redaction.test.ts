@@ -156,10 +156,16 @@ const authRuleNameToTemplateMap: Record<string, string> = {
   'private userPools': '{ allow: private }',
   'private oidc': '{ allow: private, provider: oidc }',
   'private iam': '{ allow: private, provider: iam }',
-  'owner userPools single': '{ allow: owner, ownerField: "owner" }',
-  'owner userPools multiple': '{ allow: owner, ownerField: "owners" }',
-  'owner oidc single': '{ allow: owner, ownerField: "owner", provider: oidc }',
-  'owner oidc multiple': '{ allow: owner, ownerField: "owners", provider: oidc }',
+  'owner userPools': '{ allow: owner, ownerField: "owner" }',
+  'owner oidc': '{ allow: owner, ownerField: "owner", provider: oidc }',
+  'owner userPools claim': '{ allow: owner, ownerField: "owner", identityClaim: "ssn" }',
+  'static groups userPools single': '{ allow: groups, groups: ["Admin"] }',
+  'static groups userPools multiple': '{ allow: groups, groups: ["Admin", "Dev"] }',
+  'static groups oidc single': '{ allow: groups, groups: ["Admin"] provider: oidc }',
+  'static groups oidc multiple': '{ allow: groups, groups: ["Admin", "Dev"] provider: oidc }',
+  'dynamic groups userPools': '{ allow: groups, groupsField: "singleGroup" }',
+  'dynamic groups oidc': '{ allow: groups, groupsField: "singleGroup", provider: oidc }',
+  custom: '{ allow: custom }',
 };
 
 const resolveSchema = (schemaTemplate: string, primaryModelRules: string[], relatedModelRules: string[]): string => {
@@ -201,12 +207,26 @@ export const makeTransformationExpectation = (
 
 export type TestTableRow = [string, string[], string[], boolean];
 
-const testCases = [
+/**
+ * Primary auth rules - Related auth rules - Redact relational field
+ */
+const testCases: [string[], string[], boolean][] = [
+  // Cases for field redaction
   [['public apiKey', 'private userPools'], ['private userPools'], true],
-  [['public apiKey', 'owner userPools single'], ['public apiKey', 'owner userPools single'], true],
-  [['private userPools', 'owner userPools single'], ['private userPools'], false],
+  [['public apiKey', 'owner userPools'], ['public apiKey', 'owner userPools'], true],
+  [['custom'], ['custom'], true],
+  [['dynamic groups userPools'], ['dynamic groups userPools'], true],
+  [['private userPools'], ['owner userPools'], true],
+  [['static groups userPools multiple'], ['static groups userPools single'], true],
+  [['private oidc', 'dynamic groups userPools'], ['private oidc', 'dynamic groups userPools'], true],
+  // Cases for non field redaction
+  [['private userPools', 'owner userPools'], ['private userPools'], false],
+  [['private oidc', 'dynamic groups oidc'], ['private oidc', 'dynamic groups oidc'], false],
   [['private userPools'], ['private userPools'], false],
-  [['owner oidc single'], ['owner userPools single'], false],
+  [['private oidc', 'static groups oidc single'], ['private oidc', 'static groups oidc single'], false],
+  [['owner oidc'], ['owner userPools'], false],
+  [['owner userPools'], ['owner userPools claim'], false],
+  [['public iam'], ['private iam'], false],
 ];
 
 describe('Relational field redaction tests', () => {
