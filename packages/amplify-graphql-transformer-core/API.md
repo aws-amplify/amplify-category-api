@@ -226,9 +226,6 @@ export const getConnectionName: (modelName: string) => string;
 // @public (undocumented)
 export const getDefaultStrategyNameForDbType: (dbType: ModelDataSourceStrategySqlDbType) => string;
 
-// @public (undocumented)
-export const getField: (obj: ObjectTypeDefinitionNode, fieldName: string) => FieldDefinitionNode | undefined;
-
 // Warning: (ae-forgotten-export) The symbol "Operation" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -259,9 +256,6 @@ export const getNonScalarFields: (object: ObjectTypeDefinitionNode | undefined, 
 export const getParameterStoreSecretPath: (secret: string, secretsKey: string, apiName: string, environmentName: string, appId: string) => string;
 
 // @public (undocumented)
-export const getPrimaryKeyFieldNodes: (type: ObjectTypeDefinitionNode) => FieldDefinitionNode[];
-
-// @public (undocumented)
 export const getPrimaryKeyFields: (type: ObjectTypeDefinitionNode) => string[];
 
 // @public (undocumented)
@@ -290,9 +284,6 @@ function getSyncConfig(ctx: TransformerTransformSchemaStepContextProvider, typeN
 
 // @public (undocumented)
 export const getTable: (ctx: TransformerContextProvider, object: ObjectTypeDefinitionNode) => any;
-
-// @public (undocumented)
-export const getType: (schema: DocumentNode_2, typeName: string) => ObjectTypeDefinitionNode | undefined;
 
 // @public (undocumented)
 export class GraphQLTransform {

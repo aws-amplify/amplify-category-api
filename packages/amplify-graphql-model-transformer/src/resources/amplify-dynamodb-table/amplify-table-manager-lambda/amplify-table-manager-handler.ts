@@ -1147,9 +1147,9 @@ const getIndexesContainingAttributes = (
 ): string[] => {
   if (!currentSchema) return [];
   const result = currentSchema
-  .filter((index) => index.IndexStatus === 'ACTIVE') // This is important. You do not want to update a GSI that is not active.
-  .filter((index) => index.KeySchema?.some((key) => attributes.includes(key.AttributeName!)))
-  .map((index) => index.IndexName!);
+    .filter((index) => index.IndexStatus === 'ACTIVE') // This is important. You do not want to update a GSI that is not active.
+    .filter((index) => index.KeySchema?.some((key) => attributes.includes(key.AttributeName!)))
+    .map((index) => index.IndexName!);
   return result ?? [];
 };
 
