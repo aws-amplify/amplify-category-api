@@ -290,6 +290,7 @@ const generateTransformParameters = (
     enableTransformerCfnOutputs: true,
     allowDestructiveGraphqlSchemaUpdates: false,
     replaceTableUponGsiUpdate: false,
+    enableGen2Migration: false,
   };
 };
 

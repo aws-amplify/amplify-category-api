@@ -5,7 +5,7 @@ import { TranslationBehavior } from '../types';
  * These should not really be updated post-launch, since they're likely breaking changes for customers.
  * Be sure to document default values when adding new keys in the top level `types` file.
  */
-export const defaultTranslationBehavior: TranslationBehavior = {
+export const defaultTranslationBehavior: TranslationBehavior & { enableGen2Migration: boolean } = {
   shouldDeepMergeDirectiveConfigDefaults: true,
   disableResolverDeduping: true,
   sandboxModeEnabled: false,
@@ -20,4 +20,6 @@ export const defaultTranslationBehavior: TranslationBehavior = {
   enableTransformerCfnOutputs: false,
   allowDestructiveGraphqlSchemaUpdates: false,
   replaceTableUponGsiUpdate: false,
+  // migrating from construct -> Gen2 is not supported
+  enableGen2Migration: false,
 };
