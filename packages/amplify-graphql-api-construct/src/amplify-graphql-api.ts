@@ -118,6 +118,8 @@ export class AmplifyGraphqlApi extends Construct {
    */
   public readonly apiId: string;
 
+  public readonly datasourceMap: { [modelName: string]: string };
+
   /**
    * DataStore conflict resolution setting
    */
@@ -219,7 +221,7 @@ export class AmplifyGraphqlApi extends Construct {
       ...getDataSourceStrategiesProvider(definition),
     };
 
-    executeTransform(executeTransformConfig);
+    const outputs = executeTransform(executeTransformConfig);
 
     this.codegenAssets = new CodegenAssets(this, 'AmplifyCodegenAssets', { modelSchema: definition.schema });
 
@@ -231,6 +233,11 @@ export class AmplifyGraphqlApi extends Construct {
     this.graphqlUrl = this.resources.cfnResources.cfnGraphqlApi.attrGraphQlUrl;
     this.realtimeUrl = this.resources.cfnResources.cfnGraphqlApi.attrRealtimeUrl;
     this.apiKey = this.resources.cfnResources.cfnApiKey?.attrApiKey;
+    this.datasourceMap = Object.fromEntries(
+      Object.entries(outputs.datasourceMap).map(([modelName, datasource]) => {
+        return [modelName, (datasource as any).ds.attrDataSourceArn];
+      }),
+    );
   }
 
   /**

@@ -70,4 +70,21 @@ describe('exposed api properties', () => {
 
     expect(api.apiId).toBeDefined();
   });
+
+  it('exposes the datasource mapping', () => {
+    const stack = new cdk.Stack();
+
+    const api = new AmplifyGraphqlApi(stack, 'TestApi', {
+      definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+        type Todo @model @auth(rules: [{ allow: public }]) {
+          description: String!
+        }
+      `),
+      authorizationModes: {
+        apiKeyConfig: { expires: cdk.Duration.days(7) },
+      },
+    });
+
+    expect(api.datasourceMap).toBeDefined();
+  });
 });

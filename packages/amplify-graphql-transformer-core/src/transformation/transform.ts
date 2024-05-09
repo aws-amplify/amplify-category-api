@@ -120,6 +120,8 @@ export class GraphQLTransform {
 
   private logs: TransformerLog[];
 
+  private outputs: { [key: string]: any } = {};
+
   constructor(private readonly options: GraphQLTransformOptions) {
     if (!options.transformers || options.transformers.length === 0) {
       throw new Error('Must provide at least one transformer.');
@@ -342,6 +344,10 @@ export class GraphQLTransform {
       if (isFunction(transformer.getLogs)) {
         const logs = transformer.getLogs();
         this.logs.push(...logs);
+      }
+      if (isFunction(transformer.getOutputs)) {
+        const outputs = transformer.getOutputs();
+        Object.assign(this.outputs, outputs);
       }
     }
     this.collectResolvers(context, context.api);
@@ -741,6 +747,10 @@ export class GraphQLTransform {
 
   public getLogs(): TransformerLog[] {
     return this.logs;
+  }
+
+  public getOutputs(): { [key: string]: any } {
+    return this.outputs;
   }
 
   private ensureNoneDataSource(api: GraphQLAPIProvider): void {

@@ -34,6 +34,7 @@ import {
   TransformerTransformSchemaStepContextProvider,
   TransformerValidationStepContextProvider,
   DataSourceStrategiesProvider,
+  DataSourceProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelDirective } from '@aws-amplify/graphql-directives';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
@@ -108,6 +109,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
    * A Map to hold the directive configuration
    */
   private modelDirectiveConfig: Map<string, ModelDirectiveConfiguration> = new Map();
+
+  private datasourceMap: Map<string, DataSourceProvider> = new Map<string, DataSourceProvider>();
 
   constructor(options: ModelTransformerOptions = {}) {
     super('amplify-model-transformer', ModelDirective.definition);
@@ -325,6 +328,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   generateResolvers = (context: TransformerContextProvider): void => {
     this.resourceGeneratorMap.forEach((generator) => {
       generator.generateResources(context);
+      Object.assign(this.datasourceMap, generator.getDatasourceMap());
     });
   };
 
@@ -877,5 +881,11 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       throw new Error(`No resource generator assigned for ${typeName} with dbType ${strategy.dbType}`);
     }
     return generator;
+  };
+
+  getOutputs = (): { [key: string]: any } => {
+    return {
+      datasourceMap: this.datasourceMap,
+    };
   };
 }

@@ -146,7 +146,7 @@ export const defaultPrintTransformerLog = (log: TransformerLog): void => {
  * @param config the configuration for the transform.
  * @returns the transformed api deployment resources.
  */
-export const executeTransform = (config: ExecuteTransformConfig): void => {
+export const executeTransform = (config: ExecuteTransformConfig): { [key: string]: any } => {
   const {
     assetProvider,
     dataSourceStrategies,
@@ -178,6 +178,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
       synthParameters,
       migrate,
     });
+    return transform.getOutputs();
   } finally {
     transform.getLogs().forEach(printLog);
   }

@@ -161,4 +161,6 @@ export interface TransformerPluginProvider {
    * Get the current buffer of logs from the transformer
    */
   getLogs?: () => TransformerLog[];
+
+  getOutputs?: () => { [key: string]: any };
 }
