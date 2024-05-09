@@ -3,16 +3,11 @@ import * as fs from 'fs-extra';
 
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
-import { initCDKProject, cdkDeploy, cdkDestroy } from '../../../commands';
+import { initCDKProject, cdkDestroy } from '../../../commands';
+import { TestDefinition, writeStackConfig, writeTestDefinitions } from '../../../utils';
+import { DURATION_1_HOUR } from '../../../utils/duration-constants';
 import {
-  addCognitoUserToGroup,
-  createCognitoUser,
-  signInCognitoUser,
-  TestDefinition,
-  writeStackPrefix,
-  writeTestDefinitions,
-} from '../../../utils';
-import {
+  deployStackAndCreateUsers,
   testCreatePrimaryDoesNotRedactRelated,
   testCreatePrimaryIsForbidden,
   testCreatePrimaryRedactsRelated,
@@ -42,7 +37,7 @@ import {
   testUpdateRelatedOneRedactsPrimary,
 } from './test-implementations';
 
-jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
+jest.setTimeout(DURATION_1_HOUR);
 
 // Each of these tests asserts that restricted fields in associated types are properly redacted. To assert this, we create the relationship
 // records in an order so that the type we're asserting on comes LAST. By "prepopulating" the associated records before creating the source
@@ -89,7 +84,7 @@ describe('Relationships protected with static group auth', () => {
         },
       };
 
-      writeStackPrefix('StaticGrpDdbDdb', projRoot);
+      writeStackConfig(projRoot, { prefix: 'StaticGrpDdbDdb' });
       writeTestDefinitions(testDefinitions, projRoot);
 
       const testConfig = await deployStackAndCreateUsers({
@@ -247,86 +242,3 @@ describe('Relationships protected with static group auth', () => {
     });
   });
 });
-
-interface CommonSetupInput {
-  projRoot: string;
-  region: string;
-  name: string;
-}
-
-interface CommonSetupOutput {
-  apiEndpoint: string;
-  group1AccessToken: string;
-  group2AccessToken: string;
-  adminAccessToken: string;
-}
-
-const deployStackAndCreateUsers = async (input: CommonSetupInput): Promise<CommonSetupOutput> => {
-  const { projRoot, region, name } = input;
-  const outputs = await cdkDeploy(projRoot, '--all');
-  const { awsAppsyncApiEndpoint, UserPoolClientId: userPoolClientId, UserPoolId: userPoolId } = outputs[name];
-
-  const apiEndpoint = awsAppsyncApiEndpoint;
-
-  const group1AccessToken = await createTestUser({
-    groupName: 'Group1',
-    region,
-    userPoolId,
-    userPoolClientId,
-  });
-
-  const group2AccessToken = await createTestUser({
-    groupName: 'Group2',
-    region,
-    userPoolId,
-    userPoolClientId,
-  });
-
-  const adminAccessToken = await createTestUser({
-    groupName: 'Group3',
-    region,
-    userPoolId,
-    userPoolClientId,
-  });
-
-  const output: CommonSetupOutput = {
-    apiEndpoint,
-    group1AccessToken,
-    group2AccessToken,
-    adminAccessToken,
-  };
-
-  return output;
-};
-
-interface CreateUserAndAssignToGroupInput {
-  region: string;
-  userPoolId: string;
-  userPoolClientId: string;
-  groupName: string;
-}
-
-/** Creates a test user and assigns to the specified group */
-const createTestUser = async (input: CreateUserAndAssignToGroupInput): Promise<string> => {
-  const { region, userPoolId, userPoolClientId, groupName } = input;
-  const { username, password } = await createCognitoUser({
-    region,
-    userPoolId,
-  });
-
-  await addCognitoUserToGroup({
-    region,
-    userPoolId,
-    username,
-    group: groupName,
-  });
-
-  const { accessToken } = await signInCognitoUser({
-    username,
-    password,
-    region,
-    userPoolClientId,
-  });
-
-  return accessToken;
-};

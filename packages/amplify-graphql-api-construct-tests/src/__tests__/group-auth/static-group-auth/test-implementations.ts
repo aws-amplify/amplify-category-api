@@ -1,3 +1,6 @@
+import { cdkDeploy } from '../../../commands';
+import { addCognitoUserToGroup, createCognitoUser, signInCognitoUser } from '../../../utils';
+import { ONE_MINUTE } from '../../../utils/duration-constants';
 import {
   doCreateRelatedOne,
   doCreateRelatedMany,
@@ -12,6 +15,93 @@ import {
   doGetRelatedMany,
   doListRelatedManies,
 } from '../../graphql-schemas/reference-style-static-group-auth/operation-implementations';
+
+// #region Test stack setup
+
+export interface CommonSetupInput {
+  projRoot: string;
+  region: string;
+  name: string;
+}
+
+export interface CommonSetupOutput {
+  apiEndpoint: string;
+  group1AccessToken: string;
+  group2AccessToken: string;
+  adminAccessToken: string;
+}
+
+export const deployStackAndCreateUsers = async (input: CommonSetupInput): Promise<CommonSetupOutput> => {
+  const { projRoot, region, name } = input;
+  const outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: ONE_MINUTE });
+  const { awsAppsyncApiEndpoint, UserPoolClientId: userPoolClientId, UserPoolId: userPoolId } = outputs[name];
+
+  const apiEndpoint = awsAppsyncApiEndpoint;
+
+  const group1AccessToken = await createTestUser({
+    groupName: 'Group1',
+    region,
+    userPoolId,
+    userPoolClientId,
+  });
+
+  const group2AccessToken = await createTestUser({
+    groupName: 'Group2',
+    region,
+    userPoolId,
+    userPoolClientId,
+  });
+
+  const adminAccessToken = await createTestUser({
+    groupName: 'Group3',
+    region,
+    userPoolId,
+    userPoolClientId,
+  });
+
+  const output: CommonSetupOutput = {
+    apiEndpoint,
+    group1AccessToken,
+    group2AccessToken,
+    adminAccessToken,
+  };
+
+  return output;
+};
+
+interface CreateUserAndAssignToGroupInput {
+  region: string;
+  userPoolId: string;
+  userPoolClientId: string;
+  groupName: string;
+}
+
+/** Creates a test user and assigns to the specified group */
+const createTestUser = async (input: CreateUserAndAssignToGroupInput): Promise<string> => {
+  const { region, userPoolId, userPoolClientId, groupName } = input;
+  const { username, password } = await createCognitoUser({
+    region,
+    userPoolId,
+  });
+
+  await addCognitoUserToGroup({
+    region,
+    userPoolId,
+    username,
+    group: groupName,
+  });
+
+  const { accessToken } = await signInCognitoUser({
+    username,
+    password,
+    region,
+    userPoolClientId,
+  });
+
+  return accessToken;
+};
+
+// #endregion Test stack setup
 
 // #region Primary operations
 

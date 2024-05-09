@@ -3,6 +3,7 @@ import { LambdaClient, GetProvisionedConcurrencyConfigCommand } from '@aws-sdk/c
 import { initCDKProject, cdkDeploy } from '../commands';
 import { graphql } from '../graphql-request';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
+import { ONE_MINUTE } from '../utils/duration-constants';
 
 export const testGraphQLAPI = async (options: {
   projRoot: string;
@@ -15,7 +16,7 @@ export const testGraphQLAPI = async (options: {
   const { projRoot, region, connectionConfigName, dbController, resourceNames } = options;
   const name = await initCDKProject(projRoot, templatePath);
   dbController.writeDbDetails(projRoot, connectionConfigName);
-  const outputs = await cdkDeploy(projRoot, '--all');
+  const outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: ONE_MINUTE });
   const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
 
   const description = 'todo description';
