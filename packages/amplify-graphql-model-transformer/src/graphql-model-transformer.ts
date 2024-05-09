@@ -34,6 +34,7 @@ import {
   TransformerTransformSchemaStepContextProvider,
   TransformerValidationStepContextProvider,
   DataSourceStrategiesProvider,
+  DataSourceProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelDirective } from '@aws-amplify/graphql-directives';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
@@ -323,9 +324,24 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   };
 
   generateResolvers = (context: TransformerContextProvider): void => {
+    const dataSourceMapping = {};
     this.resourceGeneratorMap.forEach((generator) => {
       generator.generateResources(context);
+      Object.assign(
+        dataSourceMapping,
+        Object.fromEntries(
+          Object.entries(generator.getDatasourceMap()).map(([modelName, datasource]) => [modelName, datasource.ds.attrDataSourceArn]),
+        ),
+      );
     });
+    if (context.transformParameters.enableGen2Migration && context.transformParameters.enableTransformerCfnOutputs) {
+      const { scope } = context.stackManager;
+      new cdk.CfnOutput(cdk.Stack.of(scope), 'DataSourceMappingOutput', {
+        value: cdk.Stack.of(scope).toJsonString(dataSourceMapping),
+        description: 'Mapping of model name to data source ARN',
+        exportName: cdk.Fn.join(':', [cdk.Aws.STACK_NAME, 'DataSourceMapping']),
+      });
+    }
   };
 
   generateGetResolver = (

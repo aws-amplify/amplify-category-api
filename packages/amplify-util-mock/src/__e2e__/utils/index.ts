@@ -67,6 +67,7 @@ export const defaultTransformParams: Pick<ExecuteTransformConfig, 'transformersF
     enableTransformerCfnOutputs: true,
     allowDestructiveGraphqlSchemaUpdates: false,
     replaceTableUponGsiUpdate: false,
+    enableGen2Migration: false,
   },
 };
 
