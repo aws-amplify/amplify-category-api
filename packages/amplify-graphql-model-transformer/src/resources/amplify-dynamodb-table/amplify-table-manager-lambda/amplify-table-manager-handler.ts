@@ -537,6 +537,10 @@ const getNextGSIUpdate = (currentState: TableDescription, endState: CustomDDB.In
   const endStateGSIs = endState.globalSecondaryIndexes || [];
   const endStateGSINames = endStateGSIs.map((gsi) => gsi.indexName);
 
+  // Retrieve the attributes whose type has been modified
+  const modifiedAttributes = getTypeModifiedAttributes(currentState.AttributeDefinitions, endState.attributeDefinitions);
+  const indexesWithModifiedAttributeType = getIndexesContainingAttributes(currentState.GlobalSecondaryIndexes, modifiedAttributes);
+
   const currentStateGSIs = currentState.GlobalSecondaryIndexes || [];
   const currentStateGSINames = currentStateGSIs.map((gsi) => gsi.IndexName);
 
@@ -544,6 +548,8 @@ const getNextGSIUpdate = (currentState: TableDescription, endState: CustomDDB.In
   const gsiRequiresReplacementPredicate = (currentGSI: GlobalSecondaryIndexDescription): boolean => {
     // check if the index has been removed entirely
     if (!endStateGSINames.includes(currentGSI.IndexName!)) return true;
+    // check if the index attributes type has been modified
+    if (indexesWithModifiedAttributeType.includes(currentGSI.IndexName!)) return true;
     // get the end state of this GSI
     const respectiveEndStateGSI = endStateGSIs.find((endStateGSI) => endStateGSI.indexName === currentGSI.IndexName)!;
     // detect if projection has changed
@@ -1103,6 +1109,48 @@ const isKeySchemaModified = (currentSchema: Array<KeySchemaElement>, endSchema: 
 
   // if we got here then the hash and range key are not modified
   return false;
+};
+
+/**
+ * Util function to get a list of attributes with modified type
+ * @param currentSchema current state of attributes
+ * @param endSchema end state of key attributes
+ * @returns string[] indicates the list of attributes name with modified type
+ */
+const getTypeModifiedAttributes = (
+  currentSchema?: Array<AttributeDefinition>,
+  endSchema?: Array<CustomDDB.AttributeDefinitionProperty>,
+): string[] => {
+  const result: string[] = [];
+  if (!currentSchema || !endSchema) return result;
+  for (const attribute of currentSchema) {
+    const endAttribute = endSchema.find((endAttr) => endAttr.attributeName === attribute.AttributeName);
+    // If an attribute is not found in the end schema, no need to handle it here.
+    // The attribute will be removed once we delete the corresponding GSI.
+    if (!endAttribute) continue;
+    if (attribute.AttributeType !== endAttribute.attributeType) {
+      result.push(attribute.AttributeName!);
+    }
+  }
+  return result;
+};
+
+/**
+ * Util function to get a list of indexes containing the given attributes
+ * @param currentSchema current state of GSIs
+ * @param attributes list of attribute names
+ * @returns string[] indicates the list of index names containing the given attributes
+ */
+const getIndexesContainingAttributes = (
+  currentSchema: Array<GlobalSecondaryIndexDescription> | undefined,
+  attributes: string[],
+): string[] => {
+  if (!currentSchema) return [];
+  const result = currentSchema
+  .filter((index) => index.IndexStatus === 'ACTIVE') // This is important. You do not want to update a GSI that is not active.
+  .filter((index) => index.KeySchema?.some((key) => attributes.includes(key.AttributeName!)))
+  .map((index) => index.IndexName!);
+  return result ?? [];
 };
 
 /**
