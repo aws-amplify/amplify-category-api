@@ -10,10 +10,11 @@ import {
   dbDetailsToModelDataSourceStrategy,
   signInCognitoUser,
   TestDefinition,
-  writeStackPrefix,
+  writeStackConfig,
   writeTestDefinitions,
 } from '../../../utils';
 import { SqlDatabaseDetails, SqlDatatabaseController } from '../../../sql-datatabase-controller';
+import { DURATION_1_HOUR, ONE_MINUTE } from '../../../utils/duration-constants';
 import {
   testCreatePrimaryRedactedForDifferentOwners,
   testCreatePrimaryVisibleForSameOwner,
@@ -43,7 +44,7 @@ import {
   testUpdateRelatedOneVisibleForSameOwner,
 } from './test-implementations';
 
-jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
+jest.setTimeout(DURATION_1_HOUR);
 
 // Each of these tests asserts that restricted fields in associated types are properly redacted. To assert this, we create the relationship
 // records in an order so that the type we're asserting on comes LAST. By "prepopulating" the associated records before creating the source
@@ -127,7 +128,7 @@ describe('Associated fields protected by owner auth control visibility appropria
         },
       };
 
-      writeStackPrefix('AFDdbDdb', projRoot);
+      writeStackConfig(projRoot, { prefix: 'AFDdbDdb' });
       writeTestDefinitions(testDefinitions, projRoot);
 
       const outputs = await cdkDeploy(projRoot, '--all');
@@ -321,10 +322,10 @@ describe('Associated fields protected by owner auth control visibility appropria
         },
       };
 
-      writeStackPrefix('AFSqlSql', projRoot);
+      writeStackConfig(projRoot, { prefix: 'AFSqlSql' });
       writeTestDefinitions(testDefinitions, projRoot);
 
-      const outputs = await cdkDeploy(projRoot, '--all');
+      const outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: ONE_MINUTE });
       const { awsAppsyncApiEndpoint, UserPoolClientId: userPoolClientId, UserPoolId: userPoolId } = outputs[name];
 
       apiEndpoint = awsAppsyncApiEndpoint;
@@ -519,10 +520,10 @@ describe('Associated fields protected by owner auth control visibility appropria
         },
       };
 
-      writeStackPrefix('AFSqlDdb', projRoot);
+      writeStackConfig(projRoot, { prefix: 'AFSqlDdb' });
       writeTestDefinitions(testDefinitions, projRoot);
 
-      const outputs = await cdkDeploy(projRoot, '--all');
+      const outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: ONE_MINUTE });
       const { awsAppsyncApiEndpoint, UserPoolClientId: userPoolClientId, UserPoolId: userPoolId } = outputs[name];
 
       apiEndpoint = awsAppsyncApiEndpoint;
@@ -718,10 +719,10 @@ describe('Associated fields protected by owner auth control visibility appropria
         },
       };
 
-      writeStackPrefix('AFDdbSql', projRoot);
+      writeStackConfig(projRoot, { prefix: 'AFDdbSql' });
       writeTestDefinitions(testDefinitions, projRoot);
 
-      const outputs = await cdkDeploy(projRoot, '--all');
+      const outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: ONE_MINUTE });
       const { awsAppsyncApiEndpoint, UserPoolClientId: userPoolClientId, UserPoolId: userPoolId } = outputs[name];
 
       apiEndpoint = awsAppsyncApiEndpoint;

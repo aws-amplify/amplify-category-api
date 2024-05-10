@@ -2,8 +2,9 @@ import * as path from 'path';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import { cdkDestroy } from '../commands';
 import { setupBackend, testGraphQLOperations } from '../canary-tests-common';
+import { DURATION_1_HOUR } from '../utils/duration-constants';
 
-jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
+jest.setTimeout(DURATION_1_HOUR);
 
 describe('Canary using default DynamoDB model datasource strategy', () => {
   let projRoot: string;
