@@ -1348,7 +1348,7 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
       expect(createResult.data.createTodoOwnerAndGroup.groupsField).toEqual(null);
       expect(createResult.data.createTodoOwnerAndGroup.owners).toBeDefined();
       expect(createResult.data.createTodoOwnerAndGroup.owners).toHaveLength(1);
-  
+
       const updatedTodo = {
         id: todo.id,
         content: 'Todo-Updated',
@@ -1360,7 +1360,7 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
       expect(updateResult.data.updateTodoOwnerAndGroup.groupsField).toEqual(null);
       expect(updateResult.data.updateTodoOwnerAndGroup.owners).toBeDefined();
       expect(updateResult.data.updateTodoOwnerAndGroup.owners).toHaveLength(1);
-  
+
       const getResult = await modelHelper.get({
         id: updatedTodo.id,
       });
