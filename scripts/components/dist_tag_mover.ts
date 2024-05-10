@@ -40,13 +40,13 @@ export class DistTagMover {
         }
         const destReleaseTag = destReleaseTags.find((releaseTag) => releaseTag.includes(packageName));
         if (!destReleaseTag) {
-          // this should never happen because of the upstream logic that resolves the corresponding versions
-          throw new Error(`No corresponding destination release tag found for ${sourceReleaseTag}`);
+          console.warn(`No corresponding destination release tag found for ${sourceReleaseTag}. latest tag not moved.`);
+        } else {
+          moveActions.push({
+            releaseTag: destReleaseTag,
+            distTag: tagName,
+          });
         }
-        moveActions.push({
-          releaseTag: destReleaseTag,
-          distTag: tagName,
-        });
       });
     }
 

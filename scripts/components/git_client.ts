@@ -148,17 +148,22 @@ export class GitClient {
     const previousReleaseTags: string[] = [];
 
     while (packageNamesRemaining.size > 0) {
-      releaseCommitCursor = await this.getNearestReleaseCommit(releaseCommitCursor, { inclusive: false });
-      const releaseTagsAtCursor = await this.getTagsAtCommit(releaseCommitCursor);
-      releaseTagsAtCursor.forEach((releaseTag) => {
-        const { packageName } = releaseTagToNameAndVersion(releaseTag);
-        if (packageNamesRemaining.has(packageName)) {
-          // this means we've found the previous version of "packageNameRemaining" that was released in releaseCommitHash
-          // so we add it to the return list and remove it from the search set
-          previousReleaseTags.push(releaseTag);
-          packageNamesRemaining.delete(packageName);
-        }
-      });
+      try {
+        releaseCommitCursor = await this.getNearestReleaseCommit(releaseCommitCursor, { inclusive: false });
+        const releaseTagsAtCursor = await this.getTagsAtCommit(releaseCommitCursor);
+        releaseTagsAtCursor.forEach((releaseTag) => {
+          const { packageName } = releaseTagToNameAndVersion(releaseTag);
+          if (packageNamesRemaining.has(packageName)) {
+            // this means we've found the previous version of "packageNameRemaining" that was released in releaseCommitHash
+            // so we add it to the return list and remove it from the search set
+            previousReleaseTags.push(releaseTag);
+            packageNamesRemaining.delete(packageName);
+          }
+        });
+      } catch {
+        console.warn(`Previous release not found for ${packageNamesRemaining}.`);
+        packageNamesRemaining.clear();
+      }
     }
 
     return previousReleaseTags;
