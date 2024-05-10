@@ -1332,7 +1332,7 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
       }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access customGetTodoStaticGroup on type Query"`);
     });
 
-    test.only('multiple dynamic auth rule model should respect owner rule when groups field is null', async () => {
+    test('multiple dynamic auth rule model should respect owner rule when groups field is null', async () => {
       const modelName = 'TodoOwnerAndGroup';
       const modelHelper = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema)[modelName];
       const todo = {
