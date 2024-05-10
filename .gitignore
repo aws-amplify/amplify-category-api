@@ -46,3 +46,4 @@ packages/amplify-graphiql-explorer/.eslintcache
 codebuild_specs/debug_workflow.yml
 .npmrc
 verdaccio-logs.txt
+scripts/components/private_packages.ts

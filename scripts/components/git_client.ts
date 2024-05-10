@@ -3,6 +3,7 @@ import { writeFile } from 'fs/promises';
 import { EOL } from 'os';
 import * as path from 'path';
 import { releaseTagToNameAndVersion } from './release_tag_to_name_and_version';
+import privatePackages from './private_packages';
 
 /**
  * Client for programmatically  interacting with the local git cli
@@ -96,23 +97,14 @@ export class GitClient {
    * Returns a list of tags that point to the given commit
    */
   getTagsAtCommit = async (commitHash: string) => {
-    // filter out packages not published to npm
-    const privatePackages = [
-      'amplify-category-api-dynamodb-simulator',
-      'amplify-category-api-e2e-core',
-      'amplify-category-api-e2e-tests',
-      'amplify-graphql-api-construct-tests',
-      'amplify-category-api-graphql-migration-tests',
-      '@aws-amplify/graphql-transformer-test-utils',
-      '@aws-amplify/graphql-schema-validation',
-      'amplify-category-api-util-mock',
-      'amplify-category-api-graphql-transformers-e2e-tests',
-    ];
     const { stdout: tagsString } = await this.exec('git', ['tag', '--points-at', commitHash]);
-    return tagsString
-      .split(EOL)
-      .filter((line: string) => line.trim().length > 0)
-      .filter((tag: string) => !privatePackages.some((name) => tag.includes(name)));
+    return (
+      tagsString
+        .split(EOL)
+        .filter((line: string) => line.trim().length > 0)
+        // filter out packages not published to npm
+        .filter((tag: string) => !privatePackages.some((name) => tag.includes(name)))
+    );
   };
 
   /**
