@@ -25,7 +25,7 @@ body:
       description: |
         Please copy and paste output of the following command. This will be automatically formatted into code, so no need for backticks.
         ```bash
-        npm list @aws-amplify/data-construct
+        npm list @aws-amplify/data-construct @aws-amplify/graphql-schema-generator
         ```
       render: plain text
     validations:
