@@ -1,10 +1,10 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { AuthTransformer } from '../graphql-auth-transformer';
 import { AppSyncAuthConfiguration, ModelDataSourceStrategy, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
+import { AuthTransformer } from '../graphql-auth-transformer';
 import { ddbDataSourceStrategies, sqlDataSourceStrategies } from './combination-tests/snapshot-utils';
 
 const SUBSCRIPTION_PROTECTION = `## [Start] Check if subscriptions is protected. **
@@ -241,7 +241,7 @@ describe('Relational field redaction tests', () => {
     test.each(testTable)(`%s - Primary %s - Related %s should redact relational field - %s`, expectation);
   });
   describe('DDB datasources - reference relation', () => {
-    const expectation = makeTransformationExpectation(ddbDataSourceStrategies, referenceSchemaTempalte);
+    const expectation = makeTransformationExpectation(ddbDataSourceStrategies, referenceSchemaTemplate);
     const testTable: TestTableRow[] = [];
     for (const strategyName of Object.keys(ddbDataSourceStrategies)) {
       testCases.forEach((testCase) => {
@@ -251,7 +251,7 @@ describe('Relational field redaction tests', () => {
     test.each(testTable)('%s - Primary %s - Related %s should redact relational field - %s', expectation);
   });
   describe('RDS datasources - reference relation', () => {
-    const expectation = makeTransformationExpectation(sqlDataSourceStrategies, referenceSchemaTempalte);
+    const expectation = makeTransformationExpectation(sqlDataSourceStrategies, referenceSchemaTemplate);
     const testTable: TestTableRow[] = [];
     for (const strategyName of Object.keys(sqlDataSourceStrategies)) {
       testCases.forEach((testCase) => {
