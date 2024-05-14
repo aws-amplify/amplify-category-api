@@ -56,7 +56,7 @@ export const isFieldRoleHavingAccessToBothSide = (fieldRole: RoleDefinition, rel
     (relatedRole) =>
       isIdenticalAuthRole(relatedRole, fieldRole) ||
       (relatedRole.provider === fieldRole.provider &&
-        (relatedRole.provider === 'userPools' || relatedRole.provider === 'oidc') &&
+        (relatedRole.provider === 'userPools' || relatedRole.provider === 'oidc' || relatedRole.provider === 'identityPool') &&
         (fieldRole.strategy === 'private' || relatedRole.strategy === 'private')),
   );
 
