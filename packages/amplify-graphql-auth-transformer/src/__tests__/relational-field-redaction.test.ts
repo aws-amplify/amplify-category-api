@@ -102,7 +102,7 @@ const fieldSchemaTemplate = `
   }
 `;
 
-const referenceSchemaTempalte = `
+const referenceSchemaTemplate = `
   type Primary
   @model
   @auth(
