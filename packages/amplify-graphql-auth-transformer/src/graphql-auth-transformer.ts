@@ -771,12 +771,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
           if (isFieldRoleHavingAccessToBothSide(fieldRole, filteredRelatedModelReadRoleDefinitions)) {
             // Check if two role definitions are identical without dynamic auth role or custom auth role
             // If not, redact the relational field
-            redactRelationalField = !(
+            const isIdenticalRoleDefinitions =
               fieldReadRoleDefinitions.length === filteredRelatedModelReadRoleDefinitions.length &&
               filteredRelatedModelReadRoleDefinitions.every((relatedRole) => {
                 return fieldReadRoleDefinitions.some((fr) => isIdenticalAuthRole(fr, relatedRole) && !isDynamicAuthOrCustomAuth(fr));
-              })
-            );
+              });
+            redactRelationalField = !isIdenticalRoleDefinitions;
             break;
           }
         }
