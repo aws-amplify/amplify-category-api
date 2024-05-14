@@ -1,9 +1,10 @@
 export {
-  getPrimaryKeyFields,
-  getFilterInputName,
   getConditionInputName,
-  getSubscriptionFilterInputName,
   getConnectionName,
+  getFilterInputName,
+  getPrimaryKeyFieldNodes,
+  getPrimaryKeyFields,
+  getSubscriptionFilterInputName,
 } from './model-util';
 export { DirectiveWrapper, GetArgumentsOptions, generateGetArgumentsInput } from './directive-wrapper';
 export { collectDirectives, collectDirectivesByTypeNames } from './type-map-utils';

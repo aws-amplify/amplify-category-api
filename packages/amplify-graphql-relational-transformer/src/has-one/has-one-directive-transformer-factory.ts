@@ -30,7 +30,7 @@ export const getHasOneDirectiveTransformer = (
           throw new InvalidDirectiveError(`fields and references cannot be defined in the same ${config.directiveName}. Use 'references'`);
         }
         if (config.references.length < 1) {
-          throw new Error(`Invalid @hasMany directive on ${config.field.name.value} - empty references list`);
+          throw new Error(`Invalid @hasOne directive on ${config.field.name.value} - empty references list`);
         }
         return hasOneDirectiveDdbReferencesTransformer;
       }
