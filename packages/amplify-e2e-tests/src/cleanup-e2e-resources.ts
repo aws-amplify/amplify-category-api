@@ -53,6 +53,12 @@ type IamRoleInfo = {
   cbInfo?: CodeBuild.Build;
 };
 
+type IamPolicyInfo = {
+  name: string;
+  arn: string;
+  cbInfo?: CodeBuild.Build;
+};
+
 type ReportEntry = {
   jobId?: string;
   buildBatchArn?: string;
@@ -63,6 +69,7 @@ type ReportEntry = {
   stacks: Record<string, StackInfo>;
   buckets: Record<string, S3BucketInfo>;
   roles: Record<string, IamRoleInfo>;
+  policies: Record<string, IamPolicyInfo>;
 };
 
 type JobFilterPredicate = (job: ReportEntry) => boolean;
@@ -85,6 +92,7 @@ type AWSAccountInfo = {
 const BUCKET_TEST_REGEX = /test/;
 const IAM_TEST_REGEX =
   /!RotateE2eAwsToken-e2eTestContextRole|-integtest$|^amplify-|^eu-|^us-|^ap-|^auth-exhaustive-tests|rds-schema-inspector-integtest|^amplify_e2e_tests_lambda|^JsonMockStack-jsonMockApi|^SubscriptionAuth|^cdkamplifytable[0-9]*-|^MutationConditionTest-|^SearchableAuth|^SubscriptionRTFTests-|^NonModelAuthV2FunctionTransformerTests-|^MultiAuthV2Transformer|^FunctionTransformerTests/;
+const POLICY_TEST_REGEX = /rds-schema-inspector|amplify_e2e_tests_lambda_basic_access|auth-exhaustive-tests-2/;
 const STALE_DURATION_MS = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
 
 const isCI = (): boolean => !!(process.env.CI && process.env.CODEBUILD);
@@ -107,6 +115,12 @@ const testBucketStalenessFilter = (resource: aws.S3.Bucket): boolean => {
 
 const testRoleStalenessFilter = (resource: aws.IAM.Role): boolean => {
   const isTestResource = resource.RoleName.match(IAM_TEST_REGEX);
+  const isStaleResource = Date.now() - resource.CreateDate.getMilliseconds() > STALE_DURATION_MS;
+  return isTestResource && isStaleResource;
+};
+
+const testPolicyStalenessFilter = (resource: aws.IAM.Policy): boolean => {
+  const isTestResource = resource.PolicyName.match(POLICY_TEST_REGEX);
   const isStaleResource = Date.now() - resource.CreateDate.getMilliseconds() > STALE_DURATION_MS;
   return isTestResource && isStaleResource;
 };
@@ -139,6 +153,16 @@ const getOrphanTestIamRoles = async (account: AWSAccountInfo): Promise<IamRoleIn
   const listRoleResponse = await iamClient.listRoles({ MaxItems: 1000 }).promise();
   const staleRoles = listRoleResponse.Roles.filter(testRoleStalenessFilter);
   return staleRoles.map((it) => ({ name: it.RoleName }));
+};
+
+/**
+ * Get all iam policies in the account, and filter down to the ones we consider stale.
+ */
+const getOrphanTestIamPolicies = async (account: AWSAccountInfo): Promise<IamPolicyInfo[]> => {
+  const iamClient = new aws.IAM(getAWSConfig(account));
+  const listRoleResponse = await iamClient.listPolicies({ MaxItems: 1000 }).promise();
+  const staleRoles = listRoleResponse.Policies.filter(testPolicyStalenessFilter);
+  return staleRoles.map((it) => ({ name: it.PolicyName, arn: it.Arn }));
 };
 
 /**
@@ -386,6 +410,7 @@ const mergeResourcesByCCIJob = async (
   s3Buckets: S3BucketInfo[],
   orphanS3Buckets: S3BucketInfo[],
   orphanIamRoles: IamRoleInfo[],
+  orphanIamPolicies: IamPolicyInfo[],
 ): Promise<Record<string, ReportEntry>> => {
   const result: Record<string, ReportEntry> = {};
 
@@ -460,6 +485,16 @@ const mergeResourcesByCCIJob = async (
     ...val,
     jobId: key,
     roles: src,
+  }));
+
+  const orphanIamPoliciesGroup = {
+    [ORPHAN]: orphanIamPolicies,
+  };
+
+  _.mergeWith(result, orphanIamPoliciesGroup, (val, src, key) => ({
+    ...val,
+    jobId: key,
+    policies: src,
   }));
 
   return result;
@@ -553,6 +588,27 @@ const deleteIamRolePolicy = async (account: AWSAccountInfo, accountIndex: number
   }
 };
 
+const deleteIamPolicies = async (account: AWSAccountInfo, accountIndex: number, policies: IamPolicyInfo[]): Promise<void> => {
+  console.log(`${generateAccountInfo(account, accountIndex)} Started deleting IAM Policies`);
+  for (const policy of policies) {
+    await deleteIamPolicy(account, accountIndex, policy);
+  }
+};
+
+const deleteIamPolicy = async (account: AWSAccountInfo, accountIndex: number, policy: IamPolicyInfo): Promise<void> => {
+  const { arn, name } = policy;
+  try {
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleting Iam Policy ${name}`);
+    const iamClient = new aws.IAM(getAWSConfig(account));
+    await iamClient.deletePolicy({ PolicyArn: arn }).promise();
+  } catch (e) {
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleting iam policy ${name} failed with error ${e.message}`);
+    if (e.code === 'ExpiredTokenException') {
+      handleExpiredTokenException();
+    }
+  }
+}
+
 const deleteBuckets = async (account: AWSAccountInfo, accountIndex: number, buckets: S3BucketInfo[]): Promise<void> => {
   await Promise.all(buckets.map((bucket) => deleteBucket(account, accountIndex, bucket)));
 };
@@ -626,6 +682,10 @@ const deleteResources = async (
 
     if (resources.roles) {
       await deleteIamRoles(account, accountIndex, Object.values(resources.roles));
+    }
+
+    if (resources.policies) {
+      await deleteIamPolicies(account, accountIndex, Object.values(resources.policies));
     }
   }
 };
@@ -730,14 +790,16 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const bucketPromise = getS3Buckets(account);
   const orphanBucketPromise = getOrphanS3TestBuckets(account);
   const orphanIamRolesPromise = getOrphanTestIamRoles(account);
+  const orphanIamPoliciesPromise = getOrphanTestIamPolicies(account);
 
   const apps = (await Promise.all(appPromises)).flat();
   const stacks = (await Promise.all(stackPromises)).flat();
   const buckets = await bucketPromise;
   const orphanBuckets = await orphanBucketPromise;
   const orphanIamRoles = await orphanIamRolesPromise;
+  const orphanIamPolicies = await orphanIamPoliciesPromise;
 
-  const allResources = await mergeResourcesByCCIJob(apps, stacks, buckets, orphanBuckets, orphanIamRoles);
+  const allResources = await mergeResourcesByCCIJob(apps, stacks, buckets, orphanBuckets, orphanIamRoles, orphanIamPolicies);
   const staleResources = _.pickBy(allResources, filterPredicate);
 
   generateReport(staleResources, accountIndex);
