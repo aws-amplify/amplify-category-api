@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.8.5...@aws-amplify/graphql-schema-generator@0.8.6) (2024-05-15)
+
+### Bug Fixes
+
+- yarn clean preserve cert file in schema discovery lambda ([#2548](https://github.com/aws-amplify/amplify-category-api/issues/2548)) ([7810c87](https://github.com/aws-amplify/amplify-category-api/commit/7810c87831ae8701d1d9b1029e2035ac4bccddb1))
+
 ## [0.8.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.8.4...@aws-amplify/graphql-schema-generator@0.8.5) (2024-05-10)
 
 **Note:** Version bump only for package @aws-amplify/graphql-schema-generator

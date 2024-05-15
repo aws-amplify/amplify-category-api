@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-schema-generator",
-  "version": "0.8.5",
+  "version": "0.8.6",
   "description": "Amplify GraphQL schema generator",
   "repository": {
     "type": "git",
