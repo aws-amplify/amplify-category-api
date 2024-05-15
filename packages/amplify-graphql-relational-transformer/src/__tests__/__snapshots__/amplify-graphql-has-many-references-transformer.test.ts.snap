@@ -681,7 +681,10 @@ input ModelSubscriptionMemberFilterInput {
 
 exports[`has many query with implicit IDs 2`] = `
 "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
@@ -781,7 +784,10 @@ exports[`has many query with implicit IDs 3`] = `
 
 exports[`has many references with multiple relationships to the same model 1`] = `
 "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
@@ -853,7 +859,10 @@ null
 
 exports[`has many references with multiple relationships to the same model 2`] = `
 "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
@@ -981,7 +990,10 @@ exports[`has many references with multiple relationships to the same model 4`] =
 
 exports[`has many references with multiple relationships to the same model with composite primary key 1`] = `
 "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"pk\\"), $ctx.source.pk) )
 #if( $util.isNull($partitionKeyValue) )
@@ -1057,7 +1069,10 @@ null
 
 exports[`has many references with multiple relationships to the same model with composite primary key 2`] = `
 "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"pk\\"), $ctx.source.pk) )
 #if( $util.isNull($partitionKeyValue) )
@@ -1991,7 +2006,10 @@ input ModelPostEditorFilterInput {
 
 exports[`supports recursive schemas 1`] = `
 "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
