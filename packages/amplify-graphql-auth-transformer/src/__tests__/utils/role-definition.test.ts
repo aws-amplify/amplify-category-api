@@ -44,9 +44,67 @@ describe('RoleDefinition', () => {
   });
 
   describe('isFieldRoleHavingAccessToBothSide', () => {
-    test('access on both sides', () => {});
+    describe('access on both sides', () => {
+      describe('identical roles', () => {
+        test.each(allRoles)('%j', (role) => {
+          expect(isFieldRoleHavingAccessToBothSide(role, [{ ...role }])).toBeTruthy();
+        });
+      });
 
-    test('non-access on both sides', () => {});
+      describe('non-identical roles', () => {
+        const providers: AuthProvider[] = ['userPools', 'oidc', 'identityPool'];
+        test.each(providers)('provider %s private on fieldRole', (provider) => {
+          const fieldRole = {
+            provider,
+            strategy: 'private' as AuthStrategy,
+            static: false,
+          };
+          const relatedModelRoles = [
+            {
+              provider,
+              strategy: 'public' as AuthStrategy,
+              static: true,
+            },
+          ];
+
+          expect(isFieldRoleHavingAccessToBothSide(fieldRole, relatedModelRoles)).toBeTruthy();
+        });
+
+        test.each(providers)('provider %s private on relatedModelRoles', (provider) => {
+          const fieldRole = {
+            provider,
+            strategy: 'public' as AuthStrategy,
+            static: false,
+          };
+          const relatedModelRoles = [
+            {
+              provider,
+              strategy: 'private' as AuthStrategy,
+              static: true,
+            },
+          ];
+
+          expect(isFieldRoleHavingAccessToBothSide(fieldRole, relatedModelRoles)).toBeTruthy();
+        });
+      });
+    });
+
+    test('non-access on both sides', () => {
+      const fieldRole = {
+        provider: 'owner' as AuthProvider,
+        strategy: 'public' as AuthStrategy,
+        static: false,
+      };
+      const relatedModelRoles = [
+        {
+          provider: 'group' as AuthProvider,
+          strategy: 'private' as AuthStrategy,
+          static: true,
+        },
+      ];
+
+      expect(isFieldRoleHavingAccessToBothSide(fieldRole, relatedModelRoles)).toBeFalsy();
+    });
   });
 
   describe('isDynamicAuthOrCustomAuth', () => {
