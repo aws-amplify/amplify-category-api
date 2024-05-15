@@ -42,51 +42,12 @@ describe('Models with multiple relationships', () => {
   );
 
   beforeAll(async () => {
-    // dbDetails = await databaseController.setupDatabase();
-    dbDetails = {
-      dbConfig: {
-        dbName: 'default_db',
-        dbType: 'MYSQL',
-        endpoint: 'fhnnvcizbr.cxudc8crpgqw.us-west-2.rds.amazonaws.com',
-        port: 3306,
-        strategyName: 'mysqlDBStrategy',
-        vpcConfig: {
-          vpcId: 'vpc-0a8a4272',
-          securityGroupIds: ['sg-17a20862'],
-          subnetAvailabilityZones: [
-            {
-              subnetId: 'subnet-75a3f90c',
-              availabilityZone: 'us-west-2a',
-            },
-            {
-              subnetId: 'subnet-c54f088e',
-              availabilityZone: 'us-west-2b',
-            },
-            {
-              subnetId: 'subnet-5471450e',
-              availabilityZone: 'us-west-2c',
-            },
-            {
-              subnetId: 'subnet-5f739274',
-              availabilityZone: 'us-west-2d',
-            },
-          ],
-        },
-      },
-      connectionConfigs: {
-        secretsManagerManagedSecret: {
-          databaseName: 'default_db',
-          hostname: 'fhnnvcizbr.cxudc8crpgqw.us-west-2.rds.amazonaws.com',
-          port: 3306,
-          secretArn: 'arn:aws:secretsmanager:us-west-2:779656175277:secret:rds!db-0721fd57-c76d-4539-a56a-c49f68f69cf7-o86kf0',
-        },
-      },
-    };
+    dbDetails = await databaseController.setupDatabase();
   });
 
-  // afterAll(async () => {
-  //   await databaseController.cleanupDatabase();
-  // });
+  afterAll(async () => {
+    await databaseController.cleanupDatabase();
+  });
 
   describe('SQL primary, SQL related', () => {
     const projFolderName = `${baseProjFolderName}-sql`;

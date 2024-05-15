@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.8.1...@aws-amplify/data-construct@1.8.2) (2024-05-10)
+
+**Note:** Version bump only for package @aws-amplify/data-construct
+
 ## [1.8.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.8.0...@aws-amplify/data-construct@1.8.1) (2024-05-01)
 
 **Note:** Version bump only for package @aws-amplify/data-construct
