@@ -7,7 +7,7 @@ import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-tr
 import { initCDKProject, cdkDestroy } from '../../../commands';
 import { dbDetailsToModelDataSourceStrategy, TestDefinition, writeStackConfig, writeTestDefinitions } from '../../../utils';
 import { SqlDatabaseDetails, SqlDatatabaseController } from '../../../sql-datatabase-controller';
-import { DURATION_1_HOUR } from '../../../utils/duration-constants';
+import { DURATION_90_MINUTES } from '../../../utils/duration-constants';
 import {
   deployStackAndCreateUsers,
   testCreatePrimaryDoesNotRedactRelatedForSameOwningGroup,
@@ -38,7 +38,7 @@ import {
   testUpdateRelatedOneRedactsPrimaryForDifferentOwningGroup,
 } from './test-implementations';
 
-jest.setTimeout(DURATION_1_HOUR);
+jest.setTimeout(DURATION_90_MINUTES);
 
 // Each of these tests asserts that restricted fields in associated types are properly redacted. To assert this, we create the relationship
 // records in an order so that the type we're asserting on comes LAST. By "prepopulating" the associated records before creating the source
