@@ -46,7 +46,7 @@ export const isIdenticalAuthRole = (role1: RoleDefinition, role2: RoleDefinition
 /**
  * Determine if the given relational field role have the same access as one of the related model auth roles
  * Usually this means an auth role have the exact same provider, strategy, claim and entity
- * One special case is when the provider 'userPools' or 'oidc' exists on both sides and at least one side have 'private' role
+ * One special case is when the provider 'userPools', 'oidc', or 'identityPool' exists on both sides and at least one side have 'private' role
  * @param fieldRole relational field auth role
  * @param relatedModelRoles related model auth roles
  * @returns boolean for the field can access both sides or not
