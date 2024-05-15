@@ -3,7 +3,7 @@ import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aw
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AppSyncAuthConfiguration, ModelDataSourceStrategy, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
+import { getModelTypeNames } from '@aws-amplify/graphql-transformer-core';
 import { AuthTransformer } from '../graphql-auth-transformer';
 import { ddbDataSourceStrategies, sqlDataSourceStrategies } from './combination-tests/snapshot-utils';
 
@@ -180,14 +180,35 @@ const resolveSchema = (schemaTemplate: string, primaryModelRules: string[], rela
 export const makeTransformationExpectation = (
   dataSourceStrategies: Record<string, ModelDataSourceStrategy>,
   schemaTemplate: string,
-): ((strategyName: string, primaryModelRules: string[], relatedModelRules: string[], shouldRedactField: boolean) => void) => {
-  const expectation = (strategyName: string, primaryModelRules: string[], relatedModelRules: string[], shouldRedactField: boolean) => {
+): ((
+  primaryStrategyName: string,
+  relatedStrategyName: string,
+  primaryModelRules: string[],
+  relatedModelRules: string[],
+  shouldRedactField: boolean,
+  primaryModelNames?: string[],
+) => void) => {
+  const expectation = (
+    primaryStrategyName: string,
+    relatedStrategyName: string,
+    primaryModelRules: string[],
+    relatedModelRules: string[],
+    shouldRedactField: boolean,
+    primaryModelNames = ['Primary'],
+  ) => {
     const validSchema = resolveSchema(schemaTemplate, primaryModelRules, relatedModelRules);
+    const modelKeys = getModelTypeNames(validSchema);
     const out = testTransform({
       schema: validSchema,
       authConfig: authConfigWithAllProviders,
       transformers: makeTransformers(),
-      dataSourceStrategies: constructDataSourceStrategies(validSchema, dataSourceStrategies[strategyName]),
+      dataSourceStrategies: modelKeys.reduce(
+        (acc, cur) => ({
+          ...acc,
+          [cur]: dataSourceStrategies[primaryModelNames.includes(cur) ? primaryStrategyName : relatedStrategyName],
+        }),
+        {},
+      ),
     });
     expect(out).toBeDefined();
     if (shouldRedactField) {
@@ -205,7 +226,7 @@ export const makeTransformationExpectation = (
   return expectation;
 };
 
-export type TestTableRow = [string, string[], string[], boolean];
+export type TestTableRow = [string, string, string[], string[], boolean];
 
 /**
  * Primary auth rules - Related auth rules - Redact relational field
@@ -235,29 +256,53 @@ describe('Relational field redaction tests', () => {
     const testTable: TestTableRow[] = [];
     for (const strategyName of Object.keys(ddbDataSourceStrategies)) {
       testCases.forEach((testCase) => {
-        testTable.push([strategyName, ...testCase] as TestTableRow);
+        testTable.push([strategyName, strategyName, ...testCase] as TestTableRow);
       });
     }
-    test.each(testTable)(`%s - Primary %s - Related %s should redact relational field - %s`, expectation);
+    test.each(testTable)('%s -> %s - Primary %s - Related %s should redact relational field - %s', expectation);
   });
   describe('DDB datasources - reference relation', () => {
     const expectation = makeTransformationExpectation(ddbDataSourceStrategies, referenceSchemaTemplate);
     const testTable: TestTableRow[] = [];
     for (const strategyName of Object.keys(ddbDataSourceStrategies)) {
       testCases.forEach((testCase) => {
-        testTable.push([strategyName, ...testCase] as TestTableRow);
+        testTable.push([strategyName, strategyName, ...testCase] as TestTableRow);
       });
     }
-    test.each(testTable)('%s - Primary %s - Related %s should redact relational field - %s', expectation);
+    test.each(testTable)('%s -> %s - Primary %s - Related %s should redact relational field - %s', expectation);
   });
   describe('RDS datasources - reference relation', () => {
     const expectation = makeTransformationExpectation(sqlDataSourceStrategies, referenceSchemaTemplate);
     const testTable: TestTableRow[] = [];
     for (const strategyName of Object.keys(sqlDataSourceStrategies)) {
       testCases.forEach((testCase) => {
-        testTable.push([strategyName, ...testCase] as TestTableRow);
+        testTable.push([strategyName, strategyName, ...testCase] as TestTableRow);
       });
     }
-    test.each(testTable)('%s - Primary %s - Related %s should redact relational field - %s', expectation);
+    test.each(testTable)('%s -> %s - Primary %s - Related %s should redact relational field - %s', expectation);
+  });
+  describe('DDB Primary, SQL Related - reference relation', () => {
+    const expectation = makeTransformationExpectation({ ...sqlDataSourceStrategies, ...ddbDataSourceStrategies }, referenceSchemaTemplate);
+    const testTable: TestTableRow[] = [];
+    for (const primaryStrategyName of Object.keys(ddbDataSourceStrategies)) {
+      for (const relatedStrategyName of Object.keys(sqlDataSourceStrategies)) {
+        testCases.forEach((testCase) => {
+          testTable.push([primaryStrategyName, relatedStrategyName, ...testCase] as TestTableRow);
+        });
+      }
+    }
+    test.each(testTable)('%s -> %s - Primary %s - Related %s should redact relational field - %s', expectation);
+  });
+  describe('SQL Primary, DDB Related - reference relation', () => {
+    const expectation = makeTransformationExpectation({ ...sqlDataSourceStrategies, ...ddbDataSourceStrategies }, referenceSchemaTemplate);
+    const testTable: TestTableRow[] = [];
+    for (const primaryStrategyName of Object.keys(sqlDataSourceStrategies)) {
+      for (const relatedStrategyName of Object.keys(ddbDataSourceStrategies)) {
+        testCases.forEach((testCase) => {
+          testTable.push([primaryStrategyName, relatedStrategyName, ...testCase] as TestTableRow);
+        });
+      }
+    }
+    test.each(testTable)('%s -> %s - Primary %s - Related %s should redact relational field - %s', expectation);
   });
 });
