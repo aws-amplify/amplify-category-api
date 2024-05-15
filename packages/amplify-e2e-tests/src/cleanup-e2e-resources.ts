@@ -367,11 +367,13 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
       }
     } catch (e) {
       // TODO: Why do we process the bucket even with these particular errors?
-      if (e.code === 'NoSuchTagSet' || e.code === 'NoSuchBucket') {
+      if (e.code === 'NoSuchTagSet') {
         result.push({
           name: bucket.Name,
           region: region ?? 'us-east-1',
         });
+      } else if (e.code === 'NoSuchBucket') {
+        console.error(`Error: NoSuchBucket. Skipping processing ${account.accountId}, bucket ${bucket.Name}`, e);
       } else if (e.code === 'InvalidToken') {
         // We see some buckets in some accounts that were somehow created in an opt-in region different from the one to which the account is
         // actually opted in. We don't quite know how this happened, but for now, we'll make a note of the inconsistency and continue
