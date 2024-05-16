@@ -671,6 +671,9 @@ describe(`Deployed Mutation Condition tests`, () => {
               },
               Action: 'sts:AssumeRoleWithWebIdentity',
               Condition: {
+                'StringEquals': {
+                  'cognito-identity.amazonaws.com:aud': { Ref: 'IdentityPool' },
+                },
                 'ForAnyValue:StringLike': {
                   'cognito-identity.amazonaws.com:amr': 'authenticated',
                 },
@@ -693,6 +696,9 @@ describe(`Deployed Mutation Condition tests`, () => {
               },
               Action: 'sts:AssumeRoleWithWebIdentity',
               Condition: {
+                'StringEquals': {
+                  'cognito-identity.amazonaws.com:aud': { Ref: 'IdentityPool' },
+                },
                 'ForAnyValue:StringLike': {
                   'cognito-identity.amazonaws.com:amr': 'unauthenticated',
                 },
