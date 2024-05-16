@@ -121,6 +121,14 @@ export const testCreatePrimaryDoesNotRedactRelatedForSameOwningGroup = async (
   expect(primary.relatedMany.items[0].id).toEqual(relatedManyId);
 };
 
+export const testCreatePrimaryRedactsRelatedForSameOwningGroup = async (
+  currentId: number,
+  apiEndpoint: string,
+  accessToken: string,
+): Promise<void> => {
+  return testCreatePrimaryRedactsRelatedForDifferentOwningGroup(currentId, apiEndpoint, accessToken, accessToken);
+};
+
 export const testCreatePrimaryRedactsRelatedForDifferentOwningGroup = async (
   currentId: number,
   apiEndpoint: string,
@@ -328,6 +336,14 @@ export const testUpdatePrimaryDoesNotRedactRelatedForSameOwningGroup = async (
   expect(primary.relatedMany.items[0].id).toEqual(relatedManyId);
 };
 
+export const testUpdatePrimaryRedactsRelatedForSameOwningGroup = async (
+  currentId: number,
+  apiEndpoint: string,
+  accessToken: string,
+): Promise<void> => {
+  return testUpdatePrimaryRedactsRelatedForDifferentOwningGroup(currentId, apiEndpoint, accessToken, accessToken);
+};
+
 export const testUpdatePrimaryRedactsRelatedForDifferentOwningGroup = async (
   currentId: number,
   apiEndpoint: string,
@@ -379,6 +395,14 @@ export const testCreateRelatedOneDoesNotRedactPrimaryForSameOwningGroup = async 
   expect(relatedOne.primary.relatedMany).toBeDefined();
   expect(relatedOne.primary.relatedMany.items.length).toEqual(1);
   expect(relatedOne.primary.relatedMany.items[0].id).toEqual(relatedManyId);
+};
+
+export const testCreateRelatedOneRedactsPrimaryForSameOwningGroup = async (
+  currentId: number,
+  apiEndpoint: string,
+  accessToken: string,
+): Promise<void> => {
+  return testCreateRelatedOneRedactsPrimaryForDifferentOwningGroup(currentId, apiEndpoint, accessToken, accessToken);
 };
 
 export const testCreateRelatedOneRedactsPrimaryForDifferentOwningGroup = async (
@@ -518,6 +542,14 @@ export const testUpdateRelatedOneDoesNotRedactPrimaryForSameOwningGroup = async 
   expect(relatedOne.primary.relatedMany.items[0].id).toEqual(relatedManyId);
 };
 
+export const testUpdateRelatedOneRedactsPrimaryForSameOwningGroup = async (
+  currentId: number,
+  apiEndpoint: string,
+  accessToken: string,
+): Promise<void> => {
+  return testUpdateRelatedOneRedactsPrimaryForDifferentOwningGroup(currentId, apiEndpoint, accessToken, accessToken);
+};
+
 export const testUpdateRelatedOneRedactsPrimaryForDifferentOwningGroup = async (
   currentId: number,
   apiEndpoint: string,
@@ -564,6 +596,14 @@ export const testCreateRelatedManyDoesNotRedactPrimaryForSameOwningGroup = async
 
   expect(relatedMany.primary.relatedOne).toBeDefined();
   expect(relatedMany.primary.relatedOne.id).toEqual(relatedOneId);
+};
+
+export const testCreateRelatedManyRedactsPrimaryForSameOwningGroup = async (
+  currentId: number,
+  apiEndpoint: string,
+  accessToken: string,
+): Promise<void> => {
+  return testCreateRelatedManyRedactsPrimaryForDifferentOwningGroup(currentId, apiEndpoint, accessToken, accessToken);
 };
 
 export const testCreateRelatedManyRedactsPrimaryForDifferentOwningGroup = async (
@@ -700,6 +740,14 @@ export const testUpdateRelatedManyDoesNotRedactPrimaryForSameOwningGroup = async
 
   expect(relatedMany.primary.relatedOne).toBeDefined();
   expect(relatedMany.primary.relatedOne.id).toEqual(relatedOneId);
+};
+
+export const testUpdateRelatedManyRedactsPrimaryForSameOwningGroup = async (
+  currentId: number,
+  apiEndpoint: string,
+  accessToken: string,
+): Promise<void> => {
+  return testUpdateRelatedManyRedactsPrimaryForDifferentOwningGroup(currentId, apiEndpoint, accessToken, accessToken);
 };
 
 export const testUpdateRelatedManyRedactsPrimaryForDifferentOwningGroup = async (
