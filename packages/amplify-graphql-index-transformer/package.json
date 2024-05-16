@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-index-transformer",
-  "version": "2.4.2",
+  "version": "2.4.3",
   "description": "Amplify GraphQL index and key transformers",
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@aws-amplify/graphql-directives": "1.1.0",
-    "@aws-amplify/graphql-model-transformer": "2.10.0",
+    "@aws-amplify/graphql-model-transformer": "2.10.1",
     "@aws-amplify/graphql-transformer-core": "2.8.0",
     "@aws-amplify/graphql-transformer-interfaces": "3.8.0",
     "graphql": "^15.5.0",
