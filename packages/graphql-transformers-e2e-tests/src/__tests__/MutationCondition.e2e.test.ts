@@ -671,7 +671,7 @@ describe(`Deployed Mutation Condition tests`, () => {
               },
               Action: 'sts:AssumeRoleWithWebIdentity',
               Condition: {
-                'StringEquals': {
+                StringEquals: {
                   'cognito-identity.amazonaws.com:aud': { Ref: 'IdentityPool' },
                 },
                 'ForAnyValue:StringLike': {
@@ -696,7 +696,7 @@ describe(`Deployed Mutation Condition tests`, () => {
               },
               Action: 'sts:AssumeRoleWithWebIdentity',
               Condition: {
-                'StringEquals': {
+                StringEquals: {
                   'cognito-identity.amazonaws.com:aud': { Ref: 'IdentityPool' },
                 },
                 'ForAnyValue:StringLike': {
