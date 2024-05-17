@@ -152,8 +152,6 @@ export const testCreateRelatedOneRedacted = async (currentId: number, apiEndpoin
   expect(relatedOne.secret).toBeNull();
   expect(relatedOne.id).toBeDefined();
   expect(relatedOne.primary).toBeNull();
-  expect(relatedOne.primary.relatedMany).toBeDefined();
-  expect(relatedOne.primary.relatedMany.items.length).toEqual(0);
 };
 
 export const testUpdateRelatedOneRedacted = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
