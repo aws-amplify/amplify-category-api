@@ -44,3 +44,6 @@ test.out.log
 packages/amplify-graphiql-explorer/.eslintcache
 !packages/amplify-graphql-model-transformer/src/__tests__/overrides/build/override.js
 codebuild_specs/debug_workflow.yml
+.npmrc
+verdaccio-logs.txt
+scripts/components/private_packages.ts

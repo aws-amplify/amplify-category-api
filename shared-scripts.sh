@@ -87,6 +87,14 @@ function _buildLinux {
   yarn build-tests
   storeCacheForBuildJob
 }
+
+# used when build is not necessary for codebuild project
+function _installLinux {
+  _setShell
+  echo "Linux Install"
+  yarn run production-install
+  storeCacheForBuildJob
+}
 function _testLinux {
   echo "Run Unit Test"
   loadCacheFromBuildJob
@@ -449,6 +457,23 @@ function _deploy {
   PUBLISH_TOKEN=$(echo "$NPM_PUBLISH_TOKEN" | jq -r '.token')
   echo "//registry.npmjs.org/:_authToken=$PUBLISH_TOKEN" > ~/.npmrc
   ./codebuild_specs/scripts/publish.sh
+}
+
+function _deprecate {
+  loadCacheFromBuildJob
+  echo "Deprecate"
+  echo "Authenticate with NPM"
+  if [ "$USE_NPM_REGISTRY" == "true" ]; then
+      PUBLISH_TOKEN=$(echo "$NPM_PUBLISH_TOKEN" | jq -r '.token')
+      echo "//registry.npmjs.org/:_authToken=$PUBLISH_TOKEN" > ~/.npmrc
+  else
+    yarn verdaccio-clean
+    source codebuild_specs/scripts/local_publish_helpers.sh
+    startLocalRegistry "$(pwd)/codebuild_specs/scripts/verdaccio.yaml"
+    setNpmRegistryUrlToLocal
+  fi
+  yarn deprecate
+  unsetNpmRegistryUrl
 }
 
 # Accepts the value as an input parameter, i.e. 1 for success, 0 for failure.
