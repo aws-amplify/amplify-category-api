@@ -126,7 +126,21 @@ export const testCreatePrimaryRedactsRelatedForSameOwningGroup = async (
   apiEndpoint: string,
   accessToken: string,
 ): Promise<void> => {
-  return testCreatePrimaryRedactsRelatedForDifferentOwningGroup(currentId, apiEndpoint, accessToken, accessToken);
+  const primaryId = `p${currentId}`;
+  const relatedOneId = `ro${currentId}`;
+  const relatedManyId = `rm${currentId}`;
+
+  await doCreateRelatedOne(apiEndpoint, accessToken, relatedOneId, primaryId, ['Group1']);
+  await doCreateRelatedMany(apiEndpoint, accessToken, relatedManyId, primaryId, ['Group1']);
+
+  const result = await doCreatePrimary(apiEndpoint, accessToken, primaryId, ['Group1']);
+  const primary = result.body.data.createPrimary;
+
+  expect(primary).toBeDefined();
+  expect(primary.id).toEqual(primaryId);
+  expect(primary.relatedOne).toBeNull();
+  expect(primary.relatedMany).toBeDefined();
+  expect(primary.relatedMany.items.length).toEqual(0);
 };
 
 export const testCreatePrimaryRedactsRelatedForDifferentOwningGroup = async (
@@ -341,7 +355,22 @@ export const testUpdatePrimaryRedactsRelatedForSameOwningGroup = async (
   apiEndpoint: string,
   accessToken: string,
 ): Promise<void> => {
-  return testUpdatePrimaryRedactsRelatedForDifferentOwningGroup(currentId, apiEndpoint, accessToken, accessToken);
+  const primaryId = `p${currentId}`;
+  const relatedOneId = `ro${currentId}`;
+  const relatedManyId = `rm${currentId}`;
+
+  await doCreateRelatedOne(apiEndpoint, accessToken, relatedOneId, primaryId, ['Group1']);
+  await doCreateRelatedMany(apiEndpoint, accessToken, relatedManyId, primaryId, ['Group1']);
+  await doCreatePrimary(apiEndpoint, accessToken, primaryId, ['Group1']);
+
+  const result = await doUpdatePrimary(apiEndpoint, accessToken, primaryId, ['Group1']);
+  const primary = result.body.data.updatePrimary;
+
+  expect(primary).toBeDefined();
+  expect(primary.id).toEqual(primaryId);
+  expect(primary.relatedOne).toBeNull();
+  expect(primary.relatedMany).toBeDefined();
+  expect(primary.relatedMany.items.length).toEqual(0);
 };
 
 export const testUpdatePrimaryRedactsRelatedForDifferentOwningGroup = async (
@@ -402,7 +431,19 @@ export const testCreateRelatedOneRedactsPrimaryForSameOwningGroup = async (
   apiEndpoint: string,
   accessToken: string,
 ): Promise<void> => {
-  return testCreateRelatedOneRedactsPrimaryForDifferentOwningGroup(currentId, apiEndpoint, accessToken, accessToken);
+  const primaryId = `p${currentId}`;
+  const relatedOneId = `ro${currentId}`;
+  const relatedManyId = `rm${currentId}`;
+
+  await doCreatePrimary(apiEndpoint, accessToken, primaryId, ['Group1']);
+  await doCreateRelatedMany(apiEndpoint, accessToken, relatedManyId, primaryId, ['Group1']);
+
+  const result = await doCreateRelatedOne(apiEndpoint, accessToken, relatedOneId, primaryId, ['Group1']);
+  const relatedOne = result.body.data.createRelatedOne;
+
+  expect(relatedOne).toBeDefined();
+  expect(relatedOne.id).toEqual(relatedOneId);
+  expect(relatedOne.primary).toBeNull();
 };
 
 export const testCreateRelatedOneRedactsPrimaryForDifferentOwningGroup = async (
@@ -547,7 +588,20 @@ export const testUpdateRelatedOneRedactsPrimaryForSameOwningGroup = async (
   apiEndpoint: string,
   accessToken: string,
 ): Promise<void> => {
-  return testUpdateRelatedOneRedactsPrimaryForDifferentOwningGroup(currentId, apiEndpoint, accessToken, accessToken);
+  const primaryId = `p${currentId}`;
+  const relatedOneId = `ro${currentId}`;
+  const relatedManyId = `rm${currentId}`;
+
+  await doCreatePrimary(apiEndpoint, accessToken, primaryId, ['Group1']);
+  await doCreateRelatedMany(apiEndpoint, accessToken, relatedManyId, primaryId, ['Group1']);
+  await doCreateRelatedOne(apiEndpoint, accessToken, relatedOneId, primaryId, ['Group1']);
+
+  const result = await doUpdateRelatedOne(apiEndpoint, accessToken, relatedOneId, primaryId, ['Group1']);
+  const relatedOne = result.body.data.updateRelatedOne;
+
+  expect(relatedOne).toBeDefined();
+  expect(relatedOne.id).toEqual(relatedOneId);
+  expect(relatedOne.primary).toBeNull();
 };
 
 export const testUpdateRelatedOneRedactsPrimaryForDifferentOwningGroup = async (
@@ -603,7 +657,19 @@ export const testCreateRelatedManyRedactsPrimaryForSameOwningGroup = async (
   apiEndpoint: string,
   accessToken: string,
 ): Promise<void> => {
-  return testCreateRelatedManyRedactsPrimaryForDifferentOwningGroup(currentId, apiEndpoint, accessToken, accessToken);
+  const primaryId = `p${currentId}`;
+  const relatedOneId = `ro${currentId}`;
+  const relatedManyId = `rm${currentId}`;
+
+  await doCreatePrimary(apiEndpoint, accessToken, primaryId, ['Group1']);
+  await doCreateRelatedOne(apiEndpoint, accessToken, relatedOneId, primaryId, ['Group1']);
+
+  const result = await doCreateRelatedMany(apiEndpoint, accessToken, relatedManyId, primaryId, ['Group1']);
+  const relatedMany = result.body.data.createRelatedMany;
+
+  expect(relatedMany).toBeDefined();
+  expect(relatedMany.id).toEqual(relatedManyId);
+  expect(relatedMany.primary).toBeNull();
 };
 
 export const testCreateRelatedManyRedactsPrimaryForDifferentOwningGroup = async (
@@ -747,7 +813,20 @@ export const testUpdateRelatedManyRedactsPrimaryForSameOwningGroup = async (
   apiEndpoint: string,
   accessToken: string,
 ): Promise<void> => {
-  return testUpdateRelatedManyRedactsPrimaryForDifferentOwningGroup(currentId, apiEndpoint, accessToken, accessToken);
+  const primaryId = `p${currentId}`;
+  const relatedOneId = `ro${currentId}`;
+  const relatedManyId = `rm${currentId}`;
+
+  await doCreatePrimary(apiEndpoint, accessToken, primaryId, ['Group1']);
+  await doCreateRelatedOne(apiEndpoint, accessToken, relatedOneId, primaryId, ['Group1']);
+  await doCreateRelatedMany(apiEndpoint, accessToken, relatedManyId, primaryId, ['Group1']);
+
+  const result = await doUpdateRelatedMany(apiEndpoint, accessToken, relatedManyId, primaryId, ['Group1']);
+  const relatedMany = result.body.data.updateRelatedMany;
+
+  expect(relatedMany).toBeDefined();
+  expect(relatedMany.id).toEqual(relatedManyId);
+  expect(relatedMany.primary).toBeNull();
 };
 
 export const testUpdateRelatedManyRedactsPrimaryForDifferentOwningGroup = async (
