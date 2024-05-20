@@ -125,7 +125,9 @@ export const testCreatePrimaryDoesNotRedactRelated = async (
   expect(primary.relatedOne).toBeDefined();
   expect(primary.relatedOne.id).toEqual(relatedOneId);
 
-  expect(primary.relatedMany).toBeNull();
+  expect(primary.relatedMany).toBeDefined();
+  expect(primary.relatedMany.items.length).toEqual(1);
+  expect(primary.relatedMany.items[0].id).toEqual(relatedManyId);
 };
 
 export const testCreatePrimaryRedactsRelated = async (
