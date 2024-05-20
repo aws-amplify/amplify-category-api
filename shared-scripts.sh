@@ -145,6 +145,10 @@ function _publishToLocalRegistry {
       fi
     fi
     echo $BRANCH_NAME
+
+    git config http.version HTTP/1.1
+    # Increase buffer size to avoid error when git operations return large response
+    git config http.postBuffer 157286400
     git checkout $BRANCH_NAME
   
     # Fetching git tags from upstream
