@@ -30,6 +30,8 @@ export interface DynamoDbDataSourceOptions extends DataSourceOptions {
 export interface TransformHostProvider {
   setAPI(api: GraphqlApiBase): void;
 
+  displayAllResources(context: any): void;
+
   addHttpDataSource(name: string, endpoint: string, options?: DataSourceOptions, scope?: Construct): HttpDataSource;
   addDynamoDbDataSource(name: string, table: ITable, options?: DynamoDbDataSourceOptions, scope?: Construct): DynamoDbDataSource;
   addNoneDataSource(name: string, options?: DataSourceOptions, scope?: Construct): NoneDataSource;

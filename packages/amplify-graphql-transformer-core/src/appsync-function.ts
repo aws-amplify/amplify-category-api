@@ -30,6 +30,8 @@ export interface FunctionConfigurationProps extends BaseFunctionConfigurationPro
    * The API this resolver is attached to
    */
   readonly api: GraphQLApi;
+
+  readonly name: string;
   /**
    * The data source this resolver is using
    *
@@ -44,12 +46,15 @@ export class AppSyncFunctionConfiguration extends Construct {
    */
   public readonly arn: string;
 
+  public readonly name: string;
+
   public readonly functionId: string;
 
   private function: CfnFunctionConfiguration;
 
   constructor(scope: Construct, id: string, props: FunctionConfigurationProps) {
     super(scope, id);
+    this.name = props.name;
 
     const requestTemplate = props.requestMappingTemplate.bind(this, props.api.assetProvider);
     const responseTemplate = props.responseMappingTemplate.bind(this, props.api.assetProvider);

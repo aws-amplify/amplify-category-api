@@ -5,6 +5,9 @@ import {
   TransformHostProvider,
   VpcConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import * as util from 'util';
+import * as fs from 'fs';
+import * as path from 'path';
 import {
   BaseDataSource,
   CfnDataSource,
@@ -17,9 +20,10 @@ import {
   CfnResolver,
 } from 'aws-cdk-lib/aws-appsync';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
-import { IRole } from 'aws-cdk-lib/aws-iam';
+import { IRole, Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { CfnFunction, Code, Function, IFunction, ILayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Duration, Token } from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib';
 import { ResolverResourceIDs, resourceName, toCamelCase } from 'graphql-transformer-common';
 import hash from 'object-hash';
 import { Construct } from 'constructs';
@@ -28,6 +32,7 @@ import { SearchableDataSource } from './cdk-compat/searchable-datasource';
 import { InlineTemplate, S3MappingFunctionCode } from './cdk-compat/template-asset';
 import { GraphQLApi } from './graphql-api';
 import { setResourceName } from './utils';
+import { Provider } from 'aws-cdk-lib/custom-resources';
 
 type Slot = {
   requestMappingTemplate?: string;
@@ -45,6 +50,8 @@ export class DefaultTransformHost implements TransformHostProvider {
   private resolvers: Map<string, CfnResolver> = new Map();
 
   private appsyncFunctions: Map<string, AppSyncFunctionConfiguration> = new Map();
+
+  private resources: Record<string, any> = {};
 
   private api: GraphQLApi;
 
@@ -69,6 +76,46 @@ export class DefaultTransformHost implements TransformHostProvider {
   public getResolver = (typeName: string, fieldName: string): CfnResolver | void => {
     const resolverRef = `${typeName}:${fieldName}`;
     return this.resolvers.has(resolverRef) ? this.resolvers.get(resolverRef) : undefined;
+  };
+
+  displayAllResources = (context: any): void => {
+    fs.writeFileSync(
+      path.join(__dirname, 'resolver-manager', 'computed-resources.json'),
+      JSON.stringify(this.resources, null, 4),
+    );
+
+    const lambdaCodePath = path.join(__dirname, '..', 'lib', 'resolver-manager');
+    console.log(path.normalize(lambdaCodePath));
+
+    const customResourceStack = context.stackManager.getScopeFor('ConnectionStack', 'ConnectionStack');
+    const serviceTokenHandler = new Provider(customResourceStack, 'AmplifyResolverManagerLogicalId', {
+      onEventHandler: new Function(this.api, 'AmplifyResolverManagerOnEvent', {
+        code: Code.fromAsset(lambdaCodePath),
+        handler: 'index.handler',
+        runtime: Runtime.NODEJS_18_X,
+        environment: {
+          API_ID: this.api.apiId,
+        },
+        timeout: Duration.minutes(10),
+        initialPolicy: [
+          new PolicyStatement({
+            effect: Effect.ALLOW,
+            actions: ['appsync:*'],
+            resources: ['*'],
+          }),
+        ],
+      }),
+    });
+
+    const customResolverManager = new cdk.CustomResource(customResourceStack, 'ResolverManager', {
+      resourceType: 'Custom::AmplifyResolverManager',
+      serviceToken: serviceTokenHandler.serviceToken,
+    });
+
+    this.dataSources.forEach((ds) => {
+      customResolverManager.node.addDependency(ds);
+      serviceTokenHandler.node.addDependency(ds);
+    });
   };
 
   addSearchableDataSource(
@@ -165,10 +212,18 @@ export class DefaultTransformHost implements TransformHostProvider {
 
     const fn = new AppSyncFunctionConfiguration(scope || this.api, name, {
       api: this.api,
+      name,
       dataSource: dataSource || dataSourceName,
       requestMappingTemplate,
       responseMappingTemplate,
     });
+    this.resources[name] = {
+      type: 'AppSyncFunction',
+      functionId: fn.functionId,
+      dataSource: dataSource?.name || dataSourceName,
+      requestMappingTemplate: (requestMappingTemplate as any).content,
+      responseMappingTemplate: (responseMappingTemplate as any).content,
+    };
     this.appsyncFunctions.set(slotHash, fn);
     return fn;
   };
@@ -228,6 +283,19 @@ export class DefaultTransformHost implements TransformHostProvider {
           functions: pipelineConfig,
         },
       });
+
+      this.resources[`${typeName}.${fieldName}`] = {
+        type: 'Resolver',
+        fieldName,
+        typeName,
+        kind: 'PIPELINE',
+        requestMappingTemplate: (requestMappingTemplate as any).content,
+        responseMappingTemplate: (responseMappingTemplate as any).content,
+        pipelineConfig: {
+          functions: pipelineConfig,
+        },
+      };
+
       resolver.overrideLogicalId(resourceId);
       setResourceName(resolver, { name: `${typeName}.${fieldName}` });
       this.api.addSchemaDependency(resolver);

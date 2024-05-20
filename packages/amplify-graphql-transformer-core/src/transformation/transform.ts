@@ -57,6 +57,8 @@ import {
   sortTransformerPlugins,
 } from './utils';
 import { validateAuthModes, validateModelSchema } from './validation';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 
 /**
  * Returns whether typeof the provided object is function.
@@ -337,6 +339,15 @@ export class GraphQLTransform {
     }
     this.collectResolvers(context, context.api);
     this.ensureNoneDataSource(context.api);
+
+    context.api.host.displayAllResources(context);
+
+    // const myBucket = new s3.Bucket(context.stackManager.getScopeFor('TestCDKBucket'), 'TestCDKBucket');
+
+    // new s3deploy.BucketDeployment(context.stackManager.getScopeFor('TestCDKBucket'), 'DeployFiles', {
+    //   sources: [s3deploy.Source.jsonData('metadata', { key: 'value' })],
+    //   destinationBucket: myBucket,
+    // });
   }
 
   protected generateGraphQlApi(
