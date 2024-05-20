@@ -139,8 +139,7 @@ export const testCreatePrimaryRedactsRelatedForSameOwningGroup = async (
   expect(primary).toBeDefined();
   expect(primary.id).toEqual(primaryId);
   expect(primary.relatedOne).toBeNull();
-  expect(primary.relatedMany).toBeDefined();
-  expect(primary.relatedMany.items.length).toEqual(0);
+  expect(primary.relatedMany).toBeNull();
 };
 
 export const testCreatePrimaryRedactsRelatedForDifferentOwningGroup = async (
@@ -162,8 +161,7 @@ export const testCreatePrimaryRedactsRelatedForDifferentOwningGroup = async (
   expect(primary).toBeDefined();
   expect(primary.id).toEqual(primaryId);
   expect(primary.relatedOne).toBeNull();
-  expect(primary.relatedMany).toBeDefined();
-  expect(primary.relatedMany.items.length).toEqual(0);
+  expect(primary.relatedMany).toBeNull();
 };
 
 export const testGetPrimaryDoesNotRedactRelatedForSameOwningGroup = async (
@@ -212,8 +210,7 @@ export const testGetPrimaryRedactsRelatedForDifferentOwningGroup = async (
   expect(primary).toBeDefined();
   expect(primary.id).toEqual(primaryId);
   expect(primary.relatedOne).toBeNull();
-  expect(primary.relatedMany).toBeDefined();
-  expect(primary.relatedMany.items.length).toEqual(0);
+  expect(primary.relatedMany).toBeNull();
 };
 
 export const testGetPrimaryUnauthorizedForDifferentOwner = async (
@@ -279,8 +276,7 @@ export const testListPrimariesRedactsRelatedForDifferentOwningGroup = async (
   expect(primary).toBeDefined();
   expect(primary.id).toEqual(primaryId);
   expect(primary.relatedOne).toBeNull();
-  expect(primary.relatedMany).toBeDefined();
-  expect(primary.relatedMany.items.length).toEqual(0);
+  expect(primary.relatedMany).toBeNull();
 };
 
 export const testListPrimariesRedactsTopLevelItemsForDifferentOwningGroup = async (
@@ -369,8 +365,7 @@ export const testUpdatePrimaryRedactsRelatedForSameOwningGroup = async (
   expect(primary).toBeDefined();
   expect(primary.id).toEqual(primaryId);
   expect(primary.relatedOne).toBeNull();
-  expect(primary.relatedMany).toBeDefined();
-  expect(primary.relatedMany.items.length).toEqual(0);
+  expect(primary.relatedMany).toBeNull();
 };
 
 export const testUpdatePrimaryRedactsRelatedForDifferentOwningGroup = async (
@@ -393,8 +388,7 @@ export const testUpdatePrimaryRedactsRelatedForDifferentOwningGroup = async (
   expect(primary).toBeDefined();
   expect(primary.id).toEqual(primaryId);
   expect(primary.relatedOne).toBeNull();
-  expect(primary.relatedMany).toBeDefined();
-  expect(primary.relatedMany.items.length).toEqual(0);
+  expect(primary.relatedMany).toBeNull();
 };
 
 // #endregion

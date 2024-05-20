@@ -50,8 +50,7 @@ export const testCreatePrimaryRedacted = async (currentId: number, apiEndpoint: 
   expect(primary.id).toBeDefined();
   expect(primary.secret).toBeNull();
   expect(primary.relatedOne).toBeNull();
-  expect(primary.relatedMany).toBeDefined();
-  expect(primary.relatedMany.items.length).toEqual(0);
+  expect(primary.relatedMany).toBeNull();
 };
 
 export const testUpdatePrimaryRedacted = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
@@ -106,8 +105,7 @@ export const testUpdatePrimaryRedacted = async (currentId: number, apiEndpoint: 
   expect(primary.secret).toBeNull();
   expect(primary.id).toBeDefined();
   expect(primary.relatedOne).toBeNull();
-  expect(primary.relatedMany).toBeDefined();
-  expect(primary.relatedMany.items.length).toEqual(0);
+  expect(primary.relatedMany).toBeNull();
 };
 
 export const testCreateRelatedOneRedacted = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
