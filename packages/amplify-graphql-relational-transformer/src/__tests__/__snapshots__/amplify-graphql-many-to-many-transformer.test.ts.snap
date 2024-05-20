@@ -383,10 +383,7 @@ input ModelIDKeyConditionInput {
 exports[`both models with sort key 2`] = `
 Object {
   "ModelA.models.req.vtl": "#if( $ctx.stash.deniedField )
-  #set( $result = {
-  \\"items\\":   []
-} )
-  #return($result)
+  #return($util.toJson(null))
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
@@ -559,10 +556,7 @@ $util.unauthorized()
   #end
 #end",
   "ModelB.models.req.vtl": "#if( $ctx.stash.deniedField )
-  #set( $result = {
-  \\"items\\":   []
-} )
-  #return($result)
+  #return($util.toJson(null))
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
@@ -4464,10 +4458,7 @@ input ModelSubscriptionFooBarFilterInput {
 exports[`valid schema 2`] = `
 Object {
   "Bar.foos.req.vtl": "#if( $ctx.stash.deniedField )
-  #set( $result = {
-  \\"items\\":   []
-} )
-  #return($result)
+  #return($util.toJson(null))
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
@@ -4549,10 +4540,7 @@ $util.error($ctx.error.message, $ctx.error.type)
   $util.toJson($result)
 #end",
   "Foo.bars.req.vtl": "#if( $ctx.stash.deniedField )
-  #set( $result = {
-  \\"items\\":   []
-} )
-  #return($result)
+  #return($util.toJson(null))
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
