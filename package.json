@@ -66,8 +66,7 @@
     "verify-yarn-lock": "./scripts/verify-yarn-lock.sh",
     "view-test-artifact": "./scripts/view-test-artifacts.sh",
     "view-test-artifacts": "yarn authenticate-e2e-profile && yarn ts-node --project ./scripts/tsconfig.json ./scripts/view-test-artifacts.ts",
-    "yarn-use-bash": "yarn config set script-shell /bin/bash",
-    "postinstall": "./scripts/postinstall.sh"
+    "yarn-use-bash": "yarn config set script-shell /bin/bash"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-category-api/issues"
