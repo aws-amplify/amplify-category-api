@@ -726,6 +726,10 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     let relatedAuthExpression: string;
     // Relational field redaction is default to `needsFieldResolver`, which stays consistent with current behavior of always redacting relational field when field resolver is needed
     let redactRelationalField: boolean = needsFieldResolver;
+    const fieldIsRequired = field.type.kind === Kind.NON_NULL_TYPE;
+    if (fieldIsRequired) {
+      redactRelationalField = false;
+    }
     const relatedModelObject = this.getRelatedModelObject(ctx, getBaseType(field.type));
     const relatedModelName = relatedModelObject.name.value;
     if (this.authModelConfig.has(relatedModelName)) {
@@ -743,9 +747,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         relatedModelReadRoleDefinitions,
         relatedModelObject.fields ?? [],
       );
+
       // When the default redaction is false, it means no field resolver is involved
       // Need the additional check on model level auth rules of both sides to determine the relational field redaction
-      if (!redactRelationalField) {
+      // do not redact relational field when required
+      // appsync will throw an error if trying to nullify a required field
+      if (!fieldIsRequired && !redactRelationalField) {
         let filteredRelatedModelReadRoleDefinitions = relatedModelReadRoleDefinitions;
         // When userpool private roles are detected, filter out the non-private userpool roles
         if (filteredRelatedModelReadRoleDefinitions.some((r) => r.provider === 'userPools' && r.strategy === 'private')) {

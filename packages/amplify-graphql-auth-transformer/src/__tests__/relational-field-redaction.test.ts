@@ -102,6 +102,60 @@ const fieldSchemaTemplate = `
   }
 `;
 
+const fieldSchemaRequiredTemplate = `
+  type Primary
+    @model
+    @auth(
+      rules: [
+        <PRIMARY_MODEL_AUTH_RULES>
+      ]
+    ) {
+    id: ID! @primaryKey
+    primarySecret: String
+    owner: String
+    owners: [String]
+    singleGroup: String
+    groups: [String]
+    relatedMany: [RelatedMany!]! @hasMany(indexName: "byP", fields: ["id"])
+    primaryRelatedOneId: ID
+    relatedOne: RelatedOne! @hasOne(fields: ["primaryRelatedOneId"])
+  }
+
+  type RelatedMany
+    @model
+    @auth(
+      rules: [
+        <RELATED_MODEL_AUTH_RULES>
+      ]
+    ) {
+    id: ID! @primaryKey
+    relatedSecret: String
+    owner: String
+    owners: [String]
+    singleGroup: String
+    groups: [String]
+    primaryId: ID @index(name: "byP")
+    primary: Primary! @belongsTo(fields: ["primaryId"])
+  }
+
+  type RelatedOne
+    @model
+    @auth(
+      rules: [
+        <RELATED_MODEL_AUTH_RULES>
+      ]
+    ) {
+    id: ID! @primaryKey
+    relatedSecret: String
+    owner: String
+    owners: [String]
+    singleGroup: String
+    groups: [String]
+    relatedOnePrimaryId: ID
+    primary: Primary! @belongsTo(fields: ["relatedOnePrimaryId"])
+  }
+`;
+
 const referenceSchemaTemplate = `
   type Primary
   @model
@@ -250,59 +304,104 @@ const testCases: [string[], string[], boolean][] = [
   [['public iam'], ['private iam'], false],
 ];
 
+const buildHomogeneousTestCases = (
+  dataSourceStrategies: Record<string, ModelDataSourceStrategy>,
+  schema: string,
+  testTemplate = testCases,
+): void => {
+  const expectation = makeTransformationExpectation(dataSourceStrategies, schema);
+  const testTable: TestTableRow[] = [];
+  for (const strategyName of Object.keys(dataSourceStrategies)) {
+    testTemplate.forEach((testCase) => {
+      testTable.push([strategyName, strategyName, ...testCase] as TestTableRow);
+    });
+  }
+  test.each(testTable)('%s -> %s - Primary %s - Related %s should redact relational field - %s', expectation);
+};
+
+const buildHeterogeneousTestCases = (
+  primaryDataSourceStrategies: Record<string, ModelDataSourceStrategy>,
+  relatedDataSourceStrategies: Record<string, ModelDataSourceStrategy>,
+  schema: string,
+  testTemplate = testCases,
+): void => {
+  const expectation = makeTransformationExpectation({ ...primaryDataSourceStrategies, ...relatedDataSourceStrategies }, schema);
+  const testTable: TestTableRow[] = [];
+  for (const primaryStrategyName of Object.keys(primaryDataSourceStrategies)) {
+    for (const relatedStrategyName of Object.keys(relatedDataSourceStrategies)) {
+      testTemplate.forEach((testCase) => {
+        testTable.push([primaryStrategyName, relatedStrategyName, ...testCase] as TestTableRow);
+      });
+    }
+  }
+  test.each(testTable)('%s -> %s - Primary %s - Related %s should redact relational field - %s', expectation);
+};
+
 describe('Relational field redaction tests', () => {
-  describe('DDB datasources - field relation', () => {
-    const expectation = makeTransformationExpectation(ddbDataSourceStrategies, fieldSchemaTemplate);
-    const testTable: TestTableRow[] = [];
-    for (const strategyName of Object.keys(ddbDataSourceStrategies)) {
-      testCases.forEach((testCase) => {
-        testTable.push([strategyName, strategyName, ...testCase] as TestTableRow);
-      });
-    }
-    test.each(testTable)('%s -> %s - Primary %s - Related %s should redact relational field - %s', expectation);
+  describe('non-required relational field', () => {
+    describe('DDB datasources - field relation', () => {
+      buildHomogeneousTestCases(ddbDataSourceStrategies, fieldSchemaTemplate);
+    });
+    describe('DDB datasources - reference relation', () => {
+      buildHomogeneousTestCases(ddbDataSourceStrategies, referenceSchemaTemplate);
+    });
+    describe('RDS datasources - reference relation', () => {
+      buildHomogeneousTestCases(sqlDataSourceStrategies, referenceSchemaTemplate);
+    });
+    describe('DDB Primary, SQL Related - reference relation', () => {
+      buildHeterogeneousTestCases(ddbDataSourceStrategies, sqlDataSourceStrategies, referenceSchemaTemplate);
+    });
+    describe('SQL Primary, DDB Related - reference relation', () => {
+      buildHeterogeneousTestCases(sqlDataSourceStrategies, ddbDataSourceStrategies, referenceSchemaTemplate);
+    });
   });
-  describe('DDB datasources - reference relation', () => {
-    const expectation = makeTransformationExpectation(ddbDataSourceStrategies, referenceSchemaTemplate);
-    const testTable: TestTableRow[] = [];
-    for (const strategyName of Object.keys(ddbDataSourceStrategies)) {
-      testCases.forEach((testCase) => {
-        testTable.push([strategyName, strategyName, ...testCase] as TestTableRow);
-      });
-    }
-    test.each(testTable)('%s -> %s - Primary %s - Related %s should redact relational field - %s', expectation);
-  });
-  describe('RDS datasources - reference relation', () => {
-    const expectation = makeTransformationExpectation(sqlDataSourceStrategies, referenceSchemaTemplate);
-    const testTable: TestTableRow[] = [];
-    for (const strategyName of Object.keys(sqlDataSourceStrategies)) {
-      testCases.forEach((testCase) => {
-        testTable.push([strategyName, strategyName, ...testCase] as TestTableRow);
-      });
-    }
-    test.each(testTable)('%s -> %s - Primary %s - Related %s should redact relational field - %s', expectation);
-  });
-  describe('DDB Primary, SQL Related - reference relation', () => {
-    const expectation = makeTransformationExpectation({ ...sqlDataSourceStrategies, ...ddbDataSourceStrategies }, referenceSchemaTemplate);
-    const testTable: TestTableRow[] = [];
-    for (const primaryStrategyName of Object.keys(ddbDataSourceStrategies)) {
-      for (const relatedStrategyName of Object.keys(sqlDataSourceStrategies)) {
+
+  describe('required relational field', () => {
+    // does not use test setup function because required hasMany relationships can still be redacted without error
+    describe('DDB datasources - field relation', () => {
+      const testTable: TestTableRow[] = [];
+      for (const strategyName of Object.keys(ddbDataSourceStrategies)) {
         testCases.forEach((testCase) => {
-          testTable.push([primaryStrategyName, relatedStrategyName, ...testCase] as TestTableRow);
+          testTable.push([strategyName, strategyName, ...testCase] as TestTableRow);
         });
       }
-    }
-    test.each(testTable)('%s -> %s - Primary %s - Related %s should redact relational field - %s', expectation);
-  });
-  describe('SQL Primary, DDB Related - reference relation', () => {
-    const expectation = makeTransformationExpectation({ ...sqlDataSourceStrategies, ...ddbDataSourceStrategies }, referenceSchemaTemplate);
-    const testTable: TestTableRow[] = [];
-    for (const primaryStrategyName of Object.keys(sqlDataSourceStrategies)) {
-      for (const relatedStrategyName of Object.keys(ddbDataSourceStrategies)) {
-        testCases.forEach((testCase) => {
-          testTable.push([primaryStrategyName, relatedStrategyName, ...testCase] as TestTableRow);
-        });
-      }
-    }
-    test.each(testTable)('%s -> %s - Primary %s - Related %s should redact relational field - %s', expectation);
+      test.each(testTable)(
+        '%s -> %s - Primary %s - Related %s should redact relational field - %s',
+        (
+          primaryStrategyName: string,
+          relatedStrategyName: string,
+          primaryModelRules: string[],
+          relatedModelRules: string[],
+          shouldRedactField: boolean,
+          primaryModelNames = ['Primary'],
+        ) => {
+          const validSchema = resolveSchema(fieldSchemaRequiredTemplate, primaryModelRules, relatedModelRules);
+          const modelKeys = getModelTypeNames(validSchema);
+          const out = testTransform({
+            schema: validSchema,
+            authConfig: authConfigWithAllProviders,
+            transformers: makeTransformers(),
+            dataSourceStrategies: modelKeys.reduce(
+              (acc, cur) => ({
+                ...acc,
+                [cur]: ddbDataSourceStrategies[primaryModelNames.includes(cur) ? primaryStrategyName : relatedStrategyName],
+              }),
+              {},
+            ),
+          });
+          expect(out).toBeDefined();
+          expect(out.resolvers['Primary.relatedOne.auth.1.req.vtl']).not.toContain(SUBSCRIPTION_PROTECTION);
+          expect(out.resolvers['RelatedMany.primary.auth.1.req.vtl']).not.toContain(SUBSCRIPTION_PROTECTION);
+          expect(out.resolvers['RelatedOne.primary.auth.1.req.vtl']).not.toContain(SUBSCRIPTION_PROTECTION);
+
+          // required hasMany relationships can still be redacted without error
+          if (shouldRedactField) {
+            expect(out.resolvers['Primary.relatedMany.auth.1.req.vtl']).toContain(SUBSCRIPTION_PROTECTION);
+          } else {
+            expect(out.resolvers['Primary.relatedMany.auth.1.req.vtl']).not.toContain(SUBSCRIPTION_PROTECTION);
+          }
+        },
+      );
+    });
   });
 });
