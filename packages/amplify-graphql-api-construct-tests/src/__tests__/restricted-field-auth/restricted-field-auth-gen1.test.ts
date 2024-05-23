@@ -630,8 +630,8 @@ describe('Associated type fields with more restrictive auth rules than the model
 
       const leftRightJoin = result.body.data.createLeftRightJoin;
       expect(leftRightJoin).toBeDefined();
-      expect(leftRightJoin.manyLeft).toBeNull();
-      expect(leftRightJoin.manyRight).toBeNull();
+      expect(leftRightJoin.manyLeft.secret).toBeNull();
+      expect(leftRightJoin.manyRight.secret).toBeNull();
     });
 
     test('updateJoinLeftRight is redacted', async () => {
@@ -694,8 +694,8 @@ describe('Associated type fields with more restrictive auth rules than the model
 
       const leftRightJoin = result.body.data.updateLeftRightJoin;
       expect(leftRightJoin).toBeDefined();
-      expect(leftRightJoin.manyLeft).toBeNull();
-      expect(leftRightJoin.manyRight).toBeNull();
+      expect(leftRightJoin.manyLeft.secret).toBeNull();
+      expect(leftRightJoin.manyRight.secret).toBeNull();
     });
   });
 });
