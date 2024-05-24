@@ -12993,7 +12993,10 @@ Object {
 exports[`validates VTL of a complex schema 1`] = `
 Object {
   "Child.parents.req.vtl": "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
@@ -13113,7 +13116,10 @@ $util.error($ctx.error.message, $ctx.error.type)
   $util.toJson($result)
 #end",
   "Friendship.friend.req.vtl": "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"friendID\\"), $ctx.source.friendID) )
 #if( $util.isNull($partitionKeyValue) )
@@ -16035,7 +16041,10 @@ $util.unauthorized()
   #end
 #end",
   "Post.authors.req.vtl": "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"authorID\\"), $ctx.source.authorID) )
 #if( $util.isNull($partitionKeyValue) )
@@ -16219,7 +16228,10 @@ $util.unauthorized()
   #end
 #end",
   "PostModel.authors.req.vtl": "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"authorID\\"), $ctx.source.authorID) )
 #if( $util.isNull($partitionKeyValue) )
@@ -17962,7 +17974,10 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "User.friendships.req.vtl": "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
@@ -18082,7 +18097,10 @@ $util.error($ctx.error.message, $ctx.error.type)
   $util.toJson($result)
 #end",
   "UserModel.authorPosts.req.vtl": "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
