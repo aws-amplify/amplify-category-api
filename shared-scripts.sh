@@ -149,9 +149,14 @@ function _publishToLocalRegistry {
     # Store current git config settings
     httpVersion=$(git config --get http.version)
     postBufferSize=$(git config --get http.postBuffer)
+    echo "httpVersion: $httpVersion"
+    echo "postBufferSize: $postBufferSize"
     git config http.version HTTP/1.1
+    echo "set http version to 1"
+
     # Increase buffer size to avoid error when git operations return large response
     git config http.postBuffer 157286400
+    echo "set buffer size to 150MB"
 
     git checkout $BRANCH_NAME
   
@@ -161,7 +166,7 @@ function _publishToLocalRegistry {
     echo "fetching tags"
     git fetch --tags https://github.com/aws-amplify/amplify-category-api
     # Create the folder to avoid failure when no packages are published due to no change detected
-    mkdir ../verdaccio-cache
+    rm -rf ../verdaccio-cache && mkdir ../verdaccio-cache
 
     source codebuild_specs/scripts/local_publish_helpers.sh
     startLocalRegistry "$(pwd)/codebuild_specs/scripts/verdaccio.yaml"
