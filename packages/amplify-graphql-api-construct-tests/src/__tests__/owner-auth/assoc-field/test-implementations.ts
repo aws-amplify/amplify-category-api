@@ -149,7 +149,8 @@ export const testGetPrimaryRedactedForDifferentOwners = async (
   expect(primary).toBeDefined();
   expect(primary.id).toEqual(primaryId);
   expect(primary.relatedOne).toBeNull();
-  expect(primary.relatedMany).toBeNull();
+  expect(primary.relatedMany).toBeDefined();
+  expect(primary.relatedMany.items.length).toEqual(0);
 };
 
 export const testGetPrimaryUnauthorizedForDifferentOwner = async (
@@ -212,7 +213,8 @@ export const testListPrimariesRedactedForDifferentOwners = async (
   expect(primary).toBeDefined();
   expect(primary.id).toEqual(primaryId);
   expect(primary.relatedOne).toBeNull();
-  expect(primary.relatedMany).toBeNull();
+  expect(primary.relatedMany).toBeDefined();
+  expect(primary.relatedMany.items.length).toEqual(0);
 };
 
 export const testListPrimariesRedactsTopLevelItemsForDifferentOwners = async (
