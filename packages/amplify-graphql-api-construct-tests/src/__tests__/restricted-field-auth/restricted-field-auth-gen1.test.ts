@@ -139,7 +139,8 @@ describe('Associated type fields with more restrictive auth rules than the model
       expect(primary.id).toBeDefined();
       expect(primary.secret).toBeNull();
       expect(primary.relatedOne).toBeNull();
-      expect(primary.relatedMany).toBeNull();
+      expect(primary.relatedMany).toBeDefined();
+      expect(primary.relatedMany.items.length).toEqual(0);
     });
 
     test('updatePrimary is redacted', async () => {
@@ -195,7 +196,8 @@ describe('Associated type fields with more restrictive auth rules than the model
       expect(primary.secret).toBeNull();
       expect(primary.id).toBeDefined();
       expect(primary.relatedOne).toBeNull();
-      expect(primary.relatedMany).toBeNull();
+      expect(primary.relatedMany).toBeDefined();
+      expect(primary.relatedMany.items.length).toEqual(0);
     });
 
     test('createRelatedOne is redacted', async () => {
@@ -440,7 +442,8 @@ describe('Associated type fields with more restrictive auth rules than the model
       expect(manyLeft).toBeDefined();
       expect(manyLeft.secret).toBeNull();
       expect(manyLeft.id).toBeDefined();
-      expect(manyLeft.manyRight).toBeNull();
+      expect(manyLeft.manyRight).toBeDefined();
+      expect(manyLeft.manyRight.items.length).toEqual(0);
     });
 
     test('updateManyLeft is redacted', async () => {
@@ -493,7 +496,8 @@ describe('Associated type fields with more restrictive auth rules than the model
       expect(manyLeft).toBeDefined();
       expect(manyLeft.secret).toBeNull();
       expect(manyLeft.id).toBeDefined();
-      expect(manyLeft.manyRight).toBeNull();
+      expect(manyLeft.manyRight).toBeDefined();
+      expect(manyLeft.manyRight.items.length).toEqual(0);
     });
 
     test('createManyRight is redacted', async () => {
@@ -536,7 +540,8 @@ describe('Associated type fields with more restrictive auth rules than the model
       expect(manyRight).toBeDefined();
       expect(manyRight.secret).toBeNull();
       expect(manyRight.id).toBeDefined();
-      expect(manyRight.manyLeft).toBeNull();
+      expect(manyRight.manyLeft).toBeDefined();
+      expect(manyRight.manyLeft.items.length).toEqual(0);
     });
 
     test('updateManyRight is redacted', async () => {
@@ -589,7 +594,8 @@ describe('Associated type fields with more restrictive auth rules than the model
       expect(manyRight).toBeDefined();
       expect(manyRight.secret).toBeNull();
       expect(manyRight.id).toBeDefined();
-      expect(manyRight.manyLeft).toBeNull();
+      expect(manyRight.manyLeft).toBeDefined();
+      expect(manyRight.manyLeft.items.length).toEqual(0);
     });
 
     test('createJoinLeftRight is redacted', async () => {
