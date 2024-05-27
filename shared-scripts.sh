@@ -146,17 +146,11 @@ function _publishToLocalRegistry {
     fi
     echo $BRANCH_NAME
 
-    # Store current git config settings
-    httpVersion=$(git config --get http.version)
-    postBufferSize=$(git config --get http.postBuffer)
-    echo "httpVersion: $httpVersion"
-    echo "postBufferSize: $postBufferSize"
-    git config http.version HTTP/1.1
-    echo "set http version to 1"
-
-    # Increase buffer size to avoid error when git operations return large response
-    git config http.postBuffer 157286400
-    echo "set buffer size to 150MB"
+    # Increase buffer size to avoid error when git operations return large response on CI
+    if [ "$CI" = "true" ]; then
+      git config http.version HTTP/1.1
+      git config http.postBuffer 157286400
+    fi
 
     git checkout $BRANCH_NAME
   
@@ -180,17 +174,7 @@ function _publishToLocalRegistry {
       yarn lerna publish --exact --dist-tag=latest --preid=$NPM_TAG --conventional-commits --conventional-prerelease --no-verify-access --yes --no-commit-hooks --no-push --no-git-tag-version
     fi
     unsetNpmRegistryUrl
-    # Restore git config settings
-    if [ -z "$httpVersion" ]; then
-      git config --unset http.version
-    else
-      git config http.version $httpVersion
-    fi
-    if [ -z "$postBufferSize" ]; then
-      git config --unset http.postBuffer
-    else
-      git config http.postBuffer $postBufferSize
-    fi
+
     # copy [verdaccio-cache] to s3
     storeCache $CODEBUILD_SRC_DIR/../verdaccio-cache verdaccio-cache
 
