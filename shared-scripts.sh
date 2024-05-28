@@ -145,6 +145,13 @@ function _publishToLocalRegistry {
       fi
     fi
     echo $BRANCH_NAME
+
+    # Increase buffer size to avoid error when git operations return large response on CI
+    if [ "$CI" = "true" ]; then
+      git config http.version HTTP/1.1
+      git config http.postBuffer 157286400
+    fi
+
     git checkout $BRANCH_NAME
   
     # Fetching git tags from upstream
@@ -153,7 +160,7 @@ function _publishToLocalRegistry {
     echo "fetching tags"
     git fetch --tags https://github.com/aws-amplify/amplify-category-api
     # Create the folder to avoid failure when no packages are published due to no change detected
-    mkdir ../verdaccio-cache
+    rm -rf ../verdaccio-cache && mkdir ../verdaccio-cache
 
     source codebuild_specs/scripts/local_publish_helpers.sh
     startLocalRegistry "$(pwd)/codebuild_specs/scripts/verdaccio.yaml"
@@ -167,6 +174,7 @@ function _publishToLocalRegistry {
       yarn lerna publish --exact --dist-tag=latest --preid=$NPM_TAG --conventional-commits --conventional-prerelease --no-verify-access --yes --no-commit-hooks --no-push --no-git-tag-version
     fi
     unsetNpmRegistryUrl
+
     # copy [verdaccio-cache] to s3
     storeCache $CODEBUILD_SRC_DIR/../verdaccio-cache verdaccio-cache
 
