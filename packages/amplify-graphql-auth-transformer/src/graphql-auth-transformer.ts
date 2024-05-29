@@ -476,7 +476,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
           errorFields.push(field.name.value);
         }
         if (hasRelationalDirective(field)) {
-          this.protectRelationalResolver(context, def, modelName, field, allowedRoles, needsFieldResolver);
+          this.protectRelationalResolver(context, def, modelName, field, needsFieldResolver ? allowedRoles : null);
         } else if (needsFieldResolver) {
           this.protectFieldResolver(context, def, modelName, field.name.value, allowedRoles);
         }
@@ -719,13 +719,11 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     def: ObjectTypeDefinitionNode,
     typeName: string,
     field: FieldDefinitionNode,
-    fieldRoles: Array<string>,
-    needsFieldResolver: boolean = false,
+    fieldRoles: Array<string> | null,
   ): void => {
     let fieldAuthExpression: string;
     let relatedAuthExpression: string;
-    // Relational field redaction is default to `needsFieldResolver`, which stays consistent with current behavior of always redacting relational field when field resolver is needed
-    let redactRelationalField: boolean = needsFieldResolver;
+    let redactRelationalField: boolean = !!fieldRoles;
     const fieldIsRequired = field.type.kind === Kind.NON_NULL_TYPE;
     if (fieldIsRequired) {
       redactRelationalField = false;
@@ -767,7 +765,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
           );
         }
         // relational field read roles are already processed with filter in parent call
-        const fieldReadRoleDefinitions = fieldRoles.map((r) => this.roleMap.get(r)!);
+        const fieldReadRoleDefinitions = (fieldRoles || []).map((r) => this.roleMap.get(r)!);
         /**
          * Loop through the field read role
          * Once there is one role detected to have access on both side, the auth role definitions will be compared to determine whether
@@ -798,7 +796,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
 
     // if there is field auth on the relational query then we need to add field auth read rules first
     // in the request we then add the rules of the related type
-    if (needsFieldResolver) {
+    if (fieldRoles) {
       const roleDefinitions = fieldRoles.map((r) => this.roleMap.get(r)!);
       fieldAuthExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForField(
         this.configuredAuthProviders,
@@ -814,7 +812,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const hasSubsEnabled = this.modelDirectiveConfig.get(typeName) && this.modelDirectiveConfig.get(typeName).subscriptions?.level === 'on';
     if (hasSubsEnabled && redactRelationalField) {
       relatedAuthExpression = `${this.getVtlGenerator(ctx, def.name.value).setDeniedFieldFlag('Mutation', true)}\n${relatedAuthExpression}`;
-    } else if (needsFieldResolver) {
+    } else if (fieldRoles) {
       relatedAuthExpression = `${this.getVtlGenerator(ctx, def.name.value).setDeniedFieldFlag(
         'Mutation',
         hasSubsEnabled,
