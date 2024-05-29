@@ -735,16 +735,22 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     if (this.authModelConfig.has(relatedModelName)) {
       const acm = this.authModelConfig.get(relatedModelName);
       // Get read roles and definitions for related model
-      const relatedModelReadRoleDefinitions = [...new Set(...READ_MODEL_OPERATIONS.map((op) => acm.getRolesPerOperation(op)))].map(
-        (r) => this.roleMap.get(r)!,
-      );
+      const roleDefinitions = [
+        ...new Set([
+          ...acm.getRolesPerOperation('get'),
+          ...acm.getRolesPerOperation('list'),
+          ...acm.getRolesPerOperation('sync'),
+          ...acm.getRolesPerOperation('search'),
+          ...acm.getRolesPerOperation('listen'),
+        ]),
+      ].map((r) => this.roleMap.get(r)!);
       relatedAuthExpression = this.getVtlGenerator(ctx, relatedModelName).generateAuthExpressionForRelationQuery(
         ctx,
         def,
         field,
         relatedModelObject,
         this.configuredAuthProviders,
-        relatedModelReadRoleDefinitions,
+        roleDefinitions,
         relatedModelObject.fields ?? [],
       );
 
@@ -753,7 +759,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       // do not redact relational field when required
       // appsync will throw an error if trying to nullify a required field
       if (!fieldIsRequired && !redactRelationalField) {
-        let filteredRelatedModelReadRoleDefinitions = relatedModelReadRoleDefinitions;
+        let filteredRelatedModelReadRoleDefinitions = roleDefinitions;
         // When userpool private roles are detected, filter out the non-private userpool roles
         if (filteredRelatedModelReadRoleDefinitions.some((r) => r.provider === 'userPools' && r.strategy === 'private')) {
           filteredRelatedModelReadRoleDefinitions = filteredRelatedModelReadRoleDefinitions.filter(
@@ -800,6 +806,11 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     // in the request we then add the rules of the related type
     if (needsFieldResolver) {
       const roleDefinitions = fieldRoles.map((r) => this.roleMap.get(r)!);
+      const hasSubsEnabled = this.modelDirectiveConfig.get(typeName)!.subscriptions?.level === 'on';
+      relatedAuthExpression = `${this.getVtlGenerator(ctx, def.name.value).setDeniedFieldFlag(
+        'Mutation',
+        hasSubsEnabled,
+      )}\n${relatedAuthExpression}`;
       fieldAuthExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForField(
         this.configuredAuthProviders,
         roleDefinitions,
@@ -823,27 +834,14 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
 
     const resolver = ctx.resolvers.getResolver(typeName, field.name.value) as TransformerResolverProvider;
     if (fieldAuthExpression) {
-      if (hasSubsEnabled && redactRelationalField) {
-        resolver.addToSlot(
-          'auth',
-          MappingTemplate.s3MappingTemplateFromString(
-            `${relatedAuthExpression}\n${fieldAuthExpression}`,
-            `${typeName}.${field.name.value}.{slotName}.{slotIndex}.req.vtl`,
-          ),
-        );
-      } else {
-        resolver.addToSlot(
-          'auth',
-          MappingTemplate.s3MappingTemplateFromString(
-            fieldAuthExpression,
-            `${typeName}.${field.name.value}.{slotName}.{slotIndex}.req.vtl`,
-          ),
-          MappingTemplate.s3MappingTemplateFromString(
-            relatedAuthExpression,
-            `${typeName}.${field.name.value}.{slotName}.{slotIndex}.res.vtl`,
-          ),
-        );
-      }
+      resolver.addToSlot(
+        'auth',
+        MappingTemplate.s3MappingTemplateFromString(fieldAuthExpression, `${typeName}.${field.name.value}.{slotName}.{slotIndex}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(
+          relatedAuthExpression,
+          `${typeName}.${field.name.value}.{slotName}.{slotIndex}.res.vtl`,
+        ),
+      );
     } else {
       resolver.addToSlot(
         'auth',
