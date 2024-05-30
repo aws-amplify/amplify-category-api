@@ -139,7 +139,8 @@ export const testCreatePrimaryRedactsRelatedForSameOwningGroup = async (
   expect(primary).toBeDefined();
   expect(primary.id).toEqual(primaryId);
   expect(primary.relatedOne).toBeNull();
-  expect(primary.relatedMany).toBeNull();
+  expect(primary.relatedMany).toBeDefined();
+  expect(primary.relatedMany.items.length).toEqual(0);
 };
 
 export const testCreatePrimaryRedactsRelatedForDifferentOwningGroup = async (
@@ -161,7 +162,8 @@ export const testCreatePrimaryRedactsRelatedForDifferentOwningGroup = async (
   expect(primary).toBeDefined();
   expect(primary.id).toEqual(primaryId);
   expect(primary.relatedOne).toBeNull();
-  expect(primary.relatedMany).toBeNull();
+  expect(primary.relatedMany).toBeDefined();
+  expect(primary.relatedMany.items.length).toEqual(0);
 };
 
 export const testGetPrimaryDoesNotRedactRelatedForSameOwningGroup = async (
@@ -277,7 +279,8 @@ export const testListPrimariesRedactsRelatedForDifferentOwningGroup = async (
   expect(primary).toBeDefined();
   expect(primary.id).toEqual(primaryId);
   expect(primary.relatedOne).toBeNull();
-  expect(primary.relatedMany).toBeNull();
+  expect(primary.relatedMany).toBeDefined();
+  expect(primary.relatedMany.items.length).toEqual(0);
 };
 
 export const testListPrimariesRedactsTopLevelItemsForDifferentOwningGroup = async (
@@ -366,7 +369,8 @@ export const testUpdatePrimaryRedactsRelatedForSameOwningGroup = async (
   expect(primary).toBeDefined();
   expect(primary.id).toEqual(primaryId);
   expect(primary.relatedOne).toBeNull();
-  expect(primary.relatedMany).toBeNull();
+  expect(primary.relatedMany).toBeDefined();
+  expect(primary.relatedMany.items.length).toEqual(0);
 };
 
 export const testUpdatePrimaryRedactsRelatedForDifferentOwningGroup = async (
@@ -389,7 +393,8 @@ export const testUpdatePrimaryRedactsRelatedForDifferentOwningGroup = async (
   expect(primary).toBeDefined();
   expect(primary.id).toEqual(primaryId);
   expect(primary.relatedOne).toBeNull();
-  expect(primary.relatedMany).toBeNull();
+  expect(primary.relatedMany).toBeDefined();
+  expect(primary.relatedMany.items.length).toEqual(0);
 };
 
 // #endregion
