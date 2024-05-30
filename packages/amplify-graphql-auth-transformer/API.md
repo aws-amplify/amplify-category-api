@@ -140,7 +140,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     // (undocumented)
     protectListResolver: (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode, typeName: string, fieldName: string, acm: AccessControlMatrix, indexName?: string) => void;
     // (undocumented)
-    protectRelationalResolver: (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode, typeName: string, field: FieldDefinitionNode, fieldRoles: Array<string>, needsFieldResolver?: boolean) => void;
+    protectRelationalResolver: (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode, typeName: string, field: FieldDefinitionNode, fieldRoles: Array<string> | null) => void;
     // (undocumented)
     protectSchemaOperations: (ctx: TransformerTransformSchemaStepContextProvider, def: ObjectTypeDefinitionNode, acm: AccessControlMatrix) => void;
     // (undocumented)
