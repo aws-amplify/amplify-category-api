@@ -87,13 +87,17 @@ describe('Associated type fields with more restrictive auth rules than the model
 
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projFolderName);
-      const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'configurable-stack'));
+      const templatePath = path.resolve(path.join(__dirname, '..', '..', 'backends', 'configurable-stack'));
       const name = await initCDKProject(projRoot, templatePath);
 
-      const primarySchemaPath = path.resolve(path.join(__dirname, 'graphql-schemas', 'gen2', 'schema-primary-subscriptions-off.graphql'));
+      const primarySchemaPath = path.resolve(
+        path.join(__dirname, '..', 'graphql-schemas', 'gen2', 'schema-primary-subscriptions-off.graphql'),
+      );
       const primarySchema = fs.readFileSync(primarySchemaPath).toString();
 
-      const relatedSchemaPath = path.resolve(path.join(__dirname, 'graphql-schemas', 'gen2', 'schema-related-subscriptions-off.graphql'));
+      const relatedSchemaPath = path.resolve(
+        path.join(__dirname, '..', 'graphql-schemas', 'gen2', 'schema-related-subscriptions-off.graphql'),
+      );
       const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
 
       const testDefinitions: Record<string, TestDefinition> = {
@@ -178,13 +182,17 @@ describe('Associated type fields with more restrictive auth rules than the model
 
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projFolderName);
-      const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'configurable-stack'));
+      const templatePath = path.resolve(path.join(__dirname, '..', '..', 'backends', 'configurable-stack'));
       const name = await initCDKProject(projRoot, templatePath);
 
-      const primarySchemaPath = path.resolve(path.join(__dirname, 'graphql-schemas', 'gen2', 'schema-primary-subscriptions-off.graphql'));
+      const primarySchemaPath = path.resolve(
+        path.join(__dirname, '..', 'graphql-schemas', 'gen2', 'schema-primary-subscriptions-off.graphql'),
+      );
       const primarySchema = fs.readFileSync(primarySchemaPath).toString();
 
-      const relatedSchemaPath = path.resolve(path.join(__dirname, 'graphql-schemas', 'gen2', 'schema-related-subscriptions-off.graphql'));
+      const relatedSchemaPath = path.resolve(
+        path.join(__dirname, '..', 'graphql-schemas', 'gen2', 'schema-related-subscriptions-off.graphql'),
+      );
       const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
 
       const testDefinitions: Record<string, TestDefinition> = {
@@ -265,13 +273,17 @@ describe('Associated type fields with more restrictive auth rules than the model
 
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projFolderName);
-      const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'configurable-stack'));
+      const templatePath = path.resolve(path.join(__dirname, '..', '..', 'backends', 'configurable-stack'));
       const name = await initCDKProject(projRoot, templatePath);
 
-      const primarySchemaPath = path.resolve(path.join(__dirname, 'graphql-schemas', 'gen2', 'schema-primary-subscriptions-off.graphql'));
+      const primarySchemaPath = path.resolve(
+        path.join(__dirname, '..', 'graphql-schemas', 'gen2', 'schema-primary-subscriptions-off.graphql'),
+      );
       const primarySchema = fs.readFileSync(primarySchemaPath).toString();
 
-      const relatedSchemaPath = path.resolve(path.join(__dirname, 'graphql-schemas', 'gen2', 'schema-related-subscriptions-off.graphql'));
+      const relatedSchemaPath = path.resolve(
+        path.join(__dirname, '..', 'graphql-schemas', 'gen2', 'schema-related-subscriptions-off.graphql'),
+      );
       const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
 
       const testDefinitions: Record<string, TestDefinition> = {
@@ -356,14 +368,18 @@ describe('Associated type fields with more restrictive auth rules than the model
 
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projFolderName);
-      const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'configurable-stack'));
+      const templatePath = path.resolve(path.join(__dirname, '..', '..', 'backends', 'configurable-stack'));
       const name = await initCDKProject(projRoot, templatePath);
 
-      const primarySchemaPath = path.resolve(path.join(__dirname, 'graphql-schemas', 'gen2', 'schema-primary-subscriptions-off.graphql'));
+      const primarySchemaPath = path.resolve(
+        path.join(__dirname, '..', 'graphql-schemas', 'gen2', 'schema-primary-subscriptions-off.graphql'),
+      );
 
       const primarySchema = fs.readFileSync(primarySchemaPath).toString();
 
-      const relatedSchemaPath = path.resolve(path.join(__dirname, 'graphql-schemas', 'gen2', 'schema-related-subscriptions-off.graphql'));
+      const relatedSchemaPath = path.resolve(
+        path.join(__dirname, '..', 'graphql-schemas', 'gen2', 'schema-related-subscriptions-off.graphql'),
+      );
       const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
 
       const testDefinitions: Record<string, TestDefinition> = {

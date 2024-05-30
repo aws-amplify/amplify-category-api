@@ -101,12 +101,13 @@ describe('Relationships protected with dynamic group auth subscriptions off', ()
 
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projFolderName);
-      const templatePath = path.resolve(path.join(__dirname, '..', '..', 'backends', 'configurable-stack'));
+      const templatePath = path.resolve(path.join(__dirname, '..', '..', '..', 'backends', 'configurable-stack'));
       const name = await initCDKProject(projRoot, templatePath);
 
       const primarySchemaPath = path.resolve(
         path.join(
           __dirname,
+          '..',
           '..',
           '..',
           'graphql-schemas',
@@ -119,6 +120,7 @@ describe('Relationships protected with dynamic group auth subscriptions off', ()
       const relatedSchemaPath = path.resolve(
         path.join(
           __dirname,
+          '..',
           '..',
           '..',
           'graphql-schemas',

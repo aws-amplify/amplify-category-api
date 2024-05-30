@@ -50,10 +50,10 @@ describe('Associated type fields with more restrictive auth rules than the model
     // restricted fields on the associated records are redacted.
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projFolderName);
-      const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'configurable-stack'));
+      const templatePath = path.resolve(path.join(__dirname, '..', '..', 'backends', 'configurable-stack'));
       const name = await initCDKProject(projRoot, templatePath);
 
-      const schemaPath = path.resolve(path.join(__dirname, 'graphql-schemas', 'gen1-ddb-only', 'schema-subscriptions-off.graphql'));
+      const schemaPath = path.resolve(path.join(__dirname, '..', 'graphql-schemas', 'gen1-ddb-only', 'schema-subscriptions-off.graphql'));
       const schema = fs.readFileSync(schemaPath).toString();
 
       const testDefinitions: Record<string, TestDefinition> = {
