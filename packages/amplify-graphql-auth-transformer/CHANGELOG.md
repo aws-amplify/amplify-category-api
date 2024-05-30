@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.4-fix-sub-owner.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.5.3...@aws-amplify/graphql-auth-transformer@3.5.4-fix-sub-owner.0) (2024-05-30)
+
+### Bug Fixes
+
+- add identityPool provider ([6d88319](https://github.com/aws-amplify/amplify-category-api/commit/6d883193d2a55bed1ae85606ab00c36280e1e98b))
+- ci failure ([ef12e5a](https://github.com/aws-amplify/amplify-category-api/commit/ef12e5a4031e03a952ce8435bf14cf8cf3041110))
+- do not redact required hasOne relationships due to AppSync error ([e79208c](https://github.com/aws-amplify/amplify-category-api/commit/e79208cdf7f3371d8ff55c26d39729217f008ac2))
+- don't add denied field flag twice ([cedaa67](https://github.com/aws-amplify/amplify-category-api/commit/cedaa67806fdccb1a44531857667a2d0d640641a))
+- don't refactor role definitions ([8891cef](https://github.com/aws-amplify/amplify-category-api/commit/8891cef5245589a4bdd6ddf4272e1f37b29b8b58))
+- keep related auth expression for needsFieldResolver case ([4d9e9f7](https://github.com/aws-amplify/amplify-category-api/commit/4d9e9f79b938d179e46d400a4f9d6fcbed1a15f8))
+- redact relational field in mutation & subscription based on model auth rules ([da7802e](https://github.com/aws-amplify/amplify-category-api/commit/da7802ec38e901884f07c76052122ab9df953be7))
+- use fieldRoles check ([2e2535f](https://github.com/aws-amplify/amplify-category-api/commit/2e2535fa5256783e7426dbb7479f205000e0f204))
+- use req vtl ([bf110a6](https://github.com/aws-amplify/amplify-category-api/commit/bf110a61cfc2286d7d445618408d4629252b1830))
+
 ## [3.5.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.5.2...@aws-amplify/graphql-auth-transformer@3.5.3) (2024-05-15)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer

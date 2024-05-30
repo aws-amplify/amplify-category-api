@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.16-fix-sub-owner.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.15...@aws-amplify/graphql-maps-to-transformer@3.4.16-fix-sub-owner.0) (2024-05-30)
+
+### Bug Fixes
+
+- ci failure ([ef12e5a](https://github.com/aws-amplify/amplify-category-api/commit/ef12e5a4031e03a952ce8435bf14cf8cf3041110))
+
 ## [3.4.15](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.14...@aws-amplify/graphql-maps-to-transformer@3.4.15) (2024-05-15)
 
 **Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer

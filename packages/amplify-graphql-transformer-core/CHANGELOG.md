@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.1-fix-sub-owner.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.8.0...@aws-amplify/graphql-transformer-core@2.8.1-fix-sub-owner.0) (2024-05-30)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-core
+
 # [2.8.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.7.0...@aws-amplify/graphql-transformer-core@2.8.0) (2024-05-10)
 
 ### Bug Fixes

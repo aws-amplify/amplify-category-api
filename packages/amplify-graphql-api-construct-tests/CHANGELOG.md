@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.4-fix-sub-owner.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.6.3...amplify-graphql-api-construct-tests@1.6.4-fix-sub-owner.0) (2024-05-30)
+
+### Bug Fixes
+
+- return list on denied field for references ([6c909b6](https://github.com/aws-amplify/amplify-category-api/commit/6c909b6ebf68006814d6cf6e0d54d4ae46126057))
+- test to check for null on has many ([ba615e6](https://github.com/aws-amplify/amplify-category-api/commit/ba615e6f83614e1745b3cd3e7f1f3df4a82988a8))
+
 ## [1.6.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.6.2...amplify-graphql-api-construct-tests@1.6.3) (2024-05-15)
 
 ### Bug Fixes

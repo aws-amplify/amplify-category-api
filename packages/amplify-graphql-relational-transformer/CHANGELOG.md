@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.4-fix-sub-owner.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.5.3...@aws-amplify/graphql-relational-transformer@2.5.4-fix-sub-owner.0) (2024-05-30)
+
+### Bug Fixes
+
+- redact relational field in mutation & subscription based on model auth rules ([da7802e](https://github.com/aws-amplify/amplify-category-api/commit/da7802ec38e901884f07c76052122ab9df953be7))
+- return list on denied field for references ([6c909b6](https://github.com/aws-amplify/amplify-category-api/commit/6c909b6ebf68006814d6cf6e0d54d4ae46126057))
+- revert null result change ([28c90f2](https://github.com/aws-amplify/amplify-category-api/commit/28c90f24875e953f6304a546fb56c8389fa95a3c))
+- use empty array in place of null ([fd65b2f](https://github.com/aws-amplify/amplify-category-api/commit/fd65b2f63d7d5e1825a5bdfd5993f0acf3391d1a))
+
 ## [2.5.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.5.2...@aws-amplify/graphql-relational-transformer@2.5.3) (2024-05-15)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
