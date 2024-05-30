@@ -1,0 +1,30 @@
+type Primary @model(subscriptions: { level: off }) @auth(rules: [{ allow: public, operations: [read] }, { allow: owner }]) {
+  id: ID! @primaryKey
+  secret: String @auth(rules: [{ allow: owner }])
+  relatedMany: [RelatedMany] @hasMany
+  relatedOne: RelatedOne @hasOne
+}
+
+type RelatedMany @model(subscriptions: { level: off }) @auth(rules: [{ allow: public, operations: [read] }, { allow: owner }]) {
+  id: ID! @primaryKey
+  secret: String @auth(rules: [{ allow: owner }])
+  primary: Primary @belongsTo
+}
+
+type RelatedOne @model(subscriptions: { level: off }) @auth(rules: [{ allow: public, operations: [read] }, { allow: owner }]) {
+  id: ID! @primaryKey
+  secret: String @auth(rules: [{ allow: owner }])
+  primary: Primary @belongsTo
+}
+
+type ManyLeft @model(subscriptions: { level: off }) @auth(rules: [{ allow: public, operations: [read] }, { allow: owner }]) {
+  id: ID! @primaryKey
+  secret: String @auth(rules: [{ allow: owner }])
+  manyRight: [ManyRight] @manyToMany(relationName: "leftRightJoin")
+}
+
+type ManyRight @model(subscriptions: { level: off }) @auth(rules: [{ allow: public, operations: [read] }, { allow: owner }]) {
+  id: ID! @primaryKey
+  secret: String @auth(rules: [{ allow: owner }])
+  manyLeft: [ManyLeft] @manyToMany(relationName: "leftRightJoin")
+}
