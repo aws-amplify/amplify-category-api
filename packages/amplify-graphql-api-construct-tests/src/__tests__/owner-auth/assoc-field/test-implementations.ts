@@ -57,7 +57,8 @@ export const testCreatePrimaryRedactedForDifferentOwners = async (
   expect(primary).toBeDefined();
   expect(primary.id).toEqual(primaryId);
   expect(primary.relatedOne).toBeNull();
-  expect(primary.relatedMany).toBeNull();
+  expect(primary.relatedMany).toBeDefined();
+  expect(primary.relatedMany.items.length).toEqual(0);
 };
 
 export const testUpdatePrimaryRedactedForSameOwner = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
@@ -104,7 +105,8 @@ export const testUpdatePrimaryRedactedForDifferentOwners = async (
   expect(primary).toBeDefined();
   expect(primary.id).toEqual(primaryId);
   expect(primary.relatedOne).toBeNull();
-  expect(primary.relatedMany).toBeNull();
+  expect(primary.relatedMany).toBeDefined();
+  expect(primary.relatedMany.items.length).toEqual(0);
 };
 
 export const testGetPrimaryVisibleForSameOwner = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
