@@ -311,5 +311,5 @@ export const testUpdateRelatedManyNotRedacted = async (currentId: number, apiEnd
   expect(relatedMany.secret).toEqual('relatedMany secret');
   expect(relatedMany.id).toBeDefined();
   expect(relatedMany.primary).toBeDefined();
-  expect(relatedMany.primary.secret).toEqual('primary secrt');
+  expect(relatedMany.primary.secret).toEqual('primary secret');
 };
