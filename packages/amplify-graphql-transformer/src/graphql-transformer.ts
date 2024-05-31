@@ -115,7 +115,7 @@ export type ExecuteTransformConfig = TransformConfig &
     parameterProvider?: TransformParameterProvider;
     assetProvider: AssetProvider;
     synthParameters: SynthParameters;
-    migrate?: boolean;
+    migrationMapping?: Record<string, string>;
   };
 
 /**
@@ -159,7 +159,7 @@ export const executeTransform = (config: ExecuteTransformConfig): { [key: string
     scope,
     sqlDirectiveDataSourceStrategies,
     synthParameters,
-    migrate,
+    migrationMapping,
   } = config;
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
@@ -176,7 +176,7 @@ export const executeTransform = (config: ExecuteTransformConfig): { [key: string
       scope,
       sqlDirectiveDataSourceStrategies,
       synthParameters,
-      migrate,
+      migrationMapping,
     });
     return transform.getOutputs();
   } finally {

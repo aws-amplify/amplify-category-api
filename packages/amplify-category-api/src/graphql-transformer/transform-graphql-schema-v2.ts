@@ -28,7 +28,7 @@ import * as fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { sanityCheckProject } from 'graphql-transformer-core';
 import _ from 'lodash';
-import { executeTransform } from '@aws-amplify/graphql-transformer';
+import { executeTransform, ExecuteTransformConfig } from '@aws-amplify/graphql-transformer';
 import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { getHostVpc } from '@aws-amplify/graphql-schema-generator';
@@ -358,7 +358,7 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
     await getIdentityPoolId(context),
   );
 
-  executeTransform({
+  const executeTransformConfig: ExecuteTransformConfig = {
     ...opts,
     scope: transformManager.rootStack,
     nestedStackProvider: transformManager.getNestedStackProvider(),
@@ -371,8 +371,26 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
     printTransformerLog,
     rdsLayerMapping,
     rdsSnsTopicMapping,
-    migrate: true,
-  });
+  };
+
+  if (opts.migrate) {
+    // TODO: need to change for overrides?
+    const outputs = executeTransform(executeTransformConfig);
+    const migrationMapping = Object.fromEntries(
+      Object.entries(outputs.datasourceMap).map(([modelName, datasource]) => {
+        return [modelName, (datasource as any).ds.attrDataSourceArn];
+      }),
+    );
+    executeTransformConfig.migrationMapping = migrationMapping;
+    // do I need this
+    /*
+    const transformOutput: DeploymentResources = {
+      ...transformManager.generateDeploymentResources(),
+      userOverriddenSlots: opts.userDefinedSlots ? getUserOverridenSlots(opts.userDefinedSlots) : [],
+    };
+    */
+  }
+  executeTransform(executeTransformConfig);
 
   const transformOutput: DeploymentResources = {
     ...transformManager.generateDeploymentResources(),

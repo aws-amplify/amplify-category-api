@@ -95,7 +95,7 @@ export interface TransformOption extends DataSourceStrategiesProvider, RDSLayerM
   assetProvider: AssetProvider;
   synthParameters: SynthParameters;
   schema: string;
-  migrate?: boolean;
+  migrationMapping?: Record<string, string>;
 }
 
 export type StackMapping = { [resourceId: string]: string };
@@ -198,14 +198,8 @@ export class GraphQLTransform {
     scope,
     sqlDirectiveDataSourceStrategies,
     synthParameters,
-    migrate,
+    migrationMapping,
   }: TransformOption): void {
-    let migrationMapping = undefined;
-    if (migrate) {
-      // TODO: get migration mapping
-      // maybe to transform, then do it again
-      migrationMapping = {};
-    }
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
     const context = new TransformerContext({

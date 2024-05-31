@@ -34,6 +34,7 @@ export type TransformerProjectOptions = {
   userDefinedSlots: Record<string, UserDefinedSlot[]>;
   stackMapping: Record<string, string>;
   transformParameters: TransformParameters;
+  migrate?: boolean;
 };
 
 type SanityCheckRules = {
