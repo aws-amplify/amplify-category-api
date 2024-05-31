@@ -24,7 +24,11 @@ export type ModelCreateInitSlotConfig = {
 
 export type ModelUpdateInitSlotConfig = ModelCreateInitSlotConfig;
 
-export type ModelGetResponseConfig = ModelUpdateRequestConfig;
+export type ModelGetResponseConfig = ModelUpdateRequestConfig & {
+  configuredAuthProviders: ConfiguredAuthProviders;
+  roles: Array<RoleDefinition>;
+  fields: ReadonlyArray<FieldDefinitionNode>;
+};
 
 export type ModelDefaultResponseConfig = ModelRequestConfig & {
   isSyncEnabled: boolean;

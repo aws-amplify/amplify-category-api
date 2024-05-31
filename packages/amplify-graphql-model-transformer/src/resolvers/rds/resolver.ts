@@ -513,10 +513,16 @@ export const generateLambdaRequestTemplate = (
  * Generate RDS Lambda response template
  * @param isSyncEnabled boolean
  */
-export const generateGetLambdaResponseTemplate = (isSyncEnabled: boolean): string => {
+export const generateGetLambdaResponseTemplate = (
+  isSyncEnabled: boolean,
+  configuredAuthProviders: ConfiguredAuthProviders,
+  roles: Array<RoleDefinition>,
+  fields: ReadonlyArray<FieldDefinitionNode>,
+): string => {
   const statements: Expression[] = [];
   const resultExpression = compoundExpression([
-    set(ref('authResult'), methodCall(ref('util.authRules.validateUsingSource'), ref('ctx.stash.authRules'), ref('ctx.source'))),
+    ...generateAuthRulesFromRoles(roles, fields, configuredAuthProviders.hasIdentityPoolId, true),
+    set(ref('authResult'), methodCall(ref('util.authRules.validateUsingSource'), ref('authRules'), ref('ctx.source'))),
     ifElse(
       or([not(ref('authResult')), parens(and([ref('authResult'), not(ref('authResult.authorized'))]))]),
       compoundExpression([methodCall(ref('util.unauthorized')), methodCall(ref('util.toJson'), raw('null'))]),

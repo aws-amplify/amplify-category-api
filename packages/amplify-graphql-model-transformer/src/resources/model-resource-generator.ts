@@ -244,6 +244,9 @@ export abstract class ModelResourceGenerator {
       isSyncEnabled,
       modelName: type.name.value,
       modelIndexFields,
+      configuredAuthProviders:  getConfiguredAuthProviders(ctx),
+      roles: acm.getRolesPerOperation('get').map((r) => this.roleMap.get(r)!),
+      fields: type.fields || [];
     };
     if (!this.resolverMap[resolverKey]) {
       this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
