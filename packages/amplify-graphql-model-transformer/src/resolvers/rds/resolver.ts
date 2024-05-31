@@ -15,6 +15,9 @@ import {
   toJson,
   not,
   raw,
+  or,
+  parens,
+  and,
 } from 'graphql-mapping-template';
 import { ResourceConstants } from 'graphql-transformer-common';
 import {
@@ -515,7 +518,7 @@ export const generateGetLambdaResponseTemplate = (isSyncEnabled: boolean): strin
   const resultExpression = compoundExpression([
     set(ref('authResult'), methodCall(ref('util.authRules.validateUsingSource'), ref('ctx.stash.authRules'), ref('ctx.source'))),
     ifElse(
-      not(ref('authResult')),
+      or([not(ref('authResult')), parens(and([ref('authResult'), not(ref('authResult.authorized'))]))]),
       compoundExpression([methodCall(ref('util.unauthorized')), methodCall(ref('util.toJson'), raw('null'))]),
       toJson(ref('ctx.result')),
     ),
