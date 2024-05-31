@@ -10,7 +10,7 @@ import { DURATION_1_HOUR } from '../../../../utils/duration-constants';
 import {
   deployStackAndCreateUsers,
   testCreatePrimaryDoesNotRedactRelated,
-  testCreatePrimaryRedactsRelated,
+  testCreatePrimaryIsForbidden,
   testCreatePrimaryRedactsRelatedListAsNull,
   testCreateRelatedManyDoesNotRedactPrimary,
   testCreateRelatedManyIsForbidden,
