@@ -371,6 +371,7 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
     printTransformerLog,
     rdsLayerMapping,
     rdsSnsTopicMapping,
+    migrate: true,
   });
 
   const transformOutput: DeploymentResources = {

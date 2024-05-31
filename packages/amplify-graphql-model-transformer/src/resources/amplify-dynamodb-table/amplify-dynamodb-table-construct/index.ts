@@ -28,6 +28,7 @@ export interface AmplifyDynamoDBTableProps extends TableProps {
   customResourceServiceToken: string;
   allowDestructiveGraphqlSchemaUpdates?: boolean;
   replaceTableUponGsiUpdate?: boolean;
+  existingTable?: boolean;
 }
 export class AmplifyDynamoDBTable extends Resource {
   public readonly encryptionKey?: kms.IKey;
@@ -103,10 +104,17 @@ export class AmplifyDynamoDBTable extends Resource {
     this.tableArn = this.table.getAttString('TableArn');
     this.tableStreamArn = streamSpecification ? this.table.getAttString('TableStreamArn') : undefined;
 
-    this.tableFromAttr = Table.fromTableAttributes(scope, `CustomTable${id}`, {
-      tableArn: this.tableArn,
-      tableStreamArn: this.tableStreamArn,
-    });
+    if (props.existingTable) {
+      if (!props.tableName) {
+        throw new Error('TODO: better error message');
+      }
+      this.tableFromAttr = Table.fromTableName(scope, `CustomTable${id}`, props.tableName);
+    } else {
+      this.tableFromAttr = Table.fromTableAttributes(scope, `CustomTable${id}`, {
+        tableArn: this.tableArn,
+        tableStreamArn: this.tableStreamArn,
+      });
+    }
 
     this.addKey(props.partitionKey, HASH_KEY_TYPE);
     this.tablePartitionKey = props.partitionKey;

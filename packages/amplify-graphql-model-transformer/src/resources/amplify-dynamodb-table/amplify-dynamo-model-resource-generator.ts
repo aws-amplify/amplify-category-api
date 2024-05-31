@@ -149,7 +149,11 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
   protected createModelTable(scope: Construct, def: ObjectTypeDefinitionNode, context: TransformerContextProvider): void {
     const modelName = def!.name.value;
     const tableLogicalName = ModelResourceIDs.ModelTableResourceID(modelName);
-    const tableName = context.resourceHelper.generateTableName(modelName);
+    let tableName = context.resourceHelper.generateTableName(modelName);
+    const existingTable = !!context.migrationMapping?.[modelName];
+    if (context.migrationMapping && existingTable) {
+      tableName = context.migrationMapping[modelName];
+    }
 
     // Add parameters.
     const { readIops, writeIops, billingMode, pointInTimeRecovery, enableSSE } = this.createDynamoDBParameters(scope, true);

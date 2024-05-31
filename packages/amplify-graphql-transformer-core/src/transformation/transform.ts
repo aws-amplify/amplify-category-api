@@ -95,6 +95,7 @@ export interface TransformOption extends DataSourceStrategiesProvider, RDSLayerM
   assetProvider: AssetProvider;
   synthParameters: SynthParameters;
   schema: string;
+  migrate?: boolean;
 }
 
 export type StackMapping = { [resourceId: string]: string };
@@ -195,7 +196,14 @@ export class GraphQLTransform {
     scope,
     sqlDirectiveDataSourceStrategies,
     synthParameters,
+    migrate,
   }: TransformOption): void {
+    let migrationMapping = undefined;
+    if (migrate) {
+      // TODO: get migration mapping
+      // maybe to transform, then do it again
+      migrationMapping = {};
+    }
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
     const context = new TransformerContext({
@@ -213,6 +221,7 @@ export class GraphQLTransform {
       stackMapping: this.stackMappingOverrides,
       synthParameters,
       transformParameters: this.transformParameters,
+      migrationMapping,
     });
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),

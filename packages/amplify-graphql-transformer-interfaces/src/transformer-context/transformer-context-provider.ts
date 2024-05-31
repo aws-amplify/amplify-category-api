@@ -35,6 +35,8 @@ export interface TransformerContextProvider extends DataSourceStrategiesProvider
 
   isProjectUsingDataStore: () => boolean;
   getResolverConfig: <ResolverConfig>() => ResolverConfig | undefined;
+
+  migrationMapping?: Record<string, string>;
 }
 
 export type TransformerBeforeStepContextProvider = Pick<
