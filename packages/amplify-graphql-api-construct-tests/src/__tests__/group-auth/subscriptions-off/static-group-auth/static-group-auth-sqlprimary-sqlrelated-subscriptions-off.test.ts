@@ -10,8 +10,8 @@ import { DURATION_1_HOUR } from '../../../../utils/duration-constants';
 import {
   deployStackAndCreateUsers,
   testCreatePrimaryDoesNotRedactRelated,
-  testCreatePrimaryIsForbidden,
   testCreatePrimaryRedactsRelated,
+  testCreatePrimaryRedactsRelatedListAsNull,
   testCreateRelatedManyDoesNotRedactPrimary,
   testCreateRelatedManyIsForbidden,
   testCreateRelatedManyRedactsPrimary,
@@ -31,7 +31,7 @@ import {
   testListRelatedOnesDoesNotRedactPrimary,
   testListRelatedOnesRedactsPrimary,
   testUpdatePrimaryDoesNotRedactRelated,
-  testUpdatePrimaryRedactsRelated,
+  testUpdatePrimaryRedactsRelatedListAsNull,
   testUpdateRelatedManyDoesNotRedactPrimary,
   testUpdateRelatedManyRedactsPrimary,
   testUpdateRelatedOneDoesNotRedactPrimary,
@@ -166,11 +166,17 @@ describe('Relationships protected with static group auth subscriptions off', () 
     describe('Actors belonging to Group1', () => {
       describe('Primary as source model', () => {
         test('createPrimary redacts related models', async () => {
-          await testCreatePrimaryRedactsRelated(currentId, apiEndpoint, group1AccessToken, group2AccessToken);
+          // Fields are redacted with auth filter in this case.
+          // The auth filter will nullify the list fields.
+          // To be updated later to align with other redaction behavior.
+          await testCreatePrimaryRedactsRelatedListAsNull(currentId, apiEndpoint, group1AccessToken, group2AccessToken);
         });
 
         test('updatePrimary redacts related models', async () => {
-          await testUpdatePrimaryRedactsRelated(currentId, apiEndpoint, group1AccessToken, group2AccessToken);
+          // Fields are redacted with auth filter in this case.
+          // The auth filter will nullify the list fields.
+          // To be updated later to align with other redaction behavior.
+          await testUpdatePrimaryRedactsRelatedListAsNull(currentId, apiEndpoint, group1AccessToken, group2AccessToken);
         });
 
         test('getPrimary redacts related models', async () => {
