@@ -16,13 +16,13 @@ import {
 import { SqlDatabaseDetails, SqlDatatabaseController } from '../../../sql-datatabase-controller';
 import { DURATION_1_HOUR, ONE_MINUTE } from '../../../utils/duration-constants';
 import {
-  testCreatePrimaryRedacted,
-  testUpdatePrimaryRedacted,
-  testCreateRelatedOneRedacted,
-  testUpdateRelatedOneRedacted,
-  testCreateRelatedManyRedacted,
-  testUpdateRelatedManyRedacted,
-} from '../gen2-test-implementations';
+  testCreatePrimaryNotRedacted,
+  testUpdatePrimaryNotRedacted,
+  testCreateRelatedOneNotRedacted,
+  testUpdateRelatedOneNotRedacted,
+  testCreateRelatedManyNotRedacted,
+  testUpdateRelatedManyNotRedacted,
+} from './gen2-test-implementations';
 
 jest.setTimeout(DURATION_1_HOUR);
 
@@ -144,28 +144,28 @@ describe('Associated type fields with more restrictive auth rules than the model
       deleteProjectDir(projRoot);
     });
 
-    test('createPrimary is redacted', async () => {
-      await testCreatePrimaryRedacted(currentId, apiEndpoint, accessToken);
+    test('createPrimary is not redacted', async () => {
+      await testCreatePrimaryNotRedacted(currentId, apiEndpoint, accessToken);
     });
 
-    test('updatePrimary is redacted', async () => {
-      await testUpdatePrimaryRedacted(currentId, apiEndpoint, accessToken);
+    test('updatePrimary is not redacted', async () => {
+      await testUpdatePrimaryNotRedacted(currentId, apiEndpoint, accessToken);
     });
 
-    test('createRelatedOne is redacted', async () => {
-      await testCreateRelatedOneRedacted(currentId, apiEndpoint, accessToken);
+    test('createRelatedOne is not redacted', async () => {
+      await testCreateRelatedOneNotRedacted(currentId, apiEndpoint, accessToken);
     });
 
-    test('updateRelatedOne is redacted', async () => {
-      await testUpdateRelatedOneRedacted(currentId, apiEndpoint, accessToken);
+    test('updateRelatedOne is not redacted', async () => {
+      await testUpdateRelatedOneNotRedacted(currentId, apiEndpoint, accessToken);
     });
 
-    test('createRelatedMany is redacted', async () => {
-      await testCreateRelatedManyRedacted(currentId, apiEndpoint, accessToken);
+    test('createRelatedMany is not redacted', async () => {
+      await testCreateRelatedManyNotRedacted(currentId, apiEndpoint, accessToken);
     });
 
-    test('updateRelatedMany is redacted', async () => {
-      await testUpdateRelatedManyRedacted(currentId, apiEndpoint, accessToken);
+    test('updateRelatedMany is not redacted', async () => {
+      await testUpdateRelatedManyNotRedacted(currentId, apiEndpoint, accessToken);
     });
   });
 
@@ -235,28 +235,28 @@ describe('Associated type fields with more restrictive auth rules than the model
       deleteProjectDir(projRoot);
     });
 
-    test('createPrimary is redacted', async () => {
-      await testCreatePrimaryRedacted(currentId, apiEndpoint, accessToken);
+    test('createPrimary is not redacted', async () => {
+      await testCreatePrimaryNotRedacted(currentId, apiEndpoint, accessToken);
     });
 
-    test('updatePrimary is redacted', async () => {
-      await testUpdatePrimaryRedacted(currentId, apiEndpoint, accessToken);
+    test('updatePrimary is not redacted', async () => {
+      await testUpdatePrimaryNotRedacted(currentId, apiEndpoint, accessToken);
     });
 
-    test('createRelatedOne is redacted', async () => {
-      await testCreateRelatedOneRedacted(currentId, apiEndpoint, accessToken);
+    test('createRelatedOne is not redacted', async () => {
+      await testCreateRelatedOneNotRedacted(currentId, apiEndpoint, accessToken);
     });
 
-    test('updateRelatedOne is redacted', async () => {
-      await testUpdateRelatedOneRedacted(currentId, apiEndpoint, accessToken);
+    test('updateRelatedOne is not redacted', async () => {
+      await testUpdateRelatedOneNotRedacted(currentId, apiEndpoint, accessToken);
     });
 
-    test('createRelatedMany is redacted', async () => {
-      await testCreateRelatedManyRedacted(currentId, apiEndpoint, accessToken);
+    test('createRelatedMany is not redacted', async () => {
+      await testCreateRelatedManyNotRedacted(currentId, apiEndpoint, accessToken);
     });
 
-    test('updateRelatedMany is redacted', async () => {
-      await testUpdateRelatedManyRedacted(currentId, apiEndpoint, accessToken);
+    test('updateRelatedMany is not redacted', async () => {
+      await testUpdateRelatedManyNotRedacted(currentId, apiEndpoint, accessToken);
     });
   });
 
@@ -330,28 +330,28 @@ describe('Associated type fields with more restrictive auth rules than the model
       deleteProjectDir(projRoot);
     });
 
-    test('createPrimary is redacted', async () => {
-      await testCreatePrimaryRedacted(currentId, apiEndpoint, accessToken);
+    test('createPrimary is not redacted', async () => {
+      await testCreatePrimaryNotRedacted(currentId, apiEndpoint, accessToken);
     });
 
-    test('updatePrimary is redacted', async () => {
-      await testUpdatePrimaryRedacted(currentId, apiEndpoint, accessToken);
+    test('updatePrimary is not redacted', async () => {
+      await testUpdatePrimaryNotRedacted(currentId, apiEndpoint, accessToken);
     });
 
-    test('createRelatedOne is redacted', async () => {
-      await testCreateRelatedOneRedacted(currentId, apiEndpoint, accessToken);
+    test('createRelatedOne is not redacted', async () => {
+      await testCreateRelatedOneNotRedacted(currentId, apiEndpoint, accessToken);
     });
 
-    test('updateRelatedOne is redacted', async () => {
-      await testUpdateRelatedOneRedacted(currentId, apiEndpoint, accessToken);
+    test('updateRelatedOne is not redacted', async () => {
+      await testUpdateRelatedOneNotRedacted(currentId, apiEndpoint, accessToken);
     });
 
-    test('createRelatedMany is redacted', async () => {
-      await testCreateRelatedManyRedacted(currentId, apiEndpoint, accessToken);
+    test('createRelatedMany is not redacted', async () => {
+      await testCreateRelatedManyNotRedacted(currentId, apiEndpoint, accessToken);
     });
 
-    test('updateRelatedMany is redacted', async () => {
-      await testUpdateRelatedManyRedacted(currentId, apiEndpoint, accessToken);
+    test('updateRelatedMany is not redacted', async () => {
+      await testUpdateRelatedManyNotRedacted(currentId, apiEndpoint, accessToken);
     });
   });
 
@@ -426,28 +426,28 @@ describe('Associated type fields with more restrictive auth rules than the model
       deleteProjectDir(projRoot);
     });
 
-    test('createPrimary is redacted', async () => {
-      await testCreatePrimaryRedacted(currentId, apiEndpoint, accessToken);
+    test('createPrimary is not redacted', async () => {
+      await testCreatePrimaryNotRedacted(currentId, apiEndpoint, accessToken);
     });
 
-    test('updatePrimary is redacted', async () => {
-      await testUpdatePrimaryRedacted(currentId, apiEndpoint, accessToken);
+    test('updatePrimary is not redacted', async () => {
+      await testUpdatePrimaryNotRedacted(currentId, apiEndpoint, accessToken);
     });
 
-    test('createRelatedOne is redacted', async () => {
-      await testCreateRelatedOneRedacted(currentId, apiEndpoint, accessToken);
+    test('createRelatedOne is not redacted', async () => {
+      await testCreateRelatedOneNotRedacted(currentId, apiEndpoint, accessToken);
     });
 
-    test('updateRelatedOne is redacted', async () => {
-      await testUpdateRelatedOneRedacted(currentId, apiEndpoint, accessToken);
+    test('updateRelatedOne is not redacted', async () => {
+      await testUpdateRelatedOneNotRedacted(currentId, apiEndpoint, accessToken);
     });
 
-    test('createRelatedMany is redacted', async () => {
-      await testCreateRelatedManyRedacted(currentId, apiEndpoint, accessToken);
+    test('createRelatedMany is not redacted', async () => {
+      await testCreateRelatedManyNotRedacted(currentId, apiEndpoint, accessToken);
     });
 
-    test('updateRelatedMany is redacted', async () => {
-      await testUpdateRelatedManyRedacted(currentId, apiEndpoint, accessToken);
+    test('updateRelatedMany is not redacted', async () => {
+      await testUpdateRelatedManyNotRedacted(currentId, apiEndpoint, accessToken);
     });
   });
 });
