@@ -306,12 +306,12 @@ describe('Associated fields protected by owner auth control visibility appropria
       const name = await initCDKProject(projRoot, templatePath);
 
       const primarySchemaPath = path.resolve(
-        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-primary.graphql'),
+        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-primary-subscriptions-off.graphql'),
       );
       const primarySchema = fs.readFileSync(primarySchemaPath).toString();
 
       const relatedSchemaPath = path.resolve(
-        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-related.graphql'),
+        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-related-subscriptions-off.graphql'),
       );
       const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
 
@@ -500,12 +500,12 @@ describe('Associated fields protected by owner auth control visibility appropria
       const name = await initCDKProject(projRoot, templatePath);
 
       const primarySchemaPath = path.resolve(
-        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-primary.graphql'),
+        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-primary-subscriptions-off.graphql'),
       );
       const primarySchema = fs.readFileSync(primarySchemaPath).toString();
 
       const relatedSchemaPath = path.resolve(
-        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-related.graphql'),
+        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-related-subscriptions-off.graphql'),
       );
       const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
 
@@ -698,13 +698,13 @@ describe('Associated fields protected by owner auth control visibility appropria
       const name = await initCDKProject(projRoot, templatePath);
 
       const primarySchemaPath = path.resolve(
-        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-primary.graphql'),
+        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-primary-subscriptions-off.graphql'),
       );
 
       const primarySchema = fs.readFileSync(primarySchemaPath).toString();
 
       const relatedSchemaPath = path.resolve(
-        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-related.graphql'),
+        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-related-subscriptions-off.graphql'),
       );
       const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
 
