@@ -806,11 +806,6 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     // in the request we then add the rules of the related type
     if (needsFieldResolver) {
       const roleDefinitions = fieldRoles.map((r) => this.roleMap.get(r)!);
-      const hasSubsEnabled = this.modelDirectiveConfig.get(typeName)!.subscriptions?.level === 'on';
-      relatedAuthExpression = `${this.getVtlGenerator(ctx, def.name.value).setDeniedFieldFlag(
-        'Mutation',
-        hasSubsEnabled,
-      )}\n${relatedAuthExpression}`;
       fieldAuthExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForField(
         this.configuredAuthProviders,
         roleDefinitions,
