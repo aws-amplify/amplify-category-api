@@ -145,6 +145,7 @@ export const createRdsLambda = (
     Duration.seconds(30),
     scope,
     sqlLambdaVpcConfig,
+    'Amplify-managed SQL function',
   );
 
   if (sqlLambdaProvisionedConcurrencyConfig) {

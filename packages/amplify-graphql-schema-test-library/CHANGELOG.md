@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.30](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@2.2.29...@aws-amplify/graphql-schema-test-library@2.2.30) (2024-05-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-test-library
+
+## [2.2.29](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@2.2.28...@aws-amplify/graphql-schema-test-library@2.2.29) (2024-05-10)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-test-library
+
+## [2.2.28](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@2.2.27...@aws-amplify/graphql-schema-test-library@2.2.28) (2024-05-01)
+
+### Bug Fixes
+
+- **graphql-relational-transformer:** nullability enforcement for references relational fields ([#2510](https://github.com/aws-amplify/amplify-category-api/issues/2510)) ([d540097](https://github.com/aws-amplify/amplify-category-api/commit/d54009736092410b2d6e78ebf116a38298bf03ce))
+
 ## [2.2.27](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-test-library@2.2.26...@aws-amplify/graphql-schema-test-library@2.2.27) (2024-04-26)
 
 **Note:** Version bump only for package @aws-amplify/graphql-schema-test-library

@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.11.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.11.4...@aws-amplify/amplify-category-api@5.11.5) (2024-05-15)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+## [5.11.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.11.3...@aws-amplify/amplify-category-api@5.11.4) (2024-05-10)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-api
+
+## [5.11.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.11.2...@aws-amplify/amplify-category-api@5.11.3) (2024-05-01)
+
+### Performance Improvements
+
+- **graphql-model-transformer:** minimal provider framework and inline policies ([#2490](https://github.com/aws-amplify/amplify-category-api/issues/2490)) ([a86c816](https://github.com/aws-amplify/amplify-category-api/commit/a86c816ceb288376c4dfa9b1d12413edd28cf75e))
+
 ## [5.11.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.11.1...@aws-amplify/amplify-category-api@5.11.2) (2024-04-26)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api

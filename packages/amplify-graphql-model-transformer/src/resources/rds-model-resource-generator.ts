@@ -1,4 +1,4 @@
-import { Fn } from 'aws-cdk-lib';
+import { Fn, Tags } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Topic, SubscriptionFilter } from 'aws-cdk-lib/aws-sns';
 import { LambdaSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
@@ -151,6 +151,9 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       strategy.vpcConfiguration,
       strategy.sqlLambdaProvisionedConcurrencyConfig,
     );
+
+    // Note that this tag will be added to either the bare function, or the alias created to handle provisioned concurrency
+    Tags.of(lambda).add('amplify:function-type', 'sql-data-source');
 
     const patchingLambdaRoleScope = context.stackManager.getScopeFor(resourceNames.sqlPatchingLambdaExecutionRole, resourceNames.sqlStack);
     const patchingLambdaRole = createRdsPatchingLambdaRole(

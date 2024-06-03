@@ -6,6 +6,7 @@ import * as yaml from 'js-yaml';
 type TestRegion = {
   name: string;
   optIn: boolean;
+  cognitoSupported: boolean;
 };
 
 const REPO_ROOT = join(__dirname, '..');
@@ -13,7 +14,10 @@ const REPO_ROOT = join(__dirname, '..');
 const supportedRegionsPath = join(REPO_ROOT, 'scripts', 'e2e-test-regions.json');
 const suportedRegions: TestRegion[] = JSON.parse(fs.readFileSync(supportedRegionsPath, 'utf-8'));
 const testRegions = suportedRegions.map((region) => region.name);
-const nonOptInRegions = suportedRegions.filter((region) => !region.optIn).map((region) => region.name);
+const supportedRegionsByRegionName: Record<string, TestRegion> = suportedRegions.reduce(
+  (acc, region) => ({ ...acc, [region.name]: region }),
+  {},
+);
 
 // https://github.com/aws-amplify/amplify-cli/blob/d55917fd83140817a4447b3def1736f75142df44/packages/amplify-provider-awscloudformation/src/aws-regions.js#L4-L17
 const v1TransformerSupportedRegionsPath = join(REPO_ROOT, 'scripts', 'v1-transformer-supported-regions.json');
@@ -83,6 +87,7 @@ const TEST_TIMINGS_PATH = join(REPO_ROOT, 'scripts', 'test-timings.data.json');
 const CODEBUILD_CONFIG_BASE_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_base.yml');
 const CODEBUILD_GENERATE_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow.yml');
 const CODEBUILD_DEBUG_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'debug_workflow.yml');
+
 const RUN_SOLO: (string | RegExp)[] = [
   'src/__tests__/apigw.test.ts',
   'src/__tests__/api_2.test.ts',
@@ -167,6 +172,13 @@ const RUN_IN_NON_OPT_IN_REGIONS: (string | RegExp)[] = [
   'src/__tests__/ddb-iam-access.test.ts',
 ];
 
+const RUN_IN_COGNITO_REGIONS: (string | RegExp)[] = [
+  /src\/__tests__\/.*userpool.*\.test\.ts/,
+  /src\/__tests__\/group-auth\/.*\.test\.ts/,
+  /src\/__tests__\/owner-auth\/.*\.test\.ts/,
+  /src\/__tests__\/restricted-field-auth\/.*\.test\.ts/,
+];
+
 const RUN_IN_V1_TRANSFORMER_REGIONS = ['src/__tests__/schema-searchable.test.ts'];
 
 const DEBUG_FLAG = '--debug';
@@ -220,6 +232,7 @@ const splitTests = (baseJobLinux: any, testDirectory: string, pickTests?: (testS
     const runtimeB = testFileRunTimes.find((t: any) => t.test === b)?.medianRuntime ?? 30;
     return runtimeA - runtimeB;
   });
+
   const generateJobsForOS = (os: OSType): CandidateJob[] => {
     const soloJobs = [];
     let jobIdx = 0;
@@ -231,12 +244,9 @@ const splitTests = (baseJobLinux: any, testDirectory: string, pickTests?: (testS
       const USE_PARENT = USE_PARENT_ACCOUNT.some((usesParent) => test.startsWith(usesParent));
 
       if (RUN_SOLO.find((solo) => test === solo || test.match(solo))) {
-        if (RUN_IN_ALL_REGIONS.find((allRegions) => test === allRegions || test.match(allRegions))) {
-          const shouldRunInNonOptInRegion = RUN_IN_NON_OPT_IN_REGIONS.find(
-            (nonOptInTest) => test.toLowerCase() === nonOptInTest || test.toLowerCase().match(nonOptInTest),
-          );
-          const regionsToRunTest = shouldRunInNonOptInRegion ? nonOptInRegions : testRegions;
-          regionsToRunTest.forEach((region) => {
+        if (RUN_IN_ALL_REGIONS.find((allRegionsTest) => test === allRegionsTest || test.match(allRegionsTest))) {
+          const candidateRegions = filterCandidateRegions(test, testRegions);
+          candidateRegions.forEach((region) => {
             const newSoloJob = createJob(os, jobIdx, true);
             jobIdx++;
             newSoloJob.tests.push(test);
@@ -272,6 +282,7 @@ const splitTests = (baseJobLinux: any, testDirectory: string, pickTests?: (testS
     }
     return [...osJobs, ...soloJobs];
   };
+
   const linuxJobs = generateJobsForOS('l');
   const getIdentifier = (names: string): string => `${names.replace(/-/g, '_')}`.substring(0, 127);
   const result: any[] = [];
@@ -297,7 +308,7 @@ const splitTests = (baseJobLinux: any, testDirectory: string, pickTests?: (testS
   return result;
 };
 
-const setJobRegion = (test: string, job: CandidateJob, jobIdx: number) => {
+const setJobRegion = (test: string, job: CandidateJob, jobIdx: number): void => {
   const FORCE_REGION = Object.keys(FORCE_REGION_MAP).find((key) => {
     const testName = getTestNameFromPath(test);
     return testName.startsWith(key);
@@ -314,16 +325,39 @@ const setJobRegion = (test: string, job: CandidateJob, jobIdx: number) => {
     return;
   }
 
-  // Parent E2E account does not have opt-in regions. Choose non-opt-in region.
-  // If the tests are explicitly specified as to be run in non-opt-in regions, follow that.
-  if (
-    RUN_IN_NON_OPT_IN_REGIONS.find((nonOptInTest) => test.toLowerCase() === nonOptInTest || test.toLowerCase().match(nonOptInTest)) ||
-    USE_PARENT_ACCOUNT.some((usesParent) => test.startsWith(usesParent))
-  ) {
-    if (!nonOptInRegions.includes(job.region)) {
-      job.region = nonOptInRegions[jobIdx % nonOptInRegions.length];
-    }
+  const candidateRegions = filterCandidateRegions(test, testRegions);
+
+  if (candidateRegions.length === 0) {
+    throw new Error(`No candidate regions found for test ${test}`);
   }
+
+  job.region = candidateRegions[jobIdx % candidateRegions.length];
+};
+
+const filterCandidateRegions = (test: string, candidateRegions: string[]): string[] => {
+  let resolvedRegions = [...candidateRegions];
+
+  // Parent E2E account does not have opt-in regions. Choose non-opt-in region.
+  const shouldUseParentAccount = USE_PARENT_ACCOUNT.some((usesParent) => test.startsWith(usesParent));
+
+  // If the tests are explicitly specified as to be run in opt-in regions, respect that.
+  const shouldRunInNonOptInRegion = RUN_IN_NON_OPT_IN_REGIONS.some(
+    (nonOptInTest) => test.toLowerCase() === nonOptInTest || test.toLowerCase().match(nonOptInTest),
+  );
+
+  if (shouldUseParentAccount || shouldRunInNonOptInRegion) {
+    resolvedRegions = resolvedRegions.filter((region) => !supportedRegionsByRegionName[region].optIn);
+  }
+
+  // Some tests require Cognito User Pools or Identity Pools
+  const shouldRunInCognitoRegion = RUN_IN_COGNITO_REGIONS.some(
+    (cognitoTest) => test.toLowerCase() === cognitoTest || test.toLowerCase().match(cognitoTest),
+  );
+  if (shouldRunInCognitoRegion) {
+    resolvedRegions = resolvedRegions.filter((region) => supportedRegionsByRegionName[region].cognitoSupported);
+  }
+
+  return resolvedRegions;
 };
 
 const main = (): void => {

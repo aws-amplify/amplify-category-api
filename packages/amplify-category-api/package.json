@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-api",
-  "version": "5.11.2",
+  "version": "5.11.5",
   "description": "Amplify CLI API Category Plugin",
   "repository": {
     "type": "git",
@@ -29,12 +29,12 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/graphql-auth-transformer": "3.5.0",
-    "@aws-amplify/graphql-schema-generator": "0.8.3",
-    "@aws-amplify/graphql-transformer": "1.5.2",
-    "@aws-amplify/graphql-transformer-core": "2.7.0",
-    "@aws-amplify/graphql-transformer-interfaces": "3.7.0",
-    "@aws-amplify/graphql-transformer-migrator": "2.2.22",
+    "@aws-amplify/graphql-auth-transformer": "3.5.3",
+    "@aws-amplify/graphql-schema-generator": "0.8.6",
+    "@aws-amplify/graphql-transformer": "1.5.5",
+    "@aws-amplify/graphql-transformer-core": "2.8.0",
+    "@aws-amplify/graphql-transformer-interfaces": "3.8.0",
+    "@aws-amplify/graphql-transformer-migrator": "2.2.23",
     "@aws-cdk/aws-apigatewayv2-alpha": "~2.80.0-alpha.0",
     "@aws-sdk/client-ec2": "3.338.0",
     "@aws-sdk/client-iam": "3.338.0",
@@ -79,7 +79,7 @@
     "constructs": "^10.0.5"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "0.5.1",
+    "@aws-amplify/graphql-transformer-test-utils": "0.5.2",
     "@types/js-yaml": "^4.0.0",
     "@types/node": "^12.12.6",
     "amplify-util-headless-input": "^1.9.15",

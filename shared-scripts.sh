@@ -87,6 +87,14 @@ function _buildLinux {
   yarn build-tests
   storeCacheForBuildJob
 }
+
+# used when build is not necessary for codebuild project
+function _installLinux {
+  _setShell
+  echo "Linux Install"
+  yarn run production-install
+  storeCacheForBuildJob
+}
 function _testLinux {
   echo "Run Unit Test"
   loadCacheFromBuildJob
@@ -137,6 +145,13 @@ function _publishToLocalRegistry {
       fi
     fi
     echo $BRANCH_NAME
+
+    # Increase buffer size to avoid error when git operations return large response on CI
+    if [ "$CI" = "true" ]; then
+      git config http.version HTTP/1.1
+      git config http.postBuffer 157286400
+    fi
+
     git checkout $BRANCH_NAME
   
     # Fetching git tags from upstream
@@ -145,7 +160,7 @@ function _publishToLocalRegistry {
     echo "fetching tags"
     git fetch --tags https://github.com/aws-amplify/amplify-category-api
     # Create the folder to avoid failure when no packages are published due to no change detected
-    mkdir ../verdaccio-cache
+    rm -rf ../verdaccio-cache && mkdir ../verdaccio-cache
 
     source codebuild_specs/scripts/local_publish_helpers.sh
     startLocalRegistry "$(pwd)/codebuild_specs/scripts/verdaccio.yaml"
@@ -159,10 +174,19 @@ function _publishToLocalRegistry {
       yarn lerna publish --exact --dist-tag=latest --preid=$NPM_TAG --conventional-commits --conventional-prerelease --no-verify-access --yes --no-commit-hooks --no-push --no-git-tag-version
     fi
     unsetNpmRegistryUrl
+
     # copy [verdaccio-cache] to s3
     storeCache $CODEBUILD_SRC_DIR/../verdaccio-cache verdaccio-cache
 
     _generateChangeLog
+}
+function _publishLocalWorkspace {
+    source codebuild_specs/scripts/local_publish_helpers.sh
+    startLocalRegistry "$(pwd)/codebuild_specs/scripts/verdaccio.yaml"
+    setNpmRegistryUrlToLocal
+    setNpmTag
+    yarn publish-to-verdaccio
+    unsetNpmRegistryUrl
 }
 function _generateChangeLog {
     echo "Generate Change Log"
@@ -441,6 +465,26 @@ function _deploy {
   PUBLISH_TOKEN=$(echo "$NPM_PUBLISH_TOKEN" | jq -r '.token')
   echo "//registry.npmjs.org/:_authToken=$PUBLISH_TOKEN" > ~/.npmrc
   ./codebuild_specs/scripts/publish.sh
+}
+
+function _deprecate {
+  loadCacheFromBuildJob
+  echo "Deprecate"
+
+  echo "creating private package manifest"
+  ./scripts/create-private-package-manifest.sh
+  echo "Authenticate with NPM"
+  if [ "$USE_NPM_REGISTRY" == "true" ]; then
+      PUBLISH_TOKEN=$(echo "$NPM_PUBLISH_TOKEN" | jq -r '.token')
+      echo "//registry.npmjs.org/:_authToken=$PUBLISH_TOKEN" > ~/.npmrc
+  else
+    yarn verdaccio-clean
+    source codebuild_specs/scripts/local_publish_helpers.sh
+    startLocalRegistry "$(pwd)/codebuild_specs/scripts/verdaccio.yaml"
+    setNpmRegistryUrlToLocal
+  fi
+  yarn deprecate
+  unsetNpmRegistryUrl
 }
 
 # Accepts the value as an input parameter, i.e. 1 for success, 0 for failure.
