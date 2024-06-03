@@ -9,13 +9,11 @@ import { SqlDatabaseDetails, SqlDatatabaseController } from '../../../sql-datata
 import { DURATION_1_HOUR } from '../../../utils/duration-constants';
 import {
   deployStackAndCreateUsers,
-  testCreatePrimaryDoesNotRedactRelated,
   testCreatePrimaryIsForbidden,
   testCreatePrimaryRedactsRelated,
-  testCreateRelatedManyDoesNotRedactPrimary,
+  testCreatePrimaryRedactsRelatedListAsNull,
   testCreateRelatedManyIsForbidden,
   testCreateRelatedManyRedactsPrimary,
-  testCreateRelatedOneDoesNotRedactPrimary,
   testCreateRelatedOneIsForbidden,
   testCreateRelatedOneRedactsPrimary,
   testGetPrimaryDoesNotRedactRelated,
@@ -30,11 +28,9 @@ import {
   testListRelatedManiesRedactsPrimary,
   testListRelatedOnesDoesNotRedactPrimary,
   testListRelatedOnesRedactsPrimary,
-  testUpdatePrimaryDoesNotRedactRelated,
   testUpdatePrimaryRedactsRelated,
-  testUpdateRelatedManyDoesNotRedactPrimary,
+  testUpdatePrimaryRedactsRelatedListAsNull,
   testUpdateRelatedManyRedactsPrimary,
-  testUpdateRelatedOneDoesNotRedactPrimary,
   testUpdateRelatedOneRedactsPrimary,
 } from './test-implementations';
 
@@ -150,11 +146,17 @@ describe('Relationships protected with static group auth', () => {
     describe('Actors belonging to Group1', () => {
       describe('Primary as source model', () => {
         test('createPrimary redacts related models', async () => {
-          await testCreatePrimaryRedactsRelated(currentId, apiEndpoint, group1AccessToken, group2AccessToken);
+          // Fields are redacted with auth filter in this case.
+          // The auth filter will nullify the list fields.
+          // To be updated later to align with other redaction behavior.
+          await testCreatePrimaryRedactsRelatedListAsNull(currentId, apiEndpoint, group1AccessToken, group2AccessToken);
         });
 
         test('updatePrimary redacts related models', async () => {
-          await testUpdatePrimaryRedactsRelated(currentId, apiEndpoint, group1AccessToken, group2AccessToken);
+          // Fields are redacted with auth filter in this case.
+          // The auth filter will nullify the list fields.
+          // To be updated later to align with other redaction behavior.
+          await testUpdatePrimaryRedactsRelatedListAsNull(currentId, apiEndpoint, group1AccessToken, group2AccessToken);
         });
 
         test('getPrimary redacts related models', async () => {
@@ -225,12 +227,12 @@ describe('Relationships protected with static group auth', () => {
 
     describe('Actors belonging to Admin group', () => {
       describe('Primary as source model', () => {
-        test('createPrimary does not redact related models', async () => {
-          await testCreatePrimaryDoesNotRedactRelated(currentId, apiEndpoint, adminAccessToken);
+        test('createPrimary redacts related models', async () => {
+          await testCreatePrimaryRedactsRelated(currentId, apiEndpoint, adminAccessToken, adminAccessToken);
         });
 
-        test('updatePrimary does not redact related models', async () => {
-          await testUpdatePrimaryDoesNotRedactRelated(currentId, apiEndpoint, adminAccessToken);
+        test('updatePrimary redacts related models', async () => {
+          await testUpdatePrimaryRedactsRelated(currentId, apiEndpoint, adminAccessToken, adminAccessToken);
         });
 
         test('getPrimary does not redact related models', async () => {
@@ -243,12 +245,12 @@ describe('Relationships protected with static group auth', () => {
       });
 
       describe('RelatedOne as source model', () => {
-        test('createRelatedOne does not redact primary model', async () => {
-          await testCreateRelatedOneDoesNotRedactPrimary(currentId, apiEndpoint, adminAccessToken);
+        test('createRelatedOne redacts primary model', async () => {
+          await testCreateRelatedOneRedactsPrimary(currentId, apiEndpoint, adminAccessToken, adminAccessToken);
         });
 
-        test('updateRelatedOne does not redact primary model', async () => {
-          await testUpdateRelatedOneDoesNotRedactPrimary(currentId, apiEndpoint, adminAccessToken);
+        test('updateRelatedOne redacts primary model', async () => {
+          await testUpdateRelatedOneRedactsPrimary(currentId, apiEndpoint, adminAccessToken, adminAccessToken);
         });
 
         test('getRelatedOne does not redact primary model', async () => {
@@ -261,12 +263,12 @@ describe('Relationships protected with static group auth', () => {
       });
 
       describe('RelatedMany as source model', () => {
-        test('createRelatedMany does not redact primary model', async () => {
-          await testCreateRelatedManyDoesNotRedactPrimary(currentId, apiEndpoint, adminAccessToken);
+        test('createRelatedMany redacts primary model', async () => {
+          await testCreateRelatedManyRedactsPrimary(currentId, apiEndpoint, adminAccessToken, adminAccessToken);
         });
 
-        test('updateRelatedMany does not redact primary model', async () => {
-          await testUpdateRelatedManyDoesNotRedactPrimary(currentId, apiEndpoint, adminAccessToken);
+        test('updateRelatedMany redacts primary model', async () => {
+          await testUpdateRelatedManyRedactsPrimary(currentId, apiEndpoint, adminAccessToken, adminAccessToken);
         });
 
         test('getRelatedMany does not redact primary model', async () => {

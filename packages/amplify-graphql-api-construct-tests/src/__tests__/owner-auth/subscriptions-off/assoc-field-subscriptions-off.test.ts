@@ -17,8 +17,11 @@ import { SqlDatabaseDetails, SqlDatatabaseController } from '../../../sql-datata
 import { DURATION_1_HOUR, ONE_MINUTE } from '../../../utils/duration-constants';
 import {
   testCreatePrimaryRedactedForDifferentOwners,
+  testCreatePrimaryVisibleForSameOwner,
   testCreateRelatedManyRedactedForDifferentOwners,
+  testCreateRelatedManyVisibleForSameOwner,
   testCreateRelatedOneRedactedForDifferentOwners,
+  testCreateRelatedOneVisibleForSameOwner,
   testGetPrimaryRedactedForDifferentOwners,
   testGetPrimaryUnauthorizedForDifferentOwner,
   testGetPrimaryVisibleForSameOwner,
@@ -34,15 +37,12 @@ import {
   testListRelatedOnesRedactedForDifferentOwners,
   testListRelatedOnesVisibleForSameOwner,
   testUpdatePrimaryRedactedForDifferentOwners,
+  testUpdatePrimaryVisibleForSameOwner,
   testUpdateRelatedManyRedactedForDifferentOwners,
+  testUpdateRelatedManyVisibleForSameOwner,
   testUpdateRelatedOneRedactedForDifferentOwners,
-  testCreatePrimaryRedactedForSameOwner,
-  testUpdatePrimaryRedactedForSameOwner,
-  testCreateRelatedOneRedactedForSameOwner,
-  testUpdateRelatedOneRedactedForSameOwner,
-  testCreateRelatedManyRedactedForSameOwner,
-  testUpdateRelatedManyRedactedForSameOwner,
-} from './test-implementations';
+  testUpdateRelatedOneVisibleForSameOwner,
+} from '../assoc-field/test-implementations';
 
 jest.setTimeout(DURATION_1_HOUR);
 
@@ -50,7 +50,7 @@ jest.setTimeout(DURATION_1_HOUR);
 // records in an order so that the type we're asserting on comes LAST. By "prepopulating" the associated records before creating the source
 // record, we ensure that the selection set is fully populated with relationship data, and can therefore assert that restricted fields on
 // the associated records are redacted.
-describe('Associated fields protected by owner auth control visibility appropriately', () => {
+describe('Associated fields protected by owner auth control visibility appropriately subscriptions off', () => {
   const region = process.env.CLI_REGION ?? 'us-west-2';
   const baseProjFolderName = path.basename(__filename, '.test.ts');
 
@@ -112,12 +112,12 @@ describe('Associated fields protected by owner auth control visibility appropria
       const name = await initCDKProject(projRoot, templatePath);
 
       const primarySchemaPath = path.resolve(
-        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-primary.graphql'),
+        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-primary-subscriptions-off.graphql'),
       );
       const primarySchema = fs.readFileSync(primarySchemaPath).toString();
 
       const relatedSchemaPath = path.resolve(
-        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-related.graphql'),
+        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-related-subscriptions-off.graphql'),
       );
       const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
 
@@ -176,16 +176,16 @@ describe('Associated fields protected by owner auth control visibility appropria
     });
 
     describe('Primary as source model', () => {
-      test('createPrimary redacts relations if created by same owner', async () => {
-        await testCreatePrimaryRedactedForSameOwner(currentId, apiEndpoint, accessToken);
+      test('createPrimary shows relations if created by same owner', async () => {
+        await testCreatePrimaryVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
       test('createPrimary redacts relations if created by different owner', async () => {
         await testCreatePrimaryRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
       });
 
-      test('updatePrimary redacts relations if created by same owner', async () => {
-        await testUpdatePrimaryRedactedForSameOwner(currentId, apiEndpoint, accessToken);
+      test('updatePrimary shows relations if created by same owner', async () => {
+        await testUpdatePrimaryVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
       test('updatePrimary redacts relations if created by different owner', async () => {
@@ -220,16 +220,16 @@ describe('Associated fields protected by owner auth control visibility appropria
     });
 
     describe('RelatedOne as source model', () => {
-      test('createRelatedOne redacts relations if created by same owner', async () => {
-        await testCreateRelatedOneRedactedForSameOwner(currentId, apiEndpoint, accessToken);
+      test('createRelatedOne shows relations if created by same owner', async () => {
+        await testCreateRelatedOneVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
       test('createRelatedOne redacts relations if created by same owner', async () => {
         await testCreateRelatedOneRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
       });
 
-      test('updateRelatedOne redacts relations if created by same owner', async () => {
-        await testUpdateRelatedOneRedactedForSameOwner(currentId, apiEndpoint, accessToken);
+      test('updateRelatedOne shows relations if created by same owner', async () => {
+        await testUpdateRelatedOneVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
       test('updateRelatedOne redacts relations if created by different owner', async () => {
@@ -254,16 +254,16 @@ describe('Associated fields protected by owner auth control visibility appropria
     });
 
     describe('RelatedMany as source model', () => {
-      test('createRelatedMany redacts relations if created by same owner', async () => {
-        await testCreateRelatedManyRedactedForSameOwner(currentId, apiEndpoint, accessToken);
+      test('createRelatedMany shows relations if created by same owner', async () => {
+        await testCreateRelatedManyVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
       test('createRelatedMany redacts relations if created by different owner', async () => {
         await testCreateRelatedManyRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
       });
 
-      test('updateRelatedMany redacts relations if created by same owner', async () => {
-        await testUpdateRelatedManyRedactedForSameOwner(currentId, apiEndpoint, accessToken);
+      test('updateRelatedMany shows relations if created by same owner', async () => {
+        await testUpdateRelatedManyVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
       test('updateRelatedMany redacts relations if created by different owner', async () => {
@@ -306,12 +306,12 @@ describe('Associated fields protected by owner auth control visibility appropria
       const name = await initCDKProject(projRoot, templatePath);
 
       const primarySchemaPath = path.resolve(
-        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-primary.graphql'),
+        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-primary-subscriptions-off.graphql'),
       );
       const primarySchema = fs.readFileSync(primarySchemaPath).toString();
 
       const relatedSchemaPath = path.resolve(
-        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-related.graphql'),
+        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-related-subscriptions-off.graphql'),
       );
       const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
 
@@ -370,16 +370,16 @@ describe('Associated fields protected by owner auth control visibility appropria
     });
 
     describe('Primary as source model', () => {
-      test('createPrimary redacts relations if created by same owner', async () => {
-        await testCreatePrimaryRedactedForSameOwner(currentId, apiEndpoint, accessToken);
+      test('createPrimary shows relations if created by same owner', async () => {
+        await testCreatePrimaryVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
       test('createPrimary redacts relations if created by different owner', async () => {
         await testCreatePrimaryRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
       });
 
-      test('updatePrimary redacts relations if created by same owner', async () => {
-        await testUpdatePrimaryRedactedForSameOwner(currentId, apiEndpoint, accessToken);
+      test('updatePrimary shows relations if created by same owner', async () => {
+        await testUpdatePrimaryVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
       test('updatePrimary redacts relations if created by different owner', async () => {
@@ -414,16 +414,16 @@ describe('Associated fields protected by owner auth control visibility appropria
     });
 
     describe('RelatedOne as source model', () => {
-      test('createRelatedOne redacts relations if created by same owner', async () => {
-        await testCreateRelatedOneRedactedForSameOwner(currentId, apiEndpoint, accessToken);
+      test('createRelatedOne shows relations if created by same owner', async () => {
+        await testCreateRelatedOneVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
       test('createRelatedOne redacts relations if created by same owner', async () => {
         await testCreateRelatedOneRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
       });
 
-      test('updateRelatedOne redacts relations if created by same owner', async () => {
-        await testUpdateRelatedOneRedactedForSameOwner(currentId, apiEndpoint, accessToken);
+      test('updateRelatedOne shows relations if created by same owner', async () => {
+        await testUpdateRelatedOneVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
       test('updateRelatedOne redacts relations if created by different owner', async () => {
@@ -448,16 +448,16 @@ describe('Associated fields protected by owner auth control visibility appropria
     });
 
     describe('RelatedMany as source model', () => {
-      test('createRelatedMany redacts relations if created by same owner', async () => {
-        await testCreateRelatedManyRedactedForSameOwner(currentId, apiEndpoint, accessToken);
+      test('createRelatedMany shows relations if created by same owner', async () => {
+        await testCreateRelatedManyVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
       test('createRelatedMany redacts relations if created by different owner', async () => {
         await testCreateRelatedManyRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
       });
 
-      test('updateRelatedMany redacts relations if created by same owner', async () => {
-        await testUpdateRelatedManyRedactedForSameOwner(currentId, apiEndpoint, accessToken);
+      test('updateRelatedMany shows relations if created by same owner', async () => {
+        await testUpdateRelatedManyVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
       test('updateRelatedMany redacts relations if created by different owner', async () => {
@@ -500,12 +500,12 @@ describe('Associated fields protected by owner auth control visibility appropria
       const name = await initCDKProject(projRoot, templatePath);
 
       const primarySchemaPath = path.resolve(
-        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-primary.graphql'),
+        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-primary-subscriptions-off.graphql'),
       );
       const primarySchema = fs.readFileSync(primarySchemaPath).toString();
 
       const relatedSchemaPath = path.resolve(
-        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-related.graphql'),
+        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-related-subscriptions-off.graphql'),
       );
       const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
 
@@ -568,16 +568,16 @@ describe('Associated fields protected by owner auth control visibility appropria
     });
 
     describe('Primary as source model', () => {
-      test('createPrimary redacts relations if created by same owner', async () => {
-        await testCreatePrimaryRedactedForSameOwner(currentId, apiEndpoint, accessToken);
+      test('createPrimary shows relations if created by same owner', async () => {
+        await testCreatePrimaryVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
       test('createPrimary redacts relations if created by different owner', async () => {
         await testCreatePrimaryRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
       });
 
-      test('updatePrimary redacts relations if created by same owner', async () => {
-        await testUpdatePrimaryRedactedForSameOwner(currentId, apiEndpoint, accessToken);
+      test('updatePrimary shows relations if created by same owner', async () => {
+        await testUpdatePrimaryVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
       test('updatePrimary redacts relations if created by different owner', async () => {
@@ -612,16 +612,16 @@ describe('Associated fields protected by owner auth control visibility appropria
     });
 
     describe('RelatedOne as source model', () => {
-      test('createRelatedOne redacts relations if created by same owner', async () => {
-        await testCreateRelatedOneRedactedForSameOwner(currentId, apiEndpoint, accessToken);
+      test('createRelatedOne shows relations if created by same owner', async () => {
+        await testCreateRelatedOneVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
       test('createRelatedOne redacts relations if created by same owner', async () => {
         await testCreateRelatedOneRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
       });
 
-      test('updateRelatedOne redacts relations if created by same owner', async () => {
-        await testUpdateRelatedOneRedactedForSameOwner(currentId, apiEndpoint, accessToken);
+      test('updateRelatedOne shows relations if created by same owner', async () => {
+        await testUpdateRelatedOneVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
       test('updateRelatedOne redacts relations if created by different owner', async () => {
@@ -646,16 +646,16 @@ describe('Associated fields protected by owner auth control visibility appropria
     });
 
     describe('RelatedMany as source model', () => {
-      test('createRelatedMany redacts relations if created by same owner', async () => {
-        await testCreateRelatedManyRedactedForSameOwner(currentId, apiEndpoint, accessToken);
+      test('createRelatedMany shows relations if created by same owner', async () => {
+        await testCreateRelatedManyVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
       test('createRelatedMany redacts relations if created by different owner', async () => {
         await testCreateRelatedManyRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
       });
 
-      test('updateRelatedMany redacts relations if created by same owner', async () => {
-        await testUpdateRelatedManyRedactedForSameOwner(currentId, apiEndpoint, accessToken);
+      test('updateRelatedMany shows relations if created by same owner', async () => {
+        await testUpdateRelatedManyVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
       test('updateRelatedMany redacts relations if created by different owner', async () => {
@@ -698,13 +698,13 @@ describe('Associated fields protected by owner auth control visibility appropria
       const name = await initCDKProject(projRoot, templatePath);
 
       const primarySchemaPath = path.resolve(
-        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-primary.graphql'),
+        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-primary-subscriptions-off.graphql'),
       );
 
       const primarySchema = fs.readFileSync(primarySchemaPath).toString();
 
       const relatedSchemaPath = path.resolve(
-        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-related.graphql'),
+        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-owner-auth', 'schema-related-subscriptions-off.graphql'),
       );
       const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
 
@@ -767,16 +767,16 @@ describe('Associated fields protected by owner auth control visibility appropria
     });
 
     describe('Primary as source model', () => {
-      test('createPrimary redacts relations if created by same owner', async () => {
-        await testCreatePrimaryRedactedForSameOwner(currentId, apiEndpoint, accessToken);
+      test('createPrimary shows relations if created by same owner', async () => {
+        await testCreatePrimaryVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
       test('createPrimary redacts relations if created by different owner', async () => {
         await testCreatePrimaryRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
       });
 
-      test('updatePrimary redacts relations if created by same owner', async () => {
-        await testUpdatePrimaryRedactedForSameOwner(currentId, apiEndpoint, accessToken);
+      test('updatePrimary shows relations if created by same owner', async () => {
+        await testUpdatePrimaryVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
       test('updatePrimary redacts relations if created by different owner', async () => {
@@ -811,16 +811,16 @@ describe('Associated fields protected by owner auth control visibility appropria
     });
 
     describe('RelatedOne as source model', () => {
-      test('createRelatedOne redacts relations if created by same owner', async () => {
-        await testCreateRelatedOneRedactedForSameOwner(currentId, apiEndpoint, accessToken);
+      test('createRelatedOne shows relations if created by same owner', async () => {
+        await testCreateRelatedOneVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
       test('createRelatedOne redacts relations if created by same owner', async () => {
         await testCreateRelatedOneRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
       });
 
-      test('updateRelatedOne redacts relations if created by same owner', async () => {
-        await testUpdateRelatedOneRedactedForSameOwner(currentId, apiEndpoint, accessToken);
+      test('updateRelatedOne shows relations if created by same owner', async () => {
+        await testUpdateRelatedOneVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
       test('updateRelatedOne redacts relations if created by different owner', async () => {
@@ -845,16 +845,16 @@ describe('Associated fields protected by owner auth control visibility appropria
     });
 
     describe('RelatedMany as source model', () => {
-      test('createRelatedMany redacts relations if created by same owner', async () => {
-        await testCreateRelatedManyRedactedForSameOwner(currentId, apiEndpoint, accessToken);
+      test('createRelatedMany shows relations if created by same owner', async () => {
+        await testCreateRelatedManyVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
       test('createRelatedMany redacts relations if created by different owner', async () => {
         await testCreateRelatedManyRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken2);
       });
 
-      test('updateRelatedMany redacts relations if created by same owner', async () => {
-        await testUpdateRelatedManyRedactedForSameOwner(currentId, apiEndpoint, accessToken);
+      test('updateRelatedMany shows relations if created by same owner', async () => {
+        await testUpdateRelatedManyVisibleForSameOwner(currentId, apiEndpoint, accessToken);
       });
 
       test('updateRelatedMany redacts relations if created by different owner', async () => {

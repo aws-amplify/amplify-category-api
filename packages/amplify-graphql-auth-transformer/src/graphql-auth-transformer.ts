@@ -101,6 +101,9 @@ import {
   getAuthDirectiveRules,
   READ_MODEL_OPERATIONS,
   isAuthProviderEqual,
+  isFieldRoleHavingAccessToBothSide,
+  isDynamicAuthOrCustomAuth,
+  isIdenticalAuthRole,
 } from './utils';
 import {
   defaultIdentityClaimWarning,
@@ -473,7 +476,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
           errorFields.push(field.name.value);
         }
         if (hasRelationalDirective(field)) {
-          this.protectRelationalResolver(context, def, modelName, field, needsFieldResolver ? allowedRoles : null);
+          this.protectRelationalResolver(context, def, modelName, field, allowedRoles, needsFieldResolver);
         } else if (needsFieldResolver) {
           this.protectFieldResolver(context, def, modelName, field.name.value, allowedRoles);
         }
@@ -716,14 +719,22 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     def: ObjectTypeDefinitionNode,
     typeName: string,
     field: FieldDefinitionNode,
-    fieldRoles: Array<string> | null,
+    fieldRoles: Array<string>,
+    needsFieldResolver: boolean = false,
   ): void => {
     let fieldAuthExpression: string;
     let relatedAuthExpression: string;
+    // Relational field redaction is default to `needsFieldResolver`, which stays consistent with current behavior of always redacting relational field when field resolver is needed
+    let redactRelationalField: boolean = needsFieldResolver;
+    const fieldIsRequired = field.type.kind === Kind.NON_NULL_TYPE;
+    if (fieldIsRequired) {
+      redactRelationalField = false;
+    }
     const relatedModelObject = this.getRelatedModelObject(ctx, getBaseType(field.type));
     const relatedModelName = relatedModelObject.name.value;
     if (this.authModelConfig.has(relatedModelName)) {
       const acm = this.authModelConfig.get(relatedModelName);
+      // Get read roles and definitions for related model
       const roleDefinitions = [
         ...new Set([
           ...acm.getRolesPerOperation('get'),
@@ -742,6 +753,47 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         roleDefinitions,
         relatedModelObject.fields ?? [],
       );
+
+      // When the default redaction is false, it means no field resolver is involved
+      // Need the additional check on model level auth rules of both sides to determine the relational field redaction
+      // do not redact relational field when required
+      // appsync will throw an error if trying to nullify a required field
+      if (!fieldIsRequired && !redactRelationalField) {
+        let filteredRelatedModelReadRoleDefinitions = roleDefinitions;
+        // When userpool private roles are detected, filter out the non-private userpool roles
+        if (filteredRelatedModelReadRoleDefinitions.some((r) => r.provider === 'userPools' && r.strategy === 'private')) {
+          filteredRelatedModelReadRoleDefinitions = filteredRelatedModelReadRoleDefinitions.filter(
+            (r) => !(r.provider === 'userPools' && r.strategy !== 'private'),
+          );
+        }
+        // When oidc private roles are detected, filter out the non-private oidc roles
+        if (filteredRelatedModelReadRoleDefinitions.some((r) => r.provider === 'oidc' && r.strategy === 'private')) {
+          filteredRelatedModelReadRoleDefinitions = filteredRelatedModelReadRoleDefinitions.filter(
+            (r) => !(r.provider === 'oidc' && r.strategy !== 'private'),
+          );
+        }
+        // relational field read roles are already processed with filter in parent call
+        const fieldReadRoleDefinitions = fieldRoles.map((r) => this.roleMap.get(r)!);
+        /**
+         * Loop through the field read role
+         * Once there is one role detected to have access on both side, the auth role definitions will be compared to determine whether
+         * to redac the field or not
+         */
+        for (let fieldRole of fieldReadRoleDefinitions) {
+          // When two role definitions have an overlap
+          if (isFieldRoleHavingAccessToBothSide(fieldRole, filteredRelatedModelReadRoleDefinitions)) {
+            // Check if two role definitions are identical without dynamic auth role or custom auth role
+            // If not, redact the relational field
+            const isIdenticalRoleDefinitions =
+              fieldReadRoleDefinitions.length === filteredRelatedModelReadRoleDefinitions.length &&
+              filteredRelatedModelReadRoleDefinitions.every((relatedRole) => {
+                return fieldReadRoleDefinitions.some((fr) => isIdenticalAuthRole(fr, relatedRole) && !isDynamicAuthOrCustomAuth(fr));
+              });
+            redactRelationalField = !isIdenticalRoleDefinitions;
+            break;
+          }
+        }
+      }
     } else {
       // if the related @model does not have auth we need to add a post auth expression
       relatedAuthExpression = this.getVtlGenerator(ctx, def.name.value).generatePostAuthExpressionForField(
@@ -749,15 +801,11 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         ctx.synthParameters.enableIamAccess,
       );
     }
+
     // if there is field auth on the relational query then we need to add field auth read rules first
     // in the request we then add the rules of the related type
-    if (fieldRoles) {
+    if (needsFieldResolver) {
       const roleDefinitions = fieldRoles.map((r) => this.roleMap.get(r)!);
-      const hasSubsEnabled = this.modelDirectiveConfig.get(typeName)!.subscriptions?.level === 'on';
-      relatedAuthExpression = `${this.getVtlGenerator(ctx, def.name.value).setDeniedFieldFlag(
-        'Mutation',
-        hasSubsEnabled,
-      )}\n${relatedAuthExpression}`;
       fieldAuthExpression = this.getVtlGenerator(ctx, def.name.value).generateAuthExpressionForField(
         this.configuredAuthProviders,
         roleDefinitions,
@@ -765,6 +813,20 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         undefined,
       );
     }
+
+    /**
+     * An enabled subscription is the prerequisite for relational field redaction
+     */
+    const hasSubsEnabled = this.modelDirectiveConfig.get(typeName) && this.modelDirectiveConfig.get(typeName).subscriptions?.level === 'on';
+    if (hasSubsEnabled && redactRelationalField) {
+      relatedAuthExpression = `${this.getVtlGenerator(ctx, def.name.value).setDeniedFieldFlag('Mutation', true)}\n${relatedAuthExpression}`;
+    } else if (needsFieldResolver) {
+      relatedAuthExpression = `${this.getVtlGenerator(ctx, def.name.value).setDeniedFieldFlag(
+        'Mutation',
+        hasSubsEnabled,
+      )}\n${relatedAuthExpression}`;
+    }
+
     const resolver = ctx.resolvers.getResolver(typeName, field.name.value) as TransformerResolverProvider;
     if (fieldAuthExpression) {
       resolver.addToSlot(

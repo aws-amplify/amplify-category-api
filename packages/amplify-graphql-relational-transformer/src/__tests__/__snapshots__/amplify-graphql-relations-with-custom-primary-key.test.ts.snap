@@ -2,7 +2,10 @@
 
 exports[`Resolvers for custom primary key and relational directives should generate correct dynamoDB partition key and sort key for CPK schema in resolver VTL when CPK feature is enabled 1`] = `
 "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"postId\\"), $ctx.source.postId) )
 #if( $util.isNull($partitionKeyValue) )
@@ -77,7 +80,10 @@ null
 
 exports[`Resolvers for custom primary key and relational directives should generate correct dynamoDB partition key and sort key for CPK schema in resolver VTL when CPK feature is enabled 2`] = `
 "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"postId\\"), $ctx.source.postId) )
 #if( $util.isNull($partitionKeyValue) )
@@ -152,7 +158,10 @@ null
 
 exports[`Resolvers for custom primary key and relational directives should generate correct dynamoDB partition key and sort key for CPK schema in resolver VTL when CPK feature is enabled 3`] = `
 "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"postId\\"), $ctx.source.postId) )
 #if( $util.isNull($partitionKeyValue) )
@@ -227,7 +236,10 @@ null
 
 exports[`Resolvers for custom primary key and relational directives should generate correct dynamoDB partition key and sort key for CPK schema in resolver VTL when CPK feature is enabled 4`] = `
 "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"postId\\"), $ctx.source.postId) )
 #if( $util.isNull($partitionKeyValue) )
@@ -302,7 +314,10 @@ null
 
 exports[`Resolvers for custom primary key and relational directives should generate correct dynamoDB partition key and sort key for CPK schema in resolver VTL when CPK feature is enabled 5`] = `
 "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"postId\\"), $ctx.source.postId) )
 #if( $util.isNull($partitionKeyValue) )
@@ -378,7 +393,10 @@ null
 
 exports[`Resolvers for custom primary key and relational directives should generate correct dynamoDB partition key and sort key for CPK schema in resolver VTL when CPK feature is enabled 6`] = `
 "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"postId\\"), $ctx.source.postId) )
 #if( $util.isNull($partitionKeyValue) )
@@ -454,7 +472,10 @@ null
 
 exports[`Resolvers for custom primary key and relational directives should generate correct dynamoDB partition key and sort key for CPK schema in resolver VTL when CPK feature is enabled 7`] = `
 "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"customPostId\\"), $ctx.source.customPostId) )
 #if( $util.isNull($partitionKeyValue) )
@@ -529,7 +550,10 @@ null
 
 exports[`Resolvers for custom primary key and relational directives should generate correct dynamoDB partition key and sort key for CPK schema in resolver VTL when CPK feature is enabled 8`] = `
 "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"customTagId\\"), $ctx.source.customTagId) )
 #if( $util.isNull($partitionKeyValue) )
@@ -604,7 +628,10 @@ null
 
 exports[`Resolvers for custom primary key and relational directives should not generate sort key field in implicit hasMany relation when CPK feature is disabled 1`] = `
 "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"postId\\"), $ctx.source.postId) )
 #if( $util.isNull($partitionKeyValue) )
@@ -677,7 +704,10 @@ null
 
 exports[`Resolvers for custom primary key and relational directives should not generate sort key field in implicit hasMany relation when CPK feature is disabled 2`] = `
 "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"postId\\"), $ctx.source.postId) )
 #if( $util.isNull($partitionKeyValue) )
@@ -750,7 +780,10 @@ null
 
 exports[`Resolvers for custom primary key and relational directives should not generate sort key field in implicit hasMany relation when CPK feature is disabled 3`] = `
 "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"postId\\"), $ctx.source.postId) )
 #if( $util.isNull($partitionKeyValue) )
@@ -824,7 +857,10 @@ null
 
 exports[`Resolvers for custom primary key and relational directives should not generate sort key field in implicit hasMany relation when CPK feature is disabled 4`] = `
 "#if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"postId\\"), $ctx.source.postId) )
 #if( $util.isNull($partitionKeyValue) )

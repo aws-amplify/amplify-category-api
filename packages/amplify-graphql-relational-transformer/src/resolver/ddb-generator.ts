@@ -185,7 +185,7 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
       MappingTemplate.s3MappingTemplateFromString(
         print(
           compoundExpression([
-            iff(ref('ctx.stash.deniedField'), raw('#return($util.toJson(null))')),
+            iff(ref('ctx.stash.deniedField'), compoundExpression([set(ref('result'), obj({ items: list([]) })), raw('#return($result)')])),
             set(
               ref(PARTITION_KEY_VALUE),
               methodCall(

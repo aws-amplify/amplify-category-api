@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
-import { initCDKProject, cdkDeploy, cdkDestroy } from '../../commands';
+import { initCDKProject, cdkDeploy, cdkDestroy } from '../../../commands';
 import {
   createCognitoUser,
   doAppSyncGraphqlMutation,
@@ -11,8 +11,8 @@ import {
   TestDefinition,
   writeStackConfig,
   writeTestDefinitions,
-} from '../../utils';
-import { DURATION_1_HOUR } from '../../utils/duration-constants';
+} from '../../../utils';
+import { DURATION_1_HOUR } from '../../../utils/duration-constants';
 import {
   createLeftRightJoin,
   createManyLeft,
@@ -26,11 +26,11 @@ import {
   updatePrimary,
   updateRelatedMany,
   updateRelatedOne,
-} from './graphql-schemas/gen1-ddb-only/graphql/mutations';
+} from '../graphql-schemas/gen1-ddb-only/graphql/mutations';
 
 jest.setTimeout(DURATION_1_HOUR);
 
-describe('Associated type fields with more restrictive auth rules than the model are redacted using gen1 fields-based connections', () => {
+describe('Associated type fields with more restrictive auth rules than the model are redacted using gen1 fields-based connections subscriptions off', () => {
   const region = process.env.CLI_REGION ?? 'us-west-2';
   const projFolderName = 'restricted-field-auth-ddb';
 
@@ -50,10 +50,10 @@ describe('Associated type fields with more restrictive auth rules than the model
     // restricted fields on the associated records are redacted.
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projFolderName);
-      const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'configurable-stack'));
+      const templatePath = path.resolve(path.join(__dirname, '..', '..', 'backends', 'configurable-stack'));
       const name = await initCDKProject(projRoot, templatePath);
 
-      const schemaPath = path.resolve(path.join(__dirname, 'graphql-schemas', 'gen1-ddb-only', 'schema.graphql'));
+      const schemaPath = path.resolve(path.join(__dirname, '..', 'graphql-schemas', 'gen1-ddb-only', 'schema-subscriptions-off.graphql'));
       const schema = fs.readFileSync(schemaPath).toString();
 
       const testDefinitions: Record<string, TestDefinition> = {
@@ -96,7 +96,7 @@ describe('Associated type fields with more restrictive auth rules than the model
       deleteProjectDir(projRoot);
     });
 
-    test('createPrimary is redacted', async () => {
+    test('createPrimary is not redacted', async () => {
       const primaryId = `p${currentId}`;
       const relatedOneId = `ro${currentId}`;
       const relatedManyId = `rm${currentId}`;
@@ -137,10 +137,12 @@ describe('Associated type fields with more restrictive auth rules than the model
       const primary = result.body.data.createPrimary;
       expect(primary).toBeDefined();
       expect(primary.id).toBeDefined();
-      expect(primary.secret).toBeNull();
-      expect(primary.relatedOne).toBeNull();
+      expect(primary.secret).toEqual('primary secret');
+      expect(primary.relatedOne).toBeDefined();
+      expect(primary.relatedOne.secret).toEqual('relatedOne secret');
       expect(primary.relatedMany).toBeDefined();
-      expect(primary.relatedMany.items.length).toEqual(0);
+      expect(primary.relatedMany.items.length).toEqual(1);
+      expect(primary.relatedMany.items[0].secret).toEqual('relatedMany secret');
     });
 
     test('updatePrimary is redacted', async () => {
@@ -193,11 +195,13 @@ describe('Associated type fields with more restrictive auth rules than the model
 
       const primary = result.body.data.updatePrimary;
       expect(primary).toBeDefined();
-      expect(primary.secret).toBeNull();
+      expect(primary.secret).toEqual('primary secret updated');
       expect(primary.id).toBeDefined();
-      expect(primary.relatedOne).toBeNull();
+      expect(primary.relatedOne).toBeDefined();
+      expect(primary.relatedOne.secret).toEqual('relatedOne secret');
       expect(primary.relatedMany).toBeDefined();
-      expect(primary.relatedMany.items.length).toEqual(0);
+      expect(primary.relatedMany.items.length).toEqual(1);
+      expect(primary.relatedMany.items[0].secret).toEqual('relatedMany secret');
     });
 
     test('createRelatedOne is redacted', async () => {
@@ -240,9 +244,13 @@ describe('Associated type fields with more restrictive auth rules than the model
 
       const relatedOne = result.body.data?.createRelatedOne;
       expect(relatedOne).toBeDefined();
-      expect(relatedOne.secret).toBeNull();
+      expect(relatedOne.secret).toEqual('relatedOne secret');
       expect(relatedOne.id).toBeDefined();
-      expect(relatedOne.primary).toBeNull();
+      expect(relatedOne.primary).toBeDefined();
+      expect(relatedOne.primary.secret).toEqual('primary secret');
+      expect(relatedOne.primary.relatedMany).toBeDefined();
+      expect(relatedOne.primary.relatedMany.items.length).toEqual(1);
+      expect(relatedOne.primary.relatedMany.items[0].secret).toEqual('relatedMany secret');
     });
 
     test('updateRelatedOne is redacted', async () => {
@@ -296,9 +304,13 @@ describe('Associated type fields with more restrictive auth rules than the model
 
       const relatedOne = result.body.data?.updateRelatedOne;
       expect(relatedOne).toBeDefined();
-      expect(relatedOne.secret).toBeNull();
+      expect(relatedOne.secret).toEqual('relatedOne updated secret');
       expect(relatedOne.id).toBeDefined();
-      expect(relatedOne.primary).toBeNull();
+      expect(relatedOne.primary).toBeDefined();
+      expect(relatedOne.primary.secret).toEqual('primary secret');
+      expect(relatedOne.primary.relatedMany).toBeDefined();
+      expect(relatedOne.primary.relatedMany.items.length).toEqual(1);
+      expect(relatedOne.primary.relatedMany.items[0].secret).toEqual('relatedMany secret');
     });
 
     test('createRelatedMany is redacted', async () => {
@@ -341,9 +353,12 @@ describe('Associated type fields with more restrictive auth rules than the model
 
       const relatedMany = result.body.data?.createRelatedMany;
       expect(relatedMany).toBeDefined();
-      expect(relatedMany.secret).toBeNull();
+      expect(relatedMany.secret).toEqual('relatedMany secret');
       expect(relatedMany.id).toBeDefined();
-      expect(relatedMany.primary).toBeNull();
+      expect(relatedMany.primary).toBeDefined();
+      expect(relatedMany.primary.secret).toEqual('primary secret');
+      expect(relatedMany.primary.relatedOne).toBeDefined();
+      expect(relatedMany.primary.relatedOne.secret).toEqual('relatedOne secret');
     });
 
     test('updateRelatedMany is redacted', async () => {
@@ -397,9 +412,12 @@ describe('Associated type fields with more restrictive auth rules than the model
 
       const relatedMany = result.body.data?.updateRelatedMany;
       expect(relatedMany).toBeDefined();
-      expect(relatedMany.secret).toBeNull();
+      expect(relatedMany.secret).toEqual('relatedMany secret');
       expect(relatedMany.id).toBeDefined();
-      expect(relatedMany.primary).toBeNull();
+      expect(relatedMany.primary).toBeDefined();
+      expect(relatedMany.primary.secret).toEqual('primary secret');
+      expect(relatedMany.primary.relatedOne).toBeDefined();
+      expect(relatedMany.primary.relatedOne.secret).toEqual('relatedOne secret');
     });
 
     test('createManyLeft is redacted', async () => {
@@ -440,10 +458,10 @@ describe('Associated type fields with more restrictive auth rules than the model
 
       const manyLeft = result.body.data.createManyLeft;
       expect(manyLeft).toBeDefined();
-      expect(manyLeft.secret).toBeNull();
+      expect(manyLeft.secret).toEqual('Left secret');
       expect(manyLeft.id).toBeDefined();
-      expect(manyLeft.manyRight).toBeDefined();
-      expect(manyLeft.manyRight.items.length).toEqual(0);
+      expect(manyLeft.manyRight.items.length).toEqual(1);
+      expect(manyLeft.manyRight.items[0].manyRight.secret).toEqual('Right secret');
     });
 
     test('updateManyLeft is redacted', async () => {
@@ -494,10 +512,10 @@ describe('Associated type fields with more restrictive auth rules than the model
 
       const manyLeft = result.body.data.updateManyLeft;
       expect(manyLeft).toBeDefined();
-      expect(manyLeft.secret).toBeNull();
+      expect(manyLeft.secret).toEqual('Left secret updated');
       expect(manyLeft.id).toBeDefined();
-      expect(manyLeft.manyRight).toBeDefined();
-      expect(manyLeft.manyRight.items.length).toEqual(0);
+      expect(manyLeft.manyRight.items.length).toEqual(1);
+      expect(manyLeft.manyRight.items[0].manyRight.secret).toEqual('Right secret');
     });
 
     test('createManyRight is redacted', async () => {
@@ -538,10 +556,10 @@ describe('Associated type fields with more restrictive auth rules than the model
 
       const manyRight = result.body.data.createManyRight;
       expect(manyRight).toBeDefined();
-      expect(manyRight.secret).toBeNull();
+      expect(manyRight.secret).toEqual('Right secret');
       expect(manyRight.id).toBeDefined();
-      expect(manyRight.manyLeft).toBeDefined();
-      expect(manyRight.manyLeft.items.length).toEqual(0);
+      expect(manyRight.manyLeft.items.length).toEqual(1);
+      expect(manyRight.manyLeft.items[0].manyLeft.secret).toEqual('Left secret');
     });
 
     test('updateManyRight is redacted', async () => {
@@ -592,10 +610,10 @@ describe('Associated type fields with more restrictive auth rules than the model
 
       const manyRight = result.body.data.updateManyRight;
       expect(manyRight).toBeDefined();
-      expect(manyRight.secret).toBeNull();
+      expect(manyRight.secret).toEqual('Right secret updated');
       expect(manyRight.id).toBeDefined();
-      expect(manyRight.manyLeft).toBeDefined();
-      expect(manyRight.manyLeft.items.length).toEqual(0);
+      expect(manyRight.manyLeft.items.length).toEqual(1);
+      expect(manyRight.manyLeft.items[0].manyLeft.secret).toEqual('Left secret');
     });
 
     test('createJoinLeftRight is redacted', async () => {
@@ -636,8 +654,8 @@ describe('Associated type fields with more restrictive auth rules than the model
 
       const leftRightJoin = result.body.data.createLeftRightJoin;
       expect(leftRightJoin).toBeDefined();
-      expect(leftRightJoin.manyLeft.secret).toBeNull();
-      expect(leftRightJoin.manyRight.secret).toBeNull();
+      expect(leftRightJoin.manyLeft.secret).toEqual('Left secret');
+      expect(leftRightJoin.manyRight.secret).toEqual('Right secret');
     });
 
     test('updateJoinLeftRight is redacted', async () => {
@@ -700,8 +718,8 @@ describe('Associated type fields with more restrictive auth rules than the model
 
       const leftRightJoin = result.body.data.updateLeftRightJoin;
       expect(leftRightJoin).toBeDefined();
-      expect(leftRightJoin.manyLeft.secret).toBeNull();
-      expect(leftRightJoin.manyRight.secret).toBeNull();
+      expect(leftRightJoin.manyLeft.secret).toEqual('Left secret');
+      expect(leftRightJoin.manyRight.secret).toEqual('Right 2 secret');
     });
   });
 });

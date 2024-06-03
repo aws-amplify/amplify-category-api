@@ -2,17 +2,21 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
+import * as generator from 'generate-password';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
-import { initCDKProject, cdkDestroy } from '../../../commands';
-import { TestDefinition, writeStackConfig, writeTestDefinitions } from '../../../utils';
-import { DURATION_1_HOUR } from '../../../utils/duration-constants';
+import { initCDKProject, cdkDestroy } from '../../../../commands';
+import { dbDetailsToModelDataSourceStrategy, TestDefinition, writeStackConfig, writeTestDefinitions } from '../../../../utils';
+import { SqlDatabaseDetails, SqlDatatabaseController } from '../../../../sql-datatabase-controller';
+import { DURATION_1_HOUR } from '../../../../utils/duration-constants';
 import {
   deployStackAndCreateUsers,
+  testCreatePrimaryDoesNotRedactRelated,
   testCreatePrimaryIsForbidden,
-  testCreatePrimaryRedactsRelated,
   testCreatePrimaryRedactsRelatedListAsNull,
+  testCreateRelatedManyDoesNotRedactPrimary,
   testCreateRelatedManyIsForbidden,
   testCreateRelatedManyRedactsPrimary,
+  testCreateRelatedOneDoesNotRedactPrimary,
   testCreateRelatedOneIsForbidden,
   testCreateRelatedOneRedactsPrimary,
   testGetPrimaryDoesNotRedactRelated,
@@ -27,11 +31,13 @@ import {
   testListRelatedManiesRedactsPrimary,
   testListRelatedOnesDoesNotRedactPrimary,
   testListRelatedOnesRedactsPrimary,
-  testUpdatePrimaryRedactsRelated,
+  testUpdatePrimaryDoesNotRedactRelated,
   testUpdatePrimaryRedactsRelatedListAsNull,
+  testUpdateRelatedManyDoesNotRedactPrimary,
   testUpdateRelatedManyRedactsPrimary,
+  testUpdateRelatedOneDoesNotRedactPrimary,
   testUpdateRelatedOneRedactsPrimary,
-} from './test-implementations';
+} from '../../static-group-auth/test-implementations';
 
 jest.setTimeout(DURATION_1_HOUR);
 
@@ -41,12 +47,49 @@ jest.setTimeout(DURATION_1_HOUR);
 // the associated records are redacted.
 //
 // For these tests, "Group1" owns Primary, "Group2" owns Related, and "Group3" is an Admin who owns both
-describe('Relationships protected with static group auth', () => {
+describe('Relationships protected with static group auth subscriptions off', () => {
   const region = process.env.CLI_REGION ?? 'us-west-2';
   const baseProjFolderName = path.basename(__filename, '.test.ts');
 
-  describe('DDB primary, DDB related', () => {
-    const projFolderName = `${baseProjFolderName}-ddb-primary-ddb-related`;
+  const [dbUsername, dbIdentifier] = generator.generateMultiple(2);
+  const dbname = 'default_db';
+  let dbDetails: SqlDatabaseDetails;
+
+  // Note that the SQL database is created with slightly non-standard naming conventions, to avoid us having to use `refersTo` in the schema
+  // snippets. That allows us to reuse the same snippets across both DDB and SQL data sources, simplifying the test fixture data.
+  const databaseController = new SqlDatatabaseController(
+    [
+      'drop table if exists `RelatedMany`;',
+      'drop table if exists `RelatedOne`;',
+      'drop table if exists `Primary`;',
+
+      'create table `Primary` ( id varchar(64) primary key not null, content varchar(64));',
+
+      'create table `RelatedMany`( id varchar(64) primary key not null, content varchar(64), `primaryId` varchar(64));',
+      'create index `RelatedMany_primaryId` on `RelatedMany`(`primaryId`);',
+
+      'create table `RelatedOne`( id varchar(64) primary key not null, content varchar(64), `primaryId` varchar(64));',
+      'create index `RelatedOne_primaryId` on `RelatedOne`(`primaryId`);',
+    ],
+    {
+      identifier: dbIdentifier,
+      engine: 'mysql',
+      dbname,
+      username: dbUsername,
+      region,
+    },
+  );
+
+  beforeAll(async () => {
+    dbDetails = await databaseController.setupDatabase();
+  });
+
+  afterAll(async () => {
+    await databaseController.cleanupDatabase();
+  });
+
+  describe('SQL primary, DDB related', () => {
+    const projFolderName = `${baseProjFolderName}-sql-primary-ddb-related`;
     let adminAccessToken: string;
     let apiEndpoint: string;
     let currentId: number;
@@ -60,27 +103,47 @@ describe('Relationships protected with static group auth', () => {
 
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projFolderName);
-      const templatePath = path.resolve(path.join(__dirname, '..', '..', 'backends', 'configurable-stack'));
+      const templatePath = path.resolve(path.join(__dirname, '..', '..', '..', 'backends', 'configurable-stack'));
       const name = await initCDKProject(projRoot, templatePath);
 
       const primarySchemaPath = path.resolve(
-        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-static-group-auth', 'schema-primary.graphql'),
+        path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          'graphql-schemas',
+          'reference-style-static-group-auth',
+          'schema-primary-subscriptions-off.graphql',
+        ),
       );
       const primarySchema = fs.readFileSync(primarySchemaPath).toString();
 
       const relatedSchemaPath = path.resolve(
-        path.join(__dirname, '..', '..', 'graphql-schemas', 'reference-style-static-group-auth', 'schema-related.graphql'),
+        path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          'graphql-schemas',
+          'reference-style-static-group-auth',
+          'schema-related-subscriptions-off.graphql',
+        ),
       );
       const relatedSchema = fs.readFileSync(relatedSchemaPath).toString();
 
       const testDefinitions: Record<string, TestDefinition> = {
-        'ddb-prim-ddb-related': {
-          schema: primarySchema + '\n' + relatedSchema,
+        'sql-primary': {
+          schema: primarySchema,
+          strategy: dbDetailsToModelDataSourceStrategy(dbDetails, 'sqlprimary', 'MYSQL', 'secretsManagerManagedSecret'),
+        },
+        'ddb-related': {
+          schema: relatedSchema,
           strategy: DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
         },
       };
 
-      writeStackConfig(projRoot, { prefix: 'StaticGrpDdbDdb' });
+      writeStackConfig(projRoot, { prefix: 'StaticGrpSqlDdb' });
       writeTestDefinitions(testDefinitions, projRoot);
 
       const testConfig = await deployStackAndCreateUsers({
@@ -189,12 +252,12 @@ describe('Relationships protected with static group auth', () => {
 
     describe('Actors belonging to Admin group', () => {
       describe('Primary as source model', () => {
-        test('createPrimary redacts related models', async () => {
-          await testCreatePrimaryRedactsRelated(currentId, apiEndpoint, adminAccessToken, adminAccessToken);
+        test('createPrimary does not redact related models', async () => {
+          await testCreatePrimaryDoesNotRedactRelated(currentId, apiEndpoint, adminAccessToken);
         });
 
-        test('updatePrimary redacts related models', async () => {
-          await testUpdatePrimaryRedactsRelated(currentId, apiEndpoint, adminAccessToken, adminAccessToken);
+        test('updatePrimary does not redact related models', async () => {
+          await testUpdatePrimaryDoesNotRedactRelated(currentId, apiEndpoint, adminAccessToken);
         });
 
         test('getPrimary does not redact related models', async () => {
@@ -207,12 +270,12 @@ describe('Relationships protected with static group auth', () => {
       });
 
       describe('RelatedOne as source model', () => {
-        test('createRelatedOne redacts primary model', async () => {
-          await testCreateRelatedOneRedactsPrimary(currentId, apiEndpoint, adminAccessToken, adminAccessToken);
+        test('createRelatedOne does not redact primary model', async () => {
+          await testCreateRelatedOneDoesNotRedactPrimary(currentId, apiEndpoint, adminAccessToken);
         });
 
-        test('updateRelatedOne redacts primary model', async () => {
-          await testUpdateRelatedOneRedactsPrimary(currentId, apiEndpoint, adminAccessToken, adminAccessToken);
+        test('updateRelatedOne does not redact primary model', async () => {
+          await testUpdateRelatedOneDoesNotRedactPrimary(currentId, apiEndpoint, adminAccessToken);
         });
 
         test('getRelatedOne does not redact primary model', async () => {
@@ -225,12 +288,12 @@ describe('Relationships protected with static group auth', () => {
       });
 
       describe('RelatedMany as source model', () => {
-        test('createRelatedMany redacts primary model', async () => {
-          await testCreateRelatedManyRedactsPrimary(currentId, apiEndpoint, adminAccessToken, adminAccessToken);
+        test('createRelatedMany does not redact primary model', async () => {
+          await testCreateRelatedManyDoesNotRedactPrimary(currentId, apiEndpoint, adminAccessToken);
         });
 
-        test('updateRelatedMany redacts primary model', async () => {
-          await testUpdateRelatedManyRedactsPrimary(currentId, apiEndpoint, adminAccessToken, adminAccessToken);
+        test('updateRelatedMany does not redact primary model', async () => {
+          await testUpdateRelatedManyDoesNotRedactPrimary(currentId, apiEndpoint, adminAccessToken);
         });
 
         test('getRelatedMany does not redact primary model', async () => {

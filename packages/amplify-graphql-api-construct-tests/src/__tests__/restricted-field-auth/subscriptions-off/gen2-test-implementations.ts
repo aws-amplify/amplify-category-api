@@ -1,4 +1,4 @@
-import { doAppSyncGraphqlMutation } from '../../utils';
+import { doAppSyncGraphqlMutation } from '../../../utils';
 import {
   createPrimary,
   createRelatedMany,
@@ -6,9 +6,9 @@ import {
   updatePrimary,
   updateRelatedMany,
   updateRelatedOne,
-} from './graphql-schemas/gen2/graphql/mutations';
+} from '../graphql-schemas/gen2/graphql/mutations';
 
-export const testCreatePrimaryRedacted = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
+export const testCreatePrimaryNotRedacted = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
   const primaryId = `p${currentId}`;
   const relatedOneId = `ro${currentId}`;
   const relatedManyId = `rm${currentId}`;
@@ -48,13 +48,14 @@ export const testCreatePrimaryRedacted = async (currentId: number, apiEndpoint: 
   const primary = result.body.data.createPrimary;
   expect(primary).toBeDefined();
   expect(primary.id).toBeDefined();
-  expect(primary.secret).toBeNull();
-  expect(primary.relatedOne).toBeNull();
+  expect(primary.secret).toEqual('primary secret');
+  expect(primary.relatedOne).toBeDefined();
+  expect(primary.relatedOne.secret).toEqual('relatedOne secret');
   expect(primary.relatedMany).toBeDefined();
-  expect(primary.relatedMany.items.length).toEqual(0);
+  expect(primary.relatedMany.items[0].secret).toEqual('relatedMany secret');
 };
 
-export const testUpdatePrimaryRedacted = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
+export const testUpdatePrimaryNotRedacted = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
   const primaryId = `p${currentId}`;
   const relatedOneId = `ro${currentId}`;
   const relatedManyId = `rm${currentId}`;
@@ -103,14 +104,15 @@ export const testUpdatePrimaryRedacted = async (currentId: number, apiEndpoint: 
 
   const primary = result.body.data.updatePrimary;
   expect(primary).toBeDefined();
-  expect(primary.secret).toBeNull();
   expect(primary.id).toBeDefined();
-  expect(primary.relatedOne).toBeNull();
+  expect(primary.secret).toEqual('primary secret updated');
+  expect(primary.relatedOne).toBeDefined();
+  expect(primary.relatedOne.secret).toEqual('relatedOne secret');
   expect(primary.relatedMany).toBeDefined();
-  expect(primary.relatedMany.items.length).toEqual(0);
+  expect(primary.relatedMany.items[0].secret).toEqual('relatedMany secret');
 };
 
-export const testCreateRelatedOneRedacted = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
+export const testCreateRelatedOneNotRedacted = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
   const primaryId = `p${currentId}`;
   const relatedOneId = `ro${currentId}`;
   const relatedManyId = `rm${currentId}`;
@@ -149,12 +151,13 @@ export const testCreateRelatedOneRedacted = async (currentId: number, apiEndpoin
 
   const relatedOne = result.body.data?.createRelatedOne;
   expect(relatedOne).toBeDefined();
-  expect(relatedOne.secret).toBeNull();
+  expect(relatedOne.secret).toEqual('relatedOne secret');
   expect(relatedOne.id).toBeDefined();
-  expect(relatedOne.primary).toBeNull();
+  expect(relatedOne.primary).toBeDefined();
+  expect(relatedOne.primary.secret).toEqual('primary secret');
 };
 
-export const testUpdateRelatedOneRedacted = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
+export const testUpdateRelatedOneNotRedacted = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
   const primaryId = `p${currentId}`;
   const relatedOneId = `ro${currentId}`;
   const relatedManyId = `rm${currentId}`;
@@ -204,12 +207,13 @@ export const testUpdateRelatedOneRedacted = async (currentId: number, apiEndpoin
 
   const relatedOne = result.body.data?.updateRelatedOne;
   expect(relatedOne).toBeDefined();
-  expect(relatedOne.secret).toBeNull();
+  expect(relatedOne.secret).toEqual('relatedOne updated secret');
   expect(relatedOne.id).toBeDefined();
-  expect(relatedOne.primary).toBeNull();
+  expect(relatedOne.primary).toBeDefined();
+  expect(relatedOne.primary.secret).toEqual('primary secret');
 };
 
-export const testCreateRelatedManyRedacted = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
+export const testCreateRelatedManyNotRedacted = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
   const primaryId = `p${currentId}`;
   const relatedOneId = `ro${currentId}`;
   const relatedManyId = `rm${currentId}`;
@@ -248,12 +252,13 @@ export const testCreateRelatedManyRedacted = async (currentId: number, apiEndpoi
 
   const relatedMany = result.body.data?.createRelatedMany;
   expect(relatedMany).toBeDefined();
-  expect(relatedMany.secret).toBeNull();
+  expect(relatedMany.secret).toEqual('relatedMany secret');
   expect(relatedMany.id).toBeDefined();
-  expect(relatedMany.primary).toBeNull();
+  expect(relatedMany.primary).toBeDefined();
+  expect(relatedMany.primary.secret).toEqual('primary secret');
 };
 
-export const testUpdateRelatedManyRedacted = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
+export const testUpdateRelatedManyNotRedacted = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
   const primaryId = `p${currentId}`;
   const relatedOneId = `ro${currentId}`;
   const relatedManyId = `rm${currentId}`;
@@ -303,7 +308,8 @@ export const testUpdateRelatedManyRedacted = async (currentId: number, apiEndpoi
 
   const relatedMany = result.body.data?.updateRelatedMany;
   expect(relatedMany).toBeDefined();
-  expect(relatedMany.secret).toBeNull();
+  expect(relatedMany.secret).toEqual('relatedMany secret');
   expect(relatedMany.id).toBeDefined();
-  expect(relatedMany.primary).toBeNull();
+  expect(relatedMany.primary).toBeDefined();
+  expect(relatedMany.primary.secret).toEqual('primary secret');
 };
