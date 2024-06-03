@@ -52,7 +52,7 @@ export const testCreatePrimaryNotRedacted = async (currentId: number, apiEndpoin
   expect(primary.relatedOne).toBeDefined();
   expect(primary.relatedOne.secret).toEqual('relatedOne secret');
   expect(primary.relatedMany).toBeDefined();
-  expect(primary.relatedMany.items[1].secret).toEqual('relatedMany secret');
+  expect(primary.relatedMany.items[0].secret).toEqual('relatedMany secret');
 };
 
 export const testUpdatePrimaryNotRedacted = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
@@ -109,7 +109,7 @@ export const testUpdatePrimaryNotRedacted = async (currentId: number, apiEndpoin
   expect(primary.relatedOne).toBeDefined();
   expect(primary.relatedOne.secret).toEqual('relatedOne secret');
   expect(primary.relatedMany).toBeDefined();
-  expect(primary.relatedMany.items[1].secret).toEqual('relatedMany secret');
+  expect(primary.relatedMany.items[0].secret).toEqual('relatedMany secret');
 };
 
 export const testCreateRelatedOneNotRedacted = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
