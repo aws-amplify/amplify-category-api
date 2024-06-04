@@ -5880,6 +5880,7 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, 
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   #set( $authResult = $util.authRules.validateUsingSource($ctx.stash.authRules, $ctx.source) )
+  $util.error(\\"Auth Result\\", $authResult)
   #if( !$authResult || ($authResult && !$authResult.authorized) )
     $util.unauthorized()
     $util.toJson(null)
@@ -6411,6 +6412,7 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, 
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   #set( $authResult = $util.authRules.validateUsingSource($ctx.stash.authRules, $ctx.source) )
+  $util.error(\\"Auth Result\\", $authResult)
   #if( !$authResult || ($authResult && !$authResult.authorized) )
     $util.unauthorized()
     $util.toJson(null)

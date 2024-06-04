@@ -517,6 +517,7 @@ export const generateGetLambdaResponseTemplate = (isSyncEnabled: boolean): strin
   const statements: Expression[] = [];
   const resultExpression = compoundExpression([
     set(ref('authResult'), methodCall(ref('util.authRules.validateUsingSource'), ref('ctx.stash.authRules'), ref('ctx.source'))),
+    methodCall(ref('util.error'), raw('"Auth Result"'), ref('authResult')),
     ifElse(
       or([not(ref('authResult')), parens(and([ref('authResult'), not(ref('authResult.authorized'))]))]),
       compoundExpression([methodCall(ref('util.unauthorized')), methodCall(ref('util.toJson'), raw('null'))]),

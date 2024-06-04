@@ -51,5 +51,7 @@ export const doAppSyncGraphqlOperation = async (input: any): Promise<any> => {
     body: JSON.stringify(payload),
   });
 
+  console.log(JSON.stringify(result, null, 2));
+
   return result;
 };
