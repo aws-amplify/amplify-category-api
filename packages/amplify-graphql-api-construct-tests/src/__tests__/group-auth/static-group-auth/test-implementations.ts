@@ -149,6 +149,29 @@ export const testCreatePrimaryRedactsRelated = async (
   expect(primary).toBeDefined();
   expect(primary.id).toEqual(primaryId);
   expect(primary.relatedOne).toBeNull();
+  expect(primary.relatedMany).toBeDefined();
+  expect(primary.relatedMany.items.length).toEqual(0);
+};
+
+export const testCreatePrimaryRedactsRelatedListAsNull = async (
+  currentId: number,
+  apiEndpoint: string,
+  primaryAccessToken: string,
+  relatedAccessToken: string,
+): Promise<void> => {
+  const primaryId = `p${currentId}`;
+  const relatedOneId = `ro${currentId}`;
+  const relatedManyId = `rm${currentId}`;
+
+  await doCreateRelatedOne(apiEndpoint, relatedAccessToken, relatedOneId, primaryId);
+  await doCreateRelatedMany(apiEndpoint, relatedAccessToken, relatedManyId, primaryId);
+
+  const result = await doCreatePrimary(apiEndpoint, primaryAccessToken, primaryId);
+  const primary = result.body.data.createPrimary;
+
+  expect(primary).toBeDefined();
+  expect(primary.id).toEqual(primaryId);
+  expect(primary.relatedOne).toBeNull();
   expect(primary.relatedMany).toBeNull();
 };
 
@@ -179,6 +202,31 @@ export const testUpdatePrimaryDoesNotRedactRelated = async (
 };
 
 export const testUpdatePrimaryRedactsRelated = async (
+  currentId: number,
+  apiEndpoint: string,
+  primaryAccessToken: string,
+  relatedAccessToken: string,
+): Promise<void> => {
+  const primaryId = `p${currentId}`;
+  const relatedOneId = `ro${currentId}`;
+  const relatedManyId = `rm${currentId}`;
+
+  await doCreateRelatedOne(apiEndpoint, relatedAccessToken, relatedOneId, primaryId);
+  await doCreateRelatedMany(apiEndpoint, relatedAccessToken, relatedManyId, primaryId);
+
+  await doCreatePrimary(apiEndpoint, primaryAccessToken, primaryId);
+
+  const result = await doUpdatePrimary(apiEndpoint, primaryAccessToken, primaryId);
+  const primary = result.body.data.updatePrimary;
+
+  expect(primary).toBeDefined();
+  expect(primary.id).toEqual(primaryId);
+  expect(primary.relatedOne).toBeNull();
+  expect(primary.relatedMany).toBeDefined();
+  expect(primary.relatedMany.items.length).toEqual(0);
+};
+
+export const testUpdatePrimaryRedactsRelatedListAsNull = async (
   currentId: number,
   apiEndpoint: string,
   primaryAccessToken: string,

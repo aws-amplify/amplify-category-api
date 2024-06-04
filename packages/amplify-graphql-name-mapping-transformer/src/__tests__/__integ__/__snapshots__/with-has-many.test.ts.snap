@@ -425,7 +425,10 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 exports[`@refersTo with @hasMany for RDS Models model table names are mapped 11`] = `
 "## [Start] Invoke RDS Lambda data source. **
 #if( $ctx.stash.deniedField )
-  #return($util.toJson(null))
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
 #end
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )

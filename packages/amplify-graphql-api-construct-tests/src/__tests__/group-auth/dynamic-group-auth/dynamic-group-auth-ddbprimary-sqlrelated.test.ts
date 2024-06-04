@@ -10,11 +10,8 @@ import { SqlDatabaseDetails, SqlDatatabaseController } from '../../../sql-datata
 import { DURATION_1_HOUR } from '../../../utils/duration-constants';
 import {
   deployStackAndCreateUsers,
-  testCreatePrimaryDoesNotRedactRelatedForSameOwningGroup,
   testCreatePrimaryRedactsRelatedForDifferentOwningGroup,
-  testCreateRelatedManyDoesNotRedactPrimaryForSameOwningGroup,
   testCreateRelatedManyRedactsPrimaryForDifferentOwningGroup,
-  testCreateRelatedOneDoesNotRedactPrimaryForSameOwningGroup,
   testCreateRelatedOneRedactsPrimaryForDifferentOwningGroup,
   testGetPrimaryDoesNotRedactRelatedForSameOwningGroup,
   testGetPrimaryRedactsRelatedForDifferentOwningGroup,
@@ -30,12 +27,15 @@ import {
   testListRelatedOnesDoesNotRedactPrimaryForSameOwningGroup,
   testListRelatedOnesRedactsPrimaryForDifferentOwningGroup,
   testOwningGroupCanGrantOtherGroupsPermissions,
-  testUpdatePrimaryDoesNotRedactRelatedForSameOwningGroup,
   testUpdatePrimaryRedactsRelatedForDifferentOwningGroup,
-  testUpdateRelatedManyDoesNotRedactPrimaryForSameOwningGroup,
   testUpdateRelatedManyRedactsPrimaryForDifferentOwningGroup,
-  testUpdateRelatedOneDoesNotRedactPrimaryForSameOwningGroup,
   testUpdateRelatedOneRedactsPrimaryForDifferentOwningGroup,
+  testCreatePrimaryRedactsRelatedForSameOwningGroup,
+  testUpdatePrimaryRedactsRelatedForSameOwningGroup,
+  testCreateRelatedOneRedactsPrimaryForSameOwningGroup,
+  testUpdateRelatedOneRedactsPrimaryForSameOwningGroup,
+  testCreateRelatedManyRedactsPrimaryForSameOwningGroup,
+  testUpdateRelatedManyRedactsPrimaryForSameOwningGroup,
 } from './test-implementations';
 
 jest.setTimeout(DURATION_1_HOUR);
@@ -150,16 +150,16 @@ describe('Relationships protected with dynamic group auth', () => {
     });
 
     describe('Primary as source model', () => {
-      test('createPrimary shows related models if created by same owning group', async () => {
-        await testCreatePrimaryDoesNotRedactRelatedForSameOwningGroup(currentId, apiEndpoint, group1AccessToken);
+      test('createPrimary redacts related models if created by same owning group', async () => {
+        await testCreatePrimaryRedactsRelatedForSameOwningGroup(currentId, apiEndpoint, group1AccessToken);
       });
 
       test('createPrimary redacts related models if created by different owning group', async () => {
         await testCreatePrimaryRedactsRelatedForDifferentOwningGroup(currentId, apiEndpoint, group1AccessToken, group2AccessToken);
       });
 
-      test('updatePrimary shows related models if created by same owning group', async () => {
-        await testUpdatePrimaryDoesNotRedactRelatedForSameOwningGroup(currentId, apiEndpoint, group1AccessToken);
+      test('updatePrimary redacts related models if created by same owning group', async () => {
+        await testUpdatePrimaryRedactsRelatedForSameOwningGroup(currentId, apiEndpoint, group1AccessToken);
       });
 
       test('updatePrimary redacts related models if created by different owning group', async () => {
@@ -198,16 +198,16 @@ describe('Relationships protected with dynamic group auth', () => {
     });
 
     describe('RelatedOne as source model', () => {
-      test('createRelatedOne does not redact primary models if created by same owning group', async () => {
-        await testCreateRelatedOneDoesNotRedactPrimaryForSameOwningGroup(currentId, apiEndpoint, group1AccessToken);
+      test('createRelatedOne redacts primary models if created by same owning group', async () => {
+        await testCreateRelatedOneRedactsPrimaryForSameOwningGroup(currentId, apiEndpoint, group1AccessToken);
       });
 
       test('createRelatedOne redacts primary models if created by different owning group', async () => {
         await testCreateRelatedOneRedactsPrimaryForDifferentOwningGroup(currentId, apiEndpoint, group1AccessToken, group2AccessToken);
       });
 
-      test('updateRelatedOne does not redact primary models if created by same owning group', async () => {
-        await testUpdateRelatedOneDoesNotRedactPrimaryForSameOwningGroup(currentId, apiEndpoint, group1AccessToken);
+      test('updateRelatedOne redacts primary models if created by same owning group', async () => {
+        await testUpdateRelatedOneRedactsPrimaryForSameOwningGroup(currentId, apiEndpoint, group1AccessToken);
       });
 
       test('updateRelatedOne redacts primary models if created by different owning group', async () => {
@@ -232,16 +232,16 @@ describe('Relationships protected with dynamic group auth', () => {
     });
 
     describe('RelatedMany as source model', () => {
-      test('createRelatedMany shows related models if created by same owning group', async () => {
-        await testCreateRelatedManyDoesNotRedactPrimaryForSameOwningGroup(currentId, apiEndpoint, group1AccessToken);
+      test('createRelatedMany redacts related models if created by same owning group', async () => {
+        await testCreateRelatedManyRedactsPrimaryForSameOwningGroup(currentId, apiEndpoint, group1AccessToken);
       });
 
       test('createRelatedMany redacts related models if created by different owning group', async () => {
         await testCreateRelatedManyRedactsPrimaryForDifferentOwningGroup(currentId, apiEndpoint, group1AccessToken, group2AccessToken);
       });
 
-      test('updateRelatedMany shows related models if created by same owning group', async () => {
-        await testUpdateRelatedManyDoesNotRedactPrimaryForSameOwningGroup(currentId, apiEndpoint, group1AccessToken);
+      test('updateRelatedMany redacts related models if created by same owning group', async () => {
+        await testUpdateRelatedManyRedactsPrimaryForSameOwningGroup(currentId, apiEndpoint, group1AccessToken);
       });
 
       test('updateRelatedMany redacts related models if created by different owning group', async () => {

@@ -96,7 +96,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
   ): string => {
     return printBlock('Invoke RDS Lambda data source')(
       compoundExpression([
-        iff(ref('ctx.stash.deniedField'), raw('#return($util.toJson(null))')),
+        iff(ref('ctx.stash.deniedField'), compoundExpression([set(ref('result'), obj({ items: list([]) })), raw('#return($result)')])),
         set(ref('lambdaInput'), obj({})),
         set(ref('lambdaInput.args'), obj({})),
         set(ref('lambdaInput.table'), str(tableName)),

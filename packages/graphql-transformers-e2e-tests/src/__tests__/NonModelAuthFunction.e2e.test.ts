@@ -151,6 +151,9 @@ beforeAll(async () => {
           },
           Action: 'sts:AssumeRoleWithWebIdentity',
           Condition: {
+            StringEquals: {
+              'cognito-identity.amazonaws.com:aud': { Ref: 'IdentityPool' },
+            },
             'ForAnyValue:StringLike': {
               'cognito-identity.amazonaws.com:amr': 'authenticated',
             },
@@ -173,6 +176,9 @@ beforeAll(async () => {
           },
           Action: 'sts:AssumeRoleWithWebIdentity',
           Condition: {
+            StringEquals: {
+              'cognito-identity.amazonaws.com:aud': { Ref: 'IdentityPool' },
+            },
             'ForAnyValue:StringLike': {
               'cognito-identity.amazonaws.com:amr': 'unauthenticated',
             },

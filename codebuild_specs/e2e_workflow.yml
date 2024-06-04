@@ -60,87 +60,88 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
       depend-on:
         - build_linux
-    - identifier: auth_2_datastore_modelgen_amplify_app_custom_transformers
+    - identifier: auth_2_datastore_modelgen_mock_api_amplify_app
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/auth_2.test.ts|src/__tests__/datastore-modelgen.test.ts|src/__tests__/amplify-app.test.ts|src/__tests__/graphql-v2/custom-transformers.test.ts
-          CLI_REGION: ap-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: >-
-        mock_api_invalid_input_arguments_schema_versioned_schema_data_access_patterns
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/mock-api.test.ts|src/__tests__/graphql-v2/invalid-input-arguments.test.ts|src/__tests__/schema-versioned.test.ts|src/__tests__/schema-data-access-patterns.test.ts
+            src/__tests__/auth_2.test.ts|src/__tests__/datastore-modelgen.test.ts|src/__tests__/mock-api.test.ts|src/__tests__/amplify-app.test.ts
           CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
-    - identifier: predictions_migration_function_10_schema_predictions_api_7
+    - identifier: >-
+        custom_transformers_schema_versioned_invalid_input_arguments_schema_data_access_patterns
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/transformer-migrations/predictions-migration.test.ts|src/__tests__/function_10.test.ts|src/__tests__/schema-predictions.test.ts|src/__tests__/api_7.test.ts
+            src/__tests__/graphql-v2/custom-transformers.test.ts|src/__tests__/schema-versioned.test.ts|src/__tests__/graphql-v2/invalid-input-arguments.test.ts|src/__tests__/schema-data-access-patterns.test.ts
           CLI_REGION: ap-northeast-2
       depend-on:
         - publish_to_local_registry
-    - identifier: http_migration_global_sandbox_schema_function_2_api_connection_migration
+    - identifier: predictions_migration_schema_predictions_function_10_api_7
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/transformer-migrations/http-migration.test.ts|src/__tests__/global_sandbox.test.ts|src/__tests__/schema-function-2.test.ts|src/__tests__/migration/api.connection.migration.test.ts
+            src/__tests__/transformer-migrations/predictions-migration.test.ts|src/__tests__/schema-predictions.test.ts|src/__tests__/function_10.test.ts|src/__tests__/api_7.test.ts
           CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
-    - identifier: api_8_schema_iterative_update_3_auth_migration_lambda_conflict_handler
+    - identifier: http_migration_schema_function_2_global_sandbox_api_connection_migration
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_8.test.ts|src/__tests__/schema-iterative-update-3.test.ts|src/__tests__/transformer-migrations/auth-migration.test.ts|src/__tests__/graphql-v2/lambda-conflict-handler.test.ts
-          CLI_REGION: eu-west-1
+            src/__tests__/transformer-migrations/http-migration.test.ts|src/__tests__/schema-function-2.test.ts|src/__tests__/global_sandbox.test.ts|src/__tests__/migration/api.connection.migration.test.ts
+          CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        schema_iterative_update_1_schema_iterative_update_locking_index_with_stack_mappings_api_4
+        schema_iterative_update_3_api_8_auth_migration_schema_iterative_update_locking
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/schema-iterative-update-1.test.ts|src/__tests__/schema-iterative-update-locking.test.ts|src/__tests__/graphql-v2/index-with-stack-mappings.test.ts|src/__tests__/api_4.test.ts
+            src/__tests__/schema-iterative-update-3.test.ts|src/__tests__/api_8.test.ts|src/__tests__/transformer-migrations/auth-migration.test.ts|src/__tests__/schema-iterative-update-locking.test.ts
           CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        custom_policies_container_schema_iterative_update_2_api_connection_migration2_api_5
+        schema_iterative_update_1_lambda_conflict_handler_index_with_stack_mappings_schema_iterative_update_2
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/custom_policies_container.test.ts|src/__tests__/schema-iterative-update-2.test.ts|src/__tests__/migration/api.connection.migration2.test.ts|src/__tests__/api_5.test.ts
+            src/__tests__/schema-iterative-update-1.test.ts|src/__tests__/graphql-v2/lambda-conflict-handler.test.ts|src/__tests__/graphql-v2/index-with-stack-mappings.test.ts|src/__tests__/schema-iterative-update-2.test.ts
           CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
-    - identifier: containers_api_secrets_schema_function_1_api_3_generate_ts_data_schema
+    - identifier: >-
+        custom_policies_container_api_4_api_connection_migration2_containers_api_secrets
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/containers-api-secrets.test.ts|src/__tests__/schema-function-1.test.ts|src/__tests__/api_3.test.ts|src/__tests__/generate_ts_data_schema.test.ts
+            src/__tests__/custom_policies_container.test.ts|src/__tests__/api_4.test.ts|src/__tests__/migration/api.connection.migration2.test.ts|src/__tests__/containers-api-secrets.test.ts
           CLI_REGION: us-east-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: api_5_schema_function_1_api_3_generate_ts_data_schema
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/api_5.test.ts|src/__tests__/schema-function-1.test.ts|src/__tests__/api_3.test.ts|src/__tests__/generate_ts_data_schema.test.ts
+          CLI_REGION: ap-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: resolvers_sync_query_datastore_api_6_api_lambda_auth
@@ -150,7 +151,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/resolvers.test.ts|src/__tests__/graphql-v2/sync_query_datastore.test.ts|src/__tests__/api_6.test.ts|src/__tests__/graphql-v2/api_lambda_auth.test.ts
-          CLI_REGION: sa-east-1
+          CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
     - identifier: api_9
@@ -159,16 +160,7 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: src/__tests__/api_9.test.ts
-          CLI_REGION: us-east-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_10
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/api_10.test.ts
-          CLI_REGION: ap-south-1
+          CLI_REGION: us-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_v2
@@ -177,7 +169,16 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/rds-v2.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: ap-southeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: api_10
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/api_10.test.ts
+          CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: function_migration
@@ -186,7 +187,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/transformer-migrations/function-migration.test.ts
-          CLI_REGION: ca-central-1
+          CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: api_key_migration3
@@ -195,17 +196,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/migration/api.key.migration3.test.ts
-          CLI_REGION: eu-central-1
-          USE_PARENT_ACCOUNT: 1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_key_migration5
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/migration/api.key.migration5.test.ts
-          CLI_REGION: eu-north-1
+          CLI_REGION: eu-west-1
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
@@ -218,6 +209,16 @@ batch:
           CLI_REGION: eu-south-1
       depend-on:
         - publish_to_local_registry
+    - identifier: api_key_migration5
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/migration/api.key.migration5.test.ts
+          CLI_REGION: eu-west-3
+          USE_PARENT_ACCOUNT: 1
+      depend-on:
+        - publish_to_local_registry
     - identifier: model_migration
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
@@ -225,15 +226,6 @@ batch:
         variables:
           TEST_SUITE: src/__tests__/transformer-migrations/model-migration.test.ts
           CLI_REGION: eu-west-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: schema_auth_10
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/schema-auth-10.test.ts
-          CLI_REGION: eu-west-3
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_2
@@ -245,22 +237,22 @@ batch:
           CLI_REGION: me-south-1
       depend-on:
         - publish_to_local_registry
+    - identifier: schema_auth_10
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/schema-auth-10.test.ts
+          CLI_REGION: sa-east-1
+      depend-on:
+        - publish_to_local_registry
     - identifier: schema_auth_1
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-auth-1.test.ts
-          CLI_REGION: sa-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: schema_auth_12
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/schema-auth-12.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_13
@@ -272,12 +264,12 @@ batch:
           CLI_REGION: us-west-1
       depend-on:
         - publish_to_local_registry
-    - identifier: schema_auth_15
+    - identifier: schema_auth_12
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
-          TEST_SUITE: src/__tests__/schema-auth-15.test.ts
+          TEST_SUITE: src/__tests__/schema-auth-12.test.ts
           CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
@@ -290,14 +282,13 @@ batch:
           CLI_REGION: ap-east-1
       depend-on:
         - publish_to_local_registry
-    - identifier: api_key_migration4
+    - identifier: schema_auth_15
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
-          TEST_SUITE: src/__tests__/migration/api.key.migration4.test.ts
-          CLI_REGION: ap-northeast-2
-          USE_PARENT_ACCOUNT: 1
+          TEST_SUITE: src/__tests__/schema-auth-15.test.ts
+          CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_iterative_rollback_1
@@ -309,13 +300,14 @@ batch:
           CLI_REGION: ap-south-1
       depend-on:
         - publish_to_local_registry
-    - identifier: schema_iterative_rollback_2
+    - identifier: api_key_migration4
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
-          TEST_SUITE: src/__tests__/schema-iterative-rollback-2.test.ts
-          CLI_REGION: ap-southeast-1
+          TEST_SUITE: src/__tests__/migration/api.key.migration4.test.ts
+          CLI_REGION: eu-north-1
+          USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_key
@@ -327,22 +319,13 @@ batch:
           CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
-    - identifier: containers_api_1
+    - identifier: schema_iterative_rollback_2
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
-          TEST_SUITE: src/__tests__/containers-api-1.test.ts
-          CLI_REGION: us-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: schema_auth_4
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/schema-auth-4.test.ts
-          CLI_REGION: eu-north-1
+          TEST_SUITE: src/__tests__/schema-iterative-rollback-2.test.ts
+          CLI_REGION: ca-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_8
@@ -351,17 +334,25 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-auth-8.test.ts
-          CLI_REGION: eu-south-1
+          CLI_REGION: eu-north-1
       depend-on:
         - publish_to_local_registry
-    - identifier: api_key_migration2
+    - identifier: schema_auth_4
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
-          TEST_SUITE: src/__tests__/migration/api.key.migration2.test.ts
-          CLI_REGION: eu-west-1
-          USE_PARENT_ACCOUNT: 1
+          TEST_SUITE: src/__tests__/schema-auth-4.test.ts
+          CLI_REGION: eu-south-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: containers_api_1
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/containers-api-1.test.ts
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_11
@@ -373,22 +364,419 @@ batch:
           CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
+    - identifier: api_key_migration2
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/migration/api.key.migration2.test.ts
+          CLI_REGION: us-west-2
+          USE_PARENT_ACCOUNT: 1
+      depend-on:
+        - publish_to_local_registry
     - identifier: api_key_migration1
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/migration/api.key.migration1.test.ts
-          CLI_REGION: eu-west-3
+          CLI_REGION: me-south-1
       depend-on:
         - publish_to_local_registry
-    - identifier: api_11
+    - identifier: sql_generate_unauth
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
-          TEST_SUITE: src/__tests__/api_11.test.ts
-          CLI_REGION: me-south-1
+          TEST_SUITE: src/__tests__/sql-generate-unauth.test.ts
+          CLI_REGION: ap-northeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: schema_model
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/schema-model.test.ts
+          CLI_REGION: us-east-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_v2_test_utils
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-v2-test-utils.test.ts
+          CLI_REGION: ap-southeast-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_relational_directives
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-relational-directives.test.ts
+          CLI_REGION: ap-southeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_pg_v2_generate_schema
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-pg-v2-generate-schema.test.ts
+          CLI_REGION: ca-central-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_pg_userpool_auth
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-pg-userpool-auth.test.ts
+          CLI_REGION: eu-central-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_pg_userpool_auth_fields
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-pg-userpool-auth-fields.test.ts
+          CLI_REGION: eu-north-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_pg_relational_directives
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-pg-relational-directives.test.ts
+          CLI_REGION: eu-west-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_pg_refers_to
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-pg-refers-to.test.ts
+          CLI_REGION: eu-west-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_pg_refers_to_fields
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-pg-refers-to-fields.test.ts
+          CLI_REGION: eu-west-3
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_pg_oidc_auth
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-pg-oidc-auth.test.ts
+          CLI_REGION: sa-east-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_pg_oidc_auth_fields
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-pg-oidc-auth-fields.test.ts
+          CLI_REGION: us-east-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_pg_model_v2
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-pg-model-v2.test.ts
+          CLI_REGION: us-east-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_pg_import
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-pg-import.test.ts
+          CLI_REGION: us-west-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_pg_field_auth_userpool_static_dynamic
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-pg-field-auth-userpool-static-dynamic.test.ts
+          CLI_REGION: us-west-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_pg_field_auth_userpool_iam
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-pg-field-auth-userpool-iam.test.ts
+          CLI_REGION: ap-northeast-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_pg_field_auth_lambda
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-pg-field-auth-lambda.test.ts
+          CLI_REGION: ap-northeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_pg_field_auth_identityPool
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-pg-field-auth-identityPool.test.ts
+          CLI_REGION: ap-south-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_pg_field_auth_iam
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-pg-field-auth-iam.test.ts
+          CLI_REGION: ap-southeast-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_pg_field_auth_apikey
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-pg-field-auth-apikey.test.ts
+          CLI_REGION: ap-southeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_pg_custom_claims_refersto_auth
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-pg-custom-claims-refersto-auth.test.ts
+          CLI_REGION: ca-central-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_pg_auth_iam
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-pg-auth-iam.test.ts
+          CLI_REGION: eu-central-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_pg_auth_iam_apikey_lambda_subscription
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-pg-auth-iam-apikey-lambda-subscription.test.ts
+          CLI_REGION: eu-north-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_pg_auth_apikey_lambda
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-pg-auth-apikey-lambda.test.ts
+          CLI_REGION: eu-west-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_pg_array_objects
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-pg-array-objects.test.ts
+          CLI_REGION: eu-west-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_mysql_v2_generate_schema
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-v2-generate-schema.test.ts
+          CLI_REGION: eu-west-3
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_mysql_userpool_auth
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-userpool-auth.test.ts
+          CLI_REGION: sa-east-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_mysql_userpool_auth_fields
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-userpool-auth-fields.test.ts
+          CLI_REGION: us-east-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_mysql_refers_to
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-refers-to.test.ts
+          CLI_REGION: us-east-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_mysql_refers_to_fields
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-refers-to-fields.test.ts
+          CLI_REGION: us-west-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_mysql_oidc_auth
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-oidc-auth.test.ts
+          CLI_REGION: us-west-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_mysql_oidc_auth_fields
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-oidc-auth-fields.test.ts
+          CLI_REGION: ap-northeast-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_mysql_multi_auth_1
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-multi-auth-1.test.ts
+          CLI_REGION: ap-northeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_mysql_model_v2
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-model-v2.test.ts
+          CLI_REGION: ap-south-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_mysql_field_auth_userpool_static_dynamic
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-field-auth-userpool-static-dynamic.test.ts
+          CLI_REGION: ap-southeast-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_mysql_field_auth_userpool_iam
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-field-auth-userpool-iam.test.ts
+          CLI_REGION: ap-southeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_mysql_field_auth_lambda
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-field-auth-lambda.test.ts
+          CLI_REGION: ca-central-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_mysql_field_auth_identityPool
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-field-auth-identityPool.test.ts
+          CLI_REGION: eu-central-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_mysql_field_auth_iam
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-field-auth-iam.test.ts
+          CLI_REGION: eu-north-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_mysql_field_auth_apikey
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-field-auth-apikey.test.ts
+          CLI_REGION: eu-west-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_mysql_custom_claims_refersto_auth
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-custom-claims-refersto-auth.test.ts
+          CLI_REGION: eu-west-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_mysql_auth_iam
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-auth-iam.test.ts
+          CLI_REGION: eu-west-3
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_mysql_auth_iam_apikey_lambda_subscription
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-auth-iam-apikey-lambda-subscription.test.ts
+          CLI_REGION: sa-east-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: rds_mysql_auth_apikey_lambda
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/rds-mysql-auth-apikey-lambda.test.ts
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: api_canary_ap_east_1
@@ -562,400 +950,13 @@ batch:
           CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
-    - identifier: rds_mysql_auth_apikey_lambda
+    - identifier: api_11
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
-          TEST_SUITE: src/__tests__/rds-mysql-auth-apikey-lambda.test.ts
-          CLI_REGION: us-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_mysql_auth_iam_apikey_lambda_subscription
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-mysql-auth-iam-apikey-lambda-subscription.test.ts
-          CLI_REGION: us-east-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_mysql_auth_iam
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-mysql-auth-iam.test.ts
-          CLI_REGION: us-west-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_mysql_custom_claims_refersto_auth
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-mysql-custom-claims-refersto-auth.test.ts
-          CLI_REGION: us-west-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_mysql_field_auth_apikey
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-mysql-field-auth-apikey.test.ts
-          CLI_REGION: eu-west-3
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_mysql_field_auth_iam
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-mysql-field-auth-iam.test.ts
-          CLI_REGION: ap-northeast-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_mysql_field_auth_identityPool
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-mysql-field-auth-identityPool.test.ts
+          TEST_SUITE: src/__tests__/api_11.test.ts
           CLI_REGION: ap-northeast-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_mysql_field_auth_lambda
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-mysql-field-auth-lambda.test.ts
-          CLI_REGION: ap-south-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_mysql_field_auth_userpool_iam
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-mysql-field-auth-userpool-iam.test.ts
-          CLI_REGION: ap-southeast-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_mysql_field_auth_userpool_static_dynamic
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-mysql-field-auth-userpool-static-dynamic.test.ts
-          CLI_REGION: ap-southeast-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_mysql_model_v2
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-mysql-model-v2.test.ts
-          CLI_REGION: ca-central-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_mysql_multi_auth_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-mysql-multi-auth-1.test.ts
-          CLI_REGION: eu-central-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_mysql_oidc_auth_fields
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-mysql-oidc-auth-fields.test.ts
-          CLI_REGION: eu-north-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_mysql_oidc_auth
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-mysql-oidc-auth.test.ts
-          CLI_REGION: ap-southeast-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_mysql_refers_to_fields
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-mysql-refers-to-fields.test.ts
-          CLI_REGION: eu-west-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_mysql_refers_to
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-mysql-refers-to.test.ts
-          CLI_REGION: eu-west-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_mysql_userpool_auth_fields
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-mysql-userpool-auth-fields.test.ts
-          CLI_REGION: eu-west-3
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_mysql_userpool_auth
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-mysql-userpool-auth.test.ts
-          CLI_REGION: eu-north-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_mysql_v2_generate_schema
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-mysql-v2-generate-schema.test.ts
-          CLI_REGION: sa-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_pg_array_objects
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-pg-array-objects.test.ts
-          CLI_REGION: us-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_pg_auth_apikey_lambda
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-pg-auth-apikey-lambda.test.ts
-          CLI_REGION: us-east-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_pg_auth_iam_apikey_lambda_subscription
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-pg-auth-iam-apikey-lambda-subscription.test.ts
-          CLI_REGION: us-west-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_pg_auth_iam
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-pg-auth-iam.test.ts
-          CLI_REGION: us-west-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_pg_custom_claims_refersto_auth
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-pg-custom-claims-refersto-auth.test.ts
-          CLI_REGION: us-east-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_pg_field_auth_apikey
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-pg-field-auth-apikey.test.ts
-          CLI_REGION: ap-northeast-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_pg_field_auth_iam
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-pg-field-auth-iam.test.ts
-          CLI_REGION: ap-northeast-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_pg_field_auth_identityPool
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-pg-field-auth-identityPool.test.ts
-          CLI_REGION: ap-south-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_pg_field_auth_lambda
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-pg-field-auth-lambda.test.ts
-          CLI_REGION: ap-southeast-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_pg_field_auth_userpool_iam
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-pg-field-auth-userpool-iam.test.ts
-          CLI_REGION: ap-southeast-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_pg_field_auth_userpool_static_dynamic
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-pg-field-auth-userpool-static-dynamic.test.ts
-          CLI_REGION: ca-central-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_pg_import
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-pg-import.test.ts
-          CLI_REGION: eu-central-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_pg_model_v2
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-pg-model-v2.test.ts
-          CLI_REGION: eu-north-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_pg_oidc_auth_fields
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-pg-oidc-auth-fields.test.ts
-          CLI_REGION: eu-central-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_pg_oidc_auth
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-pg-oidc-auth.test.ts
-          CLI_REGION: eu-west-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_pg_refers_to_fields
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-pg-refers-to-fields.test.ts
-          CLI_REGION: eu-west-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_pg_refers_to
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-pg-refers-to.test.ts
-          CLI_REGION: eu-west-3
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_pg_relational_directives
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-pg-relational-directives.test.ts
-          CLI_REGION: eu-west-3
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_pg_userpool_auth_fields
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-pg-userpool-auth-fields.test.ts
-          CLI_REGION: sa-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_pg_userpool_auth
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-pg-userpool-auth.test.ts
-          CLI_REGION: us-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_pg_v2_generate_schema
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-pg-v2-generate-schema.test.ts
-          CLI_REGION: us-east-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_relational_directives
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-relational-directives.test.ts
-          CLI_REGION: us-west-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: rds_v2_test_utils
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/rds-v2-test-utils.test.ts
-          CLI_REGION: us-west-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: schema_model
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/schema-model.test.ts
-          CLI_REGION: ap-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: sql_generate_unauth
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/sql-generate-unauth.test.ts
-          CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: apigw
@@ -964,24 +965,15 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/apigw.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: ap-south-1
       depend-on:
         - publish_to_local_registry
-    - identifier: containers_api_2
+    - identifier: schema_auth_9
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
-          TEST_SUITE: src/__tests__/containers-api-2.test.ts
-          CLI_REGION: us-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: schema_auth_14
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/schema-auth-14.test.ts
+          TEST_SUITE: src/__tests__/schema-auth-9.test.ts
           CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
@@ -994,13 +986,22 @@ batch:
           CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
-    - identifier: schema_auth_9
+    - identifier: schema_auth_14
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
-          TEST_SUITE: src/__tests__/schema-auth-9.test.ts
+          TEST_SUITE: src/__tests__/schema-auth-14.test.ts
           CLI_REGION: ca-central-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: containers_api_2
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/containers-api-2.test.ts
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: api_1
@@ -1009,7 +1010,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/api_1.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: eu-north-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_5
@@ -1018,16 +1019,16 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-auth-5.test.ts
-          CLI_REGION: eu-north-1
+          CLI_REGION: eu-south-1
       depend-on:
         - publish_to_local_registry
-    - identifier: searchable_datastore
+    - identifier: schema_searchable
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
-          TEST_SUITE: src/__tests__/graphql-v2/searchable-datastore.test.ts
-          CLI_REGION: eu-west-2
+          TEST_SUITE: src/__tests__/schema-searchable.test.ts
+          CLI_REGION: us-east-1
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
@@ -1037,26 +1038,17 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-iterative-update-4.test.ts
-          CLI_REGION: eu-west-1
+          CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
-    - identifier: schema_searchable
+    - identifier: searchable_datastore
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
-          TEST_SUITE: src/__tests__/schema-searchable.test.ts
-          CLI_REGION: us-west-2
+          TEST_SUITE: src/__tests__/graphql-v2/searchable-datastore.test.ts
+          CLI_REGION: sa-east-1
           USE_PARENT_ACCOUNT: 1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: schema_auth_6
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/schema-auth-6.test.ts
-          CLI_REGION: eu-west-3
       depend-on:
         - publish_to_local_registry
     - identifier: schema_connection
@@ -1068,6 +1060,15 @@ batch:
           CLI_REGION: me-south-1
       depend-on:
         - publish_to_local_registry
+    - identifier: schema_auth_6
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/schema-auth-6.test.ts
+          CLI_REGION: sa-east-1
+      depend-on:
+        - publish_to_local_registry
     - identifier: searchable_previous_deployment_had_node_to_node
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
@@ -1075,7 +1076,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-had-node-to-node.test.ts
-          CLI_REGION: sa-east-1
+          CLI_REGION: us-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: searchable_previous_deployment_no_node_to_node
@@ -1085,7 +1086,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-no-node-to-node.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: api_2
@@ -1094,7 +1095,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/api_2.test.ts
-          CLI_REGION: us-west-1
+          CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: searchable_migration
@@ -1103,134 +1104,135 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/transformer-migrations/searchable-migration.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: ap-south-1
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
-    - identifier: add_resources_amplify_table_5_custom_logic_data_construct
+    - identifier: utils_ddb_iam_access_data_construct_custom_logic
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/add-resources.test.ts|src/__tests__/amplify-table-5.test.ts|src/__tests__/custom-logic.test.ts|src/__tests__/data-construct.test.ts
-          CLI_REGION: ap-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: ddb_iam_access_3_gsis_10k_records_3_gsis_1k_records_3_gsis_empty_table
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/ddb-iam-access.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-10k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-empty-table.test.ts
+            src/__tests__/utils.test.ts|src/__tests__/ddb-iam-access.test.ts|src/__tests__/data-construct.test.ts|src/__tests__/custom-logic.test.ts
           CLI_REGION: eu-north-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        3_gsis_single_record_replace_2_gsis_10k_records_replace_2_gsis_1k_records_replace_2_gsis_empty_table
+        amplify_table_5_add_resources_single_gsi_single_record_single_gsi_empty_table
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-10k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-empty-table.test.ts
-          CLI_REGION: eu-west-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: >-
-        replace_2_gsis_single_record_replace_2_gsis_update_attr_10k_records_replace_2_gsis_update_attr_1k_records_replace_2_gsis_update
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-10k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-empty-table.test.ts
-          CLI_REGION: eu-west-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: >-
-        replace_2_gsis_update_attr_single_record_single_gsi_10k_records_single_gsi_1k_records_single_gsi_empty_table
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-10k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-empty-table.test.ts
+            src/__tests__/amplify-table-5.test.ts|src/__tests__/add-resources.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-empty-table.test.ts
           CLI_REGION: eu-west-3
       depend-on:
         - publish_to_local_registry
-    - identifier: single_gsi_single_record_utils
+    - identifier: >-
+        single_gsi_1k_records_single_gsi_10k_records_replace_2_gsis_update_attr_single_record_replace_2_gsis_update_attr_empty_table
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-single-record.test.ts|src/__tests__/utils.test.ts
+            src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-10k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-empty-table.test.ts
           CLI_REGION: me-south-1
       depend-on:
         - publish_to_local_registry
-    - identifier: admin_role
+    - identifier: >-
+        replace_2_gsis_update_attr_1k_records_replace_2_gsis_update_attr_10k_records_replace_2_gsis_single_record_replace_2_gsis_empty_
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_SMALL
+        compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          TEST_SUITE: src/__tests__/admin-role.test.ts
-          CLI_REGION: ap-northeast-1
+          TEST_SUITE: >-
+            src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-10k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-empty-table.test.ts
+          CLI_REGION: sa-east-1
       depend-on:
         - publish_to_local_registry
-    - identifier: all_auth_modes
+    - identifier: >-
+        replace_2_gsis_1k_records_replace_2_gsis_10k_records_3_gsis_single_record_3_gsis_empty_table
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_SMALL
+        compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          TEST_SUITE: src/__tests__/all-auth-modes.test.ts
-          CLI_REGION: ap-northeast-2
+          TEST_SUITE: >-
+            src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-10k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-empty-table.test.ts
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
-    - identifier: amplify_ddb_canary
+    - identifier: 3_gsis_1k_records_3_gsis_10k_records
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-10k-records.test.ts
+          CLI_REGION: us-east-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: sql_pg_models
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
-          TEST_SUITE: src/__tests__/amplify-ddb-canary.test.ts
+          TEST_SUITE: src/__tests__/sql-pg-models.test.ts
           CLI_REGION: ap-south-1
       depend-on:
         - publish_to_local_registry
-    - identifier: amplify_table_1
+    - identifier: sql_pg_canary
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
-          TEST_SUITE: src/__tests__/amplify-table-1.test.ts
+          TEST_SUITE: src/__tests__/sql-pg-canary.test.ts
           CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
-    - identifier: amplify_table_2
+    - identifier: sql_mysql_canary
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
-          TEST_SUITE: src/__tests__/amplify-table-2.test.ts
+          TEST_SUITE: src/__tests__/sql-mysql-canary.test.ts
           CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
-    - identifier: amplify_table_3
+    - identifier: sql_models_2
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
-          TEST_SUITE: src/__tests__/amplify-table-3.test.ts
+          TEST_SUITE: src/__tests__/sql-models-2.test.ts
           CLI_REGION: ca-central-1
       depend-on:
         - publish_to_local_registry
-    - identifier: amplify_table_4
+    - identifier: sql_models_1
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
-          TEST_SUITE: src/__tests__/amplify-table-4.test.ts
+          TEST_SUITE: src/__tests__/sql-models-1.test.ts
           CLI_REGION: eu-central-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: sql_iam_access
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/sql-iam-access.test.ts
+          CLI_REGION: eu-north-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: default_ddb_canary
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/default-ddb-canary.test.ts
+          CLI_REGION: eu-north-1
       depend-on:
         - publish_to_local_registry
     - identifier: base_cdk_ap_east_1
@@ -1404,40 +1406,403 @@ batch:
           CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
-    - identifier: default_ddb_canary
+    - identifier: amplify_table_4
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
-          TEST_SUITE: src/__tests__/default-ddb-canary.test.ts
-          CLI_REGION: eu-south-1
+          TEST_SUITE: src/__tests__/amplify-table-4.test.ts
+          CLI_REGION: eu-west-1
       depend-on:
         - publish_to_local_registry
-    - identifier: 3_gsis_100k_records
+    - identifier: amplify_table_3
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
-          TEST_SUITE: src/__tests__/deploy-velocity/3-gsis-100k-records.test.ts
+          TEST_SUITE: src/__tests__/amplify-table-3.test.ts
+          CLI_REGION: eu-west-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: amplify_table_2
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/amplify-table-2.test.ts
+          CLI_REGION: eu-west-3
+      depend-on:
+        - publish_to_local_registry
+    - identifier: amplify_table_1
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/amplify-table-1.test.ts
+          CLI_REGION: me-south-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: amplify_ddb_canary
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/amplify-ddb-canary.test.ts
           CLI_REGION: sa-east-1
       depend-on:
         - publish_to_local_registry
-    - identifier: replace_2_gsis_100k_records
+    - identifier: all_auth_modes
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
-          TEST_SUITE: src/__tests__/deploy-velocity/replace-2-gsis-100k-records.test.ts
+          TEST_SUITE: src/__tests__/all-auth-modes.test.ts
           CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
-    - identifier: replace_2_gsis_update_attr_100k_records
+    - identifier: admin_role
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/admin-role.test.ts
+          CLI_REGION: us-east-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: restricted_field_auth_gen2
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: >-
-            src/__tests__/deploy-velocity/replace-2-gsis-update-attr-100k-records.test.ts
+            src/__tests__/restricted-field-auth/restricted-field-auth-gen2.test.ts
+          CLI_REGION: ap-northeast-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: restricted_field_auth_gen1
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/restricted-field-auth/restricted-field-auth-gen1.test.ts
+          CLI_REGION: ap-northeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: restricted_field_auth_gen2_subscriptions_off
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/restricted-field-auth/subscriptions-off/restricted-field-auth-gen2-subscriptions-off.test.ts
+          CLI_REGION: ap-south-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: restricted_field_auth_gen1_subscriptions_off
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/restricted-field-auth/subscriptions-off/restricted-field-auth-gen1-subscriptions-off.test.ts
+          CLI_REGION: ap-southeast-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: references_sqlprimary_sqlrelated
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/relationships/references/references-sqlprimary-sqlrelated.test.ts
+          CLI_REGION: ap-northeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: references_sqlprimary_ddbrelated
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/relationships/references/references-sqlprimary-ddbrelated.test.ts
+          CLI_REGION: ap-south-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: references_ddbprimary_sqlrelated
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/relationships/references/references-ddbprimary-sqlrelated.test.ts
+          CLI_REGION: ap-southeast-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: references_ddbprimary_ddbrelated
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/relationships/references/references-ddbprimary-ddbrelated.test.ts
+          CLI_REGION: ap-southeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: recursive_relationships_sql
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/relationships/recursive/recursive-relationships-sql.test.ts
+          CLI_REGION: ca-central-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: recursive_relationships_ddb
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/relationships/recursive/recursive-relationships-ddb.test.ts
+          CLI_REGION: eu-central-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: multi_relationship_sqlprimary_sqlrelated
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/relationships/multi-relationship/multi-relationship-sqlprimary-sqlrelated.test.ts
+          CLI_REGION: eu-north-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: multi_relationship_sqlprimary_ddbrelated
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/relationships/multi-relationship/multi-relationship-sqlprimary-ddbrelated.test.ts
+          CLI_REGION: eu-south-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: multi_relationship_ddbprimary_sqlrelated
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/relationships/multi-relationship/multi-relationship-ddbprimary-sqlrelated.test.ts
+          CLI_REGION: eu-west-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: multi_relationship_ddbprimary_ddbrelated
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/relationships/multi-relationship/multi-relationship-ddbprimary-ddbrelated.test.ts
+          CLI_REGION: eu-west-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: relationships_gen1
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/relationships/gen1/relationships-gen1.test.ts
+          CLI_REGION: eu-west-3
+      depend-on:
+        - publish_to_local_registry
+    - identifier: assoc_field_subscriptions_off
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/owner-auth/subscriptions-off/assoc-field-subscriptions-off.test.ts
+          CLI_REGION: us-east-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: bind_sql_ids
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/owner-auth/bind-sql-ids/bind-sql-ids.test.ts
+          CLI_REGION: us-west-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: assoc_field
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/owner-auth/assoc-field/assoc-field.test.ts
+          CLI_REGION: us-west-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: static_group_auth_sqlprimary_sqlrelated_subscriptions_off
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/group-auth/subscriptions-off/static-group-auth/static-group-auth-sqlprimary-sqlrelated-subscriptions-off.test.ts
+          CLI_REGION: ap-northeast-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: static_group_auth_sqlprimary_ddbrelated_subscriptions_off
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/group-auth/subscriptions-off/static-group-auth/static-group-auth-sqlprimary-ddbrelated-subscriptions-off.test.ts
+          CLI_REGION: ap-northeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: static_group_auth_ddbprimary_sqlrelated_subscriptions_off
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/group-auth/subscriptions-off/static-group-auth/static-group-auth-ddbprimary-sqlrelated-subscriptions-off.test.ts
+          CLI_REGION: ap-south-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: static_group_auth_ddbprimary_ddbrelated_subscriptions_off
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/group-auth/subscriptions-off/static-group-auth/static-group-auth-ddbprimary-ddbrelated-subscriptions-off.test.ts
+          CLI_REGION: ap-southeast-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: dynamic_group_auth_sqlprimary_sqlrelated_subscriptions_off
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/group-auth/subscriptions-off/dynamic-group-auth/dynamic-group-auth-sqlprimary-sqlrelated-subscriptions-off.test.ts
+          CLI_REGION: ap-southeast-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: dynamic_group_auth_sqlprimary_ddbrelated_subscriptions_off
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/group-auth/subscriptions-off/dynamic-group-auth/dynamic-group-auth-sqlprimary-ddbrelated-subscriptions-off.test.ts
+          CLI_REGION: ca-central-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: dynamic_group_auth_ddbprimary_sqlrelated_subscriptions_off
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/group-auth/subscriptions-off/dynamic-group-auth/dynamic-group-auth-ddbprimary-sqlrelated-subscriptions-off.test.ts
+          CLI_REGION: eu-central-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: dynamic_group_auth_ddbprimary_ddbrelated_subscriptions_off
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/group-auth/subscriptions-off/dynamic-group-auth/dynamic-group-auth-ddbprimary-ddbrelated-subscriptions-off.test.ts
+          CLI_REGION: eu-north-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: static_group_auth_sqlprimary_sqlrelated
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/group-auth/static-group-auth/static-group-auth-sqlprimary-sqlrelated.test.ts
+          CLI_REGION: eu-south-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: static_group_auth_sqlprimary_ddbrelated
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/group-auth/static-group-auth/static-group-auth-sqlprimary-ddbrelated.test.ts
+          CLI_REGION: eu-west-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: static_group_auth_ddbprimary_sqlrelated
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/group-auth/static-group-auth/static-group-auth-ddbprimary-sqlrelated.test.ts
+          CLI_REGION: eu-west-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: static_group_auth_ddbprimary_ddbrelated
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/group-auth/static-group-auth/static-group-auth-ddbprimary-ddbrelated.test.ts
+          CLI_REGION: eu-west-3
+      depend-on:
+        - publish_to_local_registry
+    - identifier: dynamic_group_auth_sqlprimary_sqlrelated
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/group-auth/dynamic-group-auth/dynamic-group-auth-sqlprimary-sqlrelated.test.ts
+          CLI_REGION: me-south-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: dynamic_group_auth_sqlprimary_ddbrelated
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/group-auth/dynamic-group-auth/dynamic-group-auth-sqlprimary-ddbrelated.test.ts
+          CLI_REGION: sa-east-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: dynamic_group_auth_ddbprimary_sqlrelated
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/group-auth/dynamic-group-auth/dynamic-group-auth-ddbprimary-sqlrelated.test.ts
+          CLI_REGION: us-east-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: dynamic_group_auth_ddbprimary_ddbrelated
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/group-auth/dynamic-group-auth/dynamic-group-auth-ddbprimary-ddbrelated.test.ts
           CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
@@ -1450,469 +1815,216 @@ batch:
           CLI_REGION: us-west-1
       depend-on:
         - publish_to_local_registry
-    - identifier: dynamic_group_auth_ddbprimary_ddbrelated
+    - identifier: replace_2_gsis_update_attr_100k_records
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: >-
-            src/__tests__/group-auth/dynamic-group-auth/dynamic-group-auth-ddbprimary-ddbrelated.test.ts
+            src/__tests__/deploy-velocity/replace-2-gsis-update-attr-100k-records.test.ts
           CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
-    - identifier: dynamic_group_auth_ddbprimary_sqlrelated
+    - identifier: replace_2_gsis_100k_records
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
-          TEST_SUITE: >-
-            src/__tests__/group-auth/dynamic-group-auth/dynamic-group-auth-ddbprimary-sqlrelated.test.ts
+          TEST_SUITE: src/__tests__/deploy-velocity/replace-2-gsis-100k-records.test.ts
           CLI_REGION: ap-east-1
       depend-on:
         - publish_to_local_registry
-    - identifier: dynamic_group_auth_sqlprimary_ddbrelated
+    - identifier: 3_gsis_100k_records
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
-          TEST_SUITE: >-
-            src/__tests__/group-auth/dynamic-group-auth/dynamic-group-auth-sqlprimary-ddbrelated.test.ts
+          TEST_SUITE: src/__tests__/deploy-velocity/3-gsis-100k-records.test.ts
           CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
-    - identifier: dynamic_group_auth_sqlprimary_sqlrelated
-      buildspec: codebuild_specs/run_cdk_tests.yml
+    - identifier: >-
+        TestComplexStackMappingsLocal_NestedStacksTest_KeyTransformerLocal_CustomRoots
+      buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_SMALL
+        compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/group-auth/dynamic-group-auth/dynamic-group-auth-sqlprimary-sqlrelated.test.ts
+            src/__tests__/TestComplexStackMappingsLocal.e2e.test.ts|src/__tests__/NestedStacksTest.e2e.test.ts|src/__tests__/KeyTransformerLocal.e2e.test.ts|src/__tests__/CustomRoots.e2e.test.ts
+          CLI_REGION: ap-northeast-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: >-
+        NonModelAuthV2Function_VersionedModelTransformer_TransformerOptionsV2_PredictionsTransformerV2Tests
+      buildspec: codebuild_specs/graphql_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/NonModelAuthV2Function.e2e.test.ts|src/__tests__/VersionedModelTransformer.e2e.test.ts|src/__tests__/TransformerOptionsV2.e2e.test.ts|src/__tests__/PredictionsTransformerV2Tests.e2e.test.ts
           CLI_REGION: ap-northeast-2
       depend-on:
         - publish_to_local_registry
-    - identifier: static_group_auth_ddbprimary_ddbrelated
-      buildspec: codebuild_specs/run_cdk_tests.yml
+    - identifier: >-
+        PredictionsTransformerTests_PerFieldAuthTests_NoneEnvFunctionTransformer_NonModelAuthFunction
+      buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_SMALL
+        compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/group-auth/static-group-auth/static-group-auth-ddbprimary-ddbrelated.test.ts
+            src/__tests__/PredictionsTransformerTests.e2e.test.ts|src/__tests__/PerFieldAuthTests.e2e.test.ts|src/__tests__/NoneEnvFunctionTransformer.e2e.test.ts|src/__tests__/NonModelAuthFunction.e2e.test.ts
           CLI_REGION: ap-south-1
       depend-on:
         - publish_to_local_registry
-    - identifier: static_group_auth_ddbprimary_sqlrelated
-      buildspec: codebuild_specs/run_cdk_tests.yml
+    - identifier: >-
+        MutationCondition_KeyWithAuth_FunctionTransformerTests_DynamoDBModelTransformer
+      buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_SMALL
+        compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/group-auth/static-group-auth/static-group-auth-ddbprimary-sqlrelated.test.ts
-          CLI_REGION: ap-southeast-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: static_group_auth_sqlprimary_ddbrelated
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/group-auth/static-group-auth/static-group-auth-sqlprimary-ddbrelated.test.ts
+            src/__tests__/MutationCondition.e2e.test.ts|src/__tests__/KeyWithAuth.e2e.test.ts|src/__tests__/FunctionTransformerTests.e2e.test.ts|src/__tests__/DynamoDBModelTransformer.e2e.test.ts
           CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
-    - identifier: static_group_auth_sqlprimary_sqlrelated
-      buildspec: codebuild_specs/run_cdk_tests.yml
+    - identifier: >-
+        DefaultValueTransformer_ConnectionsWithAuthTests_RelationalWithOwnerFieldAsKeySchemaAuth_NewConnectionWithAuth
+      buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_SMALL
+        compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/group-auth/static-group-auth/static-group-auth-sqlprimary-sqlrelated.test.ts
+            src/__tests__/DefaultValueTransformer.e2e.test.ts|src/__tests__/ConnectionsWithAuthTests.e2e.test.ts|src/__tests__/RelationalWithOwnerFieldAsKeySchemaAuth.e2e.test.ts|src/__tests__/NewConnectionWithAuth.e2e.test.ts
           CLI_REGION: ca-central-1
       depend-on:
         - publish_to_local_registry
-    - identifier: assoc_field
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/owner-auth/assoc-field/assoc-field.test.ts
-          CLI_REGION: eu-central-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: bind_sql_ids
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/owner-auth/bind-sql-ids/bind-sql-ids.test.ts
-          CLI_REGION: eu-north-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: relationships_gen1
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/relationships/gen1/relationships-gen1.test.ts
-          CLI_REGION: eu-south-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: multi_relationship_ddbprimary_ddbrelated
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/relationships/multi-relationship/multi-relationship-ddbprimary-ddbrelated.test.ts
-          CLI_REGION: eu-west-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: multi_relationship_ddbprimary_sqlrelated
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/relationships/multi-relationship/multi-relationship-ddbprimary-sqlrelated.test.ts
-          CLI_REGION: eu-west-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: multi_relationship_sqlprimary_ddbrelated
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/relationships/multi-relationship/multi-relationship-sqlprimary-ddbrelated.test.ts
-          CLI_REGION: eu-west-3
-      depend-on:
-        - publish_to_local_registry
-    - identifier: multi_relationship_sqlprimary_sqlrelated
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/relationships/multi-relationship/multi-relationship-sqlprimary-sqlrelated.test.ts
-          CLI_REGION: me-south-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: recursive_relationships_ddb
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/relationships/recursive/recursive-relationships-ddb.test.ts
-          CLI_REGION: sa-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: recursive_relationships_sql
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/relationships/recursive/recursive-relationships-sql.test.ts
-          CLI_REGION: us-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: references_ddbprimary_ddbrelated
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/relationships/references/references-ddbprimary-ddbrelated.test.ts
-          CLI_REGION: us-east-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: references_ddbprimary_sqlrelated
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/relationships/references/references-ddbprimary-sqlrelated.test.ts
-          CLI_REGION: us-west-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: references_sqlprimary_ddbrelated
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/relationships/references/references-sqlprimary-ddbrelated.test.ts
-          CLI_REGION: us-west-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: references_sqlprimary_sqlrelated
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/relationships/references/references-sqlprimary-sqlrelated.test.ts
-          CLI_REGION: ap-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: restricted_field_auth_gen1
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/restricted-field-auth/restricted-field-auth-gen1.test.ts
-          CLI_REGION: ap-northeast-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: restricted_field_auth_gen2
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/restricted-field-auth/restricted-field-auth-gen2.test.ts
-          CLI_REGION: ap-northeast-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: sql_iam_access
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/sql-iam-access.test.ts
-          CLI_REGION: ap-south-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: sql_models_1
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/sql-models-1.test.ts
-          CLI_REGION: ap-southeast-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: sql_models_2
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/sql-models-2.test.ts
-          CLI_REGION: ap-southeast-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: sql_mysql_canary
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/sql-mysql-canary.test.ts
-          CLI_REGION: ca-central-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: sql_pg_canary
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/sql-pg-canary.test.ts
-          CLI_REGION: eu-central-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: sql_pg_models
-      buildspec: codebuild_specs/run_cdk_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/sql-pg-models.test.ts
-          CLI_REGION: eu-north-1
-      depend-on:
-        - publish_to_local_registry
     - identifier: >-
-        CustomRoots_KeyTransformerLocal_NestedStacksTest_TestComplexStackMappingsLocal
+        NewConnectionTransformer_ModelConnectionTransformer_SubscriptionsWithAuthTest_PerFieldAuthV2TransformerWithFF
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/CustomRoots.e2e.test.ts|src/__tests__/KeyTransformerLocal.e2e.test.ts|src/__tests__/NestedStacksTest.e2e.test.ts|src/__tests__/TestComplexStackMappingsLocal.e2e.test.ts
-          CLI_REGION: ap-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: >-
-        NonModelAuthV2Function_FunctionTransformerTests_KeyWithAuth_MutationCondition
-      buildspec: codebuild_specs/graphql_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/NonModelAuthV2Function.e2e.test.ts|src/__tests__/FunctionTransformerTests.e2e.test.ts|src/__tests__/KeyWithAuth.e2e.test.ts|src/__tests__/MutationCondition.e2e.test.ts
-          CLI_REGION: ap-northeast-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: >-
-        NoneEnvFunctionTransformer_NonModelAuthFunction_PerFieldAuthTests_PredictionsTransformerTests
-      buildspec: codebuild_specs/graphql_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/NoneEnvFunctionTransformer.e2e.test.ts|src/__tests__/NonModelAuthFunction.e2e.test.ts|src/__tests__/PerFieldAuthTests.e2e.test.ts|src/__tests__/PredictionsTransformerTests.e2e.test.ts
-          CLI_REGION: ap-south-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: >-
-        PredictionsTransformerV2Tests_TransformerOptionsV2_VersionedModelTransformer_ConnectionsWithAuthTests
-      buildspec: codebuild_specs/graphql_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/PredictionsTransformerV2Tests.e2e.test.ts|src/__tests__/TransformerOptionsV2.e2e.test.ts|src/__tests__/VersionedModelTransformer.e2e.test.ts|src/__tests__/ConnectionsWithAuthTests.e2e.test.ts
-          CLI_REGION: ap-southeast-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: >-
-        DefaultValueTransformer_DynamoDBModelTransformer_ModelConnectionTransformer_NewConnectionTransformer
-      buildspec: codebuild_specs/graphql_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/DefaultValueTransformer.e2e.test.ts|src/__tests__/DynamoDBModelTransformer.e2e.test.ts|src/__tests__/ModelConnectionTransformer.e2e.test.ts|src/__tests__/NewConnectionTransformer.e2e.test.ts
-          CLI_REGION: ap-southeast-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: >-
-        NewConnectionWithAuth_RelationalWithOwnerFieldAsKeySchemaAuth_BelongsToTransformerV2_KeyTransformer
-      buildspec: codebuild_specs/graphql_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/NewConnectionWithAuth.e2e.test.ts|src/__tests__/RelationalWithOwnerFieldAsKeySchemaAuth.e2e.test.ts|src/__tests__/BelongsToTransformerV2.e2e.test.ts|src/__tests__/KeyTransformer.e2e.test.ts
-          CLI_REGION: eu-north-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: >-
-        ModelAuthTransformer_PerFieldAuthV2Transformer_PerFieldAuthV2TransformerWithFF_SubscriptionsWithAuthTest
-      buildspec: codebuild_specs/graphql_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          TEST_SUITE: >-
-            src/__tests__/ModelAuthTransformer.e2e.test.ts|src/__tests__/PerFieldAuthV2Transformer.e2e.test.ts|src/__tests__/PerFieldAuthV2TransformerWithFF.e2e.test.ts|src/__tests__/SubscriptionsWithAuthTest.e2e.test.ts
+            src/__tests__/NewConnectionTransformer.e2e.test.ts|src/__tests__/ModelConnectionTransformer.e2e.test.ts|src/__tests__/SubscriptionsWithAuthTest.e2e.test.ts|src/__tests__/PerFieldAuthV2TransformerWithFF.e2e.test.ts
           CLI_REGION: eu-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        IndexWithAuthV2_ModelConnectionWithKeyTransformer_RelationalWithAuthV2WithFF_IndexWithAuthV2WithFF
+        PerFieldAuthV2Transformer_ModelAuthTransformer_KeyTransformer_BelongsToTransformerV2
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/IndexWithAuthV2.e2e.test.ts|src/__tests__/ModelConnectionWithKeyTransformer.e2e.test.ts|src/__tests__/RelationalWithAuthV2WithFF.e2e.test.ts|src/__tests__/IndexWithAuthV2WithFF.e2e.test.ts
+            src/__tests__/PerFieldAuthV2Transformer.e2e.test.ts|src/__tests__/ModelAuthTransformer.e2e.test.ts|src/__tests__/KeyTransformer.e2e.test.ts|src/__tests__/BelongsToTransformerV2.e2e.test.ts
           CLI_REGION: eu-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        MultiAuthModelAuthTransformer_IndexWithClaimFieldAsSortKeyAuth_ModelTransformer_MultiAuthV2Transformer
+        RelationalWithAuthV2WithFF_ModelConnectionWithKeyTransformer_IndexWithAuthV2_MultiAuthModelAuthTransformer
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/MultiAuthModelAuthTransformer.e2e.test.ts|src/__tests__/IndexWithClaimFieldAsSortKeyAuth.e2e.test.ts|src/__tests__/ModelTransformer.e2e.test.ts|src/__tests__/MultiAuthV2Transformer.e2e.test.ts
+            src/__tests__/RelationalWithAuthV2WithFF.e2e.test.ts|src/__tests__/ModelConnectionWithKeyTransformer.e2e.test.ts|src/__tests__/IndexWithAuthV2.e2e.test.ts|src/__tests__/MultiAuthModelAuthTransformer.e2e.test.ts
           CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        SubscriptionsWithAuthV2WithFF_MapsToTransformer_RelationalWithAuthV2_SubscriptionsWithAuthV2
+        IndexWithAuthV2WithFF_SubscriptionsWithAuthV2WithFF_MultiAuthV2Transformer_ModelTransformer
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/SubscriptionsWithAuthV2WithFF.e2e.test.ts|src/__tests__/MapsToTransformer.e2e.test.ts|src/__tests__/RelationalWithAuthV2.e2e.test.ts|src/__tests__/SubscriptionsWithAuthV2.e2e.test.ts
+            src/__tests__/IndexWithAuthV2WithFF.e2e.test.ts|src/__tests__/SubscriptionsWithAuthV2WithFF.e2e.test.ts|src/__tests__/MultiAuthV2Transformer.e2e.test.ts|src/__tests__/ModelTransformer.e2e.test.ts
           CLI_REGION: eu-west-3
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        IndexTransformer_MultiAuthV2TransformerWithFF_AuthV2Transformer_AuthV2ExhaustiveT1A
+        IndexWithClaimFieldAsSortKeyAuth_SubscriptionsWithAuthV2_RelationalWithAuthV2_MapsToTransformer
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/IndexTransformer.e2e.test.ts|src/__tests__/MultiAuthV2TransformerWithFF.e2e.test.ts|src/__tests__/AuthV2Transformer.e2e.test.ts|src/__tests__/AuthV2ExhaustiveT1A.test.ts
+            src/__tests__/IndexWithClaimFieldAsSortKeyAuth.e2e.test.ts|src/__tests__/SubscriptionsWithAuthV2.e2e.test.ts|src/__tests__/RelationalWithAuthV2.e2e.test.ts|src/__tests__/MapsToTransformer.e2e.test.ts
           CLI_REGION: me-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        AuthV2ExhaustiveT1B_AuthV2TransformerWithFF_IndexWithAutoQueryField_AuthV2ExhaustiveT1C
+        MultiAuthV2TransformerWithFF_IndexTransformer_AuthV2Transformer_AuthV2ExhaustiveT1B
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/AuthV2ExhaustiveT1B.test.ts|src/__tests__/AuthV2TransformerWithFF.e2e.test.ts|src/__tests__/IndexWithAutoQueryField.e2e.test.ts|src/__tests__/AuthV2ExhaustiveT1C.test.ts
+            src/__tests__/MultiAuthV2TransformerWithFF.e2e.test.ts|src/__tests__/IndexTransformer.e2e.test.ts|src/__tests__/AuthV2Transformer.e2e.test.ts|src/__tests__/AuthV2ExhaustiveT1B.test.ts
           CLI_REGION: sa-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        AuthV2ExhaustiveT2A_RelationalTransformers_SubscriptionsRuntimeFiltering_AuthV2ExhaustiveT1D
+        AuthV2ExhaustiveT1A_IndexWithAutoQueryField_AuthV2TransformerWithFF_SubscriptionsRuntimeFiltering
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/AuthV2ExhaustiveT2A.test.ts|src/__tests__/RelationalTransformers.e2e.test.ts|src/__tests__/SubscriptionsRuntimeFiltering.e2e.test.ts|src/__tests__/AuthV2ExhaustiveT1D.test.ts
+            src/__tests__/AuthV2ExhaustiveT1A.test.ts|src/__tests__/IndexWithAutoQueryField.e2e.test.ts|src/__tests__/AuthV2TransformerWithFF.e2e.test.ts|src/__tests__/SubscriptionsRuntimeFiltering.e2e.test.ts
           CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        AuthV2ExhaustiveT2B_AuthV2ExhaustiveT2D_AuthV2ExhaustiveT2C_AuthV2ExhaustiveT3A
+        RelationalTransformers_AuthV2ExhaustiveT2A_AuthV2ExhaustiveT1C_AuthV2ExhaustiveT1D
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/AuthV2ExhaustiveT2B.test.ts|src/__tests__/AuthV2ExhaustiveT2D.test.ts|src/__tests__/AuthV2ExhaustiveT2C.test.ts|src/__tests__/AuthV2ExhaustiveT3A.test.ts
+            src/__tests__/RelationalTransformers.e2e.test.ts|src/__tests__/AuthV2ExhaustiveT2A.test.ts|src/__tests__/AuthV2ExhaustiveT1C.test.ts|src/__tests__/AuthV2ExhaustiveT1D.test.ts
           CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        AuthV2ExhaustiveT3B_AuthV2ExhaustiveT3C_AuthV2ExhaustiveT3D_AuthV2TransformerIAM
+        AuthV2ExhaustiveT2B_AuthV2ExhaustiveT2D_AuthV2ExhaustiveT2C_AuthV2TransformerIAM
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/AuthV2ExhaustiveT3B.test.ts|src/__tests__/AuthV2ExhaustiveT3C.test.ts|src/__tests__/AuthV2ExhaustiveT3D.test.ts|src/__tests__/AuthV2TransformerIAM.test.ts
+            src/__tests__/AuthV2ExhaustiveT2B.test.ts|src/__tests__/AuthV2ExhaustiveT2D.test.ts|src/__tests__/AuthV2ExhaustiveT2C.test.ts|src/__tests__/AuthV2TransformerIAM.test.ts
           CLI_REGION: us-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        SearchableModelTransformerV2_SearchableWithAuthTests_SearchableModelTransformer_SearchableWithAuthV2
+        AuthV2ExhaustiveT3D_AuthV2ExhaustiveT3C_AuthV2ExhaustiveT3B_AuthV2ExhaustiveT3A
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/SearchableModelTransformerV2.e2e.test.ts|src/__tests__/SearchableWithAuthTests.e2e.test.ts|src/__tests__/SearchableModelTransformer.e2e.test.ts|src/__tests__/SearchableWithAuthV2.e2e.test.ts
+            src/__tests__/AuthV2ExhaustiveT3D.test.ts|src/__tests__/AuthV2ExhaustiveT3C.test.ts|src/__tests__/AuthV2ExhaustiveT3B.test.ts|src/__tests__/AuthV2ExhaustiveT3A.test.ts
           CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
-    - identifier: SearchableWithAuthV2WithFF
+    - identifier: >-
+        SearchableModelTransformerV2_SearchableWithAuthTests_SearchableModelTransformer_SearchableWithAuthV2WithFF
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          TEST_SUITE: src/__tests__/SearchableWithAuthV2WithFF.e2e.test.ts
+          TEST_SUITE: >-
+            src/__tests__/SearchableModelTransformerV2.e2e.test.ts|src/__tests__/SearchableWithAuthTests.e2e.test.ts|src/__tests__/SearchableModelTransformer.e2e.test.ts|src/__tests__/SearchableWithAuthV2WithFF.e2e.test.ts
+          CLI_REGION: ap-southeast-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: SearchableWithAuthV2
+      buildspec: codebuild_specs/graphql_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          TEST_SUITE: src/__tests__/SearchableWithAuthV2.e2e.test.ts
           CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
@@ -1922,17 +2034,8 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/FunctionTransformerTestsV2.e2e.test.ts
-          CLI_REGION: ap-northeast-2
-          USE_PARENT_ACCOUNT: 1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: HttpTransformer
-      buildspec: codebuild_specs/graphql_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/HttpTransformer.e2e.test.ts
           CLI_REGION: ca-central-1
+          USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
     - identifier: HttpTransformerV2
@@ -1941,7 +2044,16 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/HttpTransformerV2.e2e.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: eu-north-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: HttpTransformer
+      buildspec: codebuild_specs/graphql_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/HttpTransformer.e2e.test.ts
+          CLI_REGION: eu-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: cleanup_e2e_resources
@@ -1949,4 +2061,4 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_SMALL
       depend-on:
-        - auth_2_datastore_modelgen_amplify_app_custom_transformers
+        - auth_2_datastore_modelgen_mock_api_amplify_app
