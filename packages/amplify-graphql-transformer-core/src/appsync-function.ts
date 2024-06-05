@@ -50,33 +50,37 @@ export class AppSyncFunctionConfiguration extends Construct {
 
   public readonly functionId: string;
 
-  private function: CfnFunctionConfiguration;
+  // private function: CfnFunctionConfiguration;
 
   constructor(scope: Construct, id: string, props: FunctionConfigurationProps) {
     super(scope, id);
     this.name = props.name;
 
-    const requestTemplate = props.requestMappingTemplate.bind(this, props.api.assetProvider);
-    const responseTemplate = props.responseMappingTemplate.bind(this, props.api.assetProvider);
-    this.function = new CfnFunctionConfiguration(this, `${id}.AppSyncFunction`, {
-      name: id,
-      apiId: props.api.apiId,
-      functionVersion: '2018-05-29',
-      description: props.description,
-      dataSourceName: props.dataSource instanceof BaseDataSource ? props.dataSource.ds.attrName : props.dataSource,
-      ...(props.requestMappingTemplate instanceof InlineTemplate
-        ? { requestMappingTemplate: requestTemplate }
-        : { requestMappingTemplateS3Location: requestTemplate }),
-      ...(props.responseMappingTemplate instanceof InlineTemplate
-        ? { responseMappingTemplate: responseTemplate }
-        : { responseMappingTemplateS3Location: responseTemplate }),
-    });
-    setResourceName(this.function, { name: id });
-    props.api.addSchemaDependency(this.function);
-    if (props.dataSource instanceof BackedDataSource) {
-      this.function.addDependency(props.dataSource?.ds);
-    }
-    this.arn = this.function.attrFunctionArn;
-    this.functionId = this.function.attrFunctionId;
+    // const requestTemplate = props.requestMappingTemplate.bind(this, props.api.assetProvider);
+    // const responseTemplate = props.responseMappingTemplate.bind(this, props.api.assetProvider);
+    // this.function = new CfnFunctionConfiguration(this, `${id}.AppSyncFunction`, {
+    //   name: id,
+    //   apiId: props.api.apiId,
+    //   functionVersion: '2018-05-29',
+    //   description: props.description,
+    //   dataSourceName: props.dataSource instanceof BaseDataSource ? props.dataSource.ds.attrName : props.dataSource,
+    //   ...(props.requestMappingTemplate instanceof InlineTemplate
+    //     ? { requestMappingTemplate: requestTemplate }
+    //     : { requestMappingTemplateS3Location: requestTemplate }),
+    //   ...(props.responseMappingTemplate instanceof InlineTemplate
+    //     ? { responseMappingTemplate: responseTemplate }
+    //     : { responseMappingTemplateS3Location: responseTemplate }),
+    // });
+    // setResourceName(this.function, { name: id });
+    // props.api.addSchemaDependency(this.function);
+    // if (props.dataSource instanceof BackedDataSource) {
+    //   this.function.addDependency(props.dataSource?.ds);
+    // }
+    // this.arn = this.function.attrFunctionArn;
+    // this.functionId = this.function.attrFunctionId;
+
+    this.arn = props.name;
+    this.functionId = props.name;
+
   }
 }

@@ -340,7 +340,7 @@ export class GraphQLTransform {
     this.collectResolvers(context, context.api);
     this.ensureNoneDataSource(context.api);
 
-    context.api.host.displayAllResources(context);
+    context.api.host.createResourceManagerResource(context);
 
     // const myBucket = new s3.Bucket(context.stackManager.getScopeFor('TestCDKBucket'), 'TestCDKBucket');
 

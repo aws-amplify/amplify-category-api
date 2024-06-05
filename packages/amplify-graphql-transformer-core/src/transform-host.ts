@@ -78,7 +78,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     return this.resolvers.has(resolverRef) ? this.resolvers.get(resolverRef) : undefined;
   };
 
-  displayAllResources = (context: any): void => {
+  createResourceManagerResource = (context: any): void => {
     fs.writeFileSync(
       path.join(__dirname, 'resolver-manager', 'computed-resources.json'),
       JSON.stringify(this.resources, null, 4),
@@ -87,7 +87,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     const lambdaCodePath = path.join(__dirname, '..', 'lib', 'resolver-manager');
     console.log(path.normalize(lambdaCodePath));
 
-    const customResourceStack = context.stackManager.getScopeFor('ConnectionStack', 'ConnectionStack');
+    const customResourceStack = context.stackManager.getScopeFor('ResolverManagerStack', 'ResolverManagerStack');
     const serviceTokenHandler = new Provider(customResourceStack, 'AmplifyResolverManagerLogicalId', {
       onEventHandler: new Function(this.api, 'AmplifyResolverManagerOnEvent', {
         code: Code.fromAsset(lambdaCodePath),
@@ -237,7 +237,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     dataSourceName?: string,
     pipelineConfig?: string[],
     scope?: Construct,
-  ): CfnResolver => {
+  ): any => {
     if (dataSourceName && !Token.isUnresolved(dataSourceName) && !this.dataSources.has(dataSourceName)) {
       throw new Error(`DataSource ${dataSourceName} is missing in the API`);
     }
@@ -268,23 +268,23 @@ export class DefaultTransformHost implements TransformHostProvider {
       return resolver;
     }
     if (pipelineConfig) {
-      const resolver = new CfnResolver(scope || this.api, resolverName, {
-        apiId: this.api.apiId,
-        fieldName,
-        typeName,
-        kind: 'PIPELINE',
-        ...(requestMappingTemplate instanceof InlineTemplate
-          ? { requestMappingTemplate: requestTemplateLocation }
-          : { requestMappingTemplateS3Location: requestTemplateLocation }),
-        ...(responseMappingTemplate instanceof InlineTemplate
-          ? { responseMappingTemplate: responseTemplateLocation }
-          : { responseMappingTemplateS3Location: responseTemplateLocation }),
-        pipelineConfig: {
-          functions: pipelineConfig,
-        },
-      });
+      // const resolver = new CfnResolver(scope || this.api, resolverName, {
+      //   apiId: this.api.apiId,
+      //   fieldName,
+      //   typeName,
+      //   kind: 'PIPELINE',
+      //   ...(requestMappingTemplate instanceof InlineTemplate
+      //     ? { requestMappingTemplate: requestTemplateLocation }
+      //     : { requestMappingTemplateS3Location: requestTemplateLocation }),
+      //   ...(responseMappingTemplate instanceof InlineTemplate
+      //     ? { responseMappingTemplate: responseTemplateLocation }
+      //     : { responseMappingTemplateS3Location: responseTemplateLocation }),
+      //   pipelineConfig: {
+      //     functions: pipelineConfig,
+      //   },
+      // });
 
-      this.resources[`${typeName}.${fieldName}`] = {
+      const resolverResource = {
         type: 'Resolver',
         fieldName,
         typeName,
@@ -296,11 +296,14 @@ export class DefaultTransformHost implements TransformHostProvider {
         },
       };
 
-      resolver.overrideLogicalId(resourceId);
-      setResourceName(resolver, { name: `${typeName}.${fieldName}` });
-      this.api.addSchemaDependency(resolver);
-      this.resolvers.set(`${typeName}:${fieldName}`, resolver);
-      return resolver;
+      this.resources[`${typeName}.${fieldName}`] = resolverResource;
+      return resolverResource;
+
+      // resolver.overrideLogicalId(resourceId);
+      // setResourceName(resolver, { name: `${typeName}.${fieldName}` });
+      // this.api.addSchemaDependency(resolver);
+      // this.resolvers.set(`${typeName}:${fieldName}`, resolver);
+      // return resolver;
     }
     throw new Error('Resolver needs either dataSourceName or pipelineConfig to be passed');
   };
