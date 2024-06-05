@@ -312,10 +312,10 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
   #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
 #end
 $util.qr($lambdaInput.args.input.put(\\"userFirstName\\", {
-  \\"eq\\": $util.defaultIfNull($ctx.source.firstName, \\"\\")
+  \\"eq\\": $ctx.source.firstName
 }))
 $util.qr($lambdaInput.args.input.put(\\"userLastName\\", {
-  \\"eq\\": $util.defaultIfNull($ctx.source.lastName, \\"\\")
+  \\"eq\\": $ctx.source.lastName
 }))
 {
   \\"version\\": \\"2018-05-29\\",
@@ -642,7 +642,7 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
   #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
 #end
 $util.qr($lambdaInput.args.input.put(\\"userId\\", {
-  \\"eq\\": $util.defaultIfNull($ctx.source.id, \\"\\")
+  \\"eq\\": $ctx.source.id
 }))
 {
   \\"version\\": \\"2018-05-29\\",

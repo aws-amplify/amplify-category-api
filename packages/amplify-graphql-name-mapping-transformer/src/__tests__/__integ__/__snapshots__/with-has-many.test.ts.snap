@@ -449,7 +449,7 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
   #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
 #end
 $util.qr($lambdaInput.args.filter.put(\\"employeeId\\", {
-  \\"eq\\": $util.defaultIfNull($ctx.source.id, \\"\\")
+  \\"eq\\": $ctx.source.id
 }))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 {
@@ -483,7 +483,7 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
 #end
-$util.qr($lambdaInput.args.input.put(\\"id\\", $util.defaultIfNull($ctx.source.employeeId, \\"\\")))
+$util.qr($lambdaInput.args.input.put(\\"id\\", $ctx.source.employeeId))
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",

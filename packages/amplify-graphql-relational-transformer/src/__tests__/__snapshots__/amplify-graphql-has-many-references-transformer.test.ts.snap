@@ -1578,7 +1578,7 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
 #end
-$util.qr($lambdaInput.args.input.put(\\"id\\", $util.defaultIfNull($ctx.source.teamId, \\"\\")))
+$util.qr($lambdaInput.args.input.put(\\"id\\", $ctx.source.teamId))
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
@@ -1610,7 +1610,7 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
 #end
-$util.qr($lambdaInput.args.input.put(\\"id\\", $util.defaultIfNull($ctx.source.teamId, \\"\\")))
+$util.qr($lambdaInput.args.input.put(\\"id\\", $ctx.source.teamId))
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
