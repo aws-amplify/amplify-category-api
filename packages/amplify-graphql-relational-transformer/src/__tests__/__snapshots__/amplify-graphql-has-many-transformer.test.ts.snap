@@ -327,10 +327,10 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
   #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
 #end
 $util.qr($lambdaInput.args.filter.put(\\"systemId\\", {
-  \\"eq\\": $util.defaultIfNull($ctx.source.systemId, \\"\\")
+  \\"eq\\": $ctx.source.systemId
 }))
 $util.qr($lambdaInput.args.filter.put(\\"systemName\\", {
-  \\"eq\\": $util.defaultIfNull($ctx.source.systemName, \\"\\")
+  \\"eq\\": $ctx.source.systemName
 }))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 {
@@ -662,7 +662,7 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
   #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
 #end
 $util.qr($lambdaInput.args.filter.put(\\"blogId\\", {
-  \\"eq\\": $util.defaultIfNull($ctx.source.id, \\"\\")
+  \\"eq\\": $ctx.source.id
 }))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 {

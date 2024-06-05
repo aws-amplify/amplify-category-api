@@ -1126,7 +1126,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/amplify-table-5.test.ts|src/__tests__/add-resources.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-empty-table.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: >-
@@ -1137,7 +1137,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-10k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-empty-table.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: ap-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
@@ -1148,7 +1148,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-10k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-empty-table.test.ts
-          CLI_REGION: us-west-1
+          CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
@@ -1159,7 +1159,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-10k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-empty-table.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: ap-northeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: 3_gsis_1k_records_3_gsis_10k_records
@@ -1169,7 +1169,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-10k-records.test.ts
-          CLI_REGION: ap-east-1
+          CLI_REGION: ap-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: sql_pg_models
@@ -1569,6 +1569,36 @@ batch:
           CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
+    - identifier: uuid_pk_sqlprimary_sqlrelated
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/relationships/postgres-uuid-pk/uuid-pk-sqlprimary-sqlrelated.test.ts
+          CLI_REGION: eu-north-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: uuid_pk_sqlprimary_ddbrelated
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/relationships/postgres-uuid-pk/uuid-pk-sqlprimary-ddbrelated.test.ts
+          CLI_REGION: eu-south-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: uuid_pk_ddbprimary_sqlrelated
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: >-
+            src/__tests__/relationships/postgres-uuid-pk/uuid-pk-ddbprimary-sqlrelated.test.ts
+          CLI_REGION: eu-west-1
+      depend-on:
+        - publish_to_local_registry
     - identifier: multi_relationship_sqlprimary_sqlrelated
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
@@ -1576,7 +1606,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/relationships/multi-relationship/multi-relationship-sqlprimary-sqlrelated.test.ts
-          CLI_REGION: eu-north-1
+          CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: multi_relationship_sqlprimary_ddbrelated
@@ -1586,7 +1616,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/relationships/multi-relationship/multi-relationship-sqlprimary-ddbrelated.test.ts
-          CLI_REGION: eu-south-1
+          CLI_REGION: eu-west-3
       depend-on:
         - publish_to_local_registry
     - identifier: multi_relationship_ddbprimary_sqlrelated
@@ -1596,7 +1626,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/relationships/multi-relationship/multi-relationship-ddbprimary-sqlrelated.test.ts
-          CLI_REGION: eu-west-1
+          CLI_REGION: me-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: multi_relationship_ddbprimary_ddbrelated
@@ -1606,7 +1636,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/relationships/multi-relationship/multi-relationship-ddbprimary-ddbrelated.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: sa-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: relationships_gen1
@@ -1615,7 +1645,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/relationships/gen1/relationships-gen1.test.ts
-          CLI_REGION: eu-west-3
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: assoc_field_subscriptions_off
@@ -1625,7 +1655,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/owner-auth/subscriptions-off/assoc-field-subscriptions-off.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: bind_sql_ids
@@ -1634,7 +1664,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/owner-auth/bind-sql-ids/bind-sql-ids.test.ts
-          CLI_REGION: us-west-1
+          CLI_REGION: ap-northeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: assoc_field_sqlprimary_sqlrelated
@@ -1644,7 +1674,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/owner-auth/assoc-field/assoc-field-sqlprimary-sqlrelated.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: ap-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: assoc_field_sqlprimary_ddbrelated
@@ -1654,7 +1684,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/owner-auth/assoc-field/assoc-field-sqlprimary-ddbrelated.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: assoc_field_ddbprimary_sqlrelated
@@ -1664,7 +1694,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/owner-auth/assoc-field/assoc-field-ddbprimary-sqlrelated.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: assoc_field_ddbprimary_ddbrelated
@@ -1674,7 +1704,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/owner-auth/assoc-field/assoc-field-ddbprimary-ddbrelated.test.ts
-          CLI_REGION: ap-south-1
+          CLI_REGION: ca-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: static_group_auth_sqlprimary_sqlrelated_subscriptions_off
@@ -1684,7 +1714,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/group-auth/subscriptions-off/static-group-auth/static-group-auth-sqlprimary-sqlrelated-subscriptions-off.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: static_group_auth_sqlprimary_ddbrelated_subscriptions_off
@@ -1694,7 +1724,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/group-auth/subscriptions-off/static-group-auth/static-group-auth-sqlprimary-ddbrelated-subscriptions-off.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: eu-north-1
       depend-on:
         - publish_to_local_registry
     - identifier: static_group_auth_ddbprimary_sqlrelated_subscriptions_off
@@ -1704,7 +1734,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/group-auth/subscriptions-off/static-group-auth/static-group-auth-ddbprimary-sqlrelated-subscriptions-off.test.ts
-          CLI_REGION: ca-central-1
+          CLI_REGION: eu-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: static_group_auth_ddbprimary_ddbrelated_subscriptions_off
@@ -1714,7 +1744,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/group-auth/subscriptions-off/static-group-auth/static-group-auth-ddbprimary-ddbrelated-subscriptions-off.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: eu-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: dynamic_group_auth_sqlprimary_sqlrelated_subscriptions_off
@@ -1724,7 +1754,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/group-auth/subscriptions-off/dynamic-group-auth/dynamic-group-auth-sqlprimary-sqlrelated-subscriptions-off.test.ts
-          CLI_REGION: eu-north-1
+          CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: dynamic_group_auth_sqlprimary_ddbrelated_subscriptions_off
@@ -1734,7 +1764,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/group-auth/subscriptions-off/dynamic-group-auth/dynamic-group-auth-sqlprimary-ddbrelated-subscriptions-off.test.ts
-          CLI_REGION: eu-south-1
+          CLI_REGION: eu-west-3
       depend-on:
         - publish_to_local_registry
     - identifier: dynamic_group_auth_ddbprimary_sqlrelated_subscriptions_off
@@ -1744,7 +1774,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/group-auth/subscriptions-off/dynamic-group-auth/dynamic-group-auth-ddbprimary-sqlrelated-subscriptions-off.test.ts
-          CLI_REGION: eu-west-1
+          CLI_REGION: me-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: dynamic_group_auth_ddbprimary_ddbrelated_subscriptions_off
@@ -1754,7 +1784,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/group-auth/subscriptions-off/dynamic-group-auth/dynamic-group-auth-ddbprimary-ddbrelated-subscriptions-off.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: sa-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: static_group_auth_sqlprimary_sqlrelated
@@ -1764,7 +1794,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/group-auth/static-group-auth/static-group-auth-sqlprimary-sqlrelated.test.ts
-          CLI_REGION: eu-west-3
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: static_group_auth_sqlprimary_ddbrelated
@@ -1774,7 +1804,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/group-auth/static-group-auth/static-group-auth-sqlprimary-ddbrelated.test.ts
-          CLI_REGION: me-south-1
+          CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
     - identifier: static_group_auth_ddbprimary_sqlrelated
@@ -1784,7 +1814,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/group-auth/static-group-auth/static-group-auth-ddbprimary-sqlrelated.test.ts
-          CLI_REGION: sa-east-1
+          CLI_REGION: us-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: static_group_auth_ddbprimary_ddbrelated
@@ -1794,7 +1824,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/group-auth/static-group-auth/static-group-auth-ddbprimary-ddbrelated.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: dynamic_group_auth_sqlprimary_sqlrelated
@@ -1804,7 +1834,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/group-auth/dynamic-group-auth/dynamic-group-auth-sqlprimary-sqlrelated.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: dynamic_group_auth_sqlprimary_ddbrelated
@@ -1814,7 +1844,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/group-auth/dynamic-group-auth/dynamic-group-auth-sqlprimary-ddbrelated.test.ts
-          CLI_REGION: us-west-1
+          CLI_REGION: ap-northeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: dynamic_group_auth_ddbprimary_sqlrelated
@@ -1824,7 +1854,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/group-auth/dynamic-group-auth/dynamic-group-auth-ddbprimary-sqlrelated.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: ap-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: dynamic_group_auth_ddbprimary_ddbrelated
@@ -1834,7 +1864,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/group-auth/dynamic-group-auth/dynamic-group-auth-ddbprimary-ddbrelated.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: single_gsi_100k_records
@@ -1843,7 +1873,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/deploy-velocity/single-gsi-100k-records.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: replace_2_gsis_update_attr_100k_records
@@ -1853,7 +1883,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/deploy-velocity/replace-2-gsis-update-attr-100k-records.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: replace_2_gsis_100k_records
@@ -1862,7 +1892,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/deploy-velocity/replace-2-gsis-100k-records.test.ts
-          CLI_REGION: ap-south-1
+          CLI_REGION: ca-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: 3_gsis_100k_records
@@ -1871,7 +1901,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/deploy-velocity/3-gsis-100k-records.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
