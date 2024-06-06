@@ -55,13 +55,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     const primaryKeys = getPrimaryKeyFields(object);
     references.forEach((r, index) => {
       connectionCondition.push(
-        qref(
-          methodCall(
-            ref('lambdaInput.args.filter.put'),
-            str(r),
-            obj({ eq: ref(`util.defaultIfNull($ctx.source.${primaryKeys[index]}, "")`) }),
-          ),
-        ),
+        qref(methodCall(ref('lambdaInput.args.filter.put'), str(r), obj({ eq: ref(`ctx.source.${primaryKeys[index]}`) }))),
       );
     });
     const resolverResourceId = ResolverResourceIDs.ResolverResourceID(object.name.value, field.name.value);
@@ -225,13 +219,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     const relatedTypePrimaryKeys = getPrimaryKeyFields(relatedType);
     references.forEach((r, index) => {
       connectionCondition.push(
-        qref(
-          methodCall(
-            ref('lambdaInput.args.input.put'),
-            str(r),
-            obj({ eq: ref(`util.defaultIfNull($ctx.source.${primaryKeys[index]}, "")`) }),
-          ),
-        ),
+        qref(methodCall(ref('lambdaInput.args.input.put'), str(r), obj({ eq: ref(`ctx.source.${primaryKeys[index]}`) }))),
       );
     });
     const resolverResourceId = ResolverResourceIDs.ResolverResourceID(object.name.value, field.name.value);
@@ -274,9 +262,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     const connectionCondition: Expression[] = [];
     const primaryKeys = getPrimaryKeyFields(relatedType);
     references.forEach((r, index) => {
-      connectionCondition.push(
-        qref(methodCall(ref('lambdaInput.args.input.put'), str(primaryKeys[index]), ref(`util.defaultIfNull($ctx.source.${r}, "")`))),
-      );
+      connectionCondition.push(qref(methodCall(ref('lambdaInput.args.input.put'), str(primaryKeys[index]), ref(`ctx.source.${r}`))));
     });
     const resolverResourceId = ResolverResourceIDs.ResolverResourceID(object.name.value, field.name.value);
     const resolver = ctx.resolvers.generateQueryResolver(
