@@ -130,6 +130,27 @@ const processOnEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
   let result;
   switch (event.RequestType) {
     case 'Create':
+      const tableName = tableDef.tableName;
+      if (tableName && (await doesTableExist(tableName))) {
+        // Inspect and use the state of the existing table
+        console.log(`Inspecting table with name: ${tableName}`);
+        const describeTableResult = await ddbClient.describeTable({ TableName: tableName });
+        if (!describeTableResult.Table) {
+          throw new Error(`Failed to inspect status of existing table ${tableName} to import`);
+        }
+        log('Current table state: ', describeTableResult);
+        result = {
+          PhysicalResourceId: describeTableResult.Table.TableName,
+          Data: {
+            TableArn: describeTableResult.Table.TableArn,
+            TableStreamArn: describeTableResult.Table.LatestStreamArn,
+            TableName: describeTableResult.Table.TableName,
+          },
+        };
+        console.log('Returning result: ', result);
+        return result;
+      }
+
       console.log('Initiating CREATE event');
       const createTableInput = toCreateTableInput(tableDef);
       console.log('Create Table Params: ', createTableInput);
