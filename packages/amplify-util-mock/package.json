@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-util-mock",
-  "version": "6.4.20",
+  "version": "6.4.21",
   "description": "Amplify CLI plugin providing local testing",
   "repository": {
     "type": "git",
@@ -53,12 +53,12 @@
     "@aws-amplify/amplify-environment-parameters": "^1.9.1"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-auth-transformer": "3.5.4",
+    "@aws-amplify/graphql-auth-transformer": "3.5.5",
     "@aws-amplify/graphql-function-transformer": "2.1.22",
     "@aws-amplify/graphql-index-transformer": "2.4.3",
-    "@aws-amplify/graphql-maps-to-transformer": "3.4.16",
+    "@aws-amplify/graphql-maps-to-transformer": "3.4.17",
     "@aws-amplify/graphql-model-transformer": "2.10.1",
-    "@aws-amplify/graphql-relational-transformer": "2.5.4",
+    "@aws-amplify/graphql-relational-transformer": "2.5.5",
     "@aws-amplify/graphql-searchable-transformer": "2.7.3",
     "@aws-amplify/graphql-transformer-core": "2.8.0",
     "@aws-amplify/graphql-transformer-interfaces": "3.8.0",
