@@ -49,12 +49,14 @@ const biDiHasOneMapped = /* GraphQL */ `
 const refersToHasOne = /* GraphQL */ `
   type Employee @model @refersTo(name: "Person") {
     id: ID! @primaryKey
+    tags: [String]
     task: Task @hasOne(references: ["employeeId"])
   }
 
   type Task @model @refersTo(name: "Todo") {
     id: ID! @primaryKey
     title: String
+    tags: [String]
     employeeId: String!
     employee: Employee @belongsTo(references: ["employeeId"])
   }

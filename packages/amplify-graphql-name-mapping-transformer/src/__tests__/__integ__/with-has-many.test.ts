@@ -23,12 +23,14 @@ const mappedHasMany = /* GraphQL */ `
 const refersToHasMany = /* GraphQL */ `
   type Employee @model @refersTo(name: "Person") {
     id: ID! @primaryKey
+    tags: [String]
     tasks: [Task] @hasMany(references: ["employeeId"])
   }
 
   type Task @model @refersTo(name: "Todo") {
     id: ID! @primaryKey
     title: String
+    tags: [String]
     employeeId: String!
     employee: Employee @belongsTo(references: ["employeeId"])
   }
