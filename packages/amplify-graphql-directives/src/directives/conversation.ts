@@ -1,4 +1,4 @@
-import { Directive } from "./directive";
+import { Directive } from './directive';
 
 const name = 'conversation';
 const definition = /* GraphQL */`
@@ -6,14 +6,14 @@ const definition = /* GraphQL */`
     aiModel: String,
     sessionModel: SessionModel,
     eventModel: EventModel
-  ) on MUTATION
+  ) on FIELD_DEFINITION
   input SessionModel {
     name: String
   }
   input EventModel {
     name: String
   }
-`
+`;
 const defaults = {};
 
 export const ConversationDirective: Directive = {
