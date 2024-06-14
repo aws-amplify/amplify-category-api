@@ -32,6 +32,7 @@ export class TypescriptDataSchemaGenerator {
     });
   };
 
+  // Create a DataSourceAdapter based on the engine type.
   private static getAdapter = (config: TypescriptDataSchemaGeneratorConfig): DataSourceAdapter => {
     switch (config.engine) {
       case 'mysql':
