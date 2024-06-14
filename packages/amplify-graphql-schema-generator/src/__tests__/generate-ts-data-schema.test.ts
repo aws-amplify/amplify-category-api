@@ -67,7 +67,7 @@ describe('ts schema generator', () => {
       password: 'password',
       connectionUriSecretName: 'connectionUriSecret',
       sslCertificate: 'MYSQL_SSL_CERTIFICATE',
-      sslCertificateSecrteName: 'mySqlSslSecret',
+      sslCertificateSecretName: 'mySqlSslSecret',
     });
     expect(mockMySqlAdapterInitialize.mock.calls.length).toBe(1);
     expect(mockMySqlAdapterGetModels.mock.calls.length).toBe(1);
@@ -85,7 +85,7 @@ describe('ts schema generator', () => {
       password: 'password',
       connectionUriSecretName: 'connectionUriSecret',
       sslCertificate: 'POSTGRES_SSL_CERTIFICATE',
-      sslCertificateSecrteName: 'postgresSslSecret',
+      sslCertificateSecretName: 'postgresSslSecret',
     });
     expect(mockPostgresAdapterInitialize.mock.calls.length).toBe(1);
     expect(mockPostgresAdapterGetModels.mock.calls.length).toBe(1);

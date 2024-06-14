@@ -437,7 +437,7 @@ export type TypescriptDataSchemaGeneratorConfig = {
     password: string;
     connectionUriSecretName: string;
     sslCertificate?: string;
-    sslCertificateSecrteName?: string;
+    sslCertificateSecretName?: string;
     outputFile?: string;
 };
 

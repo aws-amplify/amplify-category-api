@@ -14,7 +14,7 @@ export type TypescriptDataSchemaGeneratorConfig = {
   password: string;
   connectionUriSecretName: string;
   sslCertificate?: string;
-  sslCertificateSecrteName?: string;
+  sslCertificateSecretName?: string;
   outputFile?: string;
 };
 
@@ -25,7 +25,7 @@ export class TypescriptDataSchemaGenerator {
     return generateTypescriptDataSchema(schema, {
       secretNames: {
         connectionUri: config.connectionUriSecretName,
-        sslCertificate: config.sslCertificateSecrteName,
+        sslCertificate: config.sslCertificateSecretName,
       },
       vpcConfig: await getHostVpc(config.host),
       identifier: TypescriptDataSchemaGenerator.createIdentifier(config),
