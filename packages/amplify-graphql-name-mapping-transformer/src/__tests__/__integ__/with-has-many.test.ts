@@ -6,16 +6,24 @@ import { ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interf
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { RefersToTransformer } from '../../graphql-refers-to-transformer';
 import { MapsToTransformer } from '../../graphql-maps-to-transformer';
-import { expectedResolversForModelWithRenamedField, testRelationalFieldMapping, testTableNameMapping } from './common';
+import {
+  expectedResolversForModelWithRenamedField,
+  testRelationalArrayFieldsMapping,
+  testRelationalFieldMapping,
+  testRelationalNonScalarFieldsMapping,
+  testTableNameMapping,
+} from './common';
 
 const mappedHasMany = /* GraphQL */ `
   type Employee @model @mapsTo(name: "Person") {
     id: ID!
+    tags: [String]
     tasks: [Task] @hasMany
   }
 
   type Task @model {
     id: ID!
+    tags: [String]
     title: String
   }
 `;
@@ -77,5 +85,9 @@ describe('@refersTo with @hasMany for RDS Models', () => {
     testTableNameMapping('Task', 'Todo', out);
     testRelationalFieldMapping('Employee.tasks.req.vtl', 'Todo', out);
     testRelationalFieldMapping('Task.employee.req.vtl', 'Person', out);
+    testRelationalNonScalarFieldsMapping('Employee.tasks.req.vtl', '["tags", "employee"]', out);
+    testRelationalNonScalarFieldsMapping('Task.employee.req.vtl', '["tags", "tasks"]', out);
+    testRelationalArrayFieldsMapping('Employee.tasks.req.vtl', '["tags"]', out);
+    testRelationalArrayFieldsMapping('Task.employee.req.vtl', '["tags"]', out);
   });
 });
