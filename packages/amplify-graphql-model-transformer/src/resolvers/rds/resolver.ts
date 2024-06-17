@@ -482,6 +482,7 @@ export const generateLambdaRequestTemplate = (
   operation: string,
   operationName: string,
   ctx: TransformerContextProvider,
+  emptyAuthFilter: boolean = false,
 ): string => {
   const mappedTableName = ctx.resourceHelper.getModelNameMapping(tableName);
   return printBlock('Invoke RDS Lambda data source')(
@@ -493,7 +494,7 @@ export const generateLambdaRequestTemplate = (
       set(ref('lambdaInput.operationName'), str(operationName)),
       set(ref('lambdaInput.args.metadata'), obj({})),
       set(ref('lambdaInput.args.metadata.keys'), list([])),
-      constructAuthFilterStatement('lambdaInput.args.metadata.authFilter'),
+      constructAuthFilterStatement('lambdaInput.args.metadata.authFilter', emptyAuthFilter),
       constructNonScalarFieldsStatement(tableName, ctx),
       constructArrayFieldsStatement(tableName, ctx),
       constructFieldMappingInput(),
