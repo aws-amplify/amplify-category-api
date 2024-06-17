@@ -158,7 +158,7 @@ export const testOIDCAuth = (engine: ImportedRDSType): void => {
         port,
         username,
         password,
-        useVpc: true,
+        useVpc: false,
         apiExists: true,
       });
       writeFileSync(rdsSchemaFilePath, appendAmplifyInput(schema, engine), 'utf8');
@@ -509,7 +509,7 @@ export const testOIDCAuth = (engine: ImportedRDSType): void => {
         const getResult = await todoHelperNonOwner.get({
           id: todo['id'],
         });
-      }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoOwner on type Query"`);
+      }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoOwnerFieldString on type Query"`);
 
       const listTodosResult = await todoHelperNonOwner.list();
       checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
@@ -661,7 +661,7 @@ export const testOIDCAuth = (engine: ImportedRDSType): void => {
         const getResult = await todoHelperNonOwner.get({
           id: todo['id'],
         });
-      }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoOwner on type Query"`);
+      }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoOwnerFieldList on type Query"`);
 
       const listTodosResult = await todoHelperNonOwner.list();
       checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
@@ -995,7 +995,7 @@ export const testOIDCAuth = (engine: ImportedRDSType): void => {
         const getResult = await todoHelperNonAdmin.get({
           id: todo['id'],
         });
-      }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoOwner on type Query"`);
+      }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoGroupFieldString on type Query"`);
 
       const listTodosResult = await todoHelperNonAdmin.list();
       checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
@@ -1108,7 +1108,7 @@ export const testOIDCAuth = (engine: ImportedRDSType): void => {
         const getResult = await todoHelperNonAdmin.get({
           id: todo['id'],
         });
-      }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoOwner on type Query"`);
+      }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoGroupFieldList on type Query"`);
 
       const listTodosResult = await todoHelperNonAdmin.list();
       checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
