@@ -238,6 +238,9 @@ export const isSqlModelDataSourceSsmDbConnectionConfig: (obj: any) => obj is Sql
 export const isSqlModelDataSourceSsmDbConnectionStringConfig: (obj: any) => obj is SqlModelDataSourceSsmDbConnectionStringConfig;
 
 // @public (undocumented)
+export const isSslCertSsmPathConfig: (obj: any) => obj is SslCertSsmPathConfig;
+
+// @public (undocumented)
 export type MappingTemplateProvider = InlineMappingTemplateProvider | S3MappingTemplateProvider;
 
 // @public (undocumented)
@@ -415,6 +418,8 @@ export interface SqlModelDataSourceSecretsManagerDbConnectionConfig {
     readonly port: number;
     // (undocumented)
     readonly secretArn: string;
+    // (undocumented)
+    readonly sslCertConfig?: SslCertConfig;
 }
 
 // @public (undocumented)
@@ -428,6 +433,8 @@ export interface SqlModelDataSourceSsmDbConnectionConfig {
     // (undocumented)
     readonly portSsmPath: string;
     // (undocumented)
+    readonly sslCertConfig?: SslCertConfig;
+    // (undocumented)
     readonly usernameSsmPath: string;
 }
 
@@ -435,6 +442,20 @@ export interface SqlModelDataSourceSsmDbConnectionConfig {
 export interface SqlModelDataSourceSsmDbConnectionStringConfig {
     // (undocumented)
     readonly connectionUriSsmPath: string | string[];
+    // (undocumented)
+    readonly sslCertConfig?: SslCertConfig;
+}
+
+// @public (undocumented)
+export interface SslCertConfig {
+}
+
+// @public (undocumented)
+export interface SslCertSsmPathConfig extends SslCertConfig {
+    // (undocumented)
+    readonly configType: 'SSM_PATH';
+    // (undocumented)
+    readonly sslCertSsmPath?: string | string[];
 }
 
 // @public (undocumented)

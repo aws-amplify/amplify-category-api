@@ -386,4 +386,117 @@ describe('ModelTransformer with SQL data sources:', () => {
     const description = sqlFunction![1].Properties.Description;
     expect(description).toEqual('Amplify-managed SQL function');
   });
+
+  it('should process single custom ssl certificate as input', () => {
+    const connectionStringMySql = {
+      ...mysqlStrategy,
+      dbConnectionConfig: {
+        connectionUriSsmPath: '/test/connectionUri',
+        sslCertConfig: {
+          configType: 'SSM_PATH',
+          sslCertSsmPath: '/test/sslCert',
+        },
+      },
+    };
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(validSchema, connectionStringMySql),
+    });
+    expect(out).toBeDefined();
+    const resourceNames = getResourceNamesForStrategy(connectionStringMySql);
+    const sqlApiStack = out.stacks[resourceNames.sqlStack];
+    expect(sqlApiStack).toBeDefined();
+
+    // Check that SSM permissions are assigned
+    const [, policy] =
+      Object.entries(sqlApiStack.Resources!).find(([resourceName]) => {
+        return resourceName.startsWith(resourceNames.sqlLambdaExecutionRolePolicy);
+      }) || [];
+
+    expect(policy).toBeDefined();
+    const {
+      Properties: { PolicyDocument },
+    } = policy;
+    expect(PolicyDocument.Statement.length).toEqual(3);
+
+    const ssmStatements = PolicyDocument.Statement.filter(
+      (statement: any) => JSON.stringify(statement.Action) === JSON.stringify(['ssm:GetParameter', 'ssm:GetParameters']),
+    );
+    expect(ssmStatements.length).toEqual(2);
+    expect(ssmStatements[1].Resource).toEqual(
+      `arn:aws:ssm:*:*:parameter${connectionStringMySql.dbConnectionConfig.sslCertConfig?.sslCertSsmPath}`,
+    );
+
+    expect(PolicyDocument).toMatchSnapshot();
+
+    // Check that the sslCertSsmPath is passed to the lambda as an environment variable
+    const [, sqlLambda] =
+      Object.entries(sqlApiStack.Resources!).find(([resourceName]) => {
+        return resourceName.startsWith(resourceNames.sqlLambdaFunction);
+      }) || [];
+    expect(sqlLambda).toBeDefined();
+    const envVars = sqlLambda.Properties.Environment.Variables;
+    expect(envVars).toBeDefined();
+    expect(envVars.SSL_CERT_SSM_PATH).toBeDefined();
+    expect(envVars.SSL_CERT_SSM_PATH).toEqual('"/test/sslCert"');
+  });
+
+  it('should process multiple custom ssl certificates as input', () => {
+    const connectionStringMySql = {
+      ...mysqlStrategy,
+      dbConnectionConfig: {
+        connectionUriSsmPath: '/test/connectionUri',
+        sslCertConfig: {
+          configType: 'SSM_PATH',
+          sslCertSsmPath: ['/test/sslCert/1', '/test/sslCert/2'],
+        },
+      },
+    };
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(validSchema, connectionStringMySql),
+    });
+    expect(out).toBeDefined();
+    const resourceNames = getResourceNamesForStrategy(connectionStringMySql);
+    const sqlApiStack = out.stacks[resourceNames.sqlStack];
+    expect(sqlApiStack).toBeDefined();
+
+    // Check that SSM permissions are assigned
+    const [, policy] =
+      Object.entries(sqlApiStack.Resources!).find(([resourceName]) => {
+        return resourceName.startsWith(resourceNames.sqlLambdaExecutionRolePolicy);
+      }) || [];
+
+    expect(policy).toBeDefined();
+    const {
+      Properties: { PolicyDocument },
+    } = policy;
+    expect(PolicyDocument.Statement.length).toEqual(3);
+
+    const ssmStatements = PolicyDocument.Statement.filter(
+      (statement: any) => JSON.stringify(statement.Action) === JSON.stringify(['ssm:GetParameter', 'ssm:GetParameters']),
+    );
+    expect(ssmStatements.length).toEqual(2);
+    expect(ssmStatements[1].Resource[0]).toEqual(
+      `arn:aws:ssm:*:*:parameter${connectionStringMySql.dbConnectionConfig.sslCertConfig?.sslCertSsmPath[0]}`,
+    );
+    expect(ssmStatements[1].Resource[1]).toEqual(
+      `arn:aws:ssm:*:*:parameter${connectionStringMySql.dbConnectionConfig.sslCertConfig?.sslCertSsmPath[1]}`,
+    );
+
+    expect(PolicyDocument).toMatchSnapshot();
+
+    // Check that the sslCertSsmPath is passed to the lambda as an environment variable
+    const [, sqlLambda] =
+      Object.entries(sqlApiStack.Resources!).find(([resourceName]) => {
+        return resourceName.startsWith(resourceNames.sqlLambdaFunction);
+      }) || [];
+    expect(sqlLambda).toBeDefined();
+    const envVars = sqlLambda.Properties.Environment.Variables;
+    expect(envVars).toBeDefined();
+    expect(envVars.SSL_CERT_SSM_PATH).toBeDefined();
+    expect(envVars.SSL_CERT_SSM_PATH).toEqual('["/test/sslCert/1","/test/sslCert/2"]');
+  });
 });
