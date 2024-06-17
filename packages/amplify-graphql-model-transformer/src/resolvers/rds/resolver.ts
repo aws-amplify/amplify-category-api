@@ -522,9 +522,9 @@ export const generateGetLambdaResponseTemplate = (isSyncEnabled: boolean): strin
       not(ref('ctx.stash.authRules')),
       toJson(ref('ctx.result')),
       compoundExpression([
-        set(ref('authResult'), methodCall(ref('util.authRules.validateUsingSource'), ref('ctx.stash.authRules'), ref('ctx.source'))),
+        set(ref('authResult'), methodCall(ref('util.authRules.validateUsingSource'), ref('ctx.stash.authRules'), ref('ctx.result'))),
         ifElse(
-          or([not(ref('authResult')), parens(and([ref('authResult'), not(ref('authResult.authorized'))]))]),
+          not(ref('authResult')),
           compoundExpression([methodCall(ref('util.unauthorized')), methodCall(ref('util.toJson'), raw('null'))]),
           toJson(ref('ctx.result')),
         ),
