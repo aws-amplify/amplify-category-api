@@ -133,7 +133,7 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
         port,
         username,
         password,
-        useVpc: false,
+        useVpc: true,
         apiExists: true,
       });
 

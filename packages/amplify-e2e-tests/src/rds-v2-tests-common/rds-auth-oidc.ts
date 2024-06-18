@@ -158,7 +158,7 @@ export const testOIDCAuth = (engine: ImportedRDSType): void => {
         port,
         username,
         password,
-        useVpc: false,
+        useVpc: true,
         apiExists: true,
       });
       writeFileSync(rdsSchemaFilePath, appendAmplifyInput(schema, engine), 'utf8');

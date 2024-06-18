@@ -153,7 +153,7 @@ describe('RDS OIDC provider Auth tests', () => {
       port,
       username,
       password,
-      useVpc: false,
+      useVpc: true,
       apiExists: true,
     });
     writeFileSync(rdsSchemaFilePath, appendAmplifyInput(schema, ImportedRDSType.MYSQL), 'utf8');
