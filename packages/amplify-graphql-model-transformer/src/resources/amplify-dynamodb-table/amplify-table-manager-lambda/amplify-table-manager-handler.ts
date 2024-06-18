@@ -131,6 +131,7 @@ const processOnEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
   switch (event.RequestType) {
     case 'Create':
       if (tableDef.isImported) {
+        // TODO: Add import validation
         console.log('Initiating table import process');
         console.log('Fetching current table state');
         console.log(`Table name: ${tableDef.tableName}`);
