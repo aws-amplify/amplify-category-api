@@ -8,6 +8,9 @@ export const validateImportedTableMap = (definition: IAmplifyGraphqlDefinition, 
     isImportedAmplifyDynamoDbModelDataSourceStrategy(dataSourceStrategies[modelTypeName]),
   );
   if (importedModels.length > 0) {
+    if (importedModels.length < Object.keys(importedTableMap || {}).length) {
+      throw new Error('Table mapping does not include a mapping for all models.');
+    }
     if (!importedTableMap) {
       throw new Error('Table mapping is missing for imported Amplify DynamoDB table strategy');
     }
