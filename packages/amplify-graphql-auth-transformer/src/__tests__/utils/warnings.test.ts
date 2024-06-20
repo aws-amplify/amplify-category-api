@@ -1,4 +1,5 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { HasManyTransformer, HasOneTransformer, BelongsToTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { TransformerLog, TransformerLogLevel, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthTransformer } from '../../graphql-auth-transformer';
@@ -392,5 +393,94 @@ type Invoice
     expect(log.message).toBe(
       "WARNING: Schema is using an @auth directive with deprecated provider 'iam'. Replace 'iam' provider with 'identityPool' provider.",
     );
+  });
+});
+
+describe('inherit related auth on subscriptions warning', () => {
+  test('does not show message when auth rules align', () => {
+    const schema = `
+      type Primary @model @auth(rules: [{ allow: public }]) {
+        relatedOne: RelatedOne! @hasOne
+      }
+
+      type RelatedOne @model @auth(rules: [{ allow: public }]) {
+        primary: Primary! @belongsTo
+      }
+    `;
+    const logs = testTransform({
+      schema,
+      authConfig: {
+        defaultAuthentication: { authenticationType: 'API_KEY' },
+        additionalAuthenticationProviders: [],
+      },
+      transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer(), new AuthTransformer()],
+    }).logs;
+
+    expect(logs.length).toBe(0);
+  });
+
+  test('does not show message when related fields are optional', () => {
+    const schema = `
+      type Primary @model @auth(rules: [{ allow: groups, groupsField: "groups" }]) {
+        content: String
+        groups: [String]
+        relatedOne: RelatedOne @hasOne
+      }
+      
+      type RelatedOne @model @auth(rules: [{ allow: groups, groupsField: "groups" }]) {
+        content: String
+        groups: [String]
+        primaryId: String
+        primary: Primary @belongsTo
+      } 
+    `;
+    const logs = testTransform({
+      schema,
+      authConfig: {
+        defaultAuthentication: { authenticationType: 'AMAZON_COGNITO_USER_POOLS' },
+        additionalAuthenticationProviders: [],
+      },
+      transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer(), new AuthTransformer()],
+    }).logs;
+
+    expect(logs.length).toBe(0);
+  });
+
+  test('shows message when related fields are required', () => {
+    const schema = `
+      type Primary @model @auth(rules: [{ allow: groups, groupsField: "groups" }]) {
+        content: String
+        groups: [String]
+        relatedOne: RelatedOne! @hasOne
+      }
+      
+      type RelatedOne @model @auth(rules: [{ allow: groups, groupsField: "groups" }]) {
+        content: String
+        groups: [String]
+        primaryId: String
+        primary: Primary! @belongsTo
+      } 
+    `;
+    const logs = testTransform({
+      schema,
+      authConfig: {
+        defaultAuthentication: { authenticationType: 'AMAZON_COGNITO_USER_POOLS' },
+        additionalAuthenticationProviders: [],
+      },
+      transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer(), new AuthTransformer()],
+    }).logs;
+
+    expect(logs).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "level": "WARN",
+          "message": "Subscriptions will inherit related auth when relational fields are set as required. Consider modifying your schema to use optional relational fields for Primary.relatedOne.",
+        },
+        Object {
+          "level": "WARN",
+          "message": "Subscriptions will inherit related auth when relational fields are set as required. Consider modifying your schema to use optional relational fields for RelatedOne.primary.",
+        },
+      ]
+    `);
   });
 });
