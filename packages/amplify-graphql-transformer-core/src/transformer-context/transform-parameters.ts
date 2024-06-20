@@ -10,6 +10,7 @@ export const defaultTransformParameters: TransformParameters = {
   sandboxModeEnabled: false,
   allowDestructiveGraphqlSchemaUpdates: false,
   replaceTableUponGsiUpdate: false,
+  allowGen1Patterns: true,
 
   // Auth Params
   useSubUsernameForDefaultIdentityClaim: true,
