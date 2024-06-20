@@ -1,4 +1,5 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { HasManyTransformer, HasOneTransformer, BelongsToTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { TransformerLog, TransformerLogLevel, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthTransformer } from '../../graphql-auth-transformer';
@@ -392,5 +393,83 @@ type Invoice
     expect(log.message).toBe(
       "WARNING: Schema is using an @auth directive with deprecated provider 'iam'. Replace 'iam' provider with 'identityPool' provider.",
     );
+  });
+});
+
+describe('inherit related auth on subscriptions warning', () => {
+  test('does not throw when auth rules align', () => {
+    const schema = `
+      type Primary @model @auth(rules: [{ allow: public }]) {
+        relatedOne: RelatedOne! @hasOne
+      }
+
+      type RelatedOne @model @auth(rules: [{ allow: public }]) {
+        primary: Primary! @belongsTo
+      }
+    `;
+    expect(() =>
+      testTransform({
+        schema,
+        authConfig: {
+          defaultAuthentication: { authenticationType: 'API_KEY' },
+          additionalAuthenticationProviders: [],
+        },
+        transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer(), new AuthTransformer()],
+      }),
+    ).not.toThrow();
+  });
+
+  test('does not throw when related fields are optional', () => {
+    const schema = `
+      type Primary @model @auth(rules: [{ allow: groups, groupsField: "groups" }]) {
+        content: String
+        groups: [String]
+        relatedOne: RelatedOne @hasOne
+      }
+      
+      type RelatedOne @model @auth(rules: [{ allow: groups, groupsField: "groups" }]) {
+        content: String
+        groups: [String]
+        primaryId: String
+        primary: Primary @belongsTo
+      } 
+    `;
+    expect(() =>
+      testTransform({
+        schema,
+        authConfig: {
+          defaultAuthentication: { authenticationType: 'AMAZON_COGNITO_USER_POOLS' },
+          additionalAuthenticationProviders: [],
+        },
+        transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer(), new AuthTransformer()],
+      }),
+    ).not.toThrow();
+  });
+
+  test('throws when related fields are required', () => {
+    const schema = `
+      type Primary @model @auth(rules: [{ allow: groups, groupsField: "groups" }]) {
+        content: String
+        groups: [String]
+        relatedOne: RelatedOne! @hasOne
+      }
+      
+      type RelatedOne @model @auth(rules: [{ allow: groups, groupsField: "groups" }]) {
+        content: String
+        groups: [String]
+        primaryId: String
+        primary: Primary! @belongsTo
+      } 
+    `;
+    expect(() =>
+      testTransform({
+        schema,
+        authConfig: {
+          defaultAuthentication: { authenticationType: 'AMAZON_COGNITO_USER_POOLS' },
+          additionalAuthenticationProviders: [],
+        },
+        transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer(), new AuthTransformer()],
+      }),
+    ).toThrow();
   });
 });
