@@ -1,5 +1,89 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`event invocation type mutation 1`] = `
+Object {
+  "InvokeAsyncstuffLambdaDataSource.req.vtl": "## [Start] Invoke AWS Lambda data source: AsyncstuffLambdaDataSource. **
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\": {
+      \\"typeName\\": $util.toJson($ctx.stash.get(\\"typeName\\")),
+      \\"fieldName\\": $util.toJson($ctx.stash.get(\\"fieldName\\")),
+      \\"arguments\\": $util.toJson($ctx.arguments),
+      \\"identity\\": $util.toJson($ctx.identity),
+      \\"source\\": $util.toJson($ctx.source),
+      \\"request\\": $util.toJson($ctx.request),
+      \\"prev\\": $util.toJson($ctx.prev)
+  },
+  \\"invocationType\\": \\"Event\\"
+}
+## [End] Invoke AWS Lambda data source: AsyncstuffLambdaDataSource. **",
+  "InvokeAsyncstuffLambdaDataSource.res.vtl": "## [Start] Handle error or return result. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+$util.toJson(\\"\\")
+## [End] Handle error or return result. **",
+  "Mutation.asyncStuff.res.vtl": "$util.toJson($ctx.prev.result)",
+}
+`;
+
+exports[`event invocation type mutation 2`] = `
+Object {
+  "InvokeAsyncstuffLambdaDataSource.req.vtl": "## [Start] Invoke AWS Lambda data source: AsyncstuffLambdaDataSource. **
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\": {
+      \\"typeName\\": $util.toJson($ctx.stash.get(\\"typeName\\")),
+      \\"fieldName\\": $util.toJson($ctx.stash.get(\\"fieldName\\")),
+      \\"arguments\\": $util.toJson($ctx.arguments),
+      \\"identity\\": $util.toJson($ctx.identity),
+      \\"source\\": $util.toJson($ctx.source),
+      \\"request\\": $util.toJson($ctx.request),
+      \\"prev\\": $util.toJson($ctx.prev)
+  },
+  \\"invocationType\\": \\"Event\\"
+}
+## [End] Invoke AWS Lambda data source: AsyncstuffLambdaDataSource. **",
+  "InvokeAsyncstuffLambdaDataSource.res.vtl": "## [Start] Handle error or return result. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+$util.toJson(\\"\\")
+## [End] Handle error or return result. **",
+  "Mutation.asyncStuff.res.vtl": "$util.toJson($ctx.prev.result)",
+}
+`;
+
+exports[`event invocation type query 1`] = `
+Object {
+  "InvokeAsyncstuffLambdaDataSource.req.vtl": "## [Start] Invoke AWS Lambda data source: AsyncstuffLambdaDataSource. **
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\": {
+      \\"typeName\\": $util.toJson($ctx.stash.get(\\"typeName\\")),
+      \\"fieldName\\": $util.toJson($ctx.stash.get(\\"fieldName\\")),
+      \\"arguments\\": $util.toJson($ctx.arguments),
+      \\"identity\\": $util.toJson($ctx.identity),
+      \\"source\\": $util.toJson($ctx.source),
+      \\"request\\": $util.toJson($ctx.request),
+      \\"prev\\": $util.toJson($ctx.prev)
+  },
+  \\"invocationType\\": \\"Event\\"
+}
+## [End] Invoke AWS Lambda data source: AsyncstuffLambdaDataSource. **",
+  "InvokeAsyncstuffLambdaDataSource.res.vtl": "## [Start] Handle error or return result. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+$util.toJson(\\"\\")
+## [End] Handle error or return result. **",
+  "Query.asyncStuff.res.vtl": "$util.toJson($ctx.prev.result)",
+}
+`;
+
 exports[`for @function with account ID, it generates the expected resources 1`] = `
 Object {
   "InvokeEchofunction123123456456LambdaDataSource.req.vtl": "## [Start] Invoke AWS Lambda data source: Echofunction123123456456LambdaDataSource. **
@@ -14,7 +98,8 @@ Object {
       \\"source\\": $util.toJson($ctx.source),
       \\"request\\": $util.toJson($ctx.request),
       \\"prev\\": $util.toJson($ctx.prev)
-  }
+  },
+  \\"invocationType\\": \\"RequestResponse\\"
 }
 ## [End] Invoke AWS Lambda data source: Echofunction123123456456LambdaDataSource. **",
   "InvokeEchofunction123123456456LambdaDataSource.res.vtl": "## [Start] Handle error or return result. **
@@ -41,7 +126,8 @@ Object {
       \\"source\\": $util.toJson($ctx.source),
       \\"request\\": $util.toJson($ctx.request),
       \\"prev\\": $util.toJson($ctx.prev)
-  }
+  },
+  \\"invocationType\\": \\"RequestResponse\\"
 }
 ## [End] Invoke AWS Lambda data source: EchofunctionLambdaDataSource. **",
   "InvokeEchofunctionLambdaDataSource.res.vtl": "## [Start] Handle error or return result. **

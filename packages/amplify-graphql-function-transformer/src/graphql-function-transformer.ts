@@ -1,4 +1,10 @@
-import { DirectiveWrapper, generateGetArgumentsInput, MappingTemplate, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
+import {
+  DirectiveWrapper,
+  generateGetArgumentsInput,
+  InvalidDirectiveError,
+  MappingTemplate,
+  TransformerPluginBase,
+} from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FunctionDirective } from '@aws-amplify/graphql-directives';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -12,6 +18,7 @@ type FunctionDirectiveConfiguration = {
   name: string;
   region: string | undefined;
   accountId: string | undefined;
+  invocationType: string;
   resolverTypeName: string;
   resolverFieldName: string;
 };
@@ -36,9 +43,12 @@ export class FunctionTransformer extends TransformerPluginBase {
       {
         resolverTypeName: parent.name.value,
         resolverFieldName: definition.name.value,
+        invocationType: FunctionDirective.defaults.invocationType,
       } as FunctionDirectiveConfiguration,
       generateGetArgumentsInput(acc.transformParameters),
     );
+
+    validate(args, definition);
     let resolver = this.resolverGroups.get(definition);
 
     if (resolver === undefined) {
@@ -104,19 +114,12 @@ export class FunctionTransformer extends TransformerPluginBase {
                     request: ref('util.toJson($ctx.request)'),
                     prev: ref('util.toJson($ctx.prev)'),
                   }),
+                  invocationType: str(config.invocationType),
                 }),
               ),
               `${functionId}.req.vtl`,
             ),
-            MappingTemplate.s3MappingTemplateFromString(
-              printBlock('Handle error or return result')(
-                compoundExpression([
-                  iff(ref('ctx.error'), raw('$util.error($ctx.error.message, $ctx.error.type)')),
-                  raw('$util.toJson($ctx.result)'),
-                ]),
-              ),
-              `${functionId}.res.vtl`,
-            ),
+            MappingTemplate.s3MappingTemplateFromString(responseMappingTemplate(config), `${functionId}.res.vtl`),
             dataSourceId,
             funcScope,
           );
@@ -177,6 +180,61 @@ export class FunctionTransformer extends TransformerPluginBase {
     });
   };
 }
+
+const responseMappingTemplate = (config: FunctionDirectiveConfiguration): string => {
+  if (config.invocationType === 'Event') {
+    /*
+      #set( $success = true )
+      #if( $ctx.error )
+        $util.error($ctx.error.message, $ctx.error.type)
+        #set( $success = false )
+      #end
+      #set( $response = {
+        "success": $success
+      } )
+      $util.toJson($response)
+    */
+  return printBlock('Handle error or return result')(
+    compoundExpression([
+      iff(
+        ref('ctx.error'),
+        compoundExpression([
+          raw('$util.error($ctx.error.message, $ctx.error.type)'),
+        ]),
+      ),
+      raw('$util.toJson("")')
+    ]),
+  );
+}
+
+  /*
+    #if( $ctx.error )
+      $util.error($ctx.error.message, $ctx.error.type)
+    #end
+    $util.toJson($ctx.result)
+  */
+  return printBlock('Handle error or return result')(
+    compoundExpression([iff(ref('ctx.error'), raw('$util.error($ctx.error.message, $ctx.error.type)')), raw('$util.toJson($ctx.result)')]),
+  );
+};
+
+const validate = (config: FunctionDirectiveConfiguration, definition: FieldDefinitionNode): void => {
+  // only string return types are valid for Event invocationTypes
+  // TODO: clean this up
+  // - use applicable graphql-common utils
+  // - account for non-null and list return types
+  // - include field name / return type in error message
+  const { type } = definition;
+  if (config.invocationType === 'Event') {
+    if (type.kind === 'NamedType') {
+      if (type.name.value !== 'String') {
+        throw new InvalidDirectiveError(`
+        Invalid return type for 'invocationType: Event'. Return type must be 'String'.
+        `);
+      }
+    }
+  }
+};
 
 const lambdaArnResource = (env: string, name: string, region?: string, accountId?: string): string => {
   const substitutions: { [key: string]: string } = {};

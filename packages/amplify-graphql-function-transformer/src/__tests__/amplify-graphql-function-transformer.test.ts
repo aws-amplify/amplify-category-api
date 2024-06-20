@@ -369,3 +369,67 @@ test('includes auth info in stash', () => {
   });
   expect(out.stacks.FunctionDirectiveStack.Resources!.QuerymyFunctionResolver.Properties.RequestMappingTemplate).toMatchSnapshot();
 });
+
+test('event invocation type query', () => {
+  const schema = `
+    type Query {
+      asyncStuff(msg: String): String @function(name: "asyncstuff-\${env}", invocationType: Event)
+    }
+  `;
+
+  const out = testTransform({
+    schema,
+    transformers: [new FunctionTransformer()],
+  });
+  expect(out).toBeDefined();
+  parse(out.schema);
+  expect(out.stacks).toBeDefined();
+  const stack = out.stacks.FunctionDirectiveStack;
+  expect(stack).toBeDefined();
+
+  const resolvers = out.resolvers;
+  expect(resolvers).toBeDefined();
+  expect(resolvers).toMatchSnapshot();
+});
+
+test('event invocation type mutation', () => {
+  const schema = `
+  type Mutation {
+    asyncStuff(msg: String): EventInvocationResponse @function(name: "asyncstuff-\${env}", invocationType: Event)
+  }
+`;
+
+  const out = testTransform({
+    schema,
+    transformers: [new FunctionTransformer()],
+  });
+  expect(out).toBeDefined();
+
+
+  parse(out.schema);
+  expect(out.schema).toBeDefined()
+  expect(out.schema).toMatchSnapshot()
+
+  expect(out.stacks).toBeDefined();
+  const stack = out.stacks.FunctionDirectiveStack;
+  expect(stack).toBeDefined();
+
+  const resolvers = out.resolvers;
+  expect(resolvers).toBeDefined();
+  expect(resolvers).toMatchSnapshot();
+});
+
+test('event invocation non-string return type fails', () => {
+  const schema = `
+  type Mutation {
+    asyncStuff(msg: String): Int @function(name: "asyncstuff-\${env}", invocationType: Event)
+  }
+`;
+
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new FunctionTransformer()],
+    }),
+  ).toThrowError("Invalid return type for 'invocationType: Event'. Return type must be 'String'.");
+});
