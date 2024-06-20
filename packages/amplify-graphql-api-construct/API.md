@@ -438,6 +438,7 @@ export interface TimeToLiveSpecification {
 // @public
 export interface TranslationBehavior {
     readonly allowDestructiveGraphqlSchemaUpdates: boolean;
+    readonly allowGen1Patterns: boolean;
     readonly disableResolverDeduping: boolean;
     readonly enableAutoIndexQueryNames: boolean;
     // (undocumented)
