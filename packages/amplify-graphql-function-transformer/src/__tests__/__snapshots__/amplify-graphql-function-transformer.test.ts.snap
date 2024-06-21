@@ -1,34 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`event invocation type mutation 1`] = `
-Object {
-  "InvokeAsyncstuffLambdaDataSource.req.vtl": "## [Start] Invoke AWS Lambda data source: AsyncstuffLambdaDataSource. **
-{
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\": {
-      \\"typeName\\": $util.toJson($ctx.stash.get(\\"typeName\\")),
-      \\"fieldName\\": $util.toJson($ctx.stash.get(\\"fieldName\\")),
-      \\"arguments\\": $util.toJson($ctx.arguments),
-      \\"identity\\": $util.toJson($ctx.identity),
-      \\"source\\": $util.toJson($ctx.source),
-      \\"request\\": $util.toJson($ctx.request),
-      \\"prev\\": $util.toJson($ctx.prev)
-  },
-  \\"invocationType\\": \\"Event\\"
+exports[`event invocation generates EventInvocationResponse type in schema preprocess step 1`] = `
+"type Mutation {
+  asyncStuff(msg: String): EventInvocationResponse
 }
-## [End] Invoke AWS Lambda data source: AsyncstuffLambdaDataSource. **",
-  "InvokeAsyncstuffLambdaDataSource.res.vtl": "## [Start] Handle error or return result. **
-#if( $ctx.error )
-  $util.error($ctx.error.message, $ctx.error.type)
-#end
-$util.toJson(\\"\\")
-## [End] Handle error or return result. **",
-  "Mutation.asyncStuff.res.vtl": "$util.toJson($ctx.prev.result)",
+
+\\"Return type for lambda function event invocation.\\"
+type EventInvocationResponse {
+  \\"Whether the asynchronous lambda function invocation was successful. If false, you should expect errors in the response.\\"
+  success: Boolean!
 }
+"
 `;
 
-exports[`event invocation type mutation 2`] = `
+exports[`event invocation generates EventInvocationResponse type in schema preprocess step 2`] = `
 Object {
   "InvokeAsyncstuffLambdaDataSource.req.vtl": "## [Start] Invoke AWS Lambda data source: AsyncstuffLambdaDataSource. **
 {
@@ -47,10 +32,15 @@ Object {
 }
 ## [End] Invoke AWS Lambda data source: AsyncstuffLambdaDataSource. **",
   "InvokeAsyncstuffLambdaDataSource.res.vtl": "## [Start] Handle error or return result. **
+#set( $success = true )
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
+  #set( $success = false )
 #end
-$util.toJson(\\"\\")
+#set( $response = {
+  \\"success\\": $success
+} )
+$util.toJson($response)
 ## [End] Handle error or return result. **",
   "Mutation.asyncStuff.res.vtl": "$util.toJson($ctx.prev.result)",
 }
@@ -75,10 +65,15 @@ Object {
 }
 ## [End] Invoke AWS Lambda data source: AsyncstuffLambdaDataSource. **",
   "InvokeAsyncstuffLambdaDataSource.res.vtl": "## [Start] Handle error or return result. **
+#set( $success = true )
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
+  #set( $success = false )
 #end
-$util.toJson(\\"\\")
+#set( $response = {
+  \\"success\\": $success
+} )
+$util.toJson($response)
 ## [End] Handle error or return result. **",
   "Query.asyncStuff.res.vtl": "$util.toJson($ctx.prev.result)",
 }

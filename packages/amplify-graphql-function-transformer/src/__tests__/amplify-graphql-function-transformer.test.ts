@@ -1,8 +1,11 @@
 import { Match, Template } from 'aws-cdk-lib/assertions';
-import { parse } from 'graphql';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { DocumentNode, parse, print } from 'graphql';
+import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { FunctionTransformer } from '..';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { AppSyncAuthConfiguration, ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { DDB_DEFAULT_DATASOURCE_STRATEGY, GraphQLTransform, constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
 
 test('for @function with only name, it generates the expected resources', () => {
   const validSchema = `
@@ -373,12 +376,24 @@ test('includes auth info in stash', () => {
 test('event invocation type query', () => {
   const schema = `
     type Query {
-      asyncStuff(msg: String): String @function(name: "asyncstuff-\${env}", invocationType: Event)
+      asyncStuff(msg: String): EventInvocationResponse @function(name: "asyncstuff-\${env}", invocationType: Event)
     }
   `;
 
+  const transformer = createTransformer()
+  const updatedSchemaDocument = transformer.preProcessSchema(parse(schema));
+
+  const generatedResponseType = updatedSchemaDocument.definitions.find((def) =>
+    def.kind === 'ObjectTypeDefinition' &&
+    def.name.value === 'EventInvocationResponse'
+  );
+
+  expect(generatedResponseType).toBeDefined();
+
+  const preProcessedSchema = print(updatedSchemaDocument);
+
   const out = testTransform({
-    schema,
+    schema: preProcessedSchema,
     transformers: [new FunctionTransformer()],
   });
   expect(out).toBeDefined();
@@ -392,19 +407,48 @@ test('event invocation type query', () => {
   expect(resolvers).toMatchSnapshot();
 });
 
-test('event invocation type mutation', () => {
+test('RequestResponse invocation type does not add EventInvocationResponse type in schema preprocess step', () => {
+  const schema = `
+  type Mutation {
+    echo(msg: String): EventInvocationResponse @function(name: "echo-\${env}")
+  }
+`;
+
+  const transformer = createTransformer()
+  const updatedSchemaDocument = transformer.preProcessSchema(parse(schema));
+
+  const generatedResponseType = updatedSchemaDocument.definitions.find((def) =>
+    def.kind === 'ObjectTypeDefinition' &&
+    def.name.value === 'EventInvocationResponse'
+  );
+
+  expect(generatedResponseType).toBeUndefined();
+})
+
+test('event invocation generates EventInvocationResponse type in schema preprocess step', () => {
   const schema = `
   type Mutation {
     asyncStuff(msg: String): EventInvocationResponse @function(name: "asyncstuff-\${env}", invocationType: Event)
   }
 `;
 
+  const transformer = createTransformer()
+  const updatedSchemaDocument = transformer.preProcessSchema(parse(schema));
+
+  const generatedResponseType = updatedSchemaDocument.definitions.find((def) =>
+    def.kind === 'ObjectTypeDefinition' &&
+    def.name.value === 'EventInvocationResponse'
+  );
+
+  expect(generatedResponseType).toBeDefined();
+
+  const preProcessedSchema = print(updatedSchemaDocument);
+
   const out = testTransform({
-    schema,
+    schema: preProcessedSchema,
     transformers: [new FunctionTransformer()],
   });
   expect(out).toBeDefined();
-
 
   parse(out.schema);
   expect(out.schema).toBeDefined()
@@ -419,7 +463,7 @@ test('event invocation type mutation', () => {
   expect(resolvers).toMatchSnapshot();
 });
 
-test('event invocation non-string return type fails', () => {
+test('event invocation invalid return type fails', () => {
   const schema = `
   type Mutation {
     asyncStuff(msg: String): Int @function(name: "asyncstuff-\${env}", invocationType: Event)
@@ -431,5 +475,30 @@ test('event invocation non-string return type fails', () => {
       schema,
       transformers: [new FunctionTransformer()],
     }),
-  ).toThrowError("Invalid return type for 'invocationType: Event'. Return type must be 'String'.");
+  ).toThrowError("Invalid return type for 'invocationType: Event'. Return type must be 'EventInvocationResponse'.");
 });
+
+const createTransformer = (): {
+  transform: (schema: string) => DeploymentResources & { logs: any[] };
+  preProcessSchema: (schema: DocumentNode) => DocumentNode;
+} => {
+  const authTransformer = new AuthTransformer();
+  const modelTransformer = new ModelTransformer();
+  const functionTransformer = new FunctionTransformer();
+  const transformers = [
+    modelTransformer,
+    functionTransformer,
+    authTransformer,
+  ];
+
+  return {
+    transform: (schema: string) => {
+      return testTransform({
+        schema,
+        transformers,
+      });
+    },
+    preProcessSchema: (schema: DocumentNode) =>
+      new GraphQLTransform({ transformers }).preProcessSchema(schema),
+  };
+}
