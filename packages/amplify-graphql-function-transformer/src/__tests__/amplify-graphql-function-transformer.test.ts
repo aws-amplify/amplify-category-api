@@ -1,11 +1,9 @@
 import { Match, Template } from 'aws-cdk-lib/assertions';
-import { DocumentNode, parse, print } from 'graphql';
+import { DefinitionNode, DocumentNode, parse, print } from 'graphql';
 import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { FunctionTransformer } from '..';
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { AppSyncAuthConfiguration, ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
-import { DDB_DEFAULT_DATASOURCE_STRATEGY, GraphQLTransform, constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
+import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 
 test('for @function with only name, it generates the expected resources', () => {
   const validSchema = `
@@ -382,23 +380,16 @@ test('event invocation type query', () => {
 
   const transformer = createTransformer()
   const updatedSchemaDocument = transformer.preProcessSchema(parse(schema));
-
-  const generatedResponseType = updatedSchemaDocument.definitions.find((def) =>
-    def.kind === 'ObjectTypeDefinition' &&
-    def.name.value === 'EventInvocationResponse'
-  );
-
+  const generatedResponseType = updatedSchemaDocument.definitions
+  .find(containsGeneratedEventInvocationResponseType);
   expect(generatedResponseType).toBeDefined();
 
   const preProcessedSchema = print(updatedSchemaDocument);
-
-  const out = testTransform({
-    schema: preProcessedSchema,
-    transformers: [new FunctionTransformer()],
-  });
+  const out = transformer.transform(preProcessedSchema);
   expect(out).toBeDefined();
   parse(out.schema);
   expect(out.stacks).toBeDefined();
+
   const stack = out.stacks.FunctionDirectiveStack;
   expect(stack).toBeDefined();
 
@@ -417,12 +408,15 @@ test('RequestResponse invocation type does not add EventInvocationResponse type 
   const transformer = createTransformer()
   const updatedSchemaDocument = transformer.preProcessSchema(parse(schema));
 
-  const generatedResponseType = updatedSchemaDocument.definitions.find((def) =>
-    def.kind === 'ObjectTypeDefinition' &&
-    def.name.value === 'EventInvocationResponse'
-  );
+  const generatedResponseType = updatedSchemaDocument.definitions
+    .find(containsGeneratedEventInvocationResponseType);
 
   expect(generatedResponseType).toBeUndefined();
+
+  const preProcessedSchema = print(updatedSchemaDocument);
+  expect(() => {
+    transformer.transform(preProcessedSchema)
+  }).toThrowError();
 })
 
 test('event invocation generates EventInvocationResponse type in schema preprocess step', () => {
@@ -435,10 +429,8 @@ test('event invocation generates EventInvocationResponse type in schema preproce
   const transformer = createTransformer()
   const updatedSchemaDocument = transformer.preProcessSchema(parse(schema));
 
-  const generatedResponseType = updatedSchemaDocument.definitions.find((def) =>
-    def.kind === 'ObjectTypeDefinition' &&
-    def.name.value === 'EventInvocationResponse'
-  );
+  const generatedResponseType = updatedSchemaDocument.definitions
+  .find(containsGeneratedEventInvocationResponseType);
 
   expect(generatedResponseType).toBeDefined();
 
@@ -482,13 +474,8 @@ const createTransformer = (): {
   transform: (schema: string) => DeploymentResources & { logs: any[] };
   preProcessSchema: (schema: DocumentNode) => DocumentNode;
 } => {
-  const authTransformer = new AuthTransformer();
-  const modelTransformer = new ModelTransformer();
-  const functionTransformer = new FunctionTransformer();
   const transformers = [
-    modelTransformer,
-    functionTransformer,
-    authTransformer,
+    new FunctionTransformer()
   ];
 
   return {
@@ -501,4 +488,12 @@ const createTransformer = (): {
     preProcessSchema: (schema: DocumentNode) =>
       new GraphQLTransform({ transformers }).preProcessSchema(schema),
   };
+}
+
+const containsGeneratedEventInvocationResponseType = (definitionNode: DefinitionNode): boolean => {
+  return definitionNode.kind === 'ObjectTypeDefinition'
+  && definitionNode.name.value === 'EventInvocationResponse'
+  && definitionNode.fields?.length === 1
+  && definitionNode.fields[0].name.value === 'success'
+  && definitionNode.fields[0].type.kind === 'NonNullType';
 }
