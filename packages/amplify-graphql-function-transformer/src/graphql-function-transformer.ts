@@ -5,29 +5,14 @@ import {
   MappingTemplate,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
-import {
-  TransformerContextProvider,
-  TransformerPreProcessContextProvider,
-  TransformerSchemaVisitStepContextProvider,
-} from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FunctionDirective } from '@aws-amplify/graphql-directives';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import * as cdk from 'aws-cdk-lib';
 import { obj, str, ref, printBlock, compoundExpression, qref, raw, iff, Expression, set, bool } from 'graphql-mapping-template';
 import { FunctionResourceIDs, ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
-import {
-  DirectiveNode,
-  ObjectTypeDefinitionNode,
-  InterfaceTypeDefinitionNode,
-  FieldDefinitionNode,
-  Kind,
-  DocumentNode,
-  DefinitionNode,
-  ArgumentNode,
-} from 'graphql';
-import { WritableDraft } from 'immer/dist/types/types-external';
-import produce from 'immer';
+import { DirectiveNode, ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
 
 type FunctionDirectiveConfiguration = {
   name: string;
@@ -72,49 +57,6 @@ export class FunctionTransformer extends TransformerPluginBase {
     }
 
     resolver.push(args);
-  };
-
-  /**
-   * `invocationType: Event` requires the addition of a new type `EventInvocationResponse`
-   * to the GraphQL schema. This should only be added here if:
-   *   - one or more function directives in a model schema contain the `Event` invocation type.
-   *   - the type doesn't already exist in the schema.
-   */
-  mutateSchema = (ctx: TransformerPreProcessContextProvider): DocumentNode => {
-    // a few simple predicates to promote readability.
-    const isObjectTypePredicate = (definition: DefinitionNode): boolean => {
-      return definition.kind === Kind.OBJECT_TYPE_DEFINITION;
-    };
-
-    const isEventInvocationArgumentPredicate = (argumentNode: ArgumentNode | undefined): boolean => {
-      return argumentNode?.name.value === 'invocationType' && argumentNode.value.kind === Kind.ENUM && argumentNode.value.value === 'Event';
-    };
-
-    const objectTypeDefinitionNodes = ctx.inputDocument.definitions.filter((definition) =>
-      isObjectTypePredicate(definition),
-    ) as ObjectTypeDefinitionNode[];
-
-    // we care only about the directive defined on the fields of ObjectTypeDefinition nodes.
-    // so we're flattening two layers down to get them.
-    const functionDirectiveArguments = objectTypeDefinitionNodes
-      .flatMap((typeDef) => typeDef.fields)
-      .flatMap((field) => field?.directives)
-      .filter((directive) => directive?.name.value === FunctionDirective.name)
-      .flatMap((functionDirective) => functionDirective?.arguments);
-
-    const schemaContainsDirectiveWithEventInvocationType = functionDirectiveArguments.some(isEventInvocationArgumentPredicate);
-
-    const document: DocumentNode = produce(ctx.inputDocument, (draft: WritableDraft<DocumentNode>) => {
-      const documentContainsEventInvocationResponseType = draft.definitions.some(
-        (definition) => definition.kind === Kind.OBJECT_TYPE_DEFINITION && definition.name.value === 'EventInvocationResponse',
-      );
-      if (schemaContainsDirectiveWithEventInvocationType && !documentContainsEventInvocationResponseType) {
-        const eventResponseType = eventInvocationResponse();
-        draft.definitions.push(eventResponseType as WritableDraft<ObjectTypeDefinitionNode>);
-      }
-    });
-
-    return document;
   };
 
   generateResolvers = (context: TransformerContextProvider): void => {
@@ -314,46 +256,4 @@ const lambdaArnResource = (env: string, name: string, region?: string, accountId
 const lambdaArnKey = (name: string, region?: string, accountId?: string): string => {
   // eslint-disable-next-line no-template-curly-in-string
   return `arn:aws:lambda:${region ? region : '${AWS::Region}'}:${accountId ? accountId : '${AWS::AccountId}'}:function:${name}`;
-};
-
-/**
- * `EventInvocationResponse` type to be added to schema **IF** the schema contains >= 1
- *  function directives with the `invocationMode: Event` specified.
- * @returns an {@link ObjectTypeDefinitionNode} representing `EventInvocationResponse` type.
- */
-const eventInvocationResponse = (): ObjectTypeDefinitionNode => {
-  return {
-    kind: Kind.OBJECT_TYPE_DEFINITION,
-    name: {
-      kind: Kind.NAME,
-      value: 'EventInvocationResponse',
-    },
-    description: {
-      kind: Kind.STRING,
-      value: 'Return type for lambda function event invocation.',
-    },
-    fields: [
-      {
-        kind: Kind.FIELD_DEFINITION,
-        description: {
-          kind: Kind.STRING,
-          value: 'Whether the asynchronous lambda function invocation was successful. If false, you should expect errors in the response.',
-        },
-        name: {
-          kind: Kind.NAME,
-          value: 'success',
-        },
-        type: {
-          kind: Kind.NON_NULL_TYPE,
-          type: {
-            kind: Kind.NAMED_TYPE,
-            name: {
-              kind: Kind.NAME,
-              value: 'Boolean',
-            },
-          },
-        },
-      },
-    ],
-  };
 };

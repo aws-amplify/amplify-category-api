@@ -1,9 +1,9 @@
+/* eslint-disable no-template-curly-in-string */
 import { Match, Template } from 'aws-cdk-lib/assertions';
-import { DefinitionNode, DocumentNode, parse, print } from 'graphql';
-import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { parse } from 'graphql';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { FunctionTransformer } from '..';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 
 test('for @function with only name, it generates the expected resources', () => {
   const validSchema = `
@@ -376,15 +376,16 @@ test('event invocation type query', () => {
     type Query {
       asyncStuff(msg: String): EventInvocationResponse @function(name: "asyncstuff-\${env}", invocationType: Event)
     }
+
+    type EventInvocationResponse {
+      success: Boolean!
+    }
   `;
 
-  const transformer = createTransformer();
-  const updatedSchemaDocument = transformer.preProcessSchema(parse(schema));
-  const generatedResponseType = updatedSchemaDocument.definitions.find(containsGeneratedEventInvocationResponseType);
-  expect(generatedResponseType).toBeDefined();
-
-  const preProcessedSchema = print(updatedSchemaDocument);
-  const out = transformer.transform(preProcessedSchema);
+  const out = testTransform({
+    schema,
+    transformers: [new FunctionTransformer()],
+  });
   expect(out).toBeDefined();
   parse(out.schema);
   expect(out.stacks).toBeDefined();
@@ -397,44 +398,19 @@ test('event invocation type query', () => {
   expect(resolvers).toMatchSnapshot();
 });
 
-test('RequestResponse invocation type does not add EventInvocationResponse type in schema preprocess step', () => {
-  const schema = `
-  type Mutation {
-    echo(msg: String): EventInvocationResponse @function(name: "echo-\${env}")
-  }
-`;
-
-  const transformer = createTransformer();
-  const updatedSchemaDocument = transformer.preProcessSchema(parse(schema));
-
-  const generatedResponseType = updatedSchemaDocument.definitions.find(containsGeneratedEventInvocationResponseType);
-
-  expect(generatedResponseType).toBeUndefined();
-
-  const preProcessedSchema = print(updatedSchemaDocument);
-  expect(() => {
-    transformer.transform(preProcessedSchema);
-  }).toThrowError();
-});
-
-test('event invocation generates EventInvocationResponse type in schema preprocess step', () => {
+test('event invocation with included EventInvocationResponse type in schema definition succeeds', () => {
   const schema = `
   type Mutation {
     asyncStuff(msg: String): EventInvocationResponse @function(name: "asyncstuff-\${env}", invocationType: Event)
   }
+
+  type EventInvocationResponse {
+    success: Boolean!
+  }
 `;
 
-  const transformer = createTransformer();
-  const updatedSchemaDocument = transformer.preProcessSchema(parse(schema));
-
-  const generatedResponseType = updatedSchemaDocument.definitions.find(containsGeneratedEventInvocationResponseType);
-
-  expect(generatedResponseType).toBeDefined();
-
-  const preProcessedSchema = print(updatedSchemaDocument);
-
   const out = testTransform({
-    schema: preProcessedSchema,
+    schema,
     transformers: [new FunctionTransformer()],
   });
   expect(out).toBeDefined();
@@ -467,29 +443,12 @@ test('event invocation invalid return type fails', () => {
   ).toThrowError("Invalid return type for 'invocationType: Event'. Return type must be 'EventInvocationResponse'.");
 });
 
-const createTransformer = (): {
-  transform: (schema: string) => DeploymentResources & { logs: any[] };
-  preProcessSchema: (schema: DocumentNode) => DocumentNode;
-} => {
-  const transformers = [new FunctionTransformer()];
-
-  return {
-    transform: (schema: string) => {
-      return testTransform({
-        schema,
-        transformers,
-      });
-    },
-    preProcessSchema: (schema: DocumentNode) => new GraphQLTransform({ transformers }).preProcessSchema(schema),
-  };
-};
-
-const containsGeneratedEventInvocationResponseType = (definitionNode: DefinitionNode): boolean => {
-  return (
-    definitionNode.kind === 'ObjectTypeDefinition' &&
-    definitionNode.name.value === 'EventInvocationResponse' &&
-    definitionNode.fields?.length === 1 &&
-    definitionNode.fields[0].name.value === 'success' &&
-    definitionNode.fields[0].type.kind === 'NonNullType'
-  );
-};
+// const containsGeneratedEventInvocationResponseType = (definitionNode: DefinitionNode): boolean => {
+//   return (
+//     definitionNode.kind === 'ObjectTypeDefinition' &&
+//     definitionNode.name.value === 'EventInvocationResponse' &&
+//     definitionNode.fields?.length === 1 &&
+//     definitionNode.fields[0].name.value === 'success' &&
+//     definitionNode.fields[0].type.kind === 'NonNullType'
+//   );
+// };
