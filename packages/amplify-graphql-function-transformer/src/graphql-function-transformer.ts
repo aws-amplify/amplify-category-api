@@ -8,7 +8,7 @@ import {
 import {
   TransformerContextProvider,
   TransformerPreProcessContextProvider,
-  TransformerSchemaVisitStepContextProvider
+  TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { FunctionDirective } from '@aws-amplify/graphql-directives';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -16,7 +16,16 @@ import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import * as cdk from 'aws-cdk-lib';
 import { obj, str, ref, printBlock, compoundExpression, qref, raw, iff, Expression, set, bool } from 'graphql-mapping-template';
 import { FunctionResourceIDs, ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
-import { DirectiveNode, ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode, FieldDefinitionNode, Kind, DocumentNode, DefinitionNode, ArgumentNode } from 'graphql';
+import {
+  DirectiveNode,
+  ObjectTypeDefinitionNode,
+  InterfaceTypeDefinitionNode,
+  FieldDefinitionNode,
+  Kind,
+  DocumentNode,
+  DefinitionNode,
+  ArgumentNode,
+} from 'graphql';
 import { WritableDraft } from 'immer/dist/types/types-external';
 import produce from 'immer';
 
@@ -74,34 +83,30 @@ export class FunctionTransformer extends TransformerPluginBase {
   mutateSchema = (ctx: TransformerPreProcessContextProvider): DocumentNode => {
     // a few simple predicates to promote readability.
     const isObjectTypePredicate = (definition: DefinitionNode): boolean => {
-      return definition.kind === Kind.OBJECT_TYPE_DEFINITION
-    }
+      return definition.kind === Kind.OBJECT_TYPE_DEFINITION;
+    };
 
     const isEventInvocationArgumentPredicate = (argumentNode: ArgumentNode | undefined): boolean => {
-      return argumentNode?.name.value === 'invocationType'
-      && argumentNode.value.kind === Kind.ENUM
-      && argumentNode.value.value === 'Event';
-    }
+      return argumentNode?.name.value === 'invocationType' && argumentNode.value.kind === Kind.ENUM && argumentNode.value.value === 'Event';
+    };
 
     const objectTypeDefinitionNodes = ctx.inputDocument.definitions.filter((definition) =>
-      isObjectTypePredicate(definition)
-    ) as ObjectTypeDefinitionNode[]
+      isObjectTypePredicate(definition),
+    ) as ObjectTypeDefinitionNode[];
 
     // we care only about the directive defined on the fields of ObjectTypeDefinition nodes.
     // so we're flattening two layers down to get them.
     const functionDirectiveArguments = objectTypeDefinitionNodes
-    .flatMap((typeDef) => typeDef.fields)
-    .flatMap((field) => field?.directives)
-    .filter((directive) => directive?.name.value === FunctionDirective.name)
-    .flatMap((functionDirective) => functionDirective?.arguments)
+      .flatMap((typeDef) => typeDef.fields)
+      .flatMap((field) => field?.directives)
+      .filter((directive) => directive?.name.value === FunctionDirective.name)
+      .flatMap((functionDirective) => functionDirective?.arguments);
 
-    const schemaContainsDirectiveWithEventInvocationType = functionDirectiveArguments
-      .some(isEventInvocationArgumentPredicate);
+    const schemaContainsDirectiveWithEventInvocationType = functionDirectiveArguments.some(isEventInvocationArgumentPredicate);
 
     const document: DocumentNode = produce(ctx.inputDocument, (draft: WritableDraft<DocumentNode>) => {
       const documentContainsEventInvocationResponseType = draft.definitions.some(
-        (definition) => definition.kind === Kind.OBJECT_TYPE_DEFINITION
-        && definition.name.value === 'EventInvocationResponse',
+        (definition) => definition.kind === Kind.OBJECT_TYPE_DEFINITION && definition.name.value === 'EventInvocationResponse',
       );
       if (schemaContainsDirectiveWithEventInvocationType && !documentContainsEventInvocationResponseType) {
         const eventResponseType = eventInvocationResponse();

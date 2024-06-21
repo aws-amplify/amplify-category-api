@@ -378,10 +378,9 @@ test('event invocation type query', () => {
     }
   `;
 
-  const transformer = createTransformer()
+  const transformer = createTransformer();
   const updatedSchemaDocument = transformer.preProcessSchema(parse(schema));
-  const generatedResponseType = updatedSchemaDocument.definitions
-  .find(containsGeneratedEventInvocationResponseType);
+  const generatedResponseType = updatedSchemaDocument.definitions.find(containsGeneratedEventInvocationResponseType);
   expect(generatedResponseType).toBeDefined();
 
   const preProcessedSchema = print(updatedSchemaDocument);
@@ -405,19 +404,18 @@ test('RequestResponse invocation type does not add EventInvocationResponse type 
   }
 `;
 
-  const transformer = createTransformer()
+  const transformer = createTransformer();
   const updatedSchemaDocument = transformer.preProcessSchema(parse(schema));
 
-  const generatedResponseType = updatedSchemaDocument.definitions
-    .find(containsGeneratedEventInvocationResponseType);
+  const generatedResponseType = updatedSchemaDocument.definitions.find(containsGeneratedEventInvocationResponseType);
 
   expect(generatedResponseType).toBeUndefined();
 
   const preProcessedSchema = print(updatedSchemaDocument);
   expect(() => {
-    transformer.transform(preProcessedSchema)
+    transformer.transform(preProcessedSchema);
   }).toThrowError();
-})
+});
 
 test('event invocation generates EventInvocationResponse type in schema preprocess step', () => {
   const schema = `
@@ -426,11 +424,10 @@ test('event invocation generates EventInvocationResponse type in schema preproce
   }
 `;
 
-  const transformer = createTransformer()
+  const transformer = createTransformer();
   const updatedSchemaDocument = transformer.preProcessSchema(parse(schema));
 
-  const generatedResponseType = updatedSchemaDocument.definitions
-  .find(containsGeneratedEventInvocationResponseType);
+  const generatedResponseType = updatedSchemaDocument.definitions.find(containsGeneratedEventInvocationResponseType);
 
   expect(generatedResponseType).toBeDefined();
 
@@ -443,8 +440,8 @@ test('event invocation generates EventInvocationResponse type in schema preproce
   expect(out).toBeDefined();
 
   parse(out.schema);
-  expect(out.schema).toBeDefined()
-  expect(out.schema).toMatchSnapshot()
+  expect(out.schema).toBeDefined();
+  expect(out.schema).toMatchSnapshot();
 
   expect(out.stacks).toBeDefined();
   const stack = out.stacks.FunctionDirectiveStack;
@@ -474,9 +471,7 @@ const createTransformer = (): {
   transform: (schema: string) => DeploymentResources & { logs: any[] };
   preProcessSchema: (schema: DocumentNode) => DocumentNode;
 } => {
-  const transformers = [
-    new FunctionTransformer()
-  ];
+  const transformers = [new FunctionTransformer()];
 
   return {
     transform: (schema: string) => {
@@ -485,15 +480,16 @@ const createTransformer = (): {
         transformers,
       });
     },
-    preProcessSchema: (schema: DocumentNode) =>
-      new GraphQLTransform({ transformers }).preProcessSchema(schema),
+    preProcessSchema: (schema: DocumentNode) => new GraphQLTransform({ transformers }).preProcessSchema(schema),
   };
-}
+};
 
 const containsGeneratedEventInvocationResponseType = (definitionNode: DefinitionNode): boolean => {
-  return definitionNode.kind === 'ObjectTypeDefinition'
-  && definitionNode.name.value === 'EventInvocationResponse'
-  && definitionNode.fields?.length === 1
-  && definitionNode.fields[0].name.value === 'success'
-  && definitionNode.fields[0].type.kind === 'NonNullType';
-}
+  return (
+    definitionNode.kind === 'ObjectTypeDefinition' &&
+    definitionNode.name.value === 'EventInvocationResponse' &&
+    definitionNode.fields?.length === 1 &&
+    definitionNode.fields[0].name.value === 'success' &&
+    definitionNode.fields[0].type.kind === 'NonNullType'
+  );
+};
