@@ -428,8 +428,7 @@ export interface TranslationBehavior {
   readonly useSubUsernameForDefaultIdentityClaim: boolean;
 
   /**
-   * When disabled, relational fields on the mutation response are over-redacted to protect the data from subscribed users
-   * to correctly apply the auth rules.
+   * When enabled, suppresses default behavior of redacting relational fields when auth rules do not exactly match.
    * @default false
    */
   readonly subscriptionsInheritPrimaryAuth: boolean;
@@ -530,8 +529,7 @@ export interface PartialTranslationBehavior {
   readonly useSubUsernameForDefaultIdentityClaim?: boolean;
 
   /**
-   * When disabled, relational fields on the mutation response are over-redacted to protect the data from subscribed users
-   * to correctly apply the auth rules.
+   * When enabled, suppresses default behavior of redacting relational fields when auth rules do not exactly match.
    * @default false
    */
   readonly subscriptionsInheritPrimaryAuth?: boolean;
