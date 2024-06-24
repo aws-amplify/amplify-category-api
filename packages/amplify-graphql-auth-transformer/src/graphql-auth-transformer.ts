@@ -753,7 +753,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
 
       // When the default redaction is false, it means no field resolver is involved
       // Need the additional check on model level auth rules of both sides to determine the relational field redaction
-      if (!redactRelationalField) {
+      if (!redactRelationalField && !ctx.transformParameters.subscriptionsInheritPrimaryAuth) {
         let filteredRelatedModelReadRoleDefinitions = roleDefinitions;
         // When userpool private roles are detected, filter out the non-private userpool roles
         if (filteredRelatedModelReadRoleDefinitions.some((r) => r.provider === 'userPools' && r.strategy === 'private')) {

@@ -443,20 +443,22 @@ describe('Relational field redaction tests', () => {
   describe('required relational field', () => {
     // does not use test setup function because required hasMany relationships can still be redacted without error
     describe('DDB datasources - field relation', () => {
-      const testTable: TestTableRow[] = [];
+      const testTable: [string, string, string[], string[], boolean, boolean][] = [];
       for (const strategyName of Object.keys(ddbDataSourceStrategies)) {
         testCases.forEach((testCase) => {
-          testTable.push([strategyName, strategyName, ...testCase] as TestTableRow);
+          testTable.push([strategyName, strategyName, ...testCase, false] as [string, string, string[], string[], boolean, boolean]);
+          testTable.push([strategyName, strategyName, ...testCase, true] as [string, string, string[], string[], boolean, boolean]);
         });
       }
       test.each(testTable)(
-        '%s -> %s - Primary %s - Related %s should redact relational field - %s',
+        '%s -> %s - Primary %s - Related %s should redact relational field - %s, subscriptionsInheritPrimaryAuth: %s',
         (
           primaryStrategyName: string,
           relatedStrategyName: string,
           primaryModelRules: string[],
           relatedModelRules: string[],
           shouldRedactField: boolean,
+          subscriptionsInheritPrimaryAuth: boolean,
           primaryModelNames = ['Primary'],
         ) => {
           const validSchema = resolveSchema(fieldSchemaRequiredTemplate, primaryModelRules, relatedModelRules);
@@ -473,9 +475,12 @@ describe('Relational field redaction tests', () => {
                 }),
                 {},
               ),
+              transformParameters: {
+                subscriptionsInheritPrimaryAuth,
+              },
             });
 
-          if (shouldRedactField) {
+          if (shouldRedactField && !subscriptionsInheritPrimaryAuth) {
             expect(() => transform()).toThrow(
               'Subscriptions will inherit related auth when relational fields are set as required. Primary.relatedOne may be exposed in some subscriptions.',
             );
