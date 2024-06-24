@@ -726,7 +726,6 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     let relatedAuthExpression: string;
     // Relational field redaction is default to `needsFieldResolver`, which stays consistent with current behavior of always redacting relational field when field resolver is needed
     let redactRelationalField: boolean = needsFieldResolver;
-    const fieldIsRequired = field.type.kind === Kind.NON_NULL_TYPE;
     const relatedModelObject = this.getRelatedModelObject(ctx, getBaseType(field.type));
     const relatedModelName = relatedModelObject.name.value;
     if (this.authModelConfig.has(relatedModelName)) {
@@ -785,11 +784,9 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
                 return fieldReadRoleDefinitions.some((fr) => isIdenticalAuthRole(fr, relatedRole) && !isDynamicAuthOrCustomAuth(fr));
               });
             redactRelationalField = !isIdenticalRoleDefinitions;
-            // do not redact relational field when required
             // appsync will throw an error if trying to nullify a required field
+            const fieldIsRequired = field.type.kind === Kind.NON_NULL_TYPE;
             if (redactRelationalField && fieldIsRequired) {
-              redactRelationalField = false;
-
               // TODO: add link
               throw new TransformerContractError(
                 `Subscriptions will inherit related auth when relational fields are set as required. ${typeName}.${field.name.value} may be exposed in some subscriptions. See link`,
