@@ -461,29 +461,30 @@ describe('Relational field redaction tests', () => {
         ) => {
           const validSchema = resolveSchema(fieldSchemaRequiredTemplate, primaryModelRules, relatedModelRules);
           const modelKeys = getModelTypeNames(validSchema);
-          const out = testTransform({
-            schema: validSchema,
-            authConfig: authConfigWithAllProviders,
-            transformers: makeTransformers(),
-            dataSourceStrategies: modelKeys.reduce(
-              (acc, cur) => ({
-                ...acc,
-                [cur]: ddbDataSourceStrategies[primaryModelNames.includes(cur) ? primaryStrategyName : relatedStrategyName],
-              }),
-              {},
-            ),
-          });
-          expect(out).toBeDefined();
-          expect(out.resolvers['Primary.relatedOne.auth.1.req.vtl']).not.toContain(SUBSCRIPTION_PROTECTION);
-          expect(out.resolvers['RelatedMany.primary.auth.1.req.vtl']).not.toContain(SUBSCRIPTION_PROTECTION);
-          expect(out.resolvers['RelatedOne.primary.auth.1.req.vtl']).not.toContain(SUBSCRIPTION_PROTECTION);
+          const transform = () =>
+            testTransform({
+              schema: validSchema,
+              authConfig: authConfigWithAllProviders,
+              transformers: makeTransformers(),
+              dataSourceStrategies: modelKeys.reduce(
+                (acc, cur) => ({
+                  ...acc,
+                  [cur]: ddbDataSourceStrategies[primaryModelNames.includes(cur) ? primaryStrategyName : relatedStrategyName],
+                }),
+                {},
+              ),
+            });
 
-          // required hasMany relationships can still be redacted without error
           if (shouldRedactField) {
-            // eslint-disable-next-line jest/no-conditional-expect
-            expect(out.resolvers['Primary.relatedMany.auth.1.req.vtl']).toContain(SUBSCRIPTION_PROTECTION);
+            expect(() => transform()).toThrow(
+              'Subscriptions will inherit related auth when relational fields are set as required. Primary.relatedOne may be exposed in some subscriptions.',
+            );
           } else {
-            // eslint-disable-next-line jest/no-conditional-expect
+            const out = transform();
+            expect(out).toBeDefined();
+            expect(out.resolvers['Primary.relatedOne.auth.1.req.vtl']).not.toContain(SUBSCRIPTION_PROTECTION);
+            expect(out.resolvers['RelatedMany.primary.auth.1.req.vtl']).not.toContain(SUBSCRIPTION_PROTECTION);
+            expect(out.resolvers['RelatedOne.primary.auth.1.req.vtl']).not.toContain(SUBSCRIPTION_PROTECTION);
             expect(out.resolvers['Primary.relatedMany.auth.1.req.vtl']).not.toContain(SUBSCRIPTION_PROTECTION);
           }
         },
