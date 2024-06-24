@@ -206,7 +206,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
           getObjectPrimaryKey(manyToManyTwo.model as ObjectTypeDefinitionNode).name.value,
         );
         const d2SortFieldNames = d2SortKeys.map((node) => `${d2FieldNameOrig}${node.name.value}`);
-        const joinModelDirective = makeDirective('model', []);
+        const joinModelDirective = createJoinTableModelDirective(manyToManyOne.model, manyToManyTwo.model);
         const d1IndexDirective = makeDirective('index', [
           makeArgument('name', makeValueNode(d1IndexName)),
           makeArgument('sortKeyFields', makeValueNode([...d1SortFieldNames])),
@@ -378,7 +378,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
         getObjectPrimaryKey(directive2.object).name.value,
       );
       const d2SortFieldNames = d2SortKeys.map((node) => `${d2FieldNameOrig}${node.name.value}`);
-      const joinModelDirective = makeDirective('model', []);
+      const joinModelDirective = createJoinTableModelDirective(directive1.object, directive2.object);
       const d1IndexDirective = makeDirective('index', [
         makeArgument('name', makeValueNode(d1IndexName)),
         makeArgument('sortKeyFields', makeValueNode([...d1SortFieldNames])),
@@ -581,4 +581,26 @@ function createJoinTableAuthDirective(
 
   // eslint-disable-next-line consistent-return
   return makeDirective('auth', [makeArgument('rules', { kind: Kind.LIST, values: rules })]);
+}
+
+/*
+ * If both table subscriptions are off set the join table subscriptions to off.
+ * @param table1 left side of many-to-many
+ * @param table2 right side of many-to-many
+ * @returns model directive for join table
+ */
+function createJoinTableModelDirective(
+  table1: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
+  table2: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
+): DirectiveNode {
+  const t1Model = table1.directives!.find((directive) => directive.name.value === 'model');
+  const t2Model = table2.directives!.find((directive) => directive.name.value === 'model');
+  const t1Subscriptions = (t1Model?.arguments ?? []).find((arg) => arg.name.value === 'subscriptions')?.value ?? ({} as any);
+  const t2Subscriptions = (t2Model?.arguments ?? []).find((arg) => arg.name.value === 'subscriptions')?.value ?? ({} as any);
+  const t1SubscriptionsLevel = t1Subscriptions.fields?.find((field: any) => field?.name?.value === 'level') ?? {};
+  const t2SubscriptionsLevel = t2Subscriptions.fields?.find((field: any) => field?.name?.value === 'level') ?? {};
+  if (t1SubscriptionsLevel?.value?.value === 'off' && t2SubscriptionsLevel?.value?.value === 'off') {
+    return makeDirective('model', [makeArgument('subscriptions', makeValueNode({ level: 'off' }))]);
+  }
+  return makeDirective('model', []);
 }
