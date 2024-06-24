@@ -23,8 +23,8 @@ type ModelAModelB {
   modelAsortId: ID!
   modelBID: ID!
   modelBsortId: ID!
-  modelA: ModelA!
-  modelB: ModelB!
+  modelA: ModelA
+  modelB: ModelB
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
 }
@@ -3350,8 +3350,8 @@ type ModelAModelB {
   modelAsecondSortId: ID!
   modelBID: ID!
   modelBsortId: ID!
-  modelA: ModelA!
-  modelB: ModelB!
+  modelA: ModelA
+  modelB: ModelB
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
 }
@@ -3768,8 +3768,8 @@ type ModelAModelB {
   modelAID: ID!
   modelAsortId: ID!
   modelBID: ID!
-  modelA: ModelA!
-  modelB: ModelB!
+  modelA: ModelA
+  modelB: ModelB
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
 }
@@ -4134,8 +4134,8 @@ type FooBar {
   id: ID!
   fooID: ID!
   barID: ID!
-  foo: Foo!
-  bar: Bar!
+  foo: Foo
+  bar: Bar
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
 }
