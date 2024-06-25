@@ -49,7 +49,6 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     }
     const dataSourceName = getModelDataSourceNameForTypeName(ctx, relatedType.name.value);
     const dataSource = ctx.api.host.getDataSource(dataSourceName);
-    const mappedTableName = ctx.resourceHelper.getModelNameMapping(relatedType.name.value);
 
     const connectionCondition: Expression[] = [];
     const primaryKeys = getPrimaryKeyFields(object);
@@ -65,7 +64,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
       resolverResourceId,
       dataSource as any,
       MappingTemplate.s3MappingTemplateFromString(
-        this.generateHasManyLambdaRequestTemplate(mappedTableName, 'LIST', 'ConnectionQuery', connectionCondition, ctx),
+        this.generateHasManyLambdaRequestTemplate(relatedType.name.value, 'LIST', 'ConnectionQuery', connectionCondition, ctx),
         `${object.name.value}.${field.name.value}.req.vtl`,
       ),
       MappingTemplate.s3MappingTemplateFromString(
@@ -88,12 +87,13 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     joinCondition: Expression[],
     ctx: TransformerContextProvider,
   ): string => {
+    const mappedTableName = ctx.resourceHelper.getModelNameMapping(tableName);
     return printBlock('Invoke RDS Lambda data source')(
       compoundExpression([
         iff(ref('ctx.stash.deniedField'), compoundExpression([set(ref('result'), obj({ items: list([]) })), raw('#return($result)')])),
         set(ref('lambdaInput'), obj({})),
         set(ref('lambdaInput.args'), obj({})),
-        set(ref('lambdaInput.table'), str(tableName)),
+        set(ref('lambdaInput.table'), str(mappedTableName)),
         set(ref('lambdaInput.operation'), str(operation)),
         set(ref('lambdaInput.operationName'), str(operationName)),
         set(ref('lambdaInput.args.metadata'), obj({})),
@@ -128,12 +128,13 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     relatedTypePrimaryKeys: string[],
     ctx: TransformerContextProvider,
   ): string => {
+    const mappedTableName = ctx.resourceHelper.getModelNameMapping(tableName);
     return printBlock('Invoke RDS Lambda data source')(
       compoundExpression([
         iff(ref('ctx.stash.deniedField'), raw('#return($util.toJson(null))')),
         set(ref('lambdaInput'), obj({})),
         set(ref('lambdaInput.args'), obj({})),
-        set(ref('lambdaInput.table'), str(tableName)),
+        set(ref('lambdaInput.table'), str(mappedTableName)),
         set(ref('lambdaInput.operation'), str(operation)),
         set(ref('lambdaInput.operationName'), str(operationName)),
         set(ref('lambdaInput.args.metadata'), obj({})),
@@ -212,7 +213,6 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     }
     const dataSourceName = getModelDataSourceNameForTypeName(ctx, relatedType.name.value);
     const dataSource = ctx.api.host.getDataSource(dataSourceName);
-    const mappedTableName = ctx.resourceHelper.getModelNameMapping(relatedType.name.value);
 
     const connectionCondition: Expression[] = [];
     const primaryKeys = getPrimaryKeyFields(object);
@@ -230,7 +230,7 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
       dataSource as any,
       MappingTemplate.s3MappingTemplateFromString(
         this.generateHasOneLambdaRequestTemplate(
-          mappedTableName,
+          relatedType.name.value,
           'GET_FIRST',
           'GetItemConnectionQuery',
           connectionCondition,
@@ -257,7 +257,6 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
     }
     const dataSourceName = getModelDataSourceNameForTypeName(ctx, relatedType.name.value);
     const dataSource = ctx.api.host.getDataSource(dataSourceName);
-    const mappedTableName = ctx.resourceHelper.getModelNameMapping(relatedType.name.value);
 
     const connectionCondition: Expression[] = [];
     const primaryKeys = getPrimaryKeyFields(relatedType);
@@ -271,7 +270,14 @@ export class RDSRelationalResolverGenerator extends RelationalResolverGenerator 
       resolverResourceId,
       dataSource as any,
       MappingTemplate.s3MappingTemplateFromString(
-        this.generateHasOneLambdaRequestTemplate(mappedTableName, 'GET', 'BelongsToConnectionQuery', connectionCondition, primaryKeys, ctx),
+        this.generateHasOneLambdaRequestTemplate(
+          relatedType.name.value,
+          'GET',
+          'BelongsToConnectionQuery',
+          connectionCondition,
+          primaryKeys,
+          ctx,
+        ),
         `${object.name.value}.${field.name.value}.req.vtl`,
       ),
       MappingTemplate.s3MappingTemplateFromString(
