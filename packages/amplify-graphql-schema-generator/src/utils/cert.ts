@@ -5,15 +5,17 @@ import * as path from 'path';
 // If you are changing this, please make sure to change the logic in the SQL Lambda Layer as well.
 export const getSSLConfig = (
   host: string,
+  sslCertificate?: string,
 ): {
   rejectUnauthorized: boolean;
   ca?: string;
 } => {
   const AWS_RDS_HOSTS = ['rds.amazonaws.com'];
   const isRDS = AWS_RDS_HOSTS.some((rdsHost) => host.toLowerCase().endsWith(rdsHost));
+  const ca = sslCertificate || (isRDS ? getRDSCertificate() : undefined);
   const sslConfig = {
     rejectUnauthorized: true,
-    ...(isRDS && { ca: getRDSCertificate() }),
+    ...(ca && { ca }),
   };
   return sslConfig;
 };

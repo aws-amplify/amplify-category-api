@@ -7,17 +7,22 @@ type TestRegion = {
   name: string;
   optIn: boolean;
   cognitoSupported: boolean;
+  betaLayerDeployed: boolean; // is the beta layer deployed in this region
 };
 
 const REPO_ROOT = join(__dirname, '..');
 
 const supportedRegionsPath = join(REPO_ROOT, 'scripts', 'e2e-test-regions.json');
-const suportedRegions: TestRegion[] = JSON.parse(fs.readFileSync(supportedRegionsPath, 'utf-8'));
-const testRegions = suportedRegions.map((region) => region.name);
-const supportedRegionsByRegionName: Record<string, TestRegion> = suportedRegions.reduce(
+const supportedRegions: TestRegion[] = JSON.parse(fs.readFileSync(supportedRegionsPath, 'utf-8'));
+const testRegions = supportedRegions.map((region) => region.name);
+const supportedRegionsByRegionName: Record<string, TestRegion> = supportedRegions.reduce(
   (acc, region) => ({ ...acc, [region.name]: region }),
   {},
 );
+
+// list of regions the beta layer is not deployed in
+// the tests should not use these regions when using the beta layer
+const BETA_LAYER_NOT_DEPLOYED = supportedRegions.filter((region) => !region.betaLayerDeployed).map((region) => region.name);
 
 // https://github.com/aws-amplify/amplify-cli/blob/d55917fd83140817a4447b3def1736f75142df44/packages/amplify-provider-awscloudformation/src/aws-regions.js#L4-L17
 const v1TransformerSupportedRegionsPath = join(REPO_ROOT, 'scripts', 'v1-transformer-supported-regions.json');
@@ -216,7 +221,12 @@ const getTestNameFromPath = (testSuitePath: string, region?: string): string => 
   return testSuitePath.substring(startIndex, endIndex).split('.e2e').join('').split('.').join('-').concat(regionSuffix);
 };
 
-const splitTests = (baseJobLinux: any, testDirectory: string, pickTests?: (testSuites: string[]) => string[]): BatchBuildJob[] => {
+const splitTests = (
+  baseJobLinux: any,
+  testDirectory: string,
+  useBetaLayer: boolean = false,
+  pickTests?: (testSuites: string[]) => string[],
+): BatchBuildJob[] => {
   const output: any[] = [];
   let testSuites = getTestFiles(testDirectory);
   if (pickTests && typeof pickTests === 'function') {
@@ -245,7 +255,8 @@ const splitTests = (baseJobLinux: any, testDirectory: string, pickTests?: (testS
 
       if (RUN_SOLO.find((solo) => test === solo || test.match(solo))) {
         if (RUN_IN_ALL_REGIONS.find((allRegionsTest) => test === allRegionsTest || test.match(allRegionsTest))) {
-          const candidateRegions = filterCandidateRegions(test, testRegions);
+          // always run these jobs in regions that do not have the beta layer deployed
+          const candidateRegions = filterCandidateRegions(test, testRegions, false);
           candidateRegions.forEach((region) => {
             const newSoloJob = createJob(os, jobIdx, true);
             jobIdx++;
@@ -262,14 +273,14 @@ const splitTests = (baseJobLinux: any, testDirectory: string, pickTests?: (testS
         if (USE_PARENT) {
           newSoloJob.useParentAccount = true;
         }
-        setJobRegion(test, newSoloJob, jobIdx);
+        setJobRegion(test, newSoloJob, jobIdx, useBetaLayer);
         soloJobs.push(newSoloJob);
         continue;
       }
 
       // add the test
       currentJob.tests.push(test);
-      setJobRegion(test, currentJob, jobIdx);
+      setJobRegion(test, currentJob, jobIdx, useBetaLayer);
       if (USE_PARENT) {
         currentJob.useParentAccount = true;
       }
@@ -308,7 +319,7 @@ const splitTests = (baseJobLinux: any, testDirectory: string, pickTests?: (testS
   return result;
 };
 
-const setJobRegion = (test: string, job: CandidateJob, jobIdx: number): void => {
+const setJobRegion = (test: string, job: CandidateJob, jobIdx: number, useBetaLayer: boolean): void => {
   const FORCE_REGION = Object.keys(FORCE_REGION_MAP).find((key) => {
     const testName = getTestNameFromPath(test);
     return testName.startsWith(key);
@@ -325,7 +336,7 @@ const setJobRegion = (test: string, job: CandidateJob, jobIdx: number): void => 
     return;
   }
 
-  const candidateRegions = filterCandidateRegions(test, testRegions);
+  const candidateRegions = filterCandidateRegions(test, testRegions, useBetaLayer);
 
   if (candidateRegions.length === 0) {
     throw new Error(`No candidate regions found for test ${test}`);
@@ -334,7 +345,7 @@ const setJobRegion = (test: string, job: CandidateJob, jobIdx: number): void => 
   job.region = candidateRegions[jobIdx % candidateRegions.length];
 };
 
-const filterCandidateRegions = (test: string, candidateRegions: string[]): string[] => {
+const filterCandidateRegions = (test: string, candidateRegions: string[], useBetaLayer: boolean): string[] => {
   let resolvedRegions = [...candidateRegions];
 
   // Parent E2E account does not have opt-in regions. Choose non-opt-in region.
@@ -357,11 +368,16 @@ const filterCandidateRegions = (test: string, candidateRegions: string[]): strin
     resolvedRegions = resolvedRegions.filter((region) => supportedRegionsByRegionName[region].cognitoSupported);
   }
 
+  if (useBetaLayer) {
+    resolvedRegions = resolvedRegions.filter((region) => !BETA_LAYER_NOT_DEPLOYED.includes(region));
+  }
+
   return resolvedRegions;
 };
 
 const main = (): void => {
-  const filteredTests = process.argv.slice(2);
+  const useBetaLayer = process.argv[2] === 'beta';
+  const filteredTests = process.argv.slice(3);
   const configBase: ConfigBase = loadConfigBase();
   const baseBuildGraph = configBase.batch['build-graph'];
 
@@ -376,6 +392,7 @@ const main = (): void => {
         'depend-on': ['publish_to_local_registry'],
       },
       join(REPO_ROOT, 'packages', 'amplify-e2e-tests'),
+      useBetaLayer,
     ),
     ...splitTests(
       {
@@ -387,6 +404,7 @@ const main = (): void => {
         'depend-on': ['publish_to_local_registry'],
       },
       join(REPO_ROOT, 'packages', 'amplify-graphql-api-construct-tests'),
+      useBetaLayer,
     ),
     ...splitTests(
       {
@@ -398,6 +416,7 @@ const main = (): void => {
         'depend-on': ['publish_to_local_registry'],
       },
       join(REPO_ROOT, 'packages', 'graphql-transformers-e2e-tests'),
+      useBetaLayer,
     ),
   ];
 

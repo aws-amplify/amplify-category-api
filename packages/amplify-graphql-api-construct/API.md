@@ -324,6 +324,7 @@ export interface PartialTranslationBehavior {
     readonly sandboxModeEnabled?: boolean;
     readonly secondaryKeyAsGSI?: boolean;
     readonly shouldDeepMergeDirectiveConfigDefaults?: boolean;
+    readonly subscriptionsInheritPrimaryAuth?: boolean;
     readonly suppressApiKeyGeneration?: boolean;
     readonly useSubUsernameForDefaultIdentityClaim?: boolean;
 }
@@ -436,6 +437,7 @@ export interface TranslationBehavior {
     readonly sandboxModeEnabled: boolean;
     readonly secondaryKeyAsGSI: boolean;
     readonly shouldDeepMergeDirectiveConfigDefaults: boolean;
+    readonly subscriptionsInheritPrimaryAuth: boolean;
     readonly suppressApiKeyGeneration: boolean;
     readonly useSubUsernameForDefaultIdentityClaim: boolean;
 }
