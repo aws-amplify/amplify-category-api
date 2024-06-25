@@ -13,6 +13,11 @@ import {
   set,
   str,
   toJson,
+  not,
+  raw,
+  or,
+  parens,
+  and,
 } from 'graphql-mapping-template';
 import { ResourceConstants } from 'graphql-transformer-common';
 import {
@@ -477,6 +482,7 @@ export const generateLambdaRequestTemplate = (
   operation: string,
   operationName: string,
   ctx: TransformerContextProvider,
+  emptyAuthFilter: boolean = false,
 ): string => {
   const mappedTableName = ctx.resourceHelper.getModelNameMapping(tableName);
   return printBlock('Invoke RDS Lambda data source')(
@@ -488,7 +494,7 @@ export const generateLambdaRequestTemplate = (
       set(ref('lambdaInput.operationName'), str(operationName)),
       set(ref('lambdaInput.args.metadata'), obj({})),
       set(ref('lambdaInput.args.metadata.keys'), list([])),
-      constructAuthFilterStatement('lambdaInput.args.metadata.authFilter'),
+      constructAuthFilterStatement('lambdaInput.args.metadata.authFilter', emptyAuthFilter),
       constructNonScalarFieldsStatement(tableName, ctx),
       constructArrayFieldsStatement(tableName, ctx),
       constructFieldMappingInput(),
@@ -512,17 +518,32 @@ export const generateLambdaRequestTemplate = (
  */
 export const generateGetLambdaResponseTemplate = (isSyncEnabled: boolean): string => {
   const statements: Expression[] = [];
+  const resultExpression = compoundExpression([
+    ifElse(
+      not(ref('ctx.stash.authRules')),
+      toJson(ref('ctx.result')),
+      compoundExpression([
+        set(ref('authResult'), methodCall(ref('util.authRules.validateUsingSource'), ref('ctx.stash.authRules'), ref('ctx.result'))),
+        ifElse(
+          not(ref('authResult')),
+          compoundExpression([methodCall(ref('util.unauthorized')), methodCall(ref('util.toJson'), raw('null'))]),
+          toJson(ref('ctx.result')),
+        ),
+      ]),
+    ),
+  ]);
+
   if (isSyncEnabled) {
     statements.push(
       ifElse(
         ref('ctx.error'),
         methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type'), ref('ctx.result')),
-        toJson(ref('ctx.result')),
+        resultExpression,
       ),
     );
   } else {
     statements.push(
-      ifElse(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type')), toJson(ref('ctx.result'))),
+      ifElse(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type')), resultExpression),
     );
   }
 

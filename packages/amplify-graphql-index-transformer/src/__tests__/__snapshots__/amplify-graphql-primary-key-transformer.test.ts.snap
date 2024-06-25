@@ -172,9 +172,7 @@ $util.qr($ctx.stash.put(\\"keys\\", $keys))
 #set( $lambdaInput.operationName = \\"getTest\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
-#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-  #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
-#end
+#set( $lambdaInput.args.metadata.authFilter = {} )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
 #set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
@@ -192,7 +190,17 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, 
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.toJson($ctx.result)
+  #if( !$ctx.stash.authRules )
+    $util.toJson($ctx.result)
+  #else
+    #set( $authResult = $util.authRules.validateUsingSource($ctx.stash.authRules, $ctx.result) )
+    #if( !$authResult )
+      $util.unauthorized()
+      $util.toJson(null)
+    #else
+      $util.toJson($ctx.result)
+    #end
+  #end
 #end
 ## [End] ResponseTemplate. **",
   "Query.listTests.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
@@ -470,9 +478,7 @@ $util.qr($ctx.stash.put(\\"keys\\", $keys))
 #set( $lambdaInput.operationName = \\"getTest\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
-#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-  #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
-#end
+#set( $lambdaInput.args.metadata.authFilter = {} )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
 #set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
@@ -490,7 +496,17 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, 
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.toJson($ctx.result)
+  #if( !$ctx.stash.authRules )
+    $util.toJson($ctx.result)
+  #else
+    #set( $authResult = $util.authRules.validateUsingSource($ctx.stash.authRules, $ctx.result) )
+    #if( !$authResult )
+      $util.unauthorized()
+      $util.toJson(null)
+    #else
+      $util.toJson($ctx.result)
+    #end
+  #end
 #end
 ## [End] ResponseTemplate. **",
   "Query.listTests.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
@@ -763,9 +779,7 @@ $util.qr($ctx.stash.put(\\"keys\\", $keys))
 #set( $lambdaInput.operationName = \\"getTest\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
-#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-  #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
-#end
+#set( $lambdaInput.args.metadata.authFilter = {} )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
 #set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
@@ -783,7 +797,17 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, 
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.toJson($ctx.result)
+  #if( !$ctx.stash.authRules )
+    $util.toJson($ctx.result)
+  #else
+    #set( $authResult = $util.authRules.validateUsingSource($ctx.stash.authRules, $ctx.result) )
+    #if( !$authResult )
+      $util.unauthorized()
+      $util.toJson(null)
+    #else
+      $util.toJson($ctx.result)
+    #end
+  #end
 #end
 ## [End] ResponseTemplate. **",
   "Query.listTests.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
@@ -1060,9 +1084,7 @@ $util.qr($ctx.stash.put(\\"keys\\", $keys))
 #set( $lambdaInput.operationName = \\"testGet\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
-#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-  #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
-#end
+#set( $lambdaInput.args.metadata.authFilter = {} )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
 #set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
@@ -1080,7 +1102,17 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, 
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.toJson($ctx.result)
+  #if( !$ctx.stash.authRules )
+    $util.toJson($ctx.result)
+  #else
+    #set( $authResult = $util.authRules.validateUsingSource($ctx.stash.authRules, $ctx.result) )
+    #if( !$authResult )
+      $util.unauthorized()
+      $util.toJson(null)
+    #else
+      $util.toJson($ctx.result)
+    #end
+  #end
 #end
 ## [End] ResponseTemplate. **",
   "Subscription.onCreateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
@@ -1309,9 +1341,7 @@ $util.qr($ctx.stash.put(\\"keys\\", $keys))
 #set( $lambdaInput.operationName = \\"testGet\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
-#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-  #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
-#end
+#set( $lambdaInput.args.metadata.authFilter = {} )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
 #set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
@@ -1329,7 +1359,17 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, 
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.toJson($ctx.result)
+  #if( !$ctx.stash.authRules )
+    $util.toJson($ctx.result)
+  #else
+    #set( $authResult = $util.authRules.validateUsingSource($ctx.stash.authRules, $ctx.result) )
+    #if( !$authResult )
+      $util.unauthorized()
+      $util.toJson(null)
+    #else
+      $util.toJson($ctx.result)
+    #end
+  #end
 #end
 ## [End] ResponseTemplate. **",
   "Query.testList.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
