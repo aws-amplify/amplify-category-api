@@ -130,6 +130,7 @@ export interface AmplifyGraphqlApiProps {
     readonly definition: IAmplifyGraphqlDefinition;
     readonly functionNameMap?: Record<string, IFunction>;
     readonly functionSlots?: FunctionSlot[];
+    readonly importedAmplifyDynamoDBTableMap?: Record<string, string>;
     readonly outputStorageStrategy?: IBackendOutputStorageStrategy;
     readonly predictionsBucket?: IBucket;
     readonly stackMappings?: Record<string, string>;
@@ -277,13 +278,21 @@ export interface IdentityPoolAuthorizationConfig {
 }
 
 // @public
+export interface ImportedAmplifyDynamoDbModelDataSourceStrategy {
+    // (undocumented)
+    readonly dbType: 'DYNAMODB';
+    // (undocumented)
+    readonly provisionStrategy: 'IMPORTED_AMPLIFY_TABLE';
+}
+
+// @public
 export interface LambdaAuthorizationConfig {
     readonly function: IFunction;
     readonly ttl: Duration;
 }
 
 // @public
-export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
+export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | ImportedAmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
 
 // @public
 export type ModelDataSourceStrategyDbType = 'DYNAMODB' | ModelDataSourceStrategySqlDbType;
@@ -324,6 +333,7 @@ export interface PartialTranslationBehavior {
     readonly sandboxModeEnabled?: boolean;
     readonly secondaryKeyAsGSI?: boolean;
     readonly shouldDeepMergeDirectiveConfigDefaults?: boolean;
+    readonly subscriptionsInheritPrimaryAuth?: boolean;
     readonly suppressApiKeyGeneration?: boolean;
     readonly useSubUsernameForDefaultIdentityClaim?: boolean;
 }
@@ -436,6 +446,7 @@ export interface TranslationBehavior {
     readonly sandboxModeEnabled: boolean;
     readonly secondaryKeyAsGSI: boolean;
     readonly shouldDeepMergeDirectiveConfigDefaults: boolean;
+    readonly subscriptionsInheritPrimaryAuth: boolean;
     readonly suppressApiKeyGeneration: boolean;
     readonly useSubUsernameForDefaultIdentityClaim: boolean;
 }

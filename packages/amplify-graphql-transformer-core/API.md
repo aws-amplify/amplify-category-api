@@ -38,6 +38,7 @@ import { GraphQLAPIProvider } from '@aws-amplify/graphql-transformer-interfaces'
 import { GraphQLError } from 'graphql';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { IGrantable } from 'aws-cdk-lib/aws-iam';
+import { ImportedAmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { InlineMappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { InputObjectTypeDefinitionNode } from 'graphql';
 import { InputObjectTypeExtensionNode } from 'graphql';
@@ -309,7 +310,7 @@ export class GraphQLTransform {
     // Warning: (ae-forgotten-export) The symbol "TransformOption" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    transform({ assetProvider, dataSourceStrategies, nestedStackProvider, parameterProvider, rdsLayerMapping, rdsSnsTopicMapping, schema, scope, sqlDirectiveDataSourceStrategies, synthParameters, }: TransformOption): void;
+    transform({ assetProvider, dataSourceStrategies, nestedStackProvider, parameterProvider, rdsLayerMapping, rdsSnsTopicMapping, schema, scope, sqlDirectiveDataSourceStrategies, synthParameters, importedAmplifyDynamoDBTableMap, }: TransformOption): void;
 }
 
 // @public (undocumented)
@@ -337,6 +338,9 @@ export type ImportAppSyncAPIInputs = {
     apiName: string;
     dataSourceConfig?: ImportedDataSourceConfig;
 };
+
+// @public (undocumented)
+export const IMPORTED_DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY: ModelDataSourceStrategy;
 
 // @public (undocumented)
 export type ImportedDataSourceConfig = RDSDataSourceConfig;
@@ -437,6 +441,9 @@ export const isDynamoDbModel: (ctx: DataSourceStrategiesProvider, typename: stri
 
 // @public (undocumented)
 export const isDynamoDbType: (dbType: ModelDataSourceStrategyDbType) => dbType is "DYNAMODB";
+
+// @public (undocumented)
+export const isImportedAmplifyDynamoDbModelDataSourceStrategy: (strategy: ModelDataSourceStrategy) => strategy is ImportedAmplifyDynamoDbModelDataSourceStrategy;
 
 // @public (undocumented)
 function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncConfigLambda;

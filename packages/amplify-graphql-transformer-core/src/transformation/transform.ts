@@ -195,6 +195,7 @@ export class GraphQLTransform {
     scope,
     sqlDirectiveDataSourceStrategies,
     synthParameters,
+    importedAmplifyDynamoDBTableMap,
   }: TransformOption): void {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
@@ -213,6 +214,7 @@ export class GraphQLTransform {
       stackMapping: this.stackMappingOverrides,
       synthParameters,
       transformParameters: this.transformParameters,
+      importedAmplifyDynamoDBTableMap,
     });
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),

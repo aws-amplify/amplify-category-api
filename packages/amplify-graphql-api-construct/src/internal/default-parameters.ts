@@ -10,6 +10,7 @@ export const defaultTranslationBehavior: TranslationBehavior = {
   disableResolverDeduping: true,
   sandboxModeEnabled: false,
   useSubUsernameForDefaultIdentityClaim: true,
+  subscriptionsInheritPrimaryAuth: false,
   populateOwnerFieldForStaticGroupAuth: true,
   suppressApiKeyGeneration: false,
   secondaryKeyAsGSI: true,

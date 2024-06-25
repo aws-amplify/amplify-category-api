@@ -15,6 +15,7 @@ export const defaultTransformParameters: TransformParameters = {
   useSubUsernameForDefaultIdentityClaim: true,
   populateOwnerFieldForStaticGroupAuth: true,
   suppressApiKeyGeneration: false,
+  subscriptionsInheritPrimaryAuth: false,
 
   // Index Params
   secondaryKeyAsGSI: true,
