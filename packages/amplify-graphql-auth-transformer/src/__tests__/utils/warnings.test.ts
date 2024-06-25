@@ -470,6 +470,8 @@ describe('inherit related auth on subscriptions warning', () => {
         },
         transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer(), new AuthTransformer()],
       }),
-    ).toThrow('Subscriptions will inherit related auth when relational fields are set as required. Primary.relatedOne may be exposed in some subscriptions.');
+    ).toThrow(
+      'Subscriptions will inherit related auth when relational fields are set as required. Primary.relatedOne may be exposed in some subscriptions.',
+    );
   });
 });
