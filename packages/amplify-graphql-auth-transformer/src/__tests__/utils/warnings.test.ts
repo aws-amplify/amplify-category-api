@@ -446,6 +446,33 @@ describe('inherit related auth on subscriptions warning', () => {
     ).not.toThrow();
   });
 
+  test('does not throw when subscriptions are disabled', () => {
+    const schema = `
+      type Primary @model(subscriptions: { level: off }) @auth(rules: [{ allow: groups, groupsField: "groups" }]) {
+        content: String
+        groups: [String]
+        relatedOne: RelatedOne! @hasOne
+      }
+
+      type RelatedOne @model(subscriptions: { level: off }) @auth(rules: [{ allow: groups, groupsField: "groups" }]) {
+        content: String
+        groups: [String]
+        primaryId: String
+        primary: Primary! @belongsTo
+      } 
+    `;
+    expect(() =>
+      testTransform({
+        schema,
+        authConfig: {
+          defaultAuthentication: { authenticationType: 'AMAZON_COGNITO_USER_POOLS' },
+          additionalAuthenticationProviders: [],
+        },
+        transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer(), new AuthTransformer()],
+      }),
+    ).not.toThrow();
+  });
+
   test('throws when related fields are required', () => {
     const schema = `
       type Primary @model @auth(rules: [{ allow: groups, groupsField: "groups" }]) {
