@@ -687,7 +687,7 @@ describe('Pre Processing Many To Many Tests', () => {
         'RecipeIngredients',
         undefined,
         'model',
-        new Map<string, string | Array<string> | object>([['subscriptions', { level: 'off' }]]),
+        new Map<string, object>([['subscriptions', { level: 'off' }]]),
       ),
     ).toBeTruthy();
   });

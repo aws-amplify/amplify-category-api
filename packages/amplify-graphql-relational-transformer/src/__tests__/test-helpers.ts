@@ -36,7 +36,7 @@ export const hasGeneratedDirective = (
   objectType: string,
   fieldName: string | undefined,
   dirName: string,
-  args: Map<string, string | Array<string>> | undefined,
+  args: Map<string, string | Array<string> | object> | undefined,
 ): boolean => {
   let matchesExpected = false;
 
