@@ -11,8 +11,8 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import * as cdk from 'aws-cdk-lib';
 import { obj, str, ref, printBlock, compoundExpression, qref, raw, iff, Expression, set, bool } from 'graphql-mapping-template';
-import { FunctionResourceIDs, ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
-import { DirectiveNode, ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
+import { FunctionResourceIDs, ResolverResourceIDs, ResourceConstants, unwrapNonNull } from 'graphql-transformer-common';
+import { DirectiveNode, ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode, FieldDefinitionNode, Kind, isNonNullType, isNamedType } from 'graphql';
 
 type FunctionDirectiveConfiguration = {
   name: string;
@@ -48,7 +48,7 @@ export class FunctionTransformer extends TransformerPluginBase {
       generateGetArgumentsInput(acc.transformParameters),
     );
 
-    validate(args, definition);
+    validate(args, definition, acc as TransformerContextProvider);
     let resolver = this.resolverGroups.get(definition);
 
     if (resolver === undefined) {
@@ -220,7 +220,7 @@ const responseMappingTemplate = (config: FunctionDirectiveConfiguration): string
   );
 };
 
-const validate = (config: FunctionDirectiveConfiguration, definition: FieldDefinitionNode): void => {
+const validate = (config: FunctionDirectiveConfiguration, definition: FieldDefinitionNode, ctx: TransformerContextProvider): void => {
   // TODO: event invocation type on valid for mutation ... and maybe (??) query types
 
   // only EventInvocationResponse return types are valid for Event invocation types
@@ -228,17 +228,67 @@ const validate = (config: FunctionDirectiveConfiguration, definition: FieldDefin
   // - use applicable graphql-common utils
   // - account for non-null and list return types
   // - include field name / return type in error message
-  const { type } = definition;
   if (config.invocationType === 'Event') {
-    if (type.kind === 'NamedType') {
-      if (type.name.value !== 'EventInvocationResponse') {
-        throw new InvalidDirectiveError(`
-        Invalid return type for 'invocationType: Event'. Return type must be 'EventInvocationResponse'.
-        `);
-      }
+    // validate is 'EventInvocationResponse'
+    validateEventInvocationResponseType(definition, ctx)
+    // validate is defined on query or mutation
+    if (!isSupportedEventInvocationParentType(config)) {
+      throw new InvalidDirectiveError('@function definition with invocationType: Event must be defined on Query or Mutation.')
     }
   }
 };
+
+const validateEventInvocationResponseType = (fieldDefition: FieldDefinitionNode, ctx: TransformerContextProvider): void => {
+  const { type } = fieldDefition;
+  const eventResponseTypeName = 'EventInvocationResponse'
+
+  const fieldResponseTypeHasValidName = type.kind === 'NamedType'
+  && type.name.value === eventResponseTypeName;
+
+  if (!fieldResponseTypeHasValidName) {
+    // This happens when an event invocation type is defined on a field (query / mutation) where the
+    // return type is not named 'EventInvocationResponse'.
+    // For example:
+    // type Mutation {
+    //   doStuff(msg: String): String @function(name: 'foo', invocationType: Event)
+    // }
+    throw new InvalidDirectiveError('Invalid return type for "invocationType: Event". Return type must be "EventInvocationResponse".');
+  }
+
+    // validate shape { success: Boolean! }
+  const responseTypeDefinitionNode = ctx.inputDocument.definitions.find((definitionNode) =>
+    definitionNode.kind === Kind.OBJECT_TYPE_DEFINITION
+    && definitionNode.name.value === eventResponseTypeName
+  ) as ObjectTypeDefinitionNode | undefined;
+
+  if (!responseTypeDefinitionNode) {
+    // This implies an invalid GraphQL schema due to a defined return type ('EventInvocationResponse')
+    // being undefined in the Model Schema -- upstream validation should have already thrown a
+    // 'Schema validation failed. Unkown type "EventInvocationResponse"' error.
+    // We're doing this check here because things upstream conditions can change in the future.
+    throw new InvalidDirectiveError('!responseTypeDefinitionNode')
+  }
+
+  const containsOneField = responseTypeDefinitionNode.fields?.length === 1
+  if (!containsOneField) {
+    throw new InvalidDirectiveError('!containsOneField')
+  }
+
+  const [expectedField] = responseTypeDefinitionNode.fields;
+
+  const schemaDefinedTypeHasValidShape = expectedField.name.value === 'success' &&
+  expectedField.type.kind === Kind.NON_NULL_TYPE &&
+  expectedField.type.type.kind === Kind.NAMED_TYPE &&
+  expectedField.type.type.name.value === Kind.BOOLEAN
+
+  if (!schemaDefinedTypeHasValidShape) {
+    throw new InvalidDirectiveError('!schemaDefinedTypeHasValidShape')
+  }
+}
+
+const isSupportedEventInvocationParentType = (config: FunctionDirectiveConfiguration): boolean => {
+  return config.resolverTypeName === 'Query' || config.resolverTypeName === 'Mutation';
+}
 
 const lambdaArnResource = (env: string, name: string, region?: string, accountId?: string): string => {
   const substitutions: { [key: string]: string } = {};
