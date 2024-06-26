@@ -2,6 +2,7 @@ import {
   DirectiveWrapper,
   generateGetArgumentsInput,
   InvalidDirectiveError,
+  isObjectTypeDefinitionNode,
   MappingTemplate,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
@@ -11,7 +12,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import * as cdk from 'aws-cdk-lib';
 import { obj, str, ref, printBlock, compoundExpression, qref, raw, iff, Expression, set, bool } from 'graphql-mapping-template';
-import { FunctionResourceIDs, getBaseType, ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
+import { FunctionResourceIDs, ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import {
   DirectiveNode,
   ObjectTypeDefinitionNode,
@@ -291,8 +292,7 @@ const eventInvocationResponse = {
  */
 const validateFieldResponseTypeForEventInvocation = (fieldDefition: FieldDefinitionNode, config: FunctionDirectiveConfiguration): void => {
   const { type } = fieldDefition;
-
-  const fieldResponseTypeHasValidName = type.kind === 'NamedType' && type.name.value === eventInvocationResponse.typeName;
+  const fieldResponseTypeHasValidName = type.kind === Kind.NAMED_TYPE && type.name.value === eventInvocationResponse.typeName;
 
   if (!fieldResponseTypeHasValidName) {
     // This happens when an event invocation type is defined on a field (query / mutation) where the
@@ -321,12 +321,10 @@ const validateFieldResponseTypeForEventInvocation = (fieldDefition: FieldDefinit
  * This should come from `ctx.inputDocument` where ctx is {@link TransformerContextProvider}
  */
 const validateSchemaDefinedEventInvocationResponseShape = (inputDocument: DocumentNode): void => {
-  const eventResponseTypeName = 'EventInvocationResponse';
-
   // validate shape { success: Boolean! }
   // We've already validated that the response type of the query / mutation
   const responseTypeDefinitionNode = inputDocument.definitions.find(
-    (definitionNode) => definitionNode.kind === Kind.OBJECT_TYPE_DEFINITION && definitionNode.name.value === eventResponseTypeName,
+    (definitionNode) => isObjectTypeDefinitionNode(definitionNode) && definitionNode.name.value === eventInvocationResponse.typeName,
   ) as ObjectTypeDefinitionNode | undefined;
 
   if (!responseTypeDefinitionNode) {
@@ -387,7 +385,6 @@ const validateIsSupportedEventInvocationParentType = (config: FunctionDirectiveC
  * @returns a textual description of the {@link TypeNode} in `string` form.
  */
 const typeDescription = (typeNode: TypeNode): string => {
-
   /*
   Int -- NamedType
   Int! -- NonNullType.NamedType -- '' / !
@@ -406,7 +403,7 @@ const typeDescription = (typeNode: TypeNode): string => {
       case Kind.NAMED_TYPE:
         return `${prefix}${node.name.value}${suffix}`;
     }
-  }
+  };
 
   return description(typeNode);
 };

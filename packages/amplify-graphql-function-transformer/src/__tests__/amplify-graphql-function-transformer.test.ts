@@ -436,7 +436,7 @@ describe('Event invocation type', () => {
     `;
 
     expect(() => testTransform({ schema, transformers: [new ModelTransformer(), new FunctionTransformer()] })).toThrowError(
-      '@function definition with \'invocationType: Event\' must be defined on Query or Mutation field.',
+      "@function definition with 'invocationType: Event' must be defined on Query or Mutation field.",
     );
   });
 
@@ -448,11 +448,10 @@ describe('Event invocation type', () => {
       }
     `;
 
-    const expectedErrorMessage =
-    'Invalid return type Int for asyncStuff(msg: String): Int @function(name: asyncstuff-${env}, invocationType: Event).\n' +
-    "Use return type 'EventInvocationResponse' and, if necessary, add 'type EventInvocationResponse { success: Boolean! }' to your model schema.";
-      expect(() => testTransform({ schema, transformers: [new FunctionTransformer()] }))
-        .toThrowError(expectedErrorMessage);
+      const expectedErrorMessage =
+        'Invalid return type Int for asyncStuff(msg: String): Int @function(name: asyncstuff-${env}, invocationType: Event).\n' +
+        "Use return type 'EventInvocationResponse' and, if necessary, add 'type EventInvocationResponse { success: Boolean! }' to your model schema.";
+      expect(() => testTransform({ schema, transformers: [new FunctionTransformer()] })).toThrowError(expectedErrorMessage);
     });
 
     test('ListType scalar fails validation', () => {
@@ -462,11 +461,10 @@ describe('Event invocation type', () => {
       }
     `;
 
-    const expectedErrorMessage =
-    'Invalid return type [Int] for asyncStuff(msg: String): [Int] @function(name: asyncstuff-${env}, invocationType: Event).\n' +
-    "Use return type 'EventInvocationResponse' and, if necessary, add 'type EventInvocationResponse { success: Boolean! }' to your model schema.";
-      expect(() => testTransform({ schema, transformers: [new FunctionTransformer()] }))
-        .toThrowError(expectedErrorMessage);
+      const expectedErrorMessage =
+        'Invalid return type [Int] for asyncStuff(msg: String): [Int] @function(name: asyncstuff-${env}, invocationType: Event).\n' +
+        "Use return type 'EventInvocationResponse' and, if necessary, add 'type EventInvocationResponse { success: Boolean! }' to your model schema.";
+      expect(() => testTransform({ schema, transformers: [new FunctionTransformer()] })).toThrowError(expectedErrorMessage);
     });
 
     test('ListType NonNull custom type fails validation', () => {
@@ -480,11 +478,10 @@ describe('Event invocation type', () => {
       }
     `;
 
-    const expectedErrorMessage =
-    'Invalid return type [Foo!] for asyncStuff(msg: String): [Foo!] @function(name: asyncstuff-${env}, invocationType: Event).\n' +
-    "Use return type 'EventInvocationResponse' and, if necessary, add 'type EventInvocationResponse { success: Boolean! }' to your model schema.";
-      expect(() => testTransform({ schema, transformers: [new FunctionTransformer()] }))
-        .toThrowError(expectedErrorMessage);
+      const expectedErrorMessage =
+        'Invalid return type [Foo!] for asyncStuff(msg: String): [Foo!] @function(name: asyncstuff-${env}, invocationType: Event).\n' +
+        "Use return type 'EventInvocationResponse' and, if necessary, add 'type EventInvocationResponse { success: Boolean! }' to your model schema.";
+      expect(() => testTransform({ schema, transformers: [new FunctionTransformer()] })).toThrowError(expectedErrorMessage);
     });
 
     test('NonNull ListType fails validation', () => {
@@ -494,11 +491,10 @@ describe('Event invocation type', () => {
       }
     `;
 
-    const expectedErrorMessage =
-    'Invalid return type [String]! for asyncStuff(msg: String): [String]! @function(name: asyncstuff-${env}, invocationType: Event).\n' +
-    "Use return type 'EventInvocationResponse' and, if necessary, add 'type EventInvocationResponse { success: Boolean! }' to your model schema.";
-      expect(() => testTransform({ schema, transformers: [new FunctionTransformer()] }))
-        .toThrowError(expectedErrorMessage);
+      const expectedErrorMessage =
+        'Invalid return type [String]! for asyncStuff(msg: String): [String]! @function(name: asyncstuff-${env}, invocationType: Event).\n' +
+        "Use return type 'EventInvocationResponse' and, if necessary, add 'type EventInvocationResponse { success: Boolean! }' to your model schema.";
+      expect(() => testTransform({ schema, transformers: [new FunctionTransformer()] })).toThrowError(expectedErrorMessage);
     });
 
     test('NonNull ListType NonNull scalar fails validation', () => {
@@ -508,11 +504,10 @@ describe('Event invocation type', () => {
       }
     `;
 
-    const expectedErrorMessage =
-    'Invalid return type [Boolean!]! for asyncStuff(msg: String): [Boolean!]! @function(name: asyncstuff-${env}, invocationType: Event).\n' +
-    "Use return type 'EventInvocationResponse' and, if necessary, add 'type EventInvocationResponse { success: Boolean! }' to your model schema.";
-      expect(() => testTransform({ schema, transformers: [new FunctionTransformer()] }))
-        .toThrowError(expectedErrorMessage);
+      const expectedErrorMessage =
+        'Invalid return type [Boolean!]! for asyncStuff(msg: String): [Boolean!]! @function(name: asyncstuff-${env}, invocationType: Event).\n' +
+        "Use return type 'EventInvocationResponse' and, if necessary, add 'type EventInvocationResponse { success: Boolean! }' to your model schema.";
+      expect(() => testTransform({ schema, transformers: [new FunctionTransformer()] })).toThrowError(expectedErrorMessage);
     });
 
     test('EventInvocationResponse with non null response type fails validation', () => {
