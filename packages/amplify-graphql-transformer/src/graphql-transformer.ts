@@ -64,8 +64,8 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
 
   // The default list of transformers should match DefaultDirectives in packages/amplify-graphql-directives/src/index.ts
   return [
-    new FunctionTransformer(options?.functionNameMap),
     modelTransformer,
+    new FunctionTransformer(options?.functionNameMap),
     new HttpTransformer(),
     new PredictionsTransformer(options?.storageConfig),
     new PrimaryKeyTransformer(),
