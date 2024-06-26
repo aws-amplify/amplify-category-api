@@ -229,8 +229,19 @@ export class ManyToManyTransformer extends TransformerPluginBase {
         const d2RelatedSortKeyFields = d2SortKeys.map((node) =>
           makeField(`${d2FieldName}${node.name.value}`, [], wrapNonNull(makeNamedType(getBaseType(node.type)))),
         );
-        const d1Field = makeField(d1FieldName, [], wrapNonNull(makeNamedType(d1TypeName)), [d1HasOneDirective]);
-        const d2Field = makeField(d2FieldName, [], wrapNonNull(makeNamedType(d2TypeName)), [d2HasOneDirective]);
+        const { allowRequiredRelationalFields } = context.transformParameters;
+        const d1Field = makeField(
+          d1FieldName,
+          [],
+          allowRequiredRelationalFields ? wrapNonNull(makeNamedType(d1TypeName)) : makeNamedType(d1TypeName),
+          [d1HasOneDirective],
+        );
+        const d2Field = makeField(
+          d2FieldName,
+          [],
+          allowRequiredRelationalFields ? wrapNonNull(makeNamedType(d2TypeName)) : makeNamedType(d2TypeName),
+          [d2HasOneDirective],
+        );
         const joinTableDirectives = [joinModelDirective];
         const joinTableAuthDirective = createJoinTableAuthDirective(manyToManyOne.model, manyToManyTwo.model);
 
@@ -397,8 +408,19 @@ export class ManyToManyTransformer extends TransformerPluginBase {
       const d2RelatedSortKeyFields = d2SortKeys.map((node) =>
         makeField(`${d2FieldName}${node.name.value}`, [], wrapNonNull(makeNamedType(getBaseType(node.type)))),
       );
-      const d1Field = makeField(d1FieldName, [], makeNamedType(d1TypeName), [d1HasOneDirective]);
-      const d2Field = makeField(d2FieldName, [], makeNamedType(d2TypeName), [d2HasOneDirective]);
+      const { allowRequiredRelationalFields } = context.transformParameters;
+      const d1Field = makeField(
+        d1FieldName,
+        [],
+        allowRequiredRelationalFields ? wrapNonNull(makeNamedType(d1TypeName)) : makeNamedType(d1TypeName),
+        [d1HasOneDirective],
+      );
+      const d2Field = makeField(
+        d2FieldName,
+        [],
+        allowRequiredRelationalFields ? wrapNonNull(makeNamedType(d2TypeName)) : makeNamedType(d2TypeName),
+        [d2HasOneDirective],
+      );
       const joinTableDirectives = [joinModelDirective];
       const joinTableAuthDirective = createJoinTableAuthDirective(directive1.object, directive2.object);
 

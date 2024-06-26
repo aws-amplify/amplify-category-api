@@ -788,7 +788,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
             redactRelationalField = !isIdenticalRoleDefinitions;
             // appsync will throw an error if trying to nullify a required field
             const fieldIsRequired = field.type.kind === Kind.NON_NULL_TYPE;
-            if (redactRelationalField && fieldIsRequired) {
+            if (redactRelationalField && fieldIsRequired && !ctx.transformParameters.allowRequiredRelationalFields) {
               // TODO: add link
               throw new TransformerContractError(
                 `Subscriptions will inherit related auth when relational fields are set as required. ${typeName}.${field.name.value} may be exposed in some subscriptions. See link`,

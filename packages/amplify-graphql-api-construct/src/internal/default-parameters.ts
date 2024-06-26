@@ -20,4 +20,5 @@ export const defaultTranslationBehavior: TranslationBehavior = {
   enableTransformerCfnOutputs: false,
   allowDestructiveGraphqlSchemaUpdates: false,
   replaceTableUponGsiUpdate: false,
+  allowRequiredRelationalFields: false,
 };

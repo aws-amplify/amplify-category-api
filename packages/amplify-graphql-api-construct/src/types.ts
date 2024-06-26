@@ -496,6 +496,14 @@ export interface TranslationBehavior {
    * @experimental
    */
   readonly replaceTableUponGsiUpdate: boolean;
+
+  /**
+   * When enabled, required relational fields can be used in the GraphQL Schema and @manyToMany join tables will use required relational
+   * fields.
+   *
+   * @default false
+   */
+  readonly allowRequiredRelationalFields: boolean;
 }
 
 /**

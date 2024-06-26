@@ -14,6 +14,7 @@ export type TransformParameters = {
   sandboxModeEnabled: boolean;
   allowDestructiveGraphqlSchemaUpdates: boolean;
   replaceTableUponGsiUpdate: boolean;
+  allowRequiredRelationalFields: boolean;
 
   // Auth Params
   useSubUsernameForDefaultIdentityClaim: boolean;
