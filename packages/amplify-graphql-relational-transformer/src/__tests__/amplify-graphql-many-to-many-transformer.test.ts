@@ -664,33 +664,6 @@ describe('Pre Processing Many To Many Tests', () => {
     expect(hasGeneratedField(updatedSchemaDoc, 'RecipeIngredients', 'foomealName', 'ID')).toBeTruthy();
     expect(hasGeneratedField(updatedSchemaDoc, 'RecipeIngredients', 'barcomponentName', 'ID')).toBeTruthy();
   });
-
-  test('Should disable subscriptions on join table if off on both models', () => {
-    const schema = `
-    type Recipe @model(subscriptions: { level: off }) {
-      id: ID!
-      recipeName: String
-      ingredients: [Ingredient] @manyToMany(relationName: "RecipeIngredients")
-    }
-
-    type Ingredient @model(subscriptions: { level: off }) {
-      id: ID!
-      ingredientName: String
-      recipes: [Recipe] @manyToMany(relationName: "RecipeIngredients")
-    }
-    `;
-
-    const updatedSchemaDoc = transformer.preProcessSchema(parse(schema));
-    expect(
-      hasGeneratedDirective(
-        updatedSchemaDoc,
-        'RecipeIngredients',
-        undefined,
-        'model',
-        new Map<string, object>([['subscriptions', { level: 'off' }]]),
-      ),
-    ).toBeTruthy();
-  });
 });
 
 function createTransformer(

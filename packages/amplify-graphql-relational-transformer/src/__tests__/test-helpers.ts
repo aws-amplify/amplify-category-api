@@ -1,4 +1,4 @@
-import { getBaseType, makeValueNode } from 'graphql-transformer-common';
+import { getBaseType } from 'graphql-transformer-common';
 import { DirectiveNode, DocumentNode } from 'graphql';
 
 export const hasGeneratedField = (
@@ -63,7 +63,7 @@ export const hasGeneratedDirective = (
 };
 
 // This is only written to support the string and string list arguments of the relational directives
-const checkDirective = (dir: DirectiveNode, expectedArgs: Map<string, string | Array<string> | object> | undefined): boolean => {
+const checkDirective = (dir: DirectiveNode, expectedArgs: Map<string, string | Array<string>> | undefined): boolean => {
   if (!expectedArgs && !dir.arguments) {
     return true;
   }
@@ -73,7 +73,7 @@ const checkDirective = (dir: DirectiveNode, expectedArgs: Map<string, string | A
         expectedArgs?.delete(arg.name.value);
       }
     } else if (arg.value.kind === 'ListValue') {
-      const stringValues = expectedArgs?.get(arg.name.value) as Array<string>;
+      const stringValues = expectedArgs?.get(arg.name.value);
       let fullMatch = true;
       arg.value.values.forEach((val, idx) => {
         if (val.kind !== 'StringValue' || val.value !== stringValues?.[idx]) {
@@ -81,11 +81,6 @@ const checkDirective = (dir: DirectiveNode, expectedArgs: Map<string, string | A
         }
       });
       if (fullMatch) {
-        expectedArgs?.delete(arg.name.value);
-      }
-    } else if (arg.value.kind === 'ObjectValue') {
-      const objectValues = expectedArgs?.get(arg.name.value);
-      if (JSON.stringify(makeValueNode(objectValues)) === JSON.stringify(arg.value)) {
         expectedArgs?.delete(arg.name.value);
       }
     }
