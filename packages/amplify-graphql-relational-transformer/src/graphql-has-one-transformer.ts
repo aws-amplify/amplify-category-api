@@ -24,6 +24,7 @@ import {
   InterfaceTypeDefinitionNode,
   NamedTypeNode,
   ObjectTypeDefinitionNode,
+  Kind,
 } from 'graphql';
 import {
   getBaseType,
@@ -186,6 +187,14 @@ export class HasOneTransformer extends TransformerPluginBase {
 
 const validate = (config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field } = config;
+  if (!ctx.transformParameters.allowGen1Patterns) {
+    if (field.type.kind === Kind.NON_NULL_TYPE) {
+      throw new InvalidDirectiveError(`@${HasOneDirective.name} cannot be used on required fields.`);
+    }
+    if (config.fields) {
+      throw new InvalidDirectiveError(`fields argument on @${HasOneDirective.name} is deprecated. Use references instead.`);
+    }
+  }
 
   let dbType: ModelDataSourceStrategyDbType;
   try {
