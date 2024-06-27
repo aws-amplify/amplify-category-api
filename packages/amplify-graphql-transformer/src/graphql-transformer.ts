@@ -56,7 +56,10 @@ export type TransformConfig = {
   transformParameters: TransformParameters;
 };
 
-export const constructTransformerChain = (options?: TransformerFactoryArgs): TransformerPluginProvider[] => {
+export const constructTransformerChain = (
+  options?: TransformerFactoryArgs,
+  allowGen1Patterns: boolean = true,
+): TransformerPluginProvider[] => {
   const modelTransformer = new ModelTransformer();
   const authTransformer = new AuthTransformer();
   const indexTransformer = new IndexTransformer();
@@ -72,7 +75,7 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
     indexTransformer,
     new HasManyTransformer(),
     hasOneTransformer,
-    new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
+    ...(allowGen1Patterns ? [new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer)] : []),
     new BelongsToTransformer(),
     new DefaultValueTransformer(),
     authTransformer,
@@ -92,7 +95,7 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
 export const constructTransform = (config: TransformConfig): GraphQLTransform => {
   const { transformersFactoryArgs, authConfig, resolverConfig, userDefinedSlots, stackMapping, transformParameters } = config;
 
-  const transformers = constructTransformerChain(transformersFactoryArgs);
+  const transformers = constructTransformerChain(transformersFactoryArgs, transformParameters.allowGen1Patterns);
 
   return new GraphQLTransform({
     transformers,
