@@ -217,7 +217,7 @@ const responseMappingTemplate = (config: FunctionDirectiveConfiguration): string
         set(ref('success'), bool(true)),
         iff(
           ref('ctx.error'),
-          compoundExpression([raw('$util.error($ctx.error.message, $ctx.error.type)'), set(ref('success'), bool(false))]),
+          compoundExpression([raw('$util.appendError($ctx.error.message, $ctx.error.type)'), set(ref('success'), bool(false))]),
         ),
         compoundExpression([set(ref('response'), obj({ success: ref('success') })), raw('$util.toJson($response)')]),
       ]),

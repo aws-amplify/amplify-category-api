@@ -32,7 +32,7 @@ Object {
   "InvokeAsyncstuffLambdaDataSource.res.vtl": "## [Start] Handle error or return result. **
 #set( $success = true )
 #if( $ctx.error )
-  $util.error($ctx.error.message, $ctx.error.type)
+  $util.appendError($ctx.error.message, $ctx.error.type)
   #set( $success = false )
 #end
 #set( $response = {
@@ -65,7 +65,7 @@ Object {
   "InvokeAsyncstuffLambdaDataSource.res.vtl": "## [Start] Handle error or return result. **
 #set( $success = true )
 #if( $ctx.error )
-  $util.error($ctx.error.message, $ctx.error.type)
+  $util.appendError($ctx.error.message, $ctx.error.type)
   #set( $success = false )
 #end
 #set( $response = {
