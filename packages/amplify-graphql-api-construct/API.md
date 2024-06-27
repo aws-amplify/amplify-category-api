@@ -409,9 +409,7 @@ export interface SslCertConfig {
 
 // @public (undocumented)
 export interface SslCertSsmPathConfig extends SslCertConfig {
-    // (undocumented)
-    readonly configType: 'SSM_PATH';
-    readonly sslCertSsmPath?: string | string[];
+    readonly ssmPath: string | string[];
 }
 
 // @public

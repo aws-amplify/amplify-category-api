@@ -99,8 +99,7 @@ describe('Custom SSL certificates', () => {
     const strategy = dbDetailsToModelDataSourceStrategy(dbDetails, prefix, 'MYSQL', 'secretsManagerManagedSecret');
     // Cast through `any` to allow us to assign to the readonly sslCertSsmPath field
     (strategy as any).dbConnectionConfig.sslCertConfig = {
-      configType: 'SSM_PATH',
-      sslCertSsmPath,
+      ssmPath: sslCertSsmPath,
     };
 
     const testDefinitions: Record<string, TestDefinition> = {
@@ -140,8 +139,7 @@ describe('Custom SSL certificates', () => {
     const strategy = dbDetailsToModelDataSourceStrategy(dbDetails, prefix, 'MYSQL', 'secretsManagerManagedSecret');
     // Cast through `any` to allow us to assign to the readonly sslCertSsmPath field
     (strategy as any).dbConnectionConfig.sslCertConfig = {
-      configType: 'SSM_PATH',
-      sslCertSsmPath,
+      ssmPath: sslCertSsmPath,
     };
 
     const testDefinitions: Record<string, TestDefinition> = {

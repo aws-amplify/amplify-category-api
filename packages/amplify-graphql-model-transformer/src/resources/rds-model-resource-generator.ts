@@ -109,7 +109,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
     const lambdaScope = context.stackManager.getScopeFor(resourceNames.sqlLambdaFunction, resourceNames.sqlStack);
 
     const sslCertConfig = strategy.dbConnectionConfig.sslCertConfig;
-    const sslCertSsmPath = isSslCertSsmPathConfig(sslCertConfig) ? sslCertConfig.sslCertSsmPath : undefined;
+    const sslCertSsmPath = isSslCertSsmPathConfig(sslCertConfig) ? sslCertConfig.ssmPath : undefined;
 
     const layerVersionArn = resolveLayerVersion(lambdaScope, context, resourceNames);
 

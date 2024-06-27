@@ -393,8 +393,7 @@ describe('ModelTransformer with SQL data sources:', () => {
       dbConnectionConfig: {
         connectionUriSsmPath: '/test/connectionUri',
         sslCertConfig: {
-          configType: 'SSM_PATH',
-          sslCertSsmPath: '/test/sslCert',
+          ssmPath: '/test/sslCert',
         },
       },
     };
@@ -425,12 +424,12 @@ describe('ModelTransformer with SQL data sources:', () => {
     );
     expect(ssmStatements.length).toEqual(2);
     expect(ssmStatements[1].Resource).toEqual(
-      `arn:aws:ssm:*:*:parameter${connectionStringMySql.dbConnectionConfig.sslCertConfig?.sslCertSsmPath}`,
+      `arn:aws:ssm:*:*:parameter${connectionStringMySql.dbConnectionConfig.sslCertConfig?.ssmPath}`,
     );
 
     expect(PolicyDocument).toMatchSnapshot();
 
-    // Check that the sslCertSsmPath is passed to the lambda as an environment variable
+    // Check that the ssmPath is passed to the lambda as an environment variable
     const [, sqlLambda] =
       Object.entries(sqlApiStack.Resources!).find(([resourceName]) => {
         return resourceName.startsWith(resourceNames.sqlLambdaFunction);
@@ -448,8 +447,7 @@ describe('ModelTransformer with SQL data sources:', () => {
       dbConnectionConfig: {
         connectionUriSsmPath: '/test/connectionUri',
         sslCertConfig: {
-          configType: 'SSM_PATH',
-          sslCertSsmPath: ['/test/sslCert/1', '/test/sslCert/2'],
+          ssmPath: ['/test/sslCert/1', '/test/sslCert/2'],
         },
       },
     };
@@ -480,15 +478,15 @@ describe('ModelTransformer with SQL data sources:', () => {
     );
     expect(ssmStatements.length).toEqual(2);
     expect(ssmStatements[1].Resource[0]).toEqual(
-      `arn:aws:ssm:*:*:parameter${connectionStringMySql.dbConnectionConfig.sslCertConfig?.sslCertSsmPath[0]}`,
+      `arn:aws:ssm:*:*:parameter${connectionStringMySql.dbConnectionConfig.sslCertConfig?.ssmPath[0]}`,
     );
     expect(ssmStatements[1].Resource[1]).toEqual(
-      `arn:aws:ssm:*:*:parameter${connectionStringMySql.dbConnectionConfig.sslCertConfig?.sslCertSsmPath[1]}`,
+      `arn:aws:ssm:*:*:parameter${connectionStringMySql.dbConnectionConfig.sslCertConfig?.ssmPath[1]}`,
     );
 
     expect(PolicyDocument).toMatchSnapshot();
 
-    // Check that the sslCertSsmPath is passed to the lambda as an environment variable
+    // Check that the ssmPath is passed to the lambda as an environment variable
     const [, sqlLambda] =
       Object.entries(sqlApiStack.Resources!).find(([resourceName]) => {
         return resourceName.startsWith(resourceNames.sqlLambdaFunction);

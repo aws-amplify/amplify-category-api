@@ -5793,7 +5793,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
-        "line": 236
+        "line": 235
       },
       "name": "CustomSqlDataSourceStrategy",
       "properties": [
@@ -5806,7 +5806,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 241
+            "line": 240
           },
           "name": "fieldName",
           "type": {
@@ -5822,7 +5822,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 244
+            "line": 243
           },
           "name": "strategy",
           "type": {
@@ -5838,7 +5838,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 238
+            "line": 237
           },
           "name": "typeName",
           "type": {
@@ -7522,7 +7522,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
-        "line": 177
+        "line": 176
       },
       "name": "SqlModelDataSourceSecretsManagerDbConnectionConfig",
       "properties": [
@@ -7535,7 +7535,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 191
+            "line": 190
           },
           "name": "databaseName",
           "type": {
@@ -7551,7 +7551,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 194
+            "line": 193
           },
           "name": "hostname",
           "type": {
@@ -7567,7 +7567,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 188
+            "line": 187
           },
           "name": "port",
           "type": {
@@ -7584,7 +7584,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 179
+            "line": 178
           },
           "name": "secretArn",
           "type": {
@@ -7601,7 +7601,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 185
+            "line": 184
           },
           "name": "keyArn",
           "optional": true,
@@ -7618,7 +7618,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 199
+            "line": 198
           },
           "name": "sslCertConfig",
           "optional": true,
@@ -7641,7 +7641,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
-        "line": 207
+        "line": 206
       },
       "name": "SqlModelDataSourceSsmDbConnectionConfig",
       "properties": [
@@ -7654,7 +7654,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 223
+            "line": 222
           },
           "name": "databaseNameSsmPath",
           "type": {
@@ -7671,7 +7671,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 211
+            "line": 210
           },
           "name": "hostnameSsmPath",
           "type": {
@@ -7687,7 +7687,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 220
+            "line": 219
           },
           "name": "passwordSsmPath",
           "type": {
@@ -7703,7 +7703,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 214
+            "line": 213
           },
           "name": "portSsmPath",
           "type": {
@@ -7719,7 +7719,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 217
+            "line": 216
           },
           "name": "usernameSsmPath",
           "type": {
@@ -7735,7 +7735,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 228
+            "line": 227
           },
           "name": "sslCertConfig",
           "optional": true,
@@ -7757,7 +7757,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
-        "line": 156
+        "line": 155
       },
       "name": "SqlModelDataSourceSsmDbConnectionStringConfig",
       "properties": [
@@ -7771,7 +7771,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 163
+            "line": 162
           },
           "name": "connectionUriSsmPath",
           "type": {
@@ -7801,7 +7801,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 168
+            "line": 167
           },
           "name": "sslCertConfig",
           "optional": true,
@@ -7849,32 +7849,16 @@
         {
           "abstract": true,
           "docs": {
-            "stability": "stable"
-          },
-          "immutable": true,
-          "locationInModule": {
-            "filename": "src/model-datasource-strategy-types.ts",
-            "line": 137
-          },
-          "name": "configType",
-          "type": {
-            "primitive": "string"
-          }
-        },
-        {
-          "abstract": true,
-          "docs": {
-            "remarks": "Amplify resolves the trust store to use as follows:\n- If the `sslCertSsmPath` parameter is provided, use it.\n  - If the parameter is a single string, use it.\n  - If the parameter is an array, iterate over them in order\n  - In either case, if the parameter is provided but the certificate content isn't retrievable, fails with an error.\n- If the database host is an RDS cluster, instance, or proxy (in other words, if the database host ends with \"rds.amazonaws.com\"), use\n  an RDS-specific trust store vended by AWS. See\n  https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html#UsingWithRDS.SSL.CertificatesAllRegions\n- Otherwise, use the trust store vended with the NodeJS runtime version that the SQL lambda is running on",
+            "remarks": "Amplify resolves the trust store to use as follows:\n- If the `ssmPath` parameter is provided, use it.\n  - If the parameter is a single string, use it.\n  - If the parameter is an array, iterate over them in order\n  - In either case, if the parameter is provided but the certificate content isn't retrievable, fails with an error.\n- If the database host is an RDS cluster, instance, or proxy (in other words, if the database host ends with \"rds.amazonaws.com\"), use\n  an RDS-specific trust store vended by AWS. See\n  https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html#UsingWithRDS.SSL.CertificatesAllRegions\n- Otherwise, use the trust store vended with the NodeJS runtime version that the SQL lambda is running on",
             "stability": "stable",
             "summary": "The SSM path to a custom SSL certificate to use instead of the default."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 149
+            "line": 148
           },
-          "name": "sslCertSsmPath",
-          "optional": true,
+          "name": "ssmPath",
           "type": {
             "union": {
               "types": [
@@ -8468,5 +8452,5 @@
     }
   },
   "version": "1.10.0",
-  "fingerprint": "It1K6V4z37DfDQYVc1RiWecj88VXasJ4GyKqmy+0wwo="
+  "fingerprint": "eJNq/ijec8DldFBRx4e0jhl9wK/PNoML1iM2UP3Vkvc="
 }

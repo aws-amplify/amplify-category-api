@@ -132,10 +132,9 @@ export type SqlModelDataSourceDbConnectionConfig =
 export interface SslCertConfig {}
 
 export interface SslCertSsmPathConfig extends SslCertConfig {
-  readonly configType: 'SSM_PATH';
   /**
    * The SSM path to a custom SSL certificate to use instead of the default. Amplify resolves the trust store to use as follows:
-   * - If the `sslCertSsmPath` parameter is provided, use it.
+   * - If the `ssmPath` parameter is provided, use it.
    *   - If the parameter is a single string, use it.
    *   - If the parameter is an array, iterate over them in order
    *   - In either case, if the parameter is provided but the certificate content isn't retrievable, fails with an error.
@@ -144,7 +143,7 @@ export interface SslCertSsmPathConfig extends SslCertConfig {
    *   https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html#UsingWithRDS.SSL.CertificatesAllRegions
    * - Otherwise, use the trust store vended with the NodeJS runtime version that the SQL lambda is running on
    */
-  readonly sslCertSsmPath?: string | string[];
+  readonly ssmPath: string | string[];
 }
 
 /**
@@ -352,4 +351,4 @@ export const isSqlModelDataSourceSsmDbConnectionStringConfig = (obj: any): obj i
 };
 
 export const isSslCertSsmPathConfig = (obj: any): obj is SslCertSsmPathConfig =>
-  obj && typeof obj === 'object' && 'configType' in obj && obj.configType === 'SSM_PATH';
+  obj && typeof obj === 'object' && 'ssmPath' in obj && (Array.isArray(obj.ssmPath) || typeof obj.ssmPath === 'string');
