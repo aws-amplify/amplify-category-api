@@ -108,8 +108,8 @@ test('ModelXConnection type is getting the directives added, when a field has @c
     id: ID!
     postID: ID! @index(name: "byPost", sortKeyFields: ["editorID"])
     editorID: ID! @index(name: "byEditor", sortKeyFields: ["postID"])
-    post: Post @belongsTo(fields: ["postID"])
-    editor: User @belongsTo(fields: ["editorID"])
+    post: Post! @belongsTo(fields: ["postID"])
+    editor: User! @belongsTo(fields: ["editorID"])
   }
   type User @model @auth(rules: [{ allow: owner }]) {
     id: ID!
