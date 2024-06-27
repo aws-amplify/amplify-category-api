@@ -335,6 +335,7 @@ const getUltimateFunctionDirectiveConfig = (
   return ultimateFunctionDirectiveConfig;
 };
 
+// #endregion Validation
 // #region Validation helpers
 
 /**
@@ -440,6 +441,11 @@ const validateIsSupportedEventInvocationParentType = (config: FunctionDirectiveC
     throw new InvalidDirectiveError("@function definition with 'invocationType: Event' must be defined on Query or Mutation field.");
   }
 };
+
+// #endregion Validation helpers
+
+// #region Debug Description Helpers
+
 /**
  * Use this to generate a description of a type for contextual error messages.
  * @param typeNode the {@link TypeNode} to describe.
@@ -501,5 +507,4 @@ const fieldDebugDescription = (config: FunctionDirectiveConfiguration, field: Fi
   return `${config.resolverFieldName}${args}: ${typeDebugDescription(field.type)} ${directivesDescription}`;
 };
 
-// #endregion Validation helpers
-// #endregion Validation
+// #endregion Debug Description Helpers
