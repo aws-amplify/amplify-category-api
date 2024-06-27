@@ -16,6 +16,10 @@ import {
   UpdateTableCommandInput,
   UpdateTimeToLiveCommandInput,
 } from '@aws-sdk/client-dynamodb';
+import {
+  Lambda,
+  ListTagsCommand,
+} from '@aws-sdk/client-lambda';
 import { OnEventResponse } from '../amplify-table-manager-lambda-types';
 import * as cfnResponse from './cfn-response';
 import { startExecution } from './outbound';
@@ -33,6 +37,27 @@ const notFinished: AWSCDKAsyncCustomResource.IsCompleteResponse = {
 // #region Entry points
 export const onEvent = cfnResponse.safeHandler(onEventHandler);
 export const isComplete = cfnResponse.safeHandler(isCompleteHandler);
+
+const getLambdaTags = async (functionArn: string): Promise<Record<string, string>[]> => {
+  const lambdaClient = new Lambda();
+  const command = new ListTagsCommand({ Resource: functionArn });
+  const tags = (await lambdaClient.send(command)).Tags ?? {};
+  const result: Record<string, string>[] = [];
+  Object.keys(tags).forEach((key) => {
+    if (key.startsWith('created-by') || key.startsWith('amplify:')) {
+      result.push({
+        key: key,
+        value: tags[key],
+      });
+    }
+  });
+  return result;
+};
+
+type TableManagerContext = {
+  invokedFunctionArn: string;
+};
+
 /**
  * Handler for requests sent from CloudFormation for custom resource.
  * This is the entry point of the custom resource.
@@ -42,13 +67,13 @@ export const isComplete = cfnResponse.safeHandler(isCompleteHandler);
  * @param cfnRequest Request received from CloudFormation
  */
 // eslint-disable-next-line func-style
-async function onEventHandler(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent): Promise<void> {
+async function onEventHandler(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent, context: TableManagerContext): Promise<void> {
   const sanitizedRequest = { ...cfnRequest, ResponseURL: '[redacted]' } as const;
   log('onEventHandler', sanitizedRequest);
 
   cfnRequest.ResourceProperties = cfnRequest.ResourceProperties || {};
 
-  const onEventResult = await processOnEvent(sanitizedRequest);
+  const onEventResult = await processOnEvent(sanitizedRequest, context);
   log('onEvent returned:', onEventResult);
 
   // merge the request and the result from onEvent to form the complete resource event
@@ -86,11 +111,11 @@ async function onEventHandler(cfnRequest: AWSLambda.CloudFormationCustomResource
  * @param event isComplete request received from Waiter State Machine.
  */
 // eslint-disable-next-line func-style
-async function isCompleteHandler(event: AWSCDKAsyncCustomResource.IsCompleteRequest): Promise<void> {
+async function isCompleteHandler(event: AWSCDKAsyncCustomResource.IsCompleteRequest, context: TableManagerContext): Promise<void> {
   const sanitizedRequest = { ...event, ResponseURL: '[redacted]' } as const;
   log('isComplete', sanitizedRequest);
 
-  const isCompleteResult = await processIsComplete(sanitizedRequest);
+  const isCompleteResult = await processIsComplete(sanitizedRequest, context);
   log('isComplete result', isCompleteResult);
 
   // if we are not complete, return false, and don't send a response back.
@@ -122,9 +147,12 @@ async function isCompleteHandler(event: AWSCDKAsyncCustomResource.IsCompleteRequ
  * @param event CFN event
  * @returns Response object which is sent back to CFN
  */
-const processOnEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): Promise<AWSCDKAsyncCustomResource.OnEventResponse> => {
+const processOnEvent = async (
+  event: AWSCDKAsyncCustomResource.OnEventRequest,
+  context: TableManagerContext,
+): Promise<AWSCDKAsyncCustomResource.OnEventResponse> => {
   console.log({ ...event, ResponseURL: '[redacted]' });
-  const tableDef = extractTableInputFromEvent(event);
+  const tableDef = await extractTableInputFromEvent(event, context);
   console.log('Input table state: ', tableDef);
 
   let result;
@@ -308,6 +336,7 @@ const processOnEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
  */
 const processIsComplete = async (
   event: AWSCDKAsyncCustomResource.IsCompleteRequest,
+  context: TableManagerContext,
 ): Promise<AWSCDKAsyncCustomResource.IsCompleteResponse> => {
   log('got event', { ...event, ResponseURL: '[redacted]' });
   if (event.RequestType === 'Delete') {
@@ -333,7 +362,7 @@ const processIsComplete = async (
     return notFinished;
   }
 
-  const endState = extractTableInputFromEvent(event);
+  const endState = await extractTableInputFromEvent(event, context);
 
   if (event.RequestType === 'Create' || event.Data?.IsTableReplaced === true) {
     // Need additional call if pointInTimeRecovery is enabled
@@ -865,11 +894,15 @@ type CreateTableResponse = {
  * @param event Event for onEvent or isComplete
  * @returns The table input for Custom dynamoDB Table
  */
-export const extractTableInputFromEvent = (
+export const extractTableInputFromEvent = async (
   event: AWSCDKAsyncCustomResource.OnEventRequest | AWSCDKAsyncCustomResource.IsCompleteRequest,
-): CustomDDB.Input => {
+  context: TableManagerContext,
+): Promise<CustomDDB.Input> => {
   // isolate the resource properties from the event and remove the service token
-  const resourceProperties = { ...event.ResourceProperties } as Record<string, any> & { ServiceToken?: string };
+  const resourceProperties = {
+    ...event.ResourceProperties,
+    tags: await getLambdaTags(context.invokedFunctionArn),
+  } as Record<string, any> & { ServiceToken?: string };
   delete resourceProperties.ServiceToken;
 
   // cast the remaining resource properties to the DynamoDB API call input type
@@ -1006,6 +1039,7 @@ export const toCreateTableInput = (props: CustomDDB.Input): CreateTableCommandIn
     ProvisionedThroughput: props.provisionedThroughput,
     SSESpecification: props.sseSpecification ? { Enabled: props.sseSpecification.sseEnabled } : undefined,
     DeletionProtectionEnabled: props.deletionProtectionEnabled,
+    Tags: props.tags,
   };
   return parsePropertiesToDynamoDBInput(createTableInput) as CreateTableCommandInput;
 };

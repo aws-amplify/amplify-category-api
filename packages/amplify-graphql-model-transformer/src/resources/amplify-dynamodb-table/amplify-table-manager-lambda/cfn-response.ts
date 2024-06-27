@@ -65,8 +65,8 @@ export async function submitResponse(
   );
 }
 
-export function safeHandler(block: (event: any) => Promise<void>) {
-  return async (event: any) => {
+export function safeHandler(block: (event: any, context?: any) => Promise<void>) {
+  return async (event: any, context: any) => {
     // ignore DELETE event when the physical resource ID is the marker that
     // indicates that this DELETE is a subsequent DELETE to a failed CREATE
     // operation.
@@ -77,7 +77,7 @@ export function safeHandler(block: (event: any) => Promise<void>) {
     }
 
     try {
-      await block(event);
+      await block(event, context);
     } catch (e: any) {
       // tell waiter state machine to retry
       if (e instanceof Retry) {
