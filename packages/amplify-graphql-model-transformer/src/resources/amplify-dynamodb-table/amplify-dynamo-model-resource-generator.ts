@@ -77,9 +77,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
           ],
         }),
         new aws_iam.PolicyStatement({
-          actions: [
-            'lambda:ListTags',
-          ],
+          actions: ['lambda:ListTags'],
           resources: [
             // eslint-disable-next-line no-template-curly-in-string
             cdk.Fn.sub('arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:*TableManager*', {}),

@@ -16,10 +16,7 @@ import {
   UpdateTableCommandInput,
   UpdateTimeToLiveCommandInput,
 } from '@aws-sdk/client-dynamodb';
-import {
-  Lambda,
-  ListTagsCommand,
-} from '@aws-sdk/client-lambda';
+import { Lambda, ListTagsCommand } from '@aws-sdk/client-lambda';
 import { OnEventResponse } from '../amplify-table-manager-lambda-types';
 import * as cfnResponse from './cfn-response';
 import { startExecution } from './outbound';
