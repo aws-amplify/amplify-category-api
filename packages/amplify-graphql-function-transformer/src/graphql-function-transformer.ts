@@ -21,6 +21,9 @@ import {
   Kind,
   DocumentNode,
   TypeNode,
+  valueFromASTUntyped,
+  ArgumentNode,
+  InputValueDefinitionNode,
 } from 'graphql';
 
 type FunctionDirectiveConfiguration = {
@@ -263,14 +266,73 @@ const lambdaArnKey = (name: string, region?: string, accountId?: string): string
  */
 const validate = (config: FunctionDirectiveConfiguration, definition: FieldDefinitionNode, ctx: TransformerContextProvider): void => {
   if (config.invocationType === 'Event') {
-    // For 'invocationType: Event' validate:
-    // 1. is used on field where parent type is Mutation or Query.
+    // For any occurance  of 'invocationType: Event' validate:
+    // is used on field where parent type is Mutation or Query.
     validateIsSupportedEventInvocationParentType(config);
-    // 2. return type of query / mutation is 'EventInvocationResponse'.
-    validateFieldResponseTypeForEventInvocation(definition, config);
-    // 3. shape of 'EventInvocationResponse' type defined in schema.
-    validateSchemaDefinedEventInvocationResponseShape(ctx.inputDocument);
+
+    // The `@function` directive is defined as `repeatable` so chaining directives is valid.
+    // The following validations apply **only** if the final `@function` directive is defined
+    // with `invocationType: Event`.
+    //
+    // Valid
+    // type Mutation {
+    //   doStuff(msg: String): String
+    //   @function(name: 'foo', invocationType: Event)
+    //   @function(name: 'bar') // defaults to RequestResponse
+    // }
+    //
+    // Valid
+    // type Mutation {
+    //   doStuff(msg: String): EventInvocationResponse
+    //   @function(name: 'bar')
+    //   @function(name: 'foo', invocationType: Event)
+    // }
+    //
+    // Invalid -- response type must be `EventInvocationResponse`
+    // type Mutation {
+    //   doStuff(msg: String): String
+    //   @function(name: 'bar')
+    //   @function(name: 'foo', invocationType: Event)
+    // }
+    const ultimateFunctionDirectiveConfig = getUltimateFunctionDirectiveConfig(definition, ctx, config);
+    if (ultimateFunctionDirectiveConfig.invocationType === 'Event') {
+      // If `invocationType: Event` is defined in the final `@function` directive on a field:
+      // 2. return type of query / mutation is 'EventInvocationResponse'.
+      validateFieldResponseTypeForEventInvocation(definition, config);
+      // 3. shape of 'EventInvocationResponse' type defined in schema.
+      validateSchemaDefinedEventInvocationResponseShape(ctx.inputDocument);
+    }
   }
+};
+
+const getUltimateFunctionDirectiveConfig = (
+  fieldDefinition: FieldDefinitionNode,
+  ctx: TransformerContextProvider,
+  currentDirectiveConfig: FunctionDirectiveConfiguration,
+): FunctionDirectiveConfiguration => {
+  const functionDirectivesForField = fieldDefinition.directives?.filter((directive) => directive.name.value === FunctionDirective.name);
+  if (!functionDirectivesForField || functionDirectivesForField.length === 0) {
+    // This really shouldn't happen because this code path should not execute without there being at least one `@function` directive
+    // defined on this field. But we're accessing the last element below, so better safe than sorry.
+    throw new InvalidDirectiveError(
+      'Unable to locate @function directives for field.' +
+        'This is an unexpected error that suggests there is a bug in the amplify-graphql-function-transformer.\n' +
+        'Please open a GitHub issue referencing this error message with your schema definition.',
+    );
+  }
+
+  const ultimateFunctionDirective = functionDirectivesForField[functionDirectivesForField.length - 1];
+  const directiveWrapped = new DirectiveWrapper(ultimateFunctionDirective);
+  const ultimateFunctionDirectiveConfig = directiveWrapped.getArguments(
+    {
+      resolverTypeName: currentDirectiveConfig.resolverTypeName,
+      resolverFieldName: currentDirectiveConfig.resolverFieldName,
+      invocationType: FunctionDirective.defaults.invocationType,
+    } as FunctionDirectiveConfiguration,
+    generateGetArgumentsInput(ctx.transformParameters),
+  );
+
+  return ultimateFunctionDirectiveConfig;
 };
 
 // #region Validation helpers
@@ -301,9 +363,8 @@ const validateFieldResponseTypeForEventInvocation = (fieldDefition: FieldDefinit
     // type Mutation {
     //   doStuff(msg: String): String @function(name: 'foo', invocationType: Event)
     // }
-
     const errorMessage =
-      `Invalid return type ${typeDescription(type)} for ${fieldDescription(config, fieldDefition)}.\n` +
+      `Invalid return type ${typeDebugDescription(type)} for ${fieldDebugDescription(config, fieldDefition)}.\n` +
       `Use return type '${eventInvocationResponse.typeName}' and, if necessary, add '${eventInvocationResponse.shapeDescription}' to your model schema.`;
     throw new InvalidDirectiveError(errorMessage);
   }
@@ -384,7 +445,7 @@ const validateIsSupportedEventInvocationParentType = (config: FunctionDirectiveC
  * @param typeNode the {@link TypeNode} to describe.
  * @returns a textual description of the {@link TypeNode} in `string` form.
  */
-const typeDescription = (typeNode: TypeNode): string => {
+const typeDebugDescription = (typeNode: TypeNode): string => {
   /*
   Int -- NamedType
   Int! -- NonNullType.NamedType -- '' / !
@@ -415,11 +476,29 @@ const typeDescription = (typeNode: TypeNode): string => {
  * @param field the {@link FieldDefinitionNode} on which the `@function` directive is defined.
  * @returns a description of the field with `@function` directive appropriate for use in error messages.
  */
-const fieldDescription = (config: FunctionDirectiveConfiguration, field: FieldDefinitionNode): string => {
-  const args = field.arguments?.map((arg) => `${arg.name.value}: ${typeDescription(arg.type)}`).join(', ') ?? '';
-  return `${config.resolverFieldName}(${args}): ${typeDescription(field.type)} @${FunctionDirective.name}(name: ${
-    config.name
-  }, invocationType: ${config.invocationType})`;
+const fieldDebugDescription = (config: FunctionDirectiveConfiguration, field: FieldDefinitionNode): string => {
+  const fieldArgumentsDescription = (nodes: readonly InputValueDefinitionNode[] | undefined): string => {
+    if (!nodes || nodes.length === 0) {
+      return '';
+    }
+    const description = '(' + nodes.map((node) => `${node.name.value}: ${typeDebugDescription(node.type)}`).join(', ') + ')';
+    return description;
+  };
+
+  const directiveArgumentsDescription = (nodes: readonly ArgumentNode[] | undefined): string => {
+    if (!nodes || nodes.length === 0) {
+      return '';
+    }
+    const description = '(' + nodes.map((node) => `${node.name.value}: ${valueFromASTUntyped(node.value)}`).join(', ') + ')';
+    return description;
+  };
+
+  const args = fieldArgumentsDescription(field.arguments);
+  const directivesDescription = field.directives
+    ?.map((directive) => `@${directive.name.value}${directiveArgumentsDescription(directive.arguments)}`)
+    .join(' ');
+
+  return `${config.resolverFieldName}${args}: ${typeDebugDescription(field.type)} ${directivesDescription}`;
 };
 
 // #endregion Validation helpers
