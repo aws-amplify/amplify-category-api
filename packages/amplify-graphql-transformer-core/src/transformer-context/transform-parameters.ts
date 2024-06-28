@@ -25,4 +25,7 @@ export const defaultTransformParameters: TransformParameters = {
 
   // Search Params
   enableSearchNodeToNodeEncryption: false,
+
+  // Migration
+  enableGen2Migration: false,
 };

@@ -29,4 +29,7 @@ export type TransformParameters = {
 
   // Search Params
   enableSearchNodeToNodeEncryption: boolean;
+
+  // Migration
+  enableGen2Migration: boolean;
 };
