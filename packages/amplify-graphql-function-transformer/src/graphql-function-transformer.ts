@@ -1,17 +1,36 @@
-import { DirectiveWrapper, generateGetArgumentsInput, MappingTemplate, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
+import {
+  DirectiveWrapper,
+  generateGetArgumentsInput,
+  InvalidDirectiveError,
+  isObjectTypeDefinitionNode,
+  MappingTemplate,
+  TransformerPluginBase,
+} from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FunctionDirective } from '@aws-amplify/graphql-directives';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import * as cdk from 'aws-cdk-lib';
-import { obj, str, ref, printBlock, compoundExpression, qref, raw, iff, Expression } from 'graphql-mapping-template';
+import { obj, str, ref, printBlock, compoundExpression, qref, raw, iff, Expression, set, bool } from 'graphql-mapping-template';
 import { FunctionResourceIDs, ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
-import { DirectiveNode, ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
+import {
+  DirectiveNode,
+  ObjectTypeDefinitionNode,
+  InterfaceTypeDefinitionNode,
+  FieldDefinitionNode,
+  Kind,
+  DocumentNode,
+  TypeNode,
+  valueFromASTUntyped,
+  ArgumentNode,
+  InputValueDefinitionNode,
+} from 'graphql';
 
 type FunctionDirectiveConfiguration = {
   name: string;
   region: string | undefined;
   accountId: string | undefined;
+  invocationType: string;
   resolverTypeName: string;
   resolverFieldName: string;
 };
@@ -36,9 +55,12 @@ export class FunctionTransformer extends TransformerPluginBase {
       {
         resolverTypeName: parent.name.value,
         resolverFieldName: definition.name.value,
+        invocationType: FunctionDirective.defaults.invocationType,
       } as FunctionDirectiveConfiguration,
       generateGetArgumentsInput(acc.transformParameters),
     );
+
+    validate(args, definition, acc as TransformerContextProvider);
     let resolver = this.resolverGroups.get(definition);
 
     if (resolver === undefined) {
@@ -104,19 +126,12 @@ export class FunctionTransformer extends TransformerPluginBase {
                     request: ref('util.toJson($ctx.request)'),
                     prev: ref('util.toJson($ctx.prev)'),
                   }),
+                  invocationType: str(config.invocationType),
                 }),
               ),
               `${functionId}.req.vtl`,
             ),
-            MappingTemplate.s3MappingTemplateFromString(
-              printBlock('Handle error or return result')(
-                compoundExpression([
-                  iff(ref('ctx.error'), raw('$util.error($ctx.error.message, $ctx.error.type)')),
-                  raw('$util.toJson($ctx.result)'),
-                ]),
-              ),
-              `${functionId}.res.vtl`,
-            ),
+            MappingTemplate.s3MappingTemplateFromString(responseMappingTemplate(config), `${functionId}.res.vtl`),
             dataSourceId,
             funcScope,
           );
@@ -178,6 +193,51 @@ export class FunctionTransformer extends TransformerPluginBase {
   };
 }
 
+/**
+ * The response mapping template for 'RequestResponse' (default) and 'Event' invocation types differ.
+ * Use this to generate the appropriate response mapping template.
+ * @param config the {@link FunctionDirectiveConfiguration} for `@function` definition.
+ * @returns the response mapping template used by AppSync to handle responses from the Lambda function invocation.
+ */
+const responseMappingTemplate = (config: FunctionDirectiveConfiguration): string => {
+  if (config.invocationType === 'Event') {
+    /*
+      #set( $success = true )
+      #if( $ctx.error )
+        $util.appendError($ctx.error.message, $ctx.error.type)
+        #set( $success = false )
+      #end
+      #set( $response = {
+        "success": $success
+      } )
+      $util.toJson($response)
+    */
+    return printBlock('Handle error or return result')(
+      compoundExpression([
+        set(ref('success'), bool(true)),
+        iff(
+          ref('ctx.error'),
+          compoundExpression([raw('$util.appendError($ctx.error.message, $ctx.error.type)'), set(ref('success'), bool(false))]),
+        ),
+        compoundExpression([set(ref('response'), obj({ success: ref('success') })), raw('$util.toJson($response)')]),
+      ]),
+    );
+  }
+
+  /*
+    #if( $ctx.error )
+      $util.error($ctx.error.message, $ctx.error.type)
+    #end
+    $util.toJson($ctx.result)
+  */
+  return printBlock('Handle error or return result')(
+    compoundExpression([
+      iff(ref('ctx.error'), compoundExpression([raw('$util.error($ctx.error.message, $ctx.error.type)')])),
+      raw('$util.toJson($ctx.result)'),
+    ]),
+  );
+};
+
 const lambdaArnResource = (env: string, name: string, region?: string, accountId?: string): string => {
   const substitutions: { [key: string]: string } = {};
   // eslint-disable-next-line no-template-curly-in-string
@@ -195,3 +255,256 @@ const lambdaArnKey = (name: string, region?: string, accountId?: string): string
   // eslint-disable-next-line no-template-curly-in-string
   return `arn:aws:lambda:${region ? region : '${AWS::Region}'}:${accountId ? accountId : '${AWS::AccountId}'}:function:${name}`;
 };
+
+// #region Validation
+
+/**
+ * Validates that a `@function` directive is used in a supported way.
+ * @param config the {@link FunctionDirectiveConfiguration} to validate.
+ * @param definition the {@link FieldDefinitionNode} on which the `@function` directive is used.
+ * @param ctx the {@link TransformerContextProvider}
+ */
+const validate = (config: FunctionDirectiveConfiguration, definition: FieldDefinitionNode, ctx: TransformerContextProvider): void => {
+  if (config.invocationType === 'Event') {
+    // For any occurance  of 'invocationType: Event' validate:
+    // is used on field where parent type is Mutation or Query.
+    validateIsSupportedEventInvocationParentType(config);
+
+    // The `@function` directive is defined as `repeatable` so chaining directives is valid.
+    // The following validations apply **only** if the final `@function` directive is defined
+    // with `invocationType: Event`.
+    //
+    // Valid
+    // type Mutation {
+    //   doStuff(msg: String): String
+    //   @function(name: 'foo', invocationType: Event)
+    //   @function(name: 'bar') // defaults to RequestResponse
+    // }
+    //
+    // Valid
+    // type Mutation {
+    //   doStuff(msg: String): EventInvocationResponse
+    //   @function(name: 'bar')
+    //   @function(name: 'foo', invocationType: Event)
+    // }
+    //
+    // Invalid -- response type must be `EventInvocationResponse`
+    // type Mutation {
+    //   doStuff(msg: String): String
+    //   @function(name: 'bar')
+    //   @function(name: 'foo', invocationType: Event)
+    // }
+    const ultimateFunctionDirectiveConfig = getUltimateFunctionDirectiveConfig(definition, ctx, config);
+    if (ultimateFunctionDirectiveConfig.invocationType === 'Event') {
+      // If `invocationType: Event` is defined in the final `@function` directive on a field:
+      // 2. return type of query / mutation is 'EventInvocationResponse'.
+      validateFieldResponseTypeForEventInvocation(definition, config);
+      // 3. shape of 'EventInvocationResponse' type defined in schema.
+      validateSchemaDefinedEventInvocationResponseShape(ctx.inputDocument);
+    }
+  }
+};
+
+const getUltimateFunctionDirectiveConfig = (
+  fieldDefinition: FieldDefinitionNode,
+  ctx: TransformerContextProvider,
+  currentDirectiveConfig: FunctionDirectiveConfiguration,
+): FunctionDirectiveConfiguration => {
+  const functionDirectivesForField = fieldDefinition.directives?.filter((directive) => directive.name.value === FunctionDirective.name);
+  if (!functionDirectivesForField || functionDirectivesForField.length === 0) {
+    // This really shouldn't happen because this code path should not execute without there being at least one `@function` directive
+    // defined on this field. But we're accessing the last element below, so better safe than sorry.
+    throw new InvalidDirectiveError(
+      'Unable to locate @function directives for field.' +
+        'This is an unexpected error that suggests there is a bug in the amplify-graphql-function-transformer.\n' +
+        'Please open a GitHub issue referencing this error message with your schema definition.',
+    );
+  }
+
+  const ultimateFunctionDirective = functionDirectivesForField[functionDirectivesForField.length - 1];
+  const directiveWrapped = new DirectiveWrapper(ultimateFunctionDirective);
+  const ultimateFunctionDirectiveConfig = directiveWrapped.getArguments(
+    {
+      resolverTypeName: currentDirectiveConfig.resolverTypeName,
+      resolverFieldName: currentDirectiveConfig.resolverFieldName,
+      invocationType: FunctionDirective.defaults.invocationType,
+    } as FunctionDirectiveConfiguration,
+    generateGetArgumentsInput(ctx.transformParameters),
+  );
+
+  return ultimateFunctionDirectiveConfig;
+};
+
+// #endregion Validation
+// #region Validation helpers
+
+/**
+ * Used for consistent validation and error messaging.
+ */
+const eventInvocationResponse = {
+  typeName: 'EventInvocationResponse',
+  shapeDescription: 'type EventInvocationResponse { success: Boolean! }',
+};
+
+/**
+ * Validates that a query / mutation using `@function(..., invocationType: Event)` has the expected return type.
+ * - The return type's kind is 'NamedType'
+ * - The return type's name is 'EventInvocationResponse'
+ *
+ * @param fieldDefition the query / mutation that the @function(..., invocationType: Event) is defined on.
+ */
+const validateFieldResponseTypeForEventInvocation = (fieldDefition: FieldDefinitionNode, config: FunctionDirectiveConfiguration): void => {
+  const { type } = fieldDefition;
+  const fieldResponseTypeHasValidName = type.kind === Kind.NAMED_TYPE && type.name.value === eventInvocationResponse.typeName;
+
+  if (!fieldResponseTypeHasValidName) {
+    // This happens when an event invocation type is defined on a field (query / mutation) where the
+    // return type is not named 'EventInvocationResponse'.
+    // For example:
+    // type Mutation {
+    //   doStuff(msg: String): String @function(name: 'foo', invocationType: Event)
+    // }
+    const errorMessage =
+      `Invalid return type ${typeDebugDescription(type)} for ${fieldDebugDescription(config, fieldDefition)}.\n` +
+      `Use return type '${eventInvocationResponse.typeName}' and, if necessary, add '${eventInvocationResponse.shapeDescription}' to your model schema.`;
+    throw new InvalidDirectiveError(errorMessage);
+  }
+};
+
+/**
+ * Validate that an 'EventInvocationResponse' type is defined in the provided model schema and
+ * has the expected shape:
+ *
+ *  type EventInvocationResponse {
+ *    success: Boolean!
+ *  }
+ *
+ * @param inputDocument the {@link DocumentNode} representing the model schema definition.
+ * This should come from `ctx.inputDocument` where ctx is {@link TransformerContextProvider}
+ */
+const validateSchemaDefinedEventInvocationResponseShape = (inputDocument: DocumentNode): void => {
+  // validate shape { success: Boolean! }
+  // We've already validated that the response type of the query / mutation
+  const responseTypeDefinitionNode = inputDocument.definitions.find(
+    (definitionNode) => isObjectTypeDefinitionNode(definitionNode) && definitionNode.name.value === eventInvocationResponse.typeName,
+  ) as ObjectTypeDefinitionNode | undefined;
+
+  if (!responseTypeDefinitionNode) {
+    // This implies an invalid GraphQL schema due to a defined return type ('EventInvocationResponse')
+    // being undefined in the Model Schema -- upstream validation should have already thrown a
+    // 'Schema validation failed. Unkown type "EventInvocationResponse"' error.
+    // We're doing this check here because upstream conditions can change in the future.
+    const errorMessage =
+      `Missing '${eventInvocationResponse.typeName}' definition. Add this type definition to your schema:\n` +
+      eventInvocationResponse.shapeDescription;
+    throw new InvalidDirectiveError(errorMessage);
+  }
+
+  const errorMessage =
+    `Invalid '${eventInvocationResponse.typeName}' definition. Update the type definition in your schema to:\n` +
+    `${eventInvocationResponse.shapeDescription}`;
+
+  // 'EventInvocationResponse' should contain only one field -- success: Boolean!
+  // We're doing this to:
+  // 1. safely access the first element below.
+  // 2. throw if > 1 fields are defined on the type.
+  const containsOneField = responseTypeDefinitionNode.fields?.length === 1;
+  if (!containsOneField) {
+    throw new InvalidDirectiveError(errorMessage);
+  }
+
+  const [expectedField] = responseTypeDefinitionNode.fields;
+
+  // At this point, we know there's only one field on the 'EventInvocationResponse' defined in the schema.
+  // Now we validate that this field has the shape 'success: Boolean!'
+  const schemaDefinedTypeHasValidShape =
+    expectedField.name.value === 'success' &&
+    expectedField.type.kind === Kind.NON_NULL_TYPE &&
+    expectedField.type.type.kind === Kind.NAMED_TYPE &&
+    expectedField.type.type.name.value === 'Boolean';
+
+  if (!schemaDefinedTypeHasValidShape) {
+    throw new InvalidDirectiveError(errorMessage);
+  }
+};
+
+/**
+ * Validates that the parent type is valid for 'invocationType: Event'
+ * - parent type === 'Query' | 'Mutation'
+ * This is done to ensure we don't accidentally add Event invocation type support to other types, e.g. `@model` or subscriptions.
+ * @param config the {@link FunctionDirectiveConfiguration} for 'invocationType: Event' definitions.
+ */
+const validateIsSupportedEventInvocationParentType = (config: FunctionDirectiveConfiguration): void => {
+  const isValidParentType = config.resolverTypeName === 'Query' || config.resolverTypeName === 'Mutation';
+
+  if (!isValidParentType) {
+    throw new InvalidDirectiveError("@function definition with 'invocationType: Event' must be defined on Query or Mutation field.");
+  }
+};
+
+// #endregion Validation helpers
+
+// #region Debug Description Helpers
+
+/**
+ * Use this to generate a description of a type for contextual error messages.
+ * @param typeNode the {@link TypeNode} to describe.
+ * @returns a textual description of the {@link TypeNode} in `string` form.
+ */
+const typeDebugDescription = (typeNode: TypeNode): string => {
+  /*
+  Int -- NamedType
+  Int! -- NonNullType.NamedType -- '' / !
+  [Int] -- ListType.NamedType -- [ / ]
+  [Int]! -- NonNullType.ListType.NamedType -- '' / ! --> [ / ]!
+  [Int!] -- ListType.NonNullType.NamedType -- [ / ] --> [ / !]
+  [Int!]! -- NonNullType.ListType.NonNullType.NamedType -- '' / ! --> [ / ]! --> [ / !]!
+  */
+  // eslint-disable-next-line consistent-return
+  const description = (node: TypeNode, prefix = '', suffix = ''): string => {
+    switch (node.kind) {
+      case Kind.LIST_TYPE:
+        return description(node.type, prefix + '[', ']' + suffix);
+      case Kind.NON_NULL_TYPE:
+        return description(node.type, prefix, '!' + suffix);
+      case Kind.NAMED_TYPE:
+        return `${prefix}${node.name.value}${suffix}`;
+    }
+  };
+
+  return description(typeNode);
+};
+
+/**
+ * Use this to generate a field description for contextual error messages in the form of:
+ * `field-name(optional-args): return-type `@function`(name: name, invocationType: invocation-type)`
+ * @param config the {@link FunctionDirectiveConfiguration} of the `@function` directive.
+ * @param field the {@link FieldDefinitionNode} on which the `@function` directive is defined.
+ * @returns a description of the field with `@function` directive appropriate for use in error messages.
+ */
+const fieldDebugDescription = (config: FunctionDirectiveConfiguration, field: FieldDefinitionNode): string => {
+  const fieldArgumentsDescription = (nodes: readonly InputValueDefinitionNode[] | undefined): string => {
+    if (!nodes || nodes.length === 0) {
+      return '';
+    }
+    const description = '(' + nodes.map((node) => `${node.name.value}: ${typeDebugDescription(node.type)}`).join(', ') + ')';
+    return description;
+  };
+
+  const directiveArgumentsDescription = (nodes: readonly ArgumentNode[] | undefined): string => {
+    if (!nodes || nodes.length === 0) {
+      return '';
+    }
+    const description = '(' + nodes.map((node) => `${node.name.value}: ${valueFromASTUntyped(node.value)}`).join(', ') + ')';
+    return description;
+  };
+
+  const args = fieldArgumentsDescription(field.arguments);
+  const directivesDescription = field.directives
+    ?.map((directive) => `@${directive.name.value}${directiveArgumentsDescription(directive.arguments)}`)
+    .join(' ');
+
+  return `${config.resolverFieldName}${args}: ${typeDebugDescription(field.type)} ${directivesDescription}`;
+};
+
+// #endregion Debug Description Helpers

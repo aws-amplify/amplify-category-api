@@ -1,8 +1,10 @@
+/* eslint-disable no-template-curly-in-string */
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { parse } from 'graphql';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { FunctionTransformer } from '..';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 
 test('for @function with only name, it generates the expected resources', () => {
   const validSchema = `
@@ -368,4 +370,319 @@ test('includes auth info in stash', () => {
     },
   });
   expect(out.stacks.FunctionDirectiveStack.Resources!.QuerymyFunctionResolver.Properties.RequestMappingTemplate).toMatchSnapshot();
+});
+
+describe('Event invocation type', () => {
+  test('Defined on Query succeeds', () => {
+    const schema = `
+      type Query {
+        asyncStuff(msg: String): EventInvocationResponse @function(name: "asyncstuff-\${env}", invocationType: Event)
+      }
+
+      type EventInvocationResponse {
+        success: Boolean!
+      }
+    `;
+
+    const out = testTransform({ schema, transformers: [new FunctionTransformer()] });
+    expect(out).toBeDefined();
+    parse(out.schema);
+    expect(out.stacks).toBeDefined();
+
+    const stack = out.stacks.FunctionDirectiveStack;
+    expect(stack).toBeDefined();
+
+    const resolvers = out.resolvers;
+    expect(resolvers).toBeDefined();
+    expect(resolvers).toMatchSnapshot();
+  });
+
+  test('Defined on Mutation succeeds', () => {
+    const schema = `
+    type Mutation {
+      asyncStuff(msg: String): EventInvocationResponse @function(name: "asyncstuff-\${env}", invocationType: Event)
+    }
+
+    type EventInvocationResponse {
+      success: Boolean!
+    }
+  `;
+
+    const out = testTransform({ schema, transformers: [new FunctionTransformer()] });
+    expect(out).toBeDefined();
+
+    parse(out.schema);
+    expect(out.schema).toBeDefined();
+    expect(out.schema).toMatchSnapshot();
+
+    expect(out.stacks).toBeDefined();
+    const stack = out.stacks.FunctionDirectiveStack;
+    expect(stack).toBeDefined();
+
+    const resolvers = out.resolvers;
+    expect(resolvers).toBeDefined();
+    expect(resolvers).toMatchSnapshot();
+  });
+
+  test('event invocation fails on non query or mutation parent type', () => {
+    const schema = `
+    type Foo @model {
+      asyncStuff(msg: String): EventInvocationResponse @function(name: "asyncstuff-\${env}", invocationType: Event)
+    }
+
+    type EventInvocationResponse {
+      success: Boolean!
+    }
+    `;
+
+    expect(() => testTransform({ schema, transformers: [new ModelTransformer(), new FunctionTransformer()] })).toThrowError(
+      "@function definition with 'invocationType: Event' must be defined on Query or Mutation field.",
+    );
+  });
+
+  describe('Chained directives', () => {
+    test('chained @function -- RequestResponse > Event succeeds with EventInvocationResponse', () => {
+      const schema = `
+        type Mutation {
+          asyncStuff(msg: String): EventInvocationResponse
+          @function(name: "asyncstuff2-\${env}")
+          @function(name: "asyncstuff-\${env}", invocationType: Event)
+        }
+        type EventInvocationResponse {
+          success: Boolean!
+        }
+      `;
+      const out = testTransform({ schema, transformers: [new FunctionTransformer()] });
+      expect(out).toBeDefined();
+    });
+
+    test('chained @function -- RequestResponse > Event fails without EventInvocationResponse', () => {
+      const schema = `
+        type Mutation {
+          asyncStuff(msg: String): String
+          @function(name: "syncstuff-\${env}")
+          @function(name: "asyncstuff-\${env}", invocationType: Event)
+        }
+      `;
+
+      const expectedErrorMessage =
+        'Invalid return type String for asyncStuff(msg: String): String @function(name: syncstuff-${env}) @function(name: asyncstuff-${env}, invocationType: Event).\n' +
+        "Use return type 'EventInvocationResponse' and, if necessary, add 'type EventInvocationResponse { success: Boolean! }' to your model schema.";
+
+      expect(() => testTransform({ schema, transformers: [new FunctionTransformer()] })).toThrowError(expectedErrorMessage);
+    });
+
+    test('chained @function -- Event > Event succeeds with EventInvocationResponse', () => {
+      const schema = `
+      type Mutation {
+        asyncStuff(msg: String): EventInvocationResponse
+        @function(name: "asyncstuff-\${env}", invocationType: Event)
+        @function(name: "asyncstuff2-\${env}", invocationType: Event)
+      }
+
+      type EventInvocationResponse {
+        success: Boolean!
+      }
+    `;
+      const out = testTransform({ schema, transformers: [new FunctionTransformer()] });
+      expect(out).toBeDefined();
+    });
+
+    test('chained @function -- Event > Event fails without EventInvocationResponse', () => {
+      const schema = `
+        type Mutation {
+          asyncStuff(msg: String): String
+          @function(name: "asyncstuff-\${env}", invocationType: Event)
+          @function(name: "asyncstuff2-\${env}", invocationType: Event)
+        }
+      `;
+      const expectedErrorMessage =
+        'Invalid return type String for asyncStuff(msg: String): String @function(name: asyncstuff-${env}, invocationType: Event) @function(name: asyncstuff2-${env}, invocationType: Event).\n' +
+        "Use return type 'EventInvocationResponse' and, if necessary, add 'type EventInvocationResponse { success: Boolean! }' to your model schema.";
+
+      expect(() => testTransform({ schema, transformers: [new FunctionTransformer()] })).toThrowError(expectedErrorMessage);
+    });
+
+    test('chained @function -- RequestResponse > Event succeeds without EventInvocationResponse', () => {
+      const schema = `
+        type Mutation {
+          asyncStuff(msg: String): String
+          @function(name: "asyncstuff-\${env}", invocationType: Event)
+          @function(name: "asyncstuff2-\${env}")
+        }
+      `;
+      const out = testTransform({ schema, transformers: [new FunctionTransformer()] });
+      expect(out).toBeDefined();
+    });
+  });
+
+  describe('Event invocation type invalid return types', () => {
+    test('NamedType scalar fails validation', () => {
+      const schema = `
+      type Mutation {
+        asyncStuff(msg: String): Int @function(name: "asyncstuff-\${env}", invocationType: Event)
+      }
+    `;
+
+      const expectedErrorMessage =
+        'Invalid return type Int for asyncStuff(msg: String): Int @function(name: asyncstuff-${env}, invocationType: Event).\n' +
+        "Use return type 'EventInvocationResponse' and, if necessary, add 'type EventInvocationResponse { success: Boolean! }' to your model schema.";
+      expect(() => testTransform({ schema, transformers: [new FunctionTransformer()] })).toThrowError(expectedErrorMessage);
+    });
+
+    test('ListType scalar fails validation', () => {
+      const schema = `
+      type Mutation {
+        asyncStuff(msg: String): [Int] @function(name: "asyncstuff-\${env}", invocationType: Event)
+      }
+    `;
+
+      const expectedErrorMessage =
+        'Invalid return type [Int] for asyncStuff(msg: String): [Int] @function(name: asyncstuff-${env}, invocationType: Event).\n' +
+        "Use return type 'EventInvocationResponse' and, if necessary, add 'type EventInvocationResponse { success: Boolean! }' to your model schema.";
+      expect(() => testTransform({ schema, transformers: [new FunctionTransformer()] })).toThrowError(expectedErrorMessage);
+    });
+
+    test('ListType NonNull custom type fails validation', () => {
+      const schema = `
+      type Mutation {
+        asyncStuff(msg: String): [Foo!] @function(name: "asyncstuff-\${env}", invocationType: Event)
+      }
+
+      type Foo {
+        bar: String!
+      }
+    `;
+
+      const expectedErrorMessage =
+        'Invalid return type [Foo!] for asyncStuff(msg: String): [Foo!] @function(name: asyncstuff-${env}, invocationType: Event).\n' +
+        "Use return type 'EventInvocationResponse' and, if necessary, add 'type EventInvocationResponse { success: Boolean! }' to your model schema.";
+      expect(() => testTransform({ schema, transformers: [new FunctionTransformer()] })).toThrowError(expectedErrorMessage);
+    });
+
+    test('NonNull ListType fails validation', () => {
+      const schema = `
+      type Mutation {
+        asyncStuff(msg: String): [String]! @function(name: "asyncstuff-\${env}", invocationType: Event)
+      }
+    `;
+
+      const expectedErrorMessage =
+        'Invalid return type [String]! for asyncStuff(msg: String): [String]! @function(name: asyncstuff-${env}, invocationType: Event).\n' +
+        "Use return type 'EventInvocationResponse' and, if necessary, add 'type EventInvocationResponse { success: Boolean! }' to your model schema.";
+      expect(() => testTransform({ schema, transformers: [new FunctionTransformer()] })).toThrowError(expectedErrorMessage);
+    });
+
+    test('NonNull ListType NonNull scalar fails validation', () => {
+      const schema = `
+      type Mutation {
+        asyncStuff(msg: String): [Boolean!]! @function(name: "asyncstuff-\${env}", invocationType: Event)
+      }
+    `;
+
+      const expectedErrorMessage =
+        'Invalid return type [Boolean!]! for asyncStuff(msg: String): [Boolean!]! @function(name: asyncstuff-${env}, invocationType: Event).\n' +
+        "Use return type 'EventInvocationResponse' and, if necessary, add 'type EventInvocationResponse { success: Boolean! }' to your model schema.";
+      expect(() => testTransform({ schema, transformers: [new FunctionTransformer()] })).toThrowError(expectedErrorMessage);
+    });
+
+    test('EventInvocationResponse with non null response type fails validation', () => {
+      const schema = `
+        type Mutation {
+          asyncStuff(msg: String): EventInvocationResponse! @function(name: "asyncstuff-\${env}", invocationType: Event)
+        }
+
+        type EventInvocationResponse {
+          success: Boolean!
+        }
+      `;
+
+      const expectedErrorMessage =
+        'Invalid return type EventInvocationResponse! for asyncStuff(msg: String): EventInvocationResponse! @function(name: asyncstuff-${env}, invocationType: Event).\n' +
+        "Use return type 'EventInvocationResponse' and, if necessary, add 'type EventInvocationResponse { success: Boolean! }' to your model schema.";
+      expect(() => testTransform({ schema, transformers: [new FunctionTransformer()] })).toThrowError(expectedErrorMessage);
+    });
+  });
+
+  describe('Event invocation type invalid EventInvocationResponse definition', () => {
+    test('EventInvocationResponse type missing in schema fails validation', () => {
+      const schema = `
+      type Mutation {
+        asyncStuff(msg: String): EventInvocationResponse @function(name: "asyncstuff-\${env}", invocationType: Event)
+      }
+    `;
+
+      const expectedErrorRegex = /Unknown type "EventInvocationResponse"/;
+      expect(() => testTransform({ schema, transformers: [new FunctionTransformer()] })).toThrowError(expectedErrorRegex);
+    });
+
+    test('EventInvocationResponse with unexpected field fails validation', () => {
+      const schema = `
+        type Mutation {
+          asyncStuff(msg: String): EventInvocationResponse @function(name: "asyncstuff-\${env}", invocationType: Event)
+        }
+
+        type EventInvocationResponse {
+          success: Boolean!
+          otherStuff: String
+        }
+      `;
+
+      const expectedErrorMessage =
+        "Invalid 'EventInvocationResponse' definition. Update the type definition in your schema to:\n" +
+        'type EventInvocationResponse { success: Boolean! }';
+      expect(() => testTransform({ schema, transformers: [new FunctionTransformer()] })).toThrowError(expectedErrorMessage);
+    });
+
+    test('EventInvocationResponse with non success field name fails validation', () => {
+      const schema = `
+        type Mutation {
+          asyncStuff(msg: String): EventInvocationResponse @function(name: "asyncstuff-\${env}", invocationType: Event)
+        }
+
+        type EventInvocationResponse {
+          invalidFieldName: Boolean!
+        }
+      `;
+
+      const expectedErrorMessage =
+        "Invalid 'EventInvocationResponse' definition. Update the type definition in your schema to:\n" +
+        'type EventInvocationResponse { success: Boolean! }';
+      expect(() => testTransform({ schema, transformers: [new FunctionTransformer()] })).toThrowError(expectedErrorMessage);
+    });
+
+    test('EventInvocationResponse with nullable success field fails validation', () => {
+      const schema = `
+        type Mutation {
+          asyncStuff(msg: String): EventInvocationResponse @function(name: "asyncstuff-\${env}", invocationType: Event)
+        }
+
+        type EventInvocationResponse {
+          success: Boolean
+        }
+      `;
+
+      const expectedErrorMessage =
+        "Invalid 'EventInvocationResponse' definition. Update the type definition in your schema to:\n" +
+        'type EventInvocationResponse { success: Boolean! }';
+      expect(() => testTransform({ schema, transformers: [new FunctionTransformer()] })).toThrowError(expectedErrorMessage);
+    });
+
+    test('EventInvocationResponse with non-boolean success field type fails validation', () => {
+      const schema = `
+        type Mutation {
+          asyncStuff(msg: String): EventInvocationResponse @function(name: "asyncstuff-\${env}", invocationType: Event)
+        }
+
+        type EventInvocationResponse {
+          success: String!
+        }
+      `;
+
+      const expectedErrorMessage =
+        "Invalid 'EventInvocationResponse' definition. Update the type definition in your schema to:\n" +
+        'type EventInvocationResponse { success: Boolean! }';
+      expect(() => testTransform({ schema, transformers: [new FunctionTransformer()] })).toThrowError(expectedErrorMessage);
+    });
+  });
 });

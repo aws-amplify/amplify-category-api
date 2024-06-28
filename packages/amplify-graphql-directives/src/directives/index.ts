@@ -5,7 +5,7 @@ export { AuthDirective } from './auth';
 export { BelongsToDirective } from './belongs-to';
 export { DefaultDirective } from './default';
 export { DeprecatedDirective } from './deprecated';
-export { FunctionDirective } from './function';
+export { FunctionDirective, FunctionDirectiveDefaults } from './function';
 export { HasManyDirective, HasManyDirectiveDefaults } from './has-many';
 export { HasOneDirective } from './has-one';
 export { HttpDirective, HttpDirectiveDefaults } from './http';
