@@ -204,7 +204,7 @@ const responseMappingTemplate = (config: FunctionDirectiveConfiguration): string
     /*
       #set( $success = true )
       #if( $ctx.error )
-        $util.error($ctx.error.message, $ctx.error.type)
+        $util.appendError($ctx.error.message, $ctx.error.type)
         #set( $success = false )
       #end
       #set( $response = {
