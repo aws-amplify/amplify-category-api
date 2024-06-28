@@ -1,5 +1,318 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`conversation route valid schema 1`] = `
+"type ConversationMessage_pirateChat {
+  conversationSessionId: ID!
+  session: ConversationSession_pirateChat
+  sender: ConversationEventSender
+  text: String
+  id: ID!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+type ConversationSession_pirateChat {
+  events(filter: ModelConversationMessage_pirateChatFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelConversationMessage_pirateChatConnection
+  id: ID!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+enum ConversationEventSender {
+  user
+  assistant
+}
+
+type Mutation {
+  pirateChat(sessionId: ID, message: String): String
+  createConversationMessage_pirateChat(input: CreateConversationMessage_pirateChatInput!, condition: ModelConversationMessage_pirateChatConditionInput): ConversationMessage_pirateChat
+  updateConversationMessage_pirateChat(input: UpdateConversationMessage_pirateChatInput!, condition: ModelConversationMessage_pirateChatConditionInput): ConversationMessage_pirateChat
+  deleteConversationMessage_pirateChat(input: DeleteConversationMessage_pirateChatInput!, condition: ModelConversationMessage_pirateChatConditionInput): ConversationMessage_pirateChat
+  createConversationSession_pirateChat(input: CreateConversationSession_pirateChatInput!, condition: ModelConversationSession_pirateChatConditionInput): ConversationSession_pirateChat
+  updateConversationSession_pirateChat(input: UpdateConversationSession_pirateChatInput!, condition: ModelConversationSession_pirateChatConditionInput): ConversationSession_pirateChat
+  deleteConversationSession_pirateChat(input: DeleteConversationSession_pirateChatInput!, condition: ModelConversationSession_pirateChatConditionInput): ConversationSession_pirateChat
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelConversationMessage_pirateChatConnection {
+  items: [ConversationMessage_pirateChat]!
+  nextToken: String
+}
+
+input ModelConversationEventSenderInput {
+  eq: ConversationEventSender
+  ne: ConversationEventSender
+}
+
+input ModelConversationMessage_pirateChatFilterInput {
+  conversationSessionId: ModelIDInput
+  sender: ModelConversationEventSenderInput
+  text: ModelStringInput
+  id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelConversationMessage_pirateChatFilterInput]
+  or: [ModelConversationMessage_pirateChatFilterInput]
+  not: ModelConversationMessage_pirateChatFilterInput
+  owner: ModelStringInput
+}
+
+type Query {
+  getConversationMessage_pirateChat(id: ID!): ConversationMessage_pirateChat
+  listConversationMessage_pirateChats(filter: ModelConversationMessage_pirateChatFilterInput, limit: Int, nextToken: String): ModelConversationMessage_pirateChatConnection
+  getConversationSession_pirateChat(id: ID!): ConversationSession_pirateChat
+  listConversationSession_pirateChats(filter: ModelConversationSession_pirateChatFilterInput, limit: Int, nextToken: String): ModelConversationSession_pirateChatConnection
+}
+
+input ModelConversationMessage_pirateChatConditionInput {
+  conversationSessionId: ModelIDInput
+  sender: ModelConversationEventSenderInput
+  text: ModelStringInput
+  and: [ModelConversationMessage_pirateChatConditionInput]
+  or: [ModelConversationMessage_pirateChatConditionInput]
+  not: ModelConversationMessage_pirateChatConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+input CreateConversationMessage_pirateChatInput {
+  conversationSessionId: ID!
+  sender: ConversationEventSender
+  text: String
+  id: ID
+}
+
+input UpdateConversationMessage_pirateChatInput {
+  conversationSessionId: ID
+  sender: ConversationEventSender
+  text: String
+  id: ID!
+}
+
+input DeleteConversationMessage_pirateChatInput {
+  id: ID!
+}
+
+input ModelSubscriptionConversationMessage_pirateChatFilterInput {
+  conversationSessionId: ModelSubscriptionIDInput
+  sender: ModelSubscriptionStringInput
+  text: ModelSubscriptionStringInput
+  id: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionConversationMessage_pirateChatFilterInput]
+  or: [ModelSubscriptionConversationMessage_pirateChatFilterInput]
+  owner: ModelStringInput
+}
+
+type Subscription {
+  onCreateConversationMessage_pirateChat(filter: ModelSubscriptionConversationMessage_pirateChatFilterInput, owner: String): ConversationMessage_pirateChat @aws_subscribe(mutations: [\\"createConversationMessage_pirateChat\\"])
+  onUpdateConversationMessage_pirateChat(filter: ModelSubscriptionConversationMessage_pirateChatFilterInput, owner: String): ConversationMessage_pirateChat @aws_subscribe(mutations: [\\"updateConversationMessage_pirateChat\\"])
+  onDeleteConversationMessage_pirateChat(filter: ModelSubscriptionConversationMessage_pirateChatFilterInput, owner: String): ConversationMessage_pirateChat @aws_subscribe(mutations: [\\"deleteConversationMessage_pirateChat\\"])
+  onCreateConversationSession_pirateChat(filter: ModelSubscriptionConversationSession_pirateChatFilterInput, owner: String): ConversationSession_pirateChat @aws_subscribe(mutations: [\\"createConversationSession_pirateChat\\"])
+  onUpdateConversationSession_pirateChat(filter: ModelSubscriptionConversationSession_pirateChatFilterInput, owner: String): ConversationSession_pirateChat @aws_subscribe(mutations: [\\"updateConversationSession_pirateChat\\"])
+  onDeleteConversationSession_pirateChat(filter: ModelSubscriptionConversationSession_pirateChatFilterInput, owner: String): ConversationSession_pirateChat @aws_subscribe(mutations: [\\"deleteConversationSession_pirateChat\\"])
+}
+
+type ModelConversationSession_pirateChatConnection {
+  items: [ConversationSession_pirateChat]!
+  nextToken: String
+}
+
+input ModelConversationSession_pirateChatFilterInput {
+  id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelConversationSession_pirateChatFilterInput]
+  or: [ModelConversationSession_pirateChatFilterInput]
+  not: ModelConversationSession_pirateChatFilterInput
+  owner: ModelStringInput
+}
+
+input ModelConversationSession_pirateChatConditionInput {
+  and: [ModelConversationSession_pirateChatConditionInput]
+  or: [ModelConversationSession_pirateChatConditionInput]
+  not: ModelConversationSession_pirateChatConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+input CreateConversationSession_pirateChatInput {
+  id: ID
+}
+
+input UpdateConversationSession_pirateChatInput {
+  id: ID!
+}
+
+input DeleteConversationSession_pirateChatInput {
+  id: ID!
+}
+
+input ModelSubscriptionConversationSession_pirateChatFilterInput {
+  id: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionConversationSession_pirateChatFilterInput]
+  or: [ModelSubscriptionConversationSession_pirateChatFilterInput]
+  owner: ModelStringInput
+}
+"
+`;
+
 exports[`fails if @belongsTo was used on an object that is not a model type 1`] = `
 "type ConversationMessage_pirateChat {
   conversationSessionId: ID!
