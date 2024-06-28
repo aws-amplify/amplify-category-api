@@ -1,14 +1,14 @@
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform, constructDataSourceStrategies, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { DocumentNode, Kind, parse } from 'graphql';
-import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { ConversationTransformer } from '..';
-import { HasManyTransformer, BelongsToTransformer } from '../../../amplify-graphql-relational-transformer/src';
+import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { parse } from 'graphql';
+import { ConversationTransformer } from '..';
+import { BelongsToTransformer, HasManyTransformer } from '../../../amplify-graphql-relational-transformer/src';
 
-test('fails if @belongsTo was used on an object that is not a model type', () => {
+test('conversation route valid schema', () => {
   const authConfig: AppSyncAuthConfiguration = {
     defaultAuthentication: {
       authenticationType: 'AMAZON_COGNITO_USER_POOLS',
