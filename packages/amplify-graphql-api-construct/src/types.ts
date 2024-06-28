@@ -611,6 +611,13 @@ export interface PartialTranslationBehavior {
    * @experimental
    */
   readonly replaceTableUponGsiUpdate?: boolean;
+
+  /**
+   * When disabled usage of Gen 1 patterns will result in an error thrown.
+   *
+   * @default true
+   */
+  readonly allowGen1Patterns?: boolean;
 }
 
 /**
