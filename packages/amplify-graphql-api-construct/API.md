@@ -371,6 +371,7 @@ export interface SqlModelDataSourceSecretsManagerDbConnectionConfig {
     readonly keyArn?: string;
     readonly port: number;
     readonly secretArn: string;
+    readonly sslCertConfig?: SslCertConfig;
 }
 
 // @public
@@ -379,12 +380,14 @@ export interface SqlModelDataSourceSsmDbConnectionConfig {
     readonly hostnameSsmPath: string;
     readonly passwordSsmPath: string;
     readonly portSsmPath: string;
+    readonly sslCertConfig?: SslCertConfig;
     readonly usernameSsmPath: string;
 }
 
 // @public
 export interface SqlModelDataSourceSsmDbConnectionStringConfig {
     readonly connectionUriSsmPath: string | string[];
+    readonly sslCertConfig?: SslCertConfig;
 }
 
 // @public
@@ -398,6 +401,15 @@ export interface SSESpecification {
 export enum SSEType {
     // (undocumented)
     KMS = "KMS"
+}
+
+// @public
+export interface SslCertConfig {
+}
+
+// @public (undocumented)
+export interface SslCertSsmPathConfig extends SslCertConfig {
+    readonly ssmPath: string | string[];
 }
 
 // @public
