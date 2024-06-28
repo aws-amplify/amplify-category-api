@@ -127,6 +127,28 @@ export type SqlModelDataSourceDbConnectionConfig =
   | SqlModelDataSourceSsmDbConnectionStringConfig;
 
 /**
+ * Marker interface. Although we can't declare it in the actual interface definition because it results in invalid C#, each conforming type
+ * must have a `configType: string` field to allow for discriminated union behavior.
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface SslCertConfig {}
+
+export interface SslCertSsmPathConfig extends SslCertConfig {
+  /**
+   * The SSM path to a custom SSL certificate to use instead of the default. Amplify resolves the trust store to use as follows:
+   * - If the `ssmPath` parameter is provided, use it.
+   *   - If the parameter is a single string, use it.
+   *   - If the parameter is an array, iterate over them in order
+   *   - In either case, if the parameter is provided but the certificate content isn't retrievable, fails with an error.
+   * - If the database host is an RDS cluster, instance, or proxy (in other words, if the database host ends with "rds.amazonaws.com"), use
+   *   an RDS-specific trust store vended by AWS. See
+   *   https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html#UsingWithRDS.SSL.CertificatesAllRegions
+   * - Otherwise, use the trust store vended with the NodeJS runtime version that the SQL lambda is running on
+   */
+  readonly ssmPath: string | string[];
+}
+
+/**
  * The configuration option to use a Secure Systems Manager parameter to store the connection string to the database.
  * @experimental
  */
@@ -138,6 +160,11 @@ export interface SqlModelDataSourceSsmDbConnectionStringConfig {
    * attempt to retrieve connection information from subsequent paths in the array.
    **/
   readonly connectionUriSsmPath: string | string[];
+
+  /**
+   * An optional configuration for a custom SSL certificate authority to use when connecting to the database.
+   */
+  readonly sslCertConfig?: SslCertConfig;
 }
 
 /**
@@ -150,7 +177,10 @@ export interface SqlModelDataSourceSecretsManagerDbConnectionConfig {
   /** The ARN of the managed secret with username, password, and hostname to use when connecting to the database. **/
   readonly secretArn: string;
 
-  /** The ARN of the customer managed encryption key for the secret. If not supplied, the secret is expected to be encrypted with the default AWS-managed key. **/
+  /**
+   * The ARN of the customer managed encryption key for the secret. If not supplied, the secret is expected to be encrypted with the default
+   * AWS-managed key.
+   **/
   readonly keyArn?: string;
 
   /** The port number of the database proxy, cluster, or instance. */
@@ -161,6 +191,11 @@ export interface SqlModelDataSourceSecretsManagerDbConnectionConfig {
 
   /** The hostame of the database. */
   readonly hostname: string;
+
+  /**
+   * An optional configuration for a custom SSL certificate authority to use when connecting to the database.
+   */
+  readonly sslCertConfig?: SslCertConfig;
 }
 
 /**
@@ -185,6 +220,11 @@ export interface SqlModelDataSourceSsmDbConnectionConfig {
 
   /** The Secure Systems Manager parameter containing the database name. */
   readonly databaseNameSsmPath: string;
+
+  /**
+   * An optional configuration for a custom SSL certificate authority to use when connecting to the database.
+   */
+  readonly sslCertConfig?: SslCertConfig;
 }
 
 /**

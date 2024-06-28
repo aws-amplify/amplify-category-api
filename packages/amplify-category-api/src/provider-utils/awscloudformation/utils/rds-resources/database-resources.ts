@@ -6,7 +6,7 @@ import {
   ImportedRDSType,
   ImportedDataSourceConfig,
 } from '@aws-amplify/graphql-transformer-core';
-import { MySQLDataSourceAdapter, DataSourceAdapter, MySQLDataSourceConfig } from '@aws-amplify/graphql-schema-generator';
+import { MySQLDataSourceAdapter, DataSourceAdapter, DataSourceConfig } from '@aws-amplify/graphql-schema-generator';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { DeleteFunctionCommand, LambdaClient } from '@aws-sdk/client-lambda';
 import { DeleteRoleCommand, IAMClient } from '@aws-sdk/client-iam';
@@ -231,7 +231,7 @@ export const testDatabaseConnection = async (config: RDSConnectionSecrets): Prom
 
   switch (config.engine) {
     case ImportedRDSType.MYSQL:
-      adapter = new MySQLDataSourceAdapter(config as MySQLDataSourceConfig);
+      adapter = new MySQLDataSourceAdapter(config as DataSourceConfig);
       break;
     default:
       printer.error('Only MySQL Data Source is supported.');

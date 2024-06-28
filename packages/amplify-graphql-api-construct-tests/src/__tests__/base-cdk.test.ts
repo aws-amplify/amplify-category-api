@@ -7,8 +7,9 @@ import {
 } from 'amplify-category-api-e2e-core';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { graphql } from '../graphql-request';
+import { DURATION_1_HOUR } from '../utils/duration-constants';
 
-jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
+jest.setTimeout(DURATION_1_HOUR);
 
 describe('CDK GraphQL Transformer', () => {
   let projRoot: string;

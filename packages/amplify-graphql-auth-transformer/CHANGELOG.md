@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.6.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.5.5...@aws-amplify/graphql-auth-transformer@3.6.0) (2024-06-25)
+
+### Features
+
+- allow subscriptions to inherit primary model auth rules for relational fields behind a feature flag ([#2649](https://github.com/aws-amplify/amplify-category-api/issues/2649)) ([56a853a](https://github.com/aws-amplify/amplify-category-api/commit/56a853ace0026de97395cfa17ca156cf360ac5c2))
+
+## [3.5.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.5.4...@aws-amplify/graphql-auth-transformer@3.5.5) (2024-06-06)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [3.5.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.5.3...@aws-amplify/graphql-auth-transformer@3.5.4) (2024-06-04)
+
+### Bug Fixes
+
+- redact relational field in mutation & subscription based on model auth rules ([#2536](https://github.com/aws-amplify/amplify-category-api/issues/2536)) ([f72f40e](https://github.com/aws-amplify/amplify-category-api/commit/f72f40e941f5b48966b60f40222abd80505fb034))
+
+## [3.5.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.5.2...@aws-amplify/graphql-auth-transformer@3.5.3) (2024-05-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [3.5.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.5.1...@aws-amplify/graphql-auth-transformer@3.5.2) (2024-05-10)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
 ## [3.5.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.5.0...@aws-amplify/graphql-auth-transformer@3.5.1) (2024-05-01)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer

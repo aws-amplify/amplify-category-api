@@ -278,6 +278,7 @@ const generateTransformParameters = (
     secondaryKeyAsGSI: featureFlagProvider.getBoolean('secondaryKeyAsGSI'),
     enableAutoIndexQueryNames: featureFlagProvider.getBoolean('enableAutoIndexQueryNames'),
     respectPrimaryKeyAttributesOnConnectionField: featureFlagProvider.getBoolean('respectPrimaryKeyAttributesOnConnectionField'),
+    subscriptionsInheritPrimaryAuth: featureFlagProvider.getBoolean('subscriptionsInheritPrimaryAuth'),
     suppressApiKeyGeneration: suppressApiKeyGeneration(parameters),
     disableResolverDeduping: projectConfig.DisableResolverDeduping ?? false,
     enableSearchNodeToNodeEncryption: shouldEnableNodeToNodeEncryption(

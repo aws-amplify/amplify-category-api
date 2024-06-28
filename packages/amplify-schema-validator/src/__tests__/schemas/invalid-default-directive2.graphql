@@ -1,0 +1,8 @@
+type Test @model {
+  id: ID!
+  student: Student @default(value: "{'name':'FooBar'}")
+}
+
+type Student {
+  name: String
+}

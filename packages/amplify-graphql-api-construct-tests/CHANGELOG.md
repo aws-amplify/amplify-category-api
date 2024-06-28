@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.6.5...amplify-graphql-api-construct-tests@1.6.6) (2024-06-25)
+
+**Note:** Version bump only for package amplify-graphql-api-construct-tests
+
+## [1.6.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.6.4...amplify-graphql-api-construct-tests@1.6.5) (2024-06-06)
+
+### Bug Fixes
+
+- fix selection sets for SQL models with optional dependencies ([#2587](https://github.com/aws-amplify/amplify-category-api/issues/2587)) ([f6b68d9](https://github.com/aws-amplify/amplify-category-api/commit/f6b68d9cf1ce8ff0509e63dcd09447d97303e5c6))
+
+## [1.6.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.6.3...amplify-graphql-api-construct-tests@1.6.4) (2024-06-04)
+
+### Bug Fixes
+
+- redact relational field in mutation & subscription based on model auth rules ([#2536](https://github.com/aws-amplify/amplify-category-api/issues/2536)) ([f72f40e](https://github.com/aws-amplify/amplify-category-api/commit/f72f40e941f5b48966b60f40222abd80505fb034))
+
+## [1.6.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.6.2...amplify-graphql-api-construct-tests@1.6.3) (2024-05-15)
+
+### Bug Fixes
+
+- **api:** handle attribute type change on gsi ([#2542](https://github.com/aws-amplify/amplify-category-api/issues/2542)) ([f0a4709](https://github.com/aws-amplify/amplify-category-api/commit/f0a470990dd41966f802bb6ecb7b7ffa41a5c7d5))
+
+## [1.6.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.6.1...amplify-graphql-api-construct-tests@1.6.2) (2024-05-10)
+
+**Note:** Version bump only for package amplify-graphql-api-construct-tests
+
 ## [1.6.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.6.0...amplify-graphql-api-construct-tests@1.6.1) (2024-05-01)
 
 **Note:** Version bump only for package amplify-graphql-api-construct-tests

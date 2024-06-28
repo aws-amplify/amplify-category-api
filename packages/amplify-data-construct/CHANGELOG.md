@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.8.5...@aws-amplify/data-construct@1.8.6) (2024-06-25)
+
+**Note:** Version bump only for package @aws-amplify/data-construct
+
+## [1.8.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.8.4...@aws-amplify/data-construct@1.8.5) (2024-06-06)
+
+**Note:** Version bump only for package @aws-amplify/data-construct
+
+## [1.8.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.8.3...@aws-amplify/data-construct@1.8.4) (2024-06-04)
+
+**Note:** Version bump only for package @aws-amplify/data-construct
+
+## [1.8.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.8.2...@aws-amplify/data-construct@1.8.3) (2024-05-15)
+
+**Note:** Version bump only for package @aws-amplify/data-construct
+
+## [1.8.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.8.1...@aws-amplify/data-construct@1.8.2) (2024-05-10)
+
+**Note:** Version bump only for package @aws-amplify/data-construct
+
 ## [1.8.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.8.0...@aws-amplify/data-construct@1.8.1) (2024-05-01)
 
 **Note:** Version bump only for package @aws-amplify/data-construct

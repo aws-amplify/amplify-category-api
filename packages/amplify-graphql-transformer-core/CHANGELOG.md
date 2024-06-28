@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.9.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.8.0...@aws-amplify/graphql-transformer-core@2.9.0) (2024-06-25)
+
+### Features
+
+- allow subscriptions to inherit primary model auth rules for relational fields behind a feature flag ([#2649](https://github.com/aws-amplify/amplify-category-api/issues/2649)) ([56a853a](https://github.com/aws-amplify/amplify-category-api/commit/56a853ace0026de97395cfa17ca156cf360ac5c2))
+
+# [2.8.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.7.0...@aws-amplify/graphql-transformer-core@2.8.0) (2024-05-10)
+
+### Bug Fixes
+
+- fix reference-style relationship validation ([#2533](https://github.com/aws-amplify/amplify-category-api/issues/2533)) ([7b3cf0e](https://github.com/aws-amplify/amplify-category-api/commit/7b3cf0e6fe1d19dffd97723a57deaee693ab448b))
+
+### Features
+
+- add tag to SQL datasource function ([#2511](https://github.com/aws-amplify/amplify-category-api/issues/2511)) ([d64fc1e](https://github.com/aws-amplify/amplify-category-api/commit/d64fc1e4d19c923cf985e30e26ce95c565a8839b))
+
 # [2.7.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.6.0...@aws-amplify/graphql-transformer-core@2.7.0) (2024-04-26)
 
 ### Bug Fixes
