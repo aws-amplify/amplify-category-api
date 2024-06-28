@@ -314,6 +314,7 @@ export interface OptimisticConflictResolutionStrategy extends ConflictResolution
 // @public
 export interface PartialTranslationBehavior {
     readonly allowDestructiveGraphqlSchemaUpdates?: boolean;
+    readonly allowGen1Patterns?: boolean;
     readonly disableResolverDeduping?: boolean;
     readonly enableAutoIndexQueryNames?: boolean;
     readonly enableSearchNodeToNodeEncryption?: boolean;
