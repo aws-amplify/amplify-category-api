@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
-import { App, Stack, Duration } from 'aws-cdk-lib';
+import { App, Stack, Duration, Tags } from 'aws-cdk-lib';
 // @ts-ignore
 import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
 import { BillingMode, StreamViewType } from 'aws-cdk-lib/aws-dynamodb';
@@ -51,3 +51,9 @@ todoTable.setGlobalSecondaryIndexProvisionedThroughput('byName2', {
 todoTable.pointInTimeRecoveryEnabled = true;
 todoTable.sseSpecification = { sseEnabled: false };
 todoTable.streamSpecification = { streamViewType: StreamViewType.KEYS_ONLY };
+
+Tags.of(stack).add('created-by', 'amplify');
+Tags.of(stack).add('amplify:deployment-type', 'pipeline');
+Tags.of(stack).add('amplify:deployment-branch', 'main');
+Tags.of(stack).add('amplify:appId', '123456');
+Tags.of(stack).add('amplify:friendly-name', 'amplifyData');
