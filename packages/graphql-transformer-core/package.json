@@ -33,7 +33,7 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@aws-amplify/amplify-cli-core": "^4.2.10",
+    "@aws-amplify/amplify-cli-core": "^4.3.9",
     "@types/fs-extra": "^8.0.1",
     "@types/mock-fs": "4.13.4",
     "@types/node": "^18.17.0",

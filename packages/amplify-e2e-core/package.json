@@ -29,7 +29,7 @@
     "@aws-sdk/client-ssm": "3.338.0",
     "@aws-sdk/client-sts": "3.338.0",
     "@aws-sdk/credential-providers": "3.338.0",
-    "amplify-headless-interface": "^1.17.4",
+    "amplify-headless-interface": "^1.17.7",
     "axios": "^1.6.0",
     "chalk": "^4.1.1",
     "execa": "^5.1.1",
@@ -55,6 +55,6 @@
     "@types/ini": "^1.3.31"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-cli-core": "^4.2.10"
+    "@aws-amplify/amplify-cli-core": "^4.3.9"
   }
 }

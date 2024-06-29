@@ -39,7 +39,7 @@
     "node-fetch": "^2.6.7"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-cli-core": "^4.2.10"
+    "@aws-amplify/amplify-cli-core": "^4.3.9"
   },
   "devDependencies": {
     "@aws-amplify/graphql-transformer-core": "2.9.0",
