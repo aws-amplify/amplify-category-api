@@ -9,6 +9,7 @@ import {
   extractOldTableInputFromEvent,
   isTtlModified,
 } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
+import * as ddbTableManagerLambda from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
 import * as CustomDDB from '../resources/amplify-dynamodb-table/amplify-table-types';
 import {
   TableDescription,
@@ -21,6 +22,13 @@ import {
 import { extractTableInputFromEvent } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
 import { RequestType } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda-types';
 
+jest.spyOn(ddbTableManagerLambda, 'getLambdaTags').mockReturnValue(
+  Promise.resolve([
+    { Key: 'key1', Value: 'value1' },
+    { Key: 'key2', Value: 'value2' },
+    { Key: 'key3', Value: 'value3' },
+  ]),
+);
 describe('Custom Resource Lambda Tests', () => {
   describe('Get next GSI update', () => {
     const endState: CustomDDB.Input = {
@@ -468,7 +476,7 @@ describe('Custom Resource Lambda Tests', () => {
     });
   });
   describe('Extract table definition input from event test', () => {
-    it('should extract the correct table definition from event object and parse it into create table input', () => {
+    it('should extract the correct table definition from event object and parse it into create table input', async () => {
       const mockEvent = {
         ServiceToken: 'mockServiceToken',
         ResponseURL: 'mockResponseURL',
@@ -535,7 +543,10 @@ describe('Custom Resource Lambda Tests', () => {
           },
         },
       };
-      const tableDef = extractTableInputFromEvent(mockEvent);
+      const mockContext = {
+        invokedFunctionArn: 'mockInvokedFunctionArn',
+      };
+      const tableDef = await extractTableInputFromEvent(mockEvent, mockContext);
       expect(tableDef).toMatchSnapshot();
       const createTableInput = toCreateTableInput(tableDef);
       expect(createTableInput).toMatchSnapshot();

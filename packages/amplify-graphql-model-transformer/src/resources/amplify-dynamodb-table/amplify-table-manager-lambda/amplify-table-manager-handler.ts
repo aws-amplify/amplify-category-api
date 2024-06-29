@@ -39,7 +39,7 @@ const notFinished: AWSCDKAsyncCustomResource.IsCompleteResponse = {
 export const onEvent = cfnResponse.safeHandler(onEventHandler);
 export const isComplete = cfnResponse.safeHandler(isCompleteHandler);
 
-const getLambdaTags = async (functionArn: string): Promise<Record<string, string>[]> => {
+export const getLambdaTags = async (functionArn: string): Promise<Record<string, string>[]> => {
   const command = new ListTagsCommand({ Resource: functionArn });
   const tags = (await lambdaClient.send(command)).Tags ?? {};
   const result: Record<string, string>[] = [];
