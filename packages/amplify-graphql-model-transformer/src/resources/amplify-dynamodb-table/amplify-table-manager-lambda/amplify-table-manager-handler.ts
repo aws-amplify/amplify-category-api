@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 import {
   AttributeDefinition,
@@ -15,6 +16,8 @@ import {
   UpdateContinuousBackupsCommandInput,
   UpdateTableCommandInput,
   UpdateTimeToLiveCommandInput,
+  ListTagsOfResourceCommand,
+  Tag as DynamoDBTag,
 } from '@aws-sdk/client-dynamodb';
 import { Lambda, ListTagsCommand } from '@aws-sdk/client-lambda';
 import { OnEventResponse } from '../amplify-table-manager-lambda-types';
@@ -23,6 +26,7 @@ import { startExecution } from './outbound';
 import { getEnv, log } from './util';
 
 const ddbClient = new DynamoDB();
+const lambdaClient = new Lambda();
 
 const finished: AWSCDKAsyncCustomResource.IsCompleteResponse = {
   IsComplete: true,
@@ -36,7 +40,6 @@ export const onEvent = cfnResponse.safeHandler(onEventHandler);
 export const isComplete = cfnResponse.safeHandler(isCompleteHandler);
 
 const getLambdaTags = async (functionArn: string): Promise<Record<string, string>[]> => {
-  const lambdaClient = new Lambda();
   const command = new ListTagsCommand({ Resource: functionArn });
   const tags = (await lambdaClient.send(command)).Tags ?? {};
   const result: Record<string, string>[] = [];
@@ -49,6 +52,12 @@ const getLambdaTags = async (functionArn: string): Promise<Record<string, string
     }
   });
   return result;
+};
+
+const getTableTags = async (tableArn: string): Promise<DynamoDBTag[]> => {
+  const command = new ListTagsOfResourceCommand({ ResourceArn: tableArn });
+  const tags: DynamoDBTag[] = (await ddbClient.send(command)).Tags ?? [];
+  return tags;
 };
 
 type TableManagerContext = {
@@ -201,6 +210,23 @@ const processOnEvent = async (
           );
           return replaceTable(describeTableResult.Table, tableDef);
         }
+      }
+
+      // Determine if table needs tags update.
+      // For Gen2 deployments, the tags do not change between deployments. This check is to ensure that
+      // the tags are applied to tables created earlier (before adding tagging support).
+      // TODO: Handle tags update for CDK construct deployments
+      const currentTableTags = await getTableTags(describeTableResult.Table.TableArn!);
+      const newTags: DynamoDBTag[] = [];
+      Object.values(tableDef.tags ?? []).forEach((tag) => {
+        newTags.push({ Key: tag.key, Value: tag.value });
+      });
+      if (currentTableTags.length !== tableDef.tags?.length && tableDef.tags?.length) {
+        console.log('Detected tag changes');
+        await ddbClient.tagResource({
+          ResourceArn: describeTableResult.Table.TableArn,
+          Tags: newTags,
+        });
       }
 
       // determine if point in time recovery is changed -> describeContinuousBackups & updateContinuousBackups
@@ -896,9 +922,10 @@ export const extractTableInputFromEvent = async (
   context: TableManagerContext,
 ): Promise<CustomDDB.Input> => {
   // isolate the resource properties from the event and remove the service token
+  const tags = await getLambdaTags(context.invokedFunctionArn);
   const resourceProperties = {
     ...event.ResourceProperties,
-    tags: await getLambdaTags(context.invokedFunctionArn),
+    ...(tags.length > 0 && { tags }),
   } as Record<string, any> & { ServiceToken?: string };
   delete resourceProperties.ServiceToken;
 
