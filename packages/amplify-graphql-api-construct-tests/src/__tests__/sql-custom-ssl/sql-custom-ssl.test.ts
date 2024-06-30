@@ -93,7 +93,7 @@ describe('Custom SSL certificates', () => {
     //   keep the certs in sync.
     const sslCertFilesystemPath = path.resolve(path.join(__dirname, 'rds-bundles', `${region}-bundle.pem`));
     sslCertSsmPath = `/amplify/integtest/${prefix}/${disambiguator}`;
-    const version = uploadSslCertAtPathToSsm(sslCertFilesystemPath, region, sslCertSsmPath);
+    const version = await uploadSslCertAtPathToSsm(sslCertFilesystemPath, region, sslCertSsmPath);
     console.log(`Uploaded cert to SSM at ${sslCertSsmPath} (version ${version})`);
 
     const strategy = dbDetailsToModelDataSourceStrategy(dbDetails, prefix, 'MYSQL', 'secretsManagerManagedSecret');
@@ -133,7 +133,7 @@ describe('Custom SSL certificates', () => {
     // We will use a self-signed cert as the only SSL cert in the trust chain, and expect a connection failure
     const sslCertFilesystemPath = path.resolve(path.join(__dirname, 'self-signed-ca-cert.pem'));
     sslCertSsmPath = `/amplify/integtest/${prefix}/${disambiguator}`;
-    const version = uploadSslCertAtPathToSsm(sslCertFilesystemPath, region, sslCertSsmPath);
+    const version = await uploadSslCertAtPathToSsm(sslCertFilesystemPath, region, sslCertSsmPath);
     console.log(`Uploaded cert to SSM at ${sslCertSsmPath} (version ${version})`);
 
     const strategy = dbDetailsToModelDataSourceStrategy(dbDetails, prefix, 'MYSQL', 'secretsManagerManagedSecret');
