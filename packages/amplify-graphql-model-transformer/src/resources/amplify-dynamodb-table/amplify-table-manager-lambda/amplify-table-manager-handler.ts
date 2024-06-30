@@ -222,11 +222,16 @@ const processOnEvent = async (
         newTags.push({ Key: tag.key, Value: tag.value });
       });
       if (currentTableTags.length !== tableDef.tags?.length && tableDef.tags?.length) {
-        console.log('Detected tag changes');
+        console.log('Detected tag changes: ', tableDef.tags);
         await ddbClient.tagResource({
           ResourceArn: describeTableResult.Table.TableArn,
           Tags: newTags,
         });
+        await retry(
+          async () => await isTableReady(event.PhysicalResourceId!),
+          (res) => res === true,
+        );
+        console.log(`Table '${event.PhysicalResourceId}' is ready after the update of Tags.`);
       }
 
       // determine if point in time recovery is changed -> describeContinuousBackups & updateContinuousBackups
