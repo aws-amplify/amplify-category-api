@@ -168,8 +168,7 @@ describe('Custom SSL certificates', () => {
  * @returns The version of the uploaded SSM parameter
  */
 const uploadSslCertAtPathToSsm = async (sslCertFilesystemPath: string, region: string, sslCertSsmPath: string): Promise<number> => {
-  const sslCertWithLineBreaks = fs.readFileSync(sslCertFilesystemPath).toString();
-  const sslCert = sslCertWithLineBreaks.replace(/\n/g, '');
+  const sslCert = fs.readFileSync(sslCertFilesystemPath).toString();
   const ssmClient = new SSMClient({ region: region });
   const command = new PutParameterCommand({
     Name: sslCertSsmPath,
