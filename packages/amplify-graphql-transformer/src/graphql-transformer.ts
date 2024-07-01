@@ -70,7 +70,7 @@ export const constructTransformerChain = (
     modelTransformer,
     new FunctionTransformer(options?.functionNameMap),
     new HttpTransformer(),
-    new PredictionsTransformer(options?.storageConfig),
+    ...(allowGen1Patterns ? [new PredictionsTransformer(options?.storageConfig)] : []),
     new PrimaryKeyTransformer(),
     indexTransformer,
     new HasManyTransformer(),

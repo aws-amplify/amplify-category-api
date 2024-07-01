@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 
@@ -23,17 +24,16 @@ const verifySchema = (schema: string, allowGen1Patterns: boolean): void => {
 };
 
 describe('allowGen1Patterns', () => {
-  const schema = `
-    type Post @model {
-      tags: [Tag] @manyToMany(relationName: "PostTags")
-    }
-
-    type Tag @model {
-      posts: [Post] @manyToMany(relationName: "PostTags")
-    }
-  `;
-
   test('defaults to allow', () => {
+    const schema = `
+      type Post @model {
+        tags: [Tag] @manyToMany(relationName: "PostTags")
+      }
+
+      type Tag @model {
+        posts: [Post] @manyToMany(relationName: "PostTags")
+      }
+    `;
     const stack = new cdk.Stack();
     expect(
       () =>
@@ -103,6 +103,41 @@ describe('allowGen1Patterns', () => {
       `,
         true,
       ),
+    ).not.toThrow();
+  });
+
+  test('does not allow @predictions', () => {
+    expect(() =>
+      verifySchema(
+        `
+        type Query {
+          recognizeLabelsFromImage: [String] @predictions(actions: [identifyLabels])
+        }
+      `,
+        false,
+      ),
+    ).toThrow('Unknown directive "@predictions".');
+  });
+
+  test('allows @predictions', () => {
+    const schema = `
+      type Query {
+        recognizeLabelsFromImage: [String] @predictions(actions: [identifyLabels])
+      }
+    `;
+    const stack = new cdk.Stack();
+    expect(
+      () =>
+        new AmplifyGraphqlApi(stack, 'TestApi', {
+          definition: AmplifyGraphqlDefinition.fromString(schema),
+          authorizationModes: {
+            apiKeyConfig: { expires: cdk.Duration.days(7) },
+          },
+          translationBehavior: {
+            allowGen1Patterns: true,
+          },
+          predictionsBucket: new Bucket(stack, 'myfakebucket'),
+        }),
     ).not.toThrow();
   });
 
