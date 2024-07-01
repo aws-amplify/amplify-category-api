@@ -82,7 +82,7 @@ export const constructTransformerChain = (
     new MapsToTransformer(),
     new SqlTransformer(),
     new RefersToTransformer(),
-    new SearchableModelTransformer(),
+    ...(allowGen1Patterns ? [new SearchableModelTransformer()] : []),
     ...(options?.customTransformers ?? []),
   ];
 };
