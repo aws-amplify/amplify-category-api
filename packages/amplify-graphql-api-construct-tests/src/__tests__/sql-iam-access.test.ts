@@ -8,8 +8,9 @@ import { CognitoIdentityPoolCredentialsFactory } from '../cognito-identity-pool-
 import { assumeIamRole } from '../assume-role';
 import { CRUDLTester } from '../crudl-tester';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
+import { DURATION_1_HOUR, ONE_MINUTE } from '../utils/duration-constants';
 
-jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
+jest.setTimeout(DURATION_1_HOUR);
 
 describe('CDK SQL Iam Access', () => {
   let projRoot: string;
@@ -70,7 +71,10 @@ describe('CDK SQL Iam Access', () => {
     });
     databaseController.writeDbDetails(projRoot, 'ssm');
     databaseController.writeDbDetails(projRootWithIam, 'ssm');
-    [outputs, outputsWithIam] = await Promise.all([cdkDeploy(projRoot, '--all'), cdkDeploy(projRootWithIam, '--all')]);
+    [outputs, outputsWithIam] = await Promise.all([
+      cdkDeploy(projRoot, '--all', { postDeployWaitMs: ONE_MINUTE }),
+      cdkDeploy(projRootWithIam, '--all', { postDeployWaitMs: ONE_MINUTE }),
+    ]);
     outputs = outputs[name];
     outputsWithIam = outputsWithIam[nameWithIam];
 

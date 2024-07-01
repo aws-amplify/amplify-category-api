@@ -49,11 +49,9 @@ export const testCreatePrimaryRedacted = async (currentId: number, apiEndpoint: 
   expect(primary).toBeDefined();
   expect(primary.id).toBeDefined();
   expect(primary.secret).toBeNull();
-  expect(primary.relatedOne).toBeDefined();
-  expect(primary.relatedOne.secret).toBeNull();
+  expect(primary.relatedOne).toBeNull();
   expect(primary.relatedMany).toBeDefined();
-  expect(primary.relatedMany.items.length).toEqual(1);
-  expect(primary.relatedMany.items[0].secret).toBeNull();
+  expect(primary.relatedMany.items.length).toEqual(0);
 };
 
 export const testUpdatePrimaryRedacted = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
@@ -107,11 +105,9 @@ export const testUpdatePrimaryRedacted = async (currentId: number, apiEndpoint: 
   expect(primary).toBeDefined();
   expect(primary.secret).toBeNull();
   expect(primary.id).toBeDefined();
-  expect(primary.relatedOne).toBeDefined();
-  expect(primary.relatedOne.secret).toBeNull();
+  expect(primary.relatedOne).toBeNull();
   expect(primary.relatedMany).toBeDefined();
-  expect(primary.relatedMany.items.length).toEqual(1);
-  expect(primary.relatedMany.items[0].secret).toBeNull();
+  expect(primary.relatedMany.items.length).toEqual(0);
 };
 
 export const testCreateRelatedOneRedacted = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
@@ -155,11 +151,7 @@ export const testCreateRelatedOneRedacted = async (currentId: number, apiEndpoin
   expect(relatedOne).toBeDefined();
   expect(relatedOne.secret).toBeNull();
   expect(relatedOne.id).toBeDefined();
-  expect(relatedOne.primary).toBeDefined();
-  expect(relatedOne.primary.secret).toBeNull();
-  expect(relatedOne.primary.relatedMany).toBeDefined();
-  expect(relatedOne.primary.relatedMany.items.length).toEqual(1);
-  expect(relatedOne.primary.relatedMany.items[0].secret).toBeNull();
+  expect(relatedOne.primary).toBeNull();
 };
 
 export const testUpdateRelatedOneRedacted = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
@@ -214,11 +206,7 @@ export const testUpdateRelatedOneRedacted = async (currentId: number, apiEndpoin
   expect(relatedOne).toBeDefined();
   expect(relatedOne.secret).toBeNull();
   expect(relatedOne.id).toBeDefined();
-  expect(relatedOne.primary).toBeDefined();
-  expect(relatedOne.primary.secret).toBeNull();
-  expect(relatedOne.primary.relatedMany).toBeDefined();
-  expect(relatedOne.primary.relatedMany.items.length).toEqual(1);
-  expect(relatedOne.primary.relatedMany.items[0].secret).toBeNull();
+  expect(relatedOne.primary).toBeNull();
 };
 
 export const testCreateRelatedManyRedacted = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
@@ -262,10 +250,7 @@ export const testCreateRelatedManyRedacted = async (currentId: number, apiEndpoi
   expect(relatedMany).toBeDefined();
   expect(relatedMany.secret).toBeNull();
   expect(relatedMany.id).toBeDefined();
-  expect(relatedMany.primary).toBeDefined();
-  expect(relatedMany.primary.secret).toBeNull();
-  expect(relatedMany.primary.relatedOne).toBeDefined();
-  expect(relatedMany.primary.relatedOne.secret).toBeNull();
+  expect(relatedMany.primary).toBeNull();
 };
 
 export const testUpdateRelatedManyRedacted = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
@@ -320,8 +305,5 @@ export const testUpdateRelatedManyRedacted = async (currentId: number, apiEndpoi
   expect(relatedMany).toBeDefined();
   expect(relatedMany.secret).toBeNull();
   expect(relatedMany.id).toBeDefined();
-  expect(relatedMany.primary).toBeDefined();
-  expect(relatedMany.primary.secret).toBeNull();
-  expect(relatedMany.primary.relatedOne).toBeDefined();
-  expect(relatedMany.primary.relatedOne.secret).toBeNull();
+  expect(relatedMany.primary).toBeNull();
 };

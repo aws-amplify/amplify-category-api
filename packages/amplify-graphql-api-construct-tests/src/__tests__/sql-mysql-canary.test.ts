@@ -3,9 +3,10 @@ import generator from 'generate-password';
 import { getResourceNamesForStrategyName } from '@aws-amplify/graphql-transformer-core';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { cdkDestroy } from '../commands';
+import { DURATION_1_HOUR } from '../utils/duration-constants';
 import { testGraphQLAPI } from './sql-models-common';
 
-jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
+jest.setTimeout(DURATION_1_HOUR);
 
 describe('Canary using MySQL lambda model datasource strategy', () => {
   let projRoot: string;

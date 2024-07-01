@@ -4,9 +4,10 @@ import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { graphql } from '../graphql-request';
 import { invokeGraphqlProxyLambda } from '../lambda-request';
+import { DURATION_1_HOUR } from '../utils/duration-constants';
 import type { CreateTodoHandlerEvent, CreateTodoResponseData } from './backends/admin-role/apiInvoker';
 
-jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
+jest.setTimeout(DURATION_1_HOUR);
 
 describe('CDK Auth Modes', () => {
   let projRoot: string;

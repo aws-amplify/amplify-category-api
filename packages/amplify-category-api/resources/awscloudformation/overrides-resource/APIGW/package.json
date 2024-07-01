@@ -7,7 +7,7 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@aws-amplify/cli-extensibility-helper": "^3.0.20"
+    "@aws-amplify/cli-extensibility-helper": "^3.0.33"
   },
   "devDependencies": {
     "typescript": "^4.2.4"

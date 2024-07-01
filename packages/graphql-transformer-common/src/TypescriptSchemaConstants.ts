@@ -21,6 +21,7 @@ export const TYPESCRIPT_DATA_SCHEMA_CONSTANTS = {
   PROPERTY_AZ: 'availabilityZone',
   PROPERTY_DATABASE: 'database',
   PROPERTY_CONNECTION_URI: 'connectionUri',
+  PROPERTY_SSL_CERTIFICATE: 'sslCertificate',
   PROPERTY_ENGINE: 'engine',
   PROPERTY_IDENTIFIER: 'identifier',
 };

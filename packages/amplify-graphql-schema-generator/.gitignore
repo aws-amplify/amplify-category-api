@@ -3,3 +3,4 @@
 *.js
 *.js.map
 lib/*
+vpc-db-lambda/lib/*

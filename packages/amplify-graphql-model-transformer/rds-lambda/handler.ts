@@ -18,7 +18,7 @@ enum CredentialStorageMethod {
   SECRETS_MANAGER = 'SECRETS_MANAGER',
 }
 
-export const run = async (event): Promise<any> => {
+export const run = async (event: any): Promise<any> => {
   if (!adapter) {
     const config = await getDBConfig();
     adapter = await getDBAdapter(config);
@@ -34,7 +34,7 @@ export const run = async (event): Promise<any> => {
   }
 };
 
-const retryWithRefreshedCredentials = async (event, debugMode): Promise<any> => {
+const retryWithRefreshedCredentials = async (event: any, debugMode: boolean): Promise<any> => {
   try {
     const config = await getDBConfig();
     adapter = await getDBAdapter(config);
@@ -45,7 +45,7 @@ const retryWithRefreshedCredentials = async (event, debugMode): Promise<any> => 
   }
 };
 
-const isRetryableError = (error): boolean => {
+const isRetryableError = (error: Error & {code?: string, errno?: string}): boolean => {
   // https://www.postgresql.org/docs/current/errcodes-appendix.html
   const postgresRetryableError = error.code === '28P01';
 
@@ -144,14 +144,21 @@ const getSecretManagerValue = async (secretArn: string | undefined): Promise<{ u
   }
 }
 
-const resolveConnectionStringValue = async (jsonConnectionString: string): Promise<string> => {
-  const parsedJsonConnectionString = JSON.parse(jsonConnectionString);
+/**
+ * Retrieves the value of the specified SSM path. The `path` argument can be either a single string or an array of strings. If an array,
+ * this method will attempt to retrieve values from each path in order until it either successfully retrieves a value, or runs out of values
+ * to try.
+ * @param path a single path, or array of candidate paths
+ * @returns the value of the first successful retrieval, or throws an error if no values can be retrieved
+ */
+const retrieveSsmValueFromEnvPaths = async (path: string): Promise<string> => {
+  const parsedJsonSsmPath = JSON.parse(path);
   const ssmRequestError = 'Unable to connect to the database. Check the logs for more details.';
   const ssmLoggedError = 'Unable to fetch the connection Uri from SSM for the provided paths.';
-  if (Array.isArray(parsedJsonConnectionString)) {
-    for (const connectionUriSsmPath of parsedJsonConnectionString) {
+  if (Array.isArray(parsedJsonSsmPath)) {
+    for (const path of parsedJsonSsmPath) {
       try {
-        return await getSSMValue(connectionUriSsmPath);
+        return await getSSMValue(path);
       }
       catch (e) {
         // try the next secret path;
@@ -163,7 +170,7 @@ const resolveConnectionStringValue = async (jsonConnectionString: string): Promi
   }
   else {
     try {
-      return await getSSMValue(parsedJsonConnectionString);
+      return await getSSMValue(parsedJsonSsmPath);
     }
     catch (e) {
       console.log(ssmLoggedError);
@@ -172,9 +179,14 @@ const resolveConnectionStringValue = async (jsonConnectionString: string): Promi
   }
 };
 
-
 const getDBConfig = async (): DBConfig => {
   const config: DBConfig = {};
+
+  const sslCertificate = await getCustomSslCert();
+  if (sslCertificate) {
+    config.sslCertificate = sslCertificate;
+  }
+
   const credentialStorageMethod = process.env.CREDENTIAL_STORAGE_METHOD;
   if (credentialStorageMethod === CredentialStorageMethod.SSM) {
     if (!ssmClient) {
@@ -183,7 +195,7 @@ const getDBConfig = async (): DBConfig => {
 
     const jsonConnectionString = process.env.connectionString;
     if (jsonConnectionString) {
-      config.connectionString = await resolveConnectionStringValue(jsonConnectionString);
+      config.connectionString = await retrieveSsmValueFromEnvPaths(jsonConnectionString);
       return config;
     }
 
@@ -224,3 +236,33 @@ const getDBEngine = (): string => {
   }
   return process.env.engine;
 };
+
+const getCustomSslCert = async (): Promise<string | undefined> => {
+  if (!ssmClient) {
+    createSSMClient();
+  }
+
+  // This must match the env key in packages/amplify-graphql-model-transformer/src/resources/rds-model-resource-generator.ts
+  const sslCertSsmPath = process.env.SSL_CERT_SSM_PATH;
+  if (!sslCertSsmPath) {
+    return;
+  }
+
+  try {
+    const sslCert = await retrieveSsmValueFromEnvPaths(sslCertSsmPath);
+    return sslCert;
+  } catch {
+    // Catch the error from getSSMValue so we can provide a more targeted failure message
+    console.log('Unable to retrieve custom SSL certificate from SSM. If your database is in VPC, verify that you have VPC endpoints for SSM defined and the security group\'s inbound rule for port 443 is defined.');
+    throw new Error('Unable to get the custom SSL certificate. Check the logs for more details.');
+  }
+};
+
+/**
+ * Used to reset the cached DB Adapter, SSM Client, and Secrets Manager Clients. Should only be invoked for tests.
+ */
+export const _resetClientCachesForTestingOnly = () => {
+  adapter = null as any;
+  ssmClient = null as any;
+  secretsManagerClient = null as any;
+}

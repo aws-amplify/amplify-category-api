@@ -1,14 +1,6 @@
 import { AmplifyGraphqlApi } from '@aws-amplify/graphql-api-construct';
 import { BillingMode } from 'aws-cdk-lib/aws-dynamodb';
 
-const ONE_MINUTE = 60 * 1000;
-export const DURATION_10_MINUTES = 10 * ONE_MINUTE;
-export const DURATION_20_MINUTES = 20 * ONE_MINUTE;
-export const DURATION_30_MINUTES = 30 * ONE_MINUTE;
-export const DURATION_45_MINUTES = 45 * ONE_MINUTE;
-export const DURATION_1_HOUR = 60 * ONE_MINUTE;
-export const DURATION_90_MINUTES = 90 * ONE_MINUTE;
-
 export const COUNT_1_THOUSAND = 1000;
 export const COUNT_10_THOUSAND = 10000;
 export const COUNT_100_THOUSAND = 100000;

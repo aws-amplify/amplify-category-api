@@ -13,6 +13,8 @@ export type TypescriptDataSchemaGeneratorConfig = {
   username: string;
   password: string;
   connectionUriSecretName: string;
+  sslCertificate?: string;
+  sslCertificateSecretName?: string;
   outputFile?: string;
 };
 
@@ -21,12 +23,16 @@ export class TypescriptDataSchemaGenerator {
   public static generate = async (config: TypescriptDataSchemaGeneratorConfig): Promise<string> => {
     const schema = await TypescriptDataSchemaGenerator.buildSchema(config);
     return generateTypescriptDataSchema(schema, {
-      secretName: config.connectionUriSecretName,
+      secretNames: {
+        connectionUri: config.connectionUriSecretName,
+        sslCertificate: config.sslCertificateSecretName,
+      },
       vpcConfig: await getHostVpc(config.host),
       identifier: TypescriptDataSchemaGenerator.createIdentifier(config),
     });
   };
 
+  // Create a DataSourceAdapter based on the engine type.
   private static getAdapter = (config: TypescriptDataSchemaGeneratorConfig): DataSourceAdapter => {
     switch (config.engine) {
       case 'mysql':

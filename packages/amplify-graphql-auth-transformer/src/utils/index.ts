@@ -7,21 +7,15 @@ import {
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { Construct } from 'constructs';
 import { MODEL_OPERATIONS, READ_MODEL_OPERATIONS } from './constants';
-import {
-  AuthProvider,
-  AuthRule,
-  ConfiguredAuthProviders,
-  GetAuthRulesOptions,
-  ModelOperation,
-  RoleDefinition,
-  RolesByProvider,
-} from './definitions';
+import { AuthProvider, AuthRule, ConfiguredAuthProviders, GetAuthRulesOptions, ModelOperation } from './definitions';
+import { RoleDefinition, RolesByProvider } from './role-definition';
 
 export * from './constants';
 export * from './definitions';
 export * from './validations';
 export * from './schema';
 export * from './iam';
+export * from './role-definition';
 
 /**
  * Splits roles into key value pairs by auth type

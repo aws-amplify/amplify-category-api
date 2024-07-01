@@ -1,0 +1,7021 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"apiKey","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"apiKey","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"apiKey","static":false,"claim":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"apiKey","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"apiKey","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"apiKey","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"apiKey","static":false,"entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"apiKey","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"apiKey","static":false} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"apiKey","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"apiKey","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"apiKey","static":true,"claim":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"apiKey","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"apiKey","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"apiKey","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"apiKey","static":true,"entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"apiKey","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"apiKey","static":true} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"function","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "function",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"function","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "function",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"function","static":false,"claim":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "function",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"function","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "function",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"function","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "function",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"function","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "function",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"function","static":false,"entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "function",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"function","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "function",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"function","static":false} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "function",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"function","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "function",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"function","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "function",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"function","static":true,"claim":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "function",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"function","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "function",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"function","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "function",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"function","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "function",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"function","static":true,"entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "function",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"function","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "function",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"function","static":true} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "function",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"iam","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "iam",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"iam","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "iam",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"iam","static":false,"claim":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "iam",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"iam","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "iam",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"iam","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "iam",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"iam","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "iam",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"iam","static":false,"entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "iam",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"iam","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "iam",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"iam","static":false} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "iam",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"iam","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "iam",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"iam","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "iam",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"iam","static":true,"claim":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "iam",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"iam","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "iam",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"iam","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "iam",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"iam","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "iam",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"iam","static":true,"entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "iam",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"iam","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "iam",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"iam","static":true} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "iam",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"identityPool","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"identityPool","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"identityPool","static":false,"claim":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"identityPool","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"identityPool","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"identityPool","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"identityPool","static":false,"entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"identityPool","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"identityPool","static":false} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"identityPool","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"identityPool","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"identityPool","static":true,"claim":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"identityPool","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"identityPool","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"identityPool","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"identityPool","static":true,"entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"identityPool","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"identityPool","static":true} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"oidc","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"oidc","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"oidc","static":false,"claim":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "oidc",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"oidc","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"oidc","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"oidc","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "oidc",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"oidc","static":false,"entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"oidc","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"oidc","static":false} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "oidc",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"oidc","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"oidc","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"oidc","static":true,"claim":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "oidc",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"oidc","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"oidc","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"oidc","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "oidc",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"oidc","static":true,"entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"oidc","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"oidc","static":true} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "oidc",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"userPools","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"userPools","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"userPools","static":false,"claim":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "userPools",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"userPools","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"userPools","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"userPools","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "userPools",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"userPools","static":false,"entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"userPools","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"userPools","static":false} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "userPools",
+    "static": false,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"userPools","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"userPools","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"userPools","static":true,"claim":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "userPools",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"userPools","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"userPools","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"userPools","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "userPools",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"userPools","static":true,"entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"userPools","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"custom","provider":"userPools","static":true} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "userPools",
+    "static": true,
+    "strategy": "custom",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"apiKey","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"apiKey","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"apiKey","static":false,"claim":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"apiKey","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"apiKey","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"apiKey","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"apiKey","static":false,"entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"apiKey","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"apiKey","static":false} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"apiKey","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"apiKey","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"apiKey","static":true,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"apiKey","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"apiKey","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"apiKey","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"apiKey","static":true,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"apiKey","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"apiKey","static":true} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"function","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "function",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"function","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "function",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"function","static":false,"claim":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "function",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"function","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "function",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"function","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "function",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"function","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "function",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"function","static":false,"entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "function",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"function","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "function",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"function","static":false} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "function",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"function","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "function",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"function","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "function",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"function","static":true,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "function",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"function","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "function",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"function","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "function",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"function","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "function",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"function","static":true,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "function",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"function","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "function",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"function","static":true} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "function",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"iam","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "iam",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"iam","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "iam",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"iam","static":false,"claim":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "iam",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"iam","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "iam",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"iam","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "iam",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"iam","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "iam",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"iam","static":false,"entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "iam",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"iam","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "iam",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"iam","static":false} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "iam",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"iam","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "iam",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"iam","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "iam",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"iam","static":true,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "iam",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"iam","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "iam",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"iam","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "iam",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"iam","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "iam",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"iam","static":true,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "iam",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"iam","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "iam",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"iam","static":true} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "iam",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"identityPool","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"identityPool","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"identityPool","static":false,"claim":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"identityPool","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"identityPool","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"identityPool","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"identityPool","static":false,"entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"identityPool","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"identityPool","static":false} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"identityPool","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"identityPool","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"identityPool","static":true,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"identityPool","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"identityPool","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"identityPool","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"identityPool","static":true,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"identityPool","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"identityPool","static":true} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"oidc","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"oidc","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"oidc","static":false,"claim":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "oidc",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"oidc","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"oidc","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"oidc","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "oidc",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"oidc","static":false,"entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"oidc","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"oidc","static":false} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "oidc",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"oidc","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"oidc","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"oidc","static":true,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "oidc",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"oidc","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"oidc","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"oidc","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "oidc",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"oidc","static":true,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"oidc","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"oidc","static":true} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "oidc",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"userPools","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"userPools","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"userPools","static":false,"claim":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "userPools",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"userPools","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"userPools","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"userPools","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "userPools",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"userPools","static":false,"entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"userPools","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"userPools","static":false} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "userPools",
+    "static": false,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"userPools","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"userPools","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"userPools","static":true,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "userPools",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"userPools","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"userPools","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"userPools","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "userPools",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"userPools","static":true,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"userPools","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"groups","provider":"userPools","static":true} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "userPools",
+    "static": true,
+    "strategy": "groups",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"apiKey","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"apiKey","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"apiKey","static":false,"claim":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"apiKey","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"apiKey","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"apiKey","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"apiKey","static":false,"entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"apiKey","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"apiKey","static":false} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"apiKey","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"apiKey","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"apiKey","static":true,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"apiKey","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"apiKey","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"apiKey","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"apiKey","static":true,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"apiKey","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"apiKey","static":true} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"function","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "function",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"function","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "function",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"function","static":false,"claim":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "function",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"function","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "function",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"function","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "function",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"function","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "function",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"function","static":false,"entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "function",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"function","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "function",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"function","static":false} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "function",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"function","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "function",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"function","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "function",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"function","static":true,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "function",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"function","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "function",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"function","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "function",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"function","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "function",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"function","static":true,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "function",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"function","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "function",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"function","static":true} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "function",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"iam","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "iam",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"iam","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "iam",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"iam","static":false,"claim":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "iam",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"iam","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "iam",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"iam","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "iam",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"iam","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "iam",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"iam","static":false,"entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "iam",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"iam","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "iam",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"iam","static":false} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "iam",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"iam","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "iam",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"iam","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "iam",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"iam","static":true,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "iam",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"iam","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "iam",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"iam","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "iam",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"iam","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "iam",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"iam","static":true,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "iam",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"iam","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "iam",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"iam","static":true} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "iam",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"identityPool","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"identityPool","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"identityPool","static":false,"claim":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"identityPool","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"identityPool","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"identityPool","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"identityPool","static":false,"entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"identityPool","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"identityPool","static":false} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"identityPool","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"identityPool","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"identityPool","static":true,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"identityPool","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"identityPool","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"identityPool","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"identityPool","static":true,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"identityPool","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"identityPool","static":true} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"oidc","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"oidc","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"oidc","static":false,"claim":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "oidc",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"oidc","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"oidc","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"oidc","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "oidc",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"oidc","static":false,"entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"oidc","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"oidc","static":false} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "oidc",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"oidc","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"oidc","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"oidc","static":true,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "oidc",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"oidc","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"oidc","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"oidc","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "oidc",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"oidc","static":true,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"oidc","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"oidc","static":true} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "oidc",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"userPools","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"userPools","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"userPools","static":false,"claim":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "userPools",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"userPools","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"userPools","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"userPools","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "userPools",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"userPools","static":false,"entity":""} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"userPools","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"userPools","static":false} 1`] = `
+Object {
+  "result": "dynamic",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "userPools",
+    "static": false,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"userPools","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"userPools","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"userPools","static":true,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "userPools",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"userPools","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"userPools","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"userPools","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "userPools",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"userPools","static":true,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"userPools","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"owner","provider":"userPools","static":true} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "userPools",
+    "static": true,
+    "strategy": "owner",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"apiKey","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"apiKey","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"apiKey","static":false,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"apiKey","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"apiKey","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"apiKey","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"apiKey","static":false,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"apiKey","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"apiKey","static":false} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"apiKey","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"apiKey","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"apiKey","static":true,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"apiKey","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"apiKey","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"apiKey","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"apiKey","static":true,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"apiKey","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"apiKey","static":true} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"function","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "function",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"function","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "function",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"function","static":false,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "function",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"function","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "function",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"function","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "function",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"function","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "function",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"function","static":false,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "function",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"function","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "function",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"function","static":false} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "function",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"function","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "function",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"function","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "function",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"function","static":true,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "function",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"function","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "function",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"function","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "function",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"function","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "function",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"function","static":true,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "function",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"function","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "function",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"function","static":true} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "function",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"iam","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "iam",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"iam","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "iam",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"iam","static":false,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "iam",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"iam","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "iam",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"iam","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "iam",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"iam","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "iam",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"iam","static":false,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "iam",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"iam","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "iam",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"iam","static":false} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "iam",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"iam","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "iam",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"iam","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "iam",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"iam","static":true,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "iam",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"iam","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "iam",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"iam","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "iam",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"iam","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "iam",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"iam","static":true,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "iam",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"iam","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "iam",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"iam","static":true} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "iam",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"identityPool","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"identityPool","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"identityPool","static":false,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"identityPool","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"identityPool","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"identityPool","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"identityPool","static":false,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"identityPool","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"identityPool","static":false} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"identityPool","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"identityPool","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"identityPool","static":true,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"identityPool","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"identityPool","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"identityPool","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"identityPool","static":true,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"identityPool","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"identityPool","static":true} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"oidc","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"oidc","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"oidc","static":false,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "oidc",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"oidc","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"oidc","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"oidc","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "oidc",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"oidc","static":false,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"oidc","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"oidc","static":false} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "oidc",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"oidc","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"oidc","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"oidc","static":true,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "oidc",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"oidc","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"oidc","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"oidc","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "oidc",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"oidc","static":true,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"oidc","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"oidc","static":true} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "oidc",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"userPools","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"userPools","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"userPools","static":false,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "userPools",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"userPools","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"userPools","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"userPools","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "userPools",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"userPools","static":false,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"userPools","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"userPools","static":false} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "userPools",
+    "static": false,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"userPools","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"userPools","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"userPools","static":true,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "userPools",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"userPools","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"userPools","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"userPools","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "userPools",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"userPools","static":true,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"userPools","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"private","provider":"userPools","static":true} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "userPools",
+    "static": true,
+    "strategy": "private",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"apiKey","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"apiKey","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"apiKey","static":false,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"apiKey","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"apiKey","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"apiKey","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"apiKey","static":false,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"apiKey","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"apiKey","static":false} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"apiKey","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"apiKey","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"apiKey","static":true,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"apiKey","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"apiKey","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"apiKey","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"apiKey","static":true,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"apiKey","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"apiKey","static":true} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "apiKey",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"function","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "function",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"function","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "function",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"function","static":false,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "function",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"function","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "function",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"function","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "function",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"function","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "function",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"function","static":false,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "function",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"function","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "function",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"function","static":false} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "function",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"function","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "function",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"function","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "function",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"function","static":true,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "function",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"function","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "function",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"function","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "function",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"function","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "function",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"function","static":true,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "function",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"function","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "function",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"function","static":true} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "function",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"iam","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "iam",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"iam","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "iam",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"iam","static":false,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "iam",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"iam","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "iam",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"iam","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "iam",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"iam","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "iam",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"iam","static":false,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "iam",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"iam","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "iam",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"iam","static":false} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "iam",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"iam","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "iam",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"iam","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "iam",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"iam","static":true,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "iam",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"iam","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "iam",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"iam","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "iam",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"iam","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "iam",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"iam","static":true,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "iam",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"iam","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "iam",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"iam","static":true} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "iam",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"identityPool","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"identityPool","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"identityPool","static":false,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"identityPool","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"identityPool","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"identityPool","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"identityPool","static":false,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"identityPool","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"identityPool","static":false} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"identityPool","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"identityPool","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"identityPool","static":true,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"identityPool","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"identityPool","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"identityPool","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"identityPool","static":true,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"identityPool","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"identityPool","static":true} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "identityPool",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"oidc","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"oidc","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"oidc","static":false,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "oidc",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"oidc","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"oidc","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"oidc","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "oidc",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"oidc","static":false,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"oidc","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "oidc",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"oidc","static":false} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "oidc",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"oidc","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"oidc","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"oidc","static":true,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "oidc",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"oidc","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"oidc","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"oidc","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "oidc",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"oidc","static":true,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"oidc","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "oidc",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"oidc","static":true} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "oidc",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"userPools","static":false,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"userPools","static":false,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"userPools","static":false,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "userPools",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"userPools","static":false,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"userPools","static":false,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"userPools","static":false,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "userPools",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"userPools","static":false,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"userPools","static":false,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "userPools",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"userPools","static":false} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "userPools",
+    "static": false,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"userPools","static":true,"claim":"","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"userPools","static":true,"claim":"","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": "entity",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"userPools","static":true,"claim":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "",
+    "entity": undefined,
+    "provider": "userPools",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"userPools","static":true,"claim":"claim","entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"userPools","static":true,"claim":"claim","entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": "entity",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"userPools","static":true,"claim":"claim"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": "claim",
+    "entity": undefined,
+    "provider": "userPools",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"userPools","static":true,"entity":""} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"userPools","static":true,"entity":"entity"} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": "entity",
+    "provider": "userPools",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;
+
+exports[`RoleDefinition isDynamicAuthOrCustomAuth {"strategy":"public","provider":"userPools","static":true} 1`] = `
+Object {
+  "result": "custom",
+  "role": Object {
+    "claim": undefined,
+    "entity": undefined,
+    "provider": "userPools",
+    "static": true,
+    "strategy": "public",
+  },
+}
+`;

@@ -37,19 +37,6 @@ export type GetAuthRulesOptions = GetArgumentsOptions & {
 };
 
 /**
- * RolesByProvider
- */
-export interface RolesByProvider {
-  cognitoStaticRoles: Array<RoleDefinition>;
-  cognitoDynamicRoles: Array<RoleDefinition>;
-  oidcStaticRoles: Array<RoleDefinition>;
-  oidcDynamicRoles: Array<RoleDefinition>;
-  iamRoles: Array<RoleDefinition>;
-  apiKeyRoles: Array<RoleDefinition>;
-  lambdaRoles: Array<RoleDefinition>;
-}
-
-/**
  * AuthRule
  */
 export interface AuthRule {
@@ -63,23 +50,6 @@ export interface AuthRule {
   operations?: ModelOperation[];
   // Used only for IAM provider to decide if an IAM policy needs to be generated. IAM auth with AdminUI does not need IAM policies
   generateIAMPolicy?: boolean;
-}
-
-/**
- * RoleDefinition
- */
-export interface RoleDefinition {
-  provider: AuthProvider;
-  strategy: AuthStrategy;
-  static: boolean;
-  claim?: string;
-  entity?: string;
-  // specific to mutations
-  allowedFields?: Array<string>;
-  nullAllowedFields?: Array<string>;
-  areAllFieldsAllowed?: boolean;
-  areAllFieldsNullAllowed?: boolean;
-  isEntityList?: boolean;
 }
 
 /**

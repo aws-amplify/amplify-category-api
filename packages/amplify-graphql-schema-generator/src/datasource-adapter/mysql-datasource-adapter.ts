@@ -3,23 +3,16 @@ import ora from 'ora';
 import { invokeSchemaInspectorLambda } from '../utils/vpc-helper';
 import { Field, Index } from '../schema-representation';
 import { getSSLConfig } from '../utils';
-import { DataSourceAdapter } from './datasource-adapter';
+import { DataSourceAdapter, DataSourceConfig } from './datasource-adapter';
 import { MySQLStringDataSourceAdapter } from './mysql-string-datasource-adapter';
 
 const spinner = ora();
-export interface MySQLDataSourceConfig {
-  host: string;
-  port: number;
-  database: string;
-  username: string;
-  password: string;
-}
 
 export class MySQLDataSourceAdapter extends DataSourceAdapter {
   private adapter: MySQLStringDataSourceAdapter;
   private dbBuilder: any;
 
-  constructor(private config: MySQLDataSourceConfig) {
+  constructor(private config: DataSourceConfig) {
     super();
   }
 
@@ -56,7 +49,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
       port: this.config.port,
       user: this.config.username,
       password: this.config.password,
-      ssl: getSSLConfig(this.config.host),
+      ssl: getSSLConfig(this.config.host, this.config.sslCertificate),
     };
     try {
       this.dbBuilder = knex({

@@ -132,3 +132,72 @@ Object {
   "Version": "2012-10-17",
 }
 `;
+
+exports[`ModelTransformer with SQL data sources: should process multiple custom ssl certificates as input 1`] = `
+Object {
+  "Statement": Array [
+    Object {
+      "Action": Array [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:aws:logs:*:*:*",
+    },
+    Object {
+      "Action": Array [
+        "ssm:GetParameter",
+        "ssm:GetParameters",
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:aws:ssm:*:*:parameter/test/connectionUri",
+    },
+    Object {
+      "Action": Array [
+        "ssm:GetParameter",
+        "ssm:GetParameters",
+      ],
+      "Effect": "Allow",
+      "Resource": Array [
+        "arn:aws:ssm:*:*:parameter/test/sslCert/1",
+        "arn:aws:ssm:*:*:parameter/test/sslCert/2",
+      ],
+    },
+  ],
+  "Version": "2012-10-17",
+}
+`;
+
+exports[`ModelTransformer with SQL data sources: should process single custom ssl certificate as input 1`] = `
+Object {
+  "Statement": Array [
+    Object {
+      "Action": Array [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:aws:logs:*:*:*",
+    },
+    Object {
+      "Action": Array [
+        "ssm:GetParameter",
+        "ssm:GetParameters",
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:aws:ssm:*:*:parameter/test/connectionUri",
+    },
+    Object {
+      "Action": Array [
+        "ssm:GetParameter",
+        "ssm:GetParameters",
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:aws:ssm:*:*:parameter/test/sslCert",
+    },
+  ],
+  "Version": "2012-10-17",
+}
+`;

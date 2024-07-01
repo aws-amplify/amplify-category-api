@@ -1,0 +1,14 @@
+version: 0.2
+env:
+  shell: bash
+  compute-type: BUILD_GENERAL1_SMALL
+
+batch:
+  fast-fail: false
+  build-graph:
+    - identifier: install_linux
+      buildspec: codebuild_specs/install_linux.yml
+    - identifier: deprecate
+      buildspec: codebuild_specs/deprecate.yml
+      depend-on:
+        - install_linux

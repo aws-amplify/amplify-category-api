@@ -10,13 +10,14 @@ import {
   dbDetailsToModelDataSourceStrategy,
   signInCognitoUser,
   TestDefinition,
-  writeStackPrefix,
+  writeStackConfig,
   writeTestDefinitions,
 } from '../../../utils';
 import { SqlDatabaseDetails, SqlDatatabaseController } from '../../../sql-datatabase-controller';
+import { DURATION_1_HOUR, ONE_MINUTE } from '../../../utils/duration-constants';
 import { testProtectsHasMany, testProtectsHasOne } from './test-implementations';
 
-jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
+jest.setTimeout(DURATION_1_HOUR);
 
 /**
  * We have separate tests to ensure we properly escape/bind incoming SQL variables. These E2Es ensure that binding carries over to
@@ -100,10 +101,10 @@ describe('Reference IDs pointing to SQL data sources are bound to prevent SQL in
         },
       };
 
-      writeStackPrefix('BindIdsSqlSql', projRoot);
+      writeStackConfig(projRoot, { prefix: 'BindIdsSqlSql' });
       writeTestDefinitions(testDefinitions, projRoot);
 
-      const outputs = await cdkDeploy(projRoot, '--all');
+      const outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: ONE_MINUTE });
       const { awsAppsyncApiEndpoint, UserPoolClientId: userPoolClientId, UserPoolId: userPoolId } = outputs[name];
 
       apiEndpoint = awsAppsyncApiEndpoint;
@@ -194,10 +195,10 @@ describe('Reference IDs pointing to SQL data sources are bound to prevent SQL in
         },
       };
 
-      writeStackPrefix('BindIdsSqlDdb', projRoot);
+      writeStackConfig(projRoot, { prefix: 'BindIdsSqlDdb' });
       writeTestDefinitions(testDefinitions, projRoot);
 
-      const outputs = await cdkDeploy(projRoot, '--all');
+      const outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: ONE_MINUTE });
       const { awsAppsyncApiEndpoint, UserPoolClientId: userPoolClientId, UserPoolId: userPoolId } = outputs[name];
 
       apiEndpoint = awsAppsyncApiEndpoint;

@@ -6,8 +6,9 @@ import { AuthConstructStackOutputs } from '../types';
 import { CognitoIdentityPoolCredentialsFactory } from '../cognito-identity-pool-credentials';
 import { assumeIamRole } from '../assume-role';
 import { CRUDLTester } from '../crudl-tester';
+import { DURATION_1_HOUR } from '../utils/duration-constants';
 
-jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
+jest.setTimeout(DURATION_1_HOUR);
 
 describe('CDK DDB Iam Access', () => {
   let projRoot: string;

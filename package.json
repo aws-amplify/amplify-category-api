@@ -18,6 +18,7 @@
     "commit": "git-cz",
     "coverage": "codecov || exit 0",
     "depcheck": "eslint --no-eslintrc --config depcheck.config.js",
+    "deprecate": "ts-node scripts/deprecate_release.ts",
     "dev-build": "yarn --cache-folder ~/.cache/yarn && lerna run build",
     "e2e": "lerna run e2e",
     "extract-api": "lerna run extract-api",
@@ -31,7 +32,8 @@
     "postpublish:release": "git fetch . release:main && git push origin main",
     "prettier-check": "yarn prettier --check .",
     "prettier-write": "yarn prettier --write .",
-    "production-build": "yarn --frozen-lockfile --cache-folder ~/.cache/yarn && lerna run build --concurrency 3 --stream",
+    "production-install": "yarn --frozen-lockfile --cache-folder ~/.cache/yarn",
+    "production-build": "yarn production-install && lerna run build --concurrency 3 --stream",
     "publish-to-verdaccio": "lerna publish --yes --no-commit-hooks --no-push --exact --dist-tag=latest --conventional-commits --no-git-tag-version --no-verify-access",
     "publish:beta": "lerna publish --exact --dist-tag=beta --preid=beta --conventional-commits --conventional-prerelease --message 'chore(release): Publish [ci skip]' --no-verify-access --yes",
     "publish:main": "lerna publish --canary --force-publish --preid=alpha --exact --include-merged-tags --conventional-prerelease --no-verify-access --yes",
@@ -41,13 +43,15 @@
     "rm-dev-link": "rimraf -f \"$(yarn global bin)/amplify-dev\"",
     "setup-dev-win": "(yarn && lerna run build) && yarn add-cli-no-save && (yarn hoist-cli-win && yarn rm-dev-link && yarn link-win)",
     "setup-dev": "(yarn && lerna run build) && yarn add-cli-no-save && (yarn hoist-cli && yarn rm-dev-link && yarn link-dev)",
-    "split-e2e-tests": "yarn ts-node ./scripts/split-e2e-tests.ts && git add codebuild_specs/e2e_workflow.yml",
+    "split-e2e-tests": "yarn ts-node ./scripts/split-e2e-tests.ts prod && git add codebuild_specs/e2e_workflow.yml",
+    "split-e2e-tests-beta": "yarn ts-node ./scripts/split-e2e-tests.ts beta && git add codebuild_specs/e2e_workflow.yml",
     "test-changed": "lerna run test --since main",
     "test-ci": "lerna run test --concurrency 1 -- --ci -i",
     "test-v2-transformers": "lerna run --scope '@aws-amplify/graphql-*-transformer' test",
     "test": "lerna run test",
     "trigger-release": "source ./scripts/cloud-release.sh && triggerRelease",
     "trigger-tag-release": "source ./scripts/cloud-release.sh && triggerTagRelease",
+    "trigger-deprecate-release": "source ./scripts/cloud-release.sh && deprecateRelease",
     "update-cli-packages": "./scripts/update-cli-dependencies.sh && yarn",
     "update-test-timing-data": "ts-node ./scripts/cci/get-test-timing-from-cci-job-metrics.ts",
     "update-versions": "lerna version --yes --no-commit-hooks --no-push --exact --conventional-commits --no-git-tag-version",
@@ -195,6 +199,7 @@
     "@types/js-yaml": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "^5.59.2",
     "@typescript-eslint/parser": "^5.59.2",
+    "@yarnpkg/lockfile": "^1.1.0",
     "@zkochan/cmd-shim": "^5.1.0",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
@@ -224,8 +229,7 @@
     "rimraf": "^3.0.0",
     "ts-jest": "^26.4.4",
     "ts-node": "^8.10.1",
-    "typescript": "^4.5.5",
-    "@yarnpkg/lockfile": "^1.1.0"
+    "typescript": "^4.5.5"
   },
   "resolutions": {
     "**/glob-parent": "^6.0.2",
@@ -249,6 +253,6 @@
     "jest-environment-node": "26.6.2",
     "ts-jest": "^26.5.5",
     "axios": "^1.6.0",
-    "aws-cdk-lib": "2.129.0"
+    "braces": "^3.0.3"
   }
 }

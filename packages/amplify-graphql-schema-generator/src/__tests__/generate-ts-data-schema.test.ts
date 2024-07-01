@@ -1,7 +1,28 @@
+import { MySQLDataSourceAdapter, PostgresDataSourceAdapter } from '../datasource-adapter';
 import { Engine, Field, Model, Schema } from '../schema-representation';
 import { generateTypescriptDataSchema } from '../ts-schema-generator/generate-ts-schema';
-import { DataSourceConfig } from '../ts-schema-generator/helpers';
+import { DataSourceGenerateConfig } from '../ts-schema-generator/helpers';
 import { TypescriptDataSchemaGenerator } from '../ts-schema-generator/ts-schema-generator';
+
+const mockMySqlAdapterInitialize = jest.spyOn(MySQLDataSourceAdapter.prototype, 'initialize').mockImplementation();
+const mockMySqlAdapterGetModels = jest.spyOn(MySQLDataSourceAdapter.prototype, 'getModels').mockImplementation(() => {
+  const model = new Model('User');
+  model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+  model.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
+  model.setPrimaryKey(['id']);
+  return [model];
+});
+const mockMySqlAdapterCleanup = jest.spyOn(MySQLDataSourceAdapter.prototype, 'cleanup').mockImplementation();
+
+const mockPostgresAdapterInitialize = jest.spyOn(PostgresDataSourceAdapter.prototype, 'initialize').mockImplementation();
+const mockPostgresAdapterGetModels = jest.spyOn(PostgresDataSourceAdapter.prototype, 'getModels').mockImplementation(() => {
+  const model = new Model('Person');
+  model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+  model.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
+  model.setPrimaryKey(['id']);
+  return [model];
+});
+const mockPostgresAdapterCleanup = jest.spyOn(PostgresDataSourceAdapter.prototype, 'cleanup').mockImplementation();
 
 jest.mock('../utils', () => ({
   getHostVpc: jest.fn(() => {
@@ -25,6 +46,53 @@ jest.mock('../utils', () => ({
     };
   }),
 }));
+
+beforeAll(() => {
+  mockMySqlAdapterInitialize.mockClear();
+  mockMySqlAdapterGetModels.mockClear();
+  mockMySqlAdapterCleanup.mockClear();
+  mockPostgresAdapterInitialize.mockClear();
+  mockPostgresAdapterGetModels.mockClear();
+  mockPostgresAdapterCleanup.mockClear();
+});
+
+describe('ts schema generator', () => {
+  it('should generate schema with ssl certificate for mysql datasource adapter', async () => {
+    const schema = await TypescriptDataSchemaGenerator.generate({
+      engine: 'mysql',
+      host: 'host',
+      port: 3306,
+      database: 'database',
+      username: 'username',
+      password: 'password',
+      connectionUriSecretName: 'connectionUriSecret',
+      sslCertificate: 'MYSQL_SSL_CERTIFICATE',
+      sslCertificateSecretName: 'mySqlSslSecret',
+    });
+    expect(mockMySqlAdapterInitialize.mock.calls.length).toBe(1);
+    expect(mockMySqlAdapterGetModels.mock.calls.length).toBe(1);
+    expect(mockMySqlAdapterCleanup.mock.calls.length).toBe(1);
+    expect(schema).toMatchSnapshot();
+  });
+
+  it('should generate schema with ssl certificate for postgres datasource adapter', async () => {
+    const schema = await TypescriptDataSchemaGenerator.generate({
+      engine: 'postgresql',
+      host: 'host',
+      port: 3306,
+      database: 'database',
+      username: 'username',
+      password: 'password',
+      connectionUriSecretName: 'connectionUriSecret',
+      sslCertificate: 'POSTGRES_SSL_CERTIFICATE',
+      sslCertificateSecretName: 'postgresSslSecret',
+    });
+    expect(mockPostgresAdapterInitialize.mock.calls.length).toBe(1);
+    expect(mockPostgresAdapterGetModels.mock.calls.length).toBe(1);
+    expect(mockPostgresAdapterCleanup.mock.calls.length).toBe(1);
+    expect(schema).toMatchSnapshot();
+  });
+});
 
 describe('Type name conversions', () => {
   it('ts schema generator should invoke generate schema', async () => {
@@ -123,9 +191,11 @@ describe('Type name conversions', () => {
     model.setPrimaryKey(['id']);
     dbschema.addModel(model);
 
-    const config: DataSourceConfig = {
+    const config: DataSourceGenerateConfig = {
       identifier: 'ID1234567890',
-      secretName: 'CONN_STR',
+      secretNames: {
+        connectionUri: 'CONN_STR',
+      },
       vpcConfig: {
         vpcId: '123',
         securityGroupIds: ['sb1', 'sb2', 'sb3'],
@@ -158,9 +228,11 @@ describe('Type name conversions', () => {
     model.setPrimaryKey(['id']);
     dbschema.addModel(model);
 
-    const config: DataSourceConfig = {
+    const config: DataSourceGenerateConfig = {
       identifier: 'ID1234567890',
-      secretName: 'CONN_STR',
+      secretNames: {
+        connectionUri: 'CONN_STR',
+      },
       vpcConfig: {
         vpcId: '123',
         securityGroupIds: ['sb1'],
@@ -191,9 +263,37 @@ describe('Type name conversions', () => {
     model.setPrimaryKey(['id']);
     dbschema.addModel(model);
 
-    const config: DataSourceConfig = {
+    const config: DataSourceGenerateConfig = {
       identifier: 'ID1234567890',
-      secretName: 'CONN_STR',
+      secretNames: {
+        connectionUri: 'CONN_STR',
+      },
+    };
+
+    const graphqlSchema = generateTypescriptDataSchema(dbschema, config);
+    expect(graphqlSchema).toMatchSnapshot();
+  });
+
+  it('schema with ssl certificate secret should generate valid typescript data schema', () => {
+    const dbschema = new Schema(new Engine('MySQL'));
+    let model = new Model('User');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
+    model.setPrimaryKey(['id']);
+    dbschema.addModel(model);
+
+    model = new Model('Profile');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('details', { kind: 'Scalar', name: 'String' }));
+    model.setPrimaryKey(['id']);
+    dbschema.addModel(model);
+
+    const config: DataSourceGenerateConfig = {
+      identifier: 'ID1234567890',
+      secretNames: {
+        connectionUri: 'CONN_STR',
+        sslCertificate: 'SSL_CERT',
+      },
     };
 
     const graphqlSchema = generateTypescriptDataSchema(dbschema, config);
@@ -213,9 +313,11 @@ describe('Type name conversions', () => {
     model.addField(new Field('details', { kind: 'Scalar', name: 'String' }));
     dbschema.addModel(model);
 
-    const config: DataSourceConfig = {
+    const config: DataSourceGenerateConfig = {
       identifier: 'ID1234567890',
-      secretName: 'CONN_STR',
+      secretNames: {
+        connectionUri: 'CONN_STR',
+      },
     };
 
     const graphqlSchema = generateTypescriptDataSchema(dbschema, config);
@@ -234,9 +336,11 @@ describe('Type name conversions', () => {
     model.addField(new Field('details', { kind: 'Scalar', name: 'String' }));
     dbschema.addModel(model);
 
-    const config: DataSourceConfig = {
+    const config: DataSourceGenerateConfig = {
       identifier: 'ID1234567890',
-      secretName: 'CONN_STR',
+      secretNames: {
+        connectionUri: 'CONN_STR',
+      },
     };
 
     expect(() => generateTypescriptDataSchema(dbschema, config)).toThrowError(

@@ -15,6 +15,10 @@ import {
 
 // #region Primary as source
 
+export const testCreatePrimaryRedactedForSameOwner = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
+  return testCreatePrimaryRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken);
+};
+
 export const testCreatePrimaryVisibleForSameOwner = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
   const primaryId = `p${currentId}`;
   const relatedOneId = `ro${currentId}`;
@@ -55,6 +59,10 @@ export const testCreatePrimaryRedactedForDifferentOwners = async (
   expect(primary.relatedOne).toBeNull();
   expect(primary.relatedMany).toBeDefined();
   expect(primary.relatedMany.items.length).toEqual(0);
+};
+
+export const testUpdatePrimaryRedactedForSameOwner = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
+  return testUpdatePrimaryRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken);
 };
 
 export const testUpdatePrimaryVisibleForSameOwner = async (currentId: number, apiEndpoint: string, accessToken: string): Promise<void> => {
@@ -229,6 +237,14 @@ export const testListPrimariesRedactsTopLevelItemsForDifferentOwners = async (
 
 // #region RelatedOne as source
 
+export const testCreateRelatedOneRedactedForSameOwner = async (
+  currentId: number,
+  apiEndpoint: string,
+  accessToken: string,
+): Promise<void> => {
+  return testCreateRelatedOneRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken);
+};
+
 export const testCreateRelatedOneVisibleForSameOwner = async (
   currentId: number,
   apiEndpoint: string,
@@ -273,6 +289,13 @@ export const testCreateRelatedOneRedactedForDifferentOwners = async (
   expect(relatedOne.primary).toBeNull();
 };
 
+export const testUpdateRelatedOneRedactedForSameOwner = async (
+  currentId: number,
+  apiEndpoint: string,
+  accessToken: string,
+): Promise<void> => {
+  return testUpdateRelatedOneRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken);
+};
 export const testUpdateRelatedOneVisibleForSameOwner = async (
   currentId: number,
   apiEndpoint: string,
@@ -410,6 +433,14 @@ export const testListRelatedOnesRedactedForDifferentOwners = async (
 
 // #region RelatedMany as source
 
+export const testCreateRelatedManyRedactedForSameOwner = async (
+  currentId: number,
+  apiEndpoint: string,
+  accessToken: string,
+): Promise<void> => {
+  return testCreateRelatedManyRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken);
+};
+
 export const testCreateRelatedManyVisibleForSameOwner = async (
   currentId: number,
   apiEndpoint: string,
@@ -454,6 +485,13 @@ export const testCreateRelatedManyRedactedForDifferentOwners = async (
   expect(relatedMany.primary).toBeNull();
 };
 
+export const testUpdateRelatedManyRedactedForSameOwner = async (
+  currentId: number,
+  apiEndpoint: string,
+  accessToken: string,
+): Promise<void> => {
+  return testUpdateRelatedManyRedactedForDifferentOwners(currentId, apiEndpoint, accessToken, accessToken);
+};
 export const testUpdateRelatedManyVisibleForSameOwner = async (
   currentId: number,
   apiEndpoint: string,

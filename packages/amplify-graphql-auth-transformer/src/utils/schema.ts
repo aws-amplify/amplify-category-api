@@ -30,7 +30,8 @@ import {
 } from 'graphql-transformer-common';
 import md5 from 'md5';
 import { RELATIONAL_DIRECTIVES } from './constants';
-import { RelationalPrimaryMapConfig, RoleDefinition, SearchableConfig } from './definitions';
+import { RelationalPrimaryMapConfig, SearchableConfig } from './definitions';
+import { RoleDefinition } from './role-definition';
 
 /**
  * collectFieldNames

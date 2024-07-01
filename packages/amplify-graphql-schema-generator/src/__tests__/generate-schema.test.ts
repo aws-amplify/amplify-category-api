@@ -1,7 +1,10 @@
+import path from 'path';
+import * as fs from 'fs';
+import { parse } from 'graphql';
 import { convertToGraphQLTypeName, printSchema, convertToGraphQLFieldName } from '../schema-generator/generate-schema';
 import { Engine, Field, Model, Schema } from '../schema-representation';
 import { generateGraphQLSchema } from '../schema-generator';
-import { parse } from 'graphql';
+import { getSSLConfig } from '../utils';
 
 describe('Type name conversions', () => {
   it('GraphQL idiomatic type name conversions', () => {
@@ -196,5 +199,38 @@ describe('Format generated schema', () => {
       }
       "
     `);
+  });
+
+  describe('getSSLConfig should use the correct certificate', () => {
+    it('should use the bundled certificate', () => {
+      const sslConfig = getSSLConfig('random-host@rds.amazonaws.com');
+      const RDS_CERT_FILE_NAME = 'aws-rds-global-bundle.pem';
+      const RDS_CERT_FILE_PATH = path.join(__dirname, '..', '..', 'certs', RDS_CERT_FILE_NAME);
+      expect(sslConfig).toEqual(
+        expect.objectContaining({
+          rejectUnauthorized: true,
+          ca: fs.readFileSync(RDS_CERT_FILE_PATH, 'utf-8'),
+        }),
+      );
+    });
+
+    it('should use the default trust store', () => {
+      const sslConfig = getSSLConfig('random-host@db-provider.com');
+      expect(sslConfig).toEqual(
+        expect.objectContaining({
+          rejectUnauthorized: true,
+        }),
+      );
+    });
+
+    it('should use the custom certificate', () => {
+      const sslConfig = getSSLConfig('random-host@rexternal-db.com', 'SSL_CERTIFICATE');
+      expect(sslConfig).toEqual(
+        expect.objectContaining({
+          rejectUnauthorized: true,
+          ca: 'SSL_CERTIFICATE',
+        }),
+      );
+    });
   });
 });

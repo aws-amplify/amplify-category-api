@@ -3,16 +3,13 @@ import { ImportedRDSType, ImportedDataSourceConfig } from '@aws-amplify/graphql-
 import * as fs from 'fs-extra';
 import {
   MySQLDataSourceAdapter,
-  generateGraphQLSchema,
   Schema,
   Engine,
   DataSourceAdapter,
-  MySQLDataSourceConfig,
+  DataSourceConfig,
   getHostVpc,
   provisionSchemaInspectorLambda,
   PostgresDataSourceAdapter,
-  PostgresDataSourceConfig,
-  constructRDSGlobalAmplifyInput,
   renderSchema,
 } from '@aws-amplify/graphql-schema-generator';
 import { readRDSSchema } from './rds-input-utils';
@@ -88,11 +85,11 @@ const buildSchemaFromConnection = async (envName: string, databaseConfig: Import
 
   switch (databaseConfig.engine) {
     case ImportedRDSType.MYSQL:
-      adapter = new MySQLDataSourceAdapter(databaseConfig as MySQLDataSourceConfig);
+      adapter = new MySQLDataSourceAdapter(databaseConfig as DataSourceConfig);
       schema = new Schema(new Engine('MySQL'));
       break;
     case ImportedRDSType.POSTGRESQL:
-      adapter = new PostgresDataSourceAdapter(databaseConfig as PostgresDataSourceConfig);
+      adapter = new PostgresDataSourceAdapter(databaseConfig as DataSourceConfig);
       schema = new Schema(new Engine('Postgres'));
       break;
     default:

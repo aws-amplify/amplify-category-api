@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { copySync, moveSync, readFileSync, writeFileSync } from 'fs-extra';
-import { getScriptRunnerPath, nspawn as spawn } from 'amplify-category-api-e2e-core';
+import { getScriptRunnerPath, sleep, nspawn as spawn } from 'amplify-category-api-e2e-core';
 
 /**
  * Retrieve the path to the `npx` executable for interacting with the aws-cdk cli.
@@ -94,7 +94,15 @@ export const initCDKProject = async (cwd: string, templatePath: string, props?: 
 };
 
 export type CdkDeployProps = {
-  timeoutMs: number;
+  /**
+   * Amount of time to wait with no output from CDK before failing.
+   */
+  timeoutMs?: number;
+
+  /**
+   * Amount of time to wait after deployment before returning. This allows time for certain resources to propagate and finalize.
+   */
+  postDeployWaitMs?: number;
 };
 
 /**
@@ -123,6 +131,11 @@ export const cdkDeploy = async (cwd: string, option: string, props?: CdkDeployPr
     ['cdk', 'deploy', '--outputs-file', 'outputs.json', '--require-approval', 'never', option],
     commandOptions,
   ).runAsync();
+
+  if (props?.postDeployWaitMs) {
+    console.log(`Waiting for ${props.postDeployWaitMs} ms to let resources propagate and finalize`);
+    await sleep(props.postDeployWaitMs);
+  }
 
   return JSON.parse(readFileSync(path.join(cwd, 'outputs.json'), 'utf8'));
 };

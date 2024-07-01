@@ -58,6 +58,7 @@ export const defaultTransformParams: Pick<ExecuteTransformConfig, 'transformersF
     disableResolverDeduping: false,
     sandboxModeEnabled: false,
     useSubUsernameForDefaultIdentityClaim: true,
+    subscriptionsInheritPrimaryAuth: false,
     populateOwnerFieldForStaticGroupAuth: true,
     suppressApiKeyGeneration: false,
     secondaryKeyAsGSI: true,

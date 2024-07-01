@@ -20,4 +20,5 @@ aws-rds-global-bundle.pem @aws-amplify/amplify-data-admins
 
 # Exceptions to CI/CD scripts/buildspecs
 /codebuild_specs/e2e_workflow.yml @aws-amplify/amplify-data
+/scripts/e2e-test-regions.json @aws-amplify/amplify-data
 /scripts/split-e2e-tests.ts @aws-amplify/amplify-data

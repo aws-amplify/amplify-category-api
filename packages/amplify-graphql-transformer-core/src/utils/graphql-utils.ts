@@ -1,4 +1,4 @@
-import { DefinitionNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
+import { DefinitionNode, DocumentNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
 
 const SQL_DIRECTIVE_NAME = 'sql';
 
@@ -42,3 +42,9 @@ export const isBuiltInGraphqlNode = (
 export const fieldsWithSqlDirective = (obj: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode): FieldDefinitionNode[] => {
   return obj.fields?.filter((field) => field.directives?.some((directive) => directive.name.value === SQL_DIRECTIVE_NAME)) ?? [];
 };
+
+export const getField = (obj: ObjectTypeDefinitionNode, fieldName: string): FieldDefinitionNode | undefined =>
+  obj.fields?.find((f) => f.name.value === fieldName);
+
+export const getType = (schema: DocumentNode, typeName: string): ObjectTypeDefinitionNode | undefined =>
+  schema.definitions.find((def) => isObjectTypeDefinitionNode(def) && def.name.value === typeName) as ObjectTypeDefinitionNode | undefined;

@@ -4,25 +4,17 @@ import * as fs from 'fs-extra';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import * as generator from 'generate-password';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
-import { initCDKProject, cdkDeploy, cdkDestroy } from '../../../commands';
-import {
-  addCognitoUserToGroup,
-  createCognitoUser,
-  dbDetailsToModelDataSourceStrategy,
-  signInCognitoUser,
-  TestDefinition,
-  writeStackPrefix,
-  writeTestDefinitions,
-} from '../../../utils';
+import { initCDKProject, cdkDestroy } from '../../../commands';
+import { dbDetailsToModelDataSourceStrategy, TestDefinition, writeStackConfig, writeTestDefinitions } from '../../../utils';
 import { SqlDatabaseDetails, SqlDatatabaseController } from '../../../sql-datatabase-controller';
+import { DURATION_1_HOUR } from '../../../utils/duration-constants';
 import {
-  testCreatePrimaryDoesNotRedactRelated,
+  deployStackAndCreateUsers,
   testCreatePrimaryIsForbidden,
   testCreatePrimaryRedactsRelated,
-  testCreateRelatedManyDoesNotRedactPrimary,
+  testCreatePrimaryRedactsRelatedListAsNull,
   testCreateRelatedManyIsForbidden,
   testCreateRelatedManyRedactsPrimary,
-  testCreateRelatedOneDoesNotRedactPrimary,
   testCreateRelatedOneIsForbidden,
   testCreateRelatedOneRedactsPrimary,
   testGetPrimaryDoesNotRedactRelated,
@@ -37,15 +29,13 @@ import {
   testListRelatedManiesRedactsPrimary,
   testListRelatedOnesDoesNotRedactPrimary,
   testListRelatedOnesRedactsPrimary,
-  testUpdatePrimaryDoesNotRedactRelated,
   testUpdatePrimaryRedactsRelated,
-  testUpdateRelatedManyDoesNotRedactPrimary,
+  testUpdatePrimaryRedactsRelatedListAsNull,
   testUpdateRelatedManyRedactsPrimary,
-  testUpdateRelatedOneDoesNotRedactPrimary,
   testUpdateRelatedOneRedactsPrimary,
 } from './test-implementations';
 
-jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
+jest.setTimeout(DURATION_1_HOUR);
 
 // Each of these tests asserts that restricted fields in associated types are properly redacted. To assert this, we create the relationship
 // records in an order so that the type we're asserting on comes LAST. By "prepopulating" the associated records before creating the source
@@ -133,7 +123,7 @@ describe('Relationships protected with static group auth', () => {
         },
       };
 
-      writeStackPrefix('StaticGrpSqlDdb', projRoot);
+      writeStackConfig(projRoot, { prefix: 'StaticGrpSqlDdb' });
       writeTestDefinitions(testDefinitions, projRoot);
 
       const testConfig = await deployStackAndCreateUsers({
@@ -161,11 +151,17 @@ describe('Relationships protected with static group auth', () => {
     describe('Actors belonging to Group1', () => {
       describe('Primary as source model', () => {
         test('createPrimary redacts related models', async () => {
-          await testCreatePrimaryRedactsRelated(currentId, apiEndpoint, group1AccessToken, group2AccessToken);
+          // Fields are redacted with auth filter in this case.
+          // The auth filter will nullify the list fields.
+          // To be updated later to align with other redaction behavior.
+          await testCreatePrimaryRedactsRelatedListAsNull(currentId, apiEndpoint, group1AccessToken, group2AccessToken);
         });
 
         test('updatePrimary redacts related models', async () => {
-          await testUpdatePrimaryRedactsRelated(currentId, apiEndpoint, group1AccessToken, group2AccessToken);
+          // Fields are redacted with auth filter in this case.
+          // The auth filter will nullify the list fields.
+          // To be updated later to align with other redaction behavior.
+          await testUpdatePrimaryRedactsRelatedListAsNull(currentId, apiEndpoint, group1AccessToken, group2AccessToken);
         });
 
         test('getPrimary redacts related models', async () => {
@@ -236,12 +232,12 @@ describe('Relationships protected with static group auth', () => {
 
     describe('Actors belonging to Admin group', () => {
       describe('Primary as source model', () => {
-        test('createPrimary does not redact related models', async () => {
-          await testCreatePrimaryDoesNotRedactRelated(currentId, apiEndpoint, adminAccessToken);
+        test('createPrimary redacts related models', async () => {
+          await testCreatePrimaryRedactsRelated(currentId, apiEndpoint, adminAccessToken, adminAccessToken);
         });
 
-        test('updatePrimary does not redact related models', async () => {
-          await testUpdatePrimaryDoesNotRedactRelated(currentId, apiEndpoint, adminAccessToken);
+        test('updatePrimary redacts related models', async () => {
+          await testUpdatePrimaryRedactsRelated(currentId, apiEndpoint, adminAccessToken, adminAccessToken);
         });
 
         test('getPrimary does not redact related models', async () => {
@@ -254,12 +250,12 @@ describe('Relationships protected with static group auth', () => {
       });
 
       describe('RelatedOne as source model', () => {
-        test('createRelatedOne does not redact primary model', async () => {
-          await testCreateRelatedOneDoesNotRedactPrimary(currentId, apiEndpoint, adminAccessToken);
+        test('createRelatedOne redacts primary model', async () => {
+          await testCreateRelatedOneRedactsPrimary(currentId, apiEndpoint, adminAccessToken, adminAccessToken);
         });
 
-        test('updateRelatedOne does not redact primary model', async () => {
-          await testUpdateRelatedOneDoesNotRedactPrimary(currentId, apiEndpoint, adminAccessToken);
+        test('updateRelatedOne redacts primary model', async () => {
+          await testUpdateRelatedOneRedactsPrimary(currentId, apiEndpoint, adminAccessToken, adminAccessToken);
         });
 
         test('getRelatedOne does not redact primary model', async () => {
@@ -272,12 +268,12 @@ describe('Relationships protected with static group auth', () => {
       });
 
       describe('RelatedMany as source model', () => {
-        test('createRelatedMany does not redact primary model', async () => {
-          await testCreateRelatedManyDoesNotRedactPrimary(currentId, apiEndpoint, adminAccessToken);
+        test('createRelatedMany redacts primary model', async () => {
+          await testCreateRelatedManyRedactsPrimary(currentId, apiEndpoint, adminAccessToken, adminAccessToken);
         });
 
-        test('updateRelatedMany does not redact primary model', async () => {
-          await testUpdateRelatedManyDoesNotRedactPrimary(currentId, apiEndpoint, adminAccessToken);
+        test('updateRelatedMany redacts primary model', async () => {
+          await testUpdateRelatedManyRedactsPrimary(currentId, apiEndpoint, adminAccessToken, adminAccessToken);
         });
 
         test('getRelatedMany does not redact primary model', async () => {
@@ -291,86 +287,3 @@ describe('Relationships protected with static group auth', () => {
     });
   });
 });
-
-interface CommonSetupInput {
-  projRoot: string;
-  region: string;
-  name: string;
-}
-
-interface CommonSetupOutput {
-  apiEndpoint: string;
-  group1AccessToken: string;
-  group2AccessToken: string;
-  adminAccessToken: string;
-}
-
-const deployStackAndCreateUsers = async (input: CommonSetupInput): Promise<CommonSetupOutput> => {
-  const { projRoot, region, name } = input;
-  const outputs = await cdkDeploy(projRoot, '--all');
-  const { awsAppsyncApiEndpoint, UserPoolClientId: userPoolClientId, UserPoolId: userPoolId } = outputs[name];
-
-  const apiEndpoint = awsAppsyncApiEndpoint;
-
-  const group1AccessToken = await createTestUser({
-    groupName: 'Group1',
-    region,
-    userPoolId,
-    userPoolClientId,
-  });
-
-  const group2AccessToken = await createTestUser({
-    groupName: 'Group2',
-    region,
-    userPoolId,
-    userPoolClientId,
-  });
-
-  const adminAccessToken = await createTestUser({
-    groupName: 'Group3',
-    region,
-    userPoolId,
-    userPoolClientId,
-  });
-
-  const output: CommonSetupOutput = {
-    apiEndpoint,
-    group1AccessToken,
-    group2AccessToken,
-    adminAccessToken,
-  };
-
-  return output;
-};
-
-interface CreateUserAndAssignToGroupInput {
-  region: string;
-  userPoolId: string;
-  userPoolClientId: string;
-  groupName: string;
-}
-
-/** Creates a test user and assigns to the specified group */
-const createTestUser = async (input: CreateUserAndAssignToGroupInput): Promise<string> => {
-  const { region, userPoolId, userPoolClientId, groupName } = input;
-  const { username, password } = await createCognitoUser({
-    region,
-    userPoolId,
-  });
-
-  await addCognitoUserToGroup({
-    region,
-    userPoolId,
-    username,
-    group: groupName,
-  });
-
-  const { accessToken } = await signInCognitoUser({
-    username,
-    password,
-    region,
-    userPoolClientId,
-  });
-
-  return accessToken;
-};

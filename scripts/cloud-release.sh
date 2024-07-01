@@ -3,6 +3,7 @@ source ./scripts/cloud-utils.sh
 export RELEASE_ROLE_NAME=CodebuildDeveloper
 export RELEASE_PROFILE_NAME=AmplifyAPIPluginRelease
 export RELEASE_PROJECT_NAME=amplify-category-api-release-workflow
+export DEPRECATE_PROJECT_NAME=amplify-category-api-deprecate-workflow
 
 function triggerRelease {
   triggerProjectBatch $RELEASE_ACCOUNT_PROD $RELEASE_ROLE_NAME "${RELEASE_PROFILE_NAME}Prod" $RELEASE_PROJECT_NAME "release"
@@ -19,4 +20,14 @@ function triggerTagRelease {
     exit 1
   fi
   triggerProjectBatch $RELEASE_ACCOUNT_PROD $RELEASE_ROLE_NAME "${RELEASE_PROFILE_NAME}Prod" $RELEASE_PROJECT_NAME $branch_name
+}
+
+function deprecateRelease {
+  DEPRECATION_MESSAGE=$1
+  SEARCH_FOR_RELEASE_STARTING_FROM=$2
+  USE_NPM_REGISTRY=$3
+  triggerProjectBatchWithEnvOverrides $RELEASE_ACCOUNT_PROD $RELEASE_ROLE_NAME "${RELEASE_PROFILE_NAME}Prod" $DEPRECATE_PROJECT_NAME "release" \
+    name=DEPRECATION_MESSAGE,value=\""$DEPRECATION_MESSAGE"\",type=PLAINTEXT \
+    name=SEARCH_FOR_RELEASE_STARTING_FROM,value=$SEARCH_FOR_RELEASE_STARTING_FROM,type=PLAINTEXT \
+    name=USE_NPM_REGISTRY,value=$USE_NPM_REGISTRY,type=PLAINTEXT
 }

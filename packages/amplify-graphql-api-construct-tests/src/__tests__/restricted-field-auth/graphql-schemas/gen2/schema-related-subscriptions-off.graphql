@@ -1,0 +1,15 @@
+type RelatedMany @model(subscriptions: { level: off }) @auth(rules: [{ allow: public, operations: [read] }, { allow: owner }]) {
+  id: String! @primaryKey
+  secret: String @auth(rules: [{ allow: owner }])
+  owner: String
+  primaryId: String
+  primary: Primary @belongsTo(references: ["primaryId"])
+}
+
+type RelatedOne @model(subscriptions: { level: off }) @auth(rules: [{ allow: public, operations: [read] }, { allow: owner }]) {
+  id: String! @primaryKey
+  secret: String @auth(rules: [{ allow: owner }])
+  owner: String
+  primaryId: String
+  primary: Primary @belongsTo(references: ["primaryId"])
+}

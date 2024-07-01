@@ -1,10 +1,10 @@
 import {
   COUNT_10_THOUSAND,
-  DURATION_10_MINUTES,
   MUTATION_ONE_FIELD_CREATE,
   SCHEMA_ONE_FIELD_ALL_INDEXED,
   SCHEMA_ONE_FIELD_NO_INDEX,
 } from '../deploy-velocity/deploy-velocity-constants';
+import { DURATION_10_MINUTES } from '../../utils/duration-constants';
 import {
   recordCountDataProvider,
   recordCountDataValidator,
