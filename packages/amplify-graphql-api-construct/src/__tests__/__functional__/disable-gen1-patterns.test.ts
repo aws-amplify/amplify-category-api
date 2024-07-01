@@ -80,6 +80,32 @@ describe('allowGen1Patterns', () => {
     ).not.toThrow();
   });
 
+  test('does not allow @searchable', () => {
+    expect(() =>
+      verifySchema(
+        `
+        type Post @model @searchable {
+          title: String
+        }
+      `,
+        false,
+      ),
+    ).toThrow('Unknown directive "@searchable".');
+  });
+
+  test('allows @searchable', () => {
+    expect(() =>
+      verifySchema(
+        `
+        type Post @model @searchable {
+          title: String
+        }
+      `,
+        true,
+      ),
+    ).not.toThrow();
+  });
+
   test('does not allow fields on @belongsTo', () => {
     expect(() =>
       verifySchema(
