@@ -8,21 +8,21 @@
   "bundled": {
     "@aws-amplify/backend-output-schemas": "^0.4.0",
     "@aws-amplify/backend-output-storage": "^0.2.2",
-    "@aws-amplify/graphql-auth-transformer": "3.5.5",
-    "@aws-amplify/graphql-default-value-transformer": "2.3.7",
+    "@aws-amplify/graphql-auth-transformer": "3.6.0",
+    "@aws-amplify/graphql-default-value-transformer": "2.3.8",
     "@aws-amplify/graphql-directives": "1.1.0",
-    "@aws-amplify/graphql-function-transformer": "2.1.22",
-    "@aws-amplify/graphql-http-transformer": "2.1.22",
-    "@aws-amplify/graphql-index-transformer": "2.4.3",
-    "@aws-amplify/graphql-maps-to-transformer": "3.4.17",
-    "@aws-amplify/graphql-model-transformer": "2.10.1",
-    "@aws-amplify/graphql-predictions-transformer": "2.1.22",
-    "@aws-amplify/graphql-relational-transformer": "2.5.5",
-    "@aws-amplify/graphql-searchable-transformer": "2.7.3",
-    "@aws-amplify/graphql-sql-transformer": "0.3.3",
-    "@aws-amplify/graphql-transformer": "1.5.7",
-    "@aws-amplify/graphql-transformer-core": "2.8.0",
-    "@aws-amplify/graphql-transformer-interfaces": "3.8.0",
+    "@aws-amplify/graphql-function-transformer": "2.1.23",
+    "@aws-amplify/graphql-http-transformer": "2.1.23",
+    "@aws-amplify/graphql-index-transformer": "2.4.4",
+    "@aws-amplify/graphql-maps-to-transformer": "3.4.18",
+    "@aws-amplify/graphql-model-transformer": "2.10.2",
+    "@aws-amplify/graphql-predictions-transformer": "2.1.23",
+    "@aws-amplify/graphql-relational-transformer": "2.5.6",
+    "@aws-amplify/graphql-searchable-transformer": "2.7.4",
+    "@aws-amplify/graphql-sql-transformer": "0.3.4",
+    "@aws-amplify/graphql-transformer": "1.6.0",
+    "@aws-amplify/graphql-transformer-core": "2.9.0",
+    "@aws-amplify/graphql-transformer-interfaces": "3.9.0",
     "@aws-amplify/platform-core": "^0.2.0",
     "@aws-amplify/plugin-types": "^0.4.1",
     "charenc": "^0.0.2",
@@ -31,7 +31,7 @@
     "graceful-fs": "^4.2.11",
     "graphql": "^15.5.0",
     "graphql-mapping-template": "4.20.16",
-    "graphql-transformer-common": "4.30.1",
+    "graphql-transformer-common": "4.31.0",
     "hjson": "^3.2.2",
     "immer": "^9.0.12",
     "is-buffer": "^2.0.5",
@@ -3491,7 +3491,7 @@
     "stability": "stable"
   },
   "homepage": "https://github.com/aws-amplify/amplify-category-api.git",
-  "jsiiVersion": "5.2.14 (build 3ac02dc)",
+  "jsiiVersion": "5.4.23 (build 4babcb9)",
   "keywords": [
     "awscdk",
     "aws-cdk",
@@ -5793,7 +5793,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
-        "line": 195
+        "line": 235
       },
       "name": "CustomSqlDataSourceStrategy",
       "properties": [
@@ -5806,7 +5806,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 200
+            "line": 240
           },
           "name": "fieldName",
           "type": {
@@ -5822,7 +5822,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 203
+            "line": 243
           },
           "name": "strategy",
           "type": {
@@ -5838,7 +5838,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 197
+            "line": 237
           },
           "name": "typeName",
           "type": {
@@ -7522,7 +7522,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
-        "line": 149
+        "line": 176
       },
       "name": "SqlModelDataSourceSecretsManagerDbConnectionConfig",
       "properties": [
@@ -7535,7 +7535,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 160
+            "line": 190
           },
           "name": "databaseName",
           "type": {
@@ -7551,7 +7551,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 163
+            "line": 193
           },
           "name": "hostname",
           "type": {
@@ -7567,7 +7567,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 157
+            "line": 187
           },
           "name": "port",
           "type": {
@@ -7584,7 +7584,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 151
+            "line": 178
           },
           "name": "secretArn",
           "type": {
@@ -7594,19 +7594,36 @@
         {
           "abstract": true,
           "docs": {
-            "remarks": "If not supplied, the secret is expected to be encrypted with the default AWS-managed key. *",
+            "remarks": "If not supplied, the secret is expected to be encrypted with the default\nAWS-managed key.",
             "stability": "experimental",
             "summary": "The ARN of the customer managed encryption key for the secret."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 154
+            "line": 184
           },
           "name": "keyArn",
           "optional": true,
           "type": {
             "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "experimental",
+            "summary": "An optional configuration for a custom SSL certificate authority to use when connecting to the database."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/model-datasource-strategy-types.ts",
+            "line": 198
+          },
+          "name": "sslCertConfig",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-amplify/graphql-api-construct.SslCertConfig"
           }
         }
       ],
@@ -7624,7 +7641,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
-        "line": 171
+        "line": 206
       },
       "name": "SqlModelDataSourceSsmDbConnectionConfig",
       "properties": [
@@ -7637,7 +7654,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 187
+            "line": 222
           },
           "name": "databaseNameSsmPath",
           "type": {
@@ -7654,7 +7671,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 175
+            "line": 210
           },
           "name": "hostnameSsmPath",
           "type": {
@@ -7670,7 +7687,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 184
+            "line": 219
           },
           "name": "passwordSsmPath",
           "type": {
@@ -7686,7 +7703,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 178
+            "line": 213
           },
           "name": "portSsmPath",
           "type": {
@@ -7702,11 +7719,28 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 181
+            "line": 216
           },
           "name": "usernameSsmPath",
           "type": {
             "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "An optional configuration for a custom SSL certificate authority to use when connecting to the database."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/model-datasource-strategy-types.ts",
+            "line": 227
+          },
+          "name": "sslCertConfig",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-amplify/graphql-api-construct.SslCertConfig"
           }
         }
       ],
@@ -7723,7 +7757,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
-        "line": 133
+        "line": 155
       },
       "name": "SqlModelDataSourceSsmDbConnectionStringConfig",
       "properties": [
@@ -7737,7 +7771,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 140
+            "line": 162
           },
           "name": "connectionUriSsmPath",
           "type": {
@@ -7757,9 +7791,94 @@
               ]
             }
           }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "experimental",
+            "summary": "An optional configuration for a custom SSL certificate authority to use when connecting to the database."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/model-datasource-strategy-types.ts",
+            "line": 167
+          },
+          "name": "sslCertConfig",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-amplify/graphql-api-construct.SslCertConfig"
+          }
         }
       ],
       "symbolId": "src/model-datasource-strategy-types:SqlModelDataSourceSsmDbConnectionStringConfig"
+    },
+    "@aws-amplify/graphql-api-construct.SslCertConfig": {
+      "assembly": "@aws-amplify/graphql-api-construct",
+      "datatype": true,
+      "docs": {
+        "remarks": "Although we can't declare it in the actual interface definition because it results in invalid C#, each conforming type\nmust have a `configType: string` field to allow for discriminated union behavior.",
+        "stability": "stable",
+        "summary": "Marker interface."
+      },
+      "fqn": "@aws-amplify/graphql-api-construct.SslCertConfig",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "src/model-datasource-strategy-types.ts",
+        "line": 134
+      },
+      "name": "SslCertConfig",
+      "symbolId": "src/model-datasource-strategy-types:SslCertConfig"
+    },
+    "@aws-amplify/graphql-api-construct.SslCertSsmPathConfig": {
+      "assembly": "@aws-amplify/graphql-api-construct",
+      "datatype": true,
+      "docs": {
+        "stability": "stable"
+      },
+      "fqn": "@aws-amplify/graphql-api-construct.SslCertSsmPathConfig",
+      "interfaces": [
+        "@aws-amplify/graphql-api-construct.SslCertConfig"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "src/model-datasource-strategy-types.ts",
+        "line": 136
+      },
+      "name": "SslCertSsmPathConfig",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Amplify resolves the trust store to use as follows:\n- If the `ssmPath` parameter is provided, use it.\n  - If the parameter is a single string, use it.\n  - If the parameter is an array, iterate over them in order\n  - In either case, if the parameter is provided but the certificate content isn't retrievable, fails with an error.\n- If the database host is an RDS cluster, instance, or proxy (in other words, if the database host ends with \"rds.amazonaws.com\"), use\n  an RDS-specific trust store vended by AWS. See\n  https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html#UsingWithRDS.SSL.CertificatesAllRegions\n- Otherwise, use the trust store vended with the NodeJS runtime version that the SQL lambda is running on",
+            "stability": "stable",
+            "summary": "The SSM path to a custom SSL certificate to use instead of the default."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/model-datasource-strategy-types.ts",
+            "line": 148
+          },
+          "name": "ssmPath",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "primitive": "string"
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "src/model-datasource-strategy-types:SslCertSsmPathConfig"
     },
     "@aws-amplify/graphql-api-construct.StreamSpecification": {
       "assembly": "@aws-amplify/graphql-api-construct",
@@ -8332,6 +8451,6 @@
       "symbolId": "src/model-datasource-strategy-types:VpcConfig"
     }
   },
-  "version": "1.9.5",
-  "fingerprint": "y0dwfB9gd7pkQemctlr+PPXVPITFIxROsAhrFgNqjdY="
+  "version": "1.10.0",
+  "fingerprint": "n/WWJJWQeDDdPSIT6rPEG9/bfCFPCnywKOkgNpdNrnw="
 }

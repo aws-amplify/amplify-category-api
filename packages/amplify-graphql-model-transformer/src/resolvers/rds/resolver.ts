@@ -13,6 +13,11 @@ import {
   set,
   str,
   toJson,
+  not,
+  raw,
+  or,
+  parens,
+  and,
 } from 'graphql-mapping-template';
 import { ResourceConstants } from 'graphql-transformer-common';
 import {
@@ -83,6 +88,29 @@ export const setRDSSNSTopicMappings = (scope: Construct, mapping: RDSSNSTopicMap
   });
 
 /**
+ * Returns an SSM Endpoint if needed by the current configuration, undefined otherwise. If the current configuration includes a VPC, the SSM
+ * endpoint will be a VPC service endpoint, otherwise it will be the standard regionalized endpoint for the service. SSM Endpoints are
+ * required if the DB connection information is stored in SSM, or if the configuration uses a custom SSL certificate.
+ */
+export const getSsmEndpoint = (scope: Construct, resourceNames: SQLLambdaResourceNames, sqlLambdaVpcConfig?: VpcConfig): string => {
+  if (!sqlLambdaVpcConfig) {
+    // Default, non-VPC SSM endpoint
+    return Fn.join('', ['ssm.', Fn.ref('AWS::Region'), '.amazonaws.com']);
+  }
+
+  // Although the Lambda function will only invoke SSM directly, internally the SDK makes calls to other services as well
+  const services = ['ssm', 'ssmmessages', 'ec2', 'ec2messages', 'kms'];
+  const endpoints = addVpcEndpoints(scope, sqlLambdaVpcConfig, resourceNames, services);
+  const endpointEntries = endpoints.find((endpoint) => endpoint.service === 'ssm')?.endpoint.attrDnsEntries;
+  if (!endpointEntries) {
+    throw new Error('Failed to find SSM endpoint DNS entries');
+  }
+  // Replace the default SSM endpoint with the VPC endpoint
+  const ssmEndpoint = Fn.select(0, endpointEntries);
+  return ssmEndpoint;
+};
+
+/**
  * Create RDS Lambda function
  * @param scope Construct
  * @param apiGraphql GraphQLAPIProvider
@@ -104,29 +132,22 @@ export const createRdsLambda = (
   };
 
   if (credentialStorageMethod === CredentialStorageMethod.SSM) {
-    let ssmEndpoint = Fn.join('', ['ssm.', Fn.ref('AWS::Region'), '.amazonaws.com']); // Default SSM endpoint
-    if (sqlLambdaVpcConfig) {
-      const services = ['ssm', 'ssmmessages', 'ec2', 'ec2messages', 'kms'];
-      const endpoints = addVpcEndpoints(scope, sqlLambdaVpcConfig, resourceNames, services);
-      const endpointEntries = endpoints.find((endpoint) => endpoint.service === 'ssm')?.endpoint.attrDnsEntries;
-      if (endpointEntries) {
-        ssmEndpoint = Fn.select(0, endpointEntries);
-      }
-    }
-
-    lambdaEnvironment.SSM_ENDPOINT = ssmEndpoint;
     lambdaEnvironment.CREDENTIAL_STORAGE_METHOD = CredentialStorageMethod.SSM;
+    if (!lambdaEnvironment.SSM_ENDPOINT) {
+      lambdaEnvironment.SSM_ENDPOINT = getSsmEndpoint(scope, resourceNames, sqlLambdaVpcConfig);
+    }
   } else if (credentialStorageMethod === CredentialStorageMethod.SECRETS_MANAGER) {
-    let secretsManagerEndpoint = Fn.join('', ['secretsmanager.', Fn.ref('AWS::Region'), '.amazonaws.com']); // Default SSM endpoint
+    // Default Secrets Manager endpoint
+    let secretsManagerEndpoint = Fn.join('', ['secretsmanager.', Fn.ref('AWS::Region'), '.amazonaws.com']);
     if (sqlLambdaVpcConfig) {
       const services = ['secretsmanager'];
       const endpoints = addVpcEndpoints(scope, sqlLambdaVpcConfig, resourceNames, services);
       const endpointEntries = endpoints.find((endpoint) => endpoint.service === 'secretsmanager')?.endpoint.attrDnsEntries;
       if (endpointEntries) {
+        // Replace the default Secrets Manager endpoint with the VPC endpoint
         secretsManagerEndpoint = Fn.select(0, endpointEntries);
       }
     }
-
     lambdaEnvironment.SECRETS_MANAGER_ENDPOINT = secretsManagerEndpoint;
     lambdaEnvironment.CREDENTIAL_STORAGE_METHOD = CredentialStorageMethod.SECRETS_MANAGER;
   } else {
@@ -334,6 +355,7 @@ export const createRdsLambdaRole = (
   scope: Construct,
   secretEntry: SqlModelDataSourceDbConnectionConfig,
   resourceNames: SQLLambdaResourceNames,
+  sslCertSsmPath?: string | string[],
 ): IRole => {
   const role = new Role(scope, resourceNames.sqlLambdaExecutionRole, {
     assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
@@ -392,6 +414,17 @@ export const createRdsLambdaRole = (
       );
     } else {
       throw new Error('Unable to determine if SSM or Secrets Manager should be used for credentials.');
+    }
+
+    if (sslCertSsmPath) {
+      const ssmPaths = Array.isArray(sslCertSsmPath) ? sslCertSsmPath : [sslCertSsmPath];
+      policyStatements.push(
+        new PolicyStatement({
+          actions: ['ssm:GetParameter', 'ssm:GetParameters'],
+          effect: Effect.ALLOW,
+          resources: ssmPaths.map((ssmPath) => `arn:aws:ssm:*:*:parameter${ssmPath}`),
+        }),
+      );
     }
   }
 
@@ -477,6 +510,7 @@ export const generateLambdaRequestTemplate = (
   operation: string,
   operationName: string,
   ctx: TransformerContextProvider,
+  emptyAuthFilter: boolean = false,
 ): string => {
   const mappedTableName = ctx.resourceHelper.getModelNameMapping(tableName);
   return printBlock('Invoke RDS Lambda data source')(
@@ -488,7 +522,7 @@ export const generateLambdaRequestTemplate = (
       set(ref('lambdaInput.operationName'), str(operationName)),
       set(ref('lambdaInput.args.metadata'), obj({})),
       set(ref('lambdaInput.args.metadata.keys'), list([])),
-      constructAuthFilterStatement('lambdaInput.args.metadata.authFilter'),
+      constructAuthFilterStatement('lambdaInput.args.metadata.authFilter', emptyAuthFilter),
       constructNonScalarFieldsStatement(tableName, ctx),
       constructArrayFieldsStatement(tableName, ctx),
       constructFieldMappingInput(),
@@ -512,17 +546,32 @@ export const generateLambdaRequestTemplate = (
  */
 export const generateGetLambdaResponseTemplate = (isSyncEnabled: boolean): string => {
   const statements: Expression[] = [];
+  const resultExpression = compoundExpression([
+    ifElse(
+      not(ref('ctx.stash.authRules')),
+      toJson(ref('ctx.result')),
+      compoundExpression([
+        set(ref('authResult'), methodCall(ref('util.authRules.validateUsingSource'), ref('ctx.stash.authRules'), ref('ctx.result'))),
+        ifElse(
+          not(ref('authResult')),
+          compoundExpression([methodCall(ref('util.unauthorized')), methodCall(ref('util.toJson'), raw('null'))]),
+          toJson(ref('ctx.result')),
+        ),
+      ]),
+    ),
+  ]);
+
   if (isSyncEnabled) {
     statements.push(
       ifElse(
         ref('ctx.error'),
         methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type'), ref('ctx.result')),
-        toJson(ref('ctx.result')),
+        resultExpression,
       ),
     );
   } else {
     statements.push(
-      ifElse(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type')), toJson(ref('ctx.result'))),
+      ifElse(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type')), resultExpression),
     );
   }
 

@@ -239,9 +239,7 @@ exports[`@refersTo with @hasOne for RDS Models model table names are mapped 4`] 
 #set( $lambdaInput.operationName = \\"getEmployee\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
-#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-  #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
-#end
+#set( $lambdaInput.args.metadata.authFilter = {} )
 #set( $lambdaInput.args.metadata.nonScalarFields = [\\"task\\"] )
 #set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
@@ -369,9 +367,7 @@ exports[`@refersTo with @hasOne for RDS Models model table names are mapped 9`] 
 #set( $lambdaInput.operationName = \\"getTask\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
-#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-  #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
-#end
+#set( $lambdaInput.args.metadata.authFilter = {} )
 #set( $lambdaInput.args.metadata.nonScalarFields = [\\"employee\\"] )
 #set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )

@@ -118,7 +118,7 @@
     "@types/node": "^12.12.6",
     "aws-cdk-lib": "2.80.0",
     "constructs": "10.0.5",
-    "jsii": "^5.1.5",
+    "jsii": "^5.4.23",
     "jsii-pacmak": "^1.84.0",
     "rimraf": "^3.0.0",
     "ts-jest": "^26.4.4",
