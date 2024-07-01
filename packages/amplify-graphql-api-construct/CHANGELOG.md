@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.11.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.10.0...@aws-amplify/graphql-api-construct@1.11.0) (2024-07-01)
+
+### Features
+
+- support custom SSL certs in SQL lambda handler ([#2631](https://github.com/aws-amplify/amplify-category-api/issues/2631)) ([f444517](https://github.com/aws-amplify/amplify-category-api/commit/f444517f2deebdb16dcc16257ed083ead4af9c9b))
+
 # [1.10.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.9.5...@aws-amplify/graphql-api-construct@1.10.0) (2024-06-25)
 
 ### Features
