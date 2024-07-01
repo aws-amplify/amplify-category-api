@@ -1,18 +1,24 @@
 import { Directive } from './directive';
 
 const name = 'conversation';
+// const definition = /* GraphQL */`
+//   directive @${name}(
+//     aiModel: String,
+//     sessionModel: SessionModel,
+//     eventModel: EventModel
+//   ) on FIELD_DEFINITION
+//   input SessionModel {
+//     name: String
+//   }
+//   input EventModel {
+//     name: String
+//   }
+// `;
+
 const definition = /* GraphQL */`
   directive @${name}(
-    aiModel: String,
-    sessionModel: SessionModel,
-    eventModel: EventModel
+    aiModel: String
   ) on FIELD_DEFINITION
-  input SessionModel {
-    name: String
-  }
-  input EventModel {
-    name: String
-  }
 `;
 const defaults = {};
 
