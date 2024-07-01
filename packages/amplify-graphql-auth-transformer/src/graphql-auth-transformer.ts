@@ -818,9 +818,10 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
      * An enabled subscription is the prerequisite for relational field redaction
      */
     const hasSubsEnabled = this.modelDirectiveConfig.get(typeName) && this.modelDirectiveConfig.get(typeName).subscriptions?.level === 'on';
-    if (hasSubsEnabled && redactRelationalField) {
+    if (hasSubsEnabled && redactRelationalField && !ctx.transformParameters.subscriptionsInheritPrimaryAuth) {
       relatedAuthExpression = `${this.getVtlGenerator(ctx, def.name.value).setDeniedFieldFlag('Mutation', true)}\n${relatedAuthExpression}`;
     } else if (needsFieldResolver) {
+      /* In this case, the relational field has restricted field-level auth, so we should redact */
       relatedAuthExpression = `${this.getVtlGenerator(ctx, def.name.value).setDeniedFieldFlag(
         'Mutation',
         hasSubsEnabled,

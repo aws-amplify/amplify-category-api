@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.31.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.30.1...graphql-transformer-common@4.31.0) (2024-06-25)
+
+### Features
+
+- **generate-schema:** custom ssl cert support to generate schema command ([#2615](https://github.com/aws-amplify/amplify-category-api/issues/2615)) ([390887f](https://github.com/aws-amplify/amplify-category-api/commit/390887ff4467baca9dad8f70071442b95bb04cf9))
+
 ## [4.30.1](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.30.0...graphql-transformer-common@4.30.1) (2024-04-26)
 
 **Note:** Version bump only for package graphql-transformer-common

@@ -13,6 +13,12 @@ export interface StackConfig {
    * If true, disable Cognito User Pool creation and only use API Key auth in sandbox mode.
    */
   useSandbox?: boolean;
+
+  /**
+   * If provided, use the provided Lambda Layer ARN instead of the default retrieved from the Lambda Layer version resolver. Suitable for
+   * overriding the default layers during tests.
+   */
+  sqlLambdaLayerArn?: string;
 }
 
 export const writeStackConfig = (projRoot: string, stackConfig: StackConfig): void => {

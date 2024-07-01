@@ -47,8 +47,11 @@ import { SQLLambdaModelDataSourceStrategyFactory } from '@aws-amplify/graphql-ap
 import { SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
 import { SqlModelDataSourceSecretsManagerDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
 import { SqlModelDataSourceSsmDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
+import { SqlModelDataSourceSsmDbConnectionStringConfig } from '@aws-amplify/graphql-api-construct';
 import { SSESpecification } from '@aws-amplify/graphql-api-construct';
 import { SSEType } from '@aws-amplify/graphql-api-construct';
+import { SslCertConfig } from '@aws-amplify/graphql-api-construct';
+import { SslCertSsmPathConfig } from '@aws-amplify/graphql-api-construct';
 import { StreamSpecification } from '@aws-amplify/graphql-api-construct';
 import { SubnetAvailabilityZone } from '@aws-amplify/graphql-api-construct';
 import { SubscriptionFunctionSlot } from '@aws-amplify/graphql-api-construct';
@@ -143,9 +146,15 @@ export { SqlModelDataSourceSecretsManagerDbConnectionConfig }
 
 export { SqlModelDataSourceSsmDbConnectionConfig }
 
+export { SqlModelDataSourceSsmDbConnectionStringConfig }
+
 export { SSESpecification }
 
 export { SSEType }
+
+export { SslCertConfig }
+
+export { SslCertSsmPathConfig }
 
 export { StreamSpecification }
 

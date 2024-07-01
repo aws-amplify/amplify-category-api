@@ -126,7 +126,7 @@ export const enum ConflictHandlerType {
 export const constructArrayFieldsStatement: (tableName: string, ctx: TransformerContextProvider) => Expression;
 
 // @public (undocumented)
-export const constructAuthFilterStatement: (keyName: string) => Expression;
+export const constructAuthFilterStatement: (keyName: string, emptyAuthFilter?: boolean) => Expression;
 
 // @public (undocumented)
 export const constructDataSourceStrategies: (schema: string, dataSourceStrategy: ModelDataSourceStrategy) => Record<string, ModelDataSourceStrategy>;

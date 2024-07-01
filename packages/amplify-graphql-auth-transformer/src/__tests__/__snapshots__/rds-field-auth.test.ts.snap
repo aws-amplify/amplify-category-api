@@ -154,6 +154,7 @@ $util.qr($authRules.add({
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
+$util.qr($ctx.stash.put(\\"authRules\\", $authRules))
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #set( $ctx.stash.authFilter = $authResult.authFilter )
 #end
@@ -196,6 +197,7 @@ $util.qr($authRules.add({
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
+$util.qr($ctx.stash.put(\\"authRules\\", $authRules))
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #set( $ctx.stash.authFilter = $authResult.authFilter )
 #end

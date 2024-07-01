@@ -428,6 +428,12 @@ export interface TranslationBehavior {
   readonly useSubUsernameForDefaultIdentityClaim: boolean;
 
   /**
+   * When enabled, suppresses default behavior of redacting relational fields when auth rules do not exactly match.
+   * @default false
+   */
+  readonly subscriptionsInheritPrimaryAuth: boolean;
+
+  /**
    * Ensure that the owner field is still populated even if a static iam or group authorization applies.
    * @default true
    */
@@ -521,6 +527,12 @@ export interface PartialTranslationBehavior {
    * @default true
    */
   readonly useSubUsernameForDefaultIdentityClaim?: boolean;
+
+  /**
+   * When enabled, suppresses default behavior of redacting relational fields when auth rules do not exactly match.
+   * @default false
+   */
+  readonly subscriptionsInheritPrimaryAuth?: boolean;
 
   /**
    * Ensure that the owner field is still populated even if a static iam or group authorization applies.

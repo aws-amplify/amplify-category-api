@@ -1,4 +1,18 @@
-import { compoundExpression, equals, ifElse, methodCall, nul, printBlock, ref, set, str, toJson, iff, not } from 'graphql-mapping-template';
+import {
+  compoundExpression,
+  equals,
+  ifElse,
+  methodCall,
+  nul,
+  printBlock,
+  ref,
+  set,
+  str,
+  toJson,
+  iff,
+  not,
+  qref,
+} from 'graphql-mapping-template';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
@@ -19,7 +33,9 @@ export const generateAuthExpressionForQueries = (
   const expressions = [];
   expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, fields, providers.hasIdentityPoolId, true)));
   expressions.push(set(ref('authResult'), methodCall(ref('util.authRules.queryAuth'), ref('authRules'))));
-  expressions.push(validateAuthResult(), constructAuthFilter(), emptyPayload);
+  expressions.push(validateAuthResult());
+  expressions.push(qref(methodCall(ref('ctx.stash.put'), str('authRules'), ref('authRules'))));
+  expressions.push(constructAuthFilter(), emptyPayload);
   return printBlock('Authorization rules')(generateIAMAccessCheck(providers.genericIamAccessEnabled, compoundExpression(expressions)));
 };
 

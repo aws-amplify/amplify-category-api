@@ -182,6 +182,10 @@ const RUN_IN_COGNITO_REGIONS: (string | RegExp)[] = [
   /src\/__tests__\/group-auth\/.*\.test\.ts/,
   /src\/__tests__\/owner-auth\/.*\.test\.ts/,
   /src\/__tests__\/restricted-field-auth\/.*\.test\.ts/,
+  /src\/__tests__\/RelationalWithAuthV2NonRedacted.e2e.test.ts/,
+  /src\/__tests__\/AuthV2TransformerIAM.test.ts/,
+  /src\/__tests__\/AuthV2ExhaustiveT3D.test.ts/,
+  /src\/__tests__\/AuthV2ExhaustiveT3C.test.ts/,
 ];
 
 const RUN_IN_V1_TRANSFORMER_REGIONS = ['src/__tests__/schema-searchable.test.ts'];

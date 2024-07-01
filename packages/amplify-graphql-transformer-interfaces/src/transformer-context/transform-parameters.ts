@@ -19,6 +19,7 @@ export type TransformParameters = {
   useSubUsernameForDefaultIdentityClaim: boolean;
   populateOwnerFieldForStaticGroupAuth: boolean;
   suppressApiKeyGeneration: boolean;
+  subscriptionsInheritPrimaryAuth: boolean;
 
   // Index Params
   secondaryKeyAsGSI: boolean;

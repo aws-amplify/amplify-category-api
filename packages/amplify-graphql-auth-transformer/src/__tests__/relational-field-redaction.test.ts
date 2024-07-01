@@ -231,7 +231,7 @@ const resolveSchema = (schemaTemplate: string, primaryModelRules: string[], rela
   return schema;
 };
 
-export const makeTransformationExpectation = (
+const makeTransformationRedactionExpectation = (
   dataSourceStrategies: Record<string, ModelDataSourceStrategy>,
   schemaTemplate: string,
 ): ((
@@ -249,7 +249,7 @@ export const makeTransformationExpectation = (
     relatedModelRules: string[],
     shouldRedactField: boolean,
     primaryModelNames = ['Primary'],
-  ) => {
+  ): void => {
     const validSchema = resolveSchema(schemaTemplate, primaryModelRules, relatedModelRules);
     const modelKeys = getModelTypeNames(validSchema);
     const out = testTransform({
@@ -280,7 +280,59 @@ export const makeTransformationExpectation = (
   return expectation;
 };
 
-export type TestTableRow = [string, string, string[], string[], boolean];
+const makeTransformationNonRedactionExpectation = (
+  dataSourceStrategies: Record<string, ModelDataSourceStrategy>,
+  schemaTemplate: string,
+): ((
+  primaryStrategyName: string,
+  relatedStrategyName: string,
+  primaryModelRules: string[],
+  relatedModelRules: string[],
+  shouldRedactField: boolean,
+  primaryModelNames?: string[],
+) => void) => {
+  const expectation = (
+    primaryStrategyName: string,
+    relatedStrategyName: string,
+    primaryModelRules: string[],
+    relatedModelRules: string[],
+    shouldRedactField: boolean,
+    primaryModelNames = ['Primary'],
+  ): void => {
+    const validSchema = resolveSchema(schemaTemplate, primaryModelRules, relatedModelRules);
+    const modelKeys = getModelTypeNames(validSchema);
+    const out = testTransform({
+      schema: validSchema,
+      authConfig: authConfigWithAllProviders,
+      transformers: makeTransformers(),
+      transformParameters: {
+        subscriptionsInheritPrimaryAuth: true,
+      },
+      dataSourceStrategies: modelKeys.reduce(
+        (acc, cur) => ({
+          ...acc,
+          [cur]: dataSourceStrategies[primaryModelNames.includes(cur) ? primaryStrategyName : relatedStrategyName],
+        }),
+        {},
+      ),
+    });
+    expect(out).toBeDefined();
+    if (shouldRedactField) {
+      expect(out.resolvers['Primary.relatedMany.auth.1.req.vtl']).toContain(SUBSCRIPTION_PROTECTION);
+      expect(out.resolvers['Primary.relatedOne.auth.1.req.vtl']).toContain(SUBSCRIPTION_PROTECTION);
+      expect(out.resolvers['RelatedMany.primary.auth.1.req.vtl']).toContain(SUBSCRIPTION_PROTECTION);
+      expect(out.resolvers['RelatedOne.primary.auth.1.req.vtl']).toContain(SUBSCRIPTION_PROTECTION);
+    } else {
+      expect(out.resolvers['Primary.relatedMany.auth.1.req.vtl']).not.toContain(SUBSCRIPTION_PROTECTION);
+      expect(out.resolvers['Primary.relatedOne.auth.1.req.vtl']).not.toContain(SUBSCRIPTION_PROTECTION);
+      expect(out.resolvers['RelatedMany.primary.auth.1.req.vtl']).not.toContain(SUBSCRIPTION_PROTECTION);
+      expect(out.resolvers['RelatedOne.primary.auth.1.req.vtl']).not.toContain(SUBSCRIPTION_PROTECTION);
+    }
+  };
+  return expectation;
+};
+
+type TestTableRow = [string, string, string[], string[], boolean];
 
 /**
  * Primary auth rules - Related auth rules - Redact relational field
@@ -309,14 +361,23 @@ const buildHomogeneousTestCases = (
   schema: string,
   testTemplate = testCases,
 ): void => {
-  const expectation = makeTransformationExpectation(dataSourceStrategies, schema);
+  const redactionExpectation = makeTransformationRedactionExpectation(dataSourceStrategies, schema);
+  const nonRedactionExpectation = makeTransformationNonRedactionExpectation(dataSourceStrategies, schema);
   const testTable: TestTableRow[] = [];
   for (const strategyName of Object.keys(dataSourceStrategies)) {
     testTemplate.forEach((testCase) => {
       testTable.push([strategyName, strategyName, ...testCase] as TestTableRow);
     });
   }
-  test.each(testTable)('%s -> %s - Primary %s - Related %s should redact relational field - %s', expectation);
+  test.each(testTable)('%s -> %s - Primary %s - Related %s should redact relational field - %s', redactionExpectation);
+
+  const nonRedactionTestTable: TestTableRow[] = [];
+  for (const strategyName of Object.keys(dataSourceStrategies)) {
+    testTemplate.forEach((testCase) => {
+      nonRedactionTestTable.push([strategyName, strategyName, ...testCase.slice(0, 2), false] as TestTableRow);
+    });
+  }
+  test.each(nonRedactionTestTable)('%s -> %s - Primary %s - Related %s should not redact relational field - %s', nonRedactionExpectation);
 };
 
 const buildHeterogeneousTestCases = (
@@ -325,7 +386,20 @@ const buildHeterogeneousTestCases = (
   schema: string,
   testTemplate = testCases,
 ): void => {
-  const expectation = makeTransformationExpectation({ ...primaryDataSourceStrategies, ...relatedDataSourceStrategies }, schema);
+  const redactionExpectation = makeTransformationRedactionExpectation(
+    {
+      ...primaryDataSourceStrategies,
+      ...relatedDataSourceStrategies,
+    },
+    schema,
+  );
+  const nonRedactionExpectation = makeTransformationNonRedactionExpectation(
+    {
+      ...primaryDataSourceStrategies,
+      ...relatedDataSourceStrategies,
+    },
+    schema,
+  );
   const testTable: TestTableRow[] = [];
   for (const primaryStrategyName of Object.keys(primaryDataSourceStrategies)) {
     for (const relatedStrategyName of Object.keys(relatedDataSourceStrategies)) {
@@ -334,7 +408,17 @@ const buildHeterogeneousTestCases = (
       });
     }
   }
-  test.each(testTable)('%s -> %s - Primary %s - Related %s should redact relational field - %s', expectation);
+  test.each(testTable)('%s -> %s - Primary %s - Related %s should redact relational field - %s', redactionExpectation);
+
+  const nonRedactionTestTable: TestTableRow[] = [];
+  for (const primaryStrategyName of Object.keys(primaryDataSourceStrategies)) {
+    for (const relatedStrategyName of Object.keys(relatedDataSourceStrategies)) {
+      testTemplate.forEach((testCase) => {
+        nonRedactionTestTable.push([primaryStrategyName, relatedStrategyName, ...testCase.slice(0, 2), false] as TestTableRow);
+      });
+    }
+  }
+  test.each(nonRedactionTestTable)('%s -> %s - Primary %s - Related %s should not redact relational field - %s', nonRedactionExpectation);
 };
 
 describe('Relational field redaction tests', () => {
@@ -396,8 +480,10 @@ describe('Relational field redaction tests', () => {
 
           // required hasMany relationships can still be redacted without error
           if (shouldRedactField) {
+            // eslint-disable-next-line jest/no-conditional-expect
             expect(out.resolvers['Primary.relatedMany.auth.1.req.vtl']).toContain(SUBSCRIPTION_PROTECTION);
           } else {
+            // eslint-disable-next-line jest/no-conditional-expect
             expect(out.resolvers['Primary.relatedMany.auth.1.req.vtl']).not.toContain(SUBSCRIPTION_PROTECTION);
           }
         },
