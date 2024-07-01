@@ -23,6 +23,29 @@ const verifySchema = (schema: string, allowGen1Patterns: boolean): void => {
 };
 
 describe('allowGen1Patterns', () => {
+  const schema = `
+    type Post @model {
+      tags: [Tag] @manyToMany(relationName: "PostTags")
+    }
+
+    type Tag @model {
+      posts: [Post] @manyToMany(relationName: "PostTags")
+    }
+  `;
+
+  test('defaults to allow', () => {
+    const stack = new cdk.Stack();
+    expect(
+      () =>
+        new AmplifyGraphqlApi(stack, 'TestApi', {
+          definition: AmplifyGraphqlDefinition.fromString(schema),
+          authorizationModes: {
+            apiKeyConfig: { expires: cdk.Duration.days(7) },
+          },
+        }),
+    ).not.toThrow();
+  });
+
   test('does not allow @manyToMany', () => {
     expect(() =>
       verifySchema(
