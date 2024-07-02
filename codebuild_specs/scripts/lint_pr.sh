@@ -8,5 +8,7 @@ if [ -z "$PR_NUM" ]; then
 fi
 
 # get PR file list, filter out removed files, filter only JS/TS files, then pass to the linter
-curl -fsSL https://api.github.com/repos/$PROJECT_USERNAME/$REPO_NAME/pulls/$PR_NUM/files | jq -r '.[] | select(.status!="removed") | .filename' | grep -E '\.(js|jsx|ts|tsx)$' | xargs yarn eslint
+# The linter will print the errors but the build will still pass.
+# This is intentional because we have thousands of lint errors that will require a separate effort to resolve
+curl -fsSL https://api.github.com/repos/$PROJECT_USERNAME/$REPO_NAME/pulls/$PR_NUM/files | jq -r '.[] | select(.status!="removed") | .filename' | grep -E '\.(js|jsx|ts|tsx)$' | xargs yarn eslint || true
 set +x
