@@ -226,7 +226,7 @@ export const schema = configure({
         identifier: \\"ID1234567890\\",
         engine: \\"mysql\\",
         connectionUri: secret(\\"CONN_STR\\"),
-        sslCertificate: secret(\\"SSL_CERT\\")
+        sslCert: secret(\\"SSL_CERT\\")
     }
 }).schema({
     \\"User\\": a.model({
@@ -303,7 +303,7 @@ export const schema = configure({
         identifier: \\"IDNb9LVUQdGlNwNzYAgL6A\\",
         engine: \\"mysql\\",
         connectionUri: secret(\\"connectionUriSecret\\"),
-        sslCertificate: secret(\\"mySqlSslSecret\\"),
+        sslCert: secret(\\"mySqlSslSecret\\"),
         vpcConfig: {
             vpcId: \\"abc\\",
             securityGroupIds: [
@@ -350,7 +350,7 @@ export const schema = configure({
         identifier: \\"IDbQzyUQqaWhcfRhqPkRBA\\",
         engine: \\"postgresql\\",
         connectionUri: secret(\\"connectionUriSecret\\"),
-        sslCertificate: secret(\\"postgresSslSecret\\"),
+        sslCert: secret(\\"postgresSslSecret\\"),
         vpcConfig: {
             vpcId: \\"abc\\",
             securityGroupIds: [
