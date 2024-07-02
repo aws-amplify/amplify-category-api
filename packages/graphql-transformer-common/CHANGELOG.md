@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.31.1](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.31.0...graphql-transformer-common@4.31.1) (2024-07-02)
+
+### Bug Fixes
+
+- **amplify-category-api:** ssl cert api name change ([#2680](https://github.com/aws-amplify/amplify-category-api/issues/2680)) ([74e7d06](https://github.com/aws-amplify/amplify-category-api/commit/74e7d06f63cd9d865d01aa46be4ae7a420fc3c2f))
+
 # [4.31.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.30.1...graphql-transformer-common@4.31.0) (2024-06-25)
 
 ### Features
