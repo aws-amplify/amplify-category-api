@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.11.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.11.0...@aws-amplify/graphql-model-transformer@2.11.1) (2024-07-02)
+
+**Note:** Version bump only for package @aws-amplify/graphql-model-transformer
+
 # [2.11.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.10.2...@aws-amplify/graphql-model-transformer@2.11.0) (2024-07-01)
 
 ### Bug Fixes
