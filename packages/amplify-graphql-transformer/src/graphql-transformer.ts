@@ -56,7 +56,10 @@ export type TransformConfig = {
   transformParameters: TransformParameters;
 };
 
-export const constructTransformerChain = (options?: TransformerFactoryArgs): TransformerPluginProvider[] => {
+export const constructTransformerChain = (
+  options?: TransformerFactoryArgs,
+  allowGen1Patterns: boolean = true,
+): TransformerPluginProvider[] => {
   const modelTransformer = new ModelTransformer();
   const authTransformer = new AuthTransformer();
   const indexTransformer = new IndexTransformer();
@@ -67,19 +70,19 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
     modelTransformer,
     new FunctionTransformer(options?.functionNameMap),
     new HttpTransformer(),
-    new PredictionsTransformer(options?.storageConfig),
+    ...(allowGen1Patterns ? [new PredictionsTransformer(options?.storageConfig)] : []),
     new PrimaryKeyTransformer(),
     indexTransformer,
     new HasManyTransformer(),
     hasOneTransformer,
-    new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
+    ...(allowGen1Patterns ? [new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer)] : []),
     new BelongsToTransformer(),
     new DefaultValueTransformer(),
     authTransformer,
     new MapsToTransformer(),
     new SqlTransformer(),
     new RefersToTransformer(),
-    new SearchableModelTransformer(),
+    ...(allowGen1Patterns ? [new SearchableModelTransformer()] : []),
     ...(options?.customTransformers ?? []),
   ];
 };
@@ -92,7 +95,7 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
 export const constructTransform = (config: TransformConfig): GraphQLTransform => {
   const { transformersFactoryArgs, authConfig, resolverConfig, userDefinedSlots, stackMapping, transformParameters } = config;
 
-  const transformers = constructTransformerChain(transformersFactoryArgs);
+  const transformers = constructTransformerChain(transformersFactoryArgs, transformParameters.allowGen1Patterns);
 
   return new GraphQLTransform({
     transformers,
