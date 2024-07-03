@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.11.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.11.0...@aws-amplify/graphql-model-transformer@2.11.1) (2024-07-02)
+
+**Note:** Version bump only for package @aws-amplify/graphql-model-transformer
+
+# [2.11.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.10.2...@aws-amplify/graphql-model-transformer@2.11.0) (2024-07-01)
+
+### Bug Fixes
+
+- auth to use validateUsingSource in place of auth filter to show error message ([#2523](https://github.com/aws-amplify/amplify-category-api/issues/2523)) ([b7d83f9](https://github.com/aws-amplify/amplify-category-api/commit/b7d83f991f85eaffb2408cff98e1880c7fa680ef))
+
+### Features
+
+- support custom SSL certs in SQL lambda handler ([#2631](https://github.com/aws-amplify/amplify-category-api/issues/2631)) ([f444517](https://github.com/aws-amplify/amplify-category-api/commit/f444517f2deebdb16dcc16257ed083ead4af9c9b))
+
+## [2.10.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.10.1...@aws-amplify/graphql-model-transformer@2.10.2) (2024-06-25)
+
+**Note:** Version bump only for package @aws-amplify/graphql-model-transformer
+
+## [2.10.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.10.0...@aws-amplify/graphql-model-transformer@2.10.1) (2024-05-15)
+
+### Bug Fixes
+
+- **api:** handle attribute type change on gsi ([#2542](https://github.com/aws-amplify/amplify-category-api/issues/2542)) ([f0a4709](https://github.com/aws-amplify/amplify-category-api/commit/f0a470990dd41966f802bb6ecb7b7ffa41a5c7d5))
+
+# [2.10.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.9.1...@aws-amplify/graphql-model-transformer@2.10.0) (2024-05-10)
+
+### Features
+
+- add tag to SQL datasource function ([#2511](https://github.com/aws-amplify/amplify-category-api/issues/2511)) ([d64fc1e](https://github.com/aws-amplify/amplify-category-api/commit/d64fc1e4d19c923cf985e30e26ce95c565a8839b))
+
 ## [2.9.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.9.0...@aws-amplify/graphql-model-transformer@2.9.1) (2024-05-01)
 
 ### Bug Fixes

@@ -30,6 +30,8 @@ import { validateHasOneNotUsedWithLists } from './validators/hasOne-cannot-be-us
 import { validateHasManyIsUsedWithLists } from './validators/hasMany-must-be-used-with-lists';
 import { validateObjectIsAnnotatedWithModel } from './validators/object-must-be-annotated-with-model';
 import { validateRelationshipNamesAreNotInverseOfRelationName } from './validators/relationshipname-not-inverseof-relationname';
+import { validateOwnerFieldTypeString } from './validators/owner-field-type-string';
+import { validateDefaultDirective } from './validators/default-directive-validation';
 
 const allValidators = [
   validateIndexScalarTypes,
@@ -55,6 +57,8 @@ const allValidators = [
   validateHasManyIsUsedWithLists,
   validateObjectIsAnnotatedWithModel,
   validateRelationshipNamesAreNotInverseOfRelationName,
+  validateOwnerFieldTypeString,
+  validateDefaultDirective,
 ];
 
 const allValidatorsWithContext = [

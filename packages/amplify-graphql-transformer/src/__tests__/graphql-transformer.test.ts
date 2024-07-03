@@ -43,6 +43,7 @@ const defaultTransformConfig: TransformConfig = {
   transformersFactoryArgs: {},
   transformParameters: {
     shouldDeepMergeDirectiveConfigDefaults: false,
+    subscriptionsInheritPrimaryAuth: false,
     disableResolverDeduping: false,
     sandboxModeEnabled: false,
     useSubUsernameForDefaultIdentityClaim: false,

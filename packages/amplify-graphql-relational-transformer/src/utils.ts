@@ -1,4 +1,9 @@
-import { getFieldNameFor, getPrimaryKeyFields, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
+import {
+  getFieldNameFor,
+  getPrimaryKeyFieldNodes,
+  getPrimaryKeyFields,
+  InvalidDirectiveError,
+} from '@aws-amplify/graphql-transformer-core';
 import {
   FieldMapEntry,
   ResolverReferenceEntry,
@@ -210,9 +215,11 @@ export const ensureReferencesArray = (
 };
 
 /**
- * Given a {@link ReferencesRelationalDirectiveConfiguration}, this finds the connection field on the associated model by:
+ * Given a {@link ReferencesRelationalDirectiveConfiguration}, this finds the connection field on the associated model by validating that:
  * - associated model's field type matches the type of the source model
  * - associated field has a counterpart directive as defined in {@link getAssociatedRelationalDirectiveTypes}
+ * - the number and names of reference fields in the Related type's `belongsTo` directive matches the number and names of the reference
+ *   fields in the Primary type's hasOne or hasMany directive.
  * @param config {@link ReferencesRelationalDirectiveConfiguration}
  * @returns the `associatedField: FieldDefinitionNode` and `associatedReferences: string[]`
  */
@@ -223,10 +230,12 @@ const getReferencesAssociatedField = (
 
   const expectedBidirectionalErrorMessages = (): string => {
     const associatedDirectiveTypes = getAssociatedRelationalDirectiveTypes(config.directiveName);
+    const primaryType = config.directiveName == BelongsToDirective.name ? config.relatedType.name.value : config.object.name.value;
     const associatedDirectiveDescription = associatedDirectiveTypes.map((directiveName) => `@${directiveName}`).join(' or ');
     return (
-      `Add a ${associatedDirectiveDescription} field in ${config.relatedType.name.value} to match the @${config.directiveName}` +
-      ` field ${config.object.name.value}.${config.field.name.value}`
+      `Add a ${associatedDirectiveDescription} field in ${config.relatedType.name.value} to match the @${config.directiveName} ` +
+      `field ${config.object.name.value}.${config.field.name.value}, and ensure the number and type of reference fields match the ` +
+      `number and type of primary key fields in ${primaryType}.`
     );
   };
 
@@ -243,8 +252,9 @@ const getReferencesAssociatedField = (
         .includes(directive.name.value);
     });
 
+    // The field has the right base type, but isn't the proper association, so skip to the next candidate
     if (!associatedRelationalDirective) {
-      throw new InvalidDirectiveError(`Uni-directional relationships are not supported. ${expectedBidirectionalErrorMessages()}`);
+      return [];
     }
 
     // extract the `references` arguments
@@ -259,6 +269,15 @@ const getReferencesAssociatedField = (
     };
     const associatedReferences = getReferencesFromArgNode(associatedDirectiveReferencesArgNode);
 
+    // Schemas can declare multiple relationships between models (e.g., Post.editor: Person @hasOne... Post.author: Person@hasOne). To make
+    // sure we're looking at the right connection field, we'll build a check to make sure that the incoming relational directive matches the
+    // associated connection by comparing the "references" names.
+    const expectedReferenceFields = config.referenceNodes.map((node) => node.name.value).join(',');
+    const actualAssociatedReferenceFields = associatedReferences.join(',');
+    if (expectedReferenceFields !== actualAssociatedReferenceFields) {
+      return [];
+    }
+
     return [
       {
         associatedField,
@@ -267,8 +286,8 @@ const getReferencesAssociatedField = (
     ];
   });
 
-  // if we didn't find any matches, bail. This is not a bidirectional relationship.
-  // the `length > 1` is validated further upstream of relational transformers.
+  // If we didn't find any matches, bail. We know there is at least one matching directive from the `if (!associatedRelationalDirective)`
+  // validation above, but the key fields don't match.
   if (!associatedConnection || associatedConnection.length === 0) {
     throw new InvalidDirectiveError(`Uni-directional relationships are not supported. ${expectedBidirectionalErrorMessages()}`);
   }
@@ -367,31 +386,27 @@ export const validateReferencesBidirectionality = (config: ReferencesRelationalD
   const { directiveName, object, references, referenceNodes, relatedType } = config;
   const { associatedReferences } = getReferencesAssociatedField(config);
 
+  // We're validating bi-directionality of all supported directives (hasMany / hasOne / belongsTo).
+  // To make the Primary model primaryKey  <--> Related model reference field type validation easier for us,
+  // let's move from Source and Associated models to Primary and Related models.
+  const primaryModel = directiveName === 'belongsTo' ? relatedType : object;
+  const relatedModel = directiveName === 'belongsTo' ? object : relatedType;
+
+  const primaryKeys = getPrimaryKeyFieldNodes(primaryModel);
+  const primaryModelName = primaryModel.name.value;
+  const relatedModelName = relatedModel.name.value;
+
   // Checking that the references passed to the directive of connection field on the associated model:
   // - length matches ()
   if (
     !(references.length === associatedReferences.length) ||
     !references.every((reference, index) => reference === associatedReferences[index])
   ) {
-    throw new Error('');
-  }
-
-  // We're validating bi-directionality of all supported directives (hasMany / hasOne / belongsTo).
-  // To make the Primary model primaryKey  <--> Related model reference field type validation easier for us,
-  // let's move from Source and Associated models to Primary and Related models.
-  const primaryModel = directiveName === 'belongsTo' ? relatedType : object;
-  const relatedModel = directiveName === 'belongsTo' ? object : relatedType;
-  const primaryKeyFieldNames = getPrimaryKeyFields(primaryModel);
-  const primaryKeys = primaryModel.fields?.filter((field) => primaryKeyFieldNames.includes(field.name.value));
-
-  if (!primaryKeys) {
-    // This shouldn't happen as primary keys are either explicitly defined
-    // or implicitly added way upstream from here. We're doing this to shed the `| undefined` below.
-    // If this happens, it's a bug.
-    throw new Error(`
-      Expected to find primary keys on ${primaryModel.name.value} while validating relational bidirectionaly.
-      This shouldn't happen -- please open an issue at https://github.com/aws-amplify/amplify-category-api
-    `);
+    throw new InvalidDirectiveError(
+      `The number and type of the reference fields [${associatedReferences.join(',')}] defined for the ${directiveName} relationship ` +
+        `between ${primaryModelName} and ${relatedModelName} must match the number and type of the primary key fields in ` +
+        `${primaryModelName}.`,
+    );
   }
 
   // Related model references fields types match those of the Primary model's primaryKey
@@ -400,9 +415,9 @@ export const validateReferencesBidirectionality = (config: ReferencesRelationalD
     .forEach(([primaryKey, referenceField]) => {
       if (!referenceFieldTypeMatchesPrimaryKey(primaryKey, referenceField)) {
         throw new InvalidDirectiveError(
-          `Type mismatch between primary key field(s) of ${primaryModel.name.value}` +
-            ` and reference fields of ${relatedModel.name.value}.` +
-            ` Type of ${primaryModel.name.value}.${primaryKey.name.value} does not match type of ${relatedModel.name.value}.${referenceField.name.value}`,
+          `Type mismatch between primary key field(s) of ${primaryModelName}` +
+            ` and reference fields of ${relatedModelName}.` +
+            ` Type of ${primaryModelName}.${primaryKey.name.value} does not match type of ${relatedModelName}.${referenceField.name.value}`,
         );
       }
     });
@@ -457,6 +472,7 @@ export const getFieldsNodes = (
     return fieldNode;
   });
 };
+
 const getAssociatedRelationalDirectiveTypes = (sourceRelationalDirectiveType: string): string[] => {
   switch (sourceRelationalDirectiveType) {
     case HasOneDirective.name:

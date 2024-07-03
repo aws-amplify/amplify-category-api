@@ -3,25 +3,17 @@ import ora from 'ora';
 import { invokeSchemaInspectorLambda } from '../utils/vpc-helper';
 import { Field, Index } from '../schema-representation';
 import { getSSLConfig } from '../utils';
-import { DataSourceAdapter } from './datasource-adapter';
+import { DataSourceAdapter, DataSourceConfig } from './datasource-adapter';
 import { PostgresStringDataSourceAdapter, expectedColumns } from './pg-string-datasource-adapter';
 
 const spinner = ora();
-
-export interface PostgresDataSourceConfig {
-  host: string;
-  port: number;
-  database: string;
-  username: string;
-  password: string;
-}
 
 export class PostgresDataSourceAdapter extends DataSourceAdapter {
   private adapter: PostgresStringDataSourceAdapter;
 
   private dbBuilder: any;
 
-  constructor(private config: PostgresDataSourceConfig) {
+  constructor(private config: DataSourceConfig) {
     super();
   }
 
@@ -58,7 +50,7 @@ export class PostgresDataSourceAdapter extends DataSourceAdapter {
       port: this.config.port,
       user: this.config.username,
       password: this.config.password,
-      ssl: getSSLConfig(this.config.host),
+      ssl: getSSLConfig(this.config.host, this.config.sslCertificate),
     };
     try {
       this.dbBuilder = knex({

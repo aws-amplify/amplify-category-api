@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@2.7.5...@aws-amplify/graphql-searchable-transformer@2.7.6) (2024-07-02)
+
+**Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
+
+## [2.7.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@2.7.4...@aws-amplify/graphql-searchable-transformer@2.7.5) (2024-07-01)
+
+**Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
+
+## [2.7.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@2.7.3...@aws-amplify/graphql-searchable-transformer@2.7.4) (2024-06-25)
+
+**Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
+
+## [2.7.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@2.7.2...@aws-amplify/graphql-searchable-transformer@2.7.3) (2024-05-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
+
+## [2.7.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@2.7.1...@aws-amplify/graphql-searchable-transformer@2.7.2) (2024-05-10)
+
+**Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
+
 ## [2.7.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@2.7.0...@aws-amplify/graphql-searchable-transformer@2.7.1) (2024-05-01)
 
 **Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer

@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.22.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.5...amplify-category-api-e2e-tests@3.22.6) (2024-07-02)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.22.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.4...amplify-category-api-e2e-tests@3.22.5) (2024-07-01)
+
+### Bug Fixes
+
+- auth to use validateUsingSource in place of auth filter to show error message ([#2523](https://github.com/aws-amplify/amplify-category-api/issues/2523)) ([b7d83f9](https://github.com/aws-amplify/amplify-category-api/commit/b7d83f991f85eaffb2408cff98e1880c7fa680ef))
+
+## [3.22.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.3...amplify-category-api-e2e-tests@3.22.4) (2024-06-25)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.22.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.2...amplify-category-api-e2e-tests@3.22.3) (2024-05-15)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.22.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.1...amplify-category-api-e2e-tests@3.22.2) (2024-05-10)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
 ## [3.22.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.0...amplify-category-api-e2e-tests@3.22.1) (2024-05-01)
 
 **Note:** Version bump only for package amplify-category-api-e2e-tests

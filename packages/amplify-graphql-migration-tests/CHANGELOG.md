@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.35](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-migration-tests@2.4.34...amplify-category-api-graphql-migration-tests@2.4.35) (2024-07-02)
+
+**Note:** Version bump only for package amplify-category-api-graphql-migration-tests
+
+## [2.4.34](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-migration-tests@2.4.33...amplify-category-api-graphql-migration-tests@2.4.34) (2024-07-01)
+
+**Note:** Version bump only for package amplify-category-api-graphql-migration-tests
+
+## [2.4.33](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-migration-tests@2.4.32...amplify-category-api-graphql-migration-tests@2.4.33) (2024-06-25)
+
+**Note:** Version bump only for package amplify-category-api-graphql-migration-tests
+
+## [2.4.32](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-migration-tests@2.4.31...amplify-category-api-graphql-migration-tests@2.4.32) (2024-06-06)
+
+**Note:** Version bump only for package amplify-category-api-graphql-migration-tests
+
+## [2.4.31](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-migration-tests@2.4.30...amplify-category-api-graphql-migration-tests@2.4.31) (2024-06-04)
+
+**Note:** Version bump only for package amplify-category-api-graphql-migration-tests
+
+## [2.4.30](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-migration-tests@2.4.29...amplify-category-api-graphql-migration-tests@2.4.30) (2024-05-15)
+
+**Note:** Version bump only for package amplify-category-api-graphql-migration-tests
+
+## [2.4.29](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-migration-tests@2.4.28...amplify-category-api-graphql-migration-tests@2.4.29) (2024-05-10)
+
+**Note:** Version bump only for package amplify-category-api-graphql-migration-tests
+
 ## [2.4.28](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-migration-tests@2.4.27...amplify-category-api-graphql-migration-tests@2.4.28) (2024-05-01)
 
 **Note:** Version bump only for package amplify-category-api-graphql-migration-tests

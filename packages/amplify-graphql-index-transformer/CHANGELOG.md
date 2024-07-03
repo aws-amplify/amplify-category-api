@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.4.5...@aws-amplify/graphql-index-transformer@2.4.6) (2024-07-02)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [2.4.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.4.4...@aws-amplify/graphql-index-transformer@2.4.5) (2024-07-01)
+
+### Bug Fixes
+
+- auth to use validateUsingSource in place of auth filter to show error message ([#2523](https://github.com/aws-amplify/amplify-category-api/issues/2523)) ([b7d83f9](https://github.com/aws-amplify/amplify-category-api/commit/b7d83f991f85eaffb2408cff98e1880c7fa680ef))
+
+## [2.4.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.4.3...@aws-amplify/graphql-index-transformer@2.4.4) (2024-06-25)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [2.4.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.4.2...@aws-amplify/graphql-index-transformer@2.4.3) (2024-05-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [2.4.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.4.1...@aws-amplify/graphql-index-transformer@2.4.2) (2024-05-10)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
 ## [2.4.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.4.0...@aws-amplify/graphql-index-transformer@2.4.1) (2024-05-01)
 
 **Note:** Version bump only for package @aws-amplify/graphql-index-transformer
