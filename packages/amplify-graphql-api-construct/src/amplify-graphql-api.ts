@@ -184,6 +184,10 @@ export class AmplifyGraphqlApi extends Construct {
 
     const assetProvider = new AssetProvider(this);
 
+    const transformParameters = {
+      ...defaultTranslationBehavior,
+      ...(translationBehavior ?? {}),
+    };
     const executeTransformConfig: ExecuteTransformConfig = {
       scope: this,
       nestedStackProvider: {
@@ -204,14 +208,12 @@ export class AmplifyGraphqlApi extends Construct {
           ...definition.referencedLambdaFunctions,
           ...functionNameMap,
         },
+        allowGen1Patterns: transformParameters.allowGen1Patterns,
       },
       authConfig,
       stackMapping: stackMappings ?? {},
       resolverConfig: this.dataStoreConfiguration ? convertToResolverConfig(this.dataStoreConfiguration) : undefined,
-      transformParameters: {
-        ...defaultTranslationBehavior,
-        ...(translationBehavior ?? {}),
-      },
+      transformParameters,
       // CDK construct uses a custom resource. We'll define this explicitly here to remind ourselves that this value is unused in the CDK
       // construct flow
       rdsLayerMapping: undefined,

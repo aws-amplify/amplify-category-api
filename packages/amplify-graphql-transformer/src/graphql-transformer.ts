@@ -42,6 +42,7 @@ export type TransformerFactoryArgs = {
   storageConfig?: any;
   customTransformers?: TransformerPluginProvider[];
   functionNameMap?: Record<string, IFunction>;
+  allowGen1Patterns?: boolean;
 };
 
 /**
@@ -56,10 +57,7 @@ export type TransformConfig = {
   transformParameters: TransformParameters;
 };
 
-export const constructTransformerChain = (
-  options?: TransformerFactoryArgs,
-  allowGen1Patterns: boolean = true,
-): TransformerPluginProvider[] => {
+export const constructTransformerChain = (options?: TransformerFactoryArgs): TransformerPluginProvider[] => {
   const modelTransformer = new ModelTransformer();
   const authTransformer = new AuthTransformer();
   const indexTransformer = new IndexTransformer();
@@ -70,19 +68,21 @@ export const constructTransformerChain = (
     modelTransformer,
     new FunctionTransformer(options?.functionNameMap),
     new HttpTransformer(),
-    ...(allowGen1Patterns ? [new PredictionsTransformer(options?.storageConfig)] : []),
+    ...(options?.allowGen1Patterns ? [new PredictionsTransformer(options?.storageConfig)] : []),
     new PrimaryKeyTransformer(),
     indexTransformer,
     new HasManyTransformer(),
     hasOneTransformer,
-    ...(allowGen1Patterns ? [new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer)] : []),
+    ...(options?.allowGen1Patterns
+      ? [new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer)]
+      : []),
     new BelongsToTransformer(),
     new DefaultValueTransformer(),
     authTransformer,
     new MapsToTransformer(),
     new SqlTransformer(),
     new RefersToTransformer(),
-    ...(allowGen1Patterns ? [new SearchableModelTransformer()] : []),
+    ...(options?.allowGen1Patterns ? [new SearchableModelTransformer()] : []),
     ...(options?.customTransformers ?? []),
   ];
 };
@@ -95,7 +95,7 @@ export const constructTransformerChain = (
 export const constructTransform = (config: TransformConfig): GraphQLTransform => {
   const { transformersFactoryArgs, authConfig, resolverConfig, userDefinedSlots, stackMapping, transformParameters } = config;
 
-  const transformers = constructTransformerChain(transformersFactoryArgs, transformParameters.allowGen1Patterns);
+  const transformers = constructTransformerChain(transformersFactoryArgs);
 
   return new GraphQLTransform({
     transformers,

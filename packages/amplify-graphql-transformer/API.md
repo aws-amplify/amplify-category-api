@@ -25,7 +25,7 @@ import { UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 export const constructTransform: (config: TransformConfig) => GraphQLTransform;
 
 // @public (undocumented)
-export const constructTransformerChain: (options?: TransformerFactoryArgs, allowGen1Patterns?: boolean) => TransformerPluginProvider[];
+export const constructTransformerChain: (options?: TransformerFactoryArgs) => TransformerPluginProvider[];
 
 // @public (undocumented)
 export const executeTransform: (config: ExecuteTransformConfig) => void;
@@ -56,6 +56,7 @@ export type TransformerFactoryArgs = {
     storageConfig?: any;
     customTransformers?: TransformerPluginProvider[];
     functionNameMap?: Record<string, IFunction>;
+    allowGen1Patterns?: boolean;
 };
 
 // (No @packageDocumentation comment for this package)
