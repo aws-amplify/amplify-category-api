@@ -41,6 +41,7 @@ export interface AmplifyDynamoDbModelDataSourceStrategy {
   readonly provisionStrategy: 'AMPLIFY_TABLE';
 }
 
+// TODO: decide final naming before merging to main
 /**
  * Use custom resource type 'Custom::ImportedAmplifyDynamoDBTable' to provision table.
  */

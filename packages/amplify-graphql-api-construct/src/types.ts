@@ -753,6 +753,7 @@ export interface AmplifyGraphqlApiProps {
    */
   readonly dataStoreConfiguration?: DataStoreConfiguration;
 
+  // TODO: decide final naming before merging to main
   /**
    * The table map for the imported tables. The key is the model type name defined in schema; the value is the table name of the existing table
    */
