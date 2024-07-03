@@ -169,7 +169,7 @@ const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerConte
     }
     if (config.fields) {
       throw new InvalidDirectiveError(
-        `fields argument on @${BelongsToDirective.name} is deprecated. Modify ${modelName}.${fieldName} to use references instead.`,
+        `fields argument on @${BelongsToDirective.name} is disallowed. Modify ${modelName}.${fieldName} to use references instead.`,
       );
     }
   }

@@ -264,7 +264,7 @@ describe('allowGen1Patterns', () => {
           `,
           false,
         ),
-      ).toThrow('fields argument on @belongsTo is deprecated. Modify Post.author to use references instead.');
+      ).toThrow('fields argument on @belongsTo is disallowed. Modify Post.author to use references instead.');
     });
 
     test('does not allow fields on @hasMany', () => {
@@ -282,7 +282,7 @@ describe('allowGen1Patterns', () => {
           `,
           false,
         ),
-      ).toThrow('fields argument on @hasMany is deprecated. Modify Author.posts to use references instead.');
+      ).toThrow('fields argument on @hasMany is disallowed. Modify Author.posts to use references instead.');
     });
 
     test('does not allow fields on @hasOne', () => {
@@ -300,7 +300,7 @@ describe('allowGen1Patterns', () => {
           `,
           false,
         ),
-      ).toThrow('fields argument on @hasOne is deprecated. Modify Author.profile to use references instead.');
+      ).toThrow('fields argument on @hasOne is disallowed. Modify Author.profile to use references instead.');
     });
 
     test('does not allow required @belongsTo fields', () => {

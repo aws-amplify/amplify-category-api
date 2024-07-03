@@ -197,7 +197,7 @@ const validate = (config: HasOneDirectiveConfiguration, ctx: TransformerContextP
     }
     if (config.fields) {
       throw new InvalidDirectiveError(
-        `fields argument on @${HasOneDirective.name} is deprecated. Modify ${modelName}.${fieldName} to use references instead.`,
+        `fields argument on @${HasOneDirective.name} is disallowed. Modify ${modelName}.${fieldName} to use references instead.`,
       );
     }
   }

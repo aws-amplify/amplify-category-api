@@ -169,7 +169,7 @@ const validate = (config: HasManyDirectiveConfiguration, ctx: TransformerContext
     }
     if (config.fields) {
       throw new InvalidDirectiveError(
-        `fields argument on @${HasManyDirective.name} is deprecated. Modify ${modelName}.${fieldName} to use references instead.`,
+        `fields argument on @${HasManyDirective.name} is disallowed. Modify ${modelName}.${fieldName} to use references instead.`,
       );
     }
   }
