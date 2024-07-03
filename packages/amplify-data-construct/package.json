@@ -116,8 +116,8 @@
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
     "@types/node": "^12.12.6",
-    "aws-cdk-lib": "2.80.0",
-    "constructs": "10.0.5",
+    "aws-cdk-lib": "2.129.0",
+    "constructs": "10.3.0",
     "jsii": "^5.4.23",
     "jsii-pacmak": "^1.84.0",
     "rimraf": "^3.0.0",
@@ -125,8 +125,8 @@
     "ts-node": "^8.10.1"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.80.0",
-    "constructs": "^10.0.5"
+    "aws-cdk-lib": "^2.129.0",
+    "constructs": "^10.3.0"
   },
   "stability": "stable",
   "types": "lib/index.d.ts",
