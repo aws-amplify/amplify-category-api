@@ -11,6 +11,7 @@ import {
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
+  DefinitionNode,
   DirectiveNode,
   DocumentNode,
   EnumTypeDefinitionNode,
@@ -78,23 +79,35 @@ export class ConversationTransformer extends TransformerPluginBase {
 
   mutateSchema = (ctx: TransformerPreProcessContextProvider): DocumentNode => {
     console.log('>>> invokedMutateSchema');
+    const mutationObjectContainingConversationDirectives = ctx.inputDocument.definitions.filter((definition) =>
+      definition.kind === 'ObjectTypeDefinition' &&
+      definition.name.value === 'Mutation' &&
+      definition.fields?.filter(
+        (mutationFields) => mutationFields.directives?.filter(
+          (directive) => directive.name.value === ConversationDirective.name)
+        )
+    ) as ObjectTypeDefinitionNode[];
+
+    const conversationDirectiveFields = mutationObjectContainingConversationDirectives[0].fields
+    if (!conversationDirectiveFields) {
+      throw new Error('No conversation directives found despite expecting them in mutateSchema of conversation-transformer');
+    }
     const document: DocumentNode = produce(ctx.inputDocument, (draft: WritableDraft<DocumentNode>) => {
       // once
       const conversationEventSender = makeConversationEventSenderType();
       draft.definitions.push(conversationEventSender as WritableDraft<EnumTypeDefinitionNode>);
-
       // for each directive
-      const conversationDirectives = draft.definitions.filter((definition) =>
-        definition.kind === Kind.
-    )
-      const sessionModelName = 'ConversationSession';
-      const messageModelName = 'ConversationMessage';
 
-      const sessionModel = makeConversationSessionModel(sessionModelName, messageModelName, 'conversationSessionId');
-      const messagesModel = makeConversationMessageModel(messageModelName, sessionModel);
+      for (const conversationDirectiveField of conversationDirectiveFields) {
+        const sessionModelName = `ConversationSession${conversationDirectiveField.name.value}`;
+        const messageModelName = `ConversationMessage${conversationDirectiveField.name.value}`;
 
-      draft.definitions.push(sessionModel as WritableDraft<ObjectTypeDefinitionNode>);
-      draft.definitions.push(messagesModel as WritableDraft<ObjectTypeDefinitionNode>);
+        const sessionModel = makeConversationSessionModel(sessionModelName, messageModelName, 'conversationSessionId');
+        const messagesModel = makeConversationMessageModel(messageModelName, sessionModel);
+
+        draft.definitions.push(sessionModel as WritableDraft<ObjectTypeDefinitionNode>);
+        draft.definitions.push(messagesModel as WritableDraft<ObjectTypeDefinitionNode>);
+      }
     });
     return document;
   };
