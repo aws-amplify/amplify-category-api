@@ -158,13 +158,19 @@ export class HasManyTransformer extends TransformerPluginBase {
 }
 
 const validate = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-  const { field } = config;
+  const { field, object } = config;
   if (!ctx.transformParameters.allowGen1Patterns) {
+    const modelName = object.name.value;
+    const fieldName = field.name.value;
     if (field.type.kind === Kind.NON_NULL_TYPE) {
-      throw new InvalidDirectiveError(`@${HasManyDirective.name} cannot be used on required fields.`);
+      throw new InvalidDirectiveError(
+        `@${HasManyDirective.name} cannot be used on required fields. Modify ${modelName}.${fieldName} to be optional.`,
+      );
     }
     if (config.fields) {
-      throw new InvalidDirectiveError(`fields argument on @${HasManyDirective.name} is deprecated. Use references instead.`);
+      throw new InvalidDirectiveError(
+        `fields argument on @${HasManyDirective.name} is deprecated. Modify ${modelName}.${fieldName} to use references instead.`,
+      );
     }
   }
 

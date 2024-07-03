@@ -156,7 +156,7 @@ describe('allowGen1Patterns', () => {
       `,
         false,
       ),
-    ).toThrow('fields argument on @belongsTo is deprecated. Use references instead.');
+    ).toThrow('fields argument on @belongsTo is deprecated. Modify Post.author to use references instead.');
   });
 
   test('allows fields on @belongsTo', () => {
@@ -192,7 +192,7 @@ describe('allowGen1Patterns', () => {
       `,
         false,
       ),
-    ).toThrow('fields argument on @hasMany is deprecated. Use references instead.');
+    ).toThrow('fields argument on @hasMany is deprecated. Modify Author.posts to use references instead.');
   });
 
   test('allows fields on @hasMany', () => {
@@ -228,7 +228,7 @@ describe('allowGen1Patterns', () => {
       `,
         false,
       ),
-    ).toThrow('fields argument on @hasOne is deprecated. Use references instead.');
+    ).toThrow('fields argument on @hasOne is deprecated. Modify Author.profile to use references instead.');
   });
 
   test('allows fields on @hasOne', () => {
@@ -263,7 +263,7 @@ describe('allowGen1Patterns', () => {
       `,
         false,
       ),
-    ).toThrow('@belongsTo cannot be used on required fields.');
+    ).toThrow('@belongsTo cannot be used on required fields. Modify Post.author to be optional.');
   });
 
   test('allows required @belongsTo fields', () => {
@@ -297,7 +297,7 @@ describe('allowGen1Patterns', () => {
       `,
         false,
       ),
-    ).toThrow('@hasMany cannot be used on required fields.');
+    ).toThrow('@hasMany cannot be used on required fields. Modify Author.posts to be optional.');
   });
 
   test('allows required @hasMany fields', () => {
@@ -331,7 +331,7 @@ describe('allowGen1Patterns', () => {
       `,
         false,
       ),
-    ).toThrow('@hasOne cannot be used on required fields.');
+    ).toThrow('@hasOne cannot be used on required fields. Modify Author.profile to be optional.');
   });
 
   test('allows required @hasOne fields', () => {
