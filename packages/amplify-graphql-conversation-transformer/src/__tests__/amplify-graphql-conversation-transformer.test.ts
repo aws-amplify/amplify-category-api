@@ -8,8 +8,6 @@ import { parse, print } from 'graphql';
 import { ConversationTransformer } from '..';
 import { BelongsToTransformer, HasManyTransformer } from '../../../amplify-graphql-relational-transformer/src';
 
-
-
 test('conversation route valid schema', () => {
   const authConfig: AppSyncAuthConfiguration = {
     defaultAuthentication: {
