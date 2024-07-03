@@ -175,11 +175,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
       expression: cdk.Fn.conditionEquals(pointInTimeRecovery, 'true'),
     });
 
-    const removalPolicy = isTableImported
-      ? cdk.RemovalPolicy.RETAIN
-      : this.options.EnableDeletionProtection
-      ? cdk.RemovalPolicy.RETAIN
-      : cdk.RemovalPolicy.DESTROY;
+    const removalPolicy = isTableImported || this.options.EnableDeletionProtection ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY;
 
     // TODO: The attribute of encryption and TTL should be added
     const table = new AmplifyDynamoDBTable(scope, `${tableLogicalName}`, {
