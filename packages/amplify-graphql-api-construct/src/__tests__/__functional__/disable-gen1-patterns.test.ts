@@ -46,308 +46,312 @@ describe('allowGen1Patterns', () => {
     ).not.toThrow();
   });
 
-  test('does not allow @manyToMany', () => {
-    expect(() =>
-      verifySchema(
-        `
-        type Post @model {
-          tags: [Tag] @manyToMany(relationName: "PostTags")
-        }
+  describe('allowGen1Patterns: true', () => {
+    test('allows @manyToMany', () => {
+      expect(() =>
+        verifySchema(
+          `
+            type Post @model {
+              tags: [Tag] @manyToMany(relationName: "PostTags")
+            }
 
-        type Tag @model {
-          posts: [Post] @manyToMany(relationName: "PostTags")
-        }
-      `,
-        false,
-      ),
-    ).toThrow('Unknown directive "@manyToMany".');
-  });
+            type Tag @model {
+              posts: [Post] @manyToMany(relationName: "PostTags")
+            }
+          `,
+          true,
+        ),
+      ).not.toThrow();
+    });
 
-  test('allows @manyToMany', () => {
-    expect(() =>
-      verifySchema(
-        `
-        type Post @model {
-          tags: [Tag] @manyToMany(relationName: "PostTags")
-        }
+    test('allows @searchable', () => {
+      expect(() =>
+        verifySchema(
+          `
+            type Post @model @searchable {
+              title: String
+            }
+          `,
+          true,
+        ),
+      ).not.toThrow();
+    });
 
-        type Tag @model {
-          posts: [Post] @manyToMany(relationName: "PostTags")
-        }
-      `,
-        true,
-      ),
-    ).not.toThrow();
-  });
-
-  test('does not allow @searchable', () => {
-    expect(() =>
-      verifySchema(
-        `
-        type Post @model @searchable {
-          title: String
-        }
-      `,
-        false,
-      ),
-    ).toThrow('Unknown directive "@searchable".');
-  });
-
-  test('allows @searchable', () => {
-    expect(() =>
-      verifySchema(
-        `
-        type Post @model @searchable {
-          title: String
-        }
-      `,
-        true,
-      ),
-    ).not.toThrow();
-  });
-
-  test('does not allow @predictions', () => {
-    expect(() =>
-      verifySchema(
-        `
+    test('allows @predictions', () => {
+      const schema = `
         type Query {
           recognizeLabelsFromImage: [String] @predictions(actions: [identifyLabels])
         }
-      `,
-        false,
-      ),
-    ).toThrow('Unknown directive "@predictions".');
+      `;
+      const stack = new cdk.Stack();
+      expect(
+        () =>
+          new AmplifyGraphqlApi(stack, 'TestApi', {
+            definition: AmplifyGraphqlDefinition.fromString(schema),
+            authorizationModes: {
+              apiKeyConfig: { expires: cdk.Duration.days(7) },
+            },
+            translationBehavior: {
+              allowGen1Patterns: true,
+            },
+            predictionsBucket: new Bucket(stack, 'myfakebucket'),
+          }),
+      ).not.toThrow();
+    });
+
+    test('allows fields on @belongsTo', () => {
+      expect(() =>
+        verifySchema(
+          `
+            type Post @model {
+              authorID: ID
+              author: Author @belongsTo(fields: ["authorID"])
+            }
+
+            type Author @model {
+              posts: [Post] @hasMany
+            }
+          `,
+          true,
+        ),
+      ).not.toThrow();
+    });
+
+    test('allows fields on @hasMany', () => {
+      expect(() =>
+        verifySchema(
+          `
+            type Post @model {
+              author: Author @belongsTo
+            }
+
+            type Author @model {
+              postID: ID
+              posts: [Post] @hasMany(fields: ["postID"])
+            }
+          `,
+          true,
+        ),
+      ).not.toThrow();
+    });
+
+    test('allows fields on @hasOne', () => {
+      expect(() =>
+        verifySchema(
+          `
+            type Profile @model {
+              author: Author @belongsTo
+            }
+
+            type Author @model {
+              profileID: ID
+              profile: Profile @hasOne(fields: ["profileID"])
+            }
+          `,
+          true,
+        ),
+      ).not.toThrow();
+    });
+
+    test('allows required @belongsTo fields', () => {
+      expect(() =>
+        verifySchema(
+          `
+            type Post @model {
+              author: Author! @belongsTo
+            }
+
+            type Author @model {
+              posts: [Post] @hasMany
+            }
+          `,
+          true,
+        ),
+      ).not.toThrow();
+    });
+
+    test('allows required @hasMany fields', () => {
+      expect(() =>
+        verifySchema(
+          `
+            type Post @model {
+              author: Author @belongsTo
+            }
+
+            type Author @model {
+              posts: [Post]! @hasMany
+            }
+          `,
+          true,
+        ),
+      ).not.toThrow();
+    });
+
+    test('allows required @hasOne fields', () => {
+      expect(() =>
+        verifySchema(
+          `
+            type Profile @model {
+              author: Author @belongsTo
+            }
+
+            type Author @model {
+              profile: Profile! @hasOne
+            }
+          `,
+          true,
+        ),
+      ).not.toThrow();
+    });
   });
 
-  test('allows @predictions', () => {
-    const schema = `
-      type Query {
-        recognizeLabelsFromImage: [String] @predictions(actions: [identifyLabels])
-      }
-    `;
-    const stack = new cdk.Stack();
-    expect(
-      () =>
-        new AmplifyGraphqlApi(stack, 'TestApi', {
-          definition: AmplifyGraphqlDefinition.fromString(schema),
-          authorizationModes: {
-            apiKeyConfig: { expires: cdk.Duration.days(7) },
-          },
-          translationBehavior: {
-            allowGen1Patterns: true,
-          },
-          predictionsBucket: new Bucket(stack, 'myfakebucket'),
-        }),
-    ).not.toThrow();
-  });
+  describe('allowGen1Patterns: false', () => {
+    test('does not allow @manyToMany', () => {
+      expect(() =>
+        verifySchema(
+          `
+            type Post @model {
+              tags: [Tag] @manyToMany(relationName: "PostTags")
+            }
 
-  test('does not allow fields on @belongsTo', () => {
-    expect(() =>
-      verifySchema(
-        `
-        type Post @model {
-          authorID: ID
-          author: Author @belongsTo(fields: ["authorID"])
-        }
+            type Tag @model {
+              posts: [Post] @manyToMany(relationName: "PostTags")
+            }
+          `,
+          false,
+        ),
+      ).toThrow('Unknown directive "@manyToMany".');
+    });
 
-        type Author @model {
-          posts: [Post] @hasMany
-        }
-      `,
-        false,
-      ),
-    ).toThrow('fields argument on @belongsTo is deprecated. Modify Post.author to use references instead.');
-  });
+    test('does not allow @searchable', () => {
+      expect(() =>
+        verifySchema(
+          `
+            type Post @model @searchable {
+              title: String
+            }
+          `,
+          false,
+        ),
+      ).toThrow('Unknown directive "@searchable".');
+    });
 
-  test('allows fields on @belongsTo', () => {
-    expect(() =>
-      verifySchema(
-        `
-        type Post @model {
-          authorID: ID
-          author: Author @belongsTo(fields: ["authorID"])
-        }
+    test('does not allow @predictions', () => {
+      expect(() =>
+        verifySchema(
+          `
+            type Query {
+              recognizeLabelsFromImage: [String] @predictions(actions: [identifyLabels])
+            }
+          `,
+          false,
+        ),
+      ).toThrow('Unknown directive "@predictions".');
+    });
 
-        type Author @model {
-          posts: [Post] @hasMany
-        }
-      `,
-        true,
-      ),
-    ).not.toThrow();
-  });
+    test('does not allow fields on @belongsTo', () => {
+      expect(() =>
+        verifySchema(
+          `
+            type Post @model {
+              authorID: ID
+              author: Author @belongsTo(fields: ["authorID"])
+            }
 
-  test('does not allow fields on @hasMany', () => {
-    expect(() =>
-      verifySchema(
-        `
-        type Post @model {
-          author: Author @belongsTo
-        }
+            type Author @model {
+              posts: [Post] @hasMany
+            }
+          `,
+          false,
+        ),
+      ).toThrow('fields argument on @belongsTo is deprecated. Modify Post.author to use references instead.');
+    });
 
-        type Author @model {
-          postID: ID
-          posts: [Post] @hasMany(fields: ["postID"])
-        }
-      `,
-        false,
-      ),
-    ).toThrow('fields argument on @hasMany is deprecated. Modify Author.posts to use references instead.');
-  });
+    test('does not allow fields on @hasMany', () => {
+      expect(() =>
+        verifySchema(
+          `
+            type Post @model {
+              author: Author @belongsTo
+            }
 
-  test('allows fields on @hasMany', () => {
-    expect(() =>
-      verifySchema(
-        `
-        type Post @model {
-          author: Author @belongsTo
-        }
+            type Author @model {
+              postID: ID
+              posts: [Post] @hasMany(fields: ["postID"])
+            }
+          `,
+          false,
+        ),
+      ).toThrow('fields argument on @hasMany is deprecated. Modify Author.posts to use references instead.');
+    });
 
-        type Author @model {
-          postID: ID
-          posts: [Post] @hasMany(fields: ["postID"])
-        }
-      `,
-        true,
-      ),
-    ).not.toThrow();
-  });
+    test('does not allow fields on @hasOne', () => {
+      expect(() =>
+        verifySchema(
+          `
+            type Profile @model {
+              author: Author @belongsTo
+            }
 
-  test('does not allow fields on @hasOne', () => {
-    expect(() =>
-      verifySchema(
-        `
-        type Profile @model {
-          author: Author @belongsTo
-        }
+            type Author @model {
+              profileID: ID
+              profile: Profile @hasOne(fields: ["profileID"])
+            }
+          `,
+          false,
+        ),
+      ).toThrow('fields argument on @hasOne is deprecated. Modify Author.profile to use references instead.');
+    });
 
-        type Author @model {
-          profileID: ID
-          profile: Profile @hasOne(fields: ["profileID"])
-        }
-      `,
-        false,
-      ),
-    ).toThrow('fields argument on @hasOne is deprecated. Modify Author.profile to use references instead.');
-  });
+    test('does not allow required @belongsTo fields', () => {
+      expect(() =>
+        verifySchema(
+          `
+            type Post @model {
+              author: Author! @belongsTo
+            }
 
-  test('allows fields on @hasOne', () => {
-    expect(() =>
-      verifySchema(
-        `
-        type Profile @model {
-          author: Author @belongsTo
-        }
+            type Author @model {
+              posts: [Post] @hasMany
+            }
+          `,
+          false,
+        ),
+      ).toThrow('@belongsTo cannot be used on required fields. Modify Post.author to be optional.');
+    });
 
-        type Author @model {
-          profileID: ID
-          profile: Profile @hasOne(fields: ["profileID"])
-        }
-      `,
-        true,
-      ),
-    ).not.toThrow();
-  });
+    test('does not allow required @hasMany fields', () => {
+      expect(() =>
+        verifySchema(
+          `
+            type Post @model {
+              author: Author @belongsTo
+            }
 
-  test('does not allow required @belongsTo fields', () => {
-    expect(() =>
-      verifySchema(
-        `
-        type Post @model {
-          author: Author! @belongsTo
-        }
+            type Author @model {
+              posts: [Post]! @hasMany
+            }
+          `,
+          false,
+        ),
+      ).toThrow('@hasMany cannot be used on required fields. Modify Author.posts to be optional.');
+    });
 
-        type Author @model {
-          posts: [Post] @hasMany
-        }
-      `,
-        false,
-      ),
-    ).toThrow('@belongsTo cannot be used on required fields. Modify Post.author to be optional.');
-  });
+    test('does not allow required @hasOne fields', () => {
+      expect(() =>
+        verifySchema(
+          `
+            type Profile @model {
+              author: Author @belongsTo
+            }
 
-  test('allows required @belongsTo fields', () => {
-    expect(() =>
-      verifySchema(
-        `
-        type Post @model {
-          author: Author! @belongsTo
-        }
-
-        type Author @model {
-          posts: [Post] @hasMany
-        }
-      `,
-        true,
-      ),
-    ).not.toThrow();
-  });
-
-  test('does not allow required @hasMany fields', () => {
-    expect(() =>
-      verifySchema(
-        `
-        type Post @model {
-          author: Author @belongsTo
-        }
-
-        type Author @model {
-          posts: [Post]! @hasMany
-        }
-      `,
-        false,
-      ),
-    ).toThrow('@hasMany cannot be used on required fields. Modify Author.posts to be optional.');
-  });
-
-  test('allows required @hasMany fields', () => {
-    expect(() =>
-      verifySchema(
-        `
-        type Post @model {
-          author: Author @belongsTo
-        }
-
-        type Author @model {
-          posts: [Post]! @hasMany
-        }
-      `,
-        true,
-      ),
-    ).not.toThrow();
-  });
-
-  test('does not allow required @hasOne fields', () => {
-    expect(() =>
-      verifySchema(
-        `
-        type Profile @model {
-          author: Author @belongsTo
-        }
-
-        type Author @model {
-          profile: Profile! @hasOne
-        }
-      `,
-        false,
-      ),
-    ).toThrow('@hasOne cannot be used on required fields. Modify Author.profile to be optional.');
-  });
-
-  test('allows required @hasOne fields', () => {
-    expect(() =>
-      verifySchema(
-        `
-        type Profile @model {
-          author: Author @belongsTo
-        }
-
-        type Author @model {
-          profile: Profile! @hasOne
-        }
-      `,
-        true,
-      ),
-    ).not.toThrow();
+            type Author @model {
+              profile: Profile! @hasOne
+            }
+          `,
+          false,
+        ),
+      ).toThrow('@hasOne cannot be used on required fields. Modify Author.profile to be optional.');
+    });
   });
 });
