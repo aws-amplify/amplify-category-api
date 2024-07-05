@@ -24,6 +24,7 @@ import { OnEventResponse } from '../amplify-table-manager-lambda-types';
 import * as cfnResponse from './cfn-response';
 import { startExecution } from './outbound';
 import { getEnv, log } from './util';
+import { CfnTag } from 'aws-cdk-lib';
 
 const ddbClient = new DynamoDB();
 const lambdaClient = new Lambda();
@@ -223,7 +224,7 @@ const processOnEvent = async (
       Object.values(tableDef.tags ?? []).forEach((tag) => {
         newTags.push({ Key: tag.key, Value: tag.value });
       });
-      if (currentTableTags.length !== tableDef.tags?.length && tableDef.tags?.length) {
+      if (requiresTagsUpdate(currentTableTags, newTags)) {
         console.log('Detected tag changes: ', tableDef.tags);
         await ddbClient.tagResource({
           ResourceArn: describeTableResult.Table.TableArn,
@@ -796,6 +797,32 @@ export const getSseUpdate = (currentState: TableDescription, endState: CustomDDB
     }) as UpdateTableCommandInput;
   }
   return undefined;
+};
+
+/**
+ * Compares the currentState with the tags on the resource provider lambda to determine if the tags are updated
+ * @param currentTags current tags on the table
+ * @param newTags new tags on the lambda
+ * @returns Boolean indicating if the tags are updated
+ */
+export const requiresTagsUpdate = (currentTags: DynamoDBTag[], newTags?: DynamoDBTag[]): boolean => {
+  if (!newTags || newTags.length === 0) {
+    return false;
+  }
+  if (currentTags.length !== newTags.length) {
+    return true;
+  }
+  for (const newTag of newTags) {
+    if (!currentTags.find((currentTag) => currentTag.Key === newTag.Key)) {
+      return true;
+    } else {
+      const currentTag = currentTags.find((tag) => tag.Key === newTag.Key);
+      if (currentTag?.Value !== newTag.Value) {
+        return true;
+      }
+    }
+  }
+  return false;
 };
 
 /**
