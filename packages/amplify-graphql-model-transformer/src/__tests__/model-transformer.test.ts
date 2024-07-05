@@ -2352,6 +2352,46 @@ describe('ModelTransformer:', () => {
       });
     });
 
+    it.only('should set table removal policy to retain', () => {
+      const validSchema = `
+        type Post @model {
+            id: ID!
+            title: String!
+        }
+      `;
+
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer()],
+        transformParameters: {
+          enableGen2Migration: true,
+        },
+      });
+      expect(out).toBeDefined();
+      const postStack = out.stacks['Post'];
+      const template = Template.fromJSON(postStack);
+      template.hasResource('AWS::DynamoDB::Table', {
+        DeletionPolicy: 'Retain',
+        Properties: {
+          TableName: {
+            'Fn::Join': [
+              '',
+              [
+                'Post-',
+                {
+                  Ref: 'referencetotransformerrootstackGraphQLAPI20497F53ApiId',
+                },
+                '-',
+                {
+                  Ref: 'referencetotransformerrootstackenv10C5A902Ref',
+                },
+              ],
+            ],
+          },
+        },
+      });
+    });
+
     describe('does not add SQL data sources to mapping', () => {
       test.each(sqlDatasources)('%s', (dbType) => {
         const validSchema = `
