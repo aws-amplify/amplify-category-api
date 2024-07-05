@@ -20,5 +20,5 @@ export const defaultTranslationBehavior: TranslationBehavior = {
   enableTransformerCfnOutputs: false,
   allowDestructiveGraphqlSchemaUpdates: false,
   replaceTableUponGsiUpdate: false,
-  allowGen1Patterns: true,
+  _allowGen1Patterns: true,
 };

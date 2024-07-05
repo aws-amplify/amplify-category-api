@@ -17,13 +17,13 @@ const verifySchema = (schema: string, allowGen1Patterns: boolean): void => {
       apiKeyConfig: { expires: cdk.Duration.days(7) },
     },
     translationBehavior: {
-      allowGen1Patterns,
+      _allowGen1Patterns: allowGen1Patterns,
     },
   });
   Template.fromStack(stack);
 };
 
-describe('allowGen1Patterns', () => {
+describe('_allowGen1Patterns', () => {
   test('defaults to allow', () => {
     const schema = `
       type Post @model {
@@ -46,7 +46,7 @@ describe('allowGen1Patterns', () => {
     ).not.toThrow();
   });
 
-  describe('allowGen1Patterns: true', () => {
+  describe('_allowGen1Patterns: true', () => {
     test('allows @manyToMany', () => {
       expect(() =>
         verifySchema(
@@ -92,7 +92,7 @@ describe('allowGen1Patterns', () => {
               apiKeyConfig: { expires: cdk.Duration.days(7) },
             },
             translationBehavior: {
-              allowGen1Patterns: true,
+              _allowGen1Patterns: true,
             },
             predictionsBucket: new Bucket(stack, 'myfakebucket'),
           }),
@@ -205,7 +205,7 @@ describe('allowGen1Patterns', () => {
     });
   });
 
-  describe('allowGen1Patterns: false', () => {
+  describe('_allowGen1Patterns: false', () => {
     test('does not allow @manyToMany', () => {
       expect(() =>
         verifySchema(
