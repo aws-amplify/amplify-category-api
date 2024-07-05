@@ -65,3 +65,13 @@ export const testRelationalFieldMapping = (resolverName: string, tableName: stri
   expect(out.resolvers[resolverName]).toContain(`lambdaInput.table = "${tableName}"`);
   expect(out.resolvers[resolverName]).toMatchSnapshot();
 };
+
+export const testRelationalNonScalarFieldsMapping = (resolverName: string, nonScalarFields: string, out: DeploymentResources): void => {
+  expect(out.resolvers[resolverName]).toContain(`lambdaInput.args.metadata.nonScalarFields = ${nonScalarFields}`);
+  expect(out.resolvers[resolverName]).toMatchSnapshot();
+};
+
+export const testRelationalArrayFieldsMapping = (resolverName: string, arrayFields: string, out: DeploymentResources): void => {
+  expect(out.resolvers[resolverName]).toContain(`lambdaInput.args.metadata.arrayFields = ${arrayFields}`);
+  expect(out.resolvers[resolverName]).toMatchSnapshot();
+};

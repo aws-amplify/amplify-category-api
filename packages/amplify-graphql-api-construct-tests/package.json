@@ -24,7 +24,7 @@
     "@aws-amplify/auth-construct-alpha": "^0.5.6",
     "@aws-amplify/core": "^2.1.0",
     "@aws-amplify/graphql-api-construct": "1.11.1",
-    "@aws-cdk/aws-cognito-identitypool-alpha": "2.80.0-alpha.0",
+    "@aws-cdk/aws-cognito-identitypool-alpha": "2.129.0-alpha.0",
     "@aws-sdk/client-cognito-identity-provider": "3.338.0",
     "@aws-sdk/client-lambda": "3.338.0",
     "@aws-sdk/client-rds": "3.338.0",
@@ -39,14 +39,14 @@
     "node-fetch": "^2.6.7"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-cli-core": "^4.2.10"
+    "@aws-amplify/amplify-cli-core": "^4.3.9"
   },
   "devDependencies": {
     "@aws-amplify/graphql-transformer-core": "2.9.2",
     "@aws-amplify/graphql-transformer-interfaces": "3.10.0",
     "@types/node": "^16.11.56",
-    "aws-cdk-lib": "2.80.0",
-    "constructs": "10.0.5",
+    "aws-cdk-lib": "2.129.0",
+    "constructs": "10.3.0",
     "ts-node": "^8.10.2"
   },
   "jest": {

@@ -37,8 +37,8 @@
     "graphql-transformer-common": "4.31.1"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.80.0",
-    "constructs": "^10.0.5"
+    "aws-cdk-lib": "^2.129.0",
+    "constructs": "^10.3.0"
   },
   "devDependencies": {
     "@aws-amplify/graphql-index-transformer": "2.4.6",
