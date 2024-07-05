@@ -4,6 +4,8 @@ import { TranslationBehavior } from '../types';
  * Defaults which will be used by the construct if overrides are not provided.
  * These should not really be updated post-launch, since they're likely breaking changes for customers.
  * Be sure to document default values when adding new keys in the top level `types` file.
+ *
+ * enableGen2Migration should not be exposed as part of TranslationBehavior because it should not be available to use from the construct.
  */
 export const defaultTranslationBehavior: TranslationBehavior & { enableGen2Migration: boolean } = {
   shouldDeepMergeDirectiveConfigDefaults: true,
