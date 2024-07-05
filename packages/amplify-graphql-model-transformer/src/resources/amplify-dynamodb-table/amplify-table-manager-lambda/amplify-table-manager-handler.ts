@@ -44,7 +44,9 @@ export const getLambdaTags = async (functionArn: string): Promise<Record<string,
   const tags = (await lambdaClient.send(command)).Tags ?? {};
   const result: Record<string, string>[] = [];
   Object.keys(tags).forEach((key) => {
-    if (key.startsWith('created-by') || key.startsWith('amplify:')) {
+    // Do not include the cloudformation tags.
+    // These tags contain information about the lambda function and it is not necessary to include them in the tags of the table.
+    if (!key.startsWith('aws:cloudformation:')) {
       result.push({
         key: key,
         value: tags[key],
