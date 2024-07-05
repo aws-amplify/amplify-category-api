@@ -290,6 +290,7 @@ const generateTransformParameters = (
     enableTransformerCfnOutputs: true,
     allowDestructiveGraphqlSchemaUpdates: false,
     replaceTableUponGsiUpdate: false,
+    // TODO: decide name before merging to main
     enableGen2Migration: featureFlagProvider.getBoolean('enableGen2Migration'),
   };
 };
