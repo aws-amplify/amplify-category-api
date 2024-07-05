@@ -53,3 +53,8 @@ export const log = (msg: string, ...other: any[]) => {
     other.map((o) => (typeof o === 'object' ? JSON.stringify(o, undefined, 2) : o)),
   );
 };
+
+export const isEqual = (right: object | boolean | undefined, left: object | boolean | undefined): boolean => {
+  // TODO: define the isEqual logic
+  return true;
+};

@@ -19,7 +19,7 @@ import {
 import { OnEventResponse } from '../amplify-table-manager-lambda-types';
 import * as cfnResponse from './cfn-response';
 import { startExecution } from './outbound';
-import { getEnv, log } from './util';
+import { getEnv, log, isEqual } from './util';
 
 const ddbClient = new DynamoDB();
 
@@ -1014,6 +1014,103 @@ export const toCreateTableInput = (props: CustomDDB.Input): CreateTableCommandIn
   return parsePropertiesToDynamoDBInput(createTableInput) as CreateTableCommandInput;
 };
 
+type ExpectedTableProperties = Partial<
+  Pick<
+    TableDescription,
+    | 'AttributeDefinitions'
+    | 'KeySchema'
+    | 'GlobalSecondaryIndexes'
+    | 'BillingModeSummary'
+    | 'ProvisionedThroughput'
+    | 'StreamSpecification'
+    | 'SSEDescription'
+    | 'DeletionProtectionEnabled'
+  >
+>;
+
+/**
+ * Get the expected table properties given the input properties.
+ * This is used to ensure the imported table matches the input properties.
+ *
+ * @param props input properties for the table creation.
+ */
+export const getExpectedTableProperties = (props: CustomDDB.Input): ExpectedTableProperties => {
+  // TODO: get the expected props
+  return {
+    /*
+    AttributeDefinitions: props.attributeDefinitions,
+    KeySchema: props.keySchema,
+    GlobalSecondaryIndexes: props.globalSecondaryIndexes,
+    BillingMode: props.globalSecondaryIndexes,
+    ProvisionedThroughput: props.provisionedThroughput,
+    StreamSpecification: props.streamSpecification
+      ? {
+          StreamEnabled: true,
+          StreamViewType: props.streamSpecification.streamViewType,
+        }
+      : undefined,
+    SSESpecification: props.sseSpecification ? { Enabled: props.sseSpecification.sseEnabled } : undefined,
+    DeletionProtectionEnabled: props.deletionProtectionEnabled,
+    */
+  };
+};
+
+/**
+ * Util function to validate imported table properties against expected properties.
+ * @param importedTable table to import
+ * @param expectedTableProperties expected properties that the imported table is validated against
+ * @throws Will throw if any properties do not match the expected values
+ */
+export const validateImportedTableProperties = (
+  importedTable: TableDescription,
+  expectedTableProperties: ExpectedTableProperties,
+): void => {
+  const errors: string[] = [];
+  const addError = (propertyName: string, actual: object | boolean | undefined, expected: object | boolean | undefined): void => {
+    errors.push(
+      `${propertyName} does not match the expected value.\nActual: ${JSON.stringify(actual)}\nExpected: ${JSON.stringify(expected)}`,
+    );
+  };
+
+  // for loop can't be used here because of TS error:
+  // type 'string' can't be used to index type 'TableDescription'
+  if (!isEqual(importedTable.AttributeDefinitions, expectedTableProperties.AttributeDefinitions)) {
+    addError('AttributeDefintions', importedTable.AttributeDefinitions, expectedTableProperties.AttributeDefinitions);
+  }
+
+  if (!isEqual(importedTable.KeySchema, expectedTableProperties.KeySchema)) {
+    addError('KeySchema', importedTable.KeySchema, expectedTableProperties.KeySchema);
+  }
+
+  if (!isEqual(importedTable.GlobalSecondaryIndexes, expectedTableProperties.GlobalSecondaryIndexes)) {
+    addError('GlobalSecondaryIndexes', importedTable.GlobalSecondaryIndexes, expectedTableProperties.GlobalSecondaryIndexes);
+  }
+
+  if (!isEqual(importedTable.BillingModeSummary, expectedTableProperties.BillingModeSummary)) {
+    addError('BillingMode', importedTable.BillingModeSummary, expectedTableProperties.BillingModeSummary);
+  }
+
+  if (!isEqual(importedTable.ProvisionedThroughput, expectedTableProperties.ProvisionedThroughput)) {
+    addError('ProvisionedThroughput', importedTable.ProvisionedThroughput, expectedTableProperties.ProvisionedThroughput);
+  }
+
+  if (!isEqual(importedTable.StreamSpecification, expectedTableProperties.StreamSpecification)) {
+    addError('StreamSpecification', importedTable.StreamSpecification, expectedTableProperties.StreamSpecification);
+  }
+
+  if (!isEqual(importedTable.SSEDescription, expectedTableProperties.SSEDescription)) {
+    addError('SSEDescription', importedTable.SSEDescription, expectedTableProperties.SSEDescription);
+  }
+
+  if (!isEqual(importedTable.DeletionProtectionEnabled, expectedTableProperties.DeletionProtectionEnabled)) {
+    addError('DeletionProtectionEnabled', importedTable.DeletionProtectionEnabled, expectedTableProperties.DeletionProtectionEnabled);
+  }
+
+  if (errors.length > 0) {
+    throw new Error(`Imported table properties did not match the expected table properties.\n${errors.join('\n')}`);
+  }
+};
+
 /**
  * Util function to make CreateTable DynamoDB call
  * @param input CreateTableInput object
@@ -1301,6 +1398,8 @@ const importTable = async (tableDef: CustomDDB.Input): Promise<AWSCDKAsyncCustom
     throw new Error(`Could not find ${tableDef.tableName} to update`);
   }
   log('Current table state: ', describeTableResult);
+  const expectedTableProperties = getExpectedTableProperties(tableDef);
+  validateImportedTableProperties(describeTableResult.Table, expectedTableProperties);
   const result = {
     PhysicalResourceId: describeTableResult.Table.TableName,
     Data: {
