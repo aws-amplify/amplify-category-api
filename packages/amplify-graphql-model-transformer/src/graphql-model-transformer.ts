@@ -345,7 +345,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       const { scope } = context.stackManager;
       new cdk.CfnOutput(cdk.Stack.of(scope), 'DataSourceMappingOutput', {
         value: cdk.Stack.of(scope).toJsonString(dataSourceMapping),
-        description: 'Mapping of model name to data source ARN',
+        description: 'Mapping of model name to data source table name.',
         exportName: cdk.Fn.join(':', [cdk.Aws.STACK_NAME, 'DataSourceMappingOutput']),
       });
     }
