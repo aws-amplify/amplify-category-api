@@ -2352,7 +2352,7 @@ describe('ModelTransformer:', () => {
       });
     });
 
-    it.only('should set table removal policy to retain', () => {
+    it('should set table removal policy to retain', () => {
       const validSchema = `
         type Post @model {
             id: ID!
