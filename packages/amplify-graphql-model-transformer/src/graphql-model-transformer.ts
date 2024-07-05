@@ -330,7 +330,14 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       Object.assign(
         dataSourceMapping,
         Object.fromEntries(
-          Object.entries(generator.getDatasourceMap()).map(([modelName, datasource]) => [modelName, datasource.ds.attrDataSourceArn]),
+          Object.entries(generator.getDatasourceMap())
+            .filter(([, datasource]) => datasource.ds.type === 'AMAZON_DYNAMODB')
+            .map(([modelName, datasource]) => {
+              if (datasource.ds.dynamoDbConfig && !cdk.isResolvableObject(datasource.ds.dynamoDbConfig)) {
+                return [modelName, datasource.ds.dynamoDbConfig.tableName];
+              }
+              throw new Error(`Unable to construct data source mapping. Could not resolve table name for ${modelName}`);
+            }),
         ),
       );
     });
