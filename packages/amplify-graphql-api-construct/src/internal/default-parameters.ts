@@ -4,10 +4,8 @@ import { TranslationBehavior } from '../types';
  * Defaults which will be used by the construct if overrides are not provided.
  * These should not really be updated post-launch, since they're likely breaking changes for customers.
  * Be sure to document default values when adding new keys in the top level `types` file.
- *
- * enableGen2Migration should not be exposed as part of TranslationBehavior because it should not be available to use from the construct.
  */
-export const defaultTranslationBehavior: TranslationBehavior & { enableGen2Migration: boolean } = {
+export const defaultTranslationBehavior: TranslationBehavior = {
   shouldDeepMergeDirectiveConfigDefaults: true,
   disableResolverDeduping: true,
   sandboxModeEnabled: false,
@@ -22,6 +20,4 @@ export const defaultTranslationBehavior: TranslationBehavior & { enableGen2Migra
   enableTransformerCfnOutputs: false,
   allowDestructiveGraphqlSchemaUpdates: false,
   replaceTableUponGsiUpdate: false,
-  // migrating from construct -> Gen2 is not supported
-  enableGen2Migration: false,
 };
