@@ -16,10 +16,11 @@ import {
   UpdateTableCommandInput,
   UpdateTimeToLiveCommandInput,
 } from '@aws-sdk/client-dynamodb';
+import isEqual from 'lodash.isequal';
 import { OnEventResponse } from '../amplify-table-manager-lambda-types';
 import * as cfnResponse from './cfn-response';
 import { startExecution } from './outbound';
-import { getEnv, log, isEqual } from './util';
+import { getEnv, log } from './util';
 
 const ddbClient = new DynamoDB();
 
