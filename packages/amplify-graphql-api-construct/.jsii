@@ -9,6 +9,7 @@
     "@aws-amplify/backend-output-schemas": "^0.4.0",
     "@aws-amplify/backend-output-storage": "^0.2.2",
     "@aws-amplify/graphql-auth-transformer": "3.6.2",
+    "@aws-amplify/graphql-conversation-transformer": "^0.1.0",
     "@aws-amplify/graphql-default-value-transformer": "2.3.10",
     "@aws-amplify/graphql-directives": "1.1.0",
     "@aws-amplify/graphql-function-transformer": "2.1.25",
@@ -8452,5 +8453,5 @@
     }
   },
   "version": "1.11.1",
-  "fingerprint": "fLRs0exr9MTBPSkZ5TNAF8Jli5TTVfukC9TLuSg2Wyw="
+  "fingerprint": "6a07Cvz30LL7b0Begp/OUIlbl41gH3jJToY5OM2fEgw="
 }
