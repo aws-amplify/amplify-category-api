@@ -63,22 +63,23 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
   const authTransformer = new AuthTransformer();
   const indexTransformer = new IndexTransformer();
   const hasOneTransformer = new HasOneTransformer();
-
+  const hasManyTransformer = new HasManyTransformer();
+  const belongsToTransformer = new BelongsToTransformer();
   const allowGen1Patterns = options?.allowGen1Patterns === undefined ? true : options?.allowGen1Patterns;
 
   // The default list of transformers should match DefaultDirectives in packages/amplify-graphql-directives/src/index.ts
   return [
     modelTransformer,
     new FunctionTransformer(options?.functionNameMap),
-    new ConversationTransformer(),
     new HttpTransformer(),
     ...(allowGen1Patterns ? [new PredictionsTransformer(options?.storageConfig)] : []),
     new PrimaryKeyTransformer(),
     indexTransformer,
-    new HasManyTransformer(),
+    hasManyTransformer,
     hasOneTransformer,
     ...(allowGen1Patterns ? [new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer)] : []),
-    new BelongsToTransformer(),
+    belongsToTransformer,
+    new ConversationTransformer(modelTransformer, hasManyTransformer, belongsToTransformer, authTransformer),
     new DefaultValueTransformer(),
     authTransformer,
     new MapsToTransformer(),

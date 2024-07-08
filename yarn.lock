@@ -487,10 +487,10 @@
     "@turf/boolean-clockwise" "6.5.0"
     camelcase-keys "6.2.2"
 
-"@aws-amplify/graphql-docs-generator@4.2.1":
-  version "4.2.1"
-  resolved "https://registry.npmjs.org/@aws-amplify/graphql-docs-generator/-/graphql-docs-generator-4.2.1.tgz#1069b43f3a796ece7d6ac30f66f75a5103cf3d96"
-  integrity sha512-ReBlY5//mWOmO0FL2ndswB9ku+vpg/JTY9Wwemjm/ibyoLHU1ojtGkPBkKH0CzbpOkIuEkIBLIg9EZ2yca/6oA==
+"@aws-amplify/graphql-docs-generator@4.2.0":
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-docs-generator/-/graphql-docs-generator-4.2.0.tgz#d1c44bb73806f4e6c16c2ce616032297828ba78c"
+  integrity sha512-V9UXceZlYkumgvcHGp7kivTgvhxYcAdc5C+JCJPyDGvowktExdsnEap6WWn0JHmUK2+5ceBIi4BjcEubn+pXVA==
   dependencies:
     graphql "^15.5.0"
     handlebars "4.7.7"

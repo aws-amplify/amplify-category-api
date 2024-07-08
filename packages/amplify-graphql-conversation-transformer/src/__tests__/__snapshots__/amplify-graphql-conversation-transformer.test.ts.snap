@@ -1,64 +1,22 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`conversation route valid schema 1`] = `
-"type Mutation {
-  pirateChat(sessionId: ID, message: String): String @conversation(aiModel: \\"Claude3Haiku\\")
-  angryChat(sessionId: ID, message: String): String @conversation(aiModel: \\"Claude3Haiku\\")
-}
-
-enum ConversationMessageSender {
-  user
-  assistant
-}
-
-type ConversationSessionpirateChat @model(subscriptions: {level: off}, mutations: {update: null}) @auth(rules: [{allow: owner, ownerField: \\"owner\\"}]) {
+"type Foo {
+  bar: Int
   id: ID!
-  name: String
-  metadata: AWSJSON
-  messages: [ConversationMessagepirateChat] @hasMany(references: \\"conversationSessionId\\")
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
 }
 
-type ConversationMessagepirateChat @model(subscriptions: {onUpdate: null, onDelete: null}, mutations: {update: null}) @auth(rules: [{allow: owner, ownerField: \\"owner\\"}]) {
-  id: ID!
-  conversationSessionId: ID!
-  session: ConversationSessionpirateChat @belongsTo(references: \\"conversationSessionId\\")
-  sender: ConversationMessageSender
-  content: String
-  context: AWSJSON
-  uiComponents: [AWSJSON]
-}
-
-type ConversationSessionangryChat @model(subscriptions: {level: off}, mutations: {update: null}) @auth(rules: [{allow: owner, ownerField: \\"owner\\"}]) {
-  id: ID!
-  name: String
-  metadata: AWSJSON
-  messages: [ConversationMessageangryChat] @hasMany(references: \\"conversationSessionId\\")
-}
-
-type ConversationMessageangryChat @model(subscriptions: {onUpdate: null, onDelete: null}, mutations: {update: null}) @auth(rules: [{allow: owner, ownerField: \\"owner\\"}]) {
-  id: ID!
-  conversationSessionId: ID!
-  session: ConversationSessionangryChat @belongsTo(references: \\"conversationSessionId\\")
-  sender: ConversationMessageSender
-  content: String
-  context: AWSJSON
-  uiComponents: [AWSJSON]
-}
-"
-`;
-
-exports[`conversation route valid schema 2`] = `
-"type Mutation {
+type Mutation {
   pirateChat(sessionId: ID, message: String): String
-  angryChat(sessionId: ID, message: String): String
+  createFoo(input: CreateFooInput!, condition: ModelFooConditionInput): Foo
+  updateFoo(input: UpdateFooInput!, condition: ModelFooConditionInput): Foo
+  deleteFoo(input: DeleteFooInput!, condition: ModelFooConditionInput): Foo
   createConversationSessionpirateChat(input: CreateConversationSessionpirateChatInput!, condition: ModelConversationSessionpirateChatConditionInput): ConversationSessionpirateChat
   deleteConversationSessionpirateChat(input: DeleteConversationSessionpirateChatInput!, condition: ModelConversationSessionpirateChatConditionInput): ConversationSessionpirateChat
   createConversationMessagepirateChat(input: CreateConversationMessagepirateChatInput!, condition: ModelConversationMessagepirateChatConditionInput): ConversationMessagepirateChat
   deleteConversationMessagepirateChat(input: DeleteConversationMessagepirateChatInput!, condition: ModelConversationMessagepirateChatConditionInput): ConversationMessagepirateChat
-  createConversationSessionangryChat(input: CreateConversationSessionangryChatInput!, condition: ModelConversationSessionangryChatConditionInput): ConversationSessionangryChat
-  deleteConversationSessionangryChat(input: DeleteConversationSessionangryChatInput!, condition: ModelConversationSessionangryChatConditionInput): ConversationSessionangryChat
-  createConversationMessageangryChat(input: CreateConversationMessageangryChatInput!, condition: ModelConversationMessageangryChatConditionInput): ConversationMessageangryChat
-  deleteConversationMessageangryChat(input: DeleteConversationMessageangryChatInput!, condition: ModelConversationMessageangryChatConditionInput): ConversationMessageangryChat
 }
 
 enum ConversationMessageSender {
@@ -80,29 +38,6 @@ type ConversationMessagepirateChat {
   id: ID!
   conversationSessionId: ID!
   session: ConversationSessionpirateChat
-  sender: ConversationMessageSender
-  content: String
-  context: AWSJSON
-  uiComponents: [AWSJSON]
-  createdAt: AWSDateTime!
-  updatedAt: AWSDateTime!
-  owner: String
-}
-
-type ConversationSessionangryChat {
-  id: ID!
-  name: String
-  metadata: AWSJSON
-  messages(filter: ModelConversationMessageangryChatFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelConversationMessageangryChatConnection
-  createdAt: AWSDateTime!
-  updatedAt: AWSDateTime!
-  owner: String
-}
-
-type ConversationMessageangryChat {
-  id: ID!
-  conversationSessionId: ID!
-  session: ConversationSessionangryChat
   sender: ConversationMessageSender
   content: String
   context: AWSJSON
@@ -262,6 +197,69 @@ enum ModelSortDirection {
   DESC
 }
 
+type ModelFooConnection {
+  items: [Foo]!
+  nextToken: String
+}
+
+input ModelFooFilterInput {
+  bar: ModelIntInput
+  id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelFooFilterInput]
+  or: [ModelFooFilterInput]
+  not: ModelFooFilterInput
+}
+
+type Query {
+  getFoo(id: ID!): Foo
+  listFoos(filter: ModelFooFilterInput, limit: Int, nextToken: String): ModelFooConnection
+  getConversationSessionpirateChat(id: ID!): ConversationSessionpirateChat
+  listConversationSessionpirateChats(filter: ModelConversationSessionpirateChatFilterInput, limit: Int, nextToken: String): ModelConversationSessionpirateChatConnection
+  getConversationMessagepirateChat(id: ID!): ConversationMessagepirateChat
+  listConversationMessagepirateChats(filter: ModelConversationMessagepirateChatFilterInput, limit: Int, nextToken: String): ModelConversationMessagepirateChatConnection
+}
+
+input ModelFooConditionInput {
+  bar: ModelIntInput
+  and: [ModelFooConditionInput]
+  or: [ModelFooConditionInput]
+  not: ModelFooConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+}
+
+input CreateFooInput {
+  bar: Int
+  id: ID
+}
+
+input UpdateFooInput {
+  bar: Int
+  id: ID!
+}
+
+input DeleteFooInput {
+  id: ID!
+}
+
+input ModelSubscriptionFooFilterInput {
+  bar: ModelSubscriptionIntInput
+  id: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionFooFilterInput]
+  or: [ModelSubscriptionFooFilterInput]
+}
+
+type Subscription {
+  onCreateFoo(filter: ModelSubscriptionFooFilterInput): Foo @aws_subscribe(mutations: [\\"createFoo\\"])
+  onUpdateFoo(filter: ModelSubscriptionFooFilterInput): Foo @aws_subscribe(mutations: [\\"updateFoo\\"])
+  onDeleteFoo(filter: ModelSubscriptionFooFilterInput): Foo @aws_subscribe(mutations: [\\"deleteFoo\\"])
+  onCreateConversationMessagepirateChat(filter: ModelSubscriptionConversationMessagepirateChatFilterInput, owner: String): ConversationMessagepirateChat @aws_subscribe(mutations: [\\"createConversationMessagepirateChat\\"])
+}
+
 type ModelConversationSessionpirateChatConnection {
   items: [ConversationSessionpirateChat]!
   nextToken: String
@@ -277,17 +275,6 @@ input ModelConversationSessionpirateChatFilterInput {
   or: [ModelConversationSessionpirateChatFilterInput]
   not: ModelConversationSessionpirateChatFilterInput
   owner: ModelStringInput
-}
-
-type Query {
-  getConversationSessionpirateChat(id: ID!): ConversationSessionpirateChat
-  listConversationSessionpirateChats(filter: ModelConversationSessionpirateChatFilterInput, limit: Int, nextToken: String): ModelConversationSessionpirateChatConnection
-  getConversationMessagepirateChat(id: ID!): ConversationMessagepirateChat
-  listConversationMessagepirateChats(filter: ModelConversationMessagepirateChatFilterInput, limit: Int, nextToken: String): ModelConversationMessagepirateChatConnection
-  getConversationSessionangryChat(id: ID!): ConversationSessionangryChat
-  listConversationSessionangryChats(filter: ModelConversationSessionangryChatFilterInput, limit: Int, nextToken: String): ModelConversationSessionangryChatConnection
-  getConversationMessageangryChat(id: ID!): ConversationMessageangryChat
-  listConversationMessageangryChats(filter: ModelConversationMessageangryChatFilterInput, limit: Int, nextToken: String): ModelConversationMessageangryChatConnection
 }
 
 input ModelConversationSessionpirateChatConditionInput {
@@ -309,11 +296,6 @@ input CreateConversationSessionpirateChatInput {
 
 input DeleteConversationSessionpirateChatInput {
   id: ID!
-}
-
-type Subscription {
-  onCreateConversationMessagepirateChat(filter: ModelSubscriptionConversationMessagepirateChatFilterInput, owner: String): ConversationMessagepirateChat @aws_subscribe(mutations: [\\"createConversationMessagepirateChat\\"])
-  onCreateConversationMessageangryChat(filter: ModelSubscriptionConversationMessageangryChatFilterInput, owner: String): ConversationMessageangryChat @aws_subscribe(mutations: [\\"createConversationMessageangryChat\\"])
 }
 
 type ModelConversationMessagepirateChatConnection {
@@ -379,105 +361,6 @@ input ModelSubscriptionConversationMessagepirateChatFilterInput {
   updatedAt: ModelSubscriptionStringInput
   and: [ModelSubscriptionConversationMessagepirateChatFilterInput]
   or: [ModelSubscriptionConversationMessagepirateChatFilterInput]
-  owner: ModelStringInput
-}
-
-type ModelConversationSessionangryChatConnection {
-  items: [ConversationSessionangryChat]!
-  nextToken: String
-}
-
-input ModelConversationSessionangryChatFilterInput {
-  id: ModelIDInput
-  name: ModelStringInput
-  metadata: ModelStringInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
-  and: [ModelConversationSessionangryChatFilterInput]
-  or: [ModelConversationSessionangryChatFilterInput]
-  not: ModelConversationSessionangryChatFilterInput
-  owner: ModelStringInput
-}
-
-input ModelConversationSessionangryChatConditionInput {
-  name: ModelStringInput
-  metadata: ModelStringInput
-  and: [ModelConversationSessionangryChatConditionInput]
-  or: [ModelConversationSessionangryChatConditionInput]
-  not: ModelConversationSessionangryChatConditionInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
-  owner: ModelStringInput
-}
-
-input CreateConversationSessionangryChatInput {
-  id: ID
-  name: String
-  metadata: AWSJSON
-}
-
-input DeleteConversationSessionangryChatInput {
-  id: ID!
-}
-
-type ModelConversationMessageangryChatConnection {
-  items: [ConversationMessageangryChat]!
-  nextToken: String
-}
-
-input ModelConversationMessageangryChatFilterInput {
-  id: ModelIDInput
-  conversationSessionId: ModelIDInput
-  sender: ModelConversationMessageSenderInput
-  content: ModelStringInput
-  context: ModelStringInput
-  uiComponents: ModelStringInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
-  and: [ModelConversationMessageangryChatFilterInput]
-  or: [ModelConversationMessageangryChatFilterInput]
-  not: ModelConversationMessageangryChatFilterInput
-  owner: ModelStringInput
-}
-
-input ModelConversationMessageangryChatConditionInput {
-  conversationSessionId: ModelIDInput
-  sender: ModelConversationMessageSenderInput
-  content: ModelStringInput
-  context: ModelStringInput
-  uiComponents: ModelStringInput
-  and: [ModelConversationMessageangryChatConditionInput]
-  or: [ModelConversationMessageangryChatConditionInput]
-  not: ModelConversationMessageangryChatConditionInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
-  owner: ModelStringInput
-}
-
-input CreateConversationMessageangryChatInput {
-  id: ID
-  conversationSessionId: ID!
-  sender: ConversationMessageSender
-  content: String
-  context: AWSJSON
-  uiComponents: [AWSJSON]
-}
-
-input DeleteConversationMessageangryChatInput {
-  id: ID!
-}
-
-input ModelSubscriptionConversationMessageangryChatFilterInput {
-  id: ModelSubscriptionIDInput
-  conversationSessionId: ModelSubscriptionIDInput
-  sender: ModelSubscriptionStringInput
-  content: ModelSubscriptionStringInput
-  context: ModelSubscriptionStringInput
-  uiComponents: ModelSubscriptionStringInput
-  createdAt: ModelSubscriptionStringInput
-  updatedAt: ModelSubscriptionStringInput
-  and: [ModelSubscriptionConversationMessageangryChatFilterInput]
-  or: [ModelSubscriptionConversationMessageangryChatFilterInput]
   owner: ModelStringInput
 }
 "

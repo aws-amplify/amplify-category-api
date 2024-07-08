@@ -182,7 +182,10 @@ export class InputFieldWrapper extends GenericFieldWrapper {
       type = unwrapNonNull(field.type);
     } else {
       type =
-        isScalar(field.type) || isEnum(field.type, document)
+        isScalar(field.type) ||
+        isEnum(field.type, document) ||
+        // TODO: temporary hack -- solve this gooder.
+        (field.type.kind === Kind.NAMED_TYPE && field.type.name.value === 'ConversationMessageSender')
           ? field.type
           : withNamedNodeNamed(field.type, ModelResourceIDs.NonModelInputObjectName(getBaseType(field.type)));
     }

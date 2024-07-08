@@ -1,13 +1,19 @@
-import { BelongsToDirective, ConversationDirective, HasManyDirective } from '@aws-amplify/graphql-directives';
+import { BelongsToDirective, ConversationDirective, HasManyDirective, ModelDirective } from '@aws-amplify/graphql-directives';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import {
+  DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
   DirectiveWrapper,
   InvalidDirectiveError,
+  InvalidTransformerError,
   TransformerPluginBase,
   generateGetArgumentsInput,
 } from '@aws-amplify/graphql-transformer-core';
 import {
+  TransformerAuthProvider,
   TransformerContextProvider,
   TransformerPreProcessContextProvider,
+  TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
@@ -33,7 +39,7 @@ import {
   wrapNonNull,
 } from 'graphql-transformer-common';
 import produce from 'immer';
-import { WritableDraft } from 'immer/dist/internal';
+import { WritableDraft, has } from 'immer/dist/internal';
 
 export type ConversationDirectiveConfiguration = {
   parent: ObjectTypeDefinitionNode;
@@ -46,9 +52,22 @@ export type ConversationDirectiveConfiguration = {
 
 export class ConversationTransformer extends TransformerPluginBase {
   private directives: ConversationDirectiveConfiguration[] = [];
+  private modelTransformer: ModelTransformer;
+  private hasManyTransformer: HasManyTransformer;
+  private belongsToTransformer: BelongsToTransformer;
+  private authProvider: TransformerAuthProvider;
 
-  constructor() {
+  constructor(
+    modelTransformer: ModelTransformer,
+    hasManyTransformer: HasManyTransformer,
+    belongsToTransformer: BelongsToTransformer,
+    authProvider: TransformerAuthProvider,
+  ) {
     super('amplify-conversation-transformer', ConversationDirective.definition);
+    this.modelTransformer = modelTransformer;
+    this.hasManyTransformer = hasManyTransformer;
+    this.belongsToTransformer = belongsToTransformer;
+    this.authProvider = authProvider;
   }
 
   field = (
@@ -79,16 +98,16 @@ export class ConversationTransformer extends TransformerPluginBase {
 
   mutateSchema = (ctx: TransformerPreProcessContextProvider): DocumentNode => {
     console.log('>>> invokedMutateSchema');
-    const mutationObjectContainingConversationDirectives = ctx.inputDocument.definitions.filter((definition) =>
-      definition.kind === 'ObjectTypeDefinition' &&
-      definition.name.value === 'Mutation' &&
-      definition.fields?.filter(
-        (mutationFields) => mutationFields.directives?.filter(
-          (directive) => directive.name.value === ConversationDirective.name)
-        )
+    const mutationObjectContainingConversationDirectives = ctx.inputDocument.definitions.filter(
+      (definition) =>
+        definition.kind === 'ObjectTypeDefinition' &&
+        definition.name.value === 'Mutation' &&
+        definition.fields?.filter((mutationFields) =>
+          mutationFields.directives?.filter((directive) => directive.name.value === ConversationDirective.name),
+        ),
     ) as ObjectTypeDefinitionNode[];
 
-    const conversationDirectiveFields = mutationObjectContainingConversationDirectives[0].fields
+    const conversationDirectiveFields = mutationObjectContainingConversationDirectives[0].fields;
     if (!conversationDirectiveFields) {
       throw new Error('No conversation directives found despite expecting them in mutateSchema of conversation-transformer');
     }
@@ -102,11 +121,29 @@ export class ConversationTransformer extends TransformerPluginBase {
         const sessionModelName = `ConversationSession${conversationDirectiveField.name.value}`;
         const messageModelName = `ConversationMessage${conversationDirectiveField.name.value}`;
 
-        const sessionModel = makeConversationSessionModel(sessionModelName, messageModelName, 'conversationSessionId');
-        const messagesModel = makeConversationMessageModel(messageModelName, sessionModel);
+        const referenceFieldName = 'conversationSessionId';
+
+        const sessionAuthDirective = createSessionAuthDirective();
+        const sessionModelDirective = createSessionModelDirective();
+        const sessionMessagesHasManyDirective = createSessionModelMessagesFieldHasManyDirective(referenceFieldName);
+        const sessionMessagesField = createSessionModelMessagesField(sessionMessagesHasManyDirective, messageModelName);
+        const sessionModel = makeConversationSessionModel(sessionModelName, sessionMessagesField, [
+          sessionModelDirective,
+          sessionAuthDirective,
+        ]);
+        // const sessionModel = makeConversationSessionModel(sessionModelName, messageModelName, 'conversationSessionId');
+
+        const messageAuthDirective = createMessageAuthDirective();
+        const messageModelDirective = createMessageModelDirective();
+        const messageSessionFieldBelongsToDirective = createMessageSessionFieldBelongsToDirective(referenceFieldName);
+        const messageSessionField = createMessageSessionField(messageSessionFieldBelongsToDirective, sessionModelName);
+        const messageModel = makeConversationMessageModel(messageModelName, messageSessionField, referenceFieldName, [
+          messageModelDirective,
+          messageAuthDirective,
+        ]);
 
         draft.definitions.push(sessionModel as WritableDraft<ObjectTypeDefinitionNode>);
-        draft.definitions.push(messagesModel as WritableDraft<ObjectTypeDefinitionNode>);
+        draft.definitions.push(messageModel as WritableDraft<ObjectTypeDefinitionNode>);
       }
     });
     return document;
@@ -115,6 +152,59 @@ export class ConversationTransformer extends TransformerPluginBase {
   generateResolvers = (context: TransformerContextProvider): void => {
     console.log('>>> invokedGenerateResolvers');
     // console.log('context in generateResolvers', context);
+  };
+
+  prepare = (ctx: TransformerPrepareStepContextProvider): void => {
+    // running this results in 'Conflicting enum type 'ConversationMessageSender' found.' from output.ts > addEnum
+    ctx.output.addEnum(makeConversationEventSenderType());
+
+    for (const directive of this.directives) {
+      const sessionModelName = `ConversationSession${directive.field.name.value}`;
+      const messageModelName = `ConversationMessage${directive.field.name.value}`;
+      const referenceFieldName = 'conversationSessionId';
+
+      const sessionAuthDirective = createSessionAuthDirective();
+      const sessionModelDirective = createSessionModelDirective();
+      const sessionMessagesHasManyDirective = createSessionModelMessagesFieldHasManyDirective(referenceFieldName);
+      const sessionMessagesField = createSessionModelMessagesField(sessionMessagesHasManyDirective, messageModelName);
+      const sessionModel = makeConversationSessionModel(sessionModelName, sessionMessagesField, [
+        sessionModelDirective,
+        sessionAuthDirective,
+      ]);
+      // const sessionModel = makeConversationSessionModel(sessionModelName, messageModelName, 'conversationSessionId');
+
+      const messageAuthDirective = createMessageAuthDirective();
+      const messageModelDirective = createMessageModelDirective();
+      const messageSessionFieldBelongsToDirective = createMessageSessionFieldBelongsToDirective(referenceFieldName);
+      const messageSessionField = createMessageSessionField(messageSessionFieldBelongsToDirective, sessionModelName);
+      const messageModel = makeConversationMessageModel(messageModelName, messageSessionField, referenceFieldName, [
+        messageModelDirective,
+        messageAuthDirective,
+      ]);
+      // const messagesModel = makeConversationMessageModel(messageModelName, sessionModel);
+          // Conflicting type 'ConversationSessionpirateChat' found.
+      ctx.output.addObject(sessionModel);
+      ctx.output.addObject(messageModel);
+
+      ctx.providerRegistry.registerDataSourceProvider(sessionModel, this.modelTransformer);
+      ctx.providerRegistry.registerDataSourceProvider(messageModel, this.modelTransformer);
+
+      ctx.dataSourceStrategies[sessionModelName] = DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY;
+      ctx.dataSourceStrategies[messageModelName] = DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY;
+
+      this.modelTransformer.object(sessionModel, sessionModelDirective, ctx);
+      this.modelTransformer.object(messageModel, messageModelDirective, ctx);
+
+      this.belongsToTransformer.field(messageModel, messageSessionField, messageSessionFieldBelongsToDirective, ctx);
+      this.hasManyTransformer.field(sessionModel, sessionMessagesField, sessionMessagesHasManyDirective, ctx);
+
+      if (!this.authProvider.object) {
+        // TODO: error message
+        throw new InvalidTransformerError('No auth provider found -- uh oh');
+      }
+      this.authProvider.object(sessionModel, sessionAuthDirective, ctx);
+      this.authProvider.object(messageModel, messageAuthDirective, ctx);
+    }
   };
 }
 
@@ -157,40 +247,8 @@ const makeConversationEventSenderType = (): EnumTypeDefinitionNode => {
   return conversationMessageSender;
 };
 
-const makeConversationSessionModel = (
-  modelName: string,
-  messageModelName: string,
-  referenceFieldName: string,
-): ObjectTypeDefinitionNode => {
-  /*
-    type ConversationSession_pirateChat
-    @model
-    @auth(rules: [{allow: owner, ownerField: "owner"}])
-    {
-        events: [ConversationMessage_pirateChat] @hasMany(references: "conversationSessionId")
-    }
-  */
-
-  // model directives
-
-  const subscriptionsOffValue: ObjectValueNode = {
-    kind: Kind.OBJECT,
-    fields: [
-      {
-        kind: Kind.OBJECT_FIELD,
-        name: { kind: Kind.NAME, value: 'level' },
-        value: { kind: Kind.ENUM, value: 'off' },
-      },
-  ],
-};
-  const modelDirective = makeDirective('model', [
-    makeArgument('subscriptions', subscriptionsOffValue),
-    makeArgument('mutations', makeValueNode({ update: null })),
-  ]);
-
-  // const authDirective = makeDirective('auth', [makeArgument('rules', makeValueNode([{ allow: 'owner', ownerField: 'owner' }]))]);
-
-  const authDirective = makeDirective('auth', [
+const createSessionAuthDirective = (): DirectiveNode => {
+  return makeDirective('auth', [
     makeArgument('rules', {
       kind: Kind.LIST,
       values: [
@@ -212,26 +270,116 @@ const makeConversationSessionModel = (
       ],
     }),
   ]);
+};
+
+const createSessionModelDirective = (): DirectiveNode => {
+  const subscriptionsOffValue: ObjectValueNode = {
+    kind: Kind.OBJECT,
+    fields: [
+      {
+        kind: Kind.OBJECT_FIELD,
+        name: { kind: Kind.NAME, value: 'level' },
+        value: { kind: Kind.ENUM, value: 'off' },
+      },
+    ],
+  };
+  return makeDirective('model', [
+    makeArgument('subscriptions', subscriptionsOffValue),
+    makeArgument('mutations', makeValueNode({ update: null })),
+  ]);
+};
+
+const createSessionModelMessagesFieldHasManyDirective = (fieldName: string): DirectiveNode => {
+  const referencesArg = makeArgument('references', makeValueNode(fieldName));
+  return makeDirective(HasManyDirective.name, [referencesArg]);
+};
+
+const createSessionModelMessagesField = (hasManyDirective: DirectiveNode, typeName: string): FieldDefinitionNode => {
+  return makeField('messages', [], makeListType(makeNamedType(typeName)), [hasManyDirective]);
+};
+
+const makeConversationSessionModel = (
+  modelName: string,
+  messagesField: FieldDefinitionNode,
+  typeLevelDirectives: DirectiveNode[],
+  // messageModelName: string,
+  // referenceFieldName: string,
+): ObjectTypeDefinitionNode => {
+  /*
+    type ConversationSession_pirateChat
+    @model
+    @auth(rules: [{allow: owner, ownerField: "owner"}])
+    {
+        events: [ConversationMessage_pirateChat] @hasMany(references: "conversationSessionId")
+    }
+  */
 
   // field directives
-  const referencesArg = makeArgument('references', makeValueNode(referenceFieldName));
-  const hasManyDirective = makeDirective(HasManyDirective.name, [referencesArg]);
+  // const referencesArg = makeArgument('references', makeValueNode(referenceFieldName));
+  // const hasManyDirective = makeDirective(HasManyDirective.name, [referencesArg]);
 
   // fields
   const id = makeField('id', [], wrapNonNull(makeNamedType('ID')));
   const name = makeField('name', [], makeNamedType('String'));
   const metadata = makeField('metadata', [], makeNamedType('AWSJSON'));
-  const messages = makeField('messages', [], makeListType(makeNamedType(messageModelName)), [hasManyDirective]);
+  // const messages = makeField('messages', [], makeListType(makeNamedType(messageModelName)), [hasManyDirective]);
 
   const object = {
     ...blankObject(modelName),
-    fields: [id, name, metadata, messages],
-    directives: [modelDirective, authDirective],
+    fields: [id, name, metadata, messagesField],
+    directives: typeLevelDirectives,
   };
   return object;
 };
 
-const makeConversationMessageModel = (modelName: string, sessionModel: ObjectTypeDefinitionNode): ObjectTypeDefinitionNode => {
+const createMessageModelDirective = (): DirectiveNode => {
+  return makeDirective('model', [
+    makeArgument('subscriptions', makeValueNode({ onUpdate: null, onDelete: null })),
+    makeArgument('mutations', makeValueNode({ update: null })),
+  ]);
+};
+
+const createMessageAuthDirective = (): DirectiveNode => {
+  return makeDirective('auth', [
+    makeArgument('rules', {
+      kind: Kind.LIST,
+      values: [
+        {
+          kind: Kind.OBJECT,
+          fields: [
+            {
+              kind: Kind.OBJECT_FIELD,
+              name: { kind: Kind.NAME, value: 'allow' },
+              value: { kind: Kind.ENUM, value: 'owner' },
+            },
+            {
+              kind: Kind.OBJECT_FIELD,
+              name: { kind: Kind.NAME, value: 'ownerField' },
+              value: { kind: Kind.STRING, value: 'owner' },
+            },
+          ],
+        },
+      ],
+    }),
+  ]);
+};
+
+const createMessageSessionFieldBelongsToDirective = (referenceFieldName: string): DirectiveNode => {
+  const referencesArg = makeArgument('references', makeValueNode(referenceFieldName));
+  return makeDirective(BelongsToDirective.name, [referencesArg]);
+};
+
+const createMessageSessionField = (belongsToDirective: DirectiveNode, typeName: string): FieldDefinitionNode => {
+  return makeField('session', [], makeNamedType(typeName), [belongsToDirective]);
+};
+
+const makeConversationMessageModel = (
+  modelName: string,
+  sessionField: FieldDefinitionNode,
+  referenceFieldName: string,
+  typeDirectives: DirectiveNode[],
+  // sessionModel: ObjectTypeDefinitionNode
+): ObjectTypeDefinitionNode => {
   /*
   type ConversationEvent<route-name>
   @model(
@@ -255,44 +403,12 @@ const makeConversationMessageModel = (modelName: string, sessionModel: ObjectTyp
   */
 
   // model directives
-  const modelDirective = makeDirective('model', [
-    makeArgument('subscriptions', makeValueNode({ onUpdate: null, onDelete: null })),
-    makeArgument('mutations', makeValueNode({ update: null })),
-  ]);
-
-  const authDirective = makeDirective('auth', [
-    makeArgument('rules', {
-      kind: Kind.LIST,
-      values: [
-        {
-          kind: Kind.OBJECT,
-          fields: [
-            {
-              kind: Kind.OBJECT_FIELD,
-              name: { kind: Kind.NAME, value: 'allow' },
-              value: { kind: Kind.ENUM, value: 'owner' },
-            },
-            {
-              kind: Kind.OBJECT_FIELD,
-              name: { kind: Kind.NAME, value: 'ownerField' },
-              value: { kind: Kind.STRING, value: 'owner' },
-            },
-          ],
-        },
-      ],
-    }),
-  ]);
-
   // field directives
-  const makeBelongsToDirective = (referenceField: FieldDefinitionNode): DirectiveNode => {
-    const referencesArg = makeArgument('references', makeValueNode(referenceField.name.value));
-    return makeDirective(BelongsToDirective.name, [referencesArg]);
-  };
 
   // fields
   const id = makeField('id', [], wrapNonNull(makeNamedType('ID')));
-  const conversationSessionId = makeField('conversationSessionId', [], wrapNonNull(makeNamedType('ID')));
-  const session = makeField('session', [], makeNamedType(sessionModel.name.value), [makeBelongsToDirective(conversationSessionId)]);
+  const conversationSessionId = makeField(referenceFieldName, [], wrapNonNull(makeNamedType('ID')));
+  // const session = makeField('session', [], makeNamedType(sessionModel.name.value), [makeBelongsToDirective(conversationSessionId)]);
   const sender = makeField('sender', [], makeNamedType('ConversationMessageSender'));
   const content = makeField('content', [], makeNamedType('String'));
   const context = makeField('context', [], makeNamedType('AWSJSON'));
@@ -300,8 +416,8 @@ const makeConversationMessageModel = (modelName: string, sessionModel: ObjectTyp
 
   const object = {
     ...blankObject(modelName),
-    fields: [id, conversationSessionId, session, sender, content, context, uiComponents],
-    directives: [modelDirective, authDirective],
+    fields: [id, conversationSessionId, sessionField, sender, content, context, uiComponents],
+    directives: typeDirectives,
   };
 
   return object;

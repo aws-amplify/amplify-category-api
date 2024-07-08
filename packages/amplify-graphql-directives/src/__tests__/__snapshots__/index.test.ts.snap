@@ -224,6 +224,18 @@ Object {
 }
 `;
 
+exports[`Directive Definitions ConversationDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @conversation(
+    aiModel: String
+  ) on FIELD_DEFINITION
+",
+  "name": "conversation",
+}
+`;
+
 exports[`Directive Definitions DefaultDirective 1`] = `
 Object {
   "defaults": Object {},

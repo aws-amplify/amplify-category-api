@@ -448,6 +448,8 @@ export const overrideIndexAtCfnLevel = (ctx: TransformerContextProvider, typeNam
   } else {
     const cfnTable = table.table.node.defaultChild;
     const idx = table.globalSecondaryIndexes.length - 1;
+    // TODO: figure out why addOverride (really defaultChild) is undefined for hasMany generated from conversation transformer.
+    // Is this because we're not invoking the index transformer???
     cfnTable.addOverride(`Properties.globalSecondaryIndexes.${idx}`, indexInfo);
   }
 };

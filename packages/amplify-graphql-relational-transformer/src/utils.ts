@@ -441,13 +441,20 @@ export const getRelatedType = (
 ): ObjectTypeDefinitionNode => {
   const { field } = config;
   const relatedTypeName = getBaseType(field.type);
+
   const relatedType = ctx.inputDocument.definitions.find(
     (d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === relatedTypeName,
   ) as ObjectTypeDefinitionNode | undefined;
 
   if (!relatedType) {
-    throw new Error(`Could not find related type with name ${relatedTypeName} while processing relationships.`);
+    const outputRelatedType = ctx.output.getObject(relatedTypeName);
+    if (outputRelatedType) {
+      return outputRelatedType
+    } else {
+      throw new Error(`Could not find related type with name ${relatedTypeName} while processing relationships.`);
+    }
   }
+
   return relatedType;
 };
 
