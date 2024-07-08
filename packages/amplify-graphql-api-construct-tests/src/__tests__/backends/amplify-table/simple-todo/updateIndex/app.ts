@@ -52,8 +52,8 @@ todoTable.pointInTimeRecoveryEnabled = true;
 todoTable.sseSpecification = { sseEnabled: false };
 todoTable.streamSpecification = { streamViewType: StreamViewType.KEYS_ONLY };
 
-Tags.of(stack).add('created-by', 'amplify');
-Tags.of(stack).add('amplify:deployment-type', 'pipeline');
-Tags.of(stack).add('amplify:deployment-branch', 'main');
-Tags.of(stack).add('amplify:appId', '123456');
-Tags.of(stack).add('amplify:friendly-name', 'amplifyData');
+Tags.of(stack).add('created-by', 'amplify-updated');
+Tags.of(stack).add('amplify:deployment-type', 'pipeline-updated');
+Tags.of(stack).add('amplify:deployment-branch', 'main-updated');
+Tags.of(stack).add('amplify:appId', '123456-updated');
+Tags.of(stack).add('amplify:friendly-name', 'amplifyData-updated');

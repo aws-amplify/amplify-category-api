@@ -43,9 +43,9 @@ describe('CDK amplify table 1', () => {
     expect(tableTags.Tags.length).toBe(3);
     expect(tableTags.Tags).toEqual(
       expect.arrayContaining([
-        { Key: 'amplify:deployment-type', Value: 'sandbox' },
-        { Key: 'amplify:friendly-name', Value: 'amplifyData' },
-        { Key: 'created-by', Value: 'amplify' },
+        { Key: 'amplify:deployment-type', Value: 'sandbox-original' },
+        { Key: 'amplify:friendly-name', Value: 'amplifyData-original' },
+        { Key: 'created-by', Value: 'amplify-original' },
       ]),
     );
 
@@ -65,11 +65,11 @@ describe('CDK amplify table 1', () => {
     expect(updatedTableTags.Tags.length).toBe(5);
     expect(updatedTableTags.Tags).toEqual(
       expect.arrayContaining([
-        { Key: 'amplify:deployment-type', Value: 'pipeline' },
-        { Key: 'amplify:deployment-branch', Value: 'main' },
-        { Key: 'amplify:appId', Value: '123456' },
-        { Key: 'amplify:friendly-name', Value: 'amplifyData' },
-        { Key: 'created-by', Value: 'amplify' },
+        { Key: 'amplify:deployment-type', Value: 'pipeline-updated' },
+        { Key: 'amplify:deployment-branch', Value: 'main-updated' },
+        { Key: 'amplify:appId', Value: '123456-updated' },
+        { Key: 'amplify:friendly-name', Value: 'amplifyData-updated' },
+        { Key: 'created-by', Value: 'amplify-updated' },
       ]),
     );
   });

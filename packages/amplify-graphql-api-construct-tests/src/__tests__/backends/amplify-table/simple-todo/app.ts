@@ -31,6 +31,6 @@ new AmplifyGraphqlApi(stack, 'GraphqlApi', {
   },
 });
 
-Tags.of(stack).add('created-by', 'amplify');
-Tags.of(stack).add('amplify:deployment-type', 'sandbox');
-Tags.of(stack).add('amplify:friendly-name', 'amplifyData');
+Tags.of(stack).add('created-by', 'amplify-original');
+Tags.of(stack).add('amplify:deployment-type', 'sandbox-original');
+Tags.of(stack).add('amplify:friendly-name', 'amplifyData-original');
