@@ -806,7 +806,7 @@ export const getSseUpdate = (currentState: TableDescription, endState: CustomDDB
  * @returns Boolean indicating if the tags are updated
  */
 export const requiresTagsUpdate = (currentTags: DynamoDBTag[], newTags?: DynamoDBTag[]): boolean => {
-  if (!newTags || newTags.length === 0) {
+  if (!newTags) {
     return false;
   }
   if (currentTags.length !== newTags.length) {
