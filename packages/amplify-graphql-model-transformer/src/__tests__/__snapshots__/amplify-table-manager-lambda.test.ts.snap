@@ -609,7 +609,8 @@ Object {
     "WriteCapacityUnits": 5,
   },
   "SSEDescription": Object {
-    "Enabled": true,
+    "SSEType": "KMS",
+    "Status": "ENABLED",
   },
   "StreamSpecification": Object {
     "StreamEnabled": true,

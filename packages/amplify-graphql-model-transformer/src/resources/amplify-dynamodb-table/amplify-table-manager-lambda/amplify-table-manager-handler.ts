@@ -1015,7 +1015,7 @@ export const toCreateTableInput = (props: CustomDDB.Input): CreateTableCommandIn
   return parsePropertiesToDynamoDBInput(createTableInput) as CreateTableCommandInput;
 };
 
-type ExpectedTableProperties = Partial<
+export type ExpectedTableProperties = Partial<
   Pick<
     TableDescription,
     | 'AttributeDefinitions'
@@ -1045,7 +1045,12 @@ export const getExpectedTableProperties = (createTableInput: CreateTableCommandI
     },
     StreamSpecification: createTableInput.StreamSpecification,
     ProvisionedThroughput: createTableInput.ProvisionedThroughput,
-    SSEDescription: createTableInput.SSESpecification,
+    SSEDescription: createTableInput.SSESpecification
+      ? {
+          SSEType: createTableInput.SSESpecification.SSEType || 'KMS',
+          Status: 'ENABLED',
+        }
+      : undefined,
     DeletionProtectionEnabled: createTableInput.DeletionProtectionEnabled,
   };
 };
@@ -1085,29 +1090,49 @@ export const validateImportedTableProperties = (
     addError('GlobalSecondaryIndexes', importedTable.GlobalSecondaryIndexes, expectedTableProperties.GlobalSecondaryIndexes);
   }
 
-  if (!isEqual(importedTable.BillingModeSummary, expectedTableProperties.BillingModeSummary)) {
-    // don't compare LastUpdateToPayPerRequestDateTime on BillingMode
-    const billingMode = {
-      ...importedTable.BillingModeSummary,
-    };
+  // don't compare LastUpdateToPayPerRequestDateTime on BillingMode
+  const billingMode = importedTable.BillingModeSummary
+    ? {
+        ...importedTable.BillingModeSummary,
+      }
+    : importedTable.BillingModeSummary;
+  if (billingMode) {
     delete billingMode.LastUpdateToPayPerRequestDateTime;
+  }
+  if (!isEqual(billingMode, expectedTableProperties.BillingModeSummary)) {
     addError('BillingModeSummary', billingMode, expectedTableProperties.BillingModeSummary);
   }
 
-  if (!isEqual(importedTable.ProvisionedThroughput, expectedTableProperties.ProvisionedThroughput)) {
-    addError('ProvisionedThroughput', importedTable.ProvisionedThroughput, expectedTableProperties.ProvisionedThroughput);
+  // don't compare LastDecreaseDateTime, LastIncreaseDateTime, and NumberOfDecreasesToday on ProvisionedThroughput
+  const provisionedThroughput = importedTable.ProvisionedThroughput
+    ? {
+        ...importedTable.ProvisionedThroughput,
+      }
+    : importedTable.ProvisionedThroughput;
+  if (provisionedThroughput) {
+    delete provisionedThroughput.LastDecreaseDateTime;
+    delete provisionedThroughput.LastIncreaseDateTime;
+    delete provisionedThroughput.NumberOfDecreasesToday;
+  }
+
+  if (!isEqual(provisionedThroughput, expectedTableProperties.ProvisionedThroughput)) {
+    addError('ProvisionedThroughput', provisionedThroughput, expectedTableProperties.ProvisionedThroughput);
   }
 
   if (!isEqual(importedTable.StreamSpecification, expectedTableProperties.StreamSpecification)) {
     addError('StreamSpecification', importedTable.StreamSpecification, expectedTableProperties.StreamSpecification);
   }
 
-  if (!isEqual(importedTable.SSEDescription, expectedTableProperties.SSEDescription)) {
-    // don't compare Status on SSEDescription
-    const sseDescription = {
-      ...importedTable.SSEDescription,
-    };
+  // don't compare Status on SSEDescription
+  const sseDescription = importedTable.SSEDescription
+    ? {
+        ...importedTable.SSEDescription,
+      }
+    : importedTable.SSEDescription;
+  if (sseDescription) {
     delete sseDescription.Status;
+  }
+  if (!isEqual(sseDescription, expectedTableProperties.SSEDescription)) {
     addError('SSEDescription', sseDescription, expectedTableProperties.SSEDescription);
   }
 

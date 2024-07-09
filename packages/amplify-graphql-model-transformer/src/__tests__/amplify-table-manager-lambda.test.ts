@@ -10,6 +10,7 @@ import {
   isTtlModified,
   validateImportedTableProperties,
   getExpectedTableProperties,
+  ExpectedTableProperties,
 } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
 import * as CustomDDB from '../resources/amplify-dynamodb-table/amplify-table-types';
 import {
@@ -19,6 +20,7 @@ import {
   TimeToLiveDescription,
   UpdateContinuousBackupsCommandInput,
   ContinuousBackupsDescription,
+  AttributeDefinition,
 } from '@aws-sdk/client-dynamodb';
 import { extractTableInputFromEvent } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
 import { RequestType } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda-types';
@@ -1206,5 +1208,458 @@ describe('Custom Resource Lambda Tests', () => {
     const createTableInput = toCreateTableInput(tableDef);
     const expectedTableProperties = getExpectedTableProperties(createTableInput);
     expect(expectedTableProperties).toMatchSnapshot();
+  });
+
+  describe('validateImportedTableProperties', () => {
+    describe('matching properties', () => {
+      test('AttributeDefinitions', () => {
+        const actual: TableDescription = {
+          AttributeDefinitions: [
+            {
+              AttributeName: 'todoId',
+              AttributeType: 'S',
+            },
+            {
+              AttributeName: 'name',
+              AttributeType: 'S',
+            },
+            {
+              AttributeName: 'name2',
+              AttributeType: 'S',
+            },
+          ],
+        };
+        const expected: ExpectedTableProperties = {
+          AttributeDefinitions: [
+            {
+              AttributeName: 'todoId',
+              AttributeType: 'S',
+            },
+            {
+              AttributeName: 'name',
+              AttributeType: 'S',
+            },
+            {
+              AttributeName: 'name2',
+              AttributeType: 'S',
+            },
+          ],
+        };
+
+        expect(() => validateImportedTableProperties(actual, expected)).not.toThrow();
+      });
+
+      test('KeySchema', () => {
+        const actual: TableDescription = {
+          KeySchema: [
+            {
+              AttributeName: 'todoId',
+              KeyType: 'HASH',
+            },
+            {
+              AttributeName: 'name',
+              KeyType: 'RANGE',
+            },
+          ],
+        };
+        const expected: ExpectedTableProperties = {
+          KeySchema: [
+            {
+              AttributeName: 'todoId',
+              KeyType: 'HASH',
+            },
+            {
+              AttributeName: 'name',
+              KeyType: 'RANGE',
+            },
+          ],
+        };
+
+        expect(() => validateImportedTableProperties(actual, expected)).not.toThrow();
+      });
+
+      test('GlobalSecondaryIndexes', () => {
+        const actual: TableDescription = {
+          GlobalSecondaryIndexes: [
+            {
+              IndexName: 'byName2',
+              KeySchema: [
+                {
+                  AttributeName: 'name2',
+                  KeyType: 'HASH',
+                },
+              ],
+              Projection: {
+                ProjectionType: 'ALL',
+              },
+              ProvisionedThroughput: {
+                ReadCapacityUnits: 5,
+                WriteCapacityUnits: 5,
+              },
+            },
+          ],
+        };
+        const expected: ExpectedTableProperties = {
+          GlobalSecondaryIndexes: [
+            {
+              IndexName: 'byName2',
+              KeySchema: [
+                {
+                  AttributeName: 'name2',
+                  KeyType: 'HASH',
+                },
+              ],
+              Projection: {
+                ProjectionType: 'ALL',
+              },
+              ProvisionedThroughput: {
+                ReadCapacityUnits: 5,
+                WriteCapacityUnits: 5,
+              },
+            },
+          ],
+        };
+
+        expect(() => validateImportedTableProperties(actual, expected)).not.toThrow();
+      });
+
+      test('BillingModeSummary', () => {
+        const actual: TableDescription = {
+          BillingModeSummary: {
+            BillingMode: 'PROVISIONED',
+            // should be ignored
+            LastUpdateToPayPerRequestDateTime: new Date(),
+          },
+        };
+        const expected: ExpectedTableProperties = {
+          BillingModeSummary: {
+            BillingMode: 'PROVISIONED',
+          },
+        };
+
+        expect(() => validateImportedTableProperties(actual, expected)).not.toThrow();
+      });
+
+      test('ProvisionedThroughput', () => {
+        const actual: TableDescription = {
+          ProvisionedThroughput: {
+            ReadCapacityUnits: 5,
+            WriteCapacityUnits: 5,
+            // should be ingnored
+            LastDecreaseDateTime: new Date(),
+            LastIncreaseDateTime: new Date(),
+            NumberOfDecreasesToday: 0,
+          },
+        };
+        const expected: ExpectedTableProperties = {
+          ProvisionedThroughput: {
+            ReadCapacityUnits: 5,
+            WriteCapacityUnits: 5,
+          },
+        };
+
+        expect(() => validateImportedTableProperties(actual, expected)).not.toThrow();
+      });
+
+      test('StreamSpecification', () => {
+        const actual: TableDescription = {
+          StreamSpecification: {
+            StreamEnabled: true,
+            StreamViewType: 'NEW_AND_OLD_IMAGES',
+          },
+        };
+        const expected: ExpectedTableProperties = {
+          StreamSpecification: {
+            StreamEnabled: true,
+            StreamViewType: 'NEW_AND_OLD_IMAGES',
+          },
+        };
+
+        expect(() => validateImportedTableProperties(actual, expected)).not.toThrow();
+      });
+
+      test('SSEDescription', () => {
+        const actual: TableDescription = {
+          SSEDescription: {
+            SSEType: 'KMS',
+            // should be ignored
+            Status: 'ENABLED',
+          },
+        };
+        const expected: ExpectedTableProperties = {
+          SSEDescription: {
+            SSEType: 'KMS',
+          },
+        };
+
+        expect(() => validateImportedTableProperties(actual, expected)).not.toThrow();
+      });
+
+      test('DeletionProtectionEnabled', () => {
+        const actual: TableDescription = {
+          DeletionProtectionEnabled: true,
+        };
+        const expected: ExpectedTableProperties = {
+          DeletionProtectionEnabled: true,
+        };
+
+        expect(() => validateImportedTableProperties(actual, expected)).not.toThrow();
+      });
+    });
+
+    describe('non-matching properties', () => {
+      test('AttributeDefinitions', () => {
+        const actual: TableDescription = {
+          AttributeDefinitions: [
+            {
+              AttributeName: 'todoId',
+              AttributeType: 'S',
+            },
+            {
+              AttributeName: 'name',
+              AttributeType: 'S',
+            },
+            {
+              AttributeName: 'name2',
+              AttributeType: 'S',
+            },
+          ],
+        };
+        const expected: ExpectedTableProperties = {
+          AttributeDefinitions: [
+            {
+              AttributeName: 'todoId',
+              AttributeType: 'S',
+            },
+            {
+              AttributeName: 'differentName',
+              AttributeType: 'S',
+            },
+            {
+              AttributeName: 'name2',
+              AttributeType: 'S',
+            },
+          ],
+        };
+
+        expect(() => validateImportedTableProperties(actual, expected)).toThrowErrorMatchingInlineSnapshot(`
+          "Imported table properties did not match the expected table properties.
+          AttributeDefintions does not match the expected value.
+          Actual: [{\\"AttributeName\\":\\"todoId\\",\\"AttributeType\\":\\"S\\"},{\\"AttributeName\\":\\"name\\",\\"AttributeType\\":\\"S\\"},{\\"AttributeName\\":\\"name2\\",\\"AttributeType\\":\\"S\\"}]
+          Expected: [{\\"AttributeName\\":\\"todoId\\",\\"AttributeType\\":\\"S\\"},{\\"AttributeName\\":\\"differentName\\",\\"AttributeType\\":\\"S\\"},{\\"AttributeName\\":\\"name2\\",\\"AttributeType\\":\\"S\\"}]"
+        `);
+      });
+
+      test('KeySchema', () => {
+        const actual: TableDescription = {
+          KeySchema: [
+            {
+              AttributeName: 'todoId',
+              KeyType: 'HASH',
+            },
+            {
+              AttributeName: 'name',
+              KeyType: 'RANGE',
+            },
+          ],
+        };
+        const expected: ExpectedTableProperties = {
+          KeySchema: [
+            {
+              AttributeName: 'todoId',
+              KeyType: 'HASH',
+            },
+            {
+              AttributeName: 'differentName',
+              KeyType: 'RANGE',
+            },
+          ],
+        };
+
+        expect(() => validateImportedTableProperties(actual, expected)).toThrowErrorMatchingInlineSnapshot(`
+          "Imported table properties did not match the expected table properties.
+          KeySchema does not match the expected value.
+          Actual: [{\\"AttributeName\\":\\"todoId\\",\\"KeyType\\":\\"HASH\\"},{\\"AttributeName\\":\\"name\\",\\"KeyType\\":\\"RANGE\\"}]
+          Expected: [{\\"AttributeName\\":\\"todoId\\",\\"KeyType\\":\\"HASH\\"},{\\"AttributeName\\":\\"differentName\\",\\"KeyType\\":\\"RANGE\\"}]"
+        `);
+      });
+
+      test('GlobalSecondaryIndexes', () => {
+        const actual: TableDescription = {
+          GlobalSecondaryIndexes: [
+            {
+              IndexName: 'byName2',
+              KeySchema: [
+                {
+                  AttributeName: 'name2',
+                  KeyType: 'HASH',
+                },
+              ],
+              Projection: {
+                ProjectionType: 'ALL',
+              },
+              ProvisionedThroughput: {
+                ReadCapacityUnits: 5,
+                WriteCapacityUnits: 5,
+              },
+            },
+          ],
+        };
+        const expected: ExpectedTableProperties = {
+          GlobalSecondaryIndexes: [
+            {
+              IndexName: 'byName2',
+              KeySchema: [
+                {
+                  AttributeName: 'name2',
+                  KeyType: 'HASH',
+                },
+              ],
+              Projection: {
+                ProjectionType: 'ALL',
+              },
+              ProvisionedThroughput: {
+                ReadCapacityUnits: 5,
+                WriteCapacityUnits: 10,
+              },
+            },
+          ],
+        };
+
+        expect(() => validateImportedTableProperties(actual, expected)).toThrowErrorMatchingInlineSnapshot(`
+          "Imported table properties did not match the expected table properties.
+          GlobalSecondaryIndexes does not match the expected value.
+          Actual: [{\\"IndexName\\":\\"byName2\\",\\"KeySchema\\":[{\\"AttributeName\\":\\"name2\\",\\"KeyType\\":\\"HASH\\"}],\\"Projection\\":{\\"ProjectionType\\":\\"ALL\\"},\\"ProvisionedThroughput\\":{\\"ReadCapacityUnits\\":5,\\"WriteCapacityUnits\\":5}}]
+          Expected: [{\\"IndexName\\":\\"byName2\\",\\"KeySchema\\":[{\\"AttributeName\\":\\"name2\\",\\"KeyType\\":\\"HASH\\"}],\\"Projection\\":{\\"ProjectionType\\":\\"ALL\\"},\\"ProvisionedThroughput\\":{\\"ReadCapacityUnits\\":5,\\"WriteCapacityUnits\\":10}}]"
+        `);
+      });
+
+      test('BillingModeSummary', () => {
+        const actual: TableDescription = {
+          BillingModeSummary: {
+            BillingMode: 'PROVISIONED',
+            // should be ignored
+            LastUpdateToPayPerRequestDateTime: new Date(),
+          },
+        };
+        const expected: ExpectedTableProperties = {
+          BillingModeSummary: {
+            BillingMode: 'PAY_PER_REQUEST',
+          },
+        };
+
+        expect(() => validateImportedTableProperties(actual, expected)).toThrowErrorMatchingInlineSnapshot(`
+          "Imported table properties did not match the expected table properties.
+          BillingModeSummary does not match the expected value.
+          Actual: {\\"BillingMode\\":\\"PROVISIONED\\"}
+          Expected: {\\"BillingMode\\":\\"PAY_PER_REQUEST\\"}"
+        `);
+      });
+
+      test('ProvisionedThroughput', () => {
+        const actual: TableDescription = {
+          ProvisionedThroughput: {
+            ReadCapacityUnits: 5,
+            WriteCapacityUnits: 5,
+            // should be ingnored
+            LastDecreaseDateTime: new Date(),
+            LastIncreaseDateTime: new Date(),
+            NumberOfDecreasesToday: 0,
+          },
+        };
+        const expected: ExpectedTableProperties = {
+          ProvisionedThroughput: {
+            ReadCapacityUnits: 5,
+            WriteCapacityUnits: 10,
+          },
+        };
+
+        expect(() => validateImportedTableProperties(actual, expected)).toThrowErrorMatchingInlineSnapshot(`
+          "Imported table properties did not match the expected table properties.
+          ProvisionedThroughput does not match the expected value.
+          Actual: {\\"ReadCapacityUnits\\":5,\\"WriteCapacityUnits\\":5}
+          Expected: {\\"ReadCapacityUnits\\":5,\\"WriteCapacityUnits\\":10}"
+        `);
+      });
+
+      test('StreamSpecification', () => {
+        const actual: TableDescription = {
+          StreamSpecification: {
+            StreamEnabled: true,
+            StreamViewType: 'NEW_AND_OLD_IMAGES',
+          },
+        };
+        const expected: ExpectedTableProperties = {
+          StreamSpecification: {
+            StreamEnabled: false,
+            StreamViewType: 'NEW_AND_OLD_IMAGES',
+          },
+        };
+
+        expect(() => validateImportedTableProperties(actual, expected)).toThrowErrorMatchingInlineSnapshot(`
+          "Imported table properties did not match the expected table properties.
+          StreamSpecification does not match the expected value.
+          Actual: {\\"StreamEnabled\\":true,\\"StreamViewType\\":\\"NEW_AND_OLD_IMAGES\\"}
+          Expected: {\\"StreamEnabled\\":false,\\"StreamViewType\\":\\"NEW_AND_OLD_IMAGES\\"}"
+        `);
+      });
+
+      test('SSEDescription', () => {
+        const actual: TableDescription = {
+          SSEDescription: undefined,
+        };
+        const expected: ExpectedTableProperties = {
+          SSEDescription: {
+            SSEType: 'KMS',
+          },
+        };
+
+        expect(() => validateImportedTableProperties(actual, expected)).toThrowErrorMatchingInlineSnapshot(`
+          "Imported table properties did not match the expected table properties.
+          SSEDescription does not match the expected value.
+          Actual: undefined
+          Expected: {\\"SSEType\\":\\"KMS\\"}"
+        `);
+      });
+
+      test('DeletionProtectionEnabled', () => {
+        const actual: TableDescription = {
+          DeletionProtectionEnabled: true,
+        };
+        const expected: ExpectedTableProperties = {
+          DeletionProtectionEnabled: false,
+        };
+
+        expect(() => validateImportedTableProperties(actual, expected)).toThrowErrorMatchingInlineSnapshot(`
+          "Imported table properties did not match the expected table properties.
+          DeletionProtectionEnabled does not match the expected value.
+          Actual: true
+          Expected: false"
+        `);
+      });
+
+      test('multiple errors', () => {
+        const actual: TableDescription = {
+          SSEDescription: undefined,
+          DeletionProtectionEnabled: true,
+        };
+        const expected: ExpectedTableProperties = {
+          SSEDescription: {
+            SSEType: 'KMS',
+          },
+          DeletionProtectionEnabled: false,
+        };
+
+        expect(() => validateImportedTableProperties(actual, expected)).toThrowErrorMatchingInlineSnapshot(`
+          "Imported table properties did not match the expected table properties.
+          SSEDescription does not match the expected value.
+          Actual: undefined
+          Expected: {\\"SSEType\\":\\"KMS\\"}
+          DeletionProtectionEnabled does not match the expected value.
+          Actual: true
+          Expected: false"
+        `);
+      });
+    });
   });
 });
