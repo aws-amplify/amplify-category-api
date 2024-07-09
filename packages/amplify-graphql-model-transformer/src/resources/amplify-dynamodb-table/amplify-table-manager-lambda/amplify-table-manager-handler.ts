@@ -1088,8 +1088,9 @@ export const validateImportedTableProperties = (
   if (!isEqual(importedTable.BillingModeSummary, expectedTableProperties.BillingModeSummary)) {
     // don't compare LastUpdateToPayPerRequestDateTime on BillingMode
     const billingMode = {
-      BillingMode: importedTable.BillingModeSummary?.BillingMode,
+      ...importedTable.BillingModeSummary,
     };
+    delete billingMode.LastUpdateToPayPerRequestDateTime;
     addError('BillingModeSummary', billingMode, expectedTableProperties.BillingModeSummary);
   }
 
@@ -1102,7 +1103,12 @@ export const validateImportedTableProperties = (
   }
 
   if (!isEqual(importedTable.SSEDescription, expectedTableProperties.SSEDescription)) {
-    addError('SSEDescription', importedTable.SSEDescription, expectedTableProperties.SSEDescription);
+    // don't compare Status on SSEDescription
+    const sseDescription = {
+      ...importedTable.SSEDescription,
+    };
+    delete sseDescription.Status;
+    addError('SSEDescription', sseDescription, expectedTableProperties.SSEDescription);
   }
 
   if (!isEqual(importedTable.DeletionProtectionEnabled, expectedTableProperties.DeletionProtectionEnabled)) {
