@@ -8,6 +8,8 @@ import {
   getDeletionProtectionUpdate,
   extractOldTableInputFromEvent,
   isTtlModified,
+  validateImportedTableProperties,
+  getExpectedTableProperties,
 } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
 import * as CustomDDB from '../resources/amplify-dynamodb-table/amplify-table-types';
 import {
@@ -1130,5 +1132,79 @@ describe('Custom Resource Lambda Tests', () => {
       };
       expect(isTtlModified(oldTtl, newTtl)).toBe(true);
     });
+  });
+
+  test('getExpectedTableProperties', () => {
+    const mockEvent = {
+      ServiceToken: 'mockServiceToken',
+      ResponseURL: 'mockResponseURL',
+      StackId: 'mockStackId',
+      RequestId: 'mockRequestId',
+      LogicalResourceId: 'mockLogicalResourceId',
+      ResourceType: 'mockResourceType',
+      RequestType: 'Create' as RequestType,
+      ResourceProperties: {
+        ServiceToken: 'mockServiceToken',
+        tableName: 'mockTableName',
+        attributeDefinitions: [
+          {
+            attributeName: 'todoId',
+            attributeType: 'S',
+          },
+          {
+            attributeName: 'name',
+            attributeType: 'S',
+          },
+          {
+            attributeName: 'name2',
+            attributeType: 'S',
+          },
+        ],
+        keySchema: [
+          {
+            attributeName: 'todoId',
+            keyType: 'HASH',
+          },
+          {
+            attributeName: 'name',
+            keyType: 'RANGE',
+          },
+        ],
+        globalSecondaryIndexes: [
+          {
+            indexName: 'byName2',
+            keySchema: [
+              {
+                attributeName: 'name2',
+                keyType: 'HASH',
+              },
+            ],
+            projection: {
+              projectionType: 'ALL',
+            },
+            provisionedThroughput: {
+              readCapacityUnits: '5',
+              writeCapacityUnits: '5',
+            },
+          },
+        ],
+        billingMode: 'PROVISIONED',
+        provisionedThroughput: {
+          readCapacityUnits: '5',
+          writeCapacityUnits: '5',
+        },
+        sseSpecification: {
+          sseEnabled: 'true',
+        },
+        streamSpecification: {
+          streamViewType: 'NEW_AND_OLD_IMAGES',
+        },
+      },
+    };
+
+    const tableDef = extractTableInputFromEvent(mockEvent);
+    const createTableInput = toCreateTableInput(tableDef);
+    const expectedTableProperties = getExpectedTableProperties(createTableInput);
+    expect(expectedTableProperties).toMatchSnapshot();
   });
 });
