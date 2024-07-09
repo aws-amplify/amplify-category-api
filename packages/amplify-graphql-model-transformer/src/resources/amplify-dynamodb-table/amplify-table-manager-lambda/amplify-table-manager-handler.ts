@@ -1033,26 +1033,20 @@ type ExpectedTableProperties = Partial<
  * Get the expected table properties given the input properties.
  * This is used to ensure the imported table matches the input properties.
  *
- * @param props input properties for the table creation.
+ * @param createTableInput input properties for the table creation.
  */
-export const getExpectedTableProperties = (props: CustomDDB.Input): ExpectedTableProperties => {
-  // TODO: get the expected props
+export const getExpectedTableProperties = (createTableInput: CreateTableCommandInput): ExpectedTableProperties => {
   return {
-    /*
-    AttributeDefinitions: props.attributeDefinitions,
-    KeySchema: props.keySchema,
-    GlobalSecondaryIndexes: props.globalSecondaryIndexes,
-    BillingMode: props.globalSecondaryIndexes,
-    ProvisionedThroughput: props.provisionedThroughput,
-    StreamSpecification: props.streamSpecification
-      ? {
-          StreamEnabled: true,
-          StreamViewType: props.streamSpecification.streamViewType,
-        }
-      : undefined,
-    SSESpecification: props.sseSpecification ? { Enabled: props.sseSpecification.sseEnabled } : undefined,
-    DeletionProtectionEnabled: props.deletionProtectionEnabled,
-    */
+    AttributeDefinitions: createTableInput.AttributeDefinitions,
+    KeySchema: createTableInput.KeySchema,
+    GlobalSecondaryIndexes: createTableInput.GlobalSecondaryIndexes,
+    BillingModeSummary: {
+      BillingMode: createTableInput.BillingMode,
+    },
+    StreamSpecification: createTableInput.StreamSpecification,
+    ProvisionedThroughput: createTableInput.ProvisionedThroughput,
+    SSEDescription: createTableInput.SSESpecification,
+    DeletionProtectionEnabled: createTableInput.DeletionProtectionEnabled,
   };
 };
 
@@ -1067,7 +1061,11 @@ export const validateImportedTableProperties = (
   expectedTableProperties: ExpectedTableProperties,
 ): void => {
   const errors: string[] = [];
-  const addError = (propertyName: string, actual: object | boolean | undefined, expected: object | boolean | undefined): void => {
+  const addError = (
+    propertyName: string,
+    actual: object | boolean | string | undefined,
+    expected: object | boolean | string | undefined,
+  ): void => {
     errors.push(
       `${propertyName} does not match the expected value.\nActual: ${JSON.stringify(actual)}\nExpected: ${JSON.stringify(expected)}`,
     );
@@ -1088,7 +1086,11 @@ export const validateImportedTableProperties = (
   }
 
   if (!isEqual(importedTable.BillingModeSummary, expectedTableProperties.BillingModeSummary)) {
-    addError('BillingMode', importedTable.BillingModeSummary, expectedTableProperties.BillingModeSummary);
+    // don't compare LastUpdateToPayPerRequestDateTime on BillingMode
+    const billingMode = {
+      BillingMode: importedTable.BillingModeSummary?.BillingMode,
+    };
+    addError('BillingModeSummary', billingMode, expectedTableProperties.BillingModeSummary);
   }
 
   if (!isEqual(importedTable.ProvisionedThroughput, expectedTableProperties.ProvisionedThroughput)) {
@@ -1399,7 +1401,8 @@ const importTable = async (tableDef: CustomDDB.Input): Promise<AWSCDKAsyncCustom
     throw new Error(`Could not find ${tableDef.tableName} to update`);
   }
   log('Current table state: ', describeTableResult);
-  const expectedTableProperties = getExpectedTableProperties(tableDef);
+  const createTableInput = toCreateTableInput(tableDef);
+  const expectedTableProperties = getExpectedTableProperties(createTableInput);
   validateImportedTableProperties(describeTableResult.Table, expectedTableProperties);
   const result = {
     PhysicalResourceId: describeTableResult.Table.TableName,
