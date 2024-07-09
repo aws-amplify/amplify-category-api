@@ -914,6 +914,7 @@ export type TransformParameters = {
     sandboxModeEnabled: boolean;
     allowDestructiveGraphqlSchemaUpdates: boolean;
     replaceTableUponGsiUpdate: boolean;
+    allowGen1Patterns: boolean;
     useSubUsernameForDefaultIdentityClaim: boolean;
     populateOwnerFieldForStaticGroupAuth: boolean;
     suppressApiKeyGeneration: boolean;

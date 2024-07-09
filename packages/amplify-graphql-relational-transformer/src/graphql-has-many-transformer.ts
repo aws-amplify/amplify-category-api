@@ -25,6 +25,7 @@ import {
   NamedTypeNode,
   ObjectTypeDefinitionNode,
   ObjectTypeExtensionNode,
+  Kind,
 } from 'graphql';
 import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 import produce from 'immer';
@@ -157,7 +158,21 @@ export class HasManyTransformer extends TransformerPluginBase {
 }
 
 const validate = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-  const { field } = config;
+  const { field, object } = config;
+  if (!ctx.transformParameters.allowGen1Patterns) {
+    const modelName = object.name.value;
+    const fieldName = field.name.value;
+    if (field.type.kind === Kind.NON_NULL_TYPE) {
+      throw new InvalidDirectiveError(
+        `@${HasManyDirective.name} cannot be used on required fields. Modify ${modelName}.${fieldName} to be optional.`,
+      );
+    }
+    if (config.fields) {
+      throw new InvalidDirectiveError(
+        `fields argument on @${HasManyDirective.name} is disallowed. Modify ${modelName}.${fieldName} to use references instead.`,
+      );
+    }
+  }
 
   if (!isListType(field.type)) {
     throw new InvalidDirectiveError(`@${HasManyDirective.name} must be used with a list. Use @hasOne for non-list types.`);
