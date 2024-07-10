@@ -324,22 +324,18 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   };
 
   generateResolvers = (context: TransformerContextProvider): void => {
-    const dataSourceMapping = {};
+    const dataSourceMapping: Record<string, string> = {};
     this.resourceGeneratorMap.forEach((generator) => {
       generator.generateResources(context);
-      Object.assign(
-        dataSourceMapping,
-        Object.fromEntries(
-          Object.entries(generator.getDatasourceMap())
-            .filter(([, datasource]) => datasource.ds.type === 'AMAZON_DYNAMODB')
-            .map(([modelName, datasource]) => {
-              if (datasource.ds.dynamoDbConfig && !cdk.isResolvableObject(datasource.ds.dynamoDbConfig)) {
-                return [modelName, datasource.ds.dynamoDbConfig.tableName];
-              }
-              throw new Error(`Unable to construct data source mapping. Could not resolve table name for ${modelName}`);
-            }),
-        ),
+      const ddbDatasources = Object.entries(generator.getDatasourceMap()).filter(
+        ([, datasource]) => datasource.ds.type === 'AMAZON_DYNAMODB',
       );
+      ddbDatasources.forEach(([modelName, datasource]) => {
+        if (datasource.ds.dynamoDbConfig && !cdk.isResolvableObject(datasource.ds.dynamoDbConfig)) {
+          dataSourceMapping[modelName] = datasource.ds.dynamoDbConfig.tableName;
+        }
+        throw new Error(`Unable to construct data source mapping. Could not resolve table name for ${modelName}`);
+      });
     });
     if (context.transformParameters.enableGen2Migration && context.transformParameters.enableTransformerCfnOutputs) {
       const { scope } = context.stackManager;
