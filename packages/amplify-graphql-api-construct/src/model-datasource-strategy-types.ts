@@ -1,4 +1,4 @@
-n; // #########################################################################################################################################
+// #########################################################################################################################################
 // These are the public-facing types used by customers to define their L3 CDK construct. Many of these have corresponding definitions in the
 // transformer-interfaces package to define internal behavior.
 //
