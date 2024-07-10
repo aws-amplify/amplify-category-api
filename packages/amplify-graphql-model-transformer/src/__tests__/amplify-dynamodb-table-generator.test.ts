@@ -2,8 +2,8 @@ import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import {
   DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
   DDB_DEFAULT_DATASOURCE_STRATEGY,
-  validateModelSchema,
   IMPORTED_DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
+  validateModelSchema,
 } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
 import { ModelTransformer } from '../graphql-model-transformer';
@@ -43,7 +43,7 @@ describe('ModelTransformer:', () => {
     expect(amplifyTableManagerStack).toBeDefined();
     // DynamoDB manager policy should be generated correctly
     const ddbManagerPolicy = Object.values(amplifyTableManagerStack.Resources!)
-      .filter((resource) => resource.Type === 'AWS::IAM::Role')
+      .filter(resource => resource.Type === 'AWS::IAM::Role')
       .flatMap((role: any) => role.Properties.Policies)
       .filter((policies: any) => policies !== undefined)
       .reduce((acc, value) => acc.concat(value), [])
@@ -73,13 +73,12 @@ describe('ModelTransformer:', () => {
     expect(authorTable.Properties.isImported).toBe(true);
     expect(authorTable.Properties.tableName).toBe('Author-myApiId-myEnv');
     // Validate schema
-    validateModelSchema(parse(out.schema));
+    validateModelSchema(parse(out.schema)); // that caused the entry point ARN to change.
 
     // Outputs should contain a reference to the Arn to the entry point (onEventHandler)
     // of the provider for the AmplifyTableManager custom resource.
     // If any of these assertions should fail, it is likely caused by a change in the custom resource provider
-    /** {@link Provider} */ // that caused the entry point ARN to change.
-    // !! This will result in broken redeployments !!
+    /** {@link Provider} */ // !! This will result in broken redeployments !!
     // Friends don't let friends mutate custom resource entry point ARNs.
     const outputs = amplifyTableManagerStack.Outputs!;
     expect(outputs).toBeDefined();
