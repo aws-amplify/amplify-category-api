@@ -50,7 +50,6 @@ import {
 } from './internal';
 import { getStackForScope, walkAndProcessNodes } from './internal/construct-tree';
 import { getDataSourceStrategiesProvider } from './internal/data-source-config';
-import { validateImportedTableMap } from './internal/imported-tables';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
@@ -153,10 +152,7 @@ export class AmplifyGraphqlApi extends Construct {
       functionNameMap,
       outputStorageStrategy,
       dataStoreConfiguration,
-      importedAmplifyDynamoDBTableMap,
     } = props;
-
-    validateImportedTableMap(definition, importedAmplifyDynamoDBTableMap);
 
     if (conflictResolution && dataStoreConfiguration) {
       throw new Error(
@@ -220,7 +216,7 @@ export class AmplifyGraphqlApi extends Construct {
       // construct flow
       rdsLayerMapping: undefined,
       rdsSnsTopicMapping: undefined,
-      ...getDataSourceStrategiesProvider(definition, importedAmplifyDynamoDBTableMap ?? {}),
+      ...getDataSourceStrategiesProvider(definition),
     };
 
     executeTransform(executeTransformConfig);

@@ -48,6 +48,7 @@ export interface AmplifyDynamoDbModelDataSourceStrategy extends ModelDataSourceS
 export interface ImportedAmplifyDynamoDbModelDataSourceStrategy {
   readonly dbType: 'DYNAMODB';
   readonly provisionStrategy: 'IMPORTED_AMPLIFY_TABLE';
+  readonly tableName: string;
 }
 
 /**
@@ -265,9 +266,6 @@ export interface DataSourceStrategiesProvider {
 
   /** Maps custom Query and Mutation fields to the ModelDataSourceStrategy used to resolve them. */
   sqlDirectiveDataSourceStrategies?: SqlDirectiveDataSourceStrategy[];
-
-  /** Maps GraphQL model names to the imported DynamoDB table names. */
-  importedAmplifyDynamoDBTableMap?: Record<string, string>;
 }
 
 /**

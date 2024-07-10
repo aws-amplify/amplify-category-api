@@ -168,8 +168,6 @@ export interface DataSourceStrategiesProvider {
     // (undocumented)
     dataSourceStrategies: Record<string, ModelDataSourceStrategy>;
     // (undocumented)
-    importedAmplifyDynamoDBTableMap?: Record<string, string>;
-    // (undocumented)
     sqlDirectiveDataSourceStrategies?: SqlDirectiveDataSourceStrategy[];
 }
 
@@ -223,6 +221,8 @@ export interface ImportedAmplifyDynamoDbModelDataSourceStrategy {
     readonly dbType: 'DYNAMODB';
     // (undocumented)
     readonly provisionStrategy: 'IMPORTED_AMPLIFY_TABLE';
+    // (undocumented)
+    readonly tableName: string;
 }
 
 // @public (undocumented)
@@ -518,7 +518,7 @@ export type SynthParameters = {
 export type TransformerAuthProvider = TransformerPluginProvider;
 
 // @public (undocumented)
-export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'dataSourceStrategies' | 'sqlDirectiveDataSourceStrategies' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager' | 'synthParameters' | 'importedAmplifyDynamoDBTableMap'>;
+export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'dataSourceStrategies' | 'sqlDirectiveDataSourceStrategies' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager' | 'synthParameters'>;
 
 // @public (undocumented)
 export interface TransformerContextMetadataProvider {
@@ -865,7 +865,7 @@ export interface TransformerSchemaHelperProvider {
 }
 
 // @public (undocumented)
-export type TransformerSchemaVisitStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'dataSourceStrategies' | 'sqlDirectiveDataSourceStrategies' | 'output' | 'providerRegistry' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper' | 'synthParameters' | 'importedAmplifyDynamoDBTableMap'>;
+export type TransformerSchemaVisitStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'dataSourceStrategies' | 'sqlDirectiveDataSourceStrategies' | 'output' | 'providerRegistry' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper' | 'synthParameters'>;
 
 // @public (undocumented)
 export type TransformerSecrets = {
@@ -876,7 +876,7 @@ export type TransformerSecrets = {
 export type TransformerTransformSchemaStepContextProvider = TransformerValidationStepContextProvider;
 
 // @public (undocumented)
-export type TransformerValidationStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'dataSourceStrategies' | 'sqlDirectiveDataSourceStrategies' | 'output' | 'providerRegistry' | 'dataSources' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper' | 'resolvers' | 'stackManager' | 'synthParameters' | 'importedAmplifyDynamoDBTableMap'>;
+export type TransformerValidationStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'dataSourceStrategies' | 'sqlDirectiveDataSourceStrategies' | 'output' | 'providerRegistry' | 'dataSources' | 'transformParameters' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata' | 'authConfig' | 'resourceHelper' | 'resolvers' | 'stackManager' | 'synthParameters'>;
 
 // @public (undocumented)
 export interface TransformHostProvider {

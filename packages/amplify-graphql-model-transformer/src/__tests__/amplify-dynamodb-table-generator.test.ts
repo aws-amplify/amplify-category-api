@@ -2,7 +2,6 @@ import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import {
   DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
   DDB_DEFAULT_DATASOURCE_STRATEGY,
-  IMPORTED_DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
   validateModelSchema,
 } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
@@ -32,10 +31,11 @@ describe('ModelTransformer:', () => {
       dataSourceStrategies: {
         Comment: DDB_DEFAULT_DATASOURCE_STRATEGY,
         Post: DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
-        Author: IMPORTED_DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
-      },
-      importedAmplifyDynamoDBTableMap: {
-        Author: 'Author-myApiId-myEnv',
+        Author: {
+          dbType: 'DYNAMODB' as const,
+          provisionStrategy: 'IMPORTED_AMPLIFY_TABLE' as const,
+          tableName: 'Author-myApiId-myEnv',
+        },
       },
     });
     expect(out).toBeDefined();
@@ -43,7 +43,7 @@ describe('ModelTransformer:', () => {
     expect(amplifyTableManagerStack).toBeDefined();
     // DynamoDB manager policy should be generated correctly
     const ddbManagerPolicy = Object.values(amplifyTableManagerStack.Resources!)
-      .filter(resource => resource.Type === 'AWS::IAM::Role')
+      .filter((resource) => resource.Type === 'AWS::IAM::Role')
       .flatMap((role: any) => role.Properties.Policies)
       .filter((policies: any) => policies !== undefined)
       .reduce((acc, value) => acc.concat(value), [])
@@ -106,7 +106,8 @@ describe('ModelTransformer:', () => {
     const onEventHandlerLambda = amplifyTableManagerResources![onEventHandlerResourceName];
     expect(onEventHandlerLambda).toBeDefined();
   });
-  it('should throw error when the mapping is not provided for model of imported table strategy', async () => {
+
+  it('should throw error when tableName is not set for imported table strategy', async () => {
     const validSchema = `
       type Post @model {
           id: ID!
@@ -117,9 +118,34 @@ describe('ModelTransformer:', () => {
       schema: validSchema,
       transformers: [new ModelTransformer()],
       dataSourceStrategies: {
-        Post: IMPORTED_DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
+        Post: {
+          dbType: 'DYNAMODB' as const,
+          provisionStrategy: 'IMPORTED_AMPLIFY_TABLE' as const,
+        },
       },
     };
-    expect(() => testTransform(transformOption)).toThrowErrorMatchingInlineSnapshot(`"Cannot find imported table mapping for model Post"`);
+    // @ts-expect-error
+    expect(() => testTransform(transformOption)).toThrow('No resource generator assigned for Post with dbType DYNAMODB');
+  });
+
+  it('should throw error when tableName is empty for imported table strategy', async () => {
+    const validSchema = `
+      type Post @model {
+          id: ID!
+          title: String!
+      }
+    `;
+    const transformOption = {
+      schema: validSchema,
+      transformers: [new ModelTransformer()],
+      dataSourceStrategies: {
+        Post: {
+          dbType: 'DYNAMODB' as const,
+          provisionStrategy: 'IMPORTED_AMPLIFY_TABLE' as const,
+          tableName: '',
+        },
+      },
+    };
+    expect(() => testTransform(transformOption)).toThrow('No resource generator assigned for Post with dbType DYNAMODB');
   });
 });

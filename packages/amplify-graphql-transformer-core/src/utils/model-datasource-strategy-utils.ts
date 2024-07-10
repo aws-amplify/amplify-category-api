@@ -70,7 +70,8 @@ export const isImportedAmplifyDynamoDbModelDataSourceStrategy = (
   return (
     isDynamoDbType(strategy.dbType) &&
     typeof (strategy as any)['provisionStrategy'] === 'string' &&
-    (strategy as any)['provisionStrategy'] === 'IMPORTED_AMPLIFY_TABLE'
+    (strategy as any)['provisionStrategy'] === 'IMPORTED_AMPLIFY_TABLE' &&
+    (strategy as any)['tableName']
   );
 };
 

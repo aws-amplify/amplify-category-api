@@ -48,7 +48,6 @@ export type TransformerBeforeStepContextProvider = Pick<
   | 'authConfig'
   | 'stackManager'
   | 'synthParameters'
-  | 'importedAmplifyDynamoDBTableMap'
 >;
 
 export type TransformerSchemaVisitStepContextProvider = Pick<
@@ -65,7 +64,6 @@ export type TransformerSchemaVisitStepContextProvider = Pick<
   | 'authConfig'
   | 'resourceHelper'
   | 'synthParameters'
-  | 'importedAmplifyDynamoDBTableMap'
 >;
 
 export type TransformerValidationStepContextProvider = Pick<
@@ -85,7 +83,6 @@ export type TransformerValidationStepContextProvider = Pick<
   | 'resolvers'
   | 'stackManager'
   | 'synthParameters'
-  | 'importedAmplifyDynamoDBTableMap'
 >;
 
 export type TransformerPrepareStepContextProvider = TransformerValidationStepContextProvider;

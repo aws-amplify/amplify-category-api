@@ -19,8 +19,3 @@ export const DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY: ModelDataSourceStrategy = 
   dbType: DDB_DB_TYPE,
   provisionStrategy: 'AMPLIFY_TABLE',
 };
-
-export const IMPORTED_DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY: ModelDataSourceStrategy = {
-  dbType: DDB_DB_TYPE,
-  provisionStrategy: 'IMPORTED_AMPLIFY_TABLE',
-};

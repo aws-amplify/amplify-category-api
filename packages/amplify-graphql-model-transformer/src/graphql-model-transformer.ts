@@ -90,7 +90,6 @@ export type Nullable<T> = T | null;
 // Keys for the resource generator map to reference the generator for various ModelDataSourceStrategies
 const ITERATIVE_TABLE_GENERATOR = 'AmplifyDDB';
 const SQL_LAMBDA_GENERATOR = 'SQL';
-const IMPORTED_AMPLIFY_TABLE_GENERATOR = 'ImportedAmplifyDDB';
 
 /**
  * ModelTransformer
@@ -104,7 +103,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
   private resourceGeneratorMap: Map<string, ModelResourceGenerator> = new Map<string, ModelResourceGenerator>();
 
-  private dataSourceStrategiesProvider: DataSourceStrategiesProvider = { dataSourceStrategies: {}, importedAmplifyDynamoDBTableMap: {} };
+  private dataSourceStrategiesProvider: DataSourceStrategiesProvider = { dataSourceStrategies: {} };
 
   /**
    * A Map to hold the directive configuration
@@ -123,8 +122,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   before = (ctx: TransformerBeforeStepContextProvider): void => {
     // We only store this the model transformer because some of the required override methods need to pass through to the Resource
     // generators, but do not have access to the context
-    const { dataSourceStrategies, sqlDirectiveDataSourceStrategies, importedAmplifyDynamoDBTableMap } = ctx;
-    this.dataSourceStrategiesProvider = { dataSourceStrategies, sqlDirectiveDataSourceStrategies, importedAmplifyDynamoDBTableMap };
+    const { dataSourceStrategies, sqlDirectiveDataSourceStrategies } = ctx;
+    this.dataSourceStrategiesProvider = { dataSourceStrategies, sqlDirectiveDataSourceStrategies };
 
     const strategies = Object.values(dataSourceStrategies);
     const customSqlDataSources = sqlDirectiveDataSourceStrategies?.map((dss) => dss.strategy) ?? [];
@@ -875,11 +874,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     } else if (isSqlStrategy(strategy)) {
       generator = this.resourceGeneratorMap.get(SQL_LAMBDA_GENERATOR);
     } else if (isImportedAmplifyDynamoDbModelDataSourceStrategy(strategy)) {
-      if (ctx.importedAmplifyDynamoDBTableMap && ctx.importedAmplifyDynamoDBTableMap[typeName]) {
-        generator = this.resourceGeneratorMap.get(ITERATIVE_TABLE_GENERATOR);
-      } else {
-        throw new Error(`Cannot find imported table mapping for model ${typeName}`);
-      }
+      generator = this.resourceGeneratorMap.get(ITERATIVE_TABLE_GENERATOR);
     }
 
     if (!generator) {

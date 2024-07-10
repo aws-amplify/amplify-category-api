@@ -310,7 +310,7 @@ export class GraphQLTransform {
     // Warning: (ae-forgotten-export) The symbol "TransformOption" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    transform({ assetProvider, dataSourceStrategies, nestedStackProvider, parameterProvider, rdsLayerMapping, rdsSnsTopicMapping, schema, scope, sqlDirectiveDataSourceStrategies, synthParameters, importedAmplifyDynamoDBTableMap, }: TransformOption): void;
+    transform({ assetProvider, dataSourceStrategies, nestedStackProvider, parameterProvider, rdsLayerMapping, rdsSnsTopicMapping, schema, scope, sqlDirectiveDataSourceStrategies, synthParameters, }: TransformOption): void;
 }
 
 // @public (undocumented)
@@ -338,9 +338,6 @@ export type ImportAppSyncAPIInputs = {
     apiName: string;
     dataSourceConfig?: ImportedDataSourceConfig;
 };
-
-// @public (undocumented)
-export const IMPORTED_DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY: ModelDataSourceStrategy;
 
 // @public (undocumented)
 export type ImportedDataSourceConfig = RDSDataSourceConfig;

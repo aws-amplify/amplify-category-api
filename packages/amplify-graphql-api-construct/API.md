@@ -130,7 +130,6 @@ export interface AmplifyGraphqlApiProps {
     readonly definition: IAmplifyGraphqlDefinition;
     readonly functionNameMap?: Record<string, IFunction>;
     readonly functionSlots?: FunctionSlot[];
-    readonly importedAmplifyDynamoDBTableMap?: Record<string, string>;
     readonly outputStorageStrategy?: IBackendOutputStorageStrategy;
     readonly predictionsBucket?: IBucket;
     readonly stackMappings?: Record<string, string>;
@@ -283,6 +282,8 @@ export interface ImportedAmplifyDynamoDbModelDataSourceStrategy {
     readonly dbType: 'DYNAMODB';
     // (undocumented)
     readonly provisionStrategy: 'IMPORTED_AMPLIFY_TABLE';
+    // (undocumented)
+    readonly tableName: string;
 }
 
 // @public
