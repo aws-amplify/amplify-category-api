@@ -1,4 +1,4 @@
-// #########################################################################################################################################
+n; // #########################################################################################################################################
 // These are the public-facing types used by customers to define their L3 CDK construct. Many of these have corresponding definitions in the
 // transformer-interfaces package to define internal behavior.
 //
@@ -51,7 +51,7 @@ export interface AmplifyDynamoDbModelDataSourceStrategy {
  * 3. The imported table properties must match the corresponding table properties specified in this construct.
  *    (AttributeDefinitions, KeySchema, GlobalSecondaryIndexes, BillingModeSummary, ProvisionedThroughput, StreamSpecification, SSEDescription, DeletionProtectionEnabled)
  *
- * The imported tables will follow the auth rules defined in the this construct.
+ * The imported tables will follow the auth rules defined in this construct.
  * The auth rules of the source Gen 1 project will not apply to the API created by this construct.
  * Ensure the correct auth rules have been set to prevent data exposure.
  */

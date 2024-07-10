@@ -6560,7 +6560,7 @@
       "assembly": "@aws-amplify/graphql-api-construct",
       "datatype": true,
       "docs": {
-        "remarks": "Tables can be imported only if they meet the following criteria.\n1. The imported table must have been created with through an Amplify Gen 1 project.\n2. The imported table must be in the same account and region as this construct.\n3. The imported table properties must match the corresponding table properties specified in this construct.\n   (AttributeDefinitions, KeySchema, GlobalSecondaryIndexes, BillingModeSummary, ProvisionedThroughput, StreamSpecification, SSEDescription, DeletionProtectionEnabled)\n\nThe imported tables will follow the auth rules defined in the this construct.\nThe auth rules of the source Gen 1 project will not apply to the API created by this construct.\nEnsure the correct auth rules have been set to prevent data exposure.",
+        "remarks": "Tables can be imported only if they meet the following criteria.\n1. The imported table must have been created with through an Amplify Gen 1 project.\n2. The imported table must be in the same account and region as this construct.\n3. The imported table properties must match the corresponding table properties specified in this construct.\n   (AttributeDefinitions, KeySchema, GlobalSecondaryIndexes, BillingModeSummary, ProvisionedThroughput, StreamSpecification, SSEDescription, DeletionProtectionEnabled)\n\nThe imported tables will follow the auth rules defined in this construct.\nThe auth rules of the source Gen 1 project will not apply to the API created by this construct.\nEnsure the correct auth rules have been set to prevent data exposure.",
         "stability": "stable",
         "summary": "Use custom resource type 'Custom::ImportedAmplifyDynamoDBTable' to manage an imported table."
       },
@@ -8525,5 +8525,5 @@
     }
   },
   "version": "1.11.1",
-  "fingerprint": "64pns8K5DqcbvAkgSyfH4EK8WDr3+083Yi1ugkrgjQI="
+  "fingerprint": "WTPIPh83dMH/R4G0mvGyEhYBPrWOizqj9RhGpB/9Z4Y="
 }
