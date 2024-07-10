@@ -72,13 +72,13 @@ describe('ModelTransformer:', () => {
     expect(authorTable.DeletionPolicy).toBe('Retain');
     expect(authorTable.Properties.isImported).toBe(true);
     expect(authorTable.Properties.tableName).toBe('Author-myApiId-myEnv');
-    // Validate schema
-    validateModelSchema(parse(out.schema)); // that caused the entry point ARN to change.
+    validateModelSchema(parse(out.schema));
 
     // Outputs should contain a reference to the Arn to the entry point (onEventHandler)
     // of the provider for the AmplifyTableManager custom resource.
     // If any of these assertions should fail, it is likely caused by a change in the custom resource provider
-    /** {@link Provider} */ // !! This will result in broken redeployments !!
+    /** {@link Provider} */
+    // !! This will result in broken redeployments !!
     // Friends don't let friends mutate custom resource entry point ARNs.
     const outputs = amplifyTableManagerStack.Outputs!;
     expect(outputs).toBeDefined();
