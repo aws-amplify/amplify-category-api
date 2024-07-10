@@ -755,7 +755,17 @@ export interface AmplifyGraphqlApiProps {
 
   // TODO: decide final naming before merging to main
   /**
-   * The table map for the imported tables. The key is the model type name defined in schema; the value is the table name of the existing table
+   * The table map for the imported tables. The key is the model type name defined in schema; the value is the table name of the existing table.
+   *
+   * Tables can be imported only if they meet the following criteria.
+   * 1. The imported table must have been created with through an Amplify Gen 1 project.
+   * 2. The imported table must be in the same account and region as this construct.
+   * 3. The imported table properties must match the corresponding table properties specified in this construct.
+   *    (AttributeDefinitions, KeySchema, GlobalSecondaryIndexes, BillingModeSummary, ProvisionedThroughput, StreamSpecification, SSEDescription, DeletionProtectionEnabled)
+   *
+   * The imported tables will follow the auth rules defined in the this construct.
+   * The auth rules of the source Gen 1 project will not apply to the API created by this construct.
+   * Ensure the correct auth rules have been set to prevent data exposure.
    */
   readonly importedAmplifyDynamoDBTableMap?: Record<string, string>;
 }
