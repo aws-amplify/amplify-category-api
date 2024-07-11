@@ -8,6 +8,8 @@ import { parse, print } from 'graphql';
 import { ConversationTransformer } from '..';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { FunctionTransformer } from '../../../amplify-graphql-function-transformer/src';
+import { QueryDefinition } from 'aws-cdk-lib/aws-logs';
+import { Subscription } from 'aws-cdk-lib/aws-sns';
 
 test('conversation route valid schema', () => {
   const authConfig: AppSyncAuthConfiguration = {
@@ -18,17 +20,78 @@ test('conversation route valid schema', () => {
   };
 
   const inputSchema = `
-    type Foo @model {
+    type Foo
+      @model(
+        mutations: { update: null },
+        subscriptions: { level: off }
+      )
+      @auth(
+        rules: [{ allow: owner }]
+      )
+    {
       bar: Int
     }
 
     type Mutation {
         pirateChat(sessionId: ID, message: String): String
-        @function(name: "abc")
+        @auth(rules: [{ allow: owner }])
         @conversation(aiModel: "Claude3Haiku")
     }
   `;
 
+   // @function(name: "abc")
+  // @auth(rules: [{ allow: owner }])
+
+/*
+
+  type ConversationSession<name> {
+    id: ID!
+    name: String
+    metadata: AWSJSON
+    messages(filter: ModelConversationMessage<name>FilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelConversationMessagepirateChatConnection
+    createdAt: AWSDateTime!
+    updatedAt: AWSDateTime!
+    owner: String
+  }
+
+
+  client.conversations.startSession
+    createConversationSession<name>(input: CreateConversationSession<name>Input!, condition: ModelConversationSession<name>ConditionInput): ConversationSession<name>
+
+    input CreateConversationSession<name>Input {
+      id: ID
+      name: String
+      metadata: AWSJSON
+    }
+
+    input ModelConversationSession<name>ConditionInput {
+      name: ModelStringInput
+      metadata: ModelStringInput
+      and: [ModelConversationSession<name>ConditionInput]
+      or: [ModelConversationSession<name>ConditionInput]
+      not: ModelConversationSession<name>ConditionInput
+      createdAt: ModelStringInput
+      updatedAt: ModelStringInput
+      owner: ModelStringInput
+    }
+
+    id: ID, name: String, metadata: AWSJSON): ConversationSession<name>
+
+  client.conversations.startSession({ sessionId })
+    --> query - getConversationSession<name>(id: ID!): ConversationSession<name>
+
+    client.conversations.listSessions
+    --> query - listConversationSession<pluralized-name>(filter: ModelConversationSessionpirateChatFilterInput, limit: Int, nextToken: String):
+
+  session.onMessage
+    --> subscription - onCreateConversationMessage<name>
+
+    session.sendMessage
+    --> mutation - createConversationMessage<name>
+
+    session.listMessages
+    --> query - listConversationMessagepirateChats
+*/
   // angryChat(sessionId: ID, message: String): String
         // @conversation(aiModel: "Claude3Haiku")
 
@@ -83,6 +146,9 @@ test('conversation route valid schema', () => {
   const schema = parse(out.schema);
   validateModelSchema(schema);
   expect(out.schema).toMatchSnapshot();
+
+  expect(out.resolvers).toBeDefined();
+  expect(out.resolvers).toMatchSnapshot();
 });
 
 
