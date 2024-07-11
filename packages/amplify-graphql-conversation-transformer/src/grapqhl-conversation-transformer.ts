@@ -14,6 +14,7 @@ import {
 } from '@aws-amplify/graphql-transformer-core';
 import { NONE_DATA_SOURCE_NAME } from '@aws-amplify/graphql-transformer-core/src/transformer-context';
 import {
+  MappingTemplateProvider,
   TransformerAuthProvider,
   TransformerContextProvider,
   TransformerPreProcessContextProvider,
@@ -129,7 +130,7 @@ export class ConversationTransformer extends TransformerPluginBase {
         const sessionModelName = `ConversationSession${conversationDirectiveField.name.value}`;
         const messageModelName = `ConversationMessage${conversationDirectiveField.name.value}`;
 
-        const referenceFieldName = 'conversationSessionId';
+        const referenceFieldName = 'sessionId';
 
         const sessionAuthDirective = createSessionAuthDirective();
         const sessionModelDirective = createSessionModelDirective();
@@ -177,47 +178,6 @@ export class ConversationTransformer extends TransformerPluginBase {
       const requestMappingTemplate = MappingTemplate.inlineTemplateFromString('request');
       const responseMappingTemplate = MappingTemplate.inlineTemplateFromString('response');
 
-      // const functionDataSourceName = '';
-      // const dataSource = ctx.api.host.getDataSource(functionDataSourceName);
-
-      // TODO: pull this from directive config (once it's added there).
-      // const mutationResolver = ctx.resolvers.generateMutationResolver(
-      //   parentName,
-      //   fieldName,
-      //   resolverResourceId,
-      //   dataSource as any,
-      //   MappingTemplate.inlineTemplateFromString('request'),
-      //   MappingTemplate.inlineTemplateFromString('response'),
-      // )
-
-      // TODO: setting the scope necessary?
-      // conversationPipelineResolver.setScope(ctx.stackManager.getScopeFor(resolverResourceId, fieldName));
-      // const conversationStackScope = ctx.stackManager.getScopeFor(resolverResourceId, fieldName);
-
-      // const initResponseMappingTemplate = MappingTemplate.inlineTemplateFromString(dedent`
-      //   $util.toJson({})
-      // `);
-
-      // const initFunctionId = `${parentName}${fieldName}InitFunction`
-      // const initFunction = ctx.api.host.addAppSyncFunction(
-      //   initFunctionId,
-      //   initRequestMappingTemplate,
-      //   initResponseMappingTemplate,
-      //   'NONE_DS',
-      //   conversationStackScope,
-      // )
-
-      // ctx.api.host.addResolver(
-      //   parentName,
-      //   fieldName,
-      //   requestMappingTemplate,
-      //   responseMappingTemplate,
-      //   resolverResourceId,
-      //   undefined,
-      //   [initFunction.functionId],
-      //   conversationStackScope
-      // )
-
       // pipeline resolver
       const conversationPipelineResolver = new TransformerResolver(
         parentName,
@@ -227,138 +187,50 @@ export class ConversationTransformer extends TransformerPluginBase {
         responseMappingTemplate,
         ['init', 'auth', 'verifySessionOwner', 'writeMessageToTable', 'retrieveMessageHistory', 'invokeLambda'],
         ['handleLambdaResponse', 'finish'],
-        // dataSource as any,
+        undefined,
+        { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' }
       );
 
       // init
-      const initRequestMappingTemplate = MappingTemplate.s3MappingTemplateFromString(
-        dedent`
-        $util.qr($ctx.stash.put("defaultValues", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-        $util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))
-        #set( $createdAt = $util.time.nowISO8601() )
-        $util.qr($ctx.stash.defaultValues.put("createdAt", $createdAt))
-        $util.qr($ctx.stash.defaultValues.put("updatedAt", $createdAt))
-        $util.toJson({
-          "version": "2018-05-29",
-          "payload": {}
-        })
-        ## [End] Initialization default values. **
-      `,
-        `${parentName}.${fieldName}.init.req.vtl`,
-      );
-
-      const initResponseMappingTemplate = MappingTemplate.s3MappingTemplateFromString(
-        dedent`
-        $util.toJson({})
-      `,
-        `${parentName}.${fieldName}.init.res.vtl`,
-      );
+      const initFunction = initMappingTemplate(parentName, fieldName);
+      conversationPipelineResolver.addToSlot('init', initFunction.req, initFunction.res);
 
       // auth
-      const authRequestMappingTemplate = MappingTemplate.s3MappingTemplateFromString(
-        dedent`
-        $util.qr($ctx.stash.put("hasAuth", true))
-        #set( $isAuthorized = false )
-        #set( $primaryFieldMap = {} )
-        #if( $util.authType() == "User Pool Authorization" )
-          #if( !$isAuthorized )
-            #set( $authFilter = [] )
-            #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("sub"), null) )
-            #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), null)) )
-            #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
-              #set( $ownerClaim0 = "$ownerClaim0::$currentClaim1" )
-              #if( !$util.isNull($ownerClaim0) )
-                $util.qr($authFilter.add({"owner": { "eq": $ownerClaim0 }}))
-              #end
-            #end
-            #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get("sub"), null) )
-            #if( !$util.isNull($role0_0) )
-              $util.qr($authFilter.add({"owner": { "eq": $role0_0 }}))
-            #end
-            #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), null)) )
-            #if( !$util.isNull($role0_1) )
-              $util.qr($authFilter.add({"owner": { "eq": $role0_1 }}))
-            #end
-            #if( !$authFilter.isEmpty() )
-              $util.qr($ctx.stash.put("authFilter", { "or": $authFilter }))
-            #end
-          #end
-        #end
-        #if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
-        $util.unauthorized()
-        #end
-        $util.toJson({"version":"2018-05-29","payload":{}})
-        `,
-        `${parentName}.${fieldName}.auth.req.vtl`,
-      )
+      const authFunction = authMappingTemplate(parentName, fieldName);
+      conversationPipelineResolver.addToSlot('auth', authFunction.req, authFunction.res);
 
-      const authResponseMappingTemplate = MappingTemplate.s3MappingTemplateFromString(
-        dedent`$util.toJson({})`,
-        `${parentName}.${fieldName}.auth.res.vtl`,
-      )
+      const sessionModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, `ConversationSession${fieldName}`);
+      const conversationSessionDDBDataSource = ctx.api.host.getDataSource(sessionModelDDBDataSourceName);
 
       // verifySessionOwner
-      const verifySessionOwnerRequestMappingTemplate = MappingTemplate.s3MappingTemplateFromString(
-        dedent`
-        #set( $GetRequest = {
-          "version": "2018-05-29",
-          "operation": "Query"
-        } )
-        #if( $ctx.stash.metadata.modelObjectKey )
-          #set( $expression = "" )
-          #set( $expressionNames = {} )
-          #set( $expressionValues = {} )
-          #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
-            #set( $expression = "$expression#keyCount$velocityCount = :valueCount$velocityCount AND " )
-            $util.qr($expressionNames.put("#keyCount$velocityCount", $item.key))
-            $util.qr($expressionValues.put(":valueCount$velocityCount", $item.value))
-          #end
-          #set( $expression = $expression.replaceAll("AND $", "") )
-          #set( $query = {
-          "expression": $expression,
-          "expressionNames": $expressionNames,
-          "expressionValues": $expressionValues
-        } )
-        #else
-          #set( $query = {
-          "expression": "id = :id",
-          "expressionValues": {
-              ":id": $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
-          }
-        } )
-        #end
-        $util.qr($GetRequest.put("query", $query))
-        #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-          $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
-        #end
-        $util.toJson($GetRequest)
-        ## [End] Get Request template. **
-        `,
-        `${parentName}.${fieldName}.verifySessionOwner.req.vtl`,
-      );
-
-      const verifySessionOwnerResponseMappingTemplate = MappingTemplate.s3MappingTemplateFromString(
-        dedent`
-        ## [Start] Get Response template. **
-        #if( $ctx.error )
-          $util.error($ctx.error.message, $ctx.error.type)
-        #end
-        #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-          $util.toJson($ctx.result.items[0])
-        #else
-          #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-        $util.unauthorized()
-          #end
-          $util.toJson(null)
-        #end
-        ## [End] Get Response template. **
-        `,
-        `${parentName}.${fieldName}.verifySessionOwner.res.vtl`,
+      const verifySessionOwnerFunction = verifySessionOwnerMappingTemplate(parentName, fieldName);
+      conversationPipelineResolver.addToSlot(
+        'verifySessionOwner',
+        verifySessionOwnerFunction.req,
+        verifySessionOwnerFunction.res,
+        conversationSessionDDBDataSource as any,
       );
 
       // writeMessageToTable
+      const messageModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, `ConversationMessage${fieldName}`);
+      const messageDDBDataSource = ctx.api.host.getDataSource(messageModelDDBDataSourceName);
+      const writeMessageToTableFunction = writeMessageToTableMappingTemplate(parentName, fieldName);
+      conversationPipelineResolver.addToSlot(
+        'writeMessageToTable',
+        writeMessageToTableFunction.req,
+        writeMessageToTableFunction.res,
+        messageDDBDataSource as any,
+      );
 
       // retrieveMessageHistory
+      const retrieveMessageHistoryFunction = readHistoryMappingTemplate(parentName, fieldName);
+      conversationPipelineResolver.addToSlot(
+        'retrieveMessageHistory',
+        retrieveMessageHistoryFunction.req,
+        retrieveMessageHistoryFunction.res,
+        messageDDBDataSource as any,
+      );
+
 
       // invokeLambda
 
@@ -366,46 +238,8 @@ export class ConversationTransformer extends TransformerPluginBase {
 
       // finish
 
-      conversationPipelineResolver.addToSlot(
-        'init',
-        initRequestMappingTemplate,
-        initResponseMappingTemplate
-      );
-
-      conversationPipelineResolver.addToSlot(
-        'auth',
-        authRequestMappingTemplate,
-        authResponseMappingTemplate
-      );
-
-
-      const sessionModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, `ConversationSession${fieldName}`);
-      const conversationSessionDDBDataSource = ctx.api.host.getDataSource(sessionModelDDBDataSourceName);
-
-      conversationPipelineResolver.addToSlot(
-        'verifySessionOwner',
-        verifySessionOwnerRequestMappingTemplate,
-        verifySessionOwnerResponseMappingTemplate,
-        conversationSessionDDBDataSource as any,
-      );
-
       ctx.resolvers.addResolver(parentName, fieldName, conversationPipelineResolver);
-      console.log('added resolver to api.host');
-
-      /*
-          return {
-        operation: 'Query',
-        query: {
-            expression: '#partitionKey = :partitionKey',
-            expressionNames: { '#partitionKey': 'conversationSessionId' },
-            expressionValues: util.dynamodb.toMapValues({ ':partitionKey': sessionId })
-        },
-        index: 'gsi-ConversationSession.events.sk'
-    };
-      */
     }
-
-    console.log('>>> generateResolvers complete');
   };
 
   prepare = (ctx: TransformerPrepareStepContextProvider): void => {
@@ -414,7 +248,7 @@ export class ConversationTransformer extends TransformerPluginBase {
     for (const directive of this.directives) {
       const sessionModelName = `ConversationSession${directive.field.name.value}`;
       const messageModelName = `ConversationMessage${directive.field.name.value}`;
-      const referenceFieldName = 'conversationSessionId';
+      const referenceFieldName = 'sessionId';
 
       const sessionAuthDirective = createSessionAuthDirective();
       const sessionModelDirective = createSessionModelDirective();
@@ -675,3 +509,542 @@ const makeConversationMessageModel = (
 
   return object;
 };
+
+// #region Resolvers
+
+// #region Init Resolver
+
+const initMappingTemplate = (parentName: string, fieldName: string): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
+  const req = MappingTemplate.s3MappingTemplateFromString(
+    dedent`
+    $util.qr($ctx.stash.put("defaultValues", $util.defaultIfNull($ctx.stash.defaultValues, {})))
+    $util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))
+    #set( $createdAt = $util.time.nowISO8601() )
+    $util.qr($ctx.stash.defaultValues.put("createdAt", $createdAt))
+    $util.qr($ctx.stash.defaultValues.put("updatedAt", $createdAt))
+    $util.toJson({
+      "version": "2018-05-29",
+      "payload": {}
+    })
+    ## [End] Initialization default values. **
+  `,
+    `${parentName}.${fieldName}.init.req.vtl`,
+  );
+
+  const res = MappingTemplate.s3MappingTemplateFromString(
+    dedent`
+    $util.toJson({})
+  `,
+    `${parentName}.${fieldName}.init.res.vtl`,
+  );
+
+  const jsReq = MappingTemplate.s3MappingTemplateFromString(
+    dedent`
+    export function request(ctx) {
+      ctx.stash.defaultValues = ctx.stash.defaultValues ?? {};
+      ctx.stash.defaultValues.id = util.autoId();
+      const createdAt = util.time.nowISO8601();
+      ctx.stash.defaultValues.createdAt = createdAt;
+      ctx.stash.defaultValues.updatedAt = createdAt;
+      return {
+        version: '2018-05-09',
+        payload: {}
+      };
+    }
+    `,
+    `${parentName}.${fieldName}.init.req.js`,
+  )
+
+  const jsRes = MappingTemplate.s3MappingTemplateFromString(
+    dedent`
+    export function response(ctx) {
+      return {};
+    }
+    `,
+    `${parentName}.${fieldName}.init.res.js`,
+  )
+  return { req: jsReq, res: jsRes}
+  return { req, res };
+};
+
+// #endregion Init Resolver
+
+// #region Auth Resolver
+
+const authMappingTemplate = (parentName: string, fieldName: string): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
+  const req = MappingTemplate.s3MappingTemplateFromString(
+    dedent`
+    $util.qr($ctx.stash.put("hasAuth", true))
+    #set( $isAuthorized = false )
+    #set( $primaryFieldMap = {} )
+    #if( $util.authType() == "User Pool Authorization" )
+      #if( !$isAuthorized )
+        #set( $authFilter = [] )
+        #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("sub"), null) )
+        $util.qr($ctx.args.put("owner", $ownerClaim0))
+        #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), null)) )
+        #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+          #set( $ownerClaim0 = "$ownerClaim0::$currentClaim1" )
+          #if( !$util.isNull($ownerClaim0) )
+            $util.qr($authFilter.add({"owner": { "eq": $ownerClaim0 }}))
+          #end
+        #end
+        #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get("sub"), null) )
+        #if( !$util.isNull($role0_0) )
+          $util.qr($authFilter.add({"owner": { "eq": $role0_0 }}))
+        #end
+        #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), null)) )
+        #if( !$util.isNull($role0_1) )
+          $util.qr($authFilter.add({"owner": { "eq": $role0_1 }}))
+        #end
+        #if( !$authFilter.isEmpty() )
+          $util.qr($ctx.stash.put("authFilter", { "or": $authFilter }))
+        #end
+      #end
+    #end
+    #if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+    $util.unauthorized()
+    #end
+    $util.toJson({"version":"2018-05-29","payload":{}})
+    `,
+    `${parentName}.${fieldName}.auth.req.vtl`,
+  );
+
+  const res = MappingTemplate.s3MappingTemplateFromString(
+    dedent`
+    $util.toJson({})
+  `,
+    `${parentName}.${fieldName}.auth.res.vtl`,
+  );
+
+  const jsReq = MappingTemplate.s3MappingTemplateFromString(
+    dedent`
+    export function request(ctx) {
+      ctx.stash.hasAuth = true;
+      const isAuthorized = false;
+
+      if (util.)
+      return {};
+    }
+    `,
+    `${parentName}.${fieldName}.auth.req.js`,
+  )
+
+  const jsRes = MappingTemplate.s3MappingTemplateFromString(
+    dedent`
+    export function response(ctx) {
+      return {};
+    }
+    `,
+    `${parentName}.${fieldName}.auth.res.js`,
+  )
+  return { req: jsReq, res: jsRes}
+  // return { req, res };
+};
+
+// #endregion Auth Resolver
+
+// #region VerifySessionOwner Resolver
+
+const verifySessionOwnerMappingTemplate = (
+  parentName: string,
+  fieldName: string,
+): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
+  const req = MappingTemplate.s3MappingTemplateFromString(
+    dedent`
+  #set( $GetRequest = {
+    "version": "2018-05-29",
+    "operation": "Query"
+  } )
+  #if( $ctx.stash.metadata.modelObjectKey )
+    #set( $expression = "" )
+    #set( $expressionNames = {} )
+    #set( $expressionValues = {} )
+    #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
+      #set( $expression = "$expression#keyCount$velocityCount = :valueCount$velocityCount AND " )
+      $util.qr($expressionNames.put("#keyCount$velocityCount", $item.key))
+      $util.qr($expressionValues.put(":valueCount$velocityCount", $item.value))
+    #end
+    #set( $expression = $expression.replaceAll("AND $", "") )
+    #set( $query = {
+    "expression": $expression,
+    "expressionNames": $expressionNames,
+    "expressionValues": $expressionValues
+  } )
+  #else
+    #set( $query = {
+    "expression": "id = :id",
+    "expressionValues": {
+        ":id": $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.sessionId))
+    }
+  } )
+  #end
+  $util.qr($GetRequest.put("query", $query))
+  #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+  #end
+  $util.toJson($GetRequest)
+  ## [End] Get Request template. **
+  `,
+    `${parentName}.${fieldName}.verifySessionOwner.req.vtl`,
+  );
+
+  const res = MappingTemplate.s3MappingTemplateFromString(
+    dedent`
+  ## [Start] Get Response template. **
+  #if( $ctx.error )
+    $util.error($ctx.error.message, $ctx.error.type)
+  #end
+  #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+    $util.toJson($ctx.result.items[0])
+  #else
+    #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+  $util.unauthorized()
+    #end
+    $util.toJson(null)
+  #end
+  ## [End] Get Response template. **
+  `,
+    `${parentName}.${fieldName}.verifySessionOwner.res.vtl`,
+  );
+
+
+  const jsReq = MappingTemplate.s3MappingTemplateFromString(
+    dedent`
+    export function request(ctx) {
+      return {};
+    }
+    `,
+    `${parentName}.${fieldName}.verifySessionOwner.req.js`,
+  )
+
+  const jsRes = MappingTemplate.s3MappingTemplateFromString(
+    dedent`
+    export function response(ctx) {
+      return {};
+    }
+    `,
+    `${parentName}.${fieldName}.verifySessionOwner.res.js`,
+  )
+  return { req: jsReq, res: jsRes}
+  return { req, res };
+};
+
+// #endregion VerifySessionOwner Resolver
+
+// #region WriteMessageToTable Resolver
+
+const writeMessageToTableMappingTemplate = (
+  parentName: string,
+  fieldName: string,
+): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
+  const req = MappingTemplate.s3MappingTemplateFromString(
+    dedent`
+  ## [Start] Create Request template. **
+  #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+  ## Set the default values to put request **
+  #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+  ## copy the values from input **
+  $util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
+  ## set the typename **
+  $util.qr($mergedValues.put("__typename", "ConversationMessage${fieldName}"))
+  $util.qr($mergedValues.put("sender", "user"))
+  #set( $PutObject = {
+    "version": "2018-05-29",
+    "operation": "PutItem",
+    "attributeValues":   $util.dynamodb.toMapValues($mergedValues),
+    "condition": $condition
+  } )
+  #if( $args.condition )
+    $util.qr($ctx.stash.conditions.add($args.condition))
+  #end
+  ## Begin - key condition **
+  #if( $ctx.stash.metadata.modelObjectKey )
+    #set( $keyConditionExpr = {} )
+    #set( $keyConditionExprNames = {} )
+    #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+      $util.qr($keyConditionExpr.put("keyCondition$velocityCount", {
+    "attributeExists": false
+  }))
+      $util.qr($keyConditionExprNames.put("#keyCondition$velocityCount", "$entry.key"))
+    #end
+    $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+  #else
+    $util.qr($ctx.stash.conditions.add({
+    "id": {
+        "attributeExists": false
+    }
+  }))
+  #end
+  ## End - key condition **
+  ## Start condition block **
+  #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+    #set( $mergedConditions = {
+    "and": $ctx.stash.conditions
+  } )
+    #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+    #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+      #set( $Conditions = {
+    "expression": $Conditions.expression,
+    "expressionNames": $Conditions.expressionNames
+  } )
+    #end
+    ## End condition block **
+  #end
+  #if( $Conditions )
+    #if( $keyConditionExprNames )
+      $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+    #end
+    $util.qr($PutObject.put("condition", $Conditions))
+  #end
+  #if( $ctx.stash.metadata.modelObjectKey )
+    $util.qr($PutObject.put("key", $ctx.stash.metadata.modelObjectKey))
+  #else
+    #set( $Key = {
+    "id":   $util.dynamodb.toDynamoDB($mergedValues.id)
+  } )
+    $util.qr($PutObject.put("key", $Key))
+  #end
+  $util.toJson($PutObject)
+  ## [End] Create Request template. **
+  `,
+    `${parentName}.${fieldName}.writeMessageToTable.req.vtl`,
+  );
+
+
+  const jsReq = MappingTemplate.s3MappingTemplateFromString(
+    dedent`
+    export function request(ctx) {
+      return {};
+    }
+    `,
+    `${parentName}.${fieldName}.writeMessageToTable.req.js`,
+  )
+
+  const jsRes = MappingTemplate.s3MappingTemplateFromString(
+    dedent`
+    export function response(ctx) {
+      return {};
+    }
+    `,
+    `${parentName}.${fieldName}.writeMessageToTable.res.js`,
+  )
+  return { req: jsReq, res: jsRes}
+  // return { req, res };
+};
+// #endregion WriteMessageToTable Resolver
+
+// #region ReadHistory Resolver
+const readHistoryMappingTemplate = (
+  parentName: string,
+  fieldName: string,
+): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
+  const req = MappingTemplate.s3MappingTemplateFromString(
+    dedent`
+    #if( $ctx.stash.deniedField )
+      #set( $result = {
+      "items":   []
+    } )
+      #return($result)
+    #end
+    #set( $partitionKeyValue = $ctx.args.sessionId )
+    #if( $util.isNull($partitionKeyValue) )
+      #set( $result = {
+      "items":   []
+    } )
+      #return($result)
+    #else
+      #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+      #set( $query = {
+      "expression": "#partitionKey = :partitionKey",
+      "expressionNames": {
+          "#partitionKey": "sessionId"
+      },
+      "expressionValues": {
+          ":partitionKey": $util.dynamodb.toDynamoDB($partitionKeyValue)
+      }
+    } )
+      #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+      #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+        #set( $filter = $ctx.stash.authFilter )
+        #if( !$util.isNullOrEmpty($args.filter) )
+          #set( $filter = {
+      "and":   [$filter, $args.filter]
+    } )
+        #end
+      #else
+        #if( !$util.isNullOrEmpty($args.filter) )
+          #set( $filter = $args.filter )
+        #end
+      #end
+      #if( !$util.isNullOrEmpty($filter) )
+        #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
+        #if( !$util.isNullOrBlank($filterExpression.expression) )
+          #if( $filterExpression.expressionValues.size() == 0 )
+            $util.qr($filterExpression.remove("expressionValues"))
+          #end
+          #set( $filter = $filterExpression )
+        #end
+      #end
+    {
+          "version": "2018-05-29",
+          "operation": "Query",
+          "query":     $util.toJson($query),
+          "scanIndexForward":     #if( $context.args.sortDirection )
+          #if( $context.args.sortDirection == "ASC" )
+    true
+          #else
+    false
+          #end
+        #else
+    true
+        #end,
+          "filter":     #if( $filter )
+    $util.toJson($filter)
+        #else
+    null
+        #end,
+          "limit": $limit,
+          "nextToken":     #if( $context.args.nextToken )
+    $util.toJson($context.args.nextToken)
+        #else
+    null
+        #end,
+          "index": "gsi-ConversationSession${fieldName}.messages"
+      }
+    #end
+    `,
+    `${parentName}.${fieldName}.readHistory.req.vtl`,
+  );
+
+  const res = MappingTemplate.s3MappingTemplateFromString(
+    dedent`
+    #if( $ctx.error )
+    $util.error($ctx.error.message, $ctx.error.type)
+    #else
+      #if( !$result )
+        #set( $result = $ctx.result )
+      #end
+      #if( $util.defaultIfNull($ctx.source.get("__operation"), null) == "Mutation" )
+        #foreach( $item in $result.items )
+          $util.qr($item.put("__operation", "Mutation"))
+        #end
+      #end
+      $util.toJson($result)
+    #end
+      `,
+    `${parentName}.${fieldName}.readHistory.res.vtl`,
+  );
+
+  const jsReq = MappingTemplate.s3MappingTemplateFromString(
+    dedent`
+    export function request(ctx) {
+      return {};
+    }
+    `,
+    `${parentName}.${fieldName}.readHistory.req.js`,
+  )
+
+  const jsRes = MappingTemplate.s3MappingTemplateFromString(
+    dedent`
+    export function response(ctx) {
+      return {};
+    }
+    `,
+    `${parentName}.${fieldName}.readHistory.res.js`,
+  )
+  return { req: jsReq, res: jsRes}
+  return { req, res };
+};
+
+// #endregion ReadHistory Resolver
+
+// #region InvokeLambda Resolver
+
+const invokeLambdaMappingTemplate = (
+  parentName: string,
+  fieldName: string,
+): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
+  const req = MappingTemplate.s3MappingTemplateFromString(
+    dedent`
+    `,
+    `${parentName}.${fieldName}.invokeLambda.req.vtl`,
+  );
+
+  const res = MappingTemplate.s3MappingTemplateFromString(
+    dedent`
+
+      `,
+    `${parentName}.${fieldName}.invokeLambda.res.vtl`,
+  );
+
+  return { req, res };
+};
+
+// #endregion InvokeLambda Resolver
+
+// #endregion Resolvers
+
+// const initRequestMappingTemplate = MappingTemplate.s3MappingTemplateFromString(
+//   dedent`
+//   $util.qr($ctx.stash.put("defaultValues", $util.defaultIfNull($ctx.stash.defaultValues, {})))
+//   $util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))
+//   #set( $createdAt = $util.time.nowISO8601() )
+//   $util.qr($ctx.stash.defaultValues.put("createdAt", $createdAt))
+//   $util.qr($ctx.stash.defaultValues.put("updatedAt", $createdAt))
+//   $util.toJson({
+//     "version": "2018-05-29",
+//     "payload": {}
+//   })
+//   ## [End] Initialization default values. **
+// `,
+//   `${parentName}.${fieldName}.init.req.vtl`,
+// );
+
+// const initResponseMappingTemplate = MappingTemplate.s3MappingTemplateFromString(
+//   dedent`
+//   $util.toJson({})
+// `,
+//   `${parentName}.${fieldName}.init.res.vtl`,
+// );
+
+// const functionDataSourceName = '';
+// const dataSource = ctx.api.host.getDataSource(functionDataSourceName);
+
+// TODO: pull this from directive config (once it's added there).
+// const mutationResolver = ctx.resolvers.generateMutationResolver(
+//   parentName,
+//   fieldName,
+//   resolverResourceId,
+//   dataSource as any,
+//   MappingTemplate.inlineTemplateFromString('request'),
+//   MappingTemplate.inlineTemplateFromString('response'),
+// )
+
+// TODO: setting the scope necessary?
+// conversationPipelineResolver.setScope(ctx.stackManager.getScopeFor(resolverResourceId, fieldName));
+// const conversationStackScope = ctx.stackManager.getScopeFor(resolverResourceId, fieldName);
+
+// const initResponseMappingTemplate = MappingTemplate.inlineTemplateFromString(dedent`
+//   $util.toJson({})
+// `);
+
+// const initFunctionId = `${parentName}${fieldName}InitFunction`
+// const initFunction = ctx.api.host.addAppSyncFunction(
+//   initFunctionId,
+//   initRequestMappingTemplate,
+//   initResponseMappingTemplate,
+//   'NONE_DS',
+//   conversationStackScope,
+// )
+
+// ctx.api.host.addResolver(
+//   parentName,
+//   fieldName,
+//   requestMappingTemplate,
+//   responseMappingTemplate,
+//   resolverResourceId,
+//   undefined,
+//   [initFunction.functionId],
+//   conversationStackScope
+// )

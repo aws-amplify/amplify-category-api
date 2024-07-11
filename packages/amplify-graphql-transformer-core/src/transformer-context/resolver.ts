@@ -142,6 +142,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     private requestSlots: string[],
     private responseSlots: string[],
     private datasource?: DataSourceProvider,
+    readonly runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
   ) {
     if (!typeName) {
       throw new InvalidDirectiveError('typeName is required');
@@ -397,15 +398,40 @@ export class TransformerResolver implements TransformerResolverProvider {
       $util.qr($ctx.stash.put("adminRoles", ${JSON.stringify(adminRoles)}))
     `;
     initResolver += '\n$util.toJson({})';
+
+    initResolver = this.runtime
+    ? dedent`
+      export const request = (ctx) => {
+        ctx.stash.typeName = '${this.typeName}';
+        ctx.stash.fieldName = '${this.fieldName}';
+        ctx.stash.metadata = { dataSourceType: '${dataSourceType}' };
+        ctx.stash.metadata.apiId = '${api.apiId}';
+        return {};
+      };
+    `
+    : initResolver
+
+    // ctx.stash.metadata.dataSourceType = '${dataSourceType}';
+    // ctx.stash.metadata.apiId = '${api.apiId}';
+
+    const initResponseResolver = this.runtime
+    ? dedent`
+    export const response = (ctx) => {
+      return ctx.prev.result;
+    };
+    `
+    : '$util.toJson($ctx.prev.result)'
+
     api.host.addResolver(
       this.typeName,
       this.fieldName,
       MappingTemplate.inlineTemplateFromString(initResolver),
-      MappingTemplate.inlineTemplateFromString('$util.toJson($ctx.prev.result)'),
+      MappingTemplate.inlineTemplateFromString(initResponseResolver),
       this.resolverLogicalId,
       undefined,
       [...requestFns, dataSourceProviderFn, ...responseFns].map((fn) => fn.functionId),
       scope,
+      this.runtime
     );
   };
 
@@ -430,6 +456,7 @@ export class TransformerResolver implements TransformerResolverProvider {
             responseMappingTemplate || MappingTemplate.inlineTemplateFromString('$util.toJson({})'),
             dataSource?.name || NONE_DATA_SOURCE_NAME,
             scope,
+            this.runtime
           );
           appSyncFunctions.push(fn);
         }

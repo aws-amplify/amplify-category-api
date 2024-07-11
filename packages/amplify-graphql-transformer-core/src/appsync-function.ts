@@ -36,6 +36,8 @@ export interface FunctionConfigurationProps extends BaseFunctionConfigurationPro
    * @default - No datasource
    */
   readonly dataSource: BaseDataSource | string;
+
+  readonly runtime: CfnFunctionConfiguration.AppSyncRuntimeProperty | undefined;
 }
 
 export class AppSyncFunctionConfiguration extends Construct {
@@ -53,7 +55,16 @@ export class AppSyncFunctionConfiguration extends Construct {
 
     const requestTemplate = props.requestMappingTemplate.bind(this, props.api.assetProvider);
     const responseTemplate = props.responseMappingTemplate.bind(this, props.api.assetProvider);
-    this.function = new CfnFunctionConfiguration(this, `${id}.AppSyncFunction`, {
+    this.function = props.runtime
+    ? new CfnFunctionConfiguration(this, `${id}.AppSyncFunction`, {
+      name: id,
+      apiId: props.api.apiId,
+      functionVersion: '2018-05-29',
+      description: props.description,
+      dataSourceName: props.dataSource instanceof BaseDataSource ? props.dataSource.ds.attrName : props.dataSource,
+      code: requestTemplate + '\n\n' + responseTemplate,
+    })
+    : new CfnFunctionConfiguration(this, `${id}.AppSyncFunction`, {
       name: id,
       apiId: props.api.apiId,
       functionVersion: '2018-05-29',

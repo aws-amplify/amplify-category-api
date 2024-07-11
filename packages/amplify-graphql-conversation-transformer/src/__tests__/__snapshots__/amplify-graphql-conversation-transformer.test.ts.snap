@@ -10,7 +10,7 @@ exports[`conversation route valid schema 1`] = `
 }
 
 type Mutation {
-  pirateChat(sessionId: ID, message: String): String
+  pirateChat(id: ID, sessionId: ID!, content: String): String
   createFoo(input: CreateFooInput!, condition: ModelFooConditionInput): Foo
   deleteFoo(input: DeleteFooInput!, condition: ModelFooConditionInput): Foo
   createConversationSessionpirateChat(input: CreateConversationSessionpirateChatInput!, condition: ModelConversationSessionpirateChatConditionInput): ConversationSessionpirateChat
@@ -36,7 +36,7 @@ type ConversationSessionpirateChat {
 
 type ConversationMessagepirateChat {
   id: ID!
-  conversationSessionId: ID!
+  sessionId: ID!
   session: ConversationSessionpirateChat
   sender: ConversationMessageSender
   content: String
@@ -295,7 +295,7 @@ input ModelConversationMessageSenderInput {
 
 input ModelConversationMessagepirateChatFilterInput {
   id: ModelIDInput
-  conversationSessionId: ModelIDInput
+  sessionId: ModelIDInput
   sender: ModelConversationMessageSenderInput
   content: ModelStringInput
   context: ModelStringInput
@@ -309,7 +309,7 @@ input ModelConversationMessagepirateChatFilterInput {
 }
 
 input ModelConversationMessagepirateChatConditionInput {
-  conversationSessionId: ModelIDInput
+  sessionId: ModelIDInput
   sender: ModelConversationMessageSenderInput
   content: ModelStringInput
   context: ModelStringInput
@@ -324,7 +324,7 @@ input ModelConversationMessagepirateChatConditionInput {
 
 input CreateConversationMessagepirateChatInput {
   id: ID
-  conversationSessionId: ID!
+  sessionId: ID!
   sender: ConversationMessageSender
   content: String
   context: AWSJSON
@@ -337,7 +337,7 @@ input DeleteConversationMessagepirateChatInput {
 
 input ModelSubscriptionConversationMessagepirateChatFilterInput {
   id: ModelSubscriptionIDInput
-  conversationSessionId: ModelSubscriptionIDInput
+  sessionId: ModelSubscriptionIDInput
   sender: ModelSubscriptionStringInput
   content: ModelSubscriptionStringInput
   context: ModelSubscriptionStringInput
@@ -414,7 +414,7 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
   "ConversationMessagepirateChat.session.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"conversationSessionId\\"), $ctx.source.conversationSessionId) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"sessionId\\"), $ctx.source.sessionId) )
 #if( $util.isNull($partitionKeyValue) )
   #return
 #else
@@ -502,7 +502,7 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
   #set( $query = {
   \\"expression\\": \\"#partitionKey = :partitionKey\\",
   \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"conversationSessionId\\"
+      \\"#partitionKey\\": \\"sessionId\\"
   },
   \\"expressionValues\\": {
       \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue)
@@ -630,7 +630,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
       #set( $ownerClaimsList0 = [] )
       $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
       $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
-      #set( $ownerAllowedFields0 = [\\"id\\",\\"conversationSessionId\\",\\"session\\",\\"sender\\",\\"content\\",\\"context\\",\\"uiComponents\\"] )
+      #set( $ownerAllowedFields0 = [\\"id\\",\\"sessionId\\",\\"session\\",\\"sender\\",\\"content\\",\\"context\\",\\"uiComponents\\"] )
       #set( $isAuthorizedOnAllFields0 = true )
       #if( $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
         #if( $isAuthorizedOnAllFields0 )
@@ -1365,108 +1365,36 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Mutation.pirateChat.auth.2.req.vtl": "## [Start] Field Authorization Steps. **
-#set( $isAuthorized = false )
-#if( $util.authType() == \\"User Pool Authorization\\" )
-
-#end
-#if( !$isAuthorized )
-$util.unauthorized()
-#end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
-## [End] Field Authorization Steps. **",
-  "Mutation.pirateChat.auth.2.res.vtl": "## [Start] Return Source Field. **
-$util.toJson($context.source[\\"pirateChat\\"])
-## [End] Return Source Field. **",
-  "Mutation.pirateChat.auth.req.vtl": "$util.qr($ctx.stash.put(\\"hasAuth\\", true))
-#set( $isAuthorized = false )
-#set( $primaryFieldMap = {} )
-#if( $util.authType() == \\"User Pool Authorization\\" )
-  #if( !$isAuthorized )
-    #set( $authFilter = [] )
-    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
-    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
-    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
-      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
-      #if( !$util.isNull($ownerClaim0) )
-        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $ownerClaim0 }}))
-      #end
-    #end
-    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
-    #if( !$util.isNull($role0_0) )
-      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_0 }}))
-    #end
-    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
-    #if( !$util.isNull($role0_1) )
-      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_1 }}))
-    #end
-    #if( !$authFilter.isEmpty() )
-      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
-    #end
-  #end
-#end
-#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
-$util.unauthorized()
-#end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})",
-  "Mutation.pirateChat.auth.res.vtl": "$util.toJson({})",
-  "Mutation.pirateChat.init.req.vtl": "$util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-$util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
-#set( $createdAt = $util.time.nowISO8601() )
-$util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
-$util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Initialization default values. **",
-  "Mutation.pirateChat.init.res.vtl": "$util.toJson({})",
-  "Mutation.pirateChat.verifySessionOwner.req.vtl": "#set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\"
-} )
-#if( $ctx.stash.metadata.modelObjectKey )
-  #set( $expression = \\"\\" )
-  #set( $expressionNames = {} )
-  #set( $expressionValues = {} )
-  #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
-    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
-    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
-  #end
-  #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
-  #set( $query = {
-  \\"expression\\": $expression,
-  \\"expressionNames\\": $expressionNames,
-  \\"expressionValues\\": $expressionValues
-} )
-#else
-  #set( $query = {
-  \\"expression\\": \\"id = :id\\",
-  \\"expressionValues\\": {
-      \\":id\\": $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
-  }
-} )
-#end
-$util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
-#end
-$util.toJson($GetRequest)
-## [End] Get Request template. **",
-  "Mutation.pirateChat.verifySessionOwner.res.vtl": "## [Start] Get Response template. **
-#if( $ctx.error )
-  $util.error($ctx.error.message, $ctx.error.type)
-#end
-#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-  $util.toJson($ctx.result.items[0])
-#else
-  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-$util.unauthorized()
-  #end
-  $util.toJson(null)
-#end
-## [End] Get Response template. **",
+  "Mutation.pirateChat.auth.req.js": "export function request(ctx) {
+  return {};
+}",
+  "Mutation.pirateChat.auth.res.js": "export function response(ctx) {
+  return {};
+}",
+  "Mutation.pirateChat.init.req.js": "export function request(ctx) {
+  return {};
+}",
+  "Mutation.pirateChat.init.res.js": "export function response(ctx) {
+  return {};
+}",
+  "Mutation.pirateChat.readHistory.req.js": "export function request(ctx) {
+  return {};
+}",
+  "Mutation.pirateChat.readHistory.res.js": "export function response(ctx) {
+  return {};
+}",
+  "Mutation.pirateChat.verifySessionOwner.req.js": "export function request(ctx) {
+  return {};
+}",
+  "Mutation.pirateChat.verifySessionOwner.res.js": "export function response(ctx) {
+  return {};
+}",
+  "Mutation.pirateChat.writeMessageToTable.req.js": "export function request(ctx) {
+  return {};
+}",
+  "Mutation.pirateChat.writeMessageToTable.res.js": "export function response(ctx) {
+  return {};
+}",
   "Query.getConversationMessagepirateChat.auth.1.req.vtl": "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
