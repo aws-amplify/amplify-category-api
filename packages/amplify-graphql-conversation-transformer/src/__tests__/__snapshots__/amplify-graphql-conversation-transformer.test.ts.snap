@@ -6,12 +6,12 @@ exports[`conversation route valid schema 1`] = `
   id: ID!
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
+  owner: String
 }
 
 type Mutation {
   pirateChat(sessionId: ID, message: String): String
   createFoo(input: CreateFooInput!, condition: ModelFooConditionInput): Foo
-  updateFoo(input: UpdateFooInput!, condition: ModelFooConditionInput): Foo
   deleteFoo(input: DeleteFooInput!, condition: ModelFooConditionInput): Foo
   createConversationSessionpirateChat(input: CreateConversationSessionpirateChatInput!, condition: ModelConversationSessionpirateChatConditionInput): ConversationSessionpirateChat
   deleteConversationSessionpirateChat(input: DeleteConversationSessionpirateChatInput!, condition: ModelConversationSessionpirateChatConditionInput): ConversationSessionpirateChat
@@ -210,6 +210,7 @@ input ModelFooFilterInput {
   and: [ModelFooFilterInput]
   or: [ModelFooFilterInput]
   not: ModelFooFilterInput
+  owner: ModelStringInput
 }
 
 type Query {
@@ -228,6 +229,7 @@ input ModelFooConditionInput {
   not: ModelFooConditionInput
   createdAt: ModelStringInput
   updatedAt: ModelStringInput
+  owner: ModelStringInput
 }
 
 input CreateFooInput {
@@ -235,28 +237,11 @@ input CreateFooInput {
   id: ID
 }
 
-input UpdateFooInput {
-  bar: Int
-  id: ID!
-}
-
 input DeleteFooInput {
   id: ID!
 }
 
-input ModelSubscriptionFooFilterInput {
-  bar: ModelSubscriptionIntInput
-  id: ModelSubscriptionIDInput
-  createdAt: ModelSubscriptionStringInput
-  updatedAt: ModelSubscriptionStringInput
-  and: [ModelSubscriptionFooFilterInput]
-  or: [ModelSubscriptionFooFilterInput]
-}
-
 type Subscription {
-  onCreateFoo(filter: ModelSubscriptionFooFilterInput): Foo @aws_subscribe(mutations: [\\"createFoo\\"])
-  onUpdateFoo(filter: ModelSubscriptionFooFilterInput): Foo @aws_subscribe(mutations: [\\"updateFoo\\"])
-  onDeleteFoo(filter: ModelSubscriptionFooFilterInput): Foo @aws_subscribe(mutations: [\\"deleteFoo\\"])
   onCreateConversationMessagepirateChat(filter: ModelSubscriptionConversationMessagepirateChatFilterInput, owner: String): ConversationMessagepirateChat @aws_subscribe(mutations: [\\"createConversationMessagepirateChat\\"])
 }
 
@@ -364,4 +349,1740 @@ input ModelSubscriptionConversationMessagepirateChatFilterInput {
   owner: ModelStringInput
 }
 "
+`;
+
+exports[`conversation route valid schema 2`] = `
+Object {
+  "ConversationMessagepirateChat.owner.req.vtl": "$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})",
+  "ConversationMessagepirateChat.owner.res.vtl": "## [Start] Parse owner field auth for Get. **
+#if( $util.isList($ctx.source.owner) )
+  #set( $ownerEntitiesList = [] )
+  #set( $owner = $ctx.source.owner )
+  #foreach( $entities in $owner )
+    #set( $ownerEntities = $entities.split(\\"::\\") )
+    #set( $ownerEntitiesLastIdx = $ownerEntities.size() - 1 )
+    #set( $ownerEntitiesLast = $ownerEntities[$ownerEntitiesLastIdx] )
+    $util.qr($ownerEntitiesList.add($ownerEntitiesLast))
+  #end
+  $util.qr($ctx.source.owner.put($ownerEntitiesList))
+  $util.toJson($ownerEntitiesList)
+#else
+  #set( $ownerEntities = $ctx.source.owner.split(\\"::\\") )
+  #set( $ownerEntitiesLastIdx = $ownerEntities.size() - 1 )
+  #set( $ownerEntitiesLast = $ownerEntities[$ownerEntitiesLastIdx] )
+  $util.qr($ctx.source.put(\\"owner\\", $ownerEntitiesLast))
+  $util.toJson($ctx.source.owner)
+#end
+## [End] Parse owner field auth for Get. **",
+  "ConversationMessagepirateChat.session.auth.1.req.vtl": "## [Start] Check if subscriptions is protected. **
+#if( $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) == \\"Mutation\\" )
+  $util.qr($ctx.stash.put(\\"deniedField\\", true))
+#end
+## [End] Check if subscriptions is protected. **
+## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $authFilter = [] )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #if( !$util.isNull($ownerClaim0) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $ownerClaim0 }}))
+      #end
+    #end
+    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #if( !$util.isNull($role0_0) )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_0 }}))
+    #end
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($role0_1) )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_1 }}))
+    #end
+    #if( !$authFilter.isEmpty() )
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **",
+  "ConversationMessagepirateChat.session.req.vtl": "#if( $ctx.stash.deniedField )
+  #return($util.toJson(null))
+#end
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"conversationSessionId\\"), $ctx.source.conversationSessionId) )
+#if( $util.isNull($partitionKeyValue) )
+  #return
+#else
+  #set( $GetRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Query\\"
+} )
+  $util.qr($GetRequest.put(\\"query\\", {
+  \\"expression\\": \\"#partitionKey = :partitionValue\\",
+  \\"expressionNames\\": {
+      \\"#partitionKey\\": \\"id\\"
+  },
+  \\"expressionValues\\": {
+      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
+  }
+}))
+  #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+  #end
+  $util.toJson($GetRequest)
+#end",
+  "ConversationMessagepirateChat.session.res.vtl": "#if( $ctx.error )
+$util.error($ctx.error.message, $ctx.error.type)
+#else
+  #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+    #set( $resultValue = $ctx.result.items[0] )
+    #set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
+    #if( $operation == \\"Mutation\\" )
+      $util.qr($resultValue.put(\\"__operation\\", \\"Mutation\\"))
+    #end
+    $util.toJson($resultValue)
+  #else
+    #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+$util.unauthorized()
+    #end
+    $util.toJson(null)
+  #end
+#end",
+  "ConversationSessionpirateChat.messages.auth.1.req.vtl": "## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $authFilter = [] )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #if( !$util.isNull($ownerClaim0) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $ownerClaim0 }}))
+      #end
+    #end
+    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #if( !$util.isNull($role0_0) )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_0 }}))
+    #end
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($role0_1) )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_1 }}))
+    #end
+    #if( !$authFilter.isEmpty() )
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **",
+  "ConversationSessionpirateChat.messages.req.vtl": "#if( $ctx.stash.deniedField )
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
+#end
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
+#if( $util.isNull($partitionKeyValue) )
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
+#else
+  #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $query = {
+  \\"expression\\": \\"#partitionKey = :partitionKey\\",
+  \\"expressionNames\\": {
+      \\"#partitionKey\\": \\"conversationSessionId\\"
+  },
+  \\"expressionValues\\": {
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue)
+  }
+} )
+  #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+  #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+    #set( $filter = $ctx.stash.authFilter )
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = {
+  \\"and\\":   [$filter, $args.filter]
+} )
+    #end
+  #else
+    #if( !$util.isNullOrEmpty($args.filter) )
+      #set( $filter = $args.filter )
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filter) )
+    #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
+    #if( !$util.isNullOrBlank($filterExpression.expression) )
+      #if( $filterExpression.expressionValues.size() == 0 )
+        $util.qr($filterExpression.remove(\\"expressionValues\\"))
+      #end
+      #set( $filter = $filterExpression )
+    #end
+  #end
+{
+      \\"version\\": \\"2018-05-29\\",
+      \\"operation\\": \\"Query\\",
+      \\"query\\":     $util.toJson($query),
+      \\"scanIndexForward\\":     #if( $context.args.sortDirection )
+      #if( $context.args.sortDirection == \\"ASC\\" )
+true
+      #else
+false
+      #end
+    #else
+true
+    #end,
+      \\"filter\\":     #if( $filter )
+$util.toJson($filter)
+    #else
+null
+    #end,
+      \\"limit\\": $limit,
+      \\"nextToken\\":     #if( $context.args.nextToken )
+$util.toJson($context.args.nextToken)
+    #else
+null
+    #end,
+      \\"index\\": \\"gsi-ConversationSessionpirateChat.messages\\"
+  }
+#end",
+  "ConversationSessionpirateChat.messages.res.vtl": "#if( $ctx.error )
+$util.error($ctx.error.message, $ctx.error.type)
+#else
+  #if( !$result )
+    #set( $result = $ctx.result )
+  #end
+  #if( $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) == \\"Mutation\\" )
+    #foreach( $item in $result.items )
+      $util.qr($item.put(\\"__operation\\", \\"Mutation\\"))
+    #end
+  #end
+  $util.toJson($result)
+#end",
+  "ConversationSessionpirateChat.owner.req.vtl": "$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})",
+  "ConversationSessionpirateChat.owner.res.vtl": "## [Start] Parse owner field auth for Get. **
+#if( $util.isList($ctx.source.owner) )
+  #set( $ownerEntitiesList = [] )
+  #set( $owner = $ctx.source.owner )
+  #foreach( $entities in $owner )
+    #set( $ownerEntities = $entities.split(\\"::\\") )
+    #set( $ownerEntitiesLastIdx = $ownerEntities.size() - 1 )
+    #set( $ownerEntitiesLast = $ownerEntities[$ownerEntitiesLastIdx] )
+    $util.qr($ownerEntitiesList.add($ownerEntitiesLast))
+  #end
+  $util.qr($ctx.source.owner.put($ownerEntitiesList))
+  $util.toJson($ownerEntitiesList)
+#else
+  #set( $ownerEntities = $ctx.source.owner.split(\\"::\\") )
+  #set( $ownerEntitiesLastIdx = $ownerEntities.size() - 1 )
+  #set( $ownerEntitiesLast = $ownerEntities[$ownerEntitiesLastIdx] )
+  $util.qr($ctx.source.put(\\"owner\\", $ownerEntitiesLast))
+  $util.toJson($ctx.source.owner)
+#end
+## [End] Parse owner field auth for Get. **",
+  "Foo.owner.req.vtl": "$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})",
+  "Foo.owner.res.vtl": "## [Start] Parse owner field auth for Get. **
+#if( $util.isList($ctx.source.owner) )
+  #set( $ownerEntitiesList = [] )
+  #set( $owner = $ctx.source.owner )
+  #foreach( $entities in $owner )
+    #set( $ownerEntities = $entities.split(\\"::\\") )
+    #set( $ownerEntitiesLastIdx = $ownerEntities.size() - 1 )
+    #set( $ownerEntitiesLast = $ownerEntities[$ownerEntitiesLastIdx] )
+    $util.qr($ownerEntitiesList.add($ownerEntitiesLast))
+  #end
+  $util.qr($ctx.source.owner.put($ownerEntitiesList))
+  $util.toJson($ownerEntitiesList)
+#else
+  #set( $ownerEntities = $ctx.source.owner.split(\\"::\\") )
+  #set( $ownerEntitiesLastIdx = $ownerEntities.size() - 1 )
+  #set( $ownerEntitiesLast = $ownerEntities[$ownerEntitiesLastIdx] )
+  $util.qr($ctx.source.put(\\"owner\\", $ownerEntitiesLast))
+  $util.toJson($ctx.source.owner)
+#end
+## [End] Parse owner field auth for Get. **",
+  "Mutation.createConversationMessagepirateChat.auth.1.req.vtl": "## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.owner, null) )
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+    #if( $isAuthorized && $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+      $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+    #end
+    #if( !$isAuthorized )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+      #set( $ownerAllowedFields0 = [\\"id\\",\\"conversationSessionId\\",\\"session\\",\\"sender\\",\\"content\\",\\"context\\",\\"uiComponents\\"] )
+      #set( $isAuthorizedOnAllFields0 = true )
+      #if( $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+      #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+        $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #set( $deniedFields = $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+  #if( $deniedFields.size() > 0 )
+    $util.error(\\"Unauthorized on \${deniedFields}\\", \\"Unauthorized\\")
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **",
+  "Mutation.createConversationMessagepirateChat.init.1.req.vtl": "## [Start] Initialization default values. **
+$util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
+$util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+#set( $createdAt = $util.time.nowISO8601() )
+$util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
+$util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Initialization default values. **",
+  "Mutation.createConversationMessagepirateChat.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
+  "Mutation.createConversationMessagepirateChat.req.vtl": "## [Start] Create Request template. **
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+## Set the default values to put request **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+## copy the values from input **
+$util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
+## set the typename **
+$util.qr($mergedValues.put(\\"__typename\\", \\"ConversationMessagepirateChat\\"))
+#set( $PutObject = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"PutItem\\",
+  \\"attributeValues\\":   $util.dynamodb.toMapValues($mergedValues),
+  \\"condition\\": $condition
+} )
+#if( $args.condition )
+  $util.qr($ctx.stash.conditions.add($args.condition))
+#end
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": false
+  }
+}))
+#end
+## End - key condition **
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  \\"and\\": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  \\"expression\\": $Conditions.expression,
+  \\"expressionNames\\": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($PutObject.put(\\"condition\\", $Conditions))
+#end
+#if( $ctx.stash.metadata.modelObjectKey )
+  $util.qr($PutObject.put(\\"key\\", $ctx.stash.metadata.modelObjectKey))
+#else
+  #set( $Key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($mergedValues.id)
+} )
+  $util.qr($PutObject.put(\\"key\\", $Key))
+#end
+$util.toJson($PutObject)
+## [End] Create Request template. **",
+  "Mutation.createConversationMessagepirateChat.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] ResponseTemplate. **",
+  "Mutation.createConversationSessionpirateChat.auth.1.req.vtl": "## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.owner, null) )
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+    #if( $isAuthorized && $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+      $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+    #end
+    #if( !$isAuthorized )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+      #set( $ownerAllowedFields0 = [\\"id\\",\\"name\\",\\"metadata\\",\\"messages\\"] )
+      #set( $isAuthorizedOnAllFields0 = true )
+      #if( $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+      #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+        $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #set( $deniedFields = $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+  #if( $deniedFields.size() > 0 )
+    $util.error(\\"Unauthorized on \${deniedFields}\\", \\"Unauthorized\\")
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **",
+  "Mutation.createConversationSessionpirateChat.init.1.req.vtl": "## [Start] Initialization default values. **
+$util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
+$util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+#set( $createdAt = $util.time.nowISO8601() )
+$util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
+$util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Initialization default values. **",
+  "Mutation.createConversationSessionpirateChat.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
+  "Mutation.createConversationSessionpirateChat.req.vtl": "## [Start] Create Request template. **
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+## Set the default values to put request **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+## copy the values from input **
+$util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
+## set the typename **
+$util.qr($mergedValues.put(\\"__typename\\", \\"ConversationSessionpirateChat\\"))
+#set( $PutObject = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"PutItem\\",
+  \\"attributeValues\\":   $util.dynamodb.toMapValues($mergedValues),
+  \\"condition\\": $condition
+} )
+#if( $args.condition )
+  $util.qr($ctx.stash.conditions.add($args.condition))
+#end
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": false
+  }
+}))
+#end
+## End - key condition **
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  \\"and\\": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  \\"expression\\": $Conditions.expression,
+  \\"expressionNames\\": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($PutObject.put(\\"condition\\", $Conditions))
+#end
+#if( $ctx.stash.metadata.modelObjectKey )
+  $util.qr($PutObject.put(\\"key\\", $ctx.stash.metadata.modelObjectKey))
+#else
+  #set( $Key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($mergedValues.id)
+} )
+  $util.qr($PutObject.put(\\"key\\", $Key))
+#end
+$util.toJson($PutObject)
+## [End] Create Request template. **",
+  "Mutation.createConversationSessionpirateChat.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] ResponseTemplate. **",
+  "Mutation.createFoo.auth.1.req.vtl": "## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.owner, null) )
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+    #if( $isAuthorized && $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+      $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+    #end
+    #if( !$isAuthorized )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+      #set( $ownerAllowedFields0 = [\\"bar\\"] )
+      #set( $isAuthorizedOnAllFields0 = true )
+      #if( $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+      #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+        $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #set( $deniedFields = $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+  #if( $deniedFields.size() > 0 )
+    $util.error(\\"Unauthorized on \${deniedFields}\\", \\"Unauthorized\\")
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **",
+  "Mutation.createFoo.init.1.req.vtl": "## [Start] Initialization default values. **
+$util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
+$util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+#set( $createdAt = $util.time.nowISO8601() )
+$util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
+$util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Initialization default values. **",
+  "Mutation.createFoo.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
+  "Mutation.createFoo.req.vtl": "## [Start] Create Request template. **
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+## Set the default values to put request **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+## copy the values from input **
+$util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
+## set the typename **
+$util.qr($mergedValues.put(\\"__typename\\", \\"Foo\\"))
+#set( $PutObject = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"PutItem\\",
+  \\"attributeValues\\":   $util.dynamodb.toMapValues($mergedValues),
+  \\"condition\\": $condition
+} )
+#if( $args.condition )
+  $util.qr($ctx.stash.conditions.add($args.condition))
+#end
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": false
+  }
+}))
+#end
+## End - key condition **
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  \\"and\\": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  \\"expression\\": $Conditions.expression,
+  \\"expressionNames\\": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($PutObject.put(\\"condition\\", $Conditions))
+#end
+#if( $ctx.stash.metadata.modelObjectKey )
+  $util.qr($PutObject.put(\\"key\\", $ctx.stash.metadata.modelObjectKey))
+#else
+  #set( $Key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($mergedValues.id)
+} )
+  $util.qr($PutObject.put(\\"key\\", $Key))
+#end
+$util.toJson($PutObject)
+## [End] Create Request template. **",
+  "Mutation.createFoo.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] ResponseTemplate. **",
+  "Mutation.deleteConversationMessagepirateChat.auth.1.req.vtl": "## [Start] Get Request template. **
+#set( $GetRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"GetItem\\"
+} )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+} )
+#end
+$util.qr($GetRequest.put(\\"key\\", $key))
+$util.toJson($GetRequest)
+## [End] Get Request template. **",
+  "Mutation.deleteConversationMessagepirateChat.auth.1.res.vtl": "## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $ownerEntity0 = $util.defaultIfNull($ctx.result.owner, null) )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+      #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #set( $isAuthorized = true )
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **",
+  "Mutation.deleteConversationMessagepirateChat.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
+  "Mutation.deleteConversationMessagepirateChat.req.vtl": "## [Start] Delete Request template. **
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+#set( $DeleteRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"DeleteItem\\"
+} )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $Key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $Key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($args.input.id)
+} )
+#end
+$util.qr($DeleteRequest.put(\\"key\\", $Key))
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": true
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": true
+  }
+}))
+#end
+## End - key condition **
+#if( $args.condition )
+  $util.qr($ctx.stash.conditions.add($args.condition))
+#end
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  \\"and\\": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  \\"expression\\": $Conditions.expression,
+  \\"expressionNames\\": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($DeleteRequest.put(\\"condition\\", $Conditions))
+#end
+$util.toJson($DeleteRequest)
+## [End] Delete Request template. **",
+  "Mutation.deleteConversationMessagepirateChat.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] ResponseTemplate. **",
+  "Mutation.deleteConversationSessionpirateChat.auth.1.req.vtl": "## [Start] Get Request template. **
+#set( $GetRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"GetItem\\"
+} )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+} )
+#end
+$util.qr($GetRequest.put(\\"key\\", $key))
+$util.toJson($GetRequest)
+## [End] Get Request template. **",
+  "Mutation.deleteConversationSessionpirateChat.auth.1.res.vtl": "## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $ownerEntity0 = $util.defaultIfNull($ctx.result.owner, null) )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+      #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #set( $isAuthorized = true )
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **",
+  "Mutation.deleteConversationSessionpirateChat.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
+  "Mutation.deleteConversationSessionpirateChat.req.vtl": "## [Start] Delete Request template. **
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+#set( $DeleteRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"DeleteItem\\"
+} )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $Key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $Key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($args.input.id)
+} )
+#end
+$util.qr($DeleteRequest.put(\\"key\\", $Key))
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": true
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": true
+  }
+}))
+#end
+## End - key condition **
+#if( $args.condition )
+  $util.qr($ctx.stash.conditions.add($args.condition))
+#end
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  \\"and\\": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  \\"expression\\": $Conditions.expression,
+  \\"expressionNames\\": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($DeleteRequest.put(\\"condition\\", $Conditions))
+#end
+$util.toJson($DeleteRequest)
+## [End] Delete Request template. **",
+  "Mutation.deleteConversationSessionpirateChat.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] ResponseTemplate. **",
+  "Mutation.deleteFoo.auth.1.req.vtl": "## [Start] Get Request template. **
+#set( $GetRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"GetItem\\"
+} )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+} )
+#end
+$util.qr($GetRequest.put(\\"key\\", $key))
+$util.toJson($GetRequest)
+## [End] Get Request template. **",
+  "Mutation.deleteFoo.auth.1.res.vtl": "## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $ownerEntity0 = $util.defaultIfNull($ctx.result.owner, null) )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+      #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #set( $isAuthorized = true )
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **",
+  "Mutation.deleteFoo.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
+  "Mutation.deleteFoo.req.vtl": "## [Start] Delete Request template. **
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+#set( $DeleteRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"DeleteItem\\"
+} )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $Key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $Key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($args.input.id)
+} )
+#end
+$util.qr($DeleteRequest.put(\\"key\\", $Key))
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": true
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": true
+  }
+}))
+#end
+## End - key condition **
+#if( $args.condition )
+  $util.qr($ctx.stash.conditions.add($args.condition))
+#end
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  \\"and\\": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  \\"expression\\": $Conditions.expression,
+  \\"expressionNames\\": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($DeleteRequest.put(\\"condition\\", $Conditions))
+#end
+$util.toJson($DeleteRequest)
+## [End] Delete Request template. **",
+  "Mutation.deleteFoo.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] ResponseTemplate. **",
+  "Mutation.pirateChat.auth.2.req.vtl": "## [Start] Field Authorization Steps. **
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Field Authorization Steps. **",
+  "Mutation.pirateChat.auth.2.res.vtl": "## [Start] Return Source Field. **
+$util.toJson($context.source[\\"pirateChat\\"])
+## [End] Return Source Field. **",
+  "Mutation.pirateChat.auth.req.vtl": "$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $authFilter = [] )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #if( !$util.isNull($ownerClaim0) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $ownerClaim0 }}))
+      #end
+    #end
+    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #if( !$util.isNull($role0_0) )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_0 }}))
+    #end
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($role0_1) )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_1 }}))
+    #end
+    #if( !$authFilter.isEmpty() )
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})",
+  "Mutation.pirateChat.auth.res.vtl": "$util.toJson({})",
+  "Mutation.pirateChat.init.req.vtl": "$util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
+$util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+#set( $createdAt = $util.time.nowISO8601() )
+$util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
+$util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Initialization default values. **",
+  "Mutation.pirateChat.init.res.vtl": "$util.toJson({})",
+  "Mutation.pirateChat.verifySessionOwner.req.vtl": "#set( $GetRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Query\\"
+} )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $expression = \\"\\" )
+  #set( $expressionNames = {} )
+  #set( $expressionValues = {} )
+  #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
+    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
+    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
+  #end
+  #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
+  #set( $query = {
+  \\"expression\\": $expression,
+  \\"expressionNames\\": $expressionNames,
+  \\"expressionValues\\": $expressionValues
+} )
+#else
+  #set( $query = {
+  \\"expression\\": \\"id = :id\\",
+  \\"expressionValues\\": {
+      \\":id\\": $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
+  }
+} )
+#end
+$util.qr($GetRequest.put(\\"query\\", $query))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+#end
+$util.toJson($GetRequest)
+## [End] Get Request template. **",
+  "Mutation.pirateChat.verifySessionOwner.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+  $util.toJson($ctx.result.items[0])
+#else
+  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+$util.unauthorized()
+  #end
+  $util.toJson(null)
+#end
+## [End] Get Response template. **",
+  "Query.getConversationMessagepirateChat.auth.1.req.vtl": "## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $authFilter = [] )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #if( !$util.isNull($ownerClaim0) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $ownerClaim0 }}))
+      #end
+    #end
+    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #if( !$util.isNull($role0_0) )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_0 }}))
+    #end
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($role0_1) )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_1 }}))
+    #end
+    #if( !$authFilter.isEmpty() )
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **",
+  "Query.getConversationMessagepirateChat.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
+  "Query.getConversationMessagepirateChat.req.vtl": "## [Start] Get Request template. **
+#set( $GetRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Query\\"
+} )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $expression = \\"\\" )
+  #set( $expressionNames = {} )
+  #set( $expressionValues = {} )
+  #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
+    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
+    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
+  #end
+  #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
+  #set( $query = {
+  \\"expression\\": $expression,
+  \\"expressionNames\\": $expressionNames,
+  \\"expressionValues\\": $expressionValues
+} )
+#else
+  #set( $query = {
+  \\"expression\\": \\"id = :id\\",
+  \\"expressionValues\\": {
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
+  }
+} )
+#end
+$util.qr($GetRequest.put(\\"query\\", $query))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+#end
+$util.toJson($GetRequest)
+## [End] Get Request template. **",
+  "Query.getConversationMessagepirateChat.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+  $util.toJson($ctx.result.items[0])
+#else
+  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+$util.unauthorized()
+  #end
+  $util.toJson(null)
+#end
+## [End] Get Response template. **",
+  "Query.getConversationSessionpirateChat.auth.1.req.vtl": "## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $authFilter = [] )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #if( !$util.isNull($ownerClaim0) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $ownerClaim0 }}))
+      #end
+    #end
+    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #if( !$util.isNull($role0_0) )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_0 }}))
+    #end
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($role0_1) )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_1 }}))
+    #end
+    #if( !$authFilter.isEmpty() )
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **",
+  "Query.getConversationSessionpirateChat.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
+  "Query.getConversationSessionpirateChat.req.vtl": "## [Start] Get Request template. **
+#set( $GetRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Query\\"
+} )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $expression = \\"\\" )
+  #set( $expressionNames = {} )
+  #set( $expressionValues = {} )
+  #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
+    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
+    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
+  #end
+  #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
+  #set( $query = {
+  \\"expression\\": $expression,
+  \\"expressionNames\\": $expressionNames,
+  \\"expressionValues\\": $expressionValues
+} )
+#else
+  #set( $query = {
+  \\"expression\\": \\"id = :id\\",
+  \\"expressionValues\\": {
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
+  }
+} )
+#end
+$util.qr($GetRequest.put(\\"query\\", $query))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+#end
+$util.toJson($GetRequest)
+## [End] Get Request template. **",
+  "Query.getConversationSessionpirateChat.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+  $util.toJson($ctx.result.items[0])
+#else
+  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+$util.unauthorized()
+  #end
+  $util.toJson(null)
+#end
+## [End] Get Response template. **",
+  "Query.getFoo.auth.1.req.vtl": "## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $authFilter = [] )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #if( !$util.isNull($ownerClaim0) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $ownerClaim0 }}))
+      #end
+    #end
+    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #if( !$util.isNull($role0_0) )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_0 }}))
+    #end
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($role0_1) )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_1 }}))
+    #end
+    #if( !$authFilter.isEmpty() )
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **",
+  "Query.getFoo.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
+  "Query.getFoo.req.vtl": "## [Start] Get Request template. **
+#set( $GetRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Query\\"
+} )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $expression = \\"\\" )
+  #set( $expressionNames = {} )
+  #set( $expressionValues = {} )
+  #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
+    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
+    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
+  #end
+  #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
+  #set( $query = {
+  \\"expression\\": $expression,
+  \\"expressionNames\\": $expressionNames,
+  \\"expressionValues\\": $expressionValues
+} )
+#else
+  #set( $query = {
+  \\"expression\\": \\"id = :id\\",
+  \\"expressionValues\\": {
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
+  }
+} )
+#end
+$util.qr($GetRequest.put(\\"query\\", $query))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+#end
+$util.toJson($GetRequest)
+## [End] Get Request template. **",
+  "Query.getFoo.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+  $util.toJson($ctx.result.items[0])
+#else
+  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+$util.unauthorized()
+  #end
+  $util.toJson(null)
+#end
+## [End] Get Response template. **",
+  "Query.listConversationMessagepirateChats.auth.1.req.vtl": "## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $authFilter = [] )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #if( !$util.isNull($ownerClaim0) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $ownerClaim0 }}))
+      #end
+    #end
+    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #if( !$util.isNull($role0_0) )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_0 }}))
+    #end
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($role0_1) )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_1 }}))
+    #end
+    #if( !$authFilter.isEmpty() )
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **",
+  "Query.listConversationMessagepirateChats.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
+  "Query.listConversationMessagepirateChats.req.vtl": "## [Start] List Request. **
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+#set( $limit = $util.defaultIfNull($args.limit, 100) )
+#set( $ListRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"limit\\": $limit
+} )
+#if( $args.nextToken )
+  #set( $ListRequest.nextToken = $args.nextToken )
+#end
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
+  #if( !$util.isNullOrEmpty($args.filter) )
+    #set( $filter = {
+  \\"and\\":   [$filter, $args.filter]
+} )
+  #end
+#else
+  #if( !$util.isNullOrEmpty($args.filter) )
+    #set( $filter = $args.filter )
+  #end
+#end
+#if( !$util.isNullOrEmpty($filter) )
+  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
+  #if( $util.isNullOrEmpty($filterExpression) )
+    $util.error(\\"Unable to process the filter expression\\", \\"Unrecognized Filter\\")
+  #end
+  #if( !$util.isNullOrBlank($filterExpression.expression) )
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
+    #end
+    #set( $ListRequest.filter = $filterExpression )
+  #end
+#end
+#if( !$util.isNull($ctx.stash.modelQueryExpression) && !$util.isNullOrEmpty($ctx.stash.modelQueryExpression.expression) )
+  $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
+  $util.qr($ListRequest.put(\\"query\\", $ctx.stash.modelQueryExpression))
+  #if( !$util.isNull($args.sortDirection) && $args.sortDirection == \\"DESC\\" )
+    #set( $ListRequest.scanIndexForward = false )
+  #else
+    #set( $ListRequest.scanIndexForward = true )
+  #end
+#else
+  $util.qr($ListRequest.put(\\"operation\\", \\"Scan\\"))
+#end
+#if( !$util.isNull($ctx.stash.metadata.index) )
+  #set( $ListRequest.IndexName = $ctx.stash.metadata.index )
+#end
+$util.toJson($ListRequest)
+## [End] List Request. **",
+  "Query.listConversationMessagepirateChats.res.vtl": "## [Start] ResponseTemplate. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] ResponseTemplate. **",
+  "Query.listConversationSessionpirateChats.auth.1.req.vtl": "## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $authFilter = [] )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #if( !$util.isNull($ownerClaim0) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $ownerClaim0 }}))
+      #end
+    #end
+    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #if( !$util.isNull($role0_0) )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_0 }}))
+    #end
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($role0_1) )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_1 }}))
+    #end
+    #if( !$authFilter.isEmpty() )
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **",
+  "Query.listConversationSessionpirateChats.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
+  "Query.listConversationSessionpirateChats.req.vtl": "## [Start] List Request. **
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+#set( $limit = $util.defaultIfNull($args.limit, 100) )
+#set( $ListRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"limit\\": $limit
+} )
+#if( $args.nextToken )
+  #set( $ListRequest.nextToken = $args.nextToken )
+#end
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
+  #if( !$util.isNullOrEmpty($args.filter) )
+    #set( $filter = {
+  \\"and\\":   [$filter, $args.filter]
+} )
+  #end
+#else
+  #if( !$util.isNullOrEmpty($args.filter) )
+    #set( $filter = $args.filter )
+  #end
+#end
+#if( !$util.isNullOrEmpty($filter) )
+  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
+  #if( $util.isNullOrEmpty($filterExpression) )
+    $util.error(\\"Unable to process the filter expression\\", \\"Unrecognized Filter\\")
+  #end
+  #if( !$util.isNullOrBlank($filterExpression.expression) )
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
+    #end
+    #set( $ListRequest.filter = $filterExpression )
+  #end
+#end
+#if( !$util.isNull($ctx.stash.modelQueryExpression) && !$util.isNullOrEmpty($ctx.stash.modelQueryExpression.expression) )
+  $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
+  $util.qr($ListRequest.put(\\"query\\", $ctx.stash.modelQueryExpression))
+  #if( !$util.isNull($args.sortDirection) && $args.sortDirection == \\"DESC\\" )
+    #set( $ListRequest.scanIndexForward = false )
+  #else
+    #set( $ListRequest.scanIndexForward = true )
+  #end
+#else
+  $util.qr($ListRequest.put(\\"operation\\", \\"Scan\\"))
+#end
+#if( !$util.isNull($ctx.stash.metadata.index) )
+  #set( $ListRequest.IndexName = $ctx.stash.metadata.index )
+#end
+$util.toJson($ListRequest)
+## [End] List Request. **",
+  "Query.listConversationSessionpirateChats.res.vtl": "## [Start] ResponseTemplate. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] ResponseTemplate. **",
+  "Query.listFoos.auth.1.req.vtl": "## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $authFilter = [] )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #if( !$util.isNull($ownerClaim0) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $ownerClaim0 }}))
+      #end
+    #end
+    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #if( !$util.isNull($role0_0) )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_0 }}))
+    #end
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($role0_1) )
+      $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_1 }}))
+    #end
+    #if( !$authFilter.isEmpty() )
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **",
+  "Query.listFoos.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
+  "Query.listFoos.req.vtl": "## [Start] List Request. **
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+#set( $limit = $util.defaultIfNull($args.limit, 100) )
+#set( $ListRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"limit\\": $limit
+} )
+#if( $args.nextToken )
+  #set( $ListRequest.nextToken = $args.nextToken )
+#end
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
+  #if( !$util.isNullOrEmpty($args.filter) )
+    #set( $filter = {
+  \\"and\\":   [$filter, $args.filter]
+} )
+  #end
+#else
+  #if( !$util.isNullOrEmpty($args.filter) )
+    #set( $filter = $args.filter )
+  #end
+#end
+#if( !$util.isNullOrEmpty($filter) )
+  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
+  #if( $util.isNullOrEmpty($filterExpression) )
+    $util.error(\\"Unable to process the filter expression\\", \\"Unrecognized Filter\\")
+  #end
+  #if( !$util.isNullOrBlank($filterExpression.expression) )
+    #if( $filterExpression.expressionValues.size() == 0 )
+      $util.qr($filterExpression.remove(\\"expressionValues\\"))
+    #end
+    #set( $ListRequest.filter = $filterExpression )
+  #end
+#end
+#if( !$util.isNull($ctx.stash.modelQueryExpression) && !$util.isNullOrEmpty($ctx.stash.modelQueryExpression.expression) )
+  $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
+  $util.qr($ListRequest.put(\\"query\\", $ctx.stash.modelQueryExpression))
+  #if( !$util.isNull($args.sortDirection) && $args.sortDirection == \\"DESC\\" )
+    #set( $ListRequest.scanIndexForward = false )
+  #else
+    #set( $ListRequest.scanIndexForward = true )
+  #end
+#else
+  $util.qr($ListRequest.put(\\"operation\\", \\"Scan\\"))
+#end
+#if( !$util.isNull($ctx.stash.metadata.index) )
+  #set( $ListRequest.IndexName = $ctx.stash.metadata.index )
+#end
+$util.toJson($ListRequest)
+## [End] List Request. **",
+  "Query.listFoos.res.vtl": "## [Start] ResponseTemplate. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] ResponseTemplate. **",
+  "Subscription.onCreateConversationMessagepirateChat.auth.1.req.vtl": "## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #set( $hasValidOwnerArgument = false )
+  #set( $authRuntimeFilter = [] )
+  #set( $authOwnerRuntimeFilter = [] )
+  #set( $authGroupRuntimeFilter = [] )
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+    #set( $ownerClaimsList0 = [] )
+    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+    $util.qr($authOwnerRuntimeFilter.add({ \\"owner\\": { \\"eq\\": $currentClaim1 } }))
+    #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.owner, null) )
+    #if( !$isAuthorized && !$util.isNullOrEmpty($ownerEntity0) )
+      #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #set( $isAuthorized = true )
+        #set( $hasValidOwnerArgument = true )
+      #else
+        $util.unauthorized()
+      #end
+    #end
+  #end
+  ## Apply dynamic roles auth if not previously authorized by static groups and owner argument **
+  #if( $authOwnerRuntimeFilter.size() > 0 )
+    $util.qr($authRuntimeFilter.addAll($authOwnerRuntimeFilter))
+  #end
+  #if( $authGroupRuntimeFilter.size() > 0 )
+    $util.qr($authRuntimeFilter.addAll($authGroupRuntimeFilter))
+  #end
+  #set( $filterArgsSize = 0 )
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filterArgsSize = $ctx.args.filter.size() )
+  #end
+  #set( $isOwnerAuthAuthorizedAndNoOtherFilters = $hasValidOwnerArgument && $authRuntimeFilter.size() == 1 && $filterArgsSize == 0 )
+  #set( $isOwnerOrDynamicAuthAuthorizedWithFilters = (!$isAuthorized || $hasValidOwnerArgument) && $authRuntimeFilter.size() > 0 )
+  #if( !$isOwnerAuthAuthorizedAndNoOtherFilters && $isOwnerOrDynamicAuthAuthorizedWithFilters )
+    #if( $util.isNullOrEmpty($ctx.args.filter) )
+      #set( $ctx.args.filter = { \\"or\\": $authRuntimeFilter } )
+    #else
+      #set( $ctx.args.filter = { \\"and\\": [ { \\"or\\": $authRuntimeFilter }, $ctx.args.filter ]} )
+    #end
+    #set( $isAuthorized = true )
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **",
+  "Subscription.onCreateConversationMessagepirateChat.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
+  "Subscription.onCreateConversationMessagepirateChat.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onCreateConversationMessagepirateChat.res.vtl": "## [Start] Subscription Response template. **
+#if( !$util.isNullOrEmpty($ctx.args.filter) )
+$extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
+#end
+$util.toJson(null)
+## [End] Subscription Response template. **",
+}
 `;

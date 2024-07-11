@@ -27,3 +27,9 @@ export const ConversationDirective: Directive = {
   definition,
   defaults,
 };
+
+/*
+Params to add:
+ - function name
+ - 
+*/

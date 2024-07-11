@@ -8,7 +8,11 @@ import {
   InvalidTransformerError,
   TransformerPluginBase,
   generateGetArgumentsInput,
+  MappingTemplate,
+  TransformerResolver,
+  getModelDataSourceNameForTypeName,
 } from '@aws-amplify/graphql-transformer-core';
+import { NONE_DATA_SOURCE_NAME } from '@aws-amplify/graphql-transformer-core/src/transformer-context';
 import {
   TransformerAuthProvider,
   TransformerContextProvider,
@@ -36,10 +40,12 @@ import {
   makeNamedType,
   makeNonNullType,
   makeValueNode,
+  ResolverResourceIDs,
   wrapNonNull,
 } from 'graphql-transformer-common';
 import produce from 'immer';
 import { WritableDraft, has } from 'immer/dist/internal';
+import { dedent } from 'ts-dedent';
 
 export type ConversationDirectiveConfiguration = {
   parent: ObjectTypeDefinitionNode;
@@ -49,6 +55,8 @@ export type ConversationDirectiveConfiguration = {
   // messagesModel: ObjectTypeDefinitionNode;
   field: FieldDefinitionNode;
 };
+
+const CONVERSATION_DIRECTIVE_STACK = 'ConversationDirectiveStack';
 
 export class ConversationTransformer extends TransformerPluginBase {
   private directives: ConversationDirectiveConfiguration[] = [];
@@ -131,7 +139,6 @@ export class ConversationTransformer extends TransformerPluginBase {
           sessionModelDirective,
           sessionAuthDirective,
         ]);
-        // const sessionModel = makeConversationSessionModel(sessionModelName, messageModelName, 'conversationSessionId');
 
         const messageAuthDirective = createMessageAuthDirective();
         const messageModelDirective = createMessageModelDirective();
@@ -149,13 +156,259 @@ export class ConversationTransformer extends TransformerPluginBase {
     return document;
   };
 
-  generateResolvers = (context: TransformerContextProvider): void => {
+  generateResolvers = (ctx: TransformerContextProvider): void => {
     console.log('>>> invokedGenerateResolvers');
     // console.log('context in generateResolvers', context);
+
+    // if (!ctx.api.host.hasDataSource(NONE_DATA_SOURCE_NAME)) {
+    //   ctx.api.host.addNoneDataSource(NONE_DATA_SOURCE_NAME, {
+    //     name: NONE_DATA_SOURCE_NAME,
+    //     description: 'None Data Source for Pipeline functions',
+    //   });
+    // }
+
+    // const stack = ctx.stackManager.createStack(CONVERSATION_DIRECTIVE_STACK);
+    for (const directive of this.directives) {
+      const { parent, field } = directive;
+      const parentName = parent.name.value;
+      const fieldName = field.name.value;
+      const resolverResourceId = ResolverResourceIDs.ResolverResourceID(parentName, fieldName);
+
+      const requestMappingTemplate = MappingTemplate.inlineTemplateFromString('request');
+      const responseMappingTemplate = MappingTemplate.inlineTemplateFromString('response');
+
+      // const functionDataSourceName = '';
+      // const dataSource = ctx.api.host.getDataSource(functionDataSourceName);
+
+      // TODO: pull this from directive config (once it's added there).
+      // const mutationResolver = ctx.resolvers.generateMutationResolver(
+      //   parentName,
+      //   fieldName,
+      //   resolverResourceId,
+      //   dataSource as any,
+      //   MappingTemplate.inlineTemplateFromString('request'),
+      //   MappingTemplate.inlineTemplateFromString('response'),
+      // )
+
+      // TODO: setting the scope necessary?
+      // conversationPipelineResolver.setScope(ctx.stackManager.getScopeFor(resolverResourceId, fieldName));
+      // const conversationStackScope = ctx.stackManager.getScopeFor(resolverResourceId, fieldName);
+
+      // const initResponseMappingTemplate = MappingTemplate.inlineTemplateFromString(dedent`
+      //   $util.toJson({})
+      // `);
+
+      // const initFunctionId = `${parentName}${fieldName}InitFunction`
+      // const initFunction = ctx.api.host.addAppSyncFunction(
+      //   initFunctionId,
+      //   initRequestMappingTemplate,
+      //   initResponseMappingTemplate,
+      //   'NONE_DS',
+      //   conversationStackScope,
+      // )
+
+      // ctx.api.host.addResolver(
+      //   parentName,
+      //   fieldName,
+      //   requestMappingTemplate,
+      //   responseMappingTemplate,
+      //   resolverResourceId,
+      //   undefined,
+      //   [initFunction.functionId],
+      //   conversationStackScope
+      // )
+
+      // pipeline resolver
+      const conversationPipelineResolver = new TransformerResolver(
+        parentName,
+        fieldName,
+        resolverResourceId,
+        requestMappingTemplate,
+        responseMappingTemplate,
+        ['init', 'auth', 'verifySessionOwner', 'writeMessageToTable', 'retrieveMessageHistory', 'invokeLambda'],
+        ['handleLambdaResponse', 'finish'],
+        // dataSource as any,
+      );
+
+      // init
+      const initRequestMappingTemplate = MappingTemplate.s3MappingTemplateFromString(
+        dedent`
+        $util.qr($ctx.stash.put("defaultValues", $util.defaultIfNull($ctx.stash.defaultValues, {})))
+        $util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))
+        #set( $createdAt = $util.time.nowISO8601() )
+        $util.qr($ctx.stash.defaultValues.put("createdAt", $createdAt))
+        $util.qr($ctx.stash.defaultValues.put("updatedAt", $createdAt))
+        $util.toJson({
+          "version": "2018-05-29",
+          "payload": {}
+        })
+        ## [End] Initialization default values. **
+      `,
+        `${parentName}.${fieldName}.init.req.vtl`,
+      );
+
+      const initResponseMappingTemplate = MappingTemplate.s3MappingTemplateFromString(
+        dedent`
+        $util.toJson({})
+      `,
+        `${parentName}.${fieldName}.init.res.vtl`,
+      );
+
+      // auth
+      const authRequestMappingTemplate = MappingTemplate.s3MappingTemplateFromString(
+        dedent`
+        $util.qr($ctx.stash.put("hasAuth", true))
+        #set( $isAuthorized = false )
+        #set( $primaryFieldMap = {} )
+        #if( $util.authType() == "User Pool Authorization" )
+          #if( !$isAuthorized )
+            #set( $authFilter = [] )
+            #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get("sub"), null) )
+            #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), null)) )
+            #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+              #set( $ownerClaim0 = "$ownerClaim0::$currentClaim1" )
+              #if( !$util.isNull($ownerClaim0) )
+                $util.qr($authFilter.add({"owner": { "eq": $ownerClaim0 }}))
+              #end
+            #end
+            #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get("sub"), null) )
+            #if( !$util.isNull($role0_0) )
+              $util.qr($authFilter.add({"owner": { "eq": $role0_0 }}))
+            #end
+            #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), null)) )
+            #if( !$util.isNull($role0_1) )
+              $util.qr($authFilter.add({"owner": { "eq": $role0_1 }}))
+            #end
+            #if( !$authFilter.isEmpty() )
+              $util.qr($ctx.stash.put("authFilter", { "or": $authFilter }))
+            #end
+          #end
+        #end
+        #if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+        $util.unauthorized()
+        #end
+        $util.toJson({"version":"2018-05-29","payload":{}})
+        `,
+        `${parentName}.${fieldName}.auth.req.vtl`,
+      )
+
+      const authResponseMappingTemplate = MappingTemplate.s3MappingTemplateFromString(
+        dedent`$util.toJson({})`,
+        `${parentName}.${fieldName}.auth.res.vtl`,
+      )
+
+      // verifySessionOwner
+      const verifySessionOwnerRequestMappingTemplate = MappingTemplate.s3MappingTemplateFromString(
+        dedent`
+        #set( $GetRequest = {
+          "version": "2018-05-29",
+          "operation": "Query"
+        } )
+        #if( $ctx.stash.metadata.modelObjectKey )
+          #set( $expression = "" )
+          #set( $expressionNames = {} )
+          #set( $expressionValues = {} )
+          #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
+            #set( $expression = "$expression#keyCount$velocityCount = :valueCount$velocityCount AND " )
+            $util.qr($expressionNames.put("#keyCount$velocityCount", $item.key))
+            $util.qr($expressionValues.put(":valueCount$velocityCount", $item.value))
+          #end
+          #set( $expression = $expression.replaceAll("AND $", "") )
+          #set( $query = {
+          "expression": $expression,
+          "expressionNames": $expressionNames,
+          "expressionValues": $expressionValues
+        } )
+        #else
+          #set( $query = {
+          "expression": "id = :id",
+          "expressionValues": {
+              ":id": $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
+          }
+        } )
+        #end
+        $util.qr($GetRequest.put("query", $query))
+        #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+          $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+        #end
+        $util.toJson($GetRequest)
+        ## [End] Get Request template. **
+        `,
+        `${parentName}.${fieldName}.verifySessionOwner.req.vtl`,
+      );
+
+      const verifySessionOwnerResponseMappingTemplate = MappingTemplate.s3MappingTemplateFromString(
+        dedent`
+        ## [Start] Get Response template. **
+        #if( $ctx.error )
+          $util.error($ctx.error.message, $ctx.error.type)
+        #end
+        #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+          $util.toJson($ctx.result.items[0])
+        #else
+          #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+        $util.unauthorized()
+          #end
+          $util.toJson(null)
+        #end
+        ## [End] Get Response template. **
+        `,
+        `${parentName}.${fieldName}.verifySessionOwner.res.vtl`,
+      );
+
+      // writeMessageToTable
+
+      // retrieveMessageHistory
+
+      // invokeLambda
+
+      // handleLambdaResponse
+
+      // finish
+
+      conversationPipelineResolver.addToSlot(
+        'init',
+        initRequestMappingTemplate,
+        initResponseMappingTemplate
+      );
+
+      conversationPipelineResolver.addToSlot(
+        'auth',
+        authRequestMappingTemplate,
+        authResponseMappingTemplate
+      );
+
+
+      const sessionModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, `ConversationSession${fieldName}`);
+      const conversationSessionDDBDataSource = ctx.api.host.getDataSource(sessionModelDDBDataSourceName);
+
+      conversationPipelineResolver.addToSlot(
+        'verifySessionOwner',
+        verifySessionOwnerRequestMappingTemplate,
+        verifySessionOwnerResponseMappingTemplate,
+        conversationSessionDDBDataSource as any,
+      );
+
+      ctx.resolvers.addResolver(parentName, fieldName, conversationPipelineResolver);
+      console.log('added resolver to api.host');
+
+      /*
+          return {
+        operation: 'Query',
+        query: {
+            expression: '#partitionKey = :partitionKey',
+            expressionNames: { '#partitionKey': 'conversationSessionId' },
+            expressionValues: util.dynamodb.toMapValues({ ':partitionKey': sessionId })
+        },
+        index: 'gsi-ConversationSession.events.sk'
+    };
+      */
+    }
+
+    console.log('>>> generateResolvers complete');
   };
 
   prepare = (ctx: TransformerPrepareStepContextProvider): void => {
-    // running this results in 'Conflicting enum type 'ConversationMessageSender' found.' from output.ts > addEnum
     ctx.output.addEnum(makeConversationEventSenderType());
 
     for (const directive of this.directives) {
@@ -182,7 +435,7 @@ export class ConversationTransformer extends TransformerPluginBase {
         messageAuthDirective,
       ]);
       // const messagesModel = makeConversationMessageModel(messageModelName, sessionModel);
-          // Conflicting type 'ConversationSessionpirateChat' found.
+      // Conflicting type 'ConversationSessionpirateChat' found.
       ctx.output.addObject(sessionModel);
       ctx.output.addObject(messageModel);
 
