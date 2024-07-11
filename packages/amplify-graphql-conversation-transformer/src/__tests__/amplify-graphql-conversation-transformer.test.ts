@@ -33,8 +33,7 @@ test('conversation route valid schema', () => {
     }
 
     type Mutation {
-        pirateChat(sessionId: ID, message: String): String
-        @auth(rules: [{ allow: owner }])
+        pirateChat(id: ID, sessionId: ID!, content: String): String
         @conversation(aiModel: "Claude3Haiku")
     }
   `;
@@ -149,6 +148,7 @@ test('conversation route valid schema', () => {
 
   expect(out.resolvers).toBeDefined();
   expect(out.resolvers).toMatchSnapshot();
+
 });
 
 
