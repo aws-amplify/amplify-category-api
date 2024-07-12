@@ -34,11 +34,11 @@ test('conversation route valid schema', () => {
 
     type Mutation {
         pirateChat(id: ID, sessionId: ID!, content: String): String
-        @conversation(aiModel: "Claude3Haiku")
+        @conversation(aiModel: "Claude3Haiku", functionName: "conversation-handler")
     }
   `;
 
-   // @function(name: "abc")
+
   // @auth(rules: [{ allow: owner }])
 
 /*

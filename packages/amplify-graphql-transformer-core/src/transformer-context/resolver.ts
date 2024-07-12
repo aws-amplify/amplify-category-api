@@ -273,6 +273,7 @@ export class TransformerResolver implements TransformerResolverProvider {
       this.responseMappingTemplate,
       this.datasource?.name || NONE_DATA_SOURCE_NAME,
       scope,
+      this.runtime
     );
 
     let dataSourceType = 'NONE';
