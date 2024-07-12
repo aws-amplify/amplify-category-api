@@ -277,13 +277,23 @@ export interface IdentityPoolAuthorizationConfig {
 }
 
 // @public
+export interface ImportedAmplifyDynamoDbModelDataSourceStrategy {
+    // (undocumented)
+    readonly dbType: 'DYNAMODB';
+    // (undocumented)
+    readonly provisionStrategy: 'IMPORTED_AMPLIFY_TABLE';
+    // (undocumented)
+    readonly tableName: string;
+}
+
+// @public
 export interface LambdaAuthorizationConfig {
     readonly function: IFunction;
     readonly ttl: Duration;
 }
 
 // @public
-export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
+export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | ImportedAmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
 
 // @public
 export type ModelDataSourceStrategyDbType = 'DYNAMODB' | ModelDataSourceStrategySqlDbType;
