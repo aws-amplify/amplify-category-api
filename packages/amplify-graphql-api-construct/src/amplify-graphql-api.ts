@@ -211,6 +211,10 @@ export class AmplifyGraphqlApi extends Construct {
       transformParameters: {
         ...defaultTranslationBehavior,
         ...(translationBehavior ?? {}),
+        // TODO: decide naming before merge to main
+        // migrating from construct -> Gen2 is not supported
+        // this param is purposely omitted from translationBehavior so the param is not available through the construct
+        enableGen2Migration: false,
       },
       // CDK construct uses a custom resource. We'll define this explicitly here to remind ourselves that this value is unused in the CDK
       // construct flow
