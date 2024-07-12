@@ -34,6 +34,7 @@ import {
 } from 'graphql';
 import {
   blankObject,
+  FunctionResourceIDs,
   makeArgument,
   makeDirective,
   makeField,
@@ -42,18 +43,22 @@ import {
   makeNonNullType,
   makeValueNode,
   ResolverResourceIDs,
+  ResourceConstants,
   wrapNonNull,
 } from 'graphql-transformer-common';
 import produce from 'immer';
 import { WritableDraft, has } from 'immer/dist/internal';
 import { dedent } from 'ts-dedent';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as cdk from 'aws-cdk-lib';
+
+
 
 export type ConversationDirectiveConfiguration = {
   parent: ObjectTypeDefinitionNode;
   directive: DirectiveNode;
   aiModel: string;
-  // sessionModel: ObjectTypeDefinitionNode;
-  // messagesModel: ObjectTypeDefinitionNode;
+  functionName: string;
   field: FieldDefinitionNode;
 };
 
@@ -85,7 +90,6 @@ export class ConversationTransformer extends TransformerPluginBase {
     directive: DirectiveNode,
     context: TransformerSchemaVisitStepContextProvider,
   ): void => {
-    // assert that parent.name.value == 'Mutation'
     if (parent.name.value !== 'Mutation') {
       throw new InvalidDirectiveError('@conversation directive must be used on Mutation field.');
     }
@@ -102,11 +106,9 @@ export class ConversationTransformer extends TransformerPluginBase {
 
     validate(config, context as TransformerContextProvider);
     this.directives.push(config);
-    console.log('>>> field');
   };
 
   mutateSchema = (ctx: TransformerPreProcessContextProvider): DocumentNode => {
-    console.log('>>> invokedMutateSchema');
     const mutationObjectContainingConversationDirectives = ctx.inputDocument.definitions.filter(
       (definition) =>
         definition.kind === 'ObjectTypeDefinition' &&
@@ -158,16 +160,6 @@ export class ConversationTransformer extends TransformerPluginBase {
   };
 
   generateResolvers = (ctx: TransformerContextProvider): void => {
-    console.log('>>> invokedGenerateResolvers');
-    // console.log('context in generateResolvers', context);
-
-    // if (!ctx.api.host.hasDataSource(NONE_DATA_SOURCE_NAME)) {
-    //   ctx.api.host.addNoneDataSource(NONE_DATA_SOURCE_NAME, {
-    //     name: NONE_DATA_SOURCE_NAME,
-    //     description: 'None Data Source for Pipeline functions',
-    //   });
-    // }
-
     // const stack = ctx.stackManager.createStack(CONVERSATION_DIRECTIVE_STACK);
     for (const directive of this.directives) {
       const { parent, field } = directive;
@@ -175,19 +167,38 @@ export class ConversationTransformer extends TransformerPluginBase {
       const fieldName = field.name.value;
       const resolverResourceId = ResolverResourceIDs.ResolverResourceID(parentName, fieldName);
 
-      const requestMappingTemplate = MappingTemplate.inlineTemplateFromString('request');
-      const responseMappingTemplate = MappingTemplate.inlineTemplateFromString('response');
+      // const requestMappingTemplate = MappingTemplate.inlineTemplateFromString('request');
+      // const responseMappingTemplate = MappingTemplate.inlineTemplateFromString('response');
+
+      // invokeLambda
+
+      // Note: trying to use lambda function as data resolver.
+
+      // TODO: Support single function for multiple routes.
+
+      // TODO: Do we really need to create a nested stack here?
+      const functionStack = ctx.stackManager.createStack('ConversationDirectiveLambdaStack');
+
+      // TODO: Add function name arg to conversation directive and pull from that.
+      const functionDataSourceId = FunctionResourceIDs.FunctionDataSourceID(directive.functionName);
+      const referencedFunction = lambda.Function.fromFunctionAttributes(functionStack, `${functionDataSourceId}Function`, {
+        functionArn: lambdaArnResource(directive.functionName),
+      });
+      const functionDataSourceScope = ctx.stackManager.getScopeFor(functionDataSourceId, 'ConversationDirectiveLambdaStack');
+      const functionDataSource = ctx.api.host.addLambdaDataSource(functionDataSourceId, referencedFunction, {}, functionDataSourceScope);
+
+      const invokeLambdaFunction = invokeLambdaMappingTemplate(parentName, fieldName);
 
       // pipeline resolver
       const conversationPipelineResolver = new TransformerResolver(
         parentName,
         fieldName,
         resolverResourceId,
-        requestMappingTemplate,
-        responseMappingTemplate,
+        invokeLambdaFunction.req,
+        invokeLambdaFunction.res,
         ['init', 'auth', 'verifySessionOwner', 'writeMessageToTable', 'retrieveMessageHistory', 'invokeLambda'],
         ['handleLambdaResponse', 'finish'],
-        undefined,
+        functionDataSource,
         { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' },
       );
 
@@ -231,11 +242,6 @@ export class ConversationTransformer extends TransformerPluginBase {
         messageDDBDataSource as any,
       );
 
-      // invokeLambda
-
-      // handleLambdaResponse
-
-      // finish
 
       ctx.resolvers.addResolver(parentName, fieldName, conversationPipelineResolver);
     }
@@ -257,7 +263,6 @@ export class ConversationTransformer extends TransformerPluginBase {
         sessionModelDirective,
         sessionAuthDirective,
       ]);
-      // const sessionModel = makeConversationSessionModel(sessionModelName, messageModelName, 'conversationSessionId');
 
       const messageAuthDirective = createMessageAuthDirective();
       const messageModelDirective = createMessageModelDirective();
@@ -267,8 +272,7 @@ export class ConversationTransformer extends TransformerPluginBase {
         messageModelDirective,
         messageAuthDirective,
       ]);
-      // const messagesModel = makeConversationMessageModel(messageModelName, sessionModel);
-      // Conflicting type 'ConversationSessionpirateChat' found.
+
       ctx.output.addObject(sessionModel);
       ctx.output.addObject(messageModel);
 
@@ -388,8 +392,6 @@ const makeConversationSessionModel = (
   modelName: string,
   messagesField: FieldDefinitionNode,
   typeLevelDirectives: DirectiveNode[],
-  // messageModelName: string,
-  // referenceFieldName: string,
 ): ObjectTypeDefinitionNode => {
   /*
     type ConversationSession_pirateChat
@@ -400,15 +402,10 @@ const makeConversationSessionModel = (
     }
   */
 
-  // field directives
-  // const referencesArg = makeArgument('references', makeValueNode(referenceFieldName));
-  // const hasManyDirective = makeDirective(HasManyDirective.name, [referencesArg]);
-
   // fields
   const id = makeField('id', [], wrapNonNull(makeNamedType('ID')));
   const name = makeField('name', [], makeNamedType('String'));
   const metadata = makeField('metadata', [], makeNamedType('AWSJSON'));
-  // const messages = makeField('messages', [], makeListType(makeNamedType(messageModelName)), [hasManyDirective]);
 
   const object = {
     ...blankObject(modelName),
@@ -717,27 +714,54 @@ const invokeLambdaMappingTemplate = (
   parentName: string,
   fieldName: string,
 ): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
-  const req = MappingTemplate.s3MappingTemplateFromString(
-    dedent`
-    `,
-    `${parentName}.${fieldName}.invokeLambda.req.vtl`,
-  );
+  const req = MappingTemplate.inlineTemplateFromString(dedent`
+    export function request(ctx) {
+    const { args, identity, source, request, prev } = ctx;
+      const { typeName, fieldName } = ctx.stash;
 
-  const res = MappingTemplate.s3MappingTemplateFromString(
-    dedent`
+      const payload = {
+        typeName,
+        fieldName,
+        args,
+        identity,
+        source,
+        request,
+        prev
+      };
 
-      `,
-    `${parentName}.${fieldName}.invokeLambda.res.vtl`,
-  );
+      return {
+        operation: 'Invoke',
+        payload,
+        invocationType: 'Event'
+      };
+    }`);
+
+  const res = MappingTemplate.inlineTemplateFromString(dedent`
+    export function response(ctx) {
+      let success = true;
+      if (ctx.error) {
+        util.appendError(ctx.error.message, ctx.error.type);
+        success = false;
+      }
+      return { success };
+    }`);
 
   return { req, res };
+};
+
+const lambdaArnResource = (name: string): string => {
+  // eslint-disable-next-line no-template-curly-in-string
+  return cdk.Fn.sub('arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${name}', { name });
+};
+
+const lambdaArnKey = (name: string, region?: string, accountId?: string): string => {
+  // eslint-disable-next-line no-template-curly-in-string
+  return `arn:aws:lambda:${region ? region : '${AWS::Region}'}:${accountId ? accountId : '${AWS::AccountId}'}:function:${name}`;
 };
 
 // #endregion InvokeLambda Resolver
 
 // #endregion Resolvers
-
-
 
 // const functionDataSourceName = '';
 // const dataSource = ctx.api.host.getDataSource(functionDataSourceName);

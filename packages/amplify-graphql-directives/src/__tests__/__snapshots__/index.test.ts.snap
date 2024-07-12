@@ -230,6 +230,7 @@ Object {
   "definition": "
   directive @conversation(
     aiModel: String
+    functionName: String
   ) on FIELD_DEFINITION
 ",
   "name": "conversation",
@@ -599,6 +600,7 @@ Array [
   "belongsTo",
   "default",
   "deprecated",
+  "conversation",
   "function",
   "hasMany",
   "hasOne",
@@ -628,6 +630,7 @@ Array [
   "belongsTo",
   "default",
   "deprecated",
+  "conversation",
   "function",
   "hasMany",
   "hasOne",

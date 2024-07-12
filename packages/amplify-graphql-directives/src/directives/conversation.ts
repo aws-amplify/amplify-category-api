@@ -17,7 +17,8 @@ const name = 'conversation';
 
 const definition = /* GraphQL */`
   directive @${name}(
-    aiModel: String
+    aiModel: String,
+    functionName: String
   ) on FIELD_DEFINITION
 `;
 const defaults = {};
@@ -31,5 +32,5 @@ export const ConversationDirective: Directive = {
 /*
 Params to add:
  - function name
- - 
+ -
 */
