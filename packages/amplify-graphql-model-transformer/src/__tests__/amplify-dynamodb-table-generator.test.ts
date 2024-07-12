@@ -6,7 +6,7 @@ import {
 } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
 import { ModelTransformer } from '../graphql-model-transformer';
-import { CUSTOM_DDB_CFN_TYPE } from '../resources/amplify-dynamodb-table/amplify-dynamodb-table-construct';
+import { CUSTOM_DDB_CFN_TYPE, CUSTOM_IMPORTED_DDB_CFN_TYPE } from '../resources/amplify-dynamodb-table/amplify-dynamodb-table-construct';
 import { ITERATIVE_TABLE_STACK_NAME } from '../resources/amplify-dynamodb-table/amplify-dynamo-model-resource-generator';
 
 describe('ModelTransformer:', () => {
@@ -20,6 +20,10 @@ describe('ModelTransformer:', () => {
         id: ID!
         content: String
       }
+      type Author @model {
+        id: ID!
+        name: String
+      }
     `;
     const out = testTransform({
       schema: validSchema,
@@ -27,6 +31,11 @@ describe('ModelTransformer:', () => {
       dataSourceStrategies: {
         Comment: DDB_DEFAULT_DATASOURCE_STRATEGY,
         Post: DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
+        Author: {
+          dbType: 'DYNAMODB' as const,
+          provisionStrategy: 'IMPORTED_AMPLIFY_TABLE' as const,
+          tableName: 'Author-myApiId-myEnv',
+        },
       },
     });
     expect(out).toBeDefined();
@@ -53,12 +62,22 @@ describe('ModelTransformer:', () => {
     const commentTable = commentStack.Resources?.CommentTable;
     expect(commentTable).toBeDefined();
     expect(commentTable.Type).toBe('AWS::DynamoDB::Table');
+    // Author table resource should be generated within the imported amplify DynamoDB table
+    const authorStack = out.stacks['Author'];
+    expect(authorStack).toBeDefined();
+    const authorTable = authorStack.Resources?.AuthorTable;
+    expect(authorTable).toBeDefined();
+    expect(authorTable.Type).toBe(CUSTOM_IMPORTED_DDB_CFN_TYPE);
+    expect(authorTable.UpdateReplacePolicy).toBe('Retain');
+    expect(authorTable.DeletionPolicy).toBe('Retain');
+    expect(authorTable.Properties.isImported).toBe(true);
+    expect(authorTable.Properties.tableName).toBe('Author-myApiId-myEnv');
     validateModelSchema(parse(out.schema));
 
     // Outputs should contain a reference to the Arn to the entry point (onEventHandler)
     // of the provider for the AmplifyTableManager custom resource.
     // If any of these assertions should fail, it is likely caused by a change in the custom resource provider
-    /** {@link Provider} */ // that caused the entry point ARN to change.
+    /** {@link Provider} */
     // !! This will result in broken redeployments !!
     // Friends don't let friends mutate custom resource entry point ARNs.
     const outputs = amplifyTableManagerStack.Outputs!;
@@ -86,5 +105,47 @@ describe('ModelTransformer:', () => {
     expect(amplifyTableManagerResources).toBeDefined();
     const onEventHandlerLambda = amplifyTableManagerResources![onEventHandlerResourceName];
     expect(onEventHandlerLambda).toBeDefined();
+  });
+
+  it('should throw error when tableName is not set for imported table strategy', async () => {
+    const validSchema = `
+      type Post @model {
+          id: ID!
+          title: String!
+      }
+    `;
+    const transformOption = {
+      schema: validSchema,
+      transformers: [new ModelTransformer()],
+      dataSourceStrategies: {
+        Post: {
+          dbType: 'DYNAMODB' as const,
+          provisionStrategy: 'IMPORTED_AMPLIFY_TABLE' as const,
+        },
+      },
+    };
+    // @ts-expect-error tableName is required on dataSourceStrategies.Post
+    expect(() => testTransform(transformOption)).toThrow('No resource generator assigned for Post with dbType DYNAMODB');
+  });
+
+  it('should throw error when tableName is empty for imported table strategy', async () => {
+    const validSchema = `
+      type Post @model {
+          id: ID!
+          title: String!
+      }
+    `;
+    const transformOption = {
+      schema: validSchema,
+      transformers: [new ModelTransformer()],
+      dataSourceStrategies: {
+        Post: {
+          dbType: 'DYNAMODB' as const,
+          provisionStrategy: 'IMPORTED_AMPLIFY_TABLE' as const,
+          tableName: '',
+        },
+      },
+    };
+    expect(() => testTransform(transformOption)).toThrow('No resource generator assigned for Post with dbType DYNAMODB');
   });
 });

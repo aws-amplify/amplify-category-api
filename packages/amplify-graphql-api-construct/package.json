@@ -335,7 +335,7 @@
       "global": {
         "branches": 89,
         "functions": 90,
-        "lines": 58
+        "lines": 59
       }
     },
     "coverageReporters": [
