@@ -63,6 +63,7 @@ export class AppSyncFunctionConfiguration extends Construct {
       description: props.description,
       dataSourceName: props.dataSource instanceof BaseDataSource ? props.dataSource.ds.attrName : props.dataSource,
       code: requestTemplate + '\n\n' + responseTemplate,
+      runtime: props.runtime,
     })
     : new CfnFunctionConfiguration(this, `${id}.AppSyncFunction`, {
       name: id,

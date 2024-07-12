@@ -1365,36 +1365,6 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Mutation.pirateChat.auth.req.js": "export function request(ctx) {
-  return {};
-}",
-  "Mutation.pirateChat.auth.res.js": "export function response(ctx) {
-  return {};
-}",
-  "Mutation.pirateChat.init.req.js": "export function request(ctx) {
-  return {};
-}",
-  "Mutation.pirateChat.init.res.js": "export function response(ctx) {
-  return {};
-}",
-  "Mutation.pirateChat.readHistory.req.js": "export function request(ctx) {
-  return {};
-}",
-  "Mutation.pirateChat.readHistory.res.js": "export function response(ctx) {
-  return {};
-}",
-  "Mutation.pirateChat.verifySessionOwner.req.js": "export function request(ctx) {
-  return {};
-}",
-  "Mutation.pirateChat.verifySessionOwner.res.js": "export function response(ctx) {
-  return {};
-}",
-  "Mutation.pirateChat.writeMessageToTable.req.js": "export function request(ctx) {
-  return {};
-}",
-  "Mutation.pirateChat.writeMessageToTable.res.js": "export function response(ctx) {
-  return {};
-}",
   "Query.getConversationMessagepirateChat.auth.1.req.vtl": "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
