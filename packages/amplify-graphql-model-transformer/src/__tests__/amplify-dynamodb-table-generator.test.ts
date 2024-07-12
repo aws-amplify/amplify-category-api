@@ -124,7 +124,7 @@ describe('ModelTransformer:', () => {
         },
       },
     };
-    // @ts-expect-error
+    // @ts-expect-error tableName is required on dataSourceStrategies.Post
     expect(() => testTransform(transformOption)).toThrow('No resource generator assigned for Post with dbType DYNAMODB');
   });
 
