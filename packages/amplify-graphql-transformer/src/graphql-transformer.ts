@@ -7,7 +7,7 @@ import { MapsToTransformer, RefersToTransformer } from '@aws-amplify/graphql-map
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { SqlTransformer } from '@aws-amplify/graphql-sql-transformer';
 import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
-import { ConversationTransformer } from '@aws-amplify/graphql-conversation-transformer'
+import { ConversationTransformer } from '@aws-amplify/graphql-conversation-transformer';
 import {
   BelongsToTransformer,
   HasManyTransformer,

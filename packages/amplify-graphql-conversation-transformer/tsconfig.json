@@ -1,14 +1,14 @@
 {
-    "extends": "../../tsconfig.base.json",
-    "compilerOptions": {
-      "rootDir": "src",
-      "outDir": "lib"
-    },
-    "references": [
-        { "path": "../amplify-graphql-directives" },
-        { "path": "../amplify-graphql-transformer-core" },
-        { "path": "../amplify-graphql-transformer-interfaces" },
-        { "path": "../graphql-mapping-template" },
-        { "path": "../graphql-transformer-common" }
-      ]
-  }
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "lib"
+  },
+  "references": [
+    { "path": "../amplify-graphql-directives" },
+    { "path": "../amplify-graphql-transformer-core" },
+    { "path": "../amplify-graphql-transformer-interfaces" },
+    { "path": "../graphql-mapping-template" },
+    { "path": "../graphql-transformer-common" }
+  ]
+}

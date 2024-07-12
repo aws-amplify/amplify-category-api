@@ -56,28 +56,28 @@ export class AppSyncFunctionConfiguration extends Construct {
     const requestTemplate = props.requestMappingTemplate.bind(this, props.api.assetProvider);
     const responseTemplate = props.responseMappingTemplate.bind(this, props.api.assetProvider);
     this.function = props.runtime
-    ? new CfnFunctionConfiguration(this, `${id}.AppSyncFunction`, {
-      name: id,
-      apiId: props.api.apiId,
-      functionVersion: '2018-05-29',
-      description: props.description,
-      dataSourceName: props.dataSource instanceof BaseDataSource ? props.dataSource.ds.attrName : props.dataSource,
-      code: requestTemplate + '\n\n' + responseTemplate,
-      runtime: props.runtime,
-    })
-    : new CfnFunctionConfiguration(this, `${id}.AppSyncFunction`, {
-      name: id,
-      apiId: props.api.apiId,
-      functionVersion: '2018-05-29',
-      description: props.description,
-      dataSourceName: props.dataSource instanceof BaseDataSource ? props.dataSource.ds.attrName : props.dataSource,
-      ...(props.requestMappingTemplate instanceof InlineTemplate
-        ? { requestMappingTemplate: requestTemplate }
-        : { requestMappingTemplateS3Location: requestTemplate }),
-      ...(props.responseMappingTemplate instanceof InlineTemplate
-        ? { responseMappingTemplate: responseTemplate }
-        : { responseMappingTemplateS3Location: responseTemplate }),
-    });
+      ? new CfnFunctionConfiguration(this, `${id}.AppSyncFunction`, {
+          name: id,
+          apiId: props.api.apiId,
+          functionVersion: '2018-05-29',
+          description: props.description,
+          dataSourceName: props.dataSource instanceof BaseDataSource ? props.dataSource.ds.attrName : props.dataSource,
+          code: requestTemplate + '\n\n' + responseTemplate,
+          runtime: props.runtime,
+        })
+      : new CfnFunctionConfiguration(this, `${id}.AppSyncFunction`, {
+          name: id,
+          apiId: props.api.apiId,
+          functionVersion: '2018-05-29',
+          description: props.description,
+          dataSourceName: props.dataSource instanceof BaseDataSource ? props.dataSource.ds.attrName : props.dataSource,
+          ...(props.requestMappingTemplate instanceof InlineTemplate
+            ? { requestMappingTemplate: requestTemplate }
+            : { requestMappingTemplateS3Location: requestTemplate }),
+          ...(props.responseMappingTemplate instanceof InlineTemplate
+            ? { responseMappingTemplate: responseTemplate }
+            : { responseMappingTemplateS3Location: responseTemplate }),
+        });
     setResourceName(this.function, { name: id });
     props.api.addSchemaDependency(this.function);
     if (props.dataSource instanceof BackedDataSource) {

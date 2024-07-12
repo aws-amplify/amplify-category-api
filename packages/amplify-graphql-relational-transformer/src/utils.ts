@@ -449,7 +449,7 @@ export const getRelatedType = (
   if (!relatedType) {
     const outputRelatedType = ctx.output.getObject(relatedTypeName);
     if (outputRelatedType) {
-      return outputRelatedType
+      return outputRelatedType;
     } else {
       throw new Error(`Could not find related type with name ${relatedTypeName} while processing relationships.`);
     }
