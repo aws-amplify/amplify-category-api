@@ -15,7 +15,7 @@ const name = 'conversation';
 //   }
 // `;
 
-const definition = /* GraphQL */`
+const definition = /* GraphQL */ `
   directive @${name}(
     aiModel: String,
     functionName: String

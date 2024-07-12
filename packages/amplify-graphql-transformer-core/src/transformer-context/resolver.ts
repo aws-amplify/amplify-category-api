@@ -273,7 +273,7 @@ export class TransformerResolver implements TransformerResolverProvider {
       this.responseMappingTemplate,
       this.datasource?.name || NONE_DATA_SOURCE_NAME,
       scope,
-      this.runtime
+      this.runtime,
     );
 
     let dataSourceType = 'NONE';
@@ -401,7 +401,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     initResolver += '\n$util.toJson({})';
 
     initResolver = this.runtime
-    ? dedent`
+      ? dedent`
       export const request = (ctx) => {
         ctx.stash.typeName = '${this.typeName}';
         ctx.stash.fieldName = '${this.fieldName}';
@@ -410,18 +410,18 @@ export class TransformerResolver implements TransformerResolverProvider {
         return {};
       };
     `
-    : initResolver
+      : initResolver;
 
     // ctx.stash.metadata.dataSourceType = '${dataSourceType}';
     // ctx.stash.metadata.apiId = '${api.apiId}';
 
     const initResponseResolver = this.runtime
-    ? dedent`
+      ? dedent`
     export const response = (ctx) => {
       return ctx.prev.result;
     };
     `
-    : '$util.toJson($ctx.prev.result)'
+      : '$util.toJson($ctx.prev.result)';
 
     api.host.addResolver(
       this.typeName,
@@ -432,7 +432,7 @@ export class TransformerResolver implements TransformerResolverProvider {
       undefined,
       [...requestFns, dataSourceProviderFn, ...responseFns].map((fn) => fn.functionId),
       scope,
-      this.runtime
+      this.runtime,
     );
   };
 
@@ -457,7 +457,7 @@ export class TransformerResolver implements TransformerResolverProvider {
             responseMappingTemplate || MappingTemplate.inlineTemplateFromString('$util.toJson({})'),
             dataSource?.name || NONE_DATA_SOURCE_NAME,
             scope,
-            this.runtime
+            this.runtime,
           );
           appSyncFunctions.push(fn);
         }

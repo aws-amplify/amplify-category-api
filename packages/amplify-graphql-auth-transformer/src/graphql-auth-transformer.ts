@@ -1602,8 +1602,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       const modelField = def.fields.find((it) => it.name.value === field);
 
       const directives = modelField.directives?.filter(
-        (dir) =>
-          dir.arguments?.some((it) => it.name.value === 'fields') && (dir.name.value === 'hasOne' || dir.name.value === 'belongsTo'),
+        (dir) => dir.arguments?.some((it) => it.name.value === 'fields') && (dir.name.value === 'hasOne' || dir.name.value === 'belongsTo'),
       );
       directives.forEach((directive) => {
         const relatedType = typeDefinitions.find((it) => it.name.value === getBaseType(modelField.type));

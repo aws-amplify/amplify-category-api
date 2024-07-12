@@ -1,4 +1,4 @@
-import { BelongsToDirective, ConversationDirective, HasManyDirective, ModelDirective } from '@aws-amplify/graphql-directives';
+import { BelongsToDirective, ConversationDirective, HasManyDirective } from '@aws-amplify/graphql-directives';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import {
@@ -12,7 +12,6 @@ import {
   TransformerResolver,
   getModelDataSourceNameForTypeName,
 } from '@aws-amplify/graphql-transformer-core';
-import { NONE_DATA_SOURCE_NAME } from '@aws-amplify/graphql-transformer-core/src/transformer-context';
 import {
   MappingTemplateProvider,
   TransformerAuthProvider,
@@ -22,7 +21,6 @@ import {
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
-  DefinitionNode,
   DirectiveNode,
   DocumentNode,
   EnumTypeDefinitionNode,
@@ -40,19 +38,15 @@ import {
   makeField,
   makeListType,
   makeNamedType,
-  makeNonNullType,
   makeValueNode,
   ResolverResourceIDs,
-  ResourceConstants,
   wrapNonNull,
 } from 'graphql-transformer-common';
 import produce from 'immer';
-import { WritableDraft, has } from 'immer/dist/internal';
+import { WritableDraft } from 'immer/dist/internal';
 import { dedent } from 'ts-dedent';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
-
-
 
 export type ConversationDirectiveConfiguration = {
   parent: ObjectTypeDefinitionNode;
@@ -61,8 +55,6 @@ export type ConversationDirectiveConfiguration = {
   functionName: string;
   field: FieldDefinitionNode;
 };
-
-const CONVERSATION_DIRECTIVE_STACK = 'ConversationDirectiveStack';
 
 export class ConversationTransformer extends TransformerPluginBase {
   private directives: ConversationDirectiveConfiguration[] = [];
@@ -160,25 +152,15 @@ export class ConversationTransformer extends TransformerPluginBase {
   };
 
   generateResolvers = (ctx: TransformerContextProvider): void => {
-    // const stack = ctx.stackManager.createStack(CONVERSATION_DIRECTIVE_STACK);
     for (const directive of this.directives) {
       const { parent, field } = directive;
       const parentName = parent.name.value;
       const fieldName = field.name.value;
       const resolverResourceId = ResolverResourceIDs.ResolverResourceID(parentName, fieldName);
 
-      // const requestMappingTemplate = MappingTemplate.inlineTemplateFromString('request');
-      // const responseMappingTemplate = MappingTemplate.inlineTemplateFromString('response');
-
-      // invokeLambda
-
-      // Note: trying to use lambda function as data resolver.
-
       // TODO: Support single function for multiple routes.
-
       // TODO: Do we really need to create a nested stack here?
       const functionStack = ctx.stackManager.createStack('ConversationDirectiveLambdaStack');
-
       // TODO: Add function name arg to conversation directive and pull from that.
       const functionDataSourceId = FunctionResourceIDs.FunctionDataSourceID(directive.functionName);
       const referencedFunction = lambda.Function.fromFunctionAttributes(functionStack, `${functionDataSourceId}Function`, {
@@ -186,7 +168,6 @@ export class ConversationTransformer extends TransformerPluginBase {
       });
       const functionDataSourceScope = ctx.stackManager.getScopeFor(functionDataSourceId, 'ConversationDirectiveLambdaStack');
       const functionDataSource = ctx.api.host.addLambdaDataSource(functionDataSourceId, referencedFunction, {}, functionDataSourceScope);
-
       const invokeLambdaFunction = invokeLambdaMappingTemplate(parentName, fieldName);
 
       // pipeline resolver
@@ -196,7 +177,7 @@ export class ConversationTransformer extends TransformerPluginBase {
         resolverResourceId,
         invokeLambdaFunction.req,
         invokeLambdaFunction.res,
-        ['init', 'auth', 'verifySessionOwner', 'writeMessageToTable', 'retrieveMessageHistory', 'invokeLambda'],
+        ['init', 'auth', 'verifySessionOwner', 'writeMessageToTable', 'retrieveMessageHistory'],
         ['handleLambdaResponse', 'finish'],
         functionDataSource,
         { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' },
@@ -241,7 +222,6 @@ export class ConversationTransformer extends TransformerPluginBase {
         retrieveMessageHistoryFunction.res,
         messageDDBDataSource as any,
       );
-
 
       ctx.resolvers.addResolver(parentName, fieldName, conversationPipelineResolver);
     }
@@ -299,9 +279,7 @@ export class ConversationTransformer extends TransformerPluginBase {
 }
 
 const validate = (config: ConversationDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-  // validation logic
-  // console.log(JSON.stringify(config));
-  // console.log(ctx);
+  // TODO: validation logic
 };
 
 const makeConversationEventSenderType = (): EnumTypeDefinitionNode => {
@@ -484,9 +462,6 @@ const makeConversationMessageModel = (
   }
   */
 
-  // model directives
-  // field directives
-
   // fields
   const id = makeField('id', [], wrapNonNull(makeNamedType('ID')));
   const sessionId = makeField(referenceFieldName, [], wrapNonNull(makeNamedType('ID')));
@@ -533,7 +508,6 @@ const initMappingTemplate = (parentName: string, fieldName: string): { req: Mapp
 // #endregion Init Resolver
 
 // #region Auth Resolver
-
 const authMappingTemplate = (parentName: string, fieldName: string): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
   const req = MappingTemplate.inlineTemplateFromString(dedent`
     export function request(ctx) {
@@ -762,44 +736,3 @@ const lambdaArnKey = (name: string, region?: string, accountId?: string): string
 // #endregion InvokeLambda Resolver
 
 // #endregion Resolvers
-
-// const functionDataSourceName = '';
-// const dataSource = ctx.api.host.getDataSource(functionDataSourceName);
-
-// TODO: pull this from directive config (once it's added there).
-// const mutationResolver = ctx.resolvers.generateMutationResolver(
-//   parentName,
-//   fieldName,
-//   resolverResourceId,
-//   dataSource as any,
-//   MappingTemplate.inlineTemplateFromString('request'),
-//   MappingTemplate.inlineTemplateFromString('response'),
-// )
-
-// TODO: setting the scope necessary?
-// conversationPipelineResolver.setScope(ctx.stackManager.getScopeFor(resolverResourceId, fieldName));
-// const conversationStackScope = ctx.stackManager.getScopeFor(resolverResourceId, fieldName);
-
-// const initResponseMappingTemplate = MappingTemplate.inlineTemplateFromString(dedent`
-//   $util.toJson({})
-// `);
-
-// const initFunctionId = `${parentName}${fieldName}InitFunction`
-// const initFunction = ctx.api.host.addAppSyncFunction(
-//   initFunctionId,
-//   initRequestMappingTemplate,
-//   initResponseMappingTemplate,
-//   'NONE_DS',
-//   conversationStackScope,
-// )
-
-// ctx.api.host.addResolver(
-//   parentName,
-//   fieldName,
-//   requestMappingTemplate,
-//   responseMappingTemplate,
-//   resolverResourceId,
-//   undefined,
-//   [initFunction.functionId],
-//   conversationStackScope
-// )

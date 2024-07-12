@@ -170,7 +170,7 @@ export class DefaultTransformHost implements TransformHostProvider {
       dataSource: dataSource || dataSourceName,
       requestMappingTemplate,
       responseMappingTemplate,
-      runtime
+      runtime,
     });
     this.appsyncFunctions.set(slotHash, fn);
     return fn;
@@ -217,37 +217,33 @@ export class DefaultTransformHost implements TransformHostProvider {
       return resolver;
     }
     if (pipelineConfig) {
-
-      const resolver =
-      runtime
-      ?
-      new CfnResolver(scope || this.api, resolverName, {
-        apiId: this.api.apiId,
-        fieldName,
-        typeName,
-        kind: 'PIPELINE',
-        code: requestTemplateLocation + '\n\n' + responseTemplateLocation,
-        pipelineConfig: {
-          functions: pipelineConfig,
-        },
-        runtime
-      })
-      :
-      new CfnResolver(scope || this.api, resolverName, {
-        apiId: this.api.apiId,
-        fieldName,
-        typeName,
-        kind: 'PIPELINE',
-        ...(requestMappingTemplate instanceof InlineTemplate
-          ? { requestMappingTemplate: requestTemplateLocation }
-          : { requestMappingTemplateS3Location: requestTemplateLocation }),
-        ...(responseMappingTemplate instanceof InlineTemplate
-          ? { responseMappingTemplate: responseTemplateLocation }
-          : { responseMappingTemplateS3Location: responseTemplateLocation }),
-        pipelineConfig: {
-          functions: pipelineConfig,
-        },
-      });
+      const resolver = runtime
+        ? new CfnResolver(scope || this.api, resolverName, {
+            apiId: this.api.apiId,
+            fieldName,
+            typeName,
+            kind: 'PIPELINE',
+            code: requestTemplateLocation + '\n\n' + responseTemplateLocation,
+            pipelineConfig: {
+              functions: pipelineConfig,
+            },
+            runtime,
+          })
+        : new CfnResolver(scope || this.api, resolverName, {
+            apiId: this.api.apiId,
+            fieldName,
+            typeName,
+            kind: 'PIPELINE',
+            ...(requestMappingTemplate instanceof InlineTemplate
+              ? { requestMappingTemplate: requestTemplateLocation }
+              : { requestMappingTemplateS3Location: requestTemplateLocation }),
+            ...(responseMappingTemplate instanceof InlineTemplate
+              ? { responseMappingTemplate: responseTemplateLocation }
+              : { responseMappingTemplateS3Location: responseTemplateLocation }),
+            pipelineConfig: {
+              functions: pipelineConfig,
+            },
+          });
       resolver.overrideLogicalId(resourceId);
       setResourceName(resolver, { name: `${typeName}.${fieldName}` });
       this.api.addSchemaDependency(resolver);
