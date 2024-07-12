@@ -56,7 +56,7 @@ const defaultTransformConfig: TransformConfig = {
     enableTransformerCfnOutputs: true,
     allowDestructiveGraphqlSchemaUpdates: false,
     replaceTableUponGsiUpdate: false,
-    allowGen1Patterns: true,
+    enableGen2Migration: false,
   },
 };
 

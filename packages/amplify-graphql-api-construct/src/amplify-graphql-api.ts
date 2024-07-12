@@ -220,7 +220,14 @@ export class AmplifyGraphqlApi extends Construct {
       authConfig,
       stackMapping: stackMappings ?? {},
       resolverConfig: this.dataStoreConfiguration ? convertToResolverConfig(this.dataStoreConfiguration) : undefined,
-      transformParameters,
+      transformParameters: {
+        ...defaultTranslationBehavior,
+        ...(translationBehavior ?? {}),
+        // TODO: decide naming before merge to main
+        // migrating from construct -> Gen2 is not supported
+        // this param is purposely omitted from translationBehavior so the param is not available through the construct
+        enableGen2Migration: false,
+      },
       // CDK construct uses a custom resource. We'll define this explicitly here to remind ourselves that this value is unused in the CDK
       // construct flow
       rdsLayerMapping: undefined,
