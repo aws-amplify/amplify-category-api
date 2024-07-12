@@ -743,7 +743,7 @@ export interface AmplifyGraphqlApiProps {
   readonly translationBehavior?: PartialTranslationBehavior;
 
   /**
-   * Strategy to store construct outputs. If no outputStorageStrategey is provided a default strategy will be used.
+   * Strategy to store construct outputs. If no outputStorageStrategy is provided a default strategy will be used.
    */
   readonly outputStorageStrategy?: IBackendOutputStorageStrategy;
 

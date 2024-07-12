@@ -130,6 +130,9 @@ const processOnEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
   let result;
   switch (event.RequestType) {
     case 'Create':
+      if (tableDef.isImported) {
+        return importTable(tableDef);
+      }
       console.log('Initiating CREATE event');
       const createTableInput = toCreateTableInput(tableDef);
       console.log('Create Table Params: ', createTableInput);
@@ -946,6 +949,7 @@ const convertStringToBooleanOrNumber = (obj: Record<string, any>): Record<string
     'pointInTimeRecoveryEnabled',
     'allowDestructiveGraphqlSchemaUpdates',
     'replaceTableUponGsiUpdate',
+    'isImported',
   ];
   const fieldsToBeConvertedToNumber = ['readCapacityUnits', 'writeCapacityUnits'];
   for (const key in obj) {
@@ -1282,4 +1286,31 @@ const retry = async <T>(
  * @returns void
  */
 const sleep = async (milliseconds: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+/**
+ * Imports an existing DDB table.
+ * @param tableDef Tabel definition of imported table.
+ */
+const importTable = async (tableDef: CustomDDB.Input): Promise<AWSCDKAsyncCustomResource.OnEventResponse> => {
+  // TODO: Add import validation
+  console.log('Initiating table import process');
+  console.log('Fetching current table state');
+  console.log(`Table name: ${tableDef.tableName}`);
+  const describeTableResult = await ddbClient.describeTable({ TableName: tableDef.tableName });
+  if (!describeTableResult.Table) {
+    throw new Error(`Could not find ${tableDef.tableName} to update`);
+  }
+  log('Current table state: ', describeTableResult);
+  const result = {
+    PhysicalResourceId: describeTableResult.Table.TableName,
+    Data: {
+      TableArn: describeTableResult.Table.TableArn,
+      TableStreamArn: describeTableResult.Table.LatestStreamArn,
+      TableName: describeTableResult.Table.TableName,
+    },
+  };
+  console.log('Returning result: ', result);
+  return result;
+};
+
 // #endregion Helpers
