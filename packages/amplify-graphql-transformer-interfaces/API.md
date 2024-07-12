@@ -923,6 +923,7 @@ export type TransformParameters = {
     enableAutoIndexQueryNames: boolean;
     respectPrimaryKeyAttributesOnConnectionField: boolean;
     enableSearchNodeToNodeEncryption: boolean;
+    enableGen2Migration: boolean;
 };
 
 // @public (undocumented)
