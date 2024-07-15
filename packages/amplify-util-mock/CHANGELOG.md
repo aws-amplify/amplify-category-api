@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.5.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.5.2...amplify-category-api-util-mock@6.5.3) (2024-07-15)
+
+### Bug Fixes
+
+- add translation behavior to disable gen 1 patterns ([#2670](https://github.com/aws-amplify/amplify-category-api/issues/2670)) ([38d1a71](https://github.com/aws-amplify/amplify-category-api/commit/38d1a718ec2b0290f514780c6d1d5f0790ba7764))
+
 ## [6.5.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.5.1...amplify-category-api-util-mock@6.5.2) (2024-07-02)
 
 **Note:** Version bump only for package amplify-category-api-util-mock

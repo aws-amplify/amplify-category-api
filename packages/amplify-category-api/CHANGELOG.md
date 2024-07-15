@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.12.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.12.2...@aws-amplify/amplify-category-api@5.12.3) (2024-07-15)
+
+### Bug Fixes
+
+- add translation behavior to disable gen 1 patterns ([#2670](https://github.com/aws-amplify/amplify-category-api/issues/2670)) ([38d1a71](https://github.com/aws-amplify/amplify-category-api/commit/38d1a718ec2b0290f514780c6d1d5f0790ba7764))
+- set allowGen1Patterns to true in gen 1 ([#2699](https://github.com/aws-amplify/amplify-category-api/issues/2699)) ([1e2a0f3](https://github.com/aws-amplify/amplify-category-api/commit/1e2a0f33f7ff5784ccdedf315084ad098f81b9c3))
+
 ## [5.12.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.12.1...@aws-amplify/amplify-category-api@5.12.2) (2024-07-02)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api
