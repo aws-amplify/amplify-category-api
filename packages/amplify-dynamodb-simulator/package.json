@@ -32,7 +32,7 @@
     "which": "^2.0.2"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-cli-core": "^4.2.10"
+    "@aws-amplify/amplify-cli-core": "^4.3.9"
   },
   "devDependencies": {
     "get-port": "^5.1.1",

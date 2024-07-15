@@ -35,7 +35,7 @@
     "@aws-amplify/graphql-transformer-core": "2.9.2",
     "@aws-amplify/graphql-transformer-interfaces": "3.10.0",
     "@aws-amplify/graphql-transformer-migrator": "2.2.26",
-    "@aws-cdk/aws-apigatewayv2-alpha": "~2.80.0-alpha.0",
+    "@aws-cdk/aws-apigatewayv2-alpha": "~2.114.1-alpha.0",
     "@aws-sdk/client-ec2": "3.338.0",
     "@aws-sdk/client-iam": "3.338.0",
     "@aws-sdk/client-lambda": "3.338.0",
@@ -69,20 +69,20 @@
     "uuid": "^8.3.2"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-cli-core": "^4.2.10",
-    "@aws-amplify/amplify-environment-parameters": "^1.9.1",
-    "@aws-amplify/amplify-prompts": "^2.8.4",
-    "@aws-amplify/amplify-provider-awscloudformation": "^8.8.0",
-    "amplify-headless-interface": "^1.17.4",
-    "amplify-util-headless-input": "^1.9.15",
-    "aws-cdk-lib": "^2.80.0",
-    "constructs": "^10.0.5"
+    "@aws-amplify/amplify-cli-core": "^4.3.9",
+    "@aws-amplify/amplify-environment-parameters": "^1.9.14",
+    "@aws-amplify/amplify-prompts": "^2.8.6",
+    "@aws-amplify/amplify-provider-awscloudformation": "^8.10.11",
+    "amplify-headless-interface": "^1.17.7",
+    "amplify-util-headless-input": "^1.9.18",
+    "aws-cdk-lib": "^2.129.0",
+    "constructs": "^10.3.0"
   },
   "devDependencies": {
     "@aws-amplify/graphql-transformer-test-utils": "0.5.5",
     "@types/js-yaml": "^4.0.0",
     "@types/node": "^12.12.6",
-    "amplify-util-headless-input": "^1.9.15",
+    "amplify-util-headless-input": "^1.9.18",
     "ts-jest": "26.4.4"
   },
   "jest": {
