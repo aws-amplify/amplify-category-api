@@ -29,10 +29,10 @@ describe('CDK Auth Modes', () => {
   test('Can be invoked with Admin Roles defined', async () => {
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'admin-role'));
     const name = await initCDKProject(projRoot, templatePath, {
-      cdkVersion: '2.80.0', // Explicitly declaring this, since this version needs to match cognito idp
+      cdkVersion: '2.129.0', // Explicitly declaring this, since this version needs to match cognito idp
       additionalDependencies: [
         'esbuild', // required to bundle the lambda function
-        '@aws-cdk/aws-cognito-identitypool-alpha@2.80.0-alpha.0', // using alpha cognito idp resource for auth config
+        '@aws-cdk/aws-cognito-identitypool-alpha@2.129.0-alpha.0', // using alpha cognito idp resource for auth config
         '@aws-crypto/sha256-js', // All remaining deps are required for the lambda to sign the request to appsync
         '@aws-sdk/credential-provider-node',
         '@aws-sdk/protocol-http',

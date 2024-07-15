@@ -30,7 +30,7 @@ describe('CDK GraphQL Transformer', () => {
     deleteProjectDir(projRoot);
   });
 
-  ['2.80.0', 'latest'].forEach((cdkVersion) => {
+  ['2.129.0', 'latest'].forEach((cdkVersion) => {
     test(`CDK base case - aws-cdk-lib@${cdkVersion}`, async () => {
       const templatePath = path.resolve(path.join(__dirname, 'backends', 'base-cdk'));
       const name = await initCDKProject(projRoot, templatePath, { cdkVersion });

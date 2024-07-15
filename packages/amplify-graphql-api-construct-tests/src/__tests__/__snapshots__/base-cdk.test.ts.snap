@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`CDK GraphQL Transformer CDK base case - aws-cdk-lib@2.80.0 1`] = `
+exports[`CDK GraphQL Transformer CDK base case - aws-cdk-lib@2.129.0 1`] = `
 Object {
   "body": Object {
     "data": Object {
@@ -14,7 +14,7 @@ Object {
 }
 `;
 
-exports[`CDK GraphQL Transformer CDK base case - aws-cdk-lib@2.80.0 2`] = `
+exports[`CDK GraphQL Transformer CDK base case - aws-cdk-lib@2.129.0 2`] = `
 Object {
   "body": Object {
     "data": Object {

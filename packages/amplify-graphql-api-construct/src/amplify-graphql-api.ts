@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
 import { NestedStack, Stack } from 'aws-cdk-lib';
 import { AttributionMetadataStorage, StackMetadataBackendOutputStorageStrategy } from '@aws-amplify/backend-output-storage';
+import { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { graphqlOutputKey } from '@aws-amplify/backend-output-schemas';
 import type { GraphqlOutput, AwsAppsyncAuthenticationType } from '@aws-amplify/backend-output-schemas';
 import {
@@ -184,6 +185,18 @@ export class AmplifyGraphqlApi extends Construct {
 
     const assetProvider = new AssetProvider(this);
 
+    const mergedTranslationBehavior = {
+      ...defaultTranslationBehavior,
+      ...(translationBehavior ?? {}),
+    };
+    const transformParameters: TransformParameters = {
+      ...mergedTranslationBehavior,
+      allowGen1Patterns: mergedTranslationBehavior._allowGen1Patterns,
+      // TODO: decide naming before merge to main
+      // migrating from construct -> Gen2 is not supported
+      // this param is purposely omitted from translationBehavior so the param is not available through the construct
+      enableGen2Migration: false,
+    };
     const executeTransformConfig: ExecuteTransformConfig = {
       scope: this,
       nestedStackProvider: {
@@ -204,18 +217,12 @@ export class AmplifyGraphqlApi extends Construct {
           ...definition.referencedLambdaFunctions,
           ...functionNameMap,
         },
+        allowGen1Patterns: transformParameters.allowGen1Patterns,
       },
       authConfig,
       stackMapping: stackMappings ?? {},
       resolverConfig: this.dataStoreConfiguration ? convertToResolverConfig(this.dataStoreConfiguration) : undefined,
-      transformParameters: {
-        ...defaultTranslationBehavior,
-        ...(translationBehavior ?? {}),
-        // TODO: decide naming before merge to main
-        // migrating from construct -> Gen2 is not supported
-        // this param is purposely omitted from translationBehavior so the param is not available through the construct
-        enableGen2Migration: false,
-      },
+      transformParameters,
       // CDK construct uses a custom resource. We'll define this explicitly here to remind ourselves that this value is unused in the CDK
       // construct flow
       rdsLayerMapping: undefined,
