@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.12.0-gen2-migration.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.11.1...@aws-amplify/graphql-api-construct@1.12.0-gen2-migration.0) (2024-07-15)
+
+### Features
+
+- get datasource map for migration ([#2668](https://github.com/aws-amplify/amplify-category-api/issues/2668)) ([02c7da0](https://github.com/aws-amplify/amplify-category-api/commit/02c7da0da0d5837ca05a8e4ff1b1536cc20ae15b))
+- import existing table to amplify managed table ([#2634](https://github.com/aws-amplify/amplify-category-api/issues/2634)) ([b3fb28f](https://github.com/aws-amplify/amplify-category-api/commit/b3fb28f6a253cae523625c0b2e93ec9ce2c37bab))
+
 ## [1.11.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.11.0...@aws-amplify/graphql-api-construct@1.11.1) (2024-07-02)
 
 **Note:** Version bump only for package @aws-amplify/graphql-api-construct

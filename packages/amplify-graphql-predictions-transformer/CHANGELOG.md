@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.26-gen2-migration.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@2.1.25...@aws-amplify/graphql-predictions-transformer@2.1.26-gen2-migration.0) (2024-07-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-predictions-transformer
+
 ## [2.1.25](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@2.1.24...@aws-amplify/graphql-predictions-transformer@2.1.25) (2024-07-02)
 
 **Note:** Version bump only for package @aws-amplify/graphql-predictions-transformer
