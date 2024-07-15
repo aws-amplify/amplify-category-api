@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.21](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.20...@aws-amplify/graphql-maps-to-transformer@3.4.21) (2024-07-15)
+
+### Bug Fixes
+
+- add nonScalarFields and arrayFields to schemas with mapped names ([#2689](https://github.com/aws-amplify/amplify-category-api/issues/2689)) ([4feb898](https://github.com/aws-amplify/amplify-category-api/commit/4feb898ae21710bb86dd900faef082c24bc08960)), closes [#2581](https://github.com/aws-amplify/amplify-category-api/issues/2581)
+
 ## [3.4.20](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.19...@aws-amplify/graphql-maps-to-transformer@3.4.20) (2024-07-02)
 
 **Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
