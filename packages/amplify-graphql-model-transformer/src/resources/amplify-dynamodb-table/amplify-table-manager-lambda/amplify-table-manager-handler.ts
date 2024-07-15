@@ -1425,8 +1425,7 @@ const sleep = async (milliseconds: number): Promise<void> => new Promise((resolv
 const importTable = async (tableDef: CustomDDB.Input): Promise<AWSCDKAsyncCustomResource.OnEventResponse> => {
   // TODO: Add import validation
   console.log('Initiating table import process');
-  console.log('Fetching current table state');
-  console.log(`Table name: ${tableDef.tableName}`);
+  console.log(`Fetching current state of table ${tableDef.tableName}`)
   const describeTableResult = await ddbClient.describeTable({ TableName: tableDef.tableName });
   if (!describeTableResult.Table) {
     throw new Error(`Could not find ${tableDef.tableName} to update`);
