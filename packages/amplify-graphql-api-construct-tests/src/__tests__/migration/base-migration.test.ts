@@ -27,11 +27,13 @@ const createGen1Project = async (
   DataSourceMappingOutput: string;
 }> => {
   await initJSProjectWithProfile(projRoot, { name });
-  await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
+  await addApiWithoutSchema(projRoot, { transformerVersion: 2 });
   await updateApiSchema(projRoot, name, schema);
   await amplifyPush(projRoot);
-  addFeatureFlag(projRoot, 'graphqltransformer', 'enableGen2Migration', true);
-  await amplifyPush(projRoot);
+
+  // TODO: can't use feature flag until released in CLI
+  // addFeatureFlag(projRoot, 'graphqltransformer', 'enableGen2Migration', true);
+  // await amplifyPush(projRoot);
 
   const meta = getProjectMeta(projRoot);
   const { output } = meta.api[name];
@@ -84,10 +86,10 @@ describe('Data Construct', () => {
       GraphQLAPIEndpointOutput: gen1APIEndpoint,
       GraphQLAPIKeyOutput: gen1APIKey,
       DataSourceMappingOutput,
-    } = await createGen1Project(gen1ProjFolderName, gen1ProjRoot, 'simple_model.graphql');
+    } = await createGen1Project(gen1ProjFolderName, gen1ProjRoot, 'simple_model_public_auth.graphql');
+    const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'migration', 'base'));
+    const name = await initCDKProject(gen2ProjRoot, templatePath);
     writeTableMap(gen2ProjRoot, DataSourceMappingOutput);
-    const templatePath = path.resolve(path.join(__dirname, 'backends', 'migration', 'base-migration'));
-    const name = await initCDKProject(gen2ProjRoot, templatePath, { construct: 'Data' });
     const outputs = await cdkDeploy(gen2ProjRoot, '--all');
     const { awsAppsyncApiEndpoint: gen2APIEndpoint, awsAppsyncApiKey: gen2APIKey } = outputs[name];
 
@@ -96,9 +98,9 @@ describe('Data Construct', () => {
       gen1APIKey,
       /* GraphQL */ `
         mutation CREATE_TODO {
-          createTodo(input: { description: "todo desc" }) {
+          createTodo(input: { content: "todo desc" }) {
             id
-            description
+            content
           }
         }
       `,
@@ -112,9 +114,9 @@ describe('Data Construct', () => {
       gen2APIKey,
       /* GraphQL */ `
         mutation CREATE_TODO {
-          createTodo(input: { description: "todo desc" }) {
+          createTodo(input: { content: "todo desc" }) {
             id
-            description
+            content
           }
         }
       `,
@@ -131,7 +133,7 @@ describe('Data Construct', () => {
           listTodos {
             items {
               id
-              description
+              content
             }
           }
         }
@@ -151,7 +153,7 @@ describe('Data Construct', () => {
           listTodos {
             items {
               id
-              description
+              content
             }
           }
         }
@@ -173,7 +175,7 @@ describe('Data Construct', () => {
           listTodos {
             items {
               id
-              description
+              content
             }
           }
         }

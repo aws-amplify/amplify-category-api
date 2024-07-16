@@ -2,7 +2,7 @@
 import 'source-map-support/register';
 import { App, Stack, Duration } from 'aws-cdk-lib';
 // @ts-ignore
-import { AmplifyData, AmplifyDataDefinition } from '@aws-amplify/data-construct';
+import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
 
 const packageJson = require('../package.json');
 
@@ -14,12 +14,13 @@ const stack = new Stack(app, packageJson.name.replace(/_/g, '-'), {
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const importedAmplifyDynamoDBTableMap: Record<string, string> = require('../table-map.json');
 
-new AmplifyData(stack, 'Data', {
+new AmplifyGraphqlApi(stack, 'Data', {
   apiName: 'MyGraphQLApi',
-  definition: AmplifyDataDefinition.fromString(
+  definition: AmplifyGraphqlDefinition.fromString(
     /* GraphQL */ `
       type Todo @model @auth(rules: [{ allow: public }]) {
-        description: String!
+        id: ID!
+        content: String
       }
     `,
     {
