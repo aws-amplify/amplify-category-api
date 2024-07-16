@@ -224,7 +224,17 @@ const processOnEvent = async (
       Object.values(tableDef.tags ?? []).forEach((tag) => {
         newTags.push({ Key: tag.key, Value: tag.value });
       });
-      if (requiresTagsUpdate(currentTableTags, newTags)) {
+      if (currentTableTags && currentTableTags.length > 0 && (!newTags || newTags.length === 0)) {
+        await ddbClient.untagResource({
+          ResourceArn: describeTableResult.Table.TableArn,
+          TagKeys: currentTableTags.map((tag) => tag.Key!),
+        });
+        await retry(
+          async () => await isTableReady(event.PhysicalResourceId!),
+          (res) => res === true,
+        );
+        console.log(`Table '${event.PhysicalResourceId}' is ready after the deletion of Tags.`);
+      } else if (requiresTagsUpdate(currentTableTags, newTags)) {
         console.log('Detected tag changes: ', tableDef.tags);
         await ddbClient.tagResource({
           ResourceArn: describeTableResult.Table.TableArn,
@@ -806,7 +816,7 @@ export const getSseUpdate = (currentState: TableDescription, endState: CustomDDB
  * @returns Boolean indicating if the tags are updated
  */
 export const requiresTagsUpdate = (currentTags: DynamoDBTag[], newTags?: DynamoDBTag[]): boolean => {
-  if (!newTags) {
+  if (!newTags || newTags.length === 0) {
     return false;
   }
   if (currentTags.length !== newTags.length) {

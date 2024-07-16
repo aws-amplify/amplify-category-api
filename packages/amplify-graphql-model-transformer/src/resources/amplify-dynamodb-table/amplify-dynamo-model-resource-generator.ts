@@ -67,6 +67,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
             'dynamodb:UpdateContinuousBackups',
             'dynamodb:UpdateTimeToLive',
             'dynamodb:TagResource',
+            'dynamodb:UntagResource',
             'dynamodb:ListTagsOfResource',
           ],
           resources: [
