@@ -15,6 +15,7 @@ Object {
           "dynamodb:UpdateContinuousBackups",
           "dynamodb:UpdateTimeToLive",
           "dynamodb:TagResource",
+          "dynamodb:UntagResource",
           "dynamodb:ListTagsOfResource",
         ],
         "Effect": "Allow",
