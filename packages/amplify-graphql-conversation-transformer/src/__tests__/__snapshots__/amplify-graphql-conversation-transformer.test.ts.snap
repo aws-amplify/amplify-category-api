@@ -11,12 +11,13 @@ exports[`conversation route valid schema 1`] = `
 
 type Mutation {
   pirateChat(id: ID, sessionId: ID!, content: String): String
+  createAssistantResponsePirateChat(input: CreateConversationMessagePirateChatAssistantInput!): ConversationMessagePirateChat
   createFoo(input: CreateFooInput!, condition: ModelFooConditionInput): Foo
   deleteFoo(input: DeleteFooInput!, condition: ModelFooConditionInput): Foo
-  createConversationSessionpirateChat(input: CreateConversationSessionpirateChatInput!, condition: ModelConversationSessionpirateChatConditionInput): ConversationSessionpirateChat
-  deleteConversationSessionpirateChat(input: DeleteConversationSessionpirateChatInput!, condition: ModelConversationSessionpirateChatConditionInput): ConversationSessionpirateChat
-  createConversationMessagepirateChat(input: CreateConversationMessagepirateChatInput!, condition: ModelConversationMessagepirateChatConditionInput): ConversationMessagepirateChat
-  deleteConversationMessagepirateChat(input: DeleteConversationMessagepirateChatInput!, condition: ModelConversationMessagepirateChatConditionInput): ConversationMessagepirateChat
+  createConversationPirateChat(input: CreateConversationPirateChatInput!, condition: ModelConversationPirateChatConditionInput): ConversationPirateChat
+  deleteConversationPirateChat(input: DeleteConversationPirateChatInput!, condition: ModelConversationPirateChatConditionInput): ConversationPirateChat
+  createConversationMessagePirateChat(input: CreateConversationMessagePirateChatInput!, condition: ModelConversationMessagePirateChatConditionInput): ConversationMessagePirateChat
+  deleteConversationMessagePirateChat(input: DeleteConversationMessagePirateChatInput!, condition: ModelConversationMessagePirateChatConditionInput): ConversationMessagePirateChat
 }
 
 enum ConversationMessageSender {
@@ -24,20 +25,26 @@ enum ConversationMessageSender {
   assistant
 }
 
-type ConversationSessionpirateChat {
+input CreateConversationMessagePirateChatAssistantInput {
+  conversationId: ID
+  content: String
+  associatedUserMessageId: ID
+}
+
+type ConversationPirateChat {
   id: ID!
   name: String
   metadata: AWSJSON
-  messages(filter: ModelConversationMessagepirateChatFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelConversationMessagepirateChatConnection
+  messages(filter: ModelConversationMessagePirateChatFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelConversationMessagePirateChatConnection
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
   owner: String
 }
 
-type ConversationMessagepirateChat {
+type ConversationMessagePirateChat {
   id: ID!
   sessionId: ID!
-  session: ConversationSessionpirateChat
+  session: ConversationPirateChat
   sender: ConversationMessageSender
   content: String
   context: AWSJSON
@@ -216,10 +223,10 @@ input ModelFooFilterInput {
 type Query {
   getFoo(id: ID!): Foo
   listFoos(filter: ModelFooFilterInput, limit: Int, nextToken: String): ModelFooConnection
-  getConversationSessionpirateChat(id: ID!): ConversationSessionpirateChat
-  listConversationSessionpirateChats(filter: ModelConversationSessionpirateChatFilterInput, limit: Int, nextToken: String): ModelConversationSessionpirateChatConnection
-  getConversationMessagepirateChat(id: ID!): ConversationMessagepirateChat
-  listConversationMessagepirateChats(filter: ModelConversationMessagepirateChatFilterInput, limit: Int, nextToken: String): ModelConversationMessagepirateChatConnection
+  getConversationPirateChat(id: ID!): ConversationPirateChat
+  listConversationPirateChats(filter: ModelConversationPirateChatFilterInput, limit: Int, nextToken: String): ModelConversationPirateChatConnection
+  getConversationMessagePirateChat(id: ID!): ConversationMessagePirateChat
+  listConversationMessagePirateChats(filter: ModelConversationMessagePirateChatFilterInput, limit: Int, nextToken: String): ModelConversationMessagePirateChatConnection
 }
 
 input ModelFooConditionInput {
@@ -242,49 +249,49 @@ input DeleteFooInput {
 }
 
 type Subscription {
-  onCreateConversationMessagepirateChat(filter: ModelSubscriptionConversationMessagepirateChatFilterInput, owner: String): ConversationMessagepirateChat @aws_subscribe(mutations: [\\"createConversationMessagepirateChat\\"])
+  onCreateConversationMessagePirateChat(filter: ModelSubscriptionConversationMessagePirateChatFilterInput, owner: String): ConversationMessagePirateChat @aws_subscribe(mutations: [\\"createConversationMessagePirateChat\\"])
 }
 
-type ModelConversationSessionpirateChatConnection {
-  items: [ConversationSessionpirateChat]!
+type ModelConversationPirateChatConnection {
+  items: [ConversationPirateChat]!
   nextToken: String
 }
 
-input ModelConversationSessionpirateChatFilterInput {
+input ModelConversationPirateChatFilterInput {
   id: ModelIDInput
   name: ModelStringInput
   metadata: ModelStringInput
   createdAt: ModelStringInput
   updatedAt: ModelStringInput
-  and: [ModelConversationSessionpirateChatFilterInput]
-  or: [ModelConversationSessionpirateChatFilterInput]
-  not: ModelConversationSessionpirateChatFilterInput
+  and: [ModelConversationPirateChatFilterInput]
+  or: [ModelConversationPirateChatFilterInput]
+  not: ModelConversationPirateChatFilterInput
   owner: ModelStringInput
 }
 
-input ModelConversationSessionpirateChatConditionInput {
+input ModelConversationPirateChatConditionInput {
   name: ModelStringInput
   metadata: ModelStringInput
-  and: [ModelConversationSessionpirateChatConditionInput]
-  or: [ModelConversationSessionpirateChatConditionInput]
-  not: ModelConversationSessionpirateChatConditionInput
+  and: [ModelConversationPirateChatConditionInput]
+  or: [ModelConversationPirateChatConditionInput]
+  not: ModelConversationPirateChatConditionInput
   createdAt: ModelStringInput
   updatedAt: ModelStringInput
   owner: ModelStringInput
 }
 
-input CreateConversationSessionpirateChatInput {
+input CreateConversationPirateChatInput {
   id: ID
   name: String
   metadata: AWSJSON
 }
 
-input DeleteConversationSessionpirateChatInput {
+input DeleteConversationPirateChatInput {
   id: ID!
 }
 
-type ModelConversationMessagepirateChatConnection {
-  items: [ConversationMessagepirateChat]!
+type ModelConversationMessagePirateChatConnection {
+  items: [ConversationMessagePirateChat]!
   nextToken: String
 }
 
@@ -293,7 +300,7 @@ input ModelConversationMessageSenderInput {
   ne: ConversationMessageSender
 }
 
-input ModelConversationMessagepirateChatFilterInput {
+input ModelConversationMessagePirateChatFilterInput {
   id: ModelIDInput
   sessionId: ModelIDInput
   sender: ModelConversationMessageSenderInput
@@ -302,27 +309,27 @@ input ModelConversationMessagepirateChatFilterInput {
   uiComponents: ModelStringInput
   createdAt: ModelStringInput
   updatedAt: ModelStringInput
-  and: [ModelConversationMessagepirateChatFilterInput]
-  or: [ModelConversationMessagepirateChatFilterInput]
-  not: ModelConversationMessagepirateChatFilterInput
+  and: [ModelConversationMessagePirateChatFilterInput]
+  or: [ModelConversationMessagePirateChatFilterInput]
+  not: ModelConversationMessagePirateChatFilterInput
   owner: ModelStringInput
 }
 
-input ModelConversationMessagepirateChatConditionInput {
+input ModelConversationMessagePirateChatConditionInput {
   sessionId: ModelIDInput
   sender: ModelConversationMessageSenderInput
   content: ModelStringInput
   context: ModelStringInput
   uiComponents: ModelStringInput
-  and: [ModelConversationMessagepirateChatConditionInput]
-  or: [ModelConversationMessagepirateChatConditionInput]
-  not: ModelConversationMessagepirateChatConditionInput
+  and: [ModelConversationMessagePirateChatConditionInput]
+  or: [ModelConversationMessagePirateChatConditionInput]
+  not: ModelConversationMessagePirateChatConditionInput
   createdAt: ModelStringInput
   updatedAt: ModelStringInput
   owner: ModelStringInput
 }
 
-input CreateConversationMessagepirateChatInput {
+input CreateConversationMessagePirateChatInput {
   id: ID
   sessionId: ID!
   sender: ConversationMessageSender
@@ -331,11 +338,11 @@ input CreateConversationMessagepirateChatInput {
   uiComponents: [AWSJSON]
 }
 
-input DeleteConversationMessagepirateChatInput {
+input DeleteConversationMessagePirateChatInput {
   id: ID!
 }
 
-input ModelSubscriptionConversationMessagepirateChatFilterInput {
+input ModelSubscriptionConversationMessagePirateChatFilterInput {
   id: ModelSubscriptionIDInput
   sessionId: ModelSubscriptionIDInput
   sender: ModelSubscriptionStringInput
@@ -344,8 +351,8 @@ input ModelSubscriptionConversationMessagepirateChatFilterInput {
   uiComponents: ModelSubscriptionStringInput
   createdAt: ModelSubscriptionStringInput
   updatedAt: ModelSubscriptionStringInput
-  and: [ModelSubscriptionConversationMessagepirateChatFilterInput]
-  or: [ModelSubscriptionConversationMessagepirateChatFilterInput]
+  and: [ModelSubscriptionConversationMessagePirateChatFilterInput]
+  or: [ModelSubscriptionConversationMessagePirateChatFilterInput]
   owner: ModelStringInput
 }
 "
@@ -353,8 +360,8 @@ input ModelSubscriptionConversationMessagepirateChatFilterInput {
 
 exports[`conversation route valid schema 2`] = `
 Object {
-  "ConversationMessagepirateChat.owner.req.vtl": "$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})",
-  "ConversationMessagepirateChat.owner.res.vtl": "## [Start] Parse owner field auth for Get. **
+  "ConversationMessagePirateChat.owner.req.vtl": "$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})",
+  "ConversationMessagePirateChat.owner.res.vtl": "## [Start] Parse owner field auth for Get. **
 #if( $util.isList($ctx.source.owner) )
   #set( $ownerEntitiesList = [] )
   #set( $owner = $ctx.source.owner )
@@ -374,7 +381,7 @@ Object {
   $util.toJson($ctx.source.owner)
 #end
 ## [End] Parse owner field auth for Get. **",
-  "ConversationMessagepirateChat.session.auth.1.req.vtl": "## [Start] Check if subscriptions is protected. **
+  "ConversationMessagePirateChat.session.auth.1.req.vtl": "## [Start] Check if subscriptions is protected. **
 #if( $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) == \\"Mutation\\" )
   $util.qr($ctx.stash.put(\\"deniedField\\", true))
 #end
@@ -411,7 +418,7 @@ $util.unauthorized()
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **",
-  "ConversationMessagepirateChat.session.req.vtl": "#if( $ctx.stash.deniedField )
+  "ConversationMessagePirateChat.session.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
 #set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"sessionId\\"), $ctx.source.sessionId) )
@@ -436,7 +443,7 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
   #end
   $util.toJson($GetRequest)
 #end",
-  "ConversationMessagepirateChat.session.res.vtl": "#if( $ctx.error )
+  "ConversationMessagePirateChat.session.res.vtl": "#if( $ctx.error )
 $util.error($ctx.error.message, $ctx.error.type)
 #else
   #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
@@ -453,7 +460,7 @@ $util.unauthorized()
     $util.toJson(null)
   #end
 #end",
-  "ConversationSessionpirateChat.messages.auth.1.req.vtl": "## [Start] Authorization Steps. **
+  "ConversationPirateChat.messages.auth.1.req.vtl": "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #if( $util.authType() == \\"User Pool Authorization\\" )
@@ -485,7 +492,7 @@ $util.unauthorized()
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **",
-  "ConversationSessionpirateChat.messages.req.vtl": "#if( $ctx.stash.deniedField )
+  "ConversationPirateChat.messages.req.vtl": "#if( $ctx.stash.deniedField )
   #set( $result = {
   \\"items\\":   []
 } )
@@ -554,10 +561,10 @@ $util.toJson($context.args.nextToken)
     #else
 null
     #end,
-      \\"index\\": \\"gsi-ConversationSessionpirateChat.messages\\"
+      \\"index\\": \\"gsi-ConversationPirateChat.messages\\"
   }
 #end",
-  "ConversationSessionpirateChat.messages.res.vtl": "#if( $ctx.error )
+  "ConversationPirateChat.messages.res.vtl": "#if( $ctx.error )
 $util.error($ctx.error.message, $ctx.error.type)
 #else
   #if( !$result )
@@ -570,8 +577,8 @@ $util.error($ctx.error.message, $ctx.error.type)
   #end
   $util.toJson($result)
 #end",
-  "ConversationSessionpirateChat.owner.req.vtl": "$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})",
-  "ConversationSessionpirateChat.owner.res.vtl": "## [Start] Parse owner field auth for Get. **
+  "ConversationPirateChat.owner.req.vtl": "$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})",
+  "ConversationPirateChat.owner.res.vtl": "## [Start] Parse owner field auth for Get. **
 #if( $util.isList($ctx.source.owner) )
   #set( $ownerEntitiesList = [] )
   #set( $owner = $ctx.source.owner )
@@ -612,7 +619,7 @@ $util.error($ctx.error.message, $ctx.error.type)
   $util.toJson($ctx.source.owner)
 #end
 ## [End] Parse owner field auth for Get. **",
-  "Mutation.createConversationMessagepirateChat.auth.1.req.vtl": "## [Start] Authorization Steps. **
+  "Mutation.createConversationMessagePirateChat.auth.1.req.vtl": "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
 #set( $isAuthorized = false )
@@ -661,7 +668,7 @@ $util.unauthorized()
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **",
-  "Mutation.createConversationMessagepirateChat.init.1.req.vtl": "## [Start] Initialization default values. **
+  "Mutation.createConversationMessagePirateChat.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 $util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -672,20 +679,20 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createConversationMessagepirateChat.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+  "Mutation.createConversationMessagePirateChat.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
-  "Mutation.createConversationMessagepirateChat.req.vtl": "## [Start] Create Request template. **
+  "Mutation.createConversationMessagePirateChat.req.vtl": "## [Start] Create Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
 $util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 ## set the typename **
-$util.qr($mergedValues.put(\\"__typename\\", \\"ConversationMessagepirateChat\\"))
+$util.qr($mergedValues.put(\\"__typename\\", \\"ConversationMessagePirateChat\\"))
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
@@ -744,7 +751,7 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"ConversationMessagepirateChat\\"
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createConversationMessagepirateChat.res.vtl": "## [Start] ResponseTemplate. **
+  "Mutation.createConversationMessagePirateChat.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
@@ -752,7 +759,7 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Mutation.createConversationSessionpirateChat.auth.1.req.vtl": "## [Start] Authorization Steps. **
+  "Mutation.createConversationPirateChat.auth.1.req.vtl": "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
 #set( $isAuthorized = false )
@@ -801,7 +808,7 @@ $util.unauthorized()
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **",
-  "Mutation.createConversationSessionpirateChat.init.1.req.vtl": "## [Start] Initialization default values. **
+  "Mutation.createConversationPirateChat.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 $util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -812,20 +819,20 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createConversationSessionpirateChat.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+  "Mutation.createConversationPirateChat.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
-  "Mutation.createConversationSessionpirateChat.req.vtl": "## [Start] Create Request template. **
+  "Mutation.createConversationPirateChat.req.vtl": "## [Start] Create Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
 $util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 ## set the typename **
-$util.qr($mergedValues.put(\\"__typename\\", \\"ConversationSessionpirateChat\\"))
+$util.qr($mergedValues.put(\\"__typename\\", \\"ConversationPirateChat\\"))
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
@@ -884,7 +891,7 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"ConversationSessionpirateChat\\"
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createConversationSessionpirateChat.res.vtl": "## [Start] ResponseTemplate. **
+  "Mutation.createConversationPirateChat.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
@@ -1032,7 +1039,7 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Mutation.deleteConversationMessagepirateChat.auth.1.req.vtl": "## [Start] Get Request template. **
+  "Mutation.deleteConversationMessagePirateChat.auth.1.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"GetItem\\"
@@ -1047,7 +1054,7 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 $util.qr($GetRequest.put(\\"key\\", $key))
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
-  "Mutation.deleteConversationMessagepirateChat.auth.1.res.vtl": "## [Start] Authorization Steps. **
+  "Mutation.deleteConversationMessagePirateChat.auth.1.res.vtl": "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #if( $util.authType() == \\"User Pool Authorization\\" )
@@ -1071,13 +1078,13 @@ $util.unauthorized()
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **",
-  "Mutation.deleteConversationMessagepirateChat.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+  "Mutation.deleteConversationMessagePirateChat.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
-  "Mutation.deleteConversationMessagepirateChat.req.vtl": "## [Start] Delete Request template. **
+  "Mutation.deleteConversationMessagePirateChat.req.vtl": "## [Start] Delete Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -1135,7 +1142,7 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteConversationMessagepirateChat.res.vtl": "## [Start] ResponseTemplate. **
+  "Mutation.deleteConversationMessagePirateChat.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
@@ -1143,7 +1150,7 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Mutation.deleteConversationSessionpirateChat.auth.1.req.vtl": "## [Start] Get Request template. **
+  "Mutation.deleteConversationPirateChat.auth.1.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"GetItem\\"
@@ -1158,7 +1165,7 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 $util.qr($GetRequest.put(\\"key\\", $key))
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
-  "Mutation.deleteConversationSessionpirateChat.auth.1.res.vtl": "## [Start] Authorization Steps. **
+  "Mutation.deleteConversationPirateChat.auth.1.res.vtl": "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #if( $util.authType() == \\"User Pool Authorization\\" )
@@ -1182,13 +1189,13 @@ $util.unauthorized()
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **",
-  "Mutation.deleteConversationSessionpirateChat.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+  "Mutation.deleteConversationPirateChat.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
-  "Mutation.deleteConversationSessionpirateChat.req.vtl": "## [Start] Delete Request template. **
+  "Mutation.deleteConversationPirateChat.req.vtl": "## [Start] Delete Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -1246,7 +1253,7 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteConversationSessionpirateChat.res.vtl": "## [Start] ResponseTemplate. **
+  "Mutation.deleteConversationPirateChat.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
@@ -1365,7 +1372,7 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Query.getConversationMessagepirateChat.auth.1.req.vtl": "## [Start] Authorization Steps. **
+  "Query.getConversationMessagePirateChat.auth.1.req.vtl": "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #set( $primaryFieldMap = {} )
@@ -1398,13 +1405,13 @@ $util.unauthorized()
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **",
-  "Query.getConversationMessagepirateChat.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+  "Query.getConversationMessagePirateChat.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
-  "Query.getConversationMessagepirateChat.req.vtl": "## [Start] Get Request template. **
+  "Query.getConversationMessagePirateChat.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Query\\"
@@ -1438,7 +1445,7 @@ $util.qr($GetRequest.put(\\"query\\", $query))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
-  "Query.getConversationMessagepirateChat.res.vtl": "## [Start] Get Response template. **
+  "Query.getConversationMessagePirateChat.res.vtl": "## [Start] Get Response template. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #end
@@ -1451,7 +1458,7 @@ $util.unauthorized()
   $util.toJson(null)
 #end
 ## [End] Get Response template. **",
-  "Query.getConversationSessionpirateChat.auth.1.req.vtl": "## [Start] Authorization Steps. **
+  "Query.getConversationPirateChat.auth.1.req.vtl": "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #set( $primaryFieldMap = {} )
@@ -1484,13 +1491,13 @@ $util.unauthorized()
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **",
-  "Query.getConversationSessionpirateChat.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+  "Query.getConversationPirateChat.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
-  "Query.getConversationSessionpirateChat.req.vtl": "## [Start] Get Request template. **
+  "Query.getConversationPirateChat.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Query\\"
@@ -1524,7 +1531,7 @@ $util.qr($GetRequest.put(\\"query\\", $query))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
-  "Query.getConversationSessionpirateChat.res.vtl": "## [Start] Get Response template. **
+  "Query.getConversationPirateChat.res.vtl": "## [Start] Get Response template. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #end
@@ -1623,7 +1630,7 @@ $util.unauthorized()
   $util.toJson(null)
 #end
 ## [End] Get Response template. **",
-  "Query.listConversationMessagepirateChats.auth.1.req.vtl": "## [Start] Authorization Steps. **
+  "Query.listConversationMessagePirateChats.auth.1.req.vtl": "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #set( $primaryFieldMap = {} )
@@ -1656,13 +1663,13 @@ $util.unauthorized()
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **",
-  "Query.listConversationMessagepirateChats.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+  "Query.listConversationMessagePirateChats.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
-  "Query.listConversationMessagepirateChats.req.vtl": "## [Start] List Request. **
+  "Query.listConversationMessagePirateChats.req.vtl": "## [Start] List Request. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $limit = $util.defaultIfNull($args.limit, 100) )
 #set( $ListRequest = {
@@ -1712,14 +1719,14 @@ $util.toJson({})
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listConversationMessagepirateChats.res.vtl": "## [Start] ResponseTemplate. **
+  "Query.listConversationMessagePirateChats.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Query.listConversationSessionpirateChats.auth.1.req.vtl": "## [Start] Authorization Steps. **
+  "Query.listConversationPirateChats.auth.1.req.vtl": "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #set( $primaryFieldMap = {} )
@@ -1752,13 +1759,13 @@ $util.unauthorized()
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **",
-  "Query.listConversationSessionpirateChats.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+  "Query.listConversationPirateChats.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
-  "Query.listConversationSessionpirateChats.req.vtl": "## [Start] List Request. **
+  "Query.listConversationPirateChats.req.vtl": "## [Start] List Request. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $limit = $util.defaultIfNull($args.limit, 100) )
 #set( $ListRequest = {
@@ -1808,7 +1815,7 @@ $util.toJson({})
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listConversationSessionpirateChats.res.vtl": "## [Start] ResponseTemplate. **
+  "Query.listConversationPirateChats.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
@@ -1911,7 +1918,7 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Subscription.onCreateConversationMessagepirateChat.auth.1.req.vtl": "## [Start] Authorization Steps. **
+  "Subscription.onCreateConversationMessagePirateChat.auth.1.req.vtl": "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #if( $util.authType() == \\"User Pool Authorization\\" )
@@ -1964,19 +1971,19 @@ $util.unauthorized()
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **",
-  "Subscription.onCreateConversationMessagepirateChat.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+  "Subscription.onCreateConversationMessagePirateChat.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
-  "Subscription.onCreateConversationMessagepirateChat.req.vtl": "## [Start] Subscription Request template. **
+  "Subscription.onCreateConversationMessagePirateChat.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
   \\"payload\\": {}
 })
 ## [End] Subscription Request template. **",
-  "Subscription.onCreateConversationMessagepirateChat.res.vtl": "## [Start] Subscription Response template. **
+  "Subscription.onCreateConversationMessagePirateChat.res.vtl": "## [Start] Subscription Response template. **
 #if( !$util.isNullOrEmpty($ctx.args.filter) )
 $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args.filter))
 #end
