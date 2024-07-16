@@ -25,6 +25,8 @@ import {
   DocumentNode,
   EnumTypeDefinitionNode,
   FieldDefinitionNode,
+  InputObjectTypeDefinitionNode,
+  InputValueDefinitionNode,
   InterfaceTypeDefinitionNode,
   Kind,
   ObjectTypeDefinitionNode,
@@ -36,8 +38,10 @@ import {
   makeArgument,
   makeDirective,
   makeField,
+  makeInputValueDefinition,
   makeListType,
   makeNamedType,
+  makeNonNullType,
   makeValueNode,
   ResolverResourceIDs,
   wrapNonNull,
@@ -47,6 +51,7 @@ import { WritableDraft } from 'immer/dist/internal';
 import { dedent } from 'ts-dedent';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
+import { Effect } from 'aws-cdk-lib/aws-iam';
 
 export type ConversationDirectiveConfiguration = {
   parent: ObjectTypeDefinitionNode;
@@ -54,6 +59,8 @@ export type ConversationDirectiveConfiguration = {
   aiModel: string;
   functionName: string;
   field: FieldDefinitionNode;
+  responseMutationInputTypeName: string;
+  responseMutationName: string;
 };
 
 export class ConversationTransformer extends TransformerPluginBase {
@@ -121,8 +128,9 @@ export class ConversationTransformer extends TransformerPluginBase {
       // for each directive
 
       for (const conversationDirectiveField of conversationDirectiveFields) {
-        const sessionModelName = `ConversationSession${conversationDirectiveField.name.value}`;
-        const messageModelName = `ConversationMessage${conversationDirectiveField.name.value}`;
+        const fieldName = capitalizeFirstLetter(conversationDirectiveField.name.value);
+        const sessionModelName = `Conversation${fieldName}`;
+        const messageModelName = `ConversationMessage${fieldName}`;
 
         const referenceFieldName = 'sessionId';
 
@@ -144,8 +152,16 @@ export class ConversationTransformer extends TransformerPluginBase {
           messageAuthDirective,
         ]);
 
+        // // Assistant mutation - Input
+        // const assistantMutationInput = makeAssistantResponseMutationInput(messageModelName);
+        // // Assistant mutation
+        // const assistantMutationName = `createAssistantResponse${conversationDirectiveField.name.value}`;
+        // const assistantMutation = makeAssistantResponseMutation(assistantMutationName, assistantMutationInput.name.value, messageModelName);
+
         draft.definitions.push(sessionModel as WritableDraft<ObjectTypeDefinitionNode>);
         draft.definitions.push(messageModel as WritableDraft<ObjectTypeDefinitionNode>);
+        // draft.definitions.push(assistantMutationInput as WritableDraft<InputObjectTypeDefinitionNode>);
+        // draft.definitions.push(assistantMu as WritableDraft<InputObjectTypeDefinitionNode>);
       }
     });
     return document;
@@ -155,20 +171,40 @@ export class ConversationTransformer extends TransformerPluginBase {
     for (const directive of this.directives) {
       const { parent, field } = directive;
       const parentName = parent.name.value;
-      const fieldName = field.name.value;
+      const fieldName = capitalizeFirstLetter(field.name.value);
       const resolverResourceId = ResolverResourceIDs.ResolverResourceID(parentName, fieldName);
 
       // TODO: Support single function for multiple routes.
       // TODO: Do we really need to create a nested stack here?
       const functionStack = ctx.stackManager.createStack('ConversationDirectiveLambdaStack');
-      // TODO: Add function name arg to conversation directive and pull from that.
+      const rootStack = ctx.stackManager.scope;
       const functionDataSourceId = FunctionResourceIDs.FunctionDataSourceID(directive.functionName);
       const referencedFunction = lambda.Function.fromFunctionAttributes(functionStack, `${functionDataSourceId}Function`, {
         functionArn: lambdaArnResource(directive.functionName),
       });
+
+      const bedrockModelId = getBedrockModelId(directive.aiModel);
+      const invokeModelPolicyStatement = new cdk.aws_iam.PolicyStatement({
+        actions: ['bedrock:InvokeModel'],
+        effect: Effect.ALLOW,
+        resources: [`arn:aws:bedrock:\${AWS::Region}::foundation-model/${bedrockModelId}`],
+      });
+      console.log('referencedFunction.role', referencedFunction.role);
+      referencedFunction.role?.attachInlinePolicy(
+        new cdk.aws_iam.Policy(functionStack, 'ConversationRouteLambdaRolePolicyBedrockConverse', {
+          statements: [invokeModelPolicyStatement],
+          policyName: 'ConversationRouteLambdaRolePolicyBedrockConverse',
+        }),
+      );
+
       const functionDataSourceScope = ctx.stackManager.getScopeFor(functionDataSourceId, 'ConversationDirectiveLambdaStack');
       const functionDataSource = ctx.api.host.addLambdaDataSource(functionDataSourceId, referencedFunction, {}, functionDataSourceScope);
-      const invokeLambdaFunction = invokeLambdaMappingTemplate(parentName, fieldName);
+
+      const invokeLambdaFunction = invokeLambdaMappingTemplate(
+        parentName,
+        fieldName,
+        directive,
+      );
 
       // pipeline resolver
       const conversationPipelineResolver = new TransformerResolver(
@@ -191,7 +227,7 @@ export class ConversationTransformer extends TransformerPluginBase {
       const authFunction = authMappingTemplate(parentName, fieldName);
       conversationPipelineResolver.addToSlot('auth', authFunction.req, authFunction.res);
 
-      const sessionModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, `ConversationSession${fieldName}`);
+      const sessionModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, `Conversation${fieldName}`);
       const conversationSessionDDBDataSource = ctx.api.host.getDataSource(sessionModelDDBDataSourceName);
 
       // verifySessionOwner
@@ -231,8 +267,9 @@ export class ConversationTransformer extends TransformerPluginBase {
     ctx.output.addEnum(makeConversationEventSenderType());
 
     for (const directive of this.directives) {
-      const sessionModelName = `ConversationSession${directive.field.name.value}`;
-      const messageModelName = `ConversationMessage${directive.field.name.value}`;
+      const fieldName = capitalizeFirstLetter(directive.field.name.value);
+      const sessionModelName = `Conversation${fieldName}`;
+      const messageModelName = `ConversationMessage${fieldName}`;
       const referenceFieldName = 'sessionId';
 
       const sessionAuthDirective = createSessionAuthDirective();
@@ -252,6 +289,17 @@ export class ConversationTransformer extends TransformerPluginBase {
         messageModelDirective,
         messageAuthDirective,
       ]);
+
+      // Assistant mutation - Input
+      const assistantMutationInput = makeAssistantResponseMutationInput(messageModelName);
+      // Assistant mutation
+      const assistantMutationName = `createAssistantResponse${fieldName}`;
+      const assistantMutation = makeAssistantResponseMutation(assistantMutationName, assistantMutationInput.name.value, messageModelName);
+      ctx.output.addInput(assistantMutationInput);
+      ctx.output.addMutationFields([assistantMutation]);
+      directive.responseMutationInputTypeName = assistantMutation.name.value
+      directive.responseMutationName = assistantMutationName
+      // -----
 
       ctx.output.addObject(sessionModel);
       ctx.output.addObject(messageModel);
@@ -479,6 +527,78 @@ const makeConversationMessageModel = (
   return object;
 };
 
+// #region AssistantResponse Mutation
+
+const makeAssistantResponseMutationInput = (messageModelName: string): InputObjectTypeDefinitionNode => {
+  const inputName = `Create${messageModelName}AssistantInput`;
+  return {
+    kind: 'InputObjectTypeDefinition',
+    name: { kind: 'Name', value: inputName },
+    fields: [
+      {
+        kind: 'InputValueDefinition',
+        name: { kind: 'Name', value: 'conversationId' },
+        type: makeNamedType('ID'),
+      },
+      {
+        kind: 'InputValueDefinition',
+        name: { kind: 'Name', value: 'content' },
+        type: makeNamedType('String'),
+      },
+      {
+        kind: 'InputValueDefinition',
+        name: { kind: 'Name', value: 'associatedUserMessageId' },
+        type: makeNamedType('ID'),
+      },
+    ],
+  };
+};
+
+const makeAssistantResponseMutation = (fieldName: string, inputTypeName: string, messageModelName: string): FieldDefinitionNode => {
+  const createAssistantResponseMutation: FieldDefinitionNode = {
+    kind: 'FieldDefinition',
+    name: {
+      value: fieldName,
+      kind: 'Name',
+    },
+    type: {
+      kind: 'NamedType',
+      name: {
+        kind: 'Name',
+        value: messageModelName,
+      },
+    },
+    arguments: [makeInputValueDefinition('input', makeNonNullType(makeNamedType(inputTypeName)))],
+  };
+  return createAssistantResponseMutation;
+};
+
+// #region Subscription -- WIP
+// const makeConversationMessageSubscriptionInputType = ( ): InputObjectTypeDefinitionNode => {
+//   const name = ``
+//   return {
+//     kind: 'InputObjectTypeDefinition',
+//     name: ''
+//   };
+// };
+
+// const makeConversationMessageSubscription = (
+//   subscriptionName: string,
+//   conversationMessageTypeName: string,
+// ): FieldDefinitionNode => {
+//   const conversationMessageSubscription: FieldDefinitionNode = {
+//     kind: 'FieldDefinition',
+//     name: {
+//       kind: 'Name',
+//       value: subscriptionName
+//     },
+//     type: makeNamedType(conversationMessageTypeName),
+//     arguments:
+//   };
+// };
+
+// #endregion AssistantResponse Mutation
+
 // #region Resolvers
 
 // #region Init Resolver
@@ -622,7 +742,7 @@ const writeMessageToTableMappingTemplate = (
       };
       const id = util.autoId();
 
-      return ddb.put({ key: id, message });
+      return ddb.put({ key: { id }, item: message });
     }
     `);
 
@@ -658,7 +778,7 @@ const readHistoryMappingTemplate = (
       };
 
       const filter = JSON.parse(util.transform.toDynamoDBFilterExpression(authFilter));
-      const index = 'gsi-ConversationSession${fieldName}.messages';
+      const index = 'gsi-Conversation${fieldName}.messages';
 
       return {
         operation: 'Query',
@@ -687,16 +807,25 @@ const readHistoryMappingTemplate = (
 const invokeLambdaMappingTemplate = (
   parentName: string,
   fieldName: string,
+  config: ConversationDirectiveConfiguration,
 ): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
+  const { responseMutationInputTypeName, responseMutationName, aiModel } = config;
+  const modelId = getBedrockModelId(aiModel);
   const req = MappingTemplate.inlineTemplateFromString(dedent`
     export function request(ctx) {
-    const { args, identity, source, request, prev } = ctx;
+      const { args, identity, source, request, prev } = ctx;
       const { typeName, fieldName } = ctx.stash;
+      const requestArgs = {
+        ...args,
+        modelId: '${modelId}',
+        responseMutationInputTypeName: '${responseMutationInputTypeName}',
+        responseMutationName: '${responseMutationName}'
+      };
 
       const payload = {
         typeName,
         fieldName,
-        args,
+        args: requestArgs,
         identity,
         source,
         request,
@@ -736,3 +865,37 @@ const lambdaArnKey = (name: string, region?: string, accountId?: string): string
 // #endregion InvokeLambda Resolver
 
 // #endregion Resolvers
+
+// TODO: Find best place to set IAM Policy for defined lambda function.
+// It can't be here (?) because the function is deployed in another stack
+// so we can only get an immutable IFunction reference.
+const getBedrockModelId = (modelName: string): string => {
+  switch (modelName) {
+    case 'Claude3Haiku':
+      return 'anthropic.claude-3-haiku-20240307-v1:0';
+    case 'Claude3Sonnet':
+      return 'anthropic.claude-3-sonnet-20240229-v1:0';
+    case 'Claude3Opus':
+      return 'anthropic.claude-3-opus-20240229-v1:0';
+    case 'Claude3.5Sonnet':
+      return 'anthropic.claude-3-5-sonnet-20240620-v1:0';
+    case 'MistralLarge':
+      return 'mistral.mistral-large-2402-v1:0';
+    case 'MistralSmall':
+      return 'mistral.mistral-small-2402-v1:0';
+    case 'Mistral8X7BInstruct':
+      return 'mistral.mixtral-8x7b-instruct-v0:1';
+    case 'Mistral7BInstruct':
+      return 'mistral.mistral-7b-instruct-v0:2';
+    case 'Llama38bInstruct':
+      return 'meta.llama3-8b-instruct-v1:0';
+    case 'Llama370bInstruct':
+      return 'meta.llama3-70b-instruct-v1:0';
+    default:
+      return 'anthropic.claude-3-haiku-20240307-v1:0';
+  }
+};
+
+const capitalizeFirstLetter = (value: string): string => {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+};
