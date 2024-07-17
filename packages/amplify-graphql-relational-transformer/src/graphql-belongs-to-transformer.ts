@@ -24,6 +24,7 @@ import {
   InterfaceTypeDefinitionNode,
   NamedTypeNode,
   ObjectTypeDefinitionNode,
+  Kind,
 } from 'graphql';
 import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 import produce from 'immer';
@@ -158,6 +159,20 @@ export class BelongsToTransformer extends TransformerPluginBase {
 
 const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field, object } = config;
+  if (!ctx.transformParameters.allowGen1Patterns) {
+    const modelName = object.name.value;
+    const fieldName = field.name.value;
+    if (field.type.kind === Kind.NON_NULL_TYPE) {
+      throw new InvalidDirectiveError(
+        `@${BelongsToDirective.name} cannot be used on required fields. Modify ${modelName}.${fieldName} to be optional.`,
+      );
+    }
+    if (config.fields) {
+      throw new InvalidDirectiveError(
+        `fields argument on @${BelongsToDirective.name} is disallowed. Modify ${modelName}.${fieldName} to use references instead.`,
+      );
+    }
+  }
 
   let dbType: ModelDataSourceStrategyDbType;
   try {

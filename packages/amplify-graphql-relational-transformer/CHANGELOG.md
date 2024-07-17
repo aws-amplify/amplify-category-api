@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.5.8...@aws-amplify/graphql-relational-transformer@2.5.9) (2024-07-15)
+
+### Bug Fixes
+
+- add nonScalarFields and arrayFields to schemas with mapped names ([#2689](https://github.com/aws-amplify/amplify-category-api/issues/2689)) ([4feb898](https://github.com/aws-amplify/amplify-category-api/commit/4feb898ae21710bb86dd900faef082c24bc08960)), closes [#2581](https://github.com/aws-amplify/amplify-category-api/issues/2581)
+- add translation behavior to disable gen 1 patterns ([#2670](https://github.com/aws-amplify/amplify-category-api/issues/2670)) ([38d1a71](https://github.com/aws-amplify/amplify-category-api/commit/38d1a718ec2b0290f514780c6d1d5f0790ba7764))
+
 ## [2.5.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.5.7...@aws-amplify/graphql-relational-transformer@2.5.8) (2024-07-02)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
