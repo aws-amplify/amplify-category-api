@@ -11,15 +11,15 @@ import { DURATION_1_HOUR } from '../../utils/duration-constants';
 
 jest.setTimeout(DURATION_1_HOUR);
 
-describe('Base Migration', () => {
+describe('References Migration', () => {
   let gen1ProjRoot: string;
   let gen2ProjRoot: string;
   let gen1ProjFolderName: string;
   let gen2ProjFolderName: string;
 
   beforeEach(async () => {
-    gen1ProjFolderName = 'basemigrationgen1';
-    gen2ProjFolderName = 'basemigrationgen2';
+    gen1ProjFolderName = 'manytomanymigrationgen1';
+    gen2ProjFolderName = 'manytomanymigrationgen2';
     gen1ProjRoot = await createNewProjectDir(gen1ProjFolderName);
     gen2ProjRoot = await createNewProjectDir(gen2ProjFolderName);
   });
@@ -40,13 +40,13 @@ describe('Base Migration', () => {
     deleteProjectDir(gen2ProjRoot);
   });
 
-  test('base migration', async () => {
+  test('many-to-many migration', async () => {
     const {
       GraphQLAPIEndpointOutput: gen1APIEndpoint,
       GraphQLAPIKeyOutput: gen1APIKey,
       DataSourceMappingOutput,
-    } = await createGen1ProjectForMigration(gen1ProjFolderName, gen1ProjRoot, 'simple_model_public_auth.graphql');
-    const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'migration', 'base'));
+    } = await createGen1ProjectForMigration(gen1ProjFolderName, gen1ProjRoot, 'many-to-many.graphql');
+    const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'migration', 'many-to-many'));
     const name = await initCDKProject(gen2ProjRoot, templatePath);
     writeTableMap(gen2ProjRoot, DataSourceMappingOutput);
     const outputs = await cdkDeploy(gen2ProjRoot, '--all');

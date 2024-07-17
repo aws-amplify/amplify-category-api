@@ -1,7 +1,14 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { copySync, moveSync, readFileSync, writeFileSync } from 'fs-extra';
-import { getScriptRunnerPath, sleep, nspawn as spawn } from 'amplify-category-api-e2e-core';
+import { getScriptRunnerPath, sleep, nspawn as spawn,
+
+initJSProjectWithProfile,
+addApiWithoutSchema,
+updateApiSchema,
+amplifyPush,
+getProjectMeta,
+} from 'amplify-category-api-e2e-core';
 
 /**
  * Retrieve the path to the `npx` executable for interacting with the aws-cdk cli.
@@ -159,4 +166,51 @@ export const updateCDKAppWithTemplate = (cwd: string, templatePath: string): voi
   const binDir = path.join(cwd, 'bin');
   copySync(templatePath, binDir, { overwrite: true });
   moveSync(path.join(binDir, 'app.ts'), path.join(binDir, `${path.basename(cwd)}.ts`), { overwrite: true });
+};
+
+/**
+ * Helper function to create a gen 1 project with for migration.
+ * 
+ * @param name project name
+ * @param projRoot project root directory
+ * @param schema schema file to use
+ */
+export const createGen1ProjectForMigration = async (
+  name: string,
+  projRoot: string,
+  schema: string,
+): Promise<{
+  GraphQLAPIEndpointOutput: string;
+  GraphQLAPIKeyOutput: string;
+  DataSourceMappingOutput: string;
+}> => {
+  await initJSProjectWithProfile(projRoot, { name });
+  await addApiWithoutSchema(projRoot, { transformerVersion: 2 });
+  await updateApiSchema(projRoot, name, schema);
+  await amplifyPush(projRoot);
+
+  // TODO: can't use feature flag until released in CLI
+  // addFeatureFlag(projRoot, 'graphqltransformer', 'enableGen2Migration', true);
+  // await amplifyPush(projRoot);
+
+  const meta = getProjectMeta(projRoot);
+  const { output } = meta.api[name];
+  const { GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput, DataSourceMappingOutput } = output;
+
+  return {
+    GraphQLAPIEndpointOutput,
+    GraphQLAPIKeyOutput,
+    DataSourceMappingOutput,
+  };
+};
+
+/**
+ * Helper function to write the table map of a gen 1 project to a file.
+ * @param projRoot project root directory
+ * @param tableMap table map as a string to write
+ */
+export const writeTableMap = (projRoot: string, tableMap: string): void => {
+  const filePath = path.join(projRoot, 'table-map.json');
+  fs.writeFileSync(filePath, tableMap);
+  console.log(`Wrote Table Mapping at ${filePath}`);
 };
