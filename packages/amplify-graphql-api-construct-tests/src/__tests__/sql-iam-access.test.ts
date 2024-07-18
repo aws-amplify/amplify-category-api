@@ -58,13 +58,13 @@ describe('CDK SQL Iam Access', () => {
     await databaseController.setupDatabase();
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'sql-iam-access'));
     const name = await initCDKProject(projRoot, templatePath, {
-      additionalDependencies: ['@aws-amplify/auth-construct-alpha@^0.5.6'],
+      additionalDependencies: ['@aws-amplify/auth-construct@^1.0.0'],
       cdkContext: {
         'enable-iam-authorization-mode': 'false',
       },
     });
     const nameWithIam = await initCDKProject(projRootWithIam, templatePath, {
-      additionalDependencies: ['@aws-amplify/auth-construct-alpha@^0.5.6'],
+      additionalDependencies: ['@aws-amplify/auth-construct@^1.0.0'],
       cdkContext: {
         'enable-iam-authorization-mode': 'true',
       },
