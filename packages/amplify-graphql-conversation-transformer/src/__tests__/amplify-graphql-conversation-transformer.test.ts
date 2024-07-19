@@ -34,7 +34,11 @@ test('conversation route valid schema', () => {
 
     type Mutation {
         pirateChat(id: ID, sessionId: ID!, content: String): String
-        @conversation(aiModel: "Claude3Haiku", functionName: "conversation-handler")
+        @conversation(
+          aiModel: "Claude3Haiku",
+          functionName: "conversation-handler",
+          systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability."
+        )
     }
   `;
 

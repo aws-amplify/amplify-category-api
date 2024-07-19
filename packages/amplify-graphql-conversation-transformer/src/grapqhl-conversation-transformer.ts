@@ -11,6 +11,7 @@ import {
   MappingTemplate,
   TransformerResolver,
   getModelDataSourceNameForTypeName,
+  getTable,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   MappingTemplateProvider,
@@ -31,10 +32,12 @@ import {
   Kind,
   ObjectTypeDefinitionNode,
   ObjectValueNode,
+  TypeNode,
 } from 'graphql';
 import {
   blankObject,
   FunctionResourceIDs,
+  getBaseType,
   makeArgument,
   makeDirective,
   makeField,
@@ -44,6 +47,7 @@ import {
   makeNonNullType,
   makeValueNode,
   ResolverResourceIDs,
+  ResourceConstants,
   wrapNonNull,
 } from 'graphql-transformer-common';
 import produce from 'immer';
@@ -52,6 +56,7 @@ import { dedent } from 'ts-dedent';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import { Effect } from 'aws-cdk-lib/aws-iam';
+import { overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
 
 export type ConversationDirectiveConfiguration = {
   parent: ObjectTypeDefinitionNode;
@@ -61,6 +66,7 @@ export type ConversationDirectiveConfiguration = {
   field: FieldDefinitionNode;
   responseMutationInputTypeName: string;
   responseMutationName: string;
+  systemPrompt: string;
 };
 
 export class ConversationTransformer extends TransformerPluginBase {
@@ -152,16 +158,8 @@ export class ConversationTransformer extends TransformerPluginBase {
           messageAuthDirective,
         ]);
 
-        // // Assistant mutation - Input
-        // const assistantMutationInput = makeAssistantResponseMutationInput(messageModelName);
-        // // Assistant mutation
-        // const assistantMutationName = `createAssistantResponse${conversationDirectiveField.name.value}`;
-        // const assistantMutation = makeAssistantResponseMutation(assistantMutationName, assistantMutationInput.name.value, messageModelName);
-
         draft.definitions.push(sessionModel as WritableDraft<ObjectTypeDefinitionNode>);
         draft.definitions.push(messageModel as WritableDraft<ObjectTypeDefinitionNode>);
-        // draft.definitions.push(assistantMutationInput as WritableDraft<InputObjectTypeDefinitionNode>);
-        // draft.definitions.push(assistantMu as WritableDraft<InputObjectTypeDefinitionNode>);
       }
     });
     return document;
@@ -171,8 +169,11 @@ export class ConversationTransformer extends TransformerPluginBase {
     for (const directive of this.directives) {
       const { parent, field } = directive;
       const parentName = parent.name.value;
-      const fieldName = capitalizeFirstLetter(field.name.value);
+      const capitalizedFieldName = capitalizeFirstLetter(field.name.value);
+      const fieldName = field.name.value;
       const resolverResourceId = ResolverResourceIDs.ResolverResourceID(parentName, fieldName);
+
+      const bedrockModelId = getBedrockModelId(directive.aiModel);
 
       // TODO: Support single function for multiple routes.
       // TODO: Do we really need to create a nested stack here?
@@ -183,27 +184,99 @@ export class ConversationTransformer extends TransformerPluginBase {
         functionArn: lambdaArnResource(directive.functionName),
       });
 
-      const bedrockModelId = getBedrockModelId(directive.aiModel);
+      // -------------------------------------------------------------------------------------------------------------------------------
+      // TODO: This should probs be deleted. Adding the policy to the IFunction we have here doesn't work
       const invokeModelPolicyStatement = new cdk.aws_iam.PolicyStatement({
         actions: ['bedrock:InvokeModel'],
         effect: Effect.ALLOW,
         resources: [`arn:aws:bedrock:\${AWS::Region}::foundation-model/${bedrockModelId}`],
       });
-      console.log('referencedFunction.role', referencedFunction.role);
+
       referencedFunction.role?.attachInlinePolicy(
         new cdk.aws_iam.Policy(functionStack, 'ConversationRouteLambdaRolePolicyBedrockConverse', {
           statements: [invokeModelPolicyStatement],
           policyName: 'ConversationRouteLambdaRolePolicyBedrockConverse',
         }),
       );
+      // -------------------------------------------------------------------------------------------------------------------------------
+
+      // console.log('>>> ctx.api as any attrGraphQlUrl', (ctx.api as any).attrGraphQlUrl);
+      // console.log('>>> ctx.api as any graphqlApiEndpoint', (ctx.api as any).graphqlApiEndpoint);
+
+      // console.log('>>> (ctx as any)._api. attrGraphQlUrl', (ctx as any)._api.attrGraphQlUrl);
+      // console.log('>>> (ctx as any)._api. graphqlUrl', (ctx as any)._api.graphqlUrl);
+      // console.log('>>> (ctx as any)._api. graphqlApiEndpoint', (ctx as any)._api.graphqlApiEndpoint);
+
+      const assistantResponseResolverResourceId = ResolverResourceIDs.ResolverResourceID('Mutation', directive.responseMutationName);
+      const assistantResponseResolverFunction = assistantMutationResolver();
+      const conversationMessageDataSourceName = getModelDataSourceNameForTypeName(ctx, `ConversationMessage${capitalizedFieldName}`);
+      const conversationMessageDataSource = ctx.api.host.getDataSource(conversationMessageDataSourceName);
+      const assistantResponseResolver = new TransformerResolver(
+        'Mutation',
+        directive.responseMutationName,
+        assistantResponseResolverResourceId,
+        assistantResponseResolverFunction.req,
+        assistantResponseResolverFunction.res,
+        [],
+        [],
+        conversationMessageDataSource as any,
+        { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' },
+      );
+
+      ctx.resolvers.addResolver('Mutation', directive.responseMutationName, assistantResponseResolver);
+
+      // ---- assitant response subscription resolver
+      const onAssistantResponseSubscriptionFieldName = `onCreateAssistantResponse${capitalizedFieldName}`;
+      const onAssistantResponseSubscriptionResolverResourceId = ResolverResourceIDs.ResolverResourceID(
+        'Subscription',
+        onAssistantResponseSubscriptionFieldName,
+      );
+      const onAssistantResponseSubscriptionResolverFunction = conversationMessageSubscriptionMappingTamplate();
+      const onAssistantResponseSubscriptionResolver = new TransformerResolver(
+        'Subscription',
+        onAssistantResponseSubscriptionFieldName,
+        onAssistantResponseSubscriptionResolverResourceId,
+        onAssistantResponseSubscriptionResolverFunction.req,
+        onAssistantResponseSubscriptionResolverFunction.res,
+        [],
+        [],
+        undefined,
+        { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' },
+      )
+      ctx.resolvers.addResolver('Subscription', onAssistantResponseSubscriptionFieldName, onAssistantResponseSubscriptionResolver);
+      // ------
 
       const functionDataSourceScope = ctx.stackManager.getScopeFor(functionDataSourceId, 'ConversationDirectiveLambdaStack');
       const functionDataSource = ctx.api.host.addLambdaDataSource(functionDataSourceId, referencedFunction, {}, functionDataSourceScope);
 
-      const invokeLambdaFunction = invokeLambdaMappingTemplate(
-        parentName,
-        fieldName,
-        directive,
+      const invokeLambdaFunction = invokeLambdaMappingTemplate(directive, ctx);
+
+      const messageModelName = `ConversationMessage${capitalizedFieldName}`;
+      const conversationModelName = `Conversation${capitalizedFieldName}`;
+
+      const referenceFieldName = 'sessionId';
+      const messageAuthDirective = createMessageAuthDirective();
+      const messageModelDirective = createMessageModelDirective();
+      const messageSessionFieldBelongsToDirective = createMessageSessionFieldBelongsToDirective(referenceFieldName);
+      const messageSessionField = createMessageSessionField(messageSessionFieldBelongsToDirective, conversationModelName);
+      const messageModel = makeConversationMessageModel(messageModelName, messageSessionField, referenceFieldName, [
+        messageModelDirective,
+        messageAuthDirective,
+      ]);
+
+      const conversationMessagesTable = getTable(ctx, messageModel);
+      const gsiPartitionKeyName = referenceFieldName;
+      const gsiPartitionKeyType = 'S';
+      const gsiSortKeyName = 'createdAt';
+      const gsiSortKeyType = 'S';
+      const indexName = 'gsi-ConversationMessage.sessionId.createdAt';
+      addGlobalSecondaryIndex(
+        conversationMessagesTable,
+        indexName,
+        { name: gsiPartitionKeyName, type: gsiPartitionKeyType },
+        { name: gsiSortKeyName, type: gsiSortKeyType },
+        ctx,
+        messageModelName,
       );
 
       // pipeline resolver
@@ -220,18 +293,18 @@ export class ConversationTransformer extends TransformerPluginBase {
       );
 
       // init
-      const initFunction = initMappingTemplate(parentName, fieldName);
+      const initFunction = initMappingTemplate();
       conversationPipelineResolver.addToSlot('init', initFunction.req, initFunction.res);
 
       // auth
-      const authFunction = authMappingTemplate(parentName, fieldName);
+      const authFunction = authMappingTemplate();
       conversationPipelineResolver.addToSlot('auth', authFunction.req, authFunction.res);
 
-      const sessionModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, `Conversation${fieldName}`);
+      const sessionModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, conversationModelName);
       const conversationSessionDDBDataSource = ctx.api.host.getDataSource(sessionModelDDBDataSourceName);
 
       // verifySessionOwner
-      const verifySessionOwnerFunction = verifySessionOwnerMappingTemplate(parentName, fieldName);
+      const verifySessionOwnerFunction = verifySessionOwnerMappingTemplate();
       conversationPipelineResolver.addToSlot(
         'verifySessionOwner',
         verifySessionOwnerFunction.req,
@@ -240,9 +313,9 @@ export class ConversationTransformer extends TransformerPluginBase {
       );
 
       // writeMessageToTable
-      const messageModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, `ConversationMessage${fieldName}`);
+      const messageModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, messageModelName);
       const messageDDBDataSource = ctx.api.host.getDataSource(messageModelDDBDataSourceName);
-      const writeMessageToTableFunction = writeMessageToTableMappingTemplate(parentName, fieldName);
+      const writeMessageToTableFunction = writeMessageToTableMappingTemplate(capitalizedFieldName);
       conversationPipelineResolver.addToSlot(
         'writeMessageToTable',
         writeMessageToTableFunction.req,
@@ -251,7 +324,7 @@ export class ConversationTransformer extends TransformerPluginBase {
       );
 
       // retrieveMessageHistory
-      const retrieveMessageHistoryFunction = readHistoryMappingTemplate(parentName, fieldName);
+      const retrieveMessageHistoryFunction = readHistoryMappingTemplate(capitalizedFieldName);
       conversationPipelineResolver.addToSlot(
         'retrieveMessageHistory',
         retrieveMessageHistoryFunction.req,
@@ -267,6 +340,9 @@ export class ConversationTransformer extends TransformerPluginBase {
     ctx.output.addEnum(makeConversationEventSenderType());
 
     for (const directive of this.directives) {
+      // TODO: Add @aws_cognito_user_pools directive to
+      // send messages mutation.
+
       const fieldName = capitalizeFirstLetter(directive.field.name.value);
       const sessionModelName = `Conversation${fieldName}`;
       const messageModelName = `ConversationMessage${fieldName}`;
@@ -297,8 +373,17 @@ export class ConversationTransformer extends TransformerPluginBase {
       const assistantMutation = makeAssistantResponseMutation(assistantMutationName, assistantMutationInput.name.value, messageModelName);
       ctx.output.addInput(assistantMutationInput);
       ctx.output.addMutationFields([assistantMutation]);
-      directive.responseMutationInputTypeName = assistantMutation.name.value
-      directive.responseMutationName = assistantMutationName
+      directive.responseMutationInputTypeName = assistantMutationInput.name.value;
+      directive.responseMutationName = assistantMutationName;
+      // -----
+
+      // Subscription on assistant response mutation
+      const onAssistantResponseMutation = makeConversationMessageSubscription(
+        `onCreateAssistantResponse${fieldName}`,
+        messageModelName,
+        assistantMutationName,
+      );
+      ctx.output.addSubscriptionFields([onAssistantResponseMutation]);
       // -----
 
       ctx.output.addObject(sessionModel);
@@ -517,10 +602,11 @@ const makeConversationMessageModel = (
   const content = makeField('content', [], makeNamedType('String'));
   const context = makeField('context', [], makeNamedType('AWSJSON'));
   const uiComponents = makeField('uiComponents', [], makeListType(makeNamedType('AWSJSON')));
+  const assistantContent = makeField('assistantContent', [], makeNamedType('String'));
 
   const object = {
     ...blankObject(modelName),
-    fields: [id, sessionId, sessionField, sender, content, context, uiComponents],
+    fields: [id, sessionId, sessionField, sender, content, context, uiComponents, assistantContent],
     directives: typeDirectives,
   };
 
@@ -555,47 +641,188 @@ const makeAssistantResponseMutationInput = (messageModelName: string): InputObje
 };
 
 const makeAssistantResponseMutation = (fieldName: string, inputTypeName: string, messageModelName: string): FieldDefinitionNode => {
-  const createAssistantResponseMutation: FieldDefinitionNode = {
-    kind: 'FieldDefinition',
-    name: {
-      value: fieldName,
-      kind: 'Name',
-    },
-    type: {
-      kind: 'NamedType',
-      name: {
-        kind: 'Name',
-        value: messageModelName,
-      },
-    },
-    arguments: [makeInputValueDefinition('input', makeNonNullType(makeNamedType(inputTypeName)))],
-  };
+  const args = [makeInputValueDefinition('input', makeNonNullType(makeNamedType(inputTypeName)))];
+  const cognitoAuthDirective = makeDirective('aws_cognito_user_pools', []);
+  const createAssistantResponseMutation = makeField(fieldName, args, makeNamedType(messageModelName), [cognitoAuthDirective]);
   return createAssistantResponseMutation;
 };
 
-// #region Subscription -- WIP
-// const makeConversationMessageSubscriptionInputType = ( ): InputObjectTypeDefinitionNode => {
-//   const name = ``
-//   return {
-//     kind: 'InputObjectTypeDefinition',
-//     name: ''
-//   };
-// };
+type KeyAttributeDefinition = {
+  name: string;
+  type: 'S' | 'N';
+};
 
-// const makeConversationMessageSubscription = (
-//   subscriptionName: string,
-//   conversationMessageTypeName: string,
-// ): FieldDefinitionNode => {
-//   const conversationMessageSubscription: FieldDefinitionNode = {
-//     kind: 'FieldDefinition',
-//     name: {
-//       kind: 'Name',
-//       value: subscriptionName
-//     },
-//     type: makeNamedType(conversationMessageTypeName),
-//     arguments:
-//   };
-// };
+const addGlobalSecondaryIndex = (
+  table: any,
+  indexName: string,
+  partitionKey: KeyAttributeDefinition,
+  sortKey: KeyAttributeDefinition,
+  ctx: TransformerContextProvider,
+  typeName: string,
+): void => {
+  table.addGlobalSecondaryIndex({
+    indexName,
+    // TODO: update to only project keys that we need when retrieving history
+    projectionType: 'ALL',
+    partitionKey,
+    sortKey,
+    readCapacity: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
+    writeCapacity: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
+  });
+
+  const gsi = table.globalSecondaryIndexes.find((g: any) => g.indexName === indexName);
+
+  const newIndex = {
+    indexName,
+    keySchema: gsi.keySchema,
+    projection: { projectionType: 'ALL' },
+    provisionedThroughput: cdk.Fn.conditionIf(ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling, cdk.Fn.ref('AWS::NoValue'), {
+      ReadCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
+      WriteCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
+    }),
+  };
+
+  overrideIndexAtCfnLevel(ctx, typeName, table, newIndex);
+};
+
+const assistantMutationResolver = (): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
+  const req = MappingTemplate.inlineTemplateFromString(dedent`
+      import { util } from '@aws-appsync/utils';
+      import * as ddb from '@aws-appsync/utils/dynamodb';
+
+      /**
+       * Sends a request to the attached data source
+       * @param {import('@aws-appsync/utils').Context} ctx the context
+       * @returns {*} the request
+       */
+      export function request(ctx) {
+          const owner = ctx.identity['claims']['sub'];
+          ctx.stash.owner = owner;
+          const { conversationId, content, associatedUserMessageId } = ctx.args.input;
+          const updatedAt = util.time.nowISO8601();
+
+          return ddb.update({
+              key: { id: associatedUserMessageId },
+              condition: {
+                  owner: { eq: owner },
+                  sessionId: { eq: conversationId }
+              },
+              update: {
+                  assistantContent: content,
+                  updatedAt
+              }
+          });
+      }
+  `);
+
+  /*
+*in a pirate voice* Arr, ye be askin' about the LRU cache eviction, eh? Well, let me tell ye, it be a clever way to keep yer treasure trove of data shipshape an' organized, like a well-run pirate ship.
+
+Ye see, the LRU, or Least Recently Used, be a strategy that keeps track of the data ye be usin' the least. When yer cache be gettin' full an' ye need to make room for new booty, the LRU be the first to walk the plank, makin' way for the more valuable data ye be needin' at the moment.
+
+It be like keepin' yer ship's hold tidy, leavin' only the most important supplies an' treasures close at hand, while the less-used items be stowed away in the depths of the hold. Arr, it be a clever way to make the most of yer limited space, an' keep yer data accessible an' ready for the next adventure!
+
+So, ye scurvy landlubber, if ye be wantin' to keep yer cache shipshape an' yer data accessible, ye best be learnin' the ways of the LRU. It be the key to navigatin' the treacherous waters of data management, an' keepin' yer ship afloat in the digital seas. *lets out a hearty laugh*
+  */
+
+  const res = MappingTemplate.inlineTemplateFromString(dedent`
+      /**
+       * Returns the resolver result
+       * @param {import('@aws-appsync/utils').Context} ctx the context
+       * @returns {*} the result
+       */
+      export function response(ctx) {
+          // Update with response logic
+          if (ctx.error) {
+              util.error(ctx.error.message, ctx.error.type);
+          }
+
+          const { conversationId, content, associatedUserMessageId } = ctx.args.input;
+
+          return {
+            id: associatedUserMessageId,
+            content,
+            sessionId: conversationId,
+            sender: 'assistant',
+            owner: ctx.stash.owner,
+          };
+      }
+    `);
+
+  return { req, res };
+};
+
+// #region Subscription
+const makeConversationMessageSubscription = (
+  subscriptionName: string,
+  conversationMessageTypeName: string,
+  onMutationName: string,
+): FieldDefinitionNode => {
+  const awsSubscribeDirective = makeDirective('aws_subscribe', [makeArgument('mutations', makeValueNode([onMutationName]))]);
+  const cognitoAuthDirective = makeDirective('aws_cognito_user_pools', []);
+
+  const args: InputValueDefinitionNode[] = [
+    makeInputValueDefinition('sessionId', makeNamedType('String')),
+  ];
+  const subscriptionField = makeField(subscriptionName, args, makeNamedType(conversationMessageTypeName), [
+    awsSubscribeDirective,
+    cognitoAuthDirective,
+  ]);
+
+  return subscriptionField;
+};
+
+const conversationMessageSubscriptionMappingTamplate = (): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
+  const req = MappingTemplate.inlineTemplateFromString(dedent`
+    export function request(ctx) {
+      ctx.stash.hasAuth = true;
+      const isAuthorized = false;
+
+      if (util.authType() === 'User Pool Authorization') {
+        if (!isAuthorized) {
+          const authFilter = [];
+          let ownerClaim0 = ctx.identity['claims']['sub'];
+          ctx.args.owner = ownerClaim0;
+          const currentClaim1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+          if (ownerClaim0 && currentClaim1) {
+            ownerClaim0 = ownerClaim0 + '::' + currentClaim1;
+            authFilter.push({ owner: { eq: ownerClaim0 } })
+          }
+          const role0_0 = ctx.identity['claims']['sub'];
+          if (role0_0) {
+            authFilter.push({ owner: { eq: role0_0 } });
+          }
+          // we can just reuse currentClaim1 here, but doing this (for now) to mirror the existing
+          // vtl auth resolver.
+          const role0_1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+          if (role0_1) {
+            authFilter.push({ owner: { eq: role0_1 }});
+          }
+          if (authFilter.length !== 0) {
+            ctx.stash.authFilter = { or: authFilter };
+          }
+        }
+      }
+      if (!isAuthorized && ctx.stash.authFilter.length === 0) {
+        util.unauthorized();
+      }
+      ctx.args.filter = { ...ctx.args.filter, and: [{ sessionId: { eq: ctx.args.sessionId  }}]};
+      return { version: '2018-05-29', payload: {} };
+    }
+  `);
+
+  const res = MappingTemplate.inlineTemplateFromString(dedent`
+    import { util, extensions } from '@aws-appsync/utils';
+
+    export function response(ctx) {
+        const subscriptionFilter = util.transform.toSubscriptionFilter(ctx.args.filter);
+        extensions.setSubscriptionFilter(subscriptionFilter);
+        return null;
+    }
+  `);
+
+  return { req, res };
+};
 
 // #endregion AssistantResponse Mutation
 
@@ -603,7 +830,7 @@ const makeAssistantResponseMutation = (fieldName: string, inputTypeName: string,
 
 // #region Init Resolver
 
-const initMappingTemplate = (parentName: string, fieldName: string): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
+const initMappingTemplate = (): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
   const req = MappingTemplate.inlineTemplateFromString(dedent`
     export function request(ctx) {
       ctx.stash.defaultValues = ctx.stash.defaultValues ?? {};
@@ -628,7 +855,7 @@ const initMappingTemplate = (parentName: string, fieldName: string): { req: Mapp
 // #endregion Init Resolver
 
 // #region Auth Resolver
-const authMappingTemplate = (parentName: string, fieldName: string): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
+const authMappingTemplate = (): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
   const req = MappingTemplate.inlineTemplateFromString(dedent`
     export function request(ctx) {
       ctx.stash.hasAuth = true;
@@ -678,10 +905,7 @@ const authMappingTemplate = (parentName: string, fieldName: string): { req: Mapp
 
 // #region VerifySessionOwner Resolver
 
-const verifySessionOwnerMappingTemplate = (
-  parentName: string,
-  fieldName: string,
-): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
+const verifySessionOwnerMappingTemplate = (): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
   const req = MappingTemplate.inlineTemplateFromString(dedent`
     export function request(ctx) {
       const { authFilter } = ctx.stash;
@@ -723,10 +947,7 @@ const verifySessionOwnerMappingTemplate = (
 
 // #region WriteMessageToTable Resolver
 
-const writeMessageToTableMappingTemplate = (
-  parentName: string,
-  fieldName: string,
-): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
+const writeMessageToTableMappingTemplate = (fieldName: string): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
   const req = MappingTemplate.inlineTemplateFromString(dedent`
     import { util } from '@aws-appsync/utils'
     import * as ddb from '@aws-appsync/utils/dynamodb'
@@ -740,7 +961,7 @@ const writeMessageToTableMappingTemplate = (
           ...args,
           ...defaultValues,
       };
-      const id = util.autoId();
+      const id = ctx.stash.defaultValues.id;
 
       return ddb.put({ key: { id }, item: message });
     }
@@ -760,10 +981,10 @@ const writeMessageToTableMappingTemplate = (
 // #endregion WriteMessageToTable Resolver
 
 // #region ReadHistory Resolver
-const readHistoryMappingTemplate = (
-  parentName: string,
-  fieldName: string,
-): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
+
+const readHistoryMappingTemplate = (fieldName: string): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
+  // TODO: filter to only retrieve messages that have an assistant response.
+  // #set( $ctx.args.filter = { "and": [ { "or": $authRuntimeFilter }, $ctx.args.filter ]} )
   const req = MappingTemplate.inlineTemplateFromString(dedent`
     export function request(ctx) {
       const { sessionId } = ctx.args;
@@ -778,14 +999,16 @@ const readHistoryMappingTemplate = (
       };
 
       const filter = JSON.parse(util.transform.toDynamoDBFilterExpression(authFilter));
-      const index = 'gsi-Conversation${fieldName}.messages';
+      const index = 'gsi-ConversationMessage.sessionId.createdAt';
 
       return {
         operation: 'Query',
         query,
         filter,
         index,
+        scanIndexForward: false,
       }
+
     }
     `);
 
@@ -794,7 +1017,17 @@ const readHistoryMappingTemplate = (
       if (ctx.error) {
         util.error(ctx.error.message, ctx.error.type);
       }
-      return ctx.result;
+      const messagesWithAssistantResponse = ctx.result.items
+        .filter((message) => message.assistantContent !== undefined)
+        .reduce((acc, current) => {
+            acc.push({ role: 'user', content: [{ text: current.content }] });
+            acc.push({ role: 'assistant', content: [{ text: current.assistantContent }] });
+            return acc;
+        }, [])
+
+      const currentMessage = { role: 'user', content: [{ text: ctx.prev.result.content }] };
+      const items = [...messagesWithAssistantResponse, currentMessage];
+      return { items };
     }`);
 
   return { req, res };
@@ -805,12 +1038,17 @@ const readHistoryMappingTemplate = (
 // #region InvokeLambda Resolver
 
 const invokeLambdaMappingTemplate = (
-  parentName: string,
-  fieldName: string,
   config: ConversationDirectiveConfiguration,
+  ctx: TransformerContextProvider,
 ): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
   const { responseMutationInputTypeName, responseMutationName, aiModel } = config;
   const modelId = getBedrockModelId(aiModel);
+  // TODO: figure out how to / if it's possible to get the GraphQL API endpoint
+  // to include in the resolver here. It should be doable considered the apiId is accessible
+  // on ctx.api. But this doesn't work.
+  // const graphQlUrl = (ctx.api as any).graphQlUrl;
+
+  const systemPrompt = config.systemPrompt;
   const req = MappingTemplate.inlineTemplateFromString(dedent`
     export function request(ctx) {
       const { args, identity, source, request, prev } = ctx;
@@ -819,7 +1057,10 @@ const invokeLambdaMappingTemplate = (
         ...args,
         modelId: '${modelId}',
         responseMutationInputTypeName: '${responseMutationInputTypeName}',
-        responseMutationName: '${responseMutationName}'
+        responseMutationName: '${responseMutationName}',
+        graphqlApiEndpoint: ctx.env.GRAPHQL_API_ENDPOINT,
+        currentMessageId: ctx.stash.defaultValues.id,
+        systemPrompt: '${systemPrompt}'
       };
 
       const payload = {
@@ -846,7 +1087,7 @@ const invokeLambdaMappingTemplate = (
         util.appendError(ctx.error.message, ctx.error.type);
         success = false;
       }
-      return { success };
+      return ctx.stash.defaultValues.id;
     }`);
 
   return { req, res };

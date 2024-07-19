@@ -11,7 +11,7 @@ exports[`conversation route valid schema 1`] = `
 
 type Mutation {
   pirateChat(id: ID, sessionId: ID!, content: String): String
-  createAssistantResponsePirateChat(input: CreateConversationMessagePirateChatAssistantInput!): ConversationMessagePirateChat
+  createAssistantResponsePirateChat(input: CreateConversationMessagePirateChatAssistantInput!): ConversationMessagePirateChat @aws_cognito_user_pools
   createFoo(input: CreateFooInput!, condition: ModelFooConditionInput): Foo
   deleteFoo(input: DeleteFooInput!, condition: ModelFooConditionInput): Foo
   createConversationPirateChat(input: CreateConversationPirateChatInput!, condition: ModelConversationPirateChatConditionInput): ConversationPirateChat
@@ -29,6 +29,11 @@ input CreateConversationMessagePirateChatAssistantInput {
   conversationId: ID
   content: String
   associatedUserMessageId: ID
+}
+
+type Subscription {
+  onCreateAssistantResponsePirateChat(sessionId: String): ConversationMessagePirateChat @aws_subscribe(mutations: [\\"createAssistantResponsePirateChat\\"]) @aws_cognito_user_pools
+  onCreateConversationMessagePirateChat(filter: ModelSubscriptionConversationMessagePirateChatFilterInput, owner: String): ConversationMessagePirateChat @aws_subscribe(mutations: [\\"createConversationMessagePirateChat\\"])
 }
 
 type ConversationPirateChat {
@@ -49,6 +54,7 @@ type ConversationMessagePirateChat {
   content: String
   context: AWSJSON
   uiComponents: [AWSJSON]
+  assistantContent: String
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
   owner: String
@@ -248,10 +254,6 @@ input DeleteFooInput {
   id: ID!
 }
 
-type Subscription {
-  onCreateConversationMessagePirateChat(filter: ModelSubscriptionConversationMessagePirateChatFilterInput, owner: String): ConversationMessagePirateChat @aws_subscribe(mutations: [\\"createConversationMessagePirateChat\\"])
-}
-
 type ModelConversationPirateChatConnection {
   items: [ConversationPirateChat]!
   nextToken: String
@@ -307,6 +309,7 @@ input ModelConversationMessagePirateChatFilterInput {
   content: ModelStringInput
   context: ModelStringInput
   uiComponents: ModelStringInput
+  assistantContent: ModelStringInput
   createdAt: ModelStringInput
   updatedAt: ModelStringInput
   and: [ModelConversationMessagePirateChatFilterInput]
@@ -321,6 +324,7 @@ input ModelConversationMessagePirateChatConditionInput {
   content: ModelStringInput
   context: ModelStringInput
   uiComponents: ModelStringInput
+  assistantContent: ModelStringInput
   and: [ModelConversationMessagePirateChatConditionInput]
   or: [ModelConversationMessagePirateChatConditionInput]
   not: ModelConversationMessagePirateChatConditionInput
@@ -336,6 +340,7 @@ input CreateConversationMessagePirateChatInput {
   content: String
   context: AWSJSON
   uiComponents: [AWSJSON]
+  assistantContent: String
 }
 
 input DeleteConversationMessagePirateChatInput {
@@ -349,6 +354,7 @@ input ModelSubscriptionConversationMessagePirateChatFilterInput {
   content: ModelSubscriptionStringInput
   context: ModelSubscriptionStringInput
   uiComponents: ModelSubscriptionStringInput
+  assistantContent: ModelSubscriptionStringInput
   createdAt: ModelSubscriptionStringInput
   updatedAt: ModelSubscriptionStringInput
   and: [ModelSubscriptionConversationMessagePirateChatFilterInput]
@@ -637,7 +643,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
       #set( $ownerClaimsList0 = [] )
       $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
       $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
-      #set( $ownerAllowedFields0 = [\\"id\\",\\"sessionId\\",\\"session\\",\\"sender\\",\\"content\\",\\"context\\",\\"uiComponents\\"] )
+      #set( $ownerAllowedFields0 = [\\"id\\",\\"sessionId\\",\\"session\\",\\"sender\\",\\"content\\",\\"context\\",\\"uiComponents\\",\\"assistantContent\\"] )
       #set( $isAuthorizedOnAllFields0 = true )
       #if( $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
         #if( $isAuthorizedOnAllFields0 )
