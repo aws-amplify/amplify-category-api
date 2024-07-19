@@ -224,17 +224,29 @@ const processOnEvent = async (
       Object.values(tableDef.tags ?? []).forEach((tag) => {
         newTags.push({ Key: tag.key, Value: tag.value });
       });
-      if (currentTableTags && currentTableTags.length > 0 && (!newTags || newTags.length === 0)) {
+
+      const removeTags: string[] = [];
+      currentTableTags.forEach((tag) => {
+        if (!newTags.some((newTag) => newTag.Key === tag.Key)) {
+          removeTags.push(tag.Key!);
+        }
+      });
+
+      // Handle tags deletion
+      if (removeTags.length > 0) {
         await ddbClient.untagResource({
           ResourceArn: describeTableResult.Table.TableArn,
-          TagKeys: currentTableTags.map((tag) => tag.Key!),
+          TagKeys: removeTags,
         });
         await retry(
           async () => await isTableReady(event.PhysicalResourceId!),
           (res) => res === true,
         );
         console.log(`Table '${event.PhysicalResourceId}' is ready after the deletion of Tags.`);
-      } else if (requiresTagsUpdate(currentTableTags, newTags)) {
+      }
+
+      // Handle tags addition/updates
+      if (requiresTagsUpdate(currentTableTags, newTags)) {
         console.log('Detected tag changes: ', tableDef.tags);
         await ddbClient.tagResource({
           ResourceArn: describeTableResult.Table.TableArn,
