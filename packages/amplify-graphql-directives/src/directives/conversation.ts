@@ -18,7 +18,8 @@ const name = 'conversation';
 const definition = /* GraphQL */ `
   directive @${name}(
     aiModel: String,
-    functionName: String
+    functionName: String,
+    systemPrompt: String
   ) on FIELD_DEFINITION
 `;
 const defaults = {};
