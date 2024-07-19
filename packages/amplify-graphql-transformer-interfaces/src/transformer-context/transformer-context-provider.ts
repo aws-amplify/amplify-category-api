@@ -35,7 +35,22 @@ export interface TransformerContextProvider extends DataSourceStrategiesProvider
 
   isProjectUsingDataStore: () => boolean;
   getResolverConfig: <ResolverConfig>() => ResolverConfig | undefined;
+
+  deploymentIdentifier: DeploymentIdentifier; // Does this need to be optional?
 }
+
+export interface SandboxIdentifier {
+  deploymentType: 'sandbox';
+  deploymentId: string;
+}
+
+export interface BranchIdentifier {
+  deploymentType: 'branch';
+  branchName: string;
+  branchId: string;
+}
+
+export type DeploymentIdentifier = SandboxIdentifier | BranchIdentifier;
 
 export type TransformerBeforeStepContextProvider = Pick<
   TransformerContextProvider,
