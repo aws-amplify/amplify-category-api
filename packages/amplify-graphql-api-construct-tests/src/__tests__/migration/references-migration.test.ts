@@ -17,8 +17,8 @@ describe('References Migration', () => {
   let gen2ProjFolderName: string;
 
   beforeEach(async () => {
-    gen1ProjFolderName = 'referencesmigrationgen1';
-    gen2ProjFolderName = 'referencesmigrationgen2';
+    gen1ProjFolderName = 'referencesgen1';
+    gen2ProjFolderName = 'referencesgen2';
     gen1ProjRoot = await createNewProjectDir(gen1ProjFolderName);
     gen2ProjRoot = await createNewProjectDir(gen2ProjFolderName);
   });
@@ -51,77 +51,163 @@ describe('References Migration', () => {
     const outputs = await cdkDeploy(gen2ProjRoot, '--all');
     const { awsAppsyncApiEndpoint: gen2APIEndpoint, awsAppsyncApiKey: gen2APIKey } = outputs[name];
 
-    const gen1Result = await graphql(
+    const gen1PrimaryResult = await graphql(
       gen1APIEndpoint,
       gen1APIKey,
       /* GraphQL */ `
-        mutation CREATE_TODO {
-          createTodo(input: { content: "todo desc" }) {
+        mutation CREATE_PRIMARY {
+          createPrimary(input: {}) {
             id
-            content
           }
         }
       `,
     );
-    expect(gen1Result.statusCode).toEqual(200);
+    expect(gen1PrimaryResult.statusCode).toEqual(200);
 
-    const gen1Todo = gen1Result.body.data.createTodo;
+    const gen1Primary = gen1PrimaryResult.body.data.createPrimary;
 
-    const gen2Result = await graphql(
+    const gen2PrimaryResult = await graphql(
       gen2APIEndpoint,
       gen2APIKey,
       /* GraphQL */ `
-        mutation CREATE_TODO {
-          createTodo(input: { content: "todo desc" }) {
+        mutation CREATE_PRIMARY {
+          createPrimary(input: {}) {
             id
-            content
           }
         }
       `,
     );
-    expect(gen2Result.statusCode).toEqual(200);
+    expect(gen2PrimaryResult.statusCode).toEqual(200);
 
-    const gen2Todo = gen2Result.body.data.createTodo;
+    const gen2Primary = gen2PrimaryResult.body.data.createPrimary;
+
+    const gen1RelatedOneResult = await graphql(
+      gen2APIEndpoint,
+      gen2APIKey,
+      /* GraphQL */ `
+        mutation CREATE_RELATED_ONE {
+          createRelatedOne(input: { primaryId: "${gen1Primary.id}" }) {
+            id
+          }
+        }
+      `,
+    );
+    expect(gen1RelatedOneResult.statusCode).toEqual(200);
+    
+    const gen1RelatedOne = gen1RelatedOneResult.body.data.createRelatedOne;
+
+    const gen2RelatedOneResult = await graphql(
+      gen2APIEndpoint,
+      gen2APIKey,
+      /* GraphQL */ `
+        mutation CREATE_RELATED_ONE {
+          createRelatedOne(input: { primaryId: "${gen2Primary.id}" }) {
+            id
+          }
+        }
+      `,
+    );
+    expect(gen2RelatedOneResult.statusCode).toEqual(200);
+
+    const gen2RelatedOne = gen2RelatedOneResult.body.data.createRelatedOne;
+
+    const gen1RelatedManyResult = await graphql(
+      gen2APIEndpoint,
+      gen2APIKey,
+      /* GraphQL */ `
+        mutation CREATE_RELATED_MANY {
+          createRelatedMany(input: { primaryId: "${gen1Primary.id}" }) {
+            id
+          }
+        }
+      `,
+    );
+    expect(gen1RelatedManyResult.statusCode).toEqual(200);
+    
+    const gen1RelatedMany = gen1RelatedOneResult.body.data.createRelatedOne;
+
+    const gen2RelatedManyResult = await graphql(
+      gen2APIEndpoint,
+      gen2APIKey,
+      /* GraphQL */ `
+        mutation CREATE_RELATED_MANY {
+          createRelatedMany(input: { primaryId: "${gen2Primary.id}" }) {
+            id
+          }
+        }
+      `,
+    );
+    expect(gen2RelatedManyResult.statusCode).toEqual(200);
+
+    const gen2RelatedMany = gen2RelatedManyResult.body.data.createRelatedMany;
 
     const gen1ListResult = await graphql(
       gen1APIEndpoint,
       gen1APIKey,
       /* GraphQL */ `
-        query LIST_TODOS {
-          listTodos {
+        query LIST_PRIMARY {
+          listPrimaries {
             items {
               id
-              content
+              relatedMany {
+                items {
+                  id
+                  primaryId
+                }
+                nextToken
+              }
+              relatedOne {
+                id
+                primaryId
+                primary {
+                  id
+                }
+              }
             }
+            nextToken
           }
         }
       `,
     );
 
     expect(gen1ListResult.statusCode).toEqual(200);
-    expect(gen1ListResult.body.data.listTodos.items.length).toEqual(2);
-    expect([gen1Todo.id, gen2Todo.id]).toContain(gen1ListResult.body.data.listTodos.items[0].id);
-    expect([gen1Todo.id, gen2Todo.id]).toContain(gen1ListResult.body.data.listTodos.items[1].id);
+    expect(gen1ListResult.body.data.listPrimaries.items.length).toEqual(2);
+    expect([gen1Primary.id, gen2Primary.id]).toContain(gen1ListResult.body.data.listPrimaries.items[0].id);
+    expect([gen1Primary.id, gen2Primary.id]).toContain(gen1ListResult.body.data.listPrimaries.items[1].id);
 
     const gen2ListResult = await graphql(
       gen2APIEndpoint,
       gen2APIKey,
       /* GraphQL */ `
-        query LIST_TODOS {
-          listTodos {
-            items {
+      query LIST_PRIMARY {
+        listPrimaries {
+          items {
+            id
+            relatedMany {
+              items {
+                id
+                primaryId
+              }
+              nextToken
+            }
+            relatedOne {
               id
-              content
+              primaryId
+              primary {
+                id
+              }
             }
           }
+          nextToken
         }
+      }
       `,
     );
 
     expect(gen2ListResult.statusCode).toEqual(200);
-    expect(gen2ListResult.body.data.listTodos.items.length).toEqual(2);
-    expect([gen1Todo.id, gen2Todo.id]).toContain(gen2ListResult.body.data.listTodos.items[0].id);
-    expect([gen1Todo.id, gen2Todo.id]).toContain(gen2ListResult.body.data.listTodos.items[1].id);
+    expect(gen1ListResult.body.data.listPrimaries.items.length).toEqual(2);
+    expect([gen1Primary.id, gen2Primary.id]).toContain(gen1ListResult.body.data.listPrimaries.items[0].id);
+    expect([gen1Primary.id, gen2Primary.id]).toContain(gen1ListResult.body.data.listPrimaries.items[1].id);
 
     await deleteProject(gen1ProjRoot);
 
@@ -129,23 +215,34 @@ describe('References Migration', () => {
       gen2APIEndpoint,
       gen2APIKey,
       /* GraphQL */ `
-        query LIST_TODOS {
-          listTodos {
-            items {
+      query LIST_PRIMARY {
+        listPrimaries {
+          items {
+            id
+            relatedMany {
+              items {
+                id
+                primaryId
+              }
+              nextToken
+            }
+            relatedOne {
               id
-              content
+              primaryId
+              primary {
+                id
+              }
             }
           }
+          nextToken
         }
+      }
       `,
     );
 
     expect(listResult.statusCode).toEqual(200);
-    expect(listResult.body.data.listTodos.items.length).toEqual(2);
-    expect([gen1Todo.id, gen2Todo.id]).toContain(listResult.body.data.listTodos.items[0].id);
-    expect([gen1Todo.id, gen2Todo.id]).toContain(listResult.body.data.listTodos.items[1].id);
-
-    // TODO: delete gen 1 table
-    // TODO: preform queries
+    expect(listResult.body.data.listPrimaries.items.length).toEqual(2);
+    expect([gen1Primary.id, gen2Primary.id]).toContain(listResult.body.data.listPrimaries.items[0].id);
+    expect([gen1Primary.id, gen2Primary.id]).toContain(listResult.body.data.listPrimaries.items[1].id);
   });
 });
