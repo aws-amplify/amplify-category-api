@@ -32,12 +32,23 @@ test('conversation route valid schema', () => {
       bar: Int
     }
 
+    type Temperature {
+      value: Int
+      unit: String
+    }
+
+    type Query {
+      getTemperature(city: String!): Temperature
+      plus(a: Int, b: Int): Int
+    }
+
     type Mutation {
         pirateChat(id: ID, sessionId: ID!, content: String): String
         @conversation(
           aiModel: "Claude3Haiku",
           functionName: "conversation-handler",
-          systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability."
+          systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
+          tools: ["getTemperature", "plus"]
         )
     }
   `;

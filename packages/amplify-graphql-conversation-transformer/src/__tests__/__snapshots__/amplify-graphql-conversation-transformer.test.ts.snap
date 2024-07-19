@@ -9,6 +9,22 @@ exports[`conversation route valid schema 1`] = `
   owner: String
 }
 
+type Temperature {
+  value: Int
+  unit: String
+}
+
+type Query {
+  getTemperature(city: String!): Temperature
+  plus(a: Int, b: Int): Int
+  getFoo(id: ID!): Foo
+  listFoos(filter: ModelFooFilterInput, limit: Int, nextToken: String): ModelFooConnection
+  getConversationPirateChat(id: ID!): ConversationPirateChat
+  listConversationPirateChats(filter: ModelConversationPirateChatFilterInput, limit: Int, nextToken: String): ModelConversationPirateChatConnection
+  getConversationMessagePirateChat(id: ID!): ConversationMessagePirateChat
+  listConversationMessagePirateChats(filter: ModelConversationMessagePirateChatFilterInput, limit: Int, nextToken: String): ModelConversationMessagePirateChatConnection
+}
+
 type Mutation {
   pirateChat(id: ID, sessionId: ID!, content: String): String
   createAssistantResponsePirateChat(input: CreateConversationMessagePirateChatAssistantInput!): ConversationMessagePirateChat @aws_cognito_user_pools
@@ -224,15 +240,6 @@ input ModelFooFilterInput {
   or: [ModelFooFilterInput]
   not: ModelFooFilterInput
   owner: ModelStringInput
-}
-
-type Query {
-  getFoo(id: ID!): Foo
-  listFoos(filter: ModelFooFilterInput, limit: Int, nextToken: String): ModelFooConnection
-  getConversationPirateChat(id: ID!): ConversationPirateChat
-  listConversationPirateChats(filter: ModelConversationPirateChatFilterInput, limit: Int, nextToken: String): ModelConversationPirateChatConnection
-  getConversationMessagePirateChat(id: ID!): ConversationMessagePirateChat
-  listConversationMessagePirateChats(filter: ModelConversationMessagePirateChatFilterInput, limit: Int, nextToken: String): ModelConversationMessagePirateChatConnection
 }
 
 input ModelFooConditionInput {

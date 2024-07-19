@@ -1,4 +1,4 @@
-import { BelongsToDirective, ConversationDirective, HasManyDirective } from '@aws-amplify/graphql-directives';
+import { ConversationDirective } from '@aws-amplify/graphql-directives';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import {
@@ -8,13 +8,11 @@ import {
   InvalidTransformerError,
   TransformerPluginBase,
   generateGetArgumentsInput,
-  MappingTemplate,
   TransformerResolver,
   getModelDataSourceNameForTypeName,
   getTable,
 } from '@aws-amplify/graphql-transformer-core';
 import {
-  MappingTemplateProvider,
   TransformerAuthProvider,
   TransformerContextProvider,
   TransformerPreProcessContextProvider,
@@ -29,34 +27,37 @@ import {
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
   InterfaceTypeDefinitionNode,
-  Kind,
   ObjectTypeDefinitionNode,
-  ObjectValueNode,
-  TypeNode,
 } from 'graphql';
 import {
-  blankObject,
   FunctionResourceIDs,
-  getBaseType,
   makeArgument,
   makeDirective,
   makeField,
   makeInputValueDefinition,
-  makeListType,
   makeNamedType,
   makeNonNullType,
   makeValueNode,
   ResolverResourceIDs,
   ResourceConstants,
-  wrapNonNull,
 } from 'graphql-transformer-common';
 import produce from 'immer';
 import { WritableDraft } from 'immer/dist/internal';
-import { dedent } from 'ts-dedent';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import { Effect } from 'aws-cdk-lib/aws-iam';
 import { overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
+import { assistantMutationResolver } from './resolvers/assistant-mutation-resolver';
+import { authMappingTemplate } from './resolvers/auth-resolver';
+import { initMappingTemplate } from './resolvers/init-resolver';
+import { invokeLambdaMappingTemplate } from './resolvers/invoke-lambda-resolver';
+import { readHistoryMappingTemplate } from './resolvers/message-history-resolver';
+import { verifySessionOwnerMappingTemplate } from './resolvers/verify-session-owner-resolver';
+import { writeMessageToTableMappingTemplate } from './resolvers/write-message-to-table-resolver';
+import { getBedrockModelId } from './utils/bedrock-model-id';
+import { conversationMessageSubscriptionMappingTamplate } from './resolvers/assistant-messages-subscription-resolver';
+import { createConversationModel, ConversationModel } from './graphql-types/session-model';
+import { createMessageModel, MessageModel } from './graphql-types/message-model';
 
 export type ConversationDirectiveConfiguration = {
   parent: ObjectTypeDefinitionNode;
@@ -67,6 +68,9 @@ export type ConversationDirectiveConfiguration = {
   responseMutationInputTypeName: string;
   responseMutationName: string;
   systemPrompt: string;
+  tools: string[];
+  conversationModel: ConversationModel;
+  messageModel: MessageModel;
 };
 
 export class ConversationTransformer extends TransformerPluginBase {
@@ -109,6 +113,13 @@ export class ConversationTransformer extends TransformerPluginBase {
       generateGetArgumentsInput(context.transformParameters),
     );
 
+    const capitalizedFieldName = capitalizeFirstLetter(config.field.name.value);
+    const conversationModelName = `Conversation${capitalizedFieldName}`;
+    const messageModelName = `ConversationMessage${capitalizedFieldName}`;
+    const referenceFieldName = 'sessionId';
+    config.messageModel = createMessageModel(messageModelName, conversationModelName, referenceFieldName);
+    config.conversationModel = createConversationModel(conversationModelName, messageModelName, referenceFieldName);
+
     validate(config, context as TransformerContextProvider);
     this.directives.push(config);
   };
@@ -131,34 +142,18 @@ export class ConversationTransformer extends TransformerPluginBase {
       // once
       const conversationEventSender = makeConversationEventSenderType();
       draft.definitions.push(conversationEventSender as WritableDraft<EnumTypeDefinitionNode>);
-      // for each directive
 
+      // for each directive
       for (const conversationDirectiveField of conversationDirectiveFields) {
         const fieldName = capitalizeFirstLetter(conversationDirectiveField.name.value);
-        const sessionModelName = `Conversation${fieldName}`;
+        const conversationModelName = `Conversation${fieldName}`;
         const messageModelName = `ConversationMessage${fieldName}`;
-
         const referenceFieldName = 'sessionId';
 
-        const sessionAuthDirective = createSessionAuthDirective();
-        const sessionModelDirective = createSessionModelDirective();
-        const sessionMessagesHasManyDirective = createSessionModelMessagesFieldHasManyDirective(referenceFieldName);
-        const sessionMessagesField = createSessionModelMessagesField(sessionMessagesHasManyDirective, messageModelName);
-        const sessionModel = makeConversationSessionModel(sessionModelName, sessionMessagesField, [
-          sessionModelDirective,
-          sessionAuthDirective,
-        ]);
+        const { conversationModel } = createConversationModel(conversationModelName, messageModelName, referenceFieldName);
+        const { messageModel } = createMessageModel(messageModelName, conversationModelName, referenceFieldName);
 
-        const messageAuthDirective = createMessageAuthDirective();
-        const messageModelDirective = createMessageModelDirective();
-        const messageSessionFieldBelongsToDirective = createMessageSessionFieldBelongsToDirective(referenceFieldName);
-        const messageSessionField = createMessageSessionField(messageSessionFieldBelongsToDirective, sessionModelName);
-        const messageModel = makeConversationMessageModel(messageModelName, messageSessionField, referenceFieldName, [
-          messageModelDirective,
-          messageAuthDirective,
-        ]);
-
-        draft.definitions.push(sessionModel as WritableDraft<ObjectTypeDefinitionNode>);
+        draft.definitions.push(conversationModel as WritableDraft<ObjectTypeDefinitionNode>);
         draft.definitions.push(messageModel as WritableDraft<ObjectTypeDefinitionNode>);
       }
     });
@@ -200,13 +195,6 @@ export class ConversationTransformer extends TransformerPluginBase {
       );
       // -------------------------------------------------------------------------------------------------------------------------------
 
-      // console.log('>>> ctx.api as any attrGraphQlUrl', (ctx.api as any).attrGraphQlUrl);
-      // console.log('>>> ctx.api as any graphqlApiEndpoint', (ctx.api as any).graphqlApiEndpoint);
-
-      // console.log('>>> (ctx as any)._api. attrGraphQlUrl', (ctx as any)._api.attrGraphQlUrl);
-      // console.log('>>> (ctx as any)._api. graphqlUrl', (ctx as any)._api.graphqlUrl);
-      // console.log('>>> (ctx as any)._api. graphqlApiEndpoint', (ctx as any)._api.graphqlApiEndpoint);
-
       const assistantResponseResolverResourceId = ResolverResourceIDs.ResolverResourceID('Mutation', directive.responseMutationName);
       const assistantResponseResolverFunction = assistantMutationResolver();
       const conversationMessageDataSourceName = getModelDataSourceNameForTypeName(ctx, `ConversationMessage${capitalizedFieldName}`);
@@ -225,7 +213,7 @@ export class ConversationTransformer extends TransformerPluginBase {
 
       ctx.resolvers.addResolver('Mutation', directive.responseMutationName, assistantResponseResolver);
 
-      // ---- assitant response subscription resolver
+      // ---- assitant response subscription resolver -----
       const onAssistantResponseSubscriptionFieldName = `onCreateAssistantResponse${capitalizedFieldName}`;
       const onAssistantResponseSubscriptionResolverResourceId = ResolverResourceIDs.ResolverResourceID(
         'Subscription',
@@ -242,27 +230,18 @@ export class ConversationTransformer extends TransformerPluginBase {
         [],
         undefined,
         { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' },
-      )
+      );
       ctx.resolvers.addResolver('Subscription', onAssistantResponseSubscriptionFieldName, onAssistantResponseSubscriptionResolver);
-      // ------
+      // ------ assitant response subscription resolver -----
 
       const functionDataSourceScope = ctx.stackManager.getScopeFor(functionDataSourceId, 'ConversationDirectiveLambdaStack');
       const functionDataSource = ctx.api.host.addLambdaDataSource(functionDataSourceId, referencedFunction, {}, functionDataSourceScope);
-
       const invokeLambdaFunction = invokeLambdaMappingTemplate(directive, ctx);
 
-      const messageModelName = `ConversationMessage${capitalizedFieldName}`;
-      const conversationModelName = `Conversation${capitalizedFieldName}`;
-
-      const referenceFieldName = 'sessionId';
-      const messageAuthDirective = createMessageAuthDirective();
-      const messageModelDirective = createMessageModelDirective();
-      const messageSessionFieldBelongsToDirective = createMessageSessionFieldBelongsToDirective(referenceFieldName);
-      const messageSessionField = createMessageSessionField(messageSessionFieldBelongsToDirective, conversationModelName);
-      const messageModel = makeConversationMessageModel(messageModelName, messageSessionField, referenceFieldName, [
-        messageModelDirective,
-        messageAuthDirective,
-      ]);
+      const messageModelName = directive.messageModel.messageModel.name.value;
+      const conversationModelName = directive.conversationModel.conversationModel.name.value;
+      const referenceFieldName = directive.messageModel.messageConversationField.name.value;
+      const messageModel = directive.messageModel.messageModel;
 
       const conversationMessagesTable = getTable(ctx, messageModel);
       const gsiPartitionKeyName = referenceFieldName;
@@ -342,29 +321,20 @@ export class ConversationTransformer extends TransformerPluginBase {
     for (const directive of this.directives) {
       // TODO: Add @aws_cognito_user_pools directive to
       // send messages mutation.
-
       const fieldName = capitalizeFirstLetter(directive.field.name.value);
-      const sessionModelName = `Conversation${fieldName}`;
-      const messageModelName = `ConversationMessage${fieldName}`;
-      const referenceFieldName = 'sessionId';
+      const sessionModelName = directive.conversationModel.conversationModel.name.value;
+      const messageModelName = directive.messageModel.messageModel.name.value;
 
-      const sessionAuthDirective = createSessionAuthDirective();
-      const sessionModelDirective = createSessionModelDirective();
-      const sessionMessagesHasManyDirective = createSessionModelMessagesFieldHasManyDirective(referenceFieldName);
-      const sessionMessagesField = createSessionModelMessagesField(sessionMessagesHasManyDirective, messageModelName);
-      const sessionModel = makeConversationSessionModel(sessionModelName, sessionMessagesField, [
-        sessionModelDirective,
-        sessionAuthDirective,
-      ]);
+      const {
+        conversationAuthDirective,
+        conversationModelDirective,
+        conversationHasManyMessagesDirective,
+        conversationMessagesField,
+        conversationModel,
+      } = directive.conversationModel;
 
-      const messageAuthDirective = createMessageAuthDirective();
-      const messageModelDirective = createMessageModelDirective();
-      const messageSessionFieldBelongsToDirective = createMessageSessionFieldBelongsToDirective(referenceFieldName);
-      const messageSessionField = createMessageSessionField(messageSessionFieldBelongsToDirective, sessionModelName);
-      const messageModel = makeConversationMessageModel(messageModelName, messageSessionField, referenceFieldName, [
-        messageModelDirective,
-        messageAuthDirective,
-      ]);
+      const { messageAuthDirective, messageModelDirective, messageBelongsToConversationDirective, messageConversationField, messageModel } =
+        directive.messageModel;
 
       // Assistant mutation - Input
       const assistantMutationInput = makeAssistantResponseMutationInput(messageModelName);
@@ -386,26 +356,26 @@ export class ConversationTransformer extends TransformerPluginBase {
       ctx.output.addSubscriptionFields([onAssistantResponseMutation]);
       // -----
 
-      ctx.output.addObject(sessionModel);
+      ctx.output.addObject(conversationModel);
       ctx.output.addObject(messageModel);
 
-      ctx.providerRegistry.registerDataSourceProvider(sessionModel, this.modelTransformer);
+      ctx.providerRegistry.registerDataSourceProvider(conversationModel, this.modelTransformer);
       ctx.providerRegistry.registerDataSourceProvider(messageModel, this.modelTransformer);
 
       ctx.dataSourceStrategies[sessionModelName] = DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY;
       ctx.dataSourceStrategies[messageModelName] = DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY;
 
-      this.modelTransformer.object(sessionModel, sessionModelDirective, ctx);
+      this.modelTransformer.object(conversationModel, conversationModelDirective, ctx);
       this.modelTransformer.object(messageModel, messageModelDirective, ctx);
 
-      this.belongsToTransformer.field(messageModel, messageSessionField, messageSessionFieldBelongsToDirective, ctx);
-      this.hasManyTransformer.field(sessionModel, sessionMessagesField, sessionMessagesHasManyDirective, ctx);
+      this.belongsToTransformer.field(messageModel, messageConversationField, messageBelongsToConversationDirective, ctx);
+      this.hasManyTransformer.field(conversationModel, conversationMessagesField, conversationHasManyMessagesDirective, ctx);
 
       if (!this.authProvider.object) {
         // TODO: error message
         throw new InvalidTransformerError('No auth provider found -- uh oh');
       }
-      this.authProvider.object(sessionModel, sessionAuthDirective, ctx);
+      this.authProvider.object(conversationModel, conversationAuthDirective, ctx);
       this.authProvider.object(messageModel, messageAuthDirective, ctx);
     }
   };
@@ -446,171 +416,6 @@ const makeConversationEventSenderType = (): EnumTypeDefinitionNode => {
     ],
   };
   return conversationMessageSender;
-};
-
-const createSessionAuthDirective = (): DirectiveNode => {
-  return makeDirective('auth', [
-    makeArgument('rules', {
-      kind: Kind.LIST,
-      values: [
-        {
-          kind: Kind.OBJECT,
-          fields: [
-            {
-              kind: Kind.OBJECT_FIELD,
-              name: { kind: Kind.NAME, value: 'allow' },
-              value: { kind: Kind.ENUM, value: 'owner' },
-            },
-            {
-              kind: Kind.OBJECT_FIELD,
-              name: { kind: Kind.NAME, value: 'ownerField' },
-              value: { kind: Kind.STRING, value: 'owner' },
-            },
-          ],
-        },
-      ],
-    }),
-  ]);
-};
-
-const createSessionModelDirective = (): DirectiveNode => {
-  const subscriptionsOffValue: ObjectValueNode = {
-    kind: Kind.OBJECT,
-    fields: [
-      {
-        kind: Kind.OBJECT_FIELD,
-        name: { kind: Kind.NAME, value: 'level' },
-        value: { kind: Kind.ENUM, value: 'off' },
-      },
-    ],
-  };
-  return makeDirective('model', [
-    makeArgument('subscriptions', subscriptionsOffValue),
-    makeArgument('mutations', makeValueNode({ update: null })),
-  ]);
-};
-
-const createSessionModelMessagesFieldHasManyDirective = (fieldName: string): DirectiveNode => {
-  const referencesArg = makeArgument('references', makeValueNode(fieldName));
-  return makeDirective(HasManyDirective.name, [referencesArg]);
-};
-
-const createSessionModelMessagesField = (hasManyDirective: DirectiveNode, typeName: string): FieldDefinitionNode => {
-  return makeField('messages', [], makeListType(makeNamedType(typeName)), [hasManyDirective]);
-};
-
-const makeConversationSessionModel = (
-  modelName: string,
-  messagesField: FieldDefinitionNode,
-  typeLevelDirectives: DirectiveNode[],
-): ObjectTypeDefinitionNode => {
-  /*
-    type ConversationSession_pirateChat
-    @model
-    @auth(rules: [{allow: owner, ownerField: "owner"}])
-    {
-        events: [ConversationMessage_pirateChat] @hasMany(references: "conversationSessionId")
-    }
-  */
-
-  // fields
-  const id = makeField('id', [], wrapNonNull(makeNamedType('ID')));
-  const name = makeField('name', [], makeNamedType('String'));
-  const metadata = makeField('metadata', [], makeNamedType('AWSJSON'));
-
-  const object = {
-    ...blankObject(modelName),
-    fields: [id, name, metadata, messagesField],
-    directives: typeLevelDirectives,
-  };
-  return object;
-};
-
-const createMessageModelDirective = (): DirectiveNode => {
-  return makeDirective('model', [
-    makeArgument('subscriptions', makeValueNode({ onUpdate: null, onDelete: null })),
-    makeArgument('mutations', makeValueNode({ update: null })),
-  ]);
-};
-
-const createMessageAuthDirective = (): DirectiveNode => {
-  return makeDirective('auth', [
-    makeArgument('rules', {
-      kind: Kind.LIST,
-      values: [
-        {
-          kind: Kind.OBJECT,
-          fields: [
-            {
-              kind: Kind.OBJECT_FIELD,
-              name: { kind: Kind.NAME, value: 'allow' },
-              value: { kind: Kind.ENUM, value: 'owner' },
-            },
-            {
-              kind: Kind.OBJECT_FIELD,
-              name: { kind: Kind.NAME, value: 'ownerField' },
-              value: { kind: Kind.STRING, value: 'owner' },
-            },
-          ],
-        },
-      ],
-    }),
-  ]);
-};
-
-const createMessageSessionFieldBelongsToDirective = (referenceFieldName: string): DirectiveNode => {
-  const referencesArg = makeArgument('references', makeValueNode(referenceFieldName));
-  return makeDirective(BelongsToDirective.name, [referencesArg]);
-};
-
-const createMessageSessionField = (belongsToDirective: DirectiveNode, typeName: string): FieldDefinitionNode => {
-  return makeField('session', [], makeNamedType(typeName), [belongsToDirective]);
-};
-
-const makeConversationMessageModel = (
-  modelName: string,
-  sessionField: FieldDefinitionNode,
-  referenceFieldName: string,
-  typeDirectives: DirectiveNode[],
-): ObjectTypeDefinitionNode => {
-  /*
-  type ConversationEvent<route-name>
-  @model(
-      subscriptions: {
-          onUpdate: null,
-          onDelete: null
-      },
-      mutations: {
-          update: null
-      }
-  )
-  @auth(rules: [{allow: owner, ownerField: "owner"}])
-  {
-    conversationSessionId: ID!
-    session: ConversationSession<route-name> @belongsTo(references: ["conversationSessionId"])
-    sender: ConversationEventSenderType! // "user" | "assistant"
-    message: String!
-    context: AWSJSON
-    uiComponents: [AWSJSON]
-  }
-  */
-
-  // fields
-  const id = makeField('id', [], wrapNonNull(makeNamedType('ID')));
-  const sessionId = makeField(referenceFieldName, [], wrapNonNull(makeNamedType('ID')));
-  const sender = makeField('sender', [], makeNamedType('ConversationMessageSender'));
-  const content = makeField('content', [], makeNamedType('String'));
-  const context = makeField('context', [], makeNamedType('AWSJSON'));
-  const uiComponents = makeField('uiComponents', [], makeListType(makeNamedType('AWSJSON')));
-  const assistantContent = makeField('assistantContent', [], makeNamedType('String'));
-
-  const object = {
-    ...blankObject(modelName),
-    fields: [id, sessionId, sessionField, sender, content, context, uiComponents, assistantContent],
-    directives: typeDirectives,
-  };
-
-  return object;
 };
 
 // #region AssistantResponse Mutation
@@ -685,73 +490,6 @@ const addGlobalSecondaryIndex = (
   overrideIndexAtCfnLevel(ctx, typeName, table, newIndex);
 };
 
-const assistantMutationResolver = (): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
-  const req = MappingTemplate.inlineTemplateFromString(dedent`
-      import { util } from '@aws-appsync/utils';
-      import * as ddb from '@aws-appsync/utils/dynamodb';
-
-      /**
-       * Sends a request to the attached data source
-       * @param {import('@aws-appsync/utils').Context} ctx the context
-       * @returns {*} the request
-       */
-      export function request(ctx) {
-          const owner = ctx.identity['claims']['sub'];
-          ctx.stash.owner = owner;
-          const { conversationId, content, associatedUserMessageId } = ctx.args.input;
-          const updatedAt = util.time.nowISO8601();
-
-          return ddb.update({
-              key: { id: associatedUserMessageId },
-              condition: {
-                  owner: { eq: owner },
-                  sessionId: { eq: conversationId }
-              },
-              update: {
-                  assistantContent: content,
-                  updatedAt
-              }
-          });
-      }
-  `);
-
-  /*
-*in a pirate voice* Arr, ye be askin' about the LRU cache eviction, eh? Well, let me tell ye, it be a clever way to keep yer treasure trove of data shipshape an' organized, like a well-run pirate ship.
-
-Ye see, the LRU, or Least Recently Used, be a strategy that keeps track of the data ye be usin' the least. When yer cache be gettin' full an' ye need to make room for new booty, the LRU be the first to walk the plank, makin' way for the more valuable data ye be needin' at the moment.
-
-It be like keepin' yer ship's hold tidy, leavin' only the most important supplies an' treasures close at hand, while the less-used items be stowed away in the depths of the hold. Arr, it be a clever way to make the most of yer limited space, an' keep yer data accessible an' ready for the next adventure!
-
-So, ye scurvy landlubber, if ye be wantin' to keep yer cache shipshape an' yer data accessible, ye best be learnin' the ways of the LRU. It be the key to navigatin' the treacherous waters of data management, an' keepin' yer ship afloat in the digital seas. *lets out a hearty laugh*
-  */
-
-  const res = MappingTemplate.inlineTemplateFromString(dedent`
-      /**
-       * Returns the resolver result
-       * @param {import('@aws-appsync/utils').Context} ctx the context
-       * @returns {*} the result
-       */
-      export function response(ctx) {
-          // Update with response logic
-          if (ctx.error) {
-              util.error(ctx.error.message, ctx.error.type);
-          }
-
-          const { conversationId, content, associatedUserMessageId } = ctx.args.input;
-
-          return {
-            id: associatedUserMessageId,
-            content,
-            sessionId: conversationId,
-            sender: 'assistant',
-            owner: ctx.stash.owner,
-          };
-      }
-    `);
-
-  return { req, res };
-};
-
 // #region Subscription
 const makeConversationMessageSubscription = (
   subscriptionName: string,
@@ -761,336 +499,13 @@ const makeConversationMessageSubscription = (
   const awsSubscribeDirective = makeDirective('aws_subscribe', [makeArgument('mutations', makeValueNode([onMutationName]))]);
   const cognitoAuthDirective = makeDirective('aws_cognito_user_pools', []);
 
-  const args: InputValueDefinitionNode[] = [
-    makeInputValueDefinition('sessionId', makeNamedType('String')),
-  ];
+  const args: InputValueDefinitionNode[] = [makeInputValueDefinition('sessionId', makeNamedType('String'))];
   const subscriptionField = makeField(subscriptionName, args, makeNamedType(conversationMessageTypeName), [
     awsSubscribeDirective,
     cognitoAuthDirective,
   ]);
 
   return subscriptionField;
-};
-
-const conversationMessageSubscriptionMappingTamplate = (): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
-  const req = MappingTemplate.inlineTemplateFromString(dedent`
-    export function request(ctx) {
-      ctx.stash.hasAuth = true;
-      const isAuthorized = false;
-
-      if (util.authType() === 'User Pool Authorization') {
-        if (!isAuthorized) {
-          const authFilter = [];
-          let ownerClaim0 = ctx.identity['claims']['sub'];
-          ctx.args.owner = ownerClaim0;
-          const currentClaim1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
-          if (ownerClaim0 && currentClaim1) {
-            ownerClaim0 = ownerClaim0 + '::' + currentClaim1;
-            authFilter.push({ owner: { eq: ownerClaim0 } })
-          }
-          const role0_0 = ctx.identity['claims']['sub'];
-          if (role0_0) {
-            authFilter.push({ owner: { eq: role0_0 } });
-          }
-          // we can just reuse currentClaim1 here, but doing this (for now) to mirror the existing
-          // vtl auth resolver.
-          const role0_1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
-          if (role0_1) {
-            authFilter.push({ owner: { eq: role0_1 }});
-          }
-          if (authFilter.length !== 0) {
-            ctx.stash.authFilter = { or: authFilter };
-          }
-        }
-      }
-      if (!isAuthorized && ctx.stash.authFilter.length === 0) {
-        util.unauthorized();
-      }
-      ctx.args.filter = { ...ctx.args.filter, and: [{ sessionId: { eq: ctx.args.sessionId  }}]};
-      return { version: '2018-05-29', payload: {} };
-    }
-  `);
-
-  const res = MappingTemplate.inlineTemplateFromString(dedent`
-    import { util, extensions } from '@aws-appsync/utils';
-
-    export function response(ctx) {
-        const subscriptionFilter = util.transform.toSubscriptionFilter(ctx.args.filter);
-        extensions.setSubscriptionFilter(subscriptionFilter);
-        return null;
-    }
-  `);
-
-  return { req, res };
-};
-
-// #endregion AssistantResponse Mutation
-
-// #region Resolvers
-
-// #region Init Resolver
-
-const initMappingTemplate = (): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
-  const req = MappingTemplate.inlineTemplateFromString(dedent`
-    export function request(ctx) {
-      ctx.stash.defaultValues = ctx.stash.defaultValues ?? {};
-      ctx.stash.defaultValues.id = util.autoId();
-      const createdAt = util.time.nowISO8601();
-      ctx.stash.defaultValues.createdAt = createdAt;
-      ctx.stash.defaultValues.updatedAt = createdAt;
-      return {
-        version: '2018-05-09',
-        payload: {}
-      };
-    }`);
-
-  const res = MappingTemplate.inlineTemplateFromString(dedent`
-    export function response(ctx) {
-      return {};
-    }`);
-
-  return { req, res };
-};
-
-// #endregion Init Resolver
-
-// #region Auth Resolver
-const authMappingTemplate = (): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
-  const req = MappingTemplate.inlineTemplateFromString(dedent`
-    export function request(ctx) {
-      ctx.stash.hasAuth = true;
-      const isAuthorized = false;
-
-      if (util.authType() === 'User Pool Authorization') {
-        if (!isAuthorized) {
-          const authFilter = [];
-          let ownerClaim0 = ctx.identity['claims']['sub'];
-          ctx.args.owner = ownerClaim0;
-          const currentClaim1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
-          if (ownerClaim0 && currentClaim1) {
-            ownerClaim0 = ownerClaim0 + '::' + currentClaim1;
-            authFilter.push({ owner: { eq: ownerClaim0 } })
-          }
-          const role0_0 = ctx.identity['claims']['sub'];
-          if (role0_0) {
-            authFilter.push({ owner: { eq: role0_0 } });
-          }
-          // we can just reuse currentClaim1 here, but doing this (for now) to mirror the existing
-          // vtl auth resolver.
-          const role0_1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
-          if (role0_1) {
-            authFilter.push({ owner: { eq: role0_1 }});
-          }
-          if (authFilter.length !== 0) {
-            ctx.stash.authFilter = { or: authFilter };
-          }
-        }
-      }
-      if (!isAuthorized && ctx.stash.authFilter.length === 0) {
-        util.unauthorized();
-      }
-      return { version: '2018-05-29', payload: {} };
-    }
-    `);
-
-  const res = MappingTemplate.inlineTemplateFromString(dedent`
-    export function response(ctx) {
-      return {};
-    }`);
-
-  return { req, res };
-};
-
-// #endregion Auth Resolver
-
-// #region VerifySessionOwner Resolver
-
-const verifySessionOwnerMappingTemplate = (): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
-  const req = MappingTemplate.inlineTemplateFromString(dedent`
-    export function request(ctx) {
-      const { authFilter } = ctx.stash;
-
-      const query = {
-        expression: 'id = :id',
-        expressionValues: util.dynamodb.toMapValues({
-          ':id': ctx.args.sessionId
-        })
-      };
-
-      const filter = JSON.parse(util.transform.toDynamoDBFilterExpression(authFilter));
-
-      return {
-        operation: 'Query',
-        query,
-        filter
-      };
-    }
-    `);
-
-  const res = MappingTemplate.inlineTemplateFromString(dedent`
-    export function response(ctx) {
-      if (ctx.error) {
-        util.error(ctx.error.message, ctx.error.type);
-      }
-      if (ctx.result.items.length !== 0 && ctx.result.scannedCount === 1) {
-        return ctx.result.items[0];
-      } else if (ctx.result.items.legnth === 0 && ctx.result.scannedCount === 1) {
-        util.unauthorized();
-      }
-      return null;
-    }`);
-
-  return { req, res };
-};
-
-// #endregion VerifySessionOwner Resolver
-
-// #region WriteMessageToTable Resolver
-
-const writeMessageToTableMappingTemplate = (fieldName: string): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
-  const req = MappingTemplate.inlineTemplateFromString(dedent`
-    import { util } from '@aws-appsync/utils'
-    import * as ddb from '@aws-appsync/utils/dynamodb'
-
-    export function request(ctx) {
-      const args = ctx.stash.transformedArgs ?? ctx.args;
-      const defaultValues = ctx.stash.defaultValues ?? {};
-      const message = {
-          __typename: 'ConversationMessage${fieldName}',
-          sender: 'user',
-          ...args,
-          ...defaultValues,
-      };
-      const id = ctx.stash.defaultValues.id;
-
-      return ddb.put({ key: { id }, item: message });
-    }
-    `);
-
-  const res = MappingTemplate.inlineTemplateFromString(dedent`
-    export function response(ctx) {
-      if (ctx.error) {
-        util.error(ctx.error.message, ctx.error.type);
-      } else {
-        return ctx.result;
-      }
-    }`);
-
-  return { req, res };
-};
-// #endregion WriteMessageToTable Resolver
-
-// #region ReadHistory Resolver
-
-const readHistoryMappingTemplate = (fieldName: string): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
-  // TODO: filter to only retrieve messages that have an assistant response.
-  // #set( $ctx.args.filter = { "and": [ { "or": $authRuntimeFilter }, $ctx.args.filter ]} )
-  const req = MappingTemplate.inlineTemplateFromString(dedent`
-    export function request(ctx) {
-      const { sessionId } = ctx.args;
-      const { authFilter } = ctx.stash;
-
-      const limit = 100;
-      const query = {
-        expression: 'sessionId = :sessionId',
-        expressionValues: util.dynamodb.toMapValues({
-          ':sessionId': ctx.args.sessionId
-        })
-      };
-
-      const filter = JSON.parse(util.transform.toDynamoDBFilterExpression(authFilter));
-      const index = 'gsi-ConversationMessage.sessionId.createdAt';
-
-      return {
-        operation: 'Query',
-        query,
-        filter,
-        index,
-        scanIndexForward: false,
-      }
-
-    }
-    `);
-
-  const res = MappingTemplate.inlineTemplateFromString(dedent`
-    export function response(ctx) {
-      if (ctx.error) {
-        util.error(ctx.error.message, ctx.error.type);
-      }
-      const messagesWithAssistantResponse = ctx.result.items
-        .filter((message) => message.assistantContent !== undefined)
-        .reduce((acc, current) => {
-            acc.push({ role: 'user', content: [{ text: current.content }] });
-            acc.push({ role: 'assistant', content: [{ text: current.assistantContent }] });
-            return acc;
-        }, [])
-
-      const currentMessage = { role: 'user', content: [{ text: ctx.prev.result.content }] };
-      const items = [...messagesWithAssistantResponse, currentMessage];
-      return { items };
-    }`);
-
-  return { req, res };
-};
-
-// #endregion ReadHistory Resolver
-
-// #region InvokeLambda Resolver
-
-const invokeLambdaMappingTemplate = (
-  config: ConversationDirectiveConfiguration,
-  ctx: TransformerContextProvider,
-): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
-  const { responseMutationInputTypeName, responseMutationName, aiModel } = config;
-  const modelId = getBedrockModelId(aiModel);
-  // TODO: figure out how to / if it's possible to get the GraphQL API endpoint
-  // to include in the resolver here. It should be doable considered the apiId is accessible
-  // on ctx.api. But this doesn't work.
-  // const graphQlUrl = (ctx.api as any).graphQlUrl;
-
-  const systemPrompt = config.systemPrompt;
-  const req = MappingTemplate.inlineTemplateFromString(dedent`
-    export function request(ctx) {
-      const { args, identity, source, request, prev } = ctx;
-      const { typeName, fieldName } = ctx.stash;
-      const requestArgs = {
-        ...args,
-        modelId: '${modelId}',
-        responseMutationInputTypeName: '${responseMutationInputTypeName}',
-        responseMutationName: '${responseMutationName}',
-        graphqlApiEndpoint: ctx.env.GRAPHQL_API_ENDPOINT,
-        currentMessageId: ctx.stash.defaultValues.id,
-        systemPrompt: '${systemPrompt}'
-      };
-
-      const payload = {
-        typeName,
-        fieldName,
-        args: requestArgs,
-        identity,
-        source,
-        request,
-        prev
-      };
-
-      return {
-        operation: 'Invoke',
-        payload,
-        invocationType: 'Event'
-      };
-    }`);
-
-  const res = MappingTemplate.inlineTemplateFromString(dedent`
-    export function response(ctx) {
-      let success = true;
-      if (ctx.error) {
-        util.appendError(ctx.error.message, ctx.error.type);
-        success = false;
-      }
-      return ctx.stash.defaultValues.id;
-    }`);
-
-  return { req, res };
 };
 
 const lambdaArnResource = (name: string): string => {
@@ -1103,39 +518,11 @@ const lambdaArnKey = (name: string, region?: string, accountId?: string): string
   return `arn:aws:lambda:${region ? region : '${AWS::Region}'}:${accountId ? accountId : '${AWS::AccountId}'}:function:${name}`;
 };
 
-// #endregion InvokeLambda Resolver
-
 // #endregion Resolvers
 
 // TODO: Find best place to set IAM Policy for defined lambda function.
 // It can't be here (?) because the function is deployed in another stack
 // so we can only get an immutable IFunction reference.
-const getBedrockModelId = (modelName: string): string => {
-  switch (modelName) {
-    case 'Claude3Haiku':
-      return 'anthropic.claude-3-haiku-20240307-v1:0';
-    case 'Claude3Sonnet':
-      return 'anthropic.claude-3-sonnet-20240229-v1:0';
-    case 'Claude3Opus':
-      return 'anthropic.claude-3-opus-20240229-v1:0';
-    case 'Claude3.5Sonnet':
-      return 'anthropic.claude-3-5-sonnet-20240620-v1:0';
-    case 'MistralLarge':
-      return 'mistral.mistral-large-2402-v1:0';
-    case 'MistralSmall':
-      return 'mistral.mistral-small-2402-v1:0';
-    case 'Mistral8X7BInstruct':
-      return 'mistral.mixtral-8x7b-instruct-v0:1';
-    case 'Mistral7BInstruct':
-      return 'mistral.mistral-7b-instruct-v0:2';
-    case 'Llama38bInstruct':
-      return 'meta.llama3-8b-instruct-v1:0';
-    case 'Llama370bInstruct':
-      return 'meta.llama3-70b-instruct-v1:0';
-    default:
-      return 'anthropic.claude-3-haiku-20240307-v1:0';
-  }
-};
 
 const capitalizeFirstLetter = (value: string): string => {
   return value.charAt(0).toUpperCase() + value.slice(1);
