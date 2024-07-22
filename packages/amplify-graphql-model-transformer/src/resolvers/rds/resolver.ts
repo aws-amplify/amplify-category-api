@@ -212,7 +212,7 @@ export const createLayerVersionCustomResource = (
   // if deployment type is sandbox, use id in the format: resourceName-YYYY-MM-DD to avoid multiple deployments in the same day
   // if deployment type is branch, use id in the original format
   let physicalIdValue: string;
-  if (context.deploymentIdentifier.deploymentType === 'sandbox') {
+  if (context.deploymentIdentifier.deploymentType === 'sandbox') { // deploymentIdentifier possibly undefined
     physicalIdValue = `${resourceName}-${new Date().toISOString().substring(0, 10)}`;
   } else {
     physicalIdValue = `${resourceName}-${Date.now().toString()}`;
@@ -245,7 +245,11 @@ export const createLayerVersionCustomResource = (
  * Generates an AwsCustomResource to resolve the SNS Topic ARNs that the lambda used for updating the SQL Lambda Layer version installed
  * into the customer account.
  */
-export const createSNSTopicARNCustomResource = (scope: Construct, resourceNames: SQLLambdaResourceNames): AwsCustomResource => {
+export const createSNSTopicARNCustomResource = (
+  scope: Construct, 
+  resourceNames: SQLLambdaResourceNames,
+  context: TransformerContextProvider,
+): AwsCustomResource => {
   const { SQLLayerManifestBucket, SQLLayerManifestBucketRegion, SQLSNSTopicARNManifestKeyPrefix } = ResourceConstants.RESOURCES;
 
   const key = Fn.join('', [SQLSNSTopicARNManifestKeyPrefix, Fn.ref('AWS::Region')]);
@@ -253,6 +257,16 @@ export const createSNSTopicARNCustomResource = (scope: Construct, resourceNames:
   const manifestArn = `arn:aws:s3:::${SQLLayerManifestBucket}/${key}`;
 
   const resourceName = resourceNames.sqlSNSTopicARNResolverCustomResource;
+
+  // if deployment type is sandbox, use id in the format: resourceName-YYYY-MM-DD to avoid multiple deployments in the same day
+  // if deployment type is branch, use id in the original format
+  let physicalIdValue: string;
+  if (context.deploymentIdentifier.deploymentType === 'sandbox') { // deploymentIdentifier possibly undefined
+    physicalIdValue = `${resourceName}-${new Date().toISOString().substring(0, 10)}`;
+  } else {
+    physicalIdValue = `${resourceName}-${Date.now().toString()}`;
+  }
+
   const customResource = new AwsCustomResource(scope, resourceName, {
     resourceType: 'Custom::SQLSNSTopicARNCustomResource',
     onUpdate: {
@@ -265,7 +279,7 @@ export const createSNSTopicARNCustomResource = (scope: Construct, resourceNames:
       },
       // Make the physical ID change each time we do a deployment, so we always check for the latest version. This means we will never have
       // a strictly no-op deployment, but the SQL Lambda configuration won't change unless the actual layer value changes
-      physicalResourceId: PhysicalResourceId.of(`${resourceName}-${Date.now().toString()}`),
+      physicalResourceId: PhysicalResourceId.of(physicalIdValue)
     },
     policy: AwsCustomResourcePolicy.fromSdkCalls({
       resources: [manifestArn],
