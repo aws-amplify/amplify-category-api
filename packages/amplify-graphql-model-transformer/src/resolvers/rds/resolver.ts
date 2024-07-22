@@ -196,7 +196,11 @@ export const createRdsLambda = (
  * add the name. We can figure out the right way to expose this to customers if needed, but for now we are not invoking `setResourceName`
  * because it would have no effect.
  */
-export const createLayerVersionCustomResource = (scope: Construct, resourceNames: SQLLambdaResourceNames): AwsCustomResource => {
+export const createLayerVersionCustomResource = (
+  scope: Construct, 
+  resourceNames: SQLLambdaResourceNames,
+  context: TransformerContextProvider,
+): AwsCustomResource => {
   const { SQLLayerManifestBucket, SQLLayerManifestBucketRegion, SQLLayerVersionManifestKeyPrefix } = ResourceConstants.RESOURCES;
 
   const key = Fn.join('', [SQLLayerVersionManifestKeyPrefix, Fn.ref('AWS::Region')]);
@@ -204,6 +208,16 @@ export const createLayerVersionCustomResource = (scope: Construct, resourceNames
   const manifestArn = `arn:aws:s3:::${SQLLayerManifestBucket}/${key}`;
 
   const resourceName = resourceNames.sqlLayerVersionResolverCustomResource;
+
+  // if deployment type is sandbox, use id in the format: resourceName-YYYY-MM-DD to avoid multiple deployments in the same day
+  // if deployment type is branch, use id in the original format
+  let physicalIdValue: string;
+  if (context.deploymentIdentifier.deploymentType === 'sandbox') {
+    physicalIdValue = `${resourceName}-${new Date().toISOString().substring(0, 10)}`;
+  } else {
+    physicalIdValue = `${resourceName}-${Date.now().toString()}`;
+  }
+
   const customResource = new AwsCustomResource(scope, resourceName, {
     resourceType: 'Custom::SQLLayerVersionCustomResource',
     onUpdate: {
@@ -216,7 +230,7 @@ export const createLayerVersionCustomResource = (scope: Construct, resourceNames
       },
       // Make the physical ID change each time we do a deployment, so we always check for the latest version. This means we will never have
       // a strictly no-op deployment, but the SQL Lambda configuration won't change unless the actual layer value changes
-      physicalResourceId: PhysicalResourceId.of(`${resourceName}-${Date.now().toString()}`),
+      physicalResourceId: PhysicalResourceId.of(physicalIdValue),
     },
     policy: AwsCustomResourcePolicy.fromSdkCalls({
       resources: [manifestArn],
