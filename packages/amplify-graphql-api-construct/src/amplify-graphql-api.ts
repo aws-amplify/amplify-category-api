@@ -153,6 +153,7 @@ export class AmplifyGraphqlApi extends Construct {
       functionNameMap,
       outputStorageStrategy,
       dataStoreConfiguration,
+      // TODO: add the new object here
     } = props;
 
     if (conflictResolution && dataStoreConfiguration) {
