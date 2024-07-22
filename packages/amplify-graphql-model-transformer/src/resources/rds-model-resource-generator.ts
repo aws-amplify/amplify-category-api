@@ -274,6 +274,6 @@ const resolveSNSTopicARN = (scope: Construct, context: TransformerContextProvide
     setRDSSNSTopicMappings(scope, context.rdsSnsTopicMapping, resourceNames);
     return Fn.findInMap(resourceNames.sqlSNSTopicArnMapping, Fn.ref('AWS::Region'), 'topicArn');
   }
-  const layerVersionCustomResource = createSNSTopicARNCustomResource(scope, resourceNames);
+  const layerVersionCustomResource = createSNSTopicARNCustomResource(scope, resourceNames, context);
   return layerVersionCustomResource.getResponseField('Body');
 };
