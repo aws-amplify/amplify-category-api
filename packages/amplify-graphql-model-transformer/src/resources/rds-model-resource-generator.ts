@@ -251,7 +251,7 @@ const resolveLayerVersion = (scope: Construct, context: TransformerContextProvid
     setRDSLayerMappings(scope, context.rdsLayerMapping, resourceNames);
     layerVersionArn = Fn.findInMap(resourceNames.sqlLayerVersionMapping, Fn.ref('AWS::Region'), 'layerRegion');
   } else {
-    const layerVersionCustomResource = createLayerVersionCustomResource(scope, resourceNames);
+    const layerVersionCustomResource = createLayerVersionCustomResource(scope, resourceNames, context);
     layerVersionArn = layerVersionCustomResource.getResponseField('Body');
   }
   return layerVersionArn;
