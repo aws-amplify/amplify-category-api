@@ -47,8 +47,8 @@ new AmplifyGraphqlApi(stack, 'Data', {
     AmplifyGraphqlDefinition.fromString(
       /* GraphQL */ `
       type PostTags @model @auth(rules: [{ allow: public }]) {
-        postId: ID
-        tagId: ID
+        postId: ID @index(name: "byPost")
+        tagId: ID @index(name: "byTag")
         post: Post @belongsTo(references: ["postId"]) 
         tag: Tag @belongsTo(references: ["tagId"])
       }`,
