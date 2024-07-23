@@ -212,7 +212,7 @@ export const createLayerVersionCustomResource = (
   // if deployment type is sandbox, use id in the format: resourceName-YYYY-MM-DD to avoid multiple deployments in the same day
   // if deployment type is branch, use id in the original format
   let physicalIdValue: string;
-  if (context.deploymentIdentifier && context.deploymentIdentifier.deploymentType === 'sandbox') { // deploymentIdentifier possibly undefined
+  if (context?.deploymentIdentifier?.deploymentType === 'sandbox') {
     physicalIdValue = `${resourceName}-${new Date().toISOString().substring(0, 10)}`;
   } else {
     physicalIdValue = `${resourceName}-${Date.now().toString()}`;
@@ -261,7 +261,7 @@ export const createSNSTopicARNCustomResource = (
   // if deployment type is sandbox, use id in the format: resourceName-YYYY-MM-DD to avoid multiple deployments in the same day
   // if deployment type is branch, use id in the original format
   let physicalIdValue: string;
-  if (context.deploymentIdentifier && context.deploymentIdentifier.deploymentType === 'sandbox') { // deploymentIdentifier possibly undefined
+  if (context?.deploymentIdentifier?.deploymentType === 'sandbox') {
     physicalIdValue = `${resourceName}-${new Date().toISOString().substring(0, 10)}`;
   } else {
     physicalIdValue = `${resourceName}-${Date.now().toString()}`;
