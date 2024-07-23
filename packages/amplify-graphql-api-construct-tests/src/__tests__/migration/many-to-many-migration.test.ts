@@ -17,8 +17,8 @@ describe('References Migration', () => {
   let gen2ProjFolderName: string;
 
   beforeEach(async () => {
-    gen1ProjFolderName = 'manytomanymigrationgen1';
-    gen2ProjFolderName = 'manytomanymigrationgen2';
+    gen1ProjFolderName = 'mtmmigrationgen1';
+    gen2ProjFolderName = 'mtmmigrationgen2';
     gen1ProjRoot = await createNewProjectDir(gen1ProjFolderName);
     gen2ProjRoot = await createNewProjectDir(gen2ProjFolderName);
   });
@@ -30,13 +30,13 @@ describe('References Migration', () => {
       /* No-op */
     }
     try {
-      await cdkDestroy(gen2ProjRoot, '--all');
+      // await cdkDestroy(gen2ProjRoot, '--all');
     } catch (_) {
       /* No-op */
     }
 
     deleteProjectDir(gen1ProjRoot);
-    deleteProjectDir(gen2ProjRoot);
+    // deleteProjectDir(gen2ProjRoot);
   });
 
   test('many-to-many migration', async () => {
@@ -51,47 +51,115 @@ describe('References Migration', () => {
     const outputs = await cdkDeploy(gen2ProjRoot, '--all');
     const { awsAppsyncApiEndpoint: gen2APIEndpoint, awsAppsyncApiKey: gen2APIKey } = outputs[name];
 
-    const gen1Result = await graphql(
+    const gen1PostResult = await graphql(
       gen1APIEndpoint,
       gen1APIKey,
       /* GraphQL */ `
-        mutation CREATE_TODO {
-          createTodo(input: { content: "todo desc" }) {
+        mutation CREATE_POST {
+          createPost(input: {title: "my post"}) {
             id
-            content
+            title
           }
         }
       `,
     );
-    expect(gen1Result.statusCode).toEqual(200);
+    expect(gen1PostResult.statusCode).toEqual(200);
 
-    const gen1Todo = gen1Result.body.data.createTodo;
+    const gen1Post = gen1PostResult.body.data.createPost;
 
-    const gen2Result = await graphql(
+    const gen1TagResult = await graphql(
+      gen1APIEndpoint,
+      gen1APIKey,
+      /* GraphQL */ `
+        mutation CREATE_TAG {
+          createTag(input: {label: "my tag"}) {
+            id
+            label
+          }
+        }
+      `,
+    );
+    expect(gen1TagResult.statusCode).toEqual(200);
+
+    const gen1Tag = gen1TagResult.body.data.createTag;
+
+    const gen1PostTagsResult = await graphql(
+      gen1APIEndpoint,
+      gen1APIKey,
+      /* GraphQL */ `
+        mutation CREATE_TAG {
+          createPostTags(input: {tagId: "${gen1Tag.id}", postId: "${gen1Post.id}"}) {
+            id
+            postId
+            tagId
+          }
+        }
+      `,
+    );
+    expect(gen1PostTagsResult.statusCode).toEqual(200);
+
+    const gen1PostTags = gen1PostTagsResult.body.data.createPostTags;
+
+    const gen2PostResult = await graphql(
       gen2APIEndpoint,
       gen2APIKey,
       /* GraphQL */ `
-        mutation CREATE_TODO {
-          createTodo(input: { content: "todo desc" }) {
+        mutation CREATE_POST {
+          createPost(input: {title: "my post"}) {
             id
-            content
+            title
           }
         }
       `,
     );
-    expect(gen2Result.statusCode).toEqual(200);
+    expect(gen2PostResult.statusCode).toEqual(200);
 
-    const gen2Todo = gen2Result.body.data.createTodo;
+    const gen2Post = gen2PostResult.body.data.createPost;
+
+    const gen2TagResult = await graphql(
+      gen2APIEndpoint,
+      gen2APIKey,
+      /* GraphQL */ `
+        mutation CREATE_TAG {
+          createTag(input: {label: "my tag"}) {
+            id
+            label
+          }
+        }
+      `,
+    );
+    expect(gen2TagResult.statusCode).toEqual(200);
+
+    const gen2Tag = gen2TagResult.body.data.createTag;
+
+    const gen2PostTagsResult = await graphql(
+      gen2APIEndpoint,
+      gen2APIKey,
+      /* GraphQL */ `
+        mutation CREATE_POST_TAG {
+          createPostTags(input: {tagId: "${gen2Tag.id}", postId: "${gen2Post.id}"}) {
+            id
+            postId
+            tagId
+          }
+        }
+      `,
+    );
+    expect(gen2PostTagsResult.statusCode).toEqual(200);
 
     const gen1ListResult = await graphql(
       gen1APIEndpoint,
       gen1APIKey,
       /* GraphQL */ `
-        query LIST_TODOS {
-          listTodos {
+        query LIST_POSTS {
+          listPosts {
             items {
               id
-              content
+              tags {
+                items {
+                  id
+                }
+              }
             }
           }
         }
@@ -99,19 +167,23 @@ describe('References Migration', () => {
     );
 
     expect(gen1ListResult.statusCode).toEqual(200);
-    expect(gen1ListResult.body.data.listTodos.items.length).toEqual(2);
-    expect([gen1Todo.id, gen2Todo.id]).toContain(gen1ListResult.body.data.listTodos.items[0].id);
-    expect([gen1Todo.id, gen2Todo.id]).toContain(gen1ListResult.body.data.listTodos.items[1].id);
+    expect(gen1ListResult.body.data.listPosts.items.length).toEqual(2);
+    expect([gen1Post.id, gen2Post.id]).toContain(gen1ListResult.body.data.listPosts.items[0].id);
+    expect([gen1Post.id, gen2Post.id]).toContain(gen1ListResult.body.data.listPosts.items[1].id);
 
     const gen2ListResult = await graphql(
       gen2APIEndpoint,
       gen2APIKey,
       /* GraphQL */ `
-        query LIST_TODOS {
-          listTodos {
+        query LIST_POSTS {
+          listPosts {
             items {
               id
-              content
+              tags {
+                items {
+                  id
+                }
+              }
             }
           }
         }
@@ -119,9 +191,9 @@ describe('References Migration', () => {
     );
 
     expect(gen2ListResult.statusCode).toEqual(200);
-    expect(gen2ListResult.body.data.listTodos.items.length).toEqual(2);
-    expect([gen1Todo.id, gen2Todo.id]).toContain(gen2ListResult.body.data.listTodos.items[0].id);
-    expect([gen1Todo.id, gen2Todo.id]).toContain(gen2ListResult.body.data.listTodos.items[1].id);
+    expect(gen2ListResult.body.data.listPosts.items.length).toEqual(2);
+    expect([gen1Post.id, gen2Post.id]).toContain(gen2ListResult.body.data.listPosts.items[0].id);
+    expect([gen1Post.id, gen2Post.id]).toContain(gen2ListResult.body.data.listPosts.items[1].id);
 
     await deleteProject(gen1ProjRoot);
 
@@ -129,11 +201,15 @@ describe('References Migration', () => {
       gen2APIEndpoint,
       gen2APIKey,
       /* GraphQL */ `
-        query LIST_TODOS {
-          listTodos {
+        query LIST_POSTS {
+          listPosts {
             items {
               id
-              content
+              tags {
+                items {
+                  id
+                }
+              }
             }
           }
         }
@@ -141,11 +217,8 @@ describe('References Migration', () => {
     );
 
     expect(listResult.statusCode).toEqual(200);
-    expect(listResult.body.data.listTodos.items.length).toEqual(2);
-    expect([gen1Todo.id, gen2Todo.id]).toContain(listResult.body.data.listTodos.items[0].id);
-    expect([gen1Todo.id, gen2Todo.id]).toContain(listResult.body.data.listTodos.items[1].id);
-
-    // TODO: delete gen 1 table
-    // TODO: preform queries
+    expect(listResult.body.data.listPosts.items.length).toEqual(2);
+    expect([gen1Post.id, gen2Post.id]).toContain(listResult.body.data.listPosts.items[0].id);
+    expect([gen1Post.id, gen2Post.id]).toContain(listResult.body.data.listPosts.items[1].id);
   });
 });

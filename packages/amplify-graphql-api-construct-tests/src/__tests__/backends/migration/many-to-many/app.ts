@@ -23,7 +23,7 @@ new AmplifyGraphqlApi(stack, 'Data', {
         id: ID!
         title: String!
         content: String
-        tags: [PostTags] @hasMany(references: "tagID")
+        tags: [PostTags] @hasMany(references: ["postId"], indexName: "byPost")
       }`,
       {
         dbType: 'DYNAMODB' as const,
@@ -36,7 +36,7 @@ new AmplifyGraphqlApi(stack, 'Data', {
       type Tag @model @auth(rules: [{ allow: public }]) {
         id: ID!
         label: String!
-        posts: [PostTags] @hasMany(references: "postID")
+        posts: [PostTags] @hasMany(references: ["tagId"], indexName: "byTag")
       }`,
       {
         dbType: 'DYNAMODB' as const,
@@ -47,10 +47,10 @@ new AmplifyGraphqlApi(stack, 'Data', {
     AmplifyGraphqlDefinition.fromString(
       /* GraphQL */ `
       type PostTags @model @auth(rules: [{ allow: public }]) {
-        postID: ID
-        tagID: ID
-        post: Post @belongsTo(references: "postID") 
-        tag: Tag @belongsTo(references: "tagID")
+        postId: ID
+        tagId: ID
+        post: Post @belongsTo(references: ["postId"]) 
+        tag: Tag @belongsTo(references: ["tagId"])
       }`,
       {
         dbType: 'DYNAMODB' as const,
