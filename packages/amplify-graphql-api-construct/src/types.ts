@@ -17,6 +17,7 @@ import { IRole, CfnRole } from 'aws-cdk-lib/aws-iam';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { IFunction, CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
+import { DeploymentIdentifier } from '@aws-amplify/graphql-transformer-interfaces';
 import { AmplifyDynamoDbTableWrapper } from './amplify-dynamodb-table-wrapper';
 import { CustomSqlDataSourceStrategy, ModelDataSourceStrategy } from './model-datasource-strategy-types';
 
@@ -786,6 +787,11 @@ export interface AmplifyGraphqlApiProps {
    * For more information, refer to https://docs.amplify.aws/lib/datastore/getting-started/q/platform/js/
    */
   readonly dataStoreConfiguration?: DataStoreConfiguration;
+
+  /**
+   * The deployment identifier for the current deployment.
+   */
+  readonly deploymentIdentifier?: DeploymentIdentifier;
 }
 
 /**
