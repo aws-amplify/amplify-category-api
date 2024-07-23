@@ -2036,6 +2036,68 @@ exports[`has one references with partition key + sort key 2`] = `
 #end"
 `;
 
+exports[`set custom index name for hasOne with references 1`] = `
+"#if( $ctx.stash.deniedField )
+  #return($util.toJson(null))
+#end
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"id\\"), $ctx.source.id) )
+#if( $util.isNull($partitionKeyValue) )
+  #return
+#else
+  #set( $GetRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Query\\",
+  \\"index\\": \\"byBlog\\"
+} )
+  $util.qr($GetRequest.put(\\"query\\", {
+  \\"expression\\": \\"#partitionKey = :partitionValue\\",
+  \\"expressionNames\\": {
+      \\"#partitionKey\\": \\"blogId\\"
+  },
+  \\"expressionValues\\": {
+      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
+  }
+}))
+  #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+  #end
+  $util.toJson($GetRequest)
+#end"
+`;
+
+exports[`set custom index name for hasOne with references 2`] = `
+Array [
+  Object {
+    "IndexName": "byBlog",
+    "KeySchema": Array [
+      Object {
+        "AttributeName": "blogId",
+        "KeyType": "HASH",
+      },
+    ],
+    "Projection": Object {
+      "ProjectionType": "ALL",
+    },
+    "ProvisionedThroughput": Object {
+      "Fn::If": Array [
+        "ShouldUsePayPerRequestBilling",
+        Object {
+          "Ref": "AWS::NoValue",
+        },
+        Object {
+          "ReadCapacityUnits": Object {
+            "Ref": "DynamoDBModelTableReadIOPS",
+          },
+          "WriteCapacityUnits": Object {
+            "Ref": "DynamoDBModelTableWriteIOPS",
+          },
+        },
+      ],
+    },
+  },
+]
+`;
+
 exports[`supports recursive schemas 1`] = `
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))

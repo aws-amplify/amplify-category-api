@@ -712,3 +712,39 @@ test('supports recursive schemas', () => {
   expect(out.resolvers['TreeNode.parent.req.vtl']).toMatchSnapshot();
   expect(out.resolvers['TreeNode.parent.req.vtl']).toContain('connectionAttibutes.get("parentId")');
 });
+
+test('set custom index name for hasOne with references', () => {
+  const inputSchema = /* GraphQL */ `
+    type Blog @model {
+      comment: Comment @hasOne(references: ["blogId"], indexName: "byBlog")
+    }
+    
+    type Comment @model {
+      blogId: ID
+      blog: Blog @belongsTo(references: ["blogId"])
+    }
+  `;
+
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+  });
+  expect(out.resolvers['Blog.comment.req.vtl']).toBeDefined();
+  expect(out.resolvers['Blog.comment.req.vtl']).toMatchSnapshot();
+  expect(out.stacks.Comment.Resources?.CommentTable.Properties.GlobalSecondaryIndexes).toMatchSnapshot();
+});
+
+test('fails if the using indexName on hasOne without references', () => {
+  const inputSchema = `
+    type Blog @model {
+      comment: Comment @hasOne(indexName: "blogId")
+    }
+
+    type Comment @model {
+      blog: Blog @belongsTo
+    }`;
+  expect(() => testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+  })).toThrowError('indexName cannot be used @hasOne without references. Modify Blog.comment to use references or remove indexName.');
+});

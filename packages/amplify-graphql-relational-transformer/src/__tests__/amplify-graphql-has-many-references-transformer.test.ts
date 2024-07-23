@@ -156,25 +156,25 @@ test('fails if reference field has different type than primary key with explicit
   );
 });
 
-test('fails if indexName is provided with references', () => {
-  const inputSchema = `
-    type Team @model {
-      id: ID!
-      name: String!
-      members: [Member] @hasMany(indexName: "foo", references: ["teamID"])
+test('set custom index name for hasMany with references', () => {
+  const inputSchema = /* GraphQL */ `
+    type Blog @model {
+      comments: [Comment] @hasMany(references: ["blogId"], indexName: "byBlog")
     }
-    type Member @model {
-      id: ID!
-      teamID: ID! @index(name: "foo")
-      team: Team @belongsTo(references: ["teamID"])
-    }`;
+    
+    type Comment @model {
+      blogId: ID
+      blog: Blog @belongsTo(references: ["blogId"])
+    }
+  `;
 
-  expect(() =>
-    testTransform({
-      schema: inputSchema,
-      transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
-    }),
-  ).toThrowError('Invalid @hasMany directive on Team.members - indexName is not supported with DynamoDB references.');
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+  });
+  expect(out.resolvers['Blog.comments.req.vtl']).toBeDefined();
+  expect(out.resolvers['Blog.comments.req.vtl']).toMatchSnapshot();
+  expect(out.stacks.Comment.Resources?.CommentTable.Properties.GlobalSecondaryIndexes).toMatchSnapshot();
 });
 
 test('fails if property does not exist on related type with references', () => {

@@ -59,18 +59,14 @@ export class HasManyDirectiveDDBReferencesTransformer implements DataSourceBased
    * @param config The {@link HasManyDirectiveConfiguration} passed to the {@link HasManyTransformer}'s `validate` function.
    */
   validate = (context: TransformerContextProvider, config: HasManyDirectiveConfiguration): void => {
-    if (config.indexName) {
-      const mappedObjectName = context.resourceHelper.getModelNameMapping(config.object.name.value);
-      throw new Error(
-        `Invalid @hasMany directive on ${mappedObjectName}.${config.field.name.value} - indexName is not supported with DynamoDB references.`,
-      );
-    }
     ensureReferencesArray(config);
     validateParentReferencesFields(config, context);
     validateReferencesRelationalFieldNullability(config);
-    const objectName = config.object.name.value;
-    const fieldName = config.field.name.value;
-    config.indexName = `gsi-${objectName}.${fieldName}`;
+    if (!config.indexName) {
+      const objectName = config.object.name.value;
+      const fieldName = config.field.name.value;
+      config.indexName = `gsi-${objectName}.${fieldName}`;
+    }
     config.referenceNodes = getReferencesNodes(config, context);
     validateReferencesBidirectionality(config);
   };

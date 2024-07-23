@@ -202,6 +202,12 @@ const validate = (config: HasOneDirectiveConfiguration, ctx: TransformerContextP
     }
   }
 
+  if (config.indexName && !config.references) {
+    throw new InvalidDirectiveError(
+      `indexName cannot be used @${HasOneDirective.name} without references. Modify ${object.name.value}.${field.name.value} to use references or remove indexName.`,
+    );
+  }
+
   let dbType: ModelDataSourceStrategyDbType;
   try {
     // getStrategyDbTypeFromTypeNode throws if a datasource is not found for the model. We want to catch that condition
