@@ -19,7 +19,7 @@ import {
   ListTagsOfResourceCommand,
   Tag as DynamoDBTag,
 } from '@aws-sdk/client-dynamodb';
-import { Lambda, ListTagsCommand } from '@aws-sdk/client-lambda';
+import isEqual from 'lodash.isequal';
 import { OnEventResponse } from '../amplify-table-manager-lambda-types';
 import * as cfnResponse from './cfn-response';
 import { startExecution } from './outbound';
@@ -1128,6 +1128,136 @@ export const toCreateTableInput = (props: CustomDDB.Input): CreateTableCommandIn
   return parsePropertiesToDynamoDBInput(createTableInput) as CreateTableCommandInput;
 };
 
+export type ExpectedTableProperties = Partial<
+  Pick<
+    TableDescription,
+    | 'AttributeDefinitions'
+    | 'KeySchema'
+    | 'GlobalSecondaryIndexes'
+    | 'BillingModeSummary'
+    | 'ProvisionedThroughput'
+    | 'StreamSpecification'
+    | 'SSEDescription'
+    | 'DeletionProtectionEnabled'
+  >
+>;
+
+/**
+ * Get the expected table properties given the input properties.
+ * This is used to ensure the imported table matches the input properties.
+ *
+ * @param createTableInput input properties for the table creation.
+ */
+export const getExpectedTableProperties = (createTableInput: CreateTableCommandInput): ExpectedTableProperties => {
+  return {
+    AttributeDefinitions: createTableInput.AttributeDefinitions,
+    KeySchema: createTableInput.KeySchema,
+    GlobalSecondaryIndexes: createTableInput.GlobalSecondaryIndexes,
+    BillingModeSummary: {
+      BillingMode: createTableInput.BillingMode,
+    },
+    StreamSpecification: createTableInput.StreamSpecification,
+    ProvisionedThroughput: createTableInput.ProvisionedThroughput,
+    SSEDescription: createTableInput.SSESpecification
+      ? {
+          SSEType: createTableInput.SSESpecification.SSEType || 'KMS',
+          Status: 'ENABLED',
+        }
+      : undefined,
+    DeletionProtectionEnabled: createTableInput.DeletionProtectionEnabled,
+  };
+};
+
+/**
+ * Util function to validate imported table properties against expected properties.
+ * @param importedTable table to import
+ * @param expectedTableProperties expected properties that the imported table is validated against
+ * @throws Will throw if any properties do not match the expected values
+ */
+export const validateImportedTableProperties = (
+  importedTable: TableDescription,
+  expectedTableProperties: ExpectedTableProperties,
+): void => {
+  const errors: string[] = [];
+  const addError = (
+    propertyName: string,
+    actual: object | boolean | string | undefined,
+    expected: object | boolean | string | undefined,
+  ): void => {
+    errors.push(
+      `${propertyName} does not match the expected value.\nActual: ${JSON.stringify(actual)}\nExpected: ${JSON.stringify(expected)}`,
+    );
+  };
+
+  // for loop can't be used here because of TS error:
+  // type 'string' can't be used to index type 'TableDescription'
+  if (!isEqual(importedTable.AttributeDefinitions, expectedTableProperties.AttributeDefinitions)) {
+    addError('AttributeDefintions', importedTable.AttributeDefinitions, expectedTableProperties.AttributeDefinitions);
+  }
+
+  if (!isEqual(importedTable.KeySchema, expectedTableProperties.KeySchema)) {
+    addError('KeySchema', importedTable.KeySchema, expectedTableProperties.KeySchema);
+  }
+
+  if (!isEqual(importedTable.GlobalSecondaryIndexes, expectedTableProperties.GlobalSecondaryIndexes)) {
+    addError('GlobalSecondaryIndexes', importedTable.GlobalSecondaryIndexes, expectedTableProperties.GlobalSecondaryIndexes);
+  }
+
+  // don't compare LastUpdateToPayPerRequestDateTime on BillingMode
+  const billingMode = importedTable.BillingModeSummary
+    ? {
+        ...importedTable.BillingModeSummary,
+      }
+    : importedTable.BillingModeSummary;
+  if (billingMode) {
+    delete billingMode.LastUpdateToPayPerRequestDateTime;
+  }
+  if (!isEqual(billingMode, expectedTableProperties.BillingModeSummary)) {
+    addError('BillingModeSummary', billingMode, expectedTableProperties.BillingModeSummary);
+  }
+
+  // don't compare LastDecreaseDateTime, LastIncreaseDateTime, and NumberOfDecreasesToday on ProvisionedThroughput
+  const provisionedThroughput = importedTable.ProvisionedThroughput
+    ? {
+        ...importedTable.ProvisionedThroughput,
+      }
+    : importedTable.ProvisionedThroughput;
+  if (provisionedThroughput) {
+    delete provisionedThroughput.LastDecreaseDateTime;
+    delete provisionedThroughput.LastIncreaseDateTime;
+    delete provisionedThroughput.NumberOfDecreasesToday;
+  }
+
+  if (!isEqual(provisionedThroughput, expectedTableProperties.ProvisionedThroughput)) {
+    addError('ProvisionedThroughput', provisionedThroughput, expectedTableProperties.ProvisionedThroughput);
+  }
+
+  if (!isEqual(importedTable.StreamSpecification, expectedTableProperties.StreamSpecification)) {
+    addError('StreamSpecification', importedTable.StreamSpecification, expectedTableProperties.StreamSpecification);
+  }
+
+  // don't compare Status on SSEDescription
+  const sseDescription = importedTable.SSEDescription
+    ? {
+        ...importedTable.SSEDescription,
+      }
+    : importedTable.SSEDescription;
+  if (sseDescription) {
+    delete sseDescription.Status;
+  }
+  if (!isEqual(sseDescription, expectedTableProperties.SSEDescription)) {
+    addError('SSEDescription', sseDescription, expectedTableProperties.SSEDescription);
+  }
+
+  if (!isEqual(importedTable.DeletionProtectionEnabled, expectedTableProperties.DeletionProtectionEnabled)) {
+    addError('DeletionProtectionEnabled', importedTable.DeletionProtectionEnabled, expectedTableProperties.DeletionProtectionEnabled);
+  }
+
+  if (errors.length > 0) {
+    throw new Error(`Imported table properties did not match the expected table properties.\n${errors.join('\n')}`);
+  }
+};
+
 /**
  * Util function to make CreateTable DynamoDB call
  * @param input CreateTableInput object
@@ -1408,13 +1538,15 @@ const sleep = async (milliseconds: number): Promise<void> => new Promise((resolv
 const importTable = async (tableDef: CustomDDB.Input): Promise<AWSCDKAsyncCustomResource.OnEventResponse> => {
   // TODO: Add import validation
   console.log('Initiating table import process');
-  console.log('Fetching current table state');
-  console.log(`Table name: ${tableDef.tableName}`);
+  console.log(`Fetching current state of table ${tableDef.tableName}`)
   const describeTableResult = await ddbClient.describeTable({ TableName: tableDef.tableName });
   if (!describeTableResult.Table) {
     throw new Error(`Could not find ${tableDef.tableName} to update`);
   }
   log('Current table state: ', describeTableResult);
+  const createTableInput = toCreateTableInput(tableDef);
+  const expectedTableProperties = getExpectedTableProperties(createTableInput);
+  validateImportedTableProperties(describeTableResult.Table, expectedTableProperties);
   const result = {
     PhysicalResourceId: describeTableResult.Table.TableName,
     Data: {
