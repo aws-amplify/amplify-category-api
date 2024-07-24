@@ -23,6 +23,7 @@
     "extract-api": "ts node ../../scripts/extract-api.ts"
   },
   "dependencies": {
+    "@aws-amplify/backend-ai": "file:/Users/isaultz/projects/raven/amplify-backend/packages/backend-ai",
     "@aws-amplify/graphql-directives": "1.1.0",
     "@aws-amplify/graphql-transformer-core": "2.9.2",
     "@aws-amplify/graphql-model-transformer": "2.11.1",

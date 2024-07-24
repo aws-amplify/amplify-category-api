@@ -62,12 +62,14 @@ import { conversationMessageSubscriptionMappingTamplate } from './resolvers/assi
 import { createConversationModel, ConversationModel } from './graphql-types/session-model';
 import { createMessageModel, MessageModel } from './graphql-types/message-model';
 import { convertGraphQlTypeToJsonSchemaType } from './utils/graphql-json-schema-type';
+import { ConversationHandler } from '@aws-amplify/backend-ai';
+import { IFunction } from 'aws-cdk-lib/aws-lambda';
 
 export type ConversationDirectiveConfiguration = {
   parent: ObjectTypeDefinitionNode;
   directive: DirectiveNode;
   aiModel: string;
-  functionName: string;
+  functionName: string | undefined;
   field: FieldDefinitionNode;
   responseMutationInputTypeName: string;
   responseMutationName: string;
@@ -80,11 +82,11 @@ export type ConversationDirectiveConfiguration = {
 
 type Tools = {
   tools: Tool[];
-}
+};
 
 type Tool = {
   toolSpec: ToolSpec;
-}
+};
 
 type ToolSpec = {
   name: string;
@@ -93,10 +95,10 @@ type ToolSpec = {
     json: {
       type: string;
       properties: Record<string, Property>;
-      required: string[]
-    }
-  }
-}
+      required: string[];
+    };
+  };
+};
 
 type Property = {
   type: string;
@@ -110,7 +112,7 @@ const processTools = (toolNames: string[], ctx: TransformerContextProvider): Too
   const { fields } = ctx.output.getType('Query') as ObjectTypeDefinitionNode;
   if (!fields) {
     // TODO: better error message.
-    throw new InvalidDirectiveError('tools must be queries -- no queries found')
+    throw new InvalidDirectiveError('tools must be queries -- no queries found');
   }
 
   let tools: Tool[] = [];
@@ -118,7 +120,7 @@ const processTools = (toolNames: string[], ctx: TransformerContextProvider): Too
     const matchingQueryField = fields.find((field) => field.name.value === toolName);
     if (!matchingQueryField) {
       // TODO: better error message.
-      throw new InvalidDirectiveError(`Tool ${toolName} defined in @conversation directive but no matching Query field definition`)
+      throw new InvalidDirectiveError(`Tool ${toolName} defined in @conversation directive but no matching Query field definition`);
     }
 
     let toolProperties: Record<string, Property> = {};
@@ -129,12 +131,12 @@ const processTools = (toolNames: string[], ctx: TransformerContextProvider): Too
         const type = convertGraphQlTypeToJsonSchemaType(getBaseType(fieldArgument.type));
         // TODO: How do we allow this to be defined in the directive?
         const description = type;
-        toolProperties = { ...toolProperties, [fieldArgument.name.value]: { type, description }};
+        toolProperties = { ...toolProperties, [fieldArgument.name.value]: { type, description } };
 
         if (fieldArgument.type.kind === 'NonNullType') {
           required.push(fieldArgument.name.value);
         }
-      };
+      }
     }
 
     const tool: Tool = {
@@ -147,10 +149,10 @@ const processTools = (toolNames: string[], ctx: TransformerContextProvider): Too
             type: 'object',
             properties: toolProperties,
             required,
-          }
-        }
-      }
-    }
+          },
+        },
+      },
+    };
     tools.push(tool);
   }
 
@@ -226,16 +228,14 @@ export class ConversationTransformer extends TransformerPluginBase {
     ) as ObjectTypeDefinitionNode[];
 
     // TODO: add validation for expected fields
-    const conversationMessageInterface = ctx.inputDocument.definitions.find((definition) =>
-      definition.kind === 'InterfaceTypeDefinition' &&
-      definition.name.value === 'ConversationMessage'
-
+    const conversationMessageInterface = ctx.inputDocument.definitions.find(
+      (definition) => definition.kind === 'InterfaceTypeDefinition' && definition.name.value === 'ConversationMessage',
     ) as InterfaceTypeDefinitionNode;
 
     const named: NamedTypeNode = {
       kind: 'NamedType',
       name: { value: 'Conversationmessage', kind: 'Name' },
-    }
+    };
 
     const conversationDirectiveFields = mutationObjectContainingConversationDirectives[0].fields;
 
@@ -277,26 +277,35 @@ export class ConversationTransformer extends TransformerPluginBase {
       // TODO: Support single function for multiple routes.
       // TODO: Do we really need to create a nested stack here?
       const functionStack = ctx.stackManager.createStack('ConversationDirectiveLambdaStack');
-      const rootStack = ctx.stackManager.scope;
-      const functionDataSourceId = FunctionResourceIDs.FunctionDataSourceID(directive.functionName);
-      const referencedFunction = lambda.Function.fromFunctionAttributes(functionStack, `${functionDataSourceId}Function`, {
-        functionArn: lambdaArnResource(directive.functionName),
-      });
+      let functionDataSourceId: string;
+      let referencedFunction: IFunction;
+      if (directive.functionName) {
+        functionDataSourceId = FunctionResourceIDs.FunctionDataSourceID(directive.functionName);
+        referencedFunction = lambda.Function.fromFunctionAttributes(functionStack, `${functionDataSourceId}Function`, {
+          functionArn: lambdaArnResource(directive.functionName),
+        });
 
-      // -------------------------------------------------------------------------------------------------------------------------------
-      // TODO: This should probs be deleted. Adding the policy to the IFunction we have here doesn't work
-      const invokeModelPolicyStatement = new cdk.aws_iam.PolicyStatement({
-        actions: ['bedrock:InvokeModel'],
-        effect: Effect.ALLOW,
-        resources: [`arn:aws:bedrock:\${AWS::Region}::foundation-model/${bedrockModelId}`],
-      });
+        // -------------------------------------------------------------------------------------------------------------------------------
+        // TODO: This should probs be deleted. Adding the policy to the IFunction we have here doesn't work
+        const invokeModelPolicyStatement = new cdk.aws_iam.PolicyStatement({
+          actions: ['bedrock:InvokeModel'],
+          effect: Effect.ALLOW,
+          resources: [`arn:aws:bedrock:\${AWS::Region}::foundation-model/${bedrockModelId}`],
+        });
 
-      referencedFunction.role?.attachInlinePolicy(
-        new cdk.aws_iam.Policy(functionStack, 'ConversationRouteLambdaRolePolicyBedrockConverse', {
-          statements: [invokeModelPolicyStatement],
-          policyName: 'ConversationRouteLambdaRolePolicyBedrockConverse',
-        }),
-      );
+        referencedFunction.role?.attachInlinePolicy(
+          new cdk.aws_iam.Policy(functionStack, 'ConversationRouteLambdaRolePolicyBedrockConverse', {
+            statements: [invokeModelPolicyStatement],
+            policyName: 'ConversationRouteLambdaRolePolicyBedrockConverse',
+          }),
+        );
+      } else {
+        const defaultConversationHandler = new ConversationHandler(functionStack, 'DefaultConversationHandler', {
+          modelId: bedrockModelId,
+        });
+        functionDataSourceId = FunctionResourceIDs.FunctionDataSourceID('DefaultConversationHandler');
+        referencedFunction = defaultConversationHandler.resources.lambda;
+      }
       // -------------------------------------------------------------------------------------------------------------------------------
 
       const assistantResponseResolverResourceId = ResolverResourceIDs.ResolverResourceID('Mutation', directive.responseMutationName);
