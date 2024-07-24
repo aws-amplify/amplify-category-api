@@ -54,6 +54,9 @@ import {
   TranslationBehavior,
   UserPoolAuthorizationConfig,
   VpcConfig,
+  DeploymentIdentifier,
+  SandboxIdentifier,
+  BranchIdentifier,
 } from '@aws-amplify/graphql-api-construct';
 
 export {
@@ -112,4 +115,7 @@ export {
   TranslationBehavior,
   UserPoolAuthorizationConfig,
   VpcConfig,
+  DeploymentIdentifier,
+  SandboxIdentifier,
+  BranchIdentifier,
 };
