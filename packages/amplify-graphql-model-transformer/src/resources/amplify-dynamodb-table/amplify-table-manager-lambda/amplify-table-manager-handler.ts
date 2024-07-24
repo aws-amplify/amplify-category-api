@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 import {
   AttributeDefinition,
@@ -15,13 +16,18 @@ import {
   UpdateContinuousBackupsCommandInput,
   UpdateTableCommandInput,
   UpdateTimeToLiveCommandInput,
+  ListTagsOfResourceCommand,
+  Tag as DynamoDBTag,
 } from '@aws-sdk/client-dynamodb';
+import { Lambda, ListTagsCommand } from '@aws-sdk/client-lambda';
 import { OnEventResponse } from '../amplify-table-manager-lambda-types';
 import * as cfnResponse from './cfn-response';
 import { startExecution } from './outbound';
 import { getEnv, log } from './util';
+import { CfnTag } from 'aws-cdk-lib';
 
 const ddbClient = new DynamoDB();
+const lambdaClient = new Lambda();
 
 const finished: AWSCDKAsyncCustomResource.IsCompleteResponse = {
   IsComplete: true,
@@ -33,6 +39,34 @@ const notFinished: AWSCDKAsyncCustomResource.IsCompleteResponse = {
 // #region Entry points
 export const onEvent = cfnResponse.safeHandler(onEventHandler);
 export const isComplete = cfnResponse.safeHandler(isCompleteHandler);
+
+export const getLambdaTags = async (functionArn: string): Promise<Record<string, string>[]> => {
+  const command = new ListTagsCommand({ Resource: functionArn });
+  const tags = (await lambdaClient.send(command)).Tags ?? {};
+  const result: Record<string, string>[] = [];
+  Object.keys(tags).forEach((key) => {
+    // Do not include the cloudformation tags.
+    // These tags contain information about the lambda function and it is not necessary to include them in the tags of the table.
+    if (!key.startsWith('aws:cloudformation:')) {
+      result.push({
+        key: key,
+        value: tags[key],
+      });
+    }
+  });
+  return result;
+};
+
+const getTableTags = async (tableArn: string): Promise<DynamoDBTag[]> => {
+  const command = new ListTagsOfResourceCommand({ ResourceArn: tableArn });
+  const tags: DynamoDBTag[] = (await ddbClient.send(command)).Tags ?? [];
+  return tags;
+};
+
+type TableManagerContext = {
+  invokedFunctionArn: string;
+};
+
 /**
  * Handler for requests sent from CloudFormation for custom resource.
  * This is the entry point of the custom resource.
@@ -42,13 +76,13 @@ export const isComplete = cfnResponse.safeHandler(isCompleteHandler);
  * @param cfnRequest Request received from CloudFormation
  */
 // eslint-disable-next-line func-style
-async function onEventHandler(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent): Promise<void> {
+async function onEventHandler(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent, context: TableManagerContext): Promise<void> {
   const sanitizedRequest = { ...cfnRequest, ResponseURL: '[redacted]' } as const;
   log('onEventHandler', sanitizedRequest);
 
   cfnRequest.ResourceProperties = cfnRequest.ResourceProperties || {};
 
-  const onEventResult = await processOnEvent(sanitizedRequest);
+  const onEventResult = await processOnEvent(sanitizedRequest, context);
   log('onEvent returned:', onEventResult);
 
   // merge the request and the result from onEvent to form the complete resource event
@@ -86,11 +120,11 @@ async function onEventHandler(cfnRequest: AWSLambda.CloudFormationCustomResource
  * @param event isComplete request received from Waiter State Machine.
  */
 // eslint-disable-next-line func-style
-async function isCompleteHandler(event: AWSCDKAsyncCustomResource.IsCompleteRequest): Promise<void> {
+async function isCompleteHandler(event: AWSCDKAsyncCustomResource.IsCompleteRequest, context: TableManagerContext): Promise<void> {
   const sanitizedRequest = { ...event, ResponseURL: '[redacted]' } as const;
   log('isComplete', sanitizedRequest);
 
-  const isCompleteResult = await processIsComplete(sanitizedRequest);
+  const isCompleteResult = await processIsComplete(sanitizedRequest, context);
   log('isComplete result', isCompleteResult);
 
   // if we are not complete, return false, and don't send a response back.
@@ -122,9 +156,12 @@ async function isCompleteHandler(event: AWSCDKAsyncCustomResource.IsCompleteRequ
  * @param event CFN event
  * @returns Response object which is sent back to CFN
  */
-const processOnEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): Promise<AWSCDKAsyncCustomResource.OnEventResponse> => {
+const processOnEvent = async (
+  event: AWSCDKAsyncCustomResource.OnEventRequest,
+  context: TableManagerContext,
+): Promise<AWSCDKAsyncCustomResource.OnEventResponse> => {
   console.log({ ...event, ResponseURL: '[redacted]' });
-  const tableDef = extractTableInputFromEvent(event);
+  const tableDef = await extractTableInputFromEvent(event, context);
   console.log('Input table state: ', tableDef);
 
   let result;
@@ -176,6 +213,50 @@ const processOnEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
           );
           return replaceTable(describeTableResult.Table, tableDef);
         }
+      }
+
+      // Determine if table needs tags update.
+      // For Gen2 deployments, the tags do not change between deployments. This check is to ensure that
+      // the tags are applied to tables created earlier (before adding tagging support).
+      // TODO: Handle tags update for CDK construct deployments
+      const currentTableTags = await getTableTags(describeTableResult.Table.TableArn!);
+      const newTags: DynamoDBTag[] = [];
+      Object.values(tableDef.tags ?? []).forEach((tag) => {
+        newTags.push({ Key: tag.key, Value: tag.value });
+      });
+
+      const removeTags: string[] = [];
+      currentTableTags.forEach((tag) => {
+        if (!newTags.some((newTag) => newTag.Key === tag.Key)) {
+          removeTags.push(tag.Key!);
+        }
+      });
+
+      // Handle tags deletion
+      if (removeTags.length > 0) {
+        await ddbClient.untagResource({
+          ResourceArn: describeTableResult.Table.TableArn,
+          TagKeys: removeTags,
+        });
+        await retry(
+          async () => await isTableReady(event.PhysicalResourceId!),
+          (res) => res === true,
+        );
+        console.log(`Table '${event.PhysicalResourceId}' is ready after the deletion of Tags.`);
+      }
+
+      // Handle tags addition/updates
+      if (requiresTagsUpdate(currentTableTags, newTags)) {
+        console.log('Detected tag changes: ', tableDef.tags);
+        await ddbClient.tagResource({
+          ResourceArn: describeTableResult.Table.TableArn,
+          Tags: newTags,
+        });
+        await retry(
+          async () => await isTableReady(event.PhysicalResourceId!),
+          (res) => res === true,
+        );
+        console.log(`Table '${event.PhysicalResourceId}' is ready after the update of Tags.`);
       }
 
       // determine if point in time recovery is changed -> describeContinuousBackups & updateContinuousBackups
@@ -308,6 +389,7 @@ const processOnEvent = async (event: AWSCDKAsyncCustomResource.OnEventRequest): 
  */
 const processIsComplete = async (
   event: AWSCDKAsyncCustomResource.IsCompleteRequest,
+  context: TableManagerContext,
 ): Promise<AWSCDKAsyncCustomResource.IsCompleteResponse> => {
   log('got event', { ...event, ResponseURL: '[redacted]' });
   if (event.RequestType === 'Delete') {
@@ -333,7 +415,7 @@ const processIsComplete = async (
     return notFinished;
   }
 
-  const endState = extractTableInputFromEvent(event);
+  const endState = await extractTableInputFromEvent(event, context);
 
   if (event.RequestType === 'Create' || event.Data?.IsTableReplaced === true) {
     // Need additional call if pointInTimeRecovery is enabled
@@ -740,6 +822,32 @@ export const getSseUpdate = (currentState: TableDescription, endState: CustomDDB
 };
 
 /**
+ * Compares the currentState with the tags on the resource provider lambda to determine if the tags are updated
+ * @param currentTags current tags on the table
+ * @param newTags new tags on the lambda
+ * @returns Boolean indicating if the tags are updated
+ */
+export const requiresTagsUpdate = (currentTags: DynamoDBTag[], newTags?: DynamoDBTag[]): boolean => {
+  if (!newTags || newTags.length === 0) {
+    return false;
+  }
+  if (currentTags.length !== newTags.length) {
+    return true;
+  }
+  for (const newTag of newTags) {
+    if (!currentTags.find((currentTag) => currentTag.Key === newTag.Key)) {
+      return true;
+    } else {
+      const currentTag = currentTags.find((tag) => tag.Key === newTag.Key);
+      if (currentTag?.Value !== newTag.Value) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
+/**
  * Compares the currentState with the endState to determine if the deletion protection is updated
  * @param currentState table description result from DynamoDB SDK call
  * @param endState The input table state from user
@@ -865,11 +973,16 @@ type CreateTableResponse = {
  * @param event Event for onEvent or isComplete
  * @returns The table input for Custom dynamoDB Table
  */
-export const extractTableInputFromEvent = (
+export const extractTableInputFromEvent = async (
   event: AWSCDKAsyncCustomResource.OnEventRequest | AWSCDKAsyncCustomResource.IsCompleteRequest,
-): CustomDDB.Input => {
+  context: TableManagerContext,
+): Promise<CustomDDB.Input> => {
   // isolate the resource properties from the event and remove the service token
-  const resourceProperties = { ...event.ResourceProperties } as Record<string, any> & { ServiceToken?: string };
+  const tags = await getLambdaTags(context.invokedFunctionArn);
+  const resourceProperties = {
+    ...event.ResourceProperties,
+    ...(tags.length > 0 && { tags }),
+  } as Record<string, any> & { ServiceToken?: string };
   delete resourceProperties.ServiceToken;
 
   // cast the remaining resource properties to the DynamoDB API call input type
@@ -1006,6 +1119,7 @@ export const toCreateTableInput = (props: CustomDDB.Input): CreateTableCommandIn
     ProvisionedThroughput: props.provisionedThroughput,
     SSESpecification: props.sseSpecification ? { Enabled: props.sseSpecification.sseEnabled } : undefined,
     DeletionProtectionEnabled: props.deletionProtectionEnabled,
+    Tags: props.tags,
   };
   return parsePropertiesToDynamoDBInput(createTableInput) as CreateTableCommandInput;
 };
