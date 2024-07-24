@@ -8,6 +8,11 @@ export const getDDBTable = async (tableName: string, region: string) => {
   }
 };
 
+export const getDDBTableTags = async (tableName: string, region: string) => {
+  const service = new DynamoDB({ region });
+  return await service.listTagsOfResource({ ResourceArn: tableName }).promise();
+};
+
 export const checkIfBucketExists = async (bucketName: string, region: string) => {
   const service = new S3({ region });
   return await service.headBucket({ Bucket: bucketName }).promise();
