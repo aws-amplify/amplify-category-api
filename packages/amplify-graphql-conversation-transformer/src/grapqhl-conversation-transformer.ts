@@ -276,7 +276,7 @@ export class ConversationTransformer extends TransformerPluginBase {
 
       // TODO: Support single function for multiple routes.
       // TODO: Do we really need to create a nested stack here?
-      const functionStack = ctx.stackManager.createStack('ConversationDirectiveLambdaStack');
+      const functionStack = ctx.stackManager.createStack(`${capitalizedFieldName}ConversationDirectiveLambdaStack`);
       let functionDataSourceId: string;
       let referencedFunction: IFunction;
       if (directive.functionName) {
@@ -300,10 +300,10 @@ export class ConversationTransformer extends TransformerPluginBase {
           }),
         );
       } else {
-        const defaultConversationHandler = new ConversationHandler(functionStack, 'DefaultConversationHandler', {
+        const defaultConversationHandler = new ConversationHandler(functionStack, `${capitalizedFieldName}DefaultConversationHandler`, {
           modelId: bedrockModelId,
         });
-        functionDataSourceId = FunctionResourceIDs.FunctionDataSourceID('DefaultConversationHandler');
+        functionDataSourceId = FunctionResourceIDs.FunctionDataSourceID(`${capitalizedFieldName}DefaultConversationHandler`);
         referencedFunction = defaultConversationHandler.resources.lambda;
       }
       // -------------------------------------------------------------------------------------------------------------------------------
@@ -347,7 +347,7 @@ export class ConversationTransformer extends TransformerPluginBase {
       ctx.resolvers.addResolver('Subscription', onAssistantResponseSubscriptionFieldName, onAssistantResponseSubscriptionResolver);
       // ------ assitant response subscription resolver -----
 
-      const functionDataSourceScope = ctx.stackManager.getScopeFor(functionDataSourceId, 'ConversationDirectiveLambdaStack');
+      const functionDataSourceScope = ctx.stackManager.getScopeFor(functionDataSourceId, `${capitalizedFieldName}ConversationDirectiveLambdaStack`);
       const functionDataSource = ctx.api.host.addLambdaDataSource(functionDataSourceId, referencedFunction, {}, functionDataSourceScope);
       const invokeLambdaFunction = invokeLambdaMappingTemplate(directive, ctx);
 
