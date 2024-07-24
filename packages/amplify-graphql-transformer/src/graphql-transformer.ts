@@ -26,6 +26,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type {
   DataSourceStrategiesProvider,
+  DeploymentIdentifier,
   RDSLayerMappingProvider,
   RDSSNSTopicMappingProvider,
   TransformParameters,
@@ -118,6 +119,7 @@ export type ExecuteTransformConfig = TransformConfig &
     parameterProvider?: TransformParameterProvider;
     assetProvider: AssetProvider;
     synthParameters: SynthParameters;
+    deploymentIdentifier?: DeploymentIdentifier;
   };
 
 /**
@@ -161,6 +163,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
     scope,
     sqlDirectiveDataSourceStrategies,
     synthParameters,
+    deploymentIdentifier,
   } = config;
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
@@ -177,6 +180,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
       scope,
       sqlDirectiveDataSourceStrategies,
       synthParameters,
+      deploymentIdentifier,
     });
   } finally {
     transform.getLogs().forEach(printLog);
