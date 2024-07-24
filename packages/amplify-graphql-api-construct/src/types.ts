@@ -17,7 +17,6 @@ import { IRole, CfnRole } from 'aws-cdk-lib/aws-iam';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { IFunction, CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
-import { DeploymentIdentifier } from '@aws-amplify/graphql-transformer-interfaces';
 import { AmplifyDynamoDbTableWrapper } from './amplify-dynamodb-table-wrapper';
 import { CustomSqlDataSourceStrategy, ModelDataSourceStrategy } from './model-datasource-strategy-types';
 
@@ -793,6 +792,28 @@ export interface AmplifyGraphqlApiProps {
    */
   readonly deploymentIdentifier?: DeploymentIdentifier;
 }
+
+/**
+ * Identifier for sandbox deployments.
+ */
+export interface SandboxIdentifier {
+  readonly deploymentType: 'sandbox';
+  readonly deploymentId: string;
+}
+
+/**
+ * Identifier for branch deployments.
+ */
+export interface BranchIdentifier {
+  readonly deploymentType: 'branch';
+  readonly branchName: string;
+  readonly branchId: string;
+}
+
+/**
+ * The deployment identifier for the current deployment.
+ */
+export type DeploymentIdentifier = SandboxIdentifier | BranchIdentifier;
 
 /**
  * L1 CDK resources from the Api which were generated as part of the transform.
