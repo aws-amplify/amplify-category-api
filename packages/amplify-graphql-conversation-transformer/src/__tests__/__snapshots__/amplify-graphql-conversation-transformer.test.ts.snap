@@ -36,11 +36,6 @@ type Mutation {
   deleteConversationMessagePirateChat(input: DeleteConversationMessagePirateChatInput!, condition: ModelConversationMessagePirateChatConditionInput): ConversationMessagePirateChat
 }
 
-enum ConversationMessageSender {
-  user
-  assistant
-}
-
 input CreateConversationMessagePirateChatAssistantInput {
   conversationId: ID
   content: String
@@ -304,15 +299,9 @@ type ModelConversationMessagePirateChatConnection {
   nextToken: String
 }
 
-input ModelConversationMessageSenderInput {
-  eq: ConversationMessageSender
-  ne: ConversationMessageSender
-}
-
 input ModelConversationMessagePirateChatFilterInput {
   id: ModelIDInput
   sessionId: ModelIDInput
-  sender: ModelConversationMessageSenderInput
   content: ModelStringInput
   context: ModelStringInput
   uiComponents: ModelStringInput
@@ -327,7 +316,6 @@ input ModelConversationMessagePirateChatFilterInput {
 
 input ModelConversationMessagePirateChatConditionInput {
   sessionId: ModelIDInput
-  sender: ModelConversationMessageSenderInput
   content: ModelStringInput
   context: ModelStringInput
   uiComponents: ModelStringInput
@@ -357,7 +345,6 @@ input DeleteConversationMessagePirateChatInput {
 input ModelSubscriptionConversationMessagePirateChatFilterInput {
   id: ModelSubscriptionIDInput
   sessionId: ModelSubscriptionIDInput
-  sender: ModelSubscriptionStringInput
   content: ModelSubscriptionStringInput
   context: ModelSubscriptionStringInput
   uiComponents: ModelSubscriptionStringInput
@@ -2003,4 +1990,377 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 $util.toJson(null)
 ## [End] Subscription Response template. **",
 }
+`;
+
+exports[`conversation route without tools 1`] = `
+"type Foo {
+  bar: Int
+  id: ID!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+enum ConversationMessageSender {
+  user
+  assistant
+}
+
+interface ConversationMessage {
+  id: ID!
+  sessionId: ID!
+  sender: ConversationMessageSender
+  content: String
+  context: AWSJSON
+  uiComponents: [AWSJSON]
+}
+
+type Mutation {
+  pirateChat(id: ID, sessionId: ID!, content: String): ConversationMessage
+  createAssistantResponsePirateChat(input: CreateConversationMessagePirateChatAssistantInput!): ConversationMessagePirateChat @aws_cognito_user_pools
+  createFoo(input: CreateFooInput!, condition: ModelFooConditionInput): Foo
+  deleteFoo(input: DeleteFooInput!, condition: ModelFooConditionInput): Foo
+  createConversationPirateChat(input: CreateConversationPirateChatInput!, condition: ModelConversationPirateChatConditionInput): ConversationPirateChat
+  deleteConversationPirateChat(input: DeleteConversationPirateChatInput!, condition: ModelConversationPirateChatConditionInput): ConversationPirateChat
+  createConversationMessagePirateChat(input: CreateConversationMessagePirateChatInput!, condition: ModelConversationMessagePirateChatConditionInput): ConversationMessagePirateChat
+  deleteConversationMessagePirateChat(input: DeleteConversationMessagePirateChatInput!, condition: ModelConversationMessagePirateChatConditionInput): ConversationMessagePirateChat
+}
+
+input CreateConversationMessagePirateChatAssistantInput {
+  conversationId: ID
+  content: String
+  associatedUserMessageId: ID
+}
+
+type Subscription {
+  onCreateAssistantResponsePirateChat(sessionId: String): ConversationMessagePirateChat @aws_subscribe(mutations: [\\"createAssistantResponsePirateChat\\"]) @aws_cognito_user_pools
+  onCreateConversationMessagePirateChat(filter: ModelSubscriptionConversationMessagePirateChatFilterInput, owner: String): ConversationMessagePirateChat @aws_subscribe(mutations: [\\"createConversationMessagePirateChat\\"])
+}
+
+type ConversationPirateChat {
+  id: ID!
+  name: String
+  metadata: AWSJSON
+  messages(filter: ModelConversationMessagePirateChatFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelConversationMessagePirateChatConnection
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+type ConversationMessagePirateChat implements ConversationMessage {
+  id: ID!
+  sessionId: ID!
+  session: ConversationPirateChat
+  sender: ConversationMessageSender
+  content: String
+  context: AWSJSON
+  uiComponents: [AWSJSON]
+  assistantContent: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelFooConnection {
+  items: [Foo]!
+  nextToken: String
+}
+
+input ModelFooFilterInput {
+  bar: ModelIntInput
+  id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelFooFilterInput]
+  or: [ModelFooFilterInput]
+  not: ModelFooFilterInput
+  owner: ModelStringInput
+}
+
+type Query {
+  getFoo(id: ID!): Foo
+  listFoos(filter: ModelFooFilterInput, limit: Int, nextToken: String): ModelFooConnection
+  getConversationPirateChat(id: ID!): ConversationPirateChat
+  listConversationPirateChats(filter: ModelConversationPirateChatFilterInput, limit: Int, nextToken: String): ModelConversationPirateChatConnection
+  getConversationMessagePirateChat(id: ID!): ConversationMessagePirateChat
+  listConversationMessagePirateChats(filter: ModelConversationMessagePirateChatFilterInput, limit: Int, nextToken: String): ModelConversationMessagePirateChatConnection
+}
+
+input ModelFooConditionInput {
+  bar: ModelIntInput
+  and: [ModelFooConditionInput]
+  or: [ModelFooConditionInput]
+  not: ModelFooConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+input CreateFooInput {
+  bar: Int
+  id: ID
+}
+
+input DeleteFooInput {
+  id: ID!
+}
+
+type ModelConversationPirateChatConnection {
+  items: [ConversationPirateChat]!
+  nextToken: String
+}
+
+input ModelConversationPirateChatFilterInput {
+  id: ModelIDInput
+  name: ModelStringInput
+  metadata: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelConversationPirateChatFilterInput]
+  or: [ModelConversationPirateChatFilterInput]
+  not: ModelConversationPirateChatFilterInput
+  owner: ModelStringInput
+}
+
+input ModelConversationPirateChatConditionInput {
+  name: ModelStringInput
+  metadata: ModelStringInput
+  and: [ModelConversationPirateChatConditionInput]
+  or: [ModelConversationPirateChatConditionInput]
+  not: ModelConversationPirateChatConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+input CreateConversationPirateChatInput {
+  id: ID
+  name: String
+  metadata: AWSJSON
+}
+
+input DeleteConversationPirateChatInput {
+  id: ID!
+}
+
+type ModelConversationMessagePirateChatConnection {
+  items: [ConversationMessagePirateChat]!
+  nextToken: String
+}
+
+input ModelConversationMessageSenderInput {
+  eq: ConversationMessageSender
+  ne: ConversationMessageSender
+}
+
+input ModelConversationMessagePirateChatFilterInput {
+  id: ModelIDInput
+  sessionId: ModelIDInput
+  sender: ModelConversationMessageSenderInput
+  content: ModelStringInput
+  context: ModelStringInput
+  uiComponents: ModelStringInput
+  assistantContent: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelConversationMessagePirateChatFilterInput]
+  or: [ModelConversationMessagePirateChatFilterInput]
+  not: ModelConversationMessagePirateChatFilterInput
+  owner: ModelStringInput
+}
+
+input ModelConversationMessagePirateChatConditionInput {
+  sessionId: ModelIDInput
+  sender: ModelConversationMessageSenderInput
+  content: ModelStringInput
+  context: ModelStringInput
+  uiComponents: ModelStringInput
+  assistantContent: ModelStringInput
+  and: [ModelConversationMessagePirateChatConditionInput]
+  or: [ModelConversationMessagePirateChatConditionInput]
+  not: ModelConversationMessagePirateChatConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+input CreateConversationMessagePirateChatInput {
+  id: ID
+  sessionId: ID!
+  sender: ConversationMessageSender
+  content: String
+  context: AWSJSON
+  uiComponents: [AWSJSON]
+  assistantContent: String
+}
+
+input DeleteConversationMessagePirateChatInput {
+  id: ID!
+}
+
+input ModelSubscriptionConversationMessagePirateChatFilterInput {
+  id: ModelSubscriptionIDInput
+  sessionId: ModelSubscriptionIDInput
+  sender: ModelSubscriptionStringInput
+  content: ModelSubscriptionStringInput
+  context: ModelSubscriptionStringInput
+  uiComponents: ModelSubscriptionStringInput
+  assistantContent: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionConversationMessagePirateChatFilterInput]
+  or: [ModelSubscriptionConversationMessagePirateChatFilterInput]
+  owner: ModelStringInput
+}
+"
 `;

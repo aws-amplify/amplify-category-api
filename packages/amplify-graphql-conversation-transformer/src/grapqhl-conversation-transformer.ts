@@ -27,10 +27,13 @@ import {
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
   InterfaceTypeDefinitionNode,
+  NamedTypeNode,
   ObjectTypeDefinitionNode,
+  TypeSystemDefinitionNode,
 } from 'graphql';
 import {
   FunctionResourceIDs,
+  getBaseType,
   makeArgument,
   makeDirective,
   makeField,
@@ -58,6 +61,7 @@ import { getBedrockModelId } from './utils/bedrock-model-id';
 import { conversationMessageSubscriptionMappingTamplate } from './resolvers/assistant-messages-subscription-resolver';
 import { createConversationModel, ConversationModel } from './graphql-types/session-model';
 import { createMessageModel, MessageModel } from './graphql-types/message-model';
+import { convertGraphQlTypeToJsonSchemaType } from './utils/graphql-json-schema-type';
 
 export type ConversationDirectiveConfiguration = {
   parent: ObjectTypeDefinitionNode;
@@ -69,8 +73,88 @@ export type ConversationDirectiveConfiguration = {
   responseMutationName: string;
   systemPrompt: string;
   tools: string[];
+  toolSpec: Tools;
   conversationModel: ConversationModel;
   messageModel: MessageModel;
+};
+
+type Tools = {
+  tools: Tool[];
+}
+
+type Tool = {
+  toolSpec: ToolSpec;
+}
+
+type ToolSpec = {
+  name: string;
+  description: string;
+  inputSchema: {
+    json: {
+      type: string;
+      properties: Record<string, Property>;
+      required: string[]
+    }
+  }
+}
+
+type Property = {
+  type: string;
+  description: string;
+};
+
+const processTools = (toolNames: string[], ctx: TransformerContextProvider): Tools | undefined => {
+  if (!toolNames || toolNames.length === 0) {
+    return undefined;
+  }
+  const { fields } = ctx.output.getType('Query') as ObjectTypeDefinitionNode;
+  if (!fields) {
+    // TODO: better error message.
+    throw new InvalidDirectiveError('tools must be queries -- no queries found')
+  }
+
+  let tools: Tool[] = [];
+  for (const toolName of toolNames) {
+    const matchingQueryField = fields.find((field) => field.name.value === toolName);
+    if (!matchingQueryField) {
+      // TODO: better error message.
+      throw new InvalidDirectiveError(`Tool ${toolName} defined in @conversation directive but no matching Query field definition`)
+    }
+
+    let toolProperties: Record<string, Property> = {};
+    let required: string[] = [];
+    const fieldArguments = matchingQueryField.arguments;
+    if (fieldArguments && fieldArguments.length > 0) {
+      for (const fieldArgument of fieldArguments) {
+        const type = convertGraphQlTypeToJsonSchemaType(getBaseType(fieldArgument.type));
+        // TODO: How do we allow this to be defined in the directive?
+        const description = type;
+        toolProperties = { ...toolProperties, [fieldArgument.name.value]: { type, description }};
+
+        if (fieldArgument.type.kind === 'NonNullType') {
+          required.push(fieldArgument.name.value);
+        }
+      };
+    }
+
+    const tool: Tool = {
+      toolSpec: {
+        name: toolName,
+        // Take description as directive input
+        description: toolName,
+        inputSchema: {
+          json: {
+            type: 'object',
+            properties: toolProperties,
+            required,
+          }
+        }
+      }
+    }
+    tools.push(tool);
+  }
+
+  return { tools };
 };
 
 export class ConversationTransformer extends TransformerPluginBase {
@@ -117,9 +201,16 @@ export class ConversationTransformer extends TransformerPluginBase {
     const conversationModelName = `Conversation${capitalizedFieldName}`;
     const messageModelName = `ConversationMessage${capitalizedFieldName}`;
     const referenceFieldName = 'sessionId';
-    config.messageModel = createMessageModel(messageModelName, conversationModelName, referenceFieldName);
+    if (definition.type.kind !== 'NamedType' || definition.type.name.value !== 'ConversationMessage') {
+      throw new InvalidDirectiveError('@conversation return type must be ConversationMessage');
+    }
+    config.messageModel = createMessageModel(messageModelName, conversationModelName, referenceFieldName, definition.type);
     config.conversationModel = createConversationModel(conversationModelName, messageModelName, referenceFieldName);
 
+    const tools = processTools(config.tools, context as TransformerContextProvider);
+    if (tools) {
+      config.toolSpec = tools;
+    }
     validate(config, context as TransformerContextProvider);
     this.directives.push(config);
   };
@@ -134,14 +225,27 @@ export class ConversationTransformer extends TransformerPluginBase {
         ),
     ) as ObjectTypeDefinitionNode[];
 
+    // TODO: add validation for expected fields
+    const conversationMessageInterface = ctx.inputDocument.definitions.find((definition) =>
+      definition.kind === 'InterfaceTypeDefinition' &&
+      definition.name.value === 'ConversationMessage'
+
+    ) as InterfaceTypeDefinitionNode;
+
+    const named: NamedTypeNode = {
+      kind: 'NamedType',
+      name: { value: 'Conversationmessage', kind: 'Name' },
+    }
+
     const conversationDirectiveFields = mutationObjectContainingConversationDirectives[0].fields;
+
     if (!conversationDirectiveFields) {
       throw new Error('No conversation directives found despite expecting them in mutateSchema of conversation-transformer');
     }
     const document: DocumentNode = produce(ctx.inputDocument, (draft: WritableDraft<DocumentNode>) => {
       // once
-      const conversationEventSender = makeConversationEventSenderType();
-      draft.definitions.push(conversationEventSender as WritableDraft<EnumTypeDefinitionNode>);
+      // const conversationEventSender = makeConversationEventSenderType();
+      // draft.definitions.push(conversationEventSender as WritableDraft<EnumTypeDefinitionNode>);
 
       // for each directive
       for (const conversationDirectiveField of conversationDirectiveFields) {
@@ -151,7 +255,7 @@ export class ConversationTransformer extends TransformerPluginBase {
         const referenceFieldName = 'sessionId';
 
         const { conversationModel } = createConversationModel(conversationModelName, messageModelName, referenceFieldName);
-        const { messageModel } = createMessageModel(messageModelName, conversationModelName, referenceFieldName);
+        const { messageModel } = createMessageModel(messageModelName, conversationModelName, referenceFieldName, named);
 
         draft.definitions.push(conversationModel as WritableDraft<ObjectTypeDefinitionNode>);
         draft.definitions.push(messageModel as WritableDraft<ObjectTypeDefinitionNode>);
@@ -240,7 +344,7 @@ export class ConversationTransformer extends TransformerPluginBase {
 
       const messageModelName = directive.messageModel.messageModel.name.value;
       const conversationModelName = directive.conversationModel.conversationModel.name.value;
-      const referenceFieldName = directive.messageModel.messageConversationField.name.value;
+      const referenceFieldName = 'sessionId';
       const messageModel = directive.messageModel.messageModel;
 
       const conversationMessagesTable = getTable(ctx, messageModel);
@@ -316,7 +420,7 @@ export class ConversationTransformer extends TransformerPluginBase {
   };
 
   prepare = (ctx: TransformerPrepareStepContextProvider): void => {
-    ctx.output.addEnum(makeConversationEventSenderType());
+    // ctx.output.addEnum(makeConversationEventSenderType());
 
     for (const directive of this.directives) {
       // TODO: Add @aws_cognito_user_pools directive to
@@ -345,6 +449,7 @@ export class ConversationTransformer extends TransformerPluginBase {
       ctx.output.addMutationFields([assistantMutation]);
       directive.responseMutationInputTypeName = assistantMutationInput.name.value;
       directive.responseMutationName = assistantMutationName;
+
       // -----
 
       // Subscription on assistant response mutation

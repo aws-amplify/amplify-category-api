@@ -19,7 +19,8 @@ const definition = /* GraphQL */ `
   directive @${name}(
     aiModel: String,
     functionName: String,
-    systemPrompt: String
+    systemPrompt: String,
+    tools: [String]
   ) on FIELD_DEFINITION
 `;
 const defaults = {};

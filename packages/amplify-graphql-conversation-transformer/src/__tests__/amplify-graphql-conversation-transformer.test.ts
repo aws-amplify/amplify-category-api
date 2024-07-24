@@ -10,6 +10,7 @@ import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aw
 import { FunctionTransformer } from '../../../amplify-graphql-function-transformer/src';
 import { QueryDefinition } from 'aws-cdk-lib/aws-logs';
 import { Subscription } from 'aws-cdk-lib/aws-sns';
+import { GraphqlApi } from 'aws-cdk-lib/aws-appsync';
 
 test('conversation route valid schema', () => {
   const authConfig: AppSyncAuthConfiguration = {
@@ -72,6 +73,9 @@ test('conversation route valid schema', () => {
     authTransformer,
   ];
 
+  const processed = new GraphQLTransform({ transformers }).preProcessSchema(parse(inputSchema));
+  // console.log(print(processed))
+
   const out = testTransform({
     schema: inputSchema,
     authConfig,
@@ -87,6 +91,91 @@ test('conversation route valid schema', () => {
   expect(out.schema).toMatchSnapshot();
   expect(out.resolvers).toBeDefined();
   expect(out.resolvers).toMatchSnapshot();
+});
+
+
+test('conversation route without tools', () => {
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    additionalAuthenticationProviders: [],
+  };
+
+  const inputSchema = `
+    type Foo
+      @model(
+        mutations: { update: null },
+        subscriptions: { level: off }
+      )
+      @auth(
+        rules: [{ allow: owner }]
+      )
+    {
+      bar: Int
+    }
+
+    enum ConversationMessageSender {
+      user
+      assistant
+    }
+
+    interface ConversationMessage {
+      id: ID!
+      sessionId: ID!
+      sender: ConversationMessageSender
+      content: String
+      context: AWSJSON
+      uiComponents: [AWSJSON]
+    }
+
+    type Mutation {
+        pirateChat(id: ID, sessionId: ID!, content: String): ConversationMessage
+        @conversation(
+          aiModel: "Claude3Haiku",
+          functionName: "conversation-handler",
+          systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability."
+        )
+    }
+  `;
+
+  const modelTransformer = new ModelTransformer();
+  const authTransformer = new AuthTransformer();
+  const indexTransformer = new IndexTransformer();
+  const hasOneTransformer = new HasOneTransformer();
+  const belongsToTransformer = new BelongsToTransformer();
+  const hasManyTransformer = new HasManyTransformer();
+
+  const transformers = [
+    modelTransformer,
+    new FunctionTransformer(),
+    new PrimaryKeyTransformer(),
+    indexTransformer,
+    hasManyTransformer,
+    hasOneTransformer,
+    belongsToTransformer,
+    new ConversationTransformer(modelTransformer, hasManyTransformer, belongsToTransformer, authTransformer),
+    authTransformer,
+  ];
+
+  const processed = new GraphQLTransform({ transformers }).preProcessSchema(parse(inputSchema));
+  console.log(print(processed))
+  
+  const out = testTransform({
+    schema: inputSchema,
+    authConfig,
+    transformers,
+    dataSourceStrategies: {
+      Foo: DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
+    },
+  });
+
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+  expect(out.schema).toMatchSnapshot();
+  // expect(out.resolvers).toBeDefined();
+  // expect(out.resolvers).toMatchSnapshot();
 });
 
 /*

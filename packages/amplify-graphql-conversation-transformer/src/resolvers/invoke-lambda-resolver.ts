@@ -15,10 +15,7 @@ export const invokeLambdaMappingTemplate = (
     // to include in the resolver here. It should be doable considered the apiId is accessible
     // on ctx.api. But this doesn't work.
     // const graphQlUrl = (ctx.api as any).graphQlUrl;
-    const queries = ctx.inputDocument.definitions
-    .find((typeDef) => typeDef.kind === 'ObjectTypeDefinition' && typeDef.name.value === 'Query') as ObjectTypeDefinitionNode;
 
-    const queryTools = config.tools.map((toolName) => queries.fields?.find((queryField) => queryField.name.value === toolName));
     /*
         "tools": [
           {
@@ -60,14 +57,14 @@ export const invokeLambdaMappingTemplate = (
     //     }
     //   }
     // }
-
-
+    const toolDefinitions = JSON.stringify(config.toolSpec);
 
     const systemPrompt = config.systemPrompt;
     const req = MappingTemplate.inlineTemplateFromString(dedent`
       export function request(ctx) {
         const { args, identity, source, request, prev } = ctx;
         const { typeName, fieldName } = ctx.stash;
+        const toolDefinitions = \`${toolDefinitions}\`;
         const requestArgs = {
           ...args,
           modelId: '${modelId}',
@@ -75,7 +72,8 @@ export const invokeLambdaMappingTemplate = (
           responseMutationName: '${responseMutationName}',
           graphqlApiEndpoint: ctx.env.GRAPHQL_API_ENDPOINT,
           currentMessageId: ctx.stash.defaultValues.id,
-          systemPrompt: '${systemPrompt}'
+          systemPrompt: '${systemPrompt}',
+          toolDefinitions: JSON.parse(toolDefinitions),
         };
 
         const payload = {
@@ -102,7 +100,15 @@ export const invokeLambdaMappingTemplate = (
           util.appendError(ctx.error.message, ctx.error.type);
           success = false;
         }
-        return ctx.stash.defaultValues.id;
+        const response = {
+            __typename: '${config.messageModel.messageModel.name.value}',
+            id: ctx.stash.defaultValues.id,
+            sessionId: ctx.args.sessionId,
+            sender: 'user',
+            content: ctx.args.content,
+            createdAt: ctx.stash.defaultValues.createdAt
+        };
+        return response;
       }`);
 
     return { req, res };

@@ -1,5 +1,5 @@
 import { BelongsToDirective } from '@aws-amplify/graphql-directives';
-import { DirectiveNode, Kind, FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
+import { DirectiveNode, Kind, FieldDefinitionNode, ObjectTypeDefinitionNode, NamedTypeNode } from 'graphql';
 import {
   makeDirective,
   makeArgument,
@@ -19,7 +19,12 @@ export type MessageModel = {
   messageModel: ObjectTypeDefinitionNode;
 };
 
-export const createMessageModel = (messageModelName: string, conversationModelName: string, referenceFieldName: string): MessageModel => {
+export const createMessageModel = (
+  messageModelName: string,
+  conversationModelName: string,
+  referenceFieldName: string,
+  conversationMessageInterface: NamedTypeNode,
+): MessageModel => {
   const messageAuthDirective = createMessageAuthDirective();
   const messageModelDirective = createMessageModelDirective();
   const messageBelongsToConversationDirective = createMessageSessionFieldBelongsToDirective(referenceFieldName);
@@ -27,7 +32,9 @@ export const createMessageModel = (messageModelName: string, conversationModelNa
   const messageModel = makeConversationMessageModel(messageModelName, messageConversationField, referenceFieldName, [
     messageModelDirective,
     messageAuthDirective,
-  ]);
+  ],
+  conversationMessageInterface
+);
 
   return {
     messageAuthDirective,
@@ -84,6 +91,7 @@ const makeConversationMessageModel = (
   sessionField: FieldDefinitionNode,
   referenceFieldName: string,
   typeDirectives: DirectiveNode[],
+  conversationMessageInterface: NamedTypeNode,
 ): ObjectTypeDefinitionNode => {
   /*
     type ConversationEvent<route-name>
@@ -118,6 +126,7 @@ const makeConversationMessageModel = (
 
   const object = {
     ...blankObject(modelName),
+    interfaces: [conversationMessageInterface],
     fields: [id, sessionId, sessionField, sender, content, context, uiComponents, assistantContent],
     directives: typeDirectives,
   };
