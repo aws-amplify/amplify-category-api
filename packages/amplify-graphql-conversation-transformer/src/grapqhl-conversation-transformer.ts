@@ -57,12 +57,14 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import { Effect } from 'aws-cdk-lib/aws-iam';
 import { overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
+import { ConversationHandler } from '@aws-amplify/backend-ai';
+import { IFunction } from 'aws-cdk-lib/aws-lambda';
 
 export type ConversationDirectiveConfiguration = {
   parent: ObjectTypeDefinitionNode;
   directive: DirectiveNode;
   aiModel: string;
-  functionName: string;
+  functionName: string | undefined;
   field: FieldDefinitionNode;
   responseMutationInputTypeName: string;
   responseMutationName: string;
@@ -178,26 +180,36 @@ export class ConversationTransformer extends TransformerPluginBase {
       // TODO: Support single function for multiple routes.
       // TODO: Do we really need to create a nested stack here?
       const functionStack = ctx.stackManager.createStack('ConversationDirectiveLambdaStack');
-      const rootStack = ctx.stackManager.scope;
-      const functionDataSourceId = FunctionResourceIDs.FunctionDataSourceID(directive.functionName);
-      const referencedFunction = lambda.Function.fromFunctionAttributes(functionStack, `${functionDataSourceId}Function`, {
-        functionArn: lambdaArnResource(directive.functionName),
-      });
+      let functionDataSourceId: string;
+      let referencedFunction: IFunction;
+      if (directive.functionName) {
+        functionDataSourceId = FunctionResourceIDs.FunctionDataSourceID(directive.functionName);
+        referencedFunction = lambda.Function.fromFunctionAttributes(functionStack, `${functionDataSourceId}Function`, {
+          functionArn: lambdaArnResource(directive.functionName),
+        });
 
-      // -------------------------------------------------------------------------------------------------------------------------------
-      // TODO: This should probs be deleted. Adding the policy to the IFunction we have here doesn't work
-      const invokeModelPolicyStatement = new cdk.aws_iam.PolicyStatement({
-        actions: ['bedrock:InvokeModel'],
-        effect: Effect.ALLOW,
-        resources: [`arn:aws:bedrock:\${AWS::Region}::foundation-model/${bedrockModelId}`],
-      });
+        // -------------------------------------------------------------------------------------------------------------------------------
+        // TODO: This should probs be deleted. Adding the policy to the IFunction we have here doesn't work
+        const invokeModelPolicyStatement = new cdk.aws_iam.PolicyStatement({
+          actions: ['bedrock:InvokeModel'],
+          effect: Effect.ALLOW,
+          resources: [`arn:aws:bedrock:\${AWS::Region}::foundation-model/${bedrockModelId}`],
+        });
 
-      referencedFunction.role?.attachInlinePolicy(
-        new cdk.aws_iam.Policy(functionStack, 'ConversationRouteLambdaRolePolicyBedrockConverse', {
-          statements: [invokeModelPolicyStatement],
-          policyName: 'ConversationRouteLambdaRolePolicyBedrockConverse',
-        }),
-      );
+
+        referencedFunction.role?.attachInlinePolicy(
+          new cdk.aws_iam.Policy(functionStack, 'ConversationRouteLambdaRolePolicyBedrockConverse', {
+            statements: [invokeModelPolicyStatement],
+            policyName: 'ConversationRouteLambdaRolePolicyBedrockConverse',
+          }),
+        );
+      } else {
+        const defaultConversationHandler = new ConversationHandler(functionStack, 'DefaultConversationHandler', {
+          modelId: bedrockModelId,
+        });
+        functionDataSourceId = FunctionResourceIDs.FunctionDataSourceID('DefaultConversationHandler');
+        referencedFunction = defaultConversationHandler.resources.lambda;
+      }
       // -------------------------------------------------------------------------------------------------------------------------------
 
       // console.log('>>> ctx.api as any attrGraphQlUrl', (ctx.api as any).attrGraphQlUrl);

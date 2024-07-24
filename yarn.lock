@@ -397,6 +397,11 @@
     amazon-cognito-identity-js "5.2.14"
     crypto-js "^4.1.1"
 
+"@aws-amplify/backend-ai@file:../amplify-backend/packages/backend-ai":
+  version "0.1.0"
+  dependencies:
+    "@aws-amplify/plugin-types" "^1.0.1"
+
 "@aws-amplify/backend-output-schemas@^0.4.0":
   version "0.4.0"
   resolved "https://registry.npmjs.org/@aws-amplify/backend-output-schemas/-/backend-output-schemas-0.4.0.tgz#835af830e1642d07c8f19bb3d96a76571606bf9a"
@@ -492,6 +497,7 @@
 "@aws-amplify/graphql-conversation-transformer@file:packages/amplify-graphql-conversation-transformer":
   version "0.1.0"
   dependencies:
+    "@aws-amplify/backend-ai" "file:../amplify-backend/packages/backend-ai"
     "@aws-amplify/graphql-directives" "1.1.0"
     "@aws-amplify/graphql-index-transformer" "2.4.6"
     "@aws-amplify/graphql-model-transformer" "2.11.1"
@@ -585,6 +591,11 @@
   version "0.8.0"
   resolved "https://registry.npmjs.org/@aws-amplify/plugin-types/-/plugin-types-0.8.0.tgz#7ab3ca9af4dd51cd489c9a172bc7325db3bf4478"
   integrity sha512-38w0dV2dS40uZB4gYa7sc+YnoLtRKdfhHDKpCqSx5ml/rq1PvzEcExiSfrPddC7/ZBLr0IUZH74evVCHzOcPDg==
+
+"@aws-amplify/plugin-types@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/@aws-amplify/plugin-types/-/plugin-types-1.0.1.tgz#66a9d69ca04951b673c0d755f8e2ba40d312ff38"
+  integrity sha512-2F8j9POq2/NQcEpFZAfee0Kwnuzta8p1w5UonK22uXX7lJnOnWrdHfV431izD7ffv1W9X1xTiO/1cLUO7U8BKQ==
 
 "@aws-amplify/predictions@4.0.64":
   version "4.0.64"
