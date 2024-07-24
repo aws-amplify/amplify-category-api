@@ -50,7 +50,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
   protected createCustomProviderResource(scope: Construct, context: TransformerContextProvider): void {
     const lambdaCode = aws_lambda.Code.fromAsset(
       path.join(__dirname, '..', '..', '..', 'lib', 'resources', 'amplify-dynamodb-table', 'amplify-table-manager-lambda'),
-      { exclude: ['*.ts'] },
+      { exclude: ['*.ts', '*.json', 'LICENSE', 'README.md'] },
     );
 
     const importedTableNames = Object.values(context.dataSourceStrategies)
