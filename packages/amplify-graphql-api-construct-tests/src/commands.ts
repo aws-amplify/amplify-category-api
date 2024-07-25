@@ -11,6 +11,10 @@ import {
   amplifyPush,
   getProjectMeta,
 } from 'amplify-category-api-e2e-core';
+import {
+  DynamoDBClient,
+  DeleteTableCommand,
+} from '@aws-sdk/client-dynamodb';
 
 /**
  * Retrieve the path to the `npx` executable for interacting with the aws-cdk cli.
@@ -216,3 +220,13 @@ export const writeTableMap = (projRoot: string, tableMap: string): void => {
   fs.writeFileSync(filePath, tableMap);
   console.log(`Wrote Table Mapping at ${filePath}`);
 };
+
+/**
+ * Helper function to delete DDB tables.
+ * Used to delete tables set to retain on delete.
+ * @param tableNames table names to delete
+ */
+export const deleteDDBTables = async (tableNames: string[]): Promise<void> => {
+  const client = new DynamoDBClient();
+  await Promise.allSettled(tableNames.map((tableName) => client.send(new DeleteTableCommand({ TableName: tableName }))));
+}

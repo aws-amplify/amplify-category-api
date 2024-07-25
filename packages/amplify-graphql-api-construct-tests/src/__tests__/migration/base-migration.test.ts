@@ -4,7 +4,7 @@ import {
   deleteProjectDir,
   deleteProject,
 } from 'amplify-category-api-e2e-core';
-import { initCDKProject, cdkDeploy, cdkDestroy, createGen1ProjectForMigration, writeTableMap } from '../../commands';
+import { initCDKProject, cdkDeploy, cdkDestroy, createGen1ProjectForMigration, writeTableMap, deleteDDBTables } from '../../commands';
 import { graphql } from '../../graphql-request';
 import { DURATION_1_HOUR } from '../../utils/duration-constants';
 
@@ -15,6 +15,7 @@ describe('Base Migration', () => {
   let gen2ProjRoot: string;
   let gen1ProjFolderName: string;
   let gen2ProjFolderName: string;
+  let dataSourceMapping: Record<string, string>;
 
   beforeEach(async () => {
     gen1ProjFolderName = 'basemigrationgen1';
@@ -35,6 +36,13 @@ describe('Base Migration', () => {
       /* No-op */
     }
 
+    try {
+      // Tables are set to retain when migrating from gen 1 to gen 2
+      await deleteDDBTables(Object.values(dataSourceMapping));
+    } catch (_) {
+      /* No-op */
+    }
+
     deleteProjectDir(gen1ProjRoot);
     deleteProjectDir(gen2ProjRoot);
   });
@@ -45,6 +53,7 @@ describe('Base Migration', () => {
       GraphQLAPIKeyOutput: gen1APIKey,
       DataSourceMappingOutput,
     } = await createGen1ProjectForMigration(gen1ProjFolderName, gen1ProjRoot, 'simple_model_public_auth.graphql');
+    dataSourceMapping = JSON.parse(DataSourceMappingOutput);
     const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'migration', 'base'));
     const name = await initCDKProject(gen2ProjRoot, templatePath);
     writeTableMap(gen2ProjRoot, DataSourceMappingOutput);
