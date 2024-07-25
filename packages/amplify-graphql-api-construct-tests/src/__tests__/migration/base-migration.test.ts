@@ -10,7 +10,7 @@ import { DURATION_20_MINUTES } from '../../utils/duration-constants';
 
 jest.setTimeout(DURATION_20_MINUTES);
 
-describe('Base Migration', () => {
+describe('Migration with basic schema', () => {
   let gen1ProjRoot: string;
   let gen2ProjRoot: string;
   let gen1ProjFolderName: string;
@@ -47,7 +47,7 @@ describe('Base Migration', () => {
     deleteProjectDir(gen2ProjRoot);
   });
 
-  test('base migration', async () => {
+  test('Migration with basic schema', async () => {
     const {
       GraphQLAPIEndpointOutput: gen1APIEndpoint,
       GraphQLAPIKeyOutput: gen1APIKey,
