@@ -38,6 +38,7 @@ describe('References Migration', () => {
 
     try {
       // Tables are set to retain when migrating from gen 1 to gen 2
+      // delete the tables to prevent resource leak after test is complete
       await deleteDDBTables(Object.values(dataSourceMapping));
     } catch (_) {
       /* No-op */
@@ -219,6 +220,8 @@ describe('References Migration', () => {
     expect(gen2ListResult.body.data.listPrimaries.items[1].relatedOne).toBeDefined();
 
     await deleteProject(gen1ProjRoot);
+
+    // assert tables have not been deleted after deleting the gen 1 project
 
     const listResult = await graphql(
       gen2APIEndpoint,
