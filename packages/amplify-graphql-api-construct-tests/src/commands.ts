@@ -2,14 +2,14 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { copySync, moveSync, readFileSync, writeFileSync } from 'fs-extra';
 import {
-  getScriptRunnerPath,
-  sleep,
-  nspawn as spawn,
-  initJSProjectWithProfile,
   addApiWithoutSchema,
-  updateApiSchema,
   amplifyPush,
   getProjectMeta,
+  getScriptRunnerPath,
+  initJSProjectWithProfile,
+  nspawn as spawn,
+  sleep,
+  updateApiSchema,
 } from 'amplify-category-api-e2e-core';
 import {
   DynamoDBClient,
