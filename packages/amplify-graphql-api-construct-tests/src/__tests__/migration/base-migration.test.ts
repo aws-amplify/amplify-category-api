@@ -153,8 +153,5 @@ describe('Base Migration', () => {
     expect(listResult.body.data.listTodos.items.length).toEqual(2);
     expect([gen1Todo.id, gen2Todo.id]).toContain(listResult.body.data.listTodos.items[0].id);
     expect([gen1Todo.id, gen2Todo.id]).toContain(listResult.body.data.listTodos.items[1].id);
-
-    // TODO: delete gen 1 table
-    // TODO: preform queries
   });
 });
