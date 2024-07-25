@@ -25,8 +25,22 @@ type Query {
   listConversationMessagePirateChats(filter: ModelConversationMessagePirateChatFilterInput, limit: Int, nextToken: String): ModelConversationMessagePirateChatConnection
 }
 
+enum ConversationMessageSender {
+  user
+  assistant
+}
+
+interface ConversationMessage {
+  id: ID!
+  sessionId: ID!
+  sender: ConversationMessageSender
+  content: String
+  context: AWSJSON
+  uiComponents: [AWSJSON]
+}
+
 type Mutation {
-  pirateChat(id: ID, sessionId: ID!, content: String): String
+  pirateChat(id: ID, sessionId: ID!, content: String): ConversationMessage
   createAssistantResponsePirateChat(input: CreateConversationMessagePirateChatAssistantInput!): ConversationMessagePirateChat @aws_cognito_user_pools
   createFoo(input: CreateFooInput!, condition: ModelFooConditionInput): Foo
   deleteFoo(input: DeleteFooInput!, condition: ModelFooConditionInput): Foo
@@ -43,7 +57,7 @@ input CreateConversationMessagePirateChatAssistantInput {
 }
 
 type Subscription {
-  onCreateAssistantResponsePirateChat(sessionId: String): ConversationMessagePirateChat @aws_subscribe(mutations: [\\"createAssistantResponsePirateChat\\"]) @aws_cognito_user_pools
+  onCreateAssistantResponsePirateChat(sessionId: ID): ConversationMessagePirateChat @aws_subscribe(mutations: [\\"createAssistantResponsePirateChat\\"]) @aws_cognito_user_pools
   onCreateConversationMessagePirateChat(filter: ModelSubscriptionConversationMessagePirateChatFilterInput, owner: String): ConversationMessagePirateChat @aws_subscribe(mutations: [\\"createConversationMessagePirateChat\\"])
 }
 
@@ -57,7 +71,7 @@ type ConversationPirateChat {
   owner: String
 }
 
-type ConversationMessagePirateChat {
+type ConversationMessagePirateChat implements ConversationMessage {
   id: ID!
   sessionId: ID!
   session: ConversationPirateChat
@@ -299,9 +313,15 @@ type ModelConversationMessagePirateChatConnection {
   nextToken: String
 }
 
+input ModelConversationMessageSenderInput {
+  eq: ConversationMessageSender
+  ne: ConversationMessageSender
+}
+
 input ModelConversationMessagePirateChatFilterInput {
   id: ModelIDInput
   sessionId: ModelIDInput
+  sender: ModelConversationMessageSenderInput
   content: ModelStringInput
   context: ModelStringInput
   uiComponents: ModelStringInput
@@ -316,6 +336,7 @@ input ModelConversationMessagePirateChatFilterInput {
 
 input ModelConversationMessagePirateChatConditionInput {
   sessionId: ModelIDInput
+  sender: ModelConversationMessageSenderInput
   content: ModelStringInput
   context: ModelStringInput
   uiComponents: ModelStringInput
@@ -345,6 +366,7 @@ input DeleteConversationMessagePirateChatInput {
 input ModelSubscriptionConversationMessagePirateChatFilterInput {
   id: ModelSubscriptionIDInput
   sessionId: ModelSubscriptionIDInput
+  sender: ModelSubscriptionStringInput
   content: ModelSubscriptionStringInput
   context: ModelSubscriptionStringInput
   uiComponents: ModelSubscriptionStringInput
@@ -2033,7 +2055,7 @@ input CreateConversationMessagePirateChatAssistantInput {
 }
 
 type Subscription {
-  onCreateAssistantResponsePirateChat(sessionId: String): ConversationMessagePirateChat @aws_subscribe(mutations: [\\"createAssistantResponsePirateChat\\"]) @aws_cognito_user_pools
+  onCreateAssistantResponsePirateChat(sessionId: ID): ConversationMessagePirateChat @aws_subscribe(mutations: [\\"createAssistantResponsePirateChat\\"]) @aws_cognito_user_pools
   onCreateConversationMessagePirateChat(filter: ModelSubscriptionConversationMessagePirateChatFilterInput, owner: String): ConversationMessagePirateChat @aws_subscribe(mutations: [\\"createConversationMessagePirateChat\\"])
 }
 

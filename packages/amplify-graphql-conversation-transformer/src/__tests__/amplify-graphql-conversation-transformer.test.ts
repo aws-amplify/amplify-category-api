@@ -43,8 +43,22 @@ test('conversation route valid schema', () => {
       plus(a: Int, b: Int): Int
     }
 
+    enum ConversationMessageSender {
+      user
+      assistant
+    }
+
+    interface ConversationMessage {
+      id: ID!
+      sessionId: ID!
+      sender: ConversationMessageSender
+      content: String
+      context: AWSJSON
+      uiComponents: [AWSJSON]
+    }
+
     type Mutation {
-        pirateChat(id: ID, sessionId: ID!, content: String): String
+        pirateChat(id: ID, sessionId: ID!, content: String): ConversationMessage
         @conversation(
           aiModel: "Claude3Haiku",
           functionName: "conversation-handler",
@@ -160,7 +174,7 @@ test('conversation route without tools', () => {
 
   const processed = new GraphQLTransform({ transformers }).preProcessSchema(parse(inputSchema));
   console.log(print(processed))
-  
+
   const out = testTransform({
     schema: inputSchema,
     authConfig,

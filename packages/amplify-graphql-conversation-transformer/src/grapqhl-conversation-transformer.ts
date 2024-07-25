@@ -604,7 +604,7 @@ const makeConversationMessageSubscription = (
   const awsSubscribeDirective = makeDirective('aws_subscribe', [makeArgument('mutations', makeValueNode([onMutationName]))]);
   const cognitoAuthDirective = makeDirective('aws_cognito_user_pools', []);
 
-  const args: InputValueDefinitionNode[] = [makeInputValueDefinition('sessionId', makeNamedType('String'))];
+  const args: InputValueDefinitionNode[] = [makeInputValueDefinition('sessionId', makeNamedType('ID'))];
   const subscriptionField = makeField(subscriptionName, args, makeNamedType(conversationMessageTypeName), [
     awsSubscribeDirective,
     cognitoAuthDirective,
