@@ -45,6 +45,7 @@ export const assistantMutationResolver = (): { req: MappingTemplateProvider; res
             }
 
             const { conversationId, content, associatedUserMessageId } = ctx.args.input;
+            const { createdAt, updatedAt } = ctx.result;
 
             return {
               id: associatedUserMessageId,
@@ -52,6 +53,8 @@ export const assistantMutationResolver = (): { req: MappingTemplateProvider; res
               sessionId: conversationId,
               sender: 'assistant',
               owner: ctx.stash.owner,
+              createdAt,
+              updatedAt,
             };
         }
       `);
