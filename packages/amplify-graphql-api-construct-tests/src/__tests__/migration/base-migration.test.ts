@@ -4,8 +4,9 @@ import {
   deleteProjectDir,
   deleteProject,
 } from 'amplify-category-api-e2e-core';
-import { initCDKProject, cdkDeploy, cdkDestroy, createGen1ProjectForMigration, writeTableMap, deleteDDBTables } from '../../commands';
+import { initCDKProject, cdkDeploy, cdkDestroy, createGen1ProjectForMigration, deleteDDBTables } from '../../commands';
 import { graphql } from '../../graphql-request';
+import { TestDefinition, writeStackConfig, writeTestDefinitions } from '../../utils';
 import { DURATION_20_MINUTES } from '../../utils/duration-constants';
 
 jest.setTimeout(DURATION_20_MINUTES);
@@ -55,9 +56,26 @@ describe('Migration with basic schema', () => {
       DataSourceMappingOutput,
     } = await createGen1ProjectForMigration(gen1ProjFolderName, gen1ProjRoot, 'simple_model_public_auth.graphql');
     dataSourceMapping = JSON.parse(DataSourceMappingOutput);
-    const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'migration', 'base'));
+    const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'configurable-stack'));
     const name = await initCDKProject(gen2ProjRoot, templatePath);
-    writeTableMap(gen2ProjRoot, DataSourceMappingOutput);
+    const testDefinitions: Record<string, TestDefinition> = {
+      'basic-schema-migration': {
+        schema: /* GraphQL */ `
+          type Todo @model @auth(rules: [{ allow: public }]) {
+            id: ID!
+            content: String
+          }
+        `,
+        strategy: {
+          dbType: 'DYNAMODB' as const,
+          provisionStrategy: 'IMPORTED_AMPLIFY_TABLE' as const,
+          tableName: dataSourceMapping.Todo,
+        },
+      }
+    };
+    writeStackConfig(gen2ProjRoot, { prefix: gen2ProjFolderName });
+    writeTestDefinitions(testDefinitions, gen2ProjRoot);
+
     const outputs = await cdkDeploy(gen2ProjRoot, '--all');
     const { awsAppsyncApiEndpoint: gen2APIEndpoint, awsAppsyncApiKey: gen2APIKey } = outputs[name];
 

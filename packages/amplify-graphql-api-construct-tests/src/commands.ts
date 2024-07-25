@@ -213,17 +213,6 @@ export const createGen1ProjectForMigration = async (
 };
 
 /**
- * Helper function to write the table map of a gen 1 project to a file.
- * @param projRoot project root directory
- * @param tableMap table map as a string to write
- */
-export const writeTableMap = (projRoot: string, tableMap: string): void => {
-  const filePath = path.join(projRoot, 'table-map.json');
-  fs.writeFileSync(filePath, tableMap);
-  console.log(`Wrote Table Mapping at ${filePath}`);
-};
-
-/**
  * Helper function to delete DDB tables.
  * Used to delete tables set to retain on delete.
  * @param tableNames table names to delete

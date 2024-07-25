@@ -1,16 +1,13 @@
 import * as path from 'path';
-import {
-  createNewProjectDir,
-  deleteProjectDir,
-  deleteProject,
-} from 'amplify-category-api-e2e-core';
-import { initCDKProject, cdkDeploy, cdkDestroy, createGen1ProjectForMigration, writeTableMap, deleteDDBTables } from '../../commands';
+import { createNewProjectDir, deleteProjectDir, deleteProject } from 'amplify-category-api-e2e-core';
+import { initCDKProject, cdkDeploy, cdkDestroy, createGen1ProjectForMigration, deleteDDBTables } from '../../commands';
 import { graphql } from '../../graphql-request';
+import { TestDefinition, writeStackConfig, writeTestDefinitions } from '../../utils';
 import { DURATION_20_MINUTES } from '../../utils/duration-constants';
 
 jest.setTimeout(DURATION_20_MINUTES);
 
-describe('References Migration', () => {
+describe('Many-to-many Migration', () => {
   let gen1ProjRoot: string;
   let gen2ProjRoot: string;
   let gen1ProjFolderName: string;
@@ -55,9 +52,56 @@ describe('References Migration', () => {
       DataSourceMappingOutput,
     } = await createGen1ProjectForMigration(gen1ProjFolderName, gen1ProjRoot, 'many-to-many.graphql');
     dataSourceMapping = JSON.parse(DataSourceMappingOutput);
-    const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'migration', 'many-to-many'));
+    const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'configurable-stack'));
     const name = await initCDKProject(gen2ProjRoot, templatePath);
-    writeTableMap(gen2ProjRoot, DataSourceMappingOutput);
+    const testDefinitions: Record<string, TestDefinition> = {
+      post: {
+        schema: /* GraphQL */ `
+          type Post @model @auth(rules: [{ allow: public }]) {
+            id: ID!
+            title: String!
+            content: String
+            tags: [PostTags] @hasMany(references: ["postId"], indexName: "byPost")
+          }
+        `,
+        strategy: {
+          dbType: 'DYNAMODB' as const,
+          provisionStrategy: 'IMPORTED_AMPLIFY_TABLE' as const,
+          tableName: dataSourceMapping.Post,
+        },
+      },
+      tag: {
+        schema: /* GraphQL */ `
+          type Tag @model @auth(rules: [{ allow: public }]) {
+            id: ID!
+            label: String!
+            posts: [PostTags] @hasMany(references: ["tagId"], indexName: "byTag")
+          }
+        `,
+        strategy: {
+          dbType: 'DYNAMODB' as const,
+          provisionStrategy: 'IMPORTED_AMPLIFY_TABLE' as const,
+          tableName: dataSourceMapping.Tag,
+        },
+      },
+      postTags: {
+        schema: /* GraphQL */ `
+          type PostTags @model @auth(rules: [{ allow: public }]) {
+            postId: ID @index(name: "byPost")
+            tagId: ID @index(name: "byTag")
+            post: Post @belongsTo(references: ["postId"])
+            tag: Tag @belongsTo(references: ["tagId"])
+          }
+        `,
+        strategy: {
+          dbType: 'DYNAMODB' as const,
+          provisionStrategy: 'IMPORTED_AMPLIFY_TABLE' as const,
+          tableName: dataSourceMapping.PostTags,
+        },
+      },
+    };
+    writeStackConfig(gen2ProjRoot, { prefix: gen2ProjFolderName });
+    writeTestDefinitions(testDefinitions, gen2ProjRoot);
     const outputs = await cdkDeploy(gen2ProjRoot, '--all');
     const { awsAppsyncApiEndpoint: gen2APIEndpoint, awsAppsyncApiKey: gen2APIKey } = outputs[name];
 
@@ -66,7 +110,7 @@ describe('References Migration', () => {
       gen1APIKey,
       /* GraphQL */ `
         mutation CREATE_POST {
-          createPost(input: {title: "my post"}) {
+          createPost(input: { title: "my post" }) {
             id
             title
           }
@@ -82,7 +126,7 @@ describe('References Migration', () => {
       gen1APIKey,
       /* GraphQL */ `
         mutation CREATE_TAG {
-          createTag(input: {label: "my tag"}) {
+          createTag(input: { label: "my tag" }) {
             id
             label
           }
@@ -115,7 +159,7 @@ describe('References Migration', () => {
       gen2APIKey,
       /* GraphQL */ `
         mutation CREATE_POST {
-          createPost(input: {title: "my post"}) {
+          createPost(input: { title: "my post" }) {
             id
             title
           }
@@ -131,7 +175,7 @@ describe('References Migration', () => {
       gen2APIKey,
       /* GraphQL */ `
         mutation CREATE_TAG {
-          createTag(input: {label: "my tag"}) {
+          createTag(input: { label: "my tag" }) {
             id
             label
           }

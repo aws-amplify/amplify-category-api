@@ -1,11 +1,8 @@
 import * as path from 'path';
-import {
-  createNewProjectDir,
-  deleteProjectDir,
-  deleteProject,
-} from 'amplify-category-api-e2e-core';
-import { initCDKProject, cdkDeploy, cdkDestroy, createGen1ProjectForMigration, writeTableMap, deleteDDBTables } from '../../commands';
+import { createNewProjectDir, deleteProjectDir, deleteProject } from 'amplify-category-api-e2e-core';
+import { initCDKProject, cdkDeploy, cdkDestroy, createGen1ProjectForMigration, deleteDDBTables } from '../../commands';
 import { graphql } from '../../graphql-request';
+import { TestDefinition, writeStackConfig, writeTestDefinitions } from '../../utils';
 import { DURATION_20_MINUTES } from '../../utils/duration-constants';
 
 jest.setTimeout(DURATION_20_MINUTES);
@@ -55,9 +52,54 @@ describe('References Migration', () => {
       DataSourceMappingOutput,
     } = await createGen1ProjectForMigration(gen1ProjFolderName, gen1ProjRoot, 'references.graphql');
     dataSourceMapping = JSON.parse(DataSourceMappingOutput);
-    const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'migration', 'references'));
+    const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'configurable-stack'));
     const name = await initCDKProject(gen2ProjRoot, templatePath);
-    writeTableMap(gen2ProjRoot, DataSourceMappingOutput);
+    const testDefinitions: Record<string, TestDefinition> = {
+      Primary: {
+        schema: /* GraphQL */ `
+          type Primary @model @auth(rules: [{ allow: public }]) {
+            id: ID! @primaryKey
+            relatedMany: [RelatedMany] @hasMany(references: "primaryId")
+            relatedOne: RelatedOne @hasOne(references: "primaryId")
+          }
+        `,
+        strategy: {
+          dbType: 'DYNAMODB' as const,
+          provisionStrategy: 'IMPORTED_AMPLIFY_TABLE' as const,
+          tableName: dataSourceMapping.Primary,
+        },
+      },
+      RelatedMany: {
+        schema: /* GraphQL */ `
+          type RelatedMany @model @auth(rules: [{ allow: public }]) {
+            id: ID! @primaryKey
+            primaryId: String
+            primary: Primary @belongsTo(references: ["primaryId"])
+          }
+        `,
+        strategy: {
+          dbType: 'DYNAMODB' as const,
+          provisionStrategy: 'IMPORTED_AMPLIFY_TABLE' as const,
+          tableName: dataSourceMapping.RelatedMany,
+        },
+      },
+      RelatedOne: {
+        schema: /* GraphQL */ `
+          type RelatedOne @model @auth(rules: [{ allow: public }]) {
+            id: ID! @primaryKey
+            primaryId: String
+            primary: Primary @belongsTo(references: ["primaryId"])
+          }
+        `,
+        strategy: {
+          dbType: 'DYNAMODB' as const,
+          provisionStrategy: 'IMPORTED_AMPLIFY_TABLE' as const,
+          tableName: dataSourceMapping.RelatedOne,
+        },
+      },
+    };
+    writeStackConfig(gen2ProjRoot, { prefix: gen2ProjFolderName });
+    writeTestDefinitions(testDefinitions, gen2ProjRoot);
     const outputs = await cdkDeploy(gen2ProjRoot, '--all');
     const { awsAppsyncApiEndpoint: gen2APIEndpoint, awsAppsyncApiKey: gen2APIKey } = outputs[name];
 
@@ -103,7 +145,7 @@ describe('References Migration', () => {
       `,
     );
     expect(gen1RelatedOneResult.statusCode).toEqual(200);
-    
+
     const gen2RelatedOneResult = await graphql(
       gen2APIEndpoint,
       gen2APIKey,
@@ -129,7 +171,7 @@ describe('References Migration', () => {
       `,
     );
     expect(gen1RelatedManyResult.statusCode).toEqual(200);
-    
+
     const gen2RelatedManyResult = await graphql(
       gen2APIEndpoint,
       gen2APIKey,
@@ -185,28 +227,28 @@ describe('References Migration', () => {
       gen2APIEndpoint,
       gen2APIKey,
       /* GraphQL */ `
-      query LIST_PRIMARY {
-        listPrimaries {
-          items {
-            id
-            relatedMany {
-              items {
+        query LIST_PRIMARY {
+          listPrimaries {
+            items {
+              id
+              relatedMany {
+                items {
+                  id
+                  primaryId
+                }
+                nextToken
+              }
+              relatedOne {
                 id
                 primaryId
-              }
-              nextToken
-            }
-            relatedOne {
-              id
-              primaryId
-              primary {
-                id
+                primary {
+                  id
+                }
               }
             }
+            nextToken
           }
-          nextToken
         }
-      }
       `,
     );
 
@@ -227,28 +269,28 @@ describe('References Migration', () => {
       gen2APIEndpoint,
       gen2APIKey,
       /* GraphQL */ `
-      query LIST_PRIMARY {
-        listPrimaries {
-          items {
-            id
-            relatedMany {
-              items {
+        query LIST_PRIMARY {
+          listPrimaries {
+            items {
+              id
+              relatedMany {
+                items {
+                  id
+                  primaryId
+                }
+                nextToken
+              }
+              relatedOne {
                 id
                 primaryId
-              }
-              nextToken
-            }
-            relatedOne {
-              id
-              primaryId
-              primary {
-                id
+                primary {
+                  id
+                }
               }
             }
+            nextToken
           }
-          nextToken
         }
-      }
       `,
     );
 
