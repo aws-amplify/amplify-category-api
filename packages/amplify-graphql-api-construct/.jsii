@@ -10,13 +10,22 @@
     "@aws-amplify/backend-output-storage": "^0.2.2",
     "@aws-amplify/graphql-auth-transformer": "3.6.4",
     "@aws-amplify/graphql-default-value-transformer": "2.3.12",
+    "@aws-amplify/graphql-auth-transformer": "3.6.4",
+    "@aws-amplify/graphql-default-value-transformer": "2.3.12",
     "@aws-amplify/graphql-directives": "1.1.0",
     "@aws-amplify/graphql-function-transformer": "2.1.26",
     "@aws-amplify/graphql-http-transformer": "2.1.26",
     "@aws-amplify/graphql-index-transformer": "2.4.8",
     "@aws-amplify/graphql-maps-to-transformer": "3.4.22",
     "@aws-amplify/graphql-model-transformer": "2.11.3",
+    "@aws-amplify/graphql-index-transformer": "2.4.8",
+    "@aws-amplify/graphql-maps-to-transformer": "3.4.22",
+    "@aws-amplify/graphql-model-transformer": "2.11.3",
     "@aws-amplify/graphql-predictions-transformer": "2.1.26",
+    "@aws-amplify/graphql-relational-transformer": "2.5.10",
+    "@aws-amplify/graphql-searchable-transformer": "2.7.8",
+    "@aws-amplify/graphql-sql-transformer": "0.3.8",
+    "@aws-amplify/graphql-transformer": "1.6.4",
     "@aws-amplify/graphql-relational-transformer": "2.5.10",
     "@aws-amplify/graphql-searchable-transformer": "2.7.8",
     "@aws-amplify/graphql-sql-transformer": "0.3.8",
@@ -4195,7 +4204,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 292
+            "line": 291
           },
           "name": "addDynamoDbDataSource",
           "parameters": [
@@ -4244,7 +4253,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 304
+            "line": 303
           },
           "name": "addElasticsearchDataSource",
           "parameters": [
@@ -4291,7 +4300,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 314
+            "line": 313
           },
           "name": "addEventBridgeDataSource",
           "parameters": [
@@ -4338,7 +4347,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 396
+            "line": 395
           },
           "name": "addFunction",
           "parameters": [
@@ -4373,7 +4382,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 325
+            "line": 324
           },
           "name": "addHttpDataSource",
           "parameters": [
@@ -4421,7 +4430,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 336
+            "line": 335
           },
           "name": "addLambdaDataSource",
           "parameters": [
@@ -4469,7 +4478,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 347
+            "line": 346
           },
           "name": "addNoneDataSource",
           "parameters": [
@@ -4508,7 +4517,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 358
+            "line": 357
           },
           "name": "addOpenSearchDataSource",
           "parameters": [
@@ -4556,7 +4565,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 371
+            "line": 370
           },
           "name": "addRdsDataSource",
           "parameters": [
@@ -4623,7 +4632,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 387
+            "line": 386
           },
           "name": "addResolver",
           "parameters": [
@@ -8785,6 +8794,6 @@
       "symbolId": "src/model-datasource-strategy-types:VpcConfig"
     }
   },
-  "version": "1.11.3",
-  "fingerprint": "a/L463RfpS/6LBdu40oZYxK4td6hA3mL1AGehebpnm4="
+  "version": "1.11.2",
+  "fingerprint": "+GbOMs9Jck++4gdG/lWhYHmTLVQPWrYoevnZIS7vDVM="
 }
