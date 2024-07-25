@@ -103,8 +103,6 @@ describe('References Migration', () => {
     );
     expect(gen1RelatedOneResult.statusCode).toEqual(200);
     
-    const gen1RelatedOne = gen1RelatedOneResult.body.data.createRelatedOne;
-
     const gen2RelatedOneResult = await graphql(
       gen2APIEndpoint,
       gen2APIKey,
@@ -117,8 +115,6 @@ describe('References Migration', () => {
       `,
     );
     expect(gen2RelatedOneResult.statusCode).toEqual(200);
-
-    const gen2RelatedOne = gen2RelatedOneResult.body.data.createRelatedOne;
 
     const gen1RelatedManyResult = await graphql(
       gen2APIEndpoint,
@@ -133,8 +129,6 @@ describe('References Migration', () => {
     );
     expect(gen1RelatedManyResult.statusCode).toEqual(200);
     
-    const gen1RelatedMany = gen1RelatedOneResult.body.data.createRelatedOne;
-
     const gen2RelatedManyResult = await graphql(
       gen2APIEndpoint,
       gen2APIKey,
@@ -147,8 +141,6 @@ describe('References Migration', () => {
       `,
     );
     expect(gen2RelatedManyResult.statusCode).toEqual(200);
-
-    const gen2RelatedMany = gen2RelatedManyResult.body.data.createRelatedMany;
 
     const gen1ListResult = await graphql(
       gen1APIEndpoint,
@@ -183,6 +175,10 @@ describe('References Migration', () => {
     expect(gen1ListResult.body.data.listPrimaries.items.length).toEqual(2);
     expect([gen1Primary.id, gen2Primary.id]).toContain(gen1ListResult.body.data.listPrimaries.items[0].id);
     expect([gen1Primary.id, gen2Primary.id]).toContain(gen1ListResult.body.data.listPrimaries.items[1].id);
+    expect(gen1ListResult.body.data.listPrimaries.items[0].relatedMany.items.length).toEqual(1);
+    expect(gen1ListResult.body.data.listPrimaries.items[1].relatedMany.items.length).toEqual(1);
+    expect(gen1ListResult.body.data.listPrimaries.items[0].relatedOne).toBeDefined();
+    expect(gen1ListResult.body.data.listPrimaries.items[1].relatedOne).toBeDefined();
 
     const gen2ListResult = await graphql(
       gen2APIEndpoint,
@@ -214,9 +210,13 @@ describe('References Migration', () => {
     );
 
     expect(gen2ListResult.statusCode).toEqual(200);
-    expect(gen1ListResult.body.data.listPrimaries.items.length).toEqual(2);
-    expect([gen1Primary.id, gen2Primary.id]).toContain(gen1ListResult.body.data.listPrimaries.items[0].id);
-    expect([gen1Primary.id, gen2Primary.id]).toContain(gen1ListResult.body.data.listPrimaries.items[1].id);
+    expect(gen2ListResult.body.data.listPrimaries.items.length).toEqual(2);
+    expect([gen1Primary.id, gen2Primary.id]).toContain(gen2ListResult.body.data.listPrimaries.items[0].id);
+    expect([gen1Primary.id, gen2Primary.id]).toContain(gen2ListResult.body.data.listPrimaries.items[1].id);
+    expect(gen2ListResult.body.data.listPrimaries.items[0].relatedMany.items.length).toEqual(1);
+    expect(gen2ListResult.body.data.listPrimaries.items[1].relatedMany.items.length).toEqual(1);
+    expect(gen2ListResult.body.data.listPrimaries.items[0].relatedOne).toBeDefined();
+    expect(gen2ListResult.body.data.listPrimaries.items[1].relatedOne).toBeDefined();
 
     await deleteProject(gen1ProjRoot);
 
@@ -253,5 +253,9 @@ describe('References Migration', () => {
     expect(listResult.body.data.listPrimaries.items.length).toEqual(2);
     expect([gen1Primary.id, gen2Primary.id]).toContain(listResult.body.data.listPrimaries.items[0].id);
     expect([gen1Primary.id, gen2Primary.id]).toContain(listResult.body.data.listPrimaries.items[1].id);
+    expect(listResult.body.data.listPrimaries.items[0].relatedMany.items.length).toEqual(1);
+    expect(listResult.body.data.listPrimaries.items[1].relatedMany.items.length).toEqual(1);
+    expect(listResult.body.data.listPrimaries.items[0].relatedOne).toBeDefined();
+    expect(listResult.body.data.listPrimaries.items[1].relatedOne).toBeDefined();
   });
 });

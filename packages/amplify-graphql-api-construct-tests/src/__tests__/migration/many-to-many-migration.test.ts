@@ -179,6 +179,8 @@ describe('References Migration', () => {
     expect(gen1ListResult.body.data.listPosts.items.length).toEqual(2);
     expect([gen1Post.id, gen2Post.id]).toContain(gen1ListResult.body.data.listPosts.items[0].id);
     expect([gen1Post.id, gen2Post.id]).toContain(gen1ListResult.body.data.listPosts.items[1].id);
+    expect(gen1ListResult.body.data.listPosts.items[0].tags.items.length).toEqual(1);
+    expect(gen1ListResult.body.data.listPosts.items[1].tags.items.length).toEqual(1);
 
     const gen2ListResult = await graphql(
       gen2APIEndpoint,
@@ -203,6 +205,8 @@ describe('References Migration', () => {
     expect(gen2ListResult.body.data.listPosts.items.length).toEqual(2);
     expect([gen1Post.id, gen2Post.id]).toContain(gen2ListResult.body.data.listPosts.items[0].id);
     expect([gen1Post.id, gen2Post.id]).toContain(gen2ListResult.body.data.listPosts.items[1].id);
+    expect(gen2ListResult.body.data.listPosts.items[0].tags.items.length).toEqual(1);
+    expect(gen2ListResult.body.data.listPosts.items[1].tags.items.length).toEqual(1);
 
     await deleteProject(gen1ProjRoot);
 
@@ -229,5 +233,7 @@ describe('References Migration', () => {
     expect(listResult.body.data.listPosts.items.length).toEqual(2);
     expect([gen1Post.id, gen2Post.id]).toContain(listResult.body.data.listPosts.items[0].id);
     expect([gen1Post.id, gen2Post.id]).toContain(listResult.body.data.listPosts.items[1].id);
+    expect(listResult.body.data.listPosts.items[0].tags.items.length).toEqual(1);
+    expect(listResult.body.data.listPosts.items[1].tags.items.length).toEqual(1);
   });
 });
